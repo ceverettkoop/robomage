@@ -19,6 +19,11 @@ fails, so one invocation reports every finding):
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
           resolve through their script's front face, mirroring the engine.
+  obsinv  Structural per-decision invariants on the raw machine-mode observation
+          vector across a few seeded scripted games (train/test_obs_invariants.py):
+          card-id / entity-ref floats decode in range, recency-packed zones have
+          no holes, one-hots are one-hot, etc. Catches a silent serialize_state
+          layout/encoding regression.
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
           matches — catches unintended narrative/behavior drift.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
@@ -65,7 +70,7 @@ LEAGUE = ["bug", "bw_dnt", "car_doomsday", "gw_maverick", "tron", "ur_delver",
           "wrb_energy"]
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "obsinv", "replay", "smoke", "fuzz"]
 
 # Transcript scan (stdout narrative + captured engine stderr). Two severities:
 #   ERROR  — genuine failures that fail the gate: the engine's own ERROR:
@@ -191,6 +196,21 @@ def tier_vocab(rep):
         if missing:
             rep.error("vocab", f"{label} decks reference {len(missing)} card(s) "
                                f"not in card_vocab.h: {', '.join(missing)}")
+
+
+def tier_obsinv(rep):
+    """Structural invariants on the raw machine-mode observation vector.
+
+    Drives a few seeded scripted games and asserts per-decision that the
+    observation encoding stays self-consistent (see train/test_obs_invariants.py).
+    A cheap gate that catches a silent serialize_state regression."""
+    r = subprocess.run([sys.executable, "train/test_obs_invariants.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("obsinv", "observation invariant violation "
+                            f"(test_obs_invariants.py exit {r.returncode}):\n"
+                            f"{r.stdout}{r.stderr}")
 
 
 def tier_replay(rep):
@@ -321,11 +341,11 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay"} & set(tiers)
+    game_tiers = {"smoke", "fuzz", "replay", "obsinv"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab"} & set(tiers):
+    if {"smoke", "fuzz", "vocab", "obsinv"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
             print(f"no card scripts under {cards_dir} — run "
@@ -339,6 +359,8 @@ def main(argv=None):
             tier_pygen(rep)
         elif t == "vocab":
             tier_vocab(rep)
+        elif t == "obsinv":
+            tier_obsinv(rep)
         elif t == "replay":
             tier_replay(rep)
         elif t == "smoke":

@@ -678,6 +678,10 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
             state, _OPP_PERM_START,
             counters=perm_counters[1] if perm_counters else None,
             token_names=perm_token_names[1] if perm_token_names else None),
+        # NOTE: the action-history ring ([4394-4905] in src/machine_io.h — 128
+        # entries x 4 floats) is DELIBERATELY not decoded here. It is bulky, only
+        # useful for the policy network's temporal context, and never surfaced in
+        # the human-readable board dump; it is the one intentional coverage skip.
         "stack": _decode_stack(state, labels),
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
@@ -1040,23 +1044,31 @@ def format_state_lines(gs):
     lines = [
         f"Priority: {gs['priority_player']}"
         f" ({'active' if gs['is_active_player'] else 'non-active'})",
-        f"Step: {gs['step']}",
+        f"Step: {gs['step']} (turn {gs['turn']})",
     ]
     hand_names = [c["name"] for c in gs["self_hand"]]
     lines.append(f"Self:  {gs['self']['life']} life"
                  f" | mana: {fmt_mana(gs['self']['mana'])}"
                  f"{fmt_resources(gs['self'])}"
-                 f" | hand({gs['self']['hand_count']}): {', '.join(hand_names) or '(empty)'}")
+                 f" | hand({gs['self']['hand_count']}): {', '.join(hand_names) or '(empty)'}"
+                 f" | lib {gs['self_library']}")
     lines.append(f"Opp:   {gs['opponent']['life']} life"
                  f" | mana: {fmt_mana(gs['opponent']['mana'])}"
                  f"{fmt_resources(gs['opponent'])}"
-                 f" | hand count: {gs['opponent']['hand_count']}")
+                 f" | hand count: {gs['opponent']['hand_count']}"
+                 f" | lib {gs['opp_library']}")
     if gs["self_battlefield"]:
         lines.append(f"Self BF:  {' | '.join(fmt_perm(p) for p in gs['self_battlefield'])}")
     if gs["opp_battlefield"]:
         lines.append(f"Opp BF:   {' | '.join(fmt_perm(p) for p in gs['opp_battlefield'])}")
     if gs["stack"]:
         lines.append(f"Stack: {' -> '.join(fmt_stack_entry(e) for e in gs['stack'])}")
+    # Source of the current mid-resolution choice (may not be on the stack yet,
+    # since targets are announced before the spell moves there).
+    pend = gs.get("pending_decision")
+    if pend:
+        lines.append(f"Pending: {pend['name']}"
+                     f" ({'self' if pend['is_self'] else 'opp'})")
     if gs["self_graveyard"]:
         lines.append(f"Self GY: {', '.join(gs['self_graveyard'])}")
     if gs["opp_graveyard"]:

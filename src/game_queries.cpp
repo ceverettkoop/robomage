@@ -514,6 +514,12 @@ Entity returnable_exiled_card(Entity host) {
     for (auto it = exiled.rbegin(); it != exiled.rend(); ++it) {
         Entity card = *it;
         if (card == 0) continue;
+        // The card must still physically be in the exile zone. A Static-Prison-class host can
+        // exile a TOKEN; the token then ceases to exist (SBA) and its entity id may be recycled
+        // onto an unrelated object — but the delayed trigger persists (it watches the host, not
+        // the card), so without this guard we'd report a phantom/wrong "holding" id.
+        if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+        if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
         for (const auto &dt : cur_game.delayed_triggers) {
             const Ability &fa = dt.ability;
             // A return path is a ChangeZone that would pull the card OUT of exile.

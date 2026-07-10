@@ -28,9 +28,9 @@
 
 --- Decision 1 ---
   Priority: Player A (active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -48,9 +48,9 @@
 
 --- Decision 2 ---
   Priority: Player B (non-active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -64,9 +64,9 @@
 
 --- Decision 3 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -78,9 +78,9 @@
 
 --- Decision 4 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Misty Rainforest
   Extras: self_lands_played=1
   Actions:
@@ -96,10 +96,11 @@
 
 --- Decision 5 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Stack: Misty Rainforest (ability, self)
+  Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -117,9 +118,9 @@
 
 --- Decision 6 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Island
   Self GY: Misty Rainforest
   Extras: self_lands_played=1, self_revolt
@@ -133,9 +134,9 @@
 
 --- Decision 7 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
   Self GY: Misty Rainforest
@@ -148,9 +149,9 @@
 
 --- Decision 8 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
   Opp GY:  Misty Rainforest
@@ -165,9 +166,9 @@
 
 --- Decision 9 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
   Opp GY:  Misty Rainforest
@@ -183,11 +184,12 @@
 
 --- Decision 10 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
+  Pending: Force of Will (self)
   Opp GY:  Misty Rainforest
   Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island
@@ -201,9 +203,9 @@
 
 --- Decision 11 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Island (T)
   Stack: Force of Will (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Misty Rainforest
@@ -218,9 +220,9 @@
 
 --- Decision 12 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Island (T)
   Stack: Force of Will (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Misty Rainforest
@@ -236,10 +238,11 @@
 
 --- Decision 13 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Island, Scalding Tarn, Wasteland
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Island, Scalding Tarn, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Stack: Force of Will (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
+  Pending: Daze (self)
   Self GY: Misty Rainforest
   Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
@@ -256,9 +259,9 @@
 
 --- Decision 14 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
   Stack: Daze (spell, opponent) -> Force of Will (self, slot 97) -> Force of Will (spell, self) -> Ponder (opponent, slot 98) -> Ponder (spell, opponent)
   Opp GY:  Misty Rainforest
   Self exile: Personal Tutor
@@ -275,10 +278,11 @@
 
 --- Decision 15 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Island, Scalding Tarn, Wasteland
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Island, Scalding Tarn, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Daze, Misty Rainforest
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -294,10 +298,11 @@
 
 --- Decision 16 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Island, Scalding Tarn, Wasteland
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Island, Scalding Tarn, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Daze, Misty Rainforest
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -310,10 +315,11 @@
 
 --- Decision 17 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Island, Scalding Tarn, Wasteland
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Island, Scalding Tarn, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Daze, Misty Rainforest
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -339,9 +345,9 @@
 
 --- Decision 18 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -357,9 +363,9 @@
 
 --- Decision 19 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Polluted Delta
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
@@ -374,9 +380,9 @@
 
 --- Decision 20 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Polluted Delta
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
@@ -394,9 +400,9 @@
 
 --- Decision 21 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Lotus Petal, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Lotus Petal, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -412,9 +418,9 @@
 
 --- Decision 22 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Dark Ritual, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(4): Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Lotus Petal
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
@@ -436,10 +442,11 @@
 
 --- Decision 23 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -455,10 +462,11 @@
 
 --- Decision 24 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -471,10 +479,11 @@
 
 --- Decision 25 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -500,9 +509,9 @@
 
 --- Decision 26 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Island, Scalding Tarn, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Island, Scalding Tarn, Wasteland | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -528,9 +537,9 @@
 
 --- Decision 27 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Daze, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Daze, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
@@ -547,9 +556,9 @@
 
 --- Decision 28 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -566,9 +575,9 @@
 
 --- Decision 29 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Begin Combat (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -587,9 +596,9 @@
 
 --- Decision 30 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Declare Atk (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -608,9 +617,9 @@
 
 --- Decision 31 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Declare Blk (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -630,9 +639,9 @@
 
 --- Decision 32 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Combat Dmg (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -649,9 +658,9 @@
 
 --- Decision 33 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: End Combat (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -668,9 +677,9 @@
 
 --- Decision 34 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Second Main (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -687,9 +696,9 @@
 
 --- Decision 35 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: End Step (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -711,9 +720,9 @@
 
 --- Decision 36 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Upkeep (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -731,9 +740,9 @@
 
 --- Decision 37 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: Draw (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -749,9 +758,9 @@
 
 --- Decision 38 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Scalding Tarn, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
   Self GY: Ponder, Daze, Misty Rainforest
@@ -768,9 +777,9 @@
 
 --- Decision 39 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island | Scalding Tarn
   Opp BF:   Underground Sea
   Self GY: Ponder, Daze, Misty Rainforest
@@ -789,9 +798,9 @@
 
 --- Decision 40 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 6
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   18 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Underground Sea
   Opp BF:   Island
   Stack: Scalding Tarn (ability, opponent)
@@ -812,12 +821,13 @@
 
 --- Decision 41 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
   Stack: Scalding Tarn (ability, self)
+  Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -838,9 +848,9 @@
 
 --- Decision 42 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island | Mountain
   Opp BF:   Underground Sea
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -860,9 +870,9 @@
 
 --- Decision 43 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island | Mountain (T)
   Opp BF:   Underground Sea
   Stack: Dragon's Rage Channeler (spell, self)
@@ -878,9 +888,9 @@
 
 --- Decision 44 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Stack: Dragon's Rage Channeler (spell, opponent)
@@ -899,9 +909,9 @@
 
 --- Decision 45 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Stack: Dragon's Rage Channeler (spell, opponent)
@@ -920,11 +930,12 @@
 
 --- Decision 46 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Daze, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Daze, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs | lib 49
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Opp BF:   Island | Mountain (T)
   Stack: Dragon's Rage Channeler (spell, opponent)
+  Pending: Daze (self)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -940,9 +951,9 @@
 
 --- Decision 47 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island | Mountain (T)
   Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -957,9 +968,9 @@
 
 --- Decision 48 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island | Mountain (T)
   Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -976,11 +987,12 @@
 
 --- Decision 49 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Island, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Island, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Mountain (T)
   Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
+  Pending: Daze (self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -998,9 +1010,9 @@
 
 --- Decision 50 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs | lib 49
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Opp BF:   Mountain (T)
   Stack: Daze (spell, opponent) -> Daze (self, slot 97) -> Daze (spell, self) -> Dragon's Rage Channeler (opponent, slot 98) -> Dragon's Rage Channeler (spell, opponent)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1027,9 +1039,9 @@
 
 --- Decision 51 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -1045,9 +1057,9 @@
 
 --- Decision 52 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1063,9 +1075,9 @@
 
 --- Decision 53 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1083,9 +1095,9 @@
 
 --- Decision 54 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1103,9 +1115,9 @@
 
 --- Decision 55 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1124,9 +1136,9 @@
 
 --- Decision 56 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1142,9 +1154,9 @@
 
 --- Decision 57 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: End Combat (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1160,9 +1172,9 @@
 
 --- Decision 58 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: Second Main (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1178,9 +1190,9 @@
 
 --- Decision 59 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: End Step (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1201,9 +1213,9 @@
 
 --- Decision 60 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Island, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 7)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Island, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Dragon's Rage Channeler [1/1] | Mountain
   Opp BF:   Underground Sea
   Self GY: Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -1219,11 +1231,12 @@
 
 --- Decision 61 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Island, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 7)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Island, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Dragon's Rage Channeler [1/1] | Mountain
   Opp BF:   Underground Sea
+  Pending: Unholy Heat (self)
   Self GY: Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -1239,9 +1252,9 @@
 
 --- Decision 62 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] | Mountain (T)
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Unholy Heat (spell, opponent) -> Dragon's Rage Channeler (opponent, slot 48)
@@ -1261,12 +1274,13 @@
 
 --- Decision 63 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Island, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 7)
+  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Island, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Dragon's Rage Channeler [1/1] | Mountain (T)
   Opp BF:   Underground Sea
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -1280,9 +1294,9 @@
 
 --- Decision 64 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Dragon's Rage Channeler [1/1] | Mountain (T)
   Stack: Unholy Heat (spell, opponent) -> Dragon's Rage Channeler (opponent, slot 48)
@@ -1302,9 +1316,9 @@
 
 --- Decision 65 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1322,9 +1336,9 @@
 
 --- Decision 66 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: Draw (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1340,9 +1354,9 @@
 
 --- Decision 67 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Island, Wasteland
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Island, Wasteland | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Mountain (T)
   Opp BF:   Underground Sea
   Self GY: Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -1360,9 +1374,9 @@
 
 --- Decision 68 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1378,9 +1392,9 @@
 
 --- Decision 69 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1398,9 +1412,9 @@
 
 --- Decision 70 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1418,9 +1432,9 @@
 
 --- Decision 71 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1439,9 +1453,9 @@
 
 --- Decision 72 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1457,9 +1471,9 @@
 
 --- Decision 73 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: End Combat (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1475,9 +1489,9 @@
 
 --- Decision 74 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Second Main (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1493,9 +1507,9 @@
 
 --- Decision 75 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: End Step (turn 7)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1516,9 +1530,9 @@
 
 --- Decision 76 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 8)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1535,9 +1549,9 @@
 
 --- Decision 77 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  19 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Lotus Petal, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 8)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Lotus Petal, Verdant Catacombs | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1552,9 +1566,9 @@
 
 --- Decision 78 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Lotus Petal, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Lotus Petal, Verdant Catacombs | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1573,9 +1587,9 @@
 
 --- Decision 79 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Island | Mountain (T)
   Stack: Lotus Petal (spell, self)
@@ -1593,9 +1607,9 @@
 
 --- Decision 80 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Underground Sea
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1614,9 +1628,9 @@
 
 --- Decision 81 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Doomsday, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(3): Doomsday, Dark Ritual, Verdant Catacombs | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Stack: Dark Ritual (spell, self)
@@ -1634,9 +1648,9 @@
 
 --- Decision 82 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: 3B | hand(3): Doomsday, Dark Ritual, Verdant Catacombs
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  19 life | mana: 3B | hand(3): Doomsday, Dark Ritual, Verdant Catacombs | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1654,9 +1668,9 @@
 
 --- Decision 83 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: 3B | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  19 life | mana: 3B | hand(2): Doomsday, Dark Ritual | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Underground Sea (T) | Verdant Catacombs
   Opp BF:   Island | Mountain (T)
   Self GY: Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1677,9 +1691,9 @@
 
 --- Decision 84 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: 3B | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  18 life | mana: 3B | hand(2): Doomsday, Dark Ritual | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Stack: Verdant Catacombs (ability, self)
@@ -1698,12 +1712,13 @@
 
 --- Decision 85 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: 3B | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  18 life | mana: 3B | hand(2): Doomsday, Dark Ritual | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Stack: Verdant Catacombs (ability, self)
+  Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -1722,9 +1737,9 @@
 
 --- Decision 86 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: 3B | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  18 life | mana: 3B | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1740,9 +1755,9 @@
 
 --- Decision 87 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 8)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1759,9 +1774,9 @@
 
 --- Decision 88 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 8)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1778,9 +1793,9 @@
 
 --- Decision 89 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 8)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1798,9 +1813,9 @@
 
 --- Decision 90 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 8)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1815,9 +1830,9 @@
 
 --- Decision 91 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: End Combat (turn 8)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1832,9 +1847,9 @@
 
 --- Decision 92 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Second Main (turn 8)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1849,9 +1864,9 @@
 
 --- Decision 93 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: End Step (turn 8)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1871,9 +1886,9 @@
 
 --- Decision 94 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 9)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1889,9 +1904,9 @@
 
 --- Decision 95 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Wasteland
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Wasteland | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Island | Mountain
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -1907,11 +1922,12 @@
 
 --- Decision 96 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Wasteland
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Wasteland | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Island | Mountain
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
+  Pending: Lightning Bolt (self)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -1927,9 +1943,9 @@
 
 --- Decision 97 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Stack: Lightning Bolt (spell, opponent) -> self (player)
@@ -1947,9 +1963,9 @@
 
 --- Decision 98 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1963,9 +1979,9 @@
 
 --- Decision 99 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Wasteland
-  Opp:   15 life | mana: empty | hand count: 2
+  Step: First Main (turn 9)
+  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Wasteland | lib 45
+  Opp:   15 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Island | Mountain (T)
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -1981,9 +1997,9 @@
 
 --- Decision 100 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter
-  Opp:   15 life | mana: empty | hand count: 2
+  Step: First Main (turn 9)
+  Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter | lib 45
+  Opp:   15 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Island | Mountain (T) | Wasteland
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -2000,11 +2016,12 @@
 
 --- Decision 101 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter
-  Opp:   15 life | mana: empty | hand count: 2
+  Step: First Main (turn 9)
+  Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter | lib 45
+  Opp:   15 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Island | Mountain (T) | Wasteland
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
+  Pending: Wasteland (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -2021,9 +2038,9 @@
 
 --- Decision 102 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
   Stack: Wasteland (ability, opponent) -> Underground Sea (self, slot 2)
@@ -2042,9 +2059,9 @@
 
 --- Decision 103 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2059,9 +2076,9 @@
 
 --- Decision 104 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Begin Combat (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2078,9 +2095,9 @@
 
 --- Decision 105 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Declare Atk (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2097,9 +2114,9 @@
 
 --- Decision 106 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Declare Blk (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2117,9 +2134,9 @@
 
 --- Decision 107 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Combat Dmg (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2134,9 +2151,9 @@
 
 --- Decision 108 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: End Combat (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2151,9 +2168,9 @@
 
 --- Decision 109 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Second Main (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2168,9 +2185,9 @@
 
 --- Decision 110 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: End Step (turn 9)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2190,9 +2207,9 @@
 
 --- Decision 111 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Upkeep (turn 10)
+  Self:  15 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2208,9 +2225,9 @@
 
 --- Decision 112 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Draw (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2224,9 +2241,9 @@
 
 --- Decision 113 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2240,9 +2257,9 @@
 
 --- Decision 114 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Begin Combat (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2258,9 +2275,9 @@
 
 --- Decision 115 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Declare Atk (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2276,9 +2293,9 @@
 
 --- Decision 116 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Declare Blk (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2295,9 +2312,9 @@
 
 --- Decision 117 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Combat Dmg (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2311,9 +2328,9 @@
 
 --- Decision 118 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: End Combat (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2327,9 +2344,9 @@
 
 --- Decision 119 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Second Main (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2343,9 +2360,9 @@
 
 --- Decision 120 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: End Step (turn 10)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2364,9 +2381,9 @@
 
 --- Decision 121 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Upkeep (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2382,9 +2399,9 @@
 
 --- Decision 122 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2398,9 +2415,9 @@
 
 --- Decision 123 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Thundering Falls
-  Opp:   15 life | mana: empty | hand count: 3
+  Step: First Main (turn 11)
+  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Thundering Falls | lib 44
+  Opp:   15 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Island | Mountain
   Opp BF:   Lotus Petal | Swamp
   Self GY: Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -2420,9 +2437,9 @@
 
 --- Decision 124 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 44
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Island | Mountain (T)
   Stack: Dragon's Rage Channeler (spell, opponent)
@@ -2440,9 +2457,9 @@
 
 --- Decision 125 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Thundering Falls
-  Opp:   15 life | mana: empty | hand count: 3
+  Step: First Main (turn 11)
+  Self:  18 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Thundering Falls | lib 44
+  Opp:   15 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T)
   Opp BF:   Lotus Petal | Swamp
   Self GY: Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -2460,9 +2477,9 @@
 
 --- Decision 126 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 44
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Stack: Thundering Falls (ability, opponent) [amt=1]
@@ -2482,12 +2499,13 @@
 
 --- Decision 127 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Cori-Steel Cutter, Cori-Steel Cutter
-  Opp:   15 life | mana: empty | hand count: 3
+  Step: First Main (turn 11)
+  Self:  18 life | mana: empty | hand(2): Cori-Steel Cutter, Cori-Steel Cutter | lib 44
+  Opp:   15 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Opp BF:   Lotus Petal | Swamp
   Stack: Thundering Falls (ability, self) [amt=1]
+  Pending: Thundering Falls (self)
   Self GY: Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -2502,9 +2520,9 @@
 
 --- Decision 128 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2519,9 +2537,9 @@
 
 --- Decision 129 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2538,9 +2556,9 @@
 
 --- Decision 130 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2557,9 +2575,9 @@
 
 --- Decision 131 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2577,9 +2595,9 @@
 
 --- Decision 132 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2594,9 +2612,9 @@
 
 --- Decision 133 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Combat (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2611,9 +2629,9 @@
 
 --- Decision 134 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Second Main (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2628,9 +2646,9 @@
 
 --- Decision 135 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Step (turn 11)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2650,9 +2668,9 @@
 
 --- Decision 136 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 12)
+  Self:  15 life | mana: empty | hand(3): Doomsday, Doomsday, Dark Ritual | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2668,9 +2686,9 @@
 
 --- Decision 137 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Draw (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2684,9 +2702,9 @@
 
 --- Decision 138 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2700,9 +2718,9 @@
 
 --- Decision 139 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2718,9 +2736,9 @@
 
 --- Decision 140 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2736,9 +2754,9 @@
 
 --- Decision 141 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2755,9 +2773,9 @@
 
 --- Decision 142 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2771,9 +2789,9 @@
 
 --- Decision 143 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Combat (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2787,9 +2805,9 @@
 
 --- Decision 144 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Second Main (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2803,9 +2821,9 @@
 
 --- Decision 145 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Step (turn 12)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2824,9 +2842,9 @@
 
 --- Decision 146 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Thundering Falls
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2842,9 +2860,9 @@
 
 --- Decision 147 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Draw (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 3 | lib 42
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Thundering Falls
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2858,9 +2876,9 @@
 
 --- Decision 148 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Flooded Strand
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  18 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Flooded Strand | lib 42
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Thundering Falls
   Opp BF:   Lotus Petal | Swamp
   Self GY: Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -2881,9 +2899,9 @@
 
 --- Decision 149 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T) | Thundering Falls
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Cori-Steel Cutter (spell, opponent)
@@ -2902,12 +2920,13 @@
 
 --- Decision 150 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Cori-Steel Cutter, Flooded Strand
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  18 life | mana: empty | hand(2): Cori-Steel Cutter, Flooded Strand | lib 42
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T) | Thundering Falls
   Opp BF:   Lotus Petal | Swamp
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -2921,9 +2940,9 @@
 
 --- Decision 151 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 41
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T) | Thundering Falls
   Stack: Cori-Steel Cutter (spell, opponent)
@@ -2940,9 +2959,9 @@
 
 --- Decision 152 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Cori-Steel Cutter, Flooded Strand
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  18 life | mana: empty | hand(2): Cori-Steel Cutter, Flooded Strand | lib 41
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Thundering Falls
   Opp BF:   Lotus Petal | Swamp
   Self GY: Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -2958,9 +2977,9 @@
 
 --- Decision 153 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(1): Cori-Steel Cutter
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  18 life | mana: empty | hand(1): Cori-Steel Cutter | lib 41
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Flooded Strand | Thundering Falls
   Opp BF:   Lotus Petal | Swamp
   Self GY: Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -2979,9 +2998,9 @@
 
 --- Decision 154 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 1 | lib 41
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Thundering Falls
   Stack: Flooded Strand (ability, opponent)
@@ -3000,12 +3019,13 @@
 
 --- Decision 155 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(1): Cori-Steel Cutter
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  17 life | mana: empty | hand(1): Cori-Steel Cutter | lib 41
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Thundering Falls
   Opp BF:   Lotus Petal | Swamp
   Stack: Flooded Strand (ability, self)
+  Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -3024,9 +3044,9 @@
 
 --- Decision 156 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(1): Cori-Steel Cutter
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  17 life | mana: empty | hand(1): Cori-Steel Cutter | lib 40
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island | Thundering Falls
   Opp BF:   Lotus Petal | Swamp
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3047,9 +3067,9 @@
 
 --- Decision 157 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 40
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T)
   Opp BF:   Lotus Petal | Swamp
   Stack: Cori-Steel Cutter (spell, self)
@@ -3068,9 +3088,9 @@
 
 --- Decision 158 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T)
   Stack: Cori-Steel Cutter (ability, opponent) -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Cori-Steel Cutter (spell, opponent)
@@ -3090,9 +3110,9 @@
 
 --- Decision 159 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 40
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Opp BF:   Lotus Petal | Swamp
   Stack: Cori-Steel Cutter (ability, self) -> Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
@@ -3110,9 +3130,9 @@
 
 --- Decision 160 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Cori-Steel Cutter (spell, opponent)
@@ -3132,12 +3152,13 @@
 
 --- Decision 161 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 13)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 40
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Opp BF:   Lotus Petal | Swamp
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -3152,9 +3173,9 @@
 
 --- Decision 162 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Stack: Cori-Steel Cutter (spell, opponent)
@@ -3172,9 +3193,9 @@
 
 --- Decision 163 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3189,9 +3210,9 @@
 
 --- Decision 164 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Begin Combat (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3210,9 +3231,9 @@
 
 --- Decision 165 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 13)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 39
+  Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3229,9 +3250,9 @@
 
 --- Decision 166 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Atk (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3248,9 +3269,9 @@
 
 --- Decision 167 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Blk (turn 13)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3269,9 +3290,9 @@
 
 --- Decision 168 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Combat Dmg (turn 13)
+  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3286,9 +3307,9 @@
 
 --- Decision 169 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: End Combat (turn 13)
+  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3303,9 +3324,9 @@
 
 --- Decision 170 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Second Main (turn 13)
+  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3320,9 +3341,9 @@
 
 --- Decision 171 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: End Step (turn 13)
+  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3342,9 +3363,9 @@
 
 --- Decision 172 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Upkeep (turn 14)
+  Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3360,9 +3381,9 @@
 
 --- Decision 173 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Draw (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3376,9 +3397,9 @@
 
 --- Decision 174 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3392,9 +3413,9 @@
 
 --- Decision 175 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Begin Combat (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3410,9 +3431,9 @@
 
 --- Decision 176 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Atk (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3428,9 +3449,9 @@
 
 --- Decision 177 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Blk (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3447,9 +3468,9 @@
 
 --- Decision 178 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Combat Dmg (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3463,9 +3484,9 @@
 
 --- Decision 179 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: End Combat (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3479,9 +3500,9 @@
 
 --- Decision 180 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Second Main (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3495,9 +3516,9 @@
 
 --- Decision 181 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: End Step (turn 14)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3516,9 +3537,9 @@
 
 --- Decision 182 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Upkeep (turn 15)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 39
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3534,9 +3555,9 @@
 
 --- Decision 183 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 1
+  Step: Draw (turn 15)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 1 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3550,9 +3571,9 @@
 
 --- Decision 184 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(1): Delver of Secrets
-  Opp:   12 life | mana: empty | hand count: 5
+  Step: First Main (turn 15)
+  Self:  17 life | mana: empty | hand(1): Delver of Secrets | lib 38
+  Opp:   12 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3571,9 +3592,9 @@
 
 --- Decision 185 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 15)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Stack: Delver of Secrets (spell, opponent)
@@ -3590,9 +3611,9 @@
 
 --- Decision 186 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   12 life | mana: empty | hand count: 5
+  Step: First Main (turn 15)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 38
+  Opp:   12 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3611,9 +3632,9 @@
 
 --- Decision 187 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   12 life | mana: empty | hand count: 5
+  Step: First Main (turn 15)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 38
+  Opp:   12 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3631,9 +3652,9 @@
 
 --- Decision 188 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 15)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3647,9 +3668,9 @@
 
 --- Decision 189 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Begin Combat (turn 15)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3667,9 +3688,9 @@
 
 --- Decision 190 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   12 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 15)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 38
+  Opp:   12 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3690,9 +3711,9 @@
 
 --- Decision 191 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   12 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 15)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 38
+  Opp:   12 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3713,9 +3734,9 @@
 
 --- Decision 192 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   12 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 15)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 38
+  Opp:   12 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (ATK)
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3734,9 +3755,9 @@
 
 --- Decision 193 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Atk (turn 15)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3752,9 +3773,9 @@
 
 --- Decision 194 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Blk (turn 15)
+  Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3774,9 +3795,9 @@
 
 --- Decision 195 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Combat Dmg (turn 15)
+  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3790,9 +3811,9 @@
 
 --- Decision 196 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: End Combat (turn 15)
+  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3806,9 +3827,9 @@
 
 --- Decision 197 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Second Main (turn 15)
+  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3822,9 +3843,9 @@
 
 --- Decision 198 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: End Step (turn 15)
+  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3843,9 +3864,9 @@
 
 --- Decision 199 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Upkeep (turn 16)
+  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 43
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3861,9 +3882,9 @@
 
 --- Decision 200 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  6 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Dark Ritual, Bloodstained Mire, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Draw (turn 16)
+  Self:  6 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Dark Ritual, Bloodstained Mire, Barrowgoyf | lib 42
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3877,9 +3898,9 @@
 
 --- Decision 201 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Dark Ritual, Bloodstained Mire, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 16)
+  Self:  6 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Dark Ritual, Bloodstained Mire, Barrowgoyf | lib 42
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3896,9 +3917,9 @@
 
 --- Decision 202 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 16)
+  Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 42
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Bloodstained Mire
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3918,9 +3939,9 @@
 
 --- Decision 203 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 42
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Stack: Bloodstained Mire (ability, self)
@@ -3939,12 +3960,13 @@
 
 --- Decision 204 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 42
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Stack: Bloodstained Mire (ability, self)
+  Pending: Bloodstained Mire (self)
   Self GY: Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -3964,9 +3986,9 @@
 
 --- Decision 205 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 41
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
@@ -3986,12 +4008,13 @@
 
 --- Decision 206 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 41
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
   Self GY: Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -4006,9 +4029,9 @@
 
 --- Decision 207 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4023,9 +4046,9 @@
 
 --- Decision 208 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Begin Combat (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4042,9 +4065,9 @@
 
 --- Decision 209 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Atk (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4061,9 +4084,9 @@
 
 --- Decision 210 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Blk (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4081,9 +4104,9 @@
 
 --- Decision 211 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Combat Dmg (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4098,9 +4121,9 @@
 
 --- Decision 212 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: End Combat (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4115,9 +4138,9 @@
 
 --- Decision 213 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Second Main (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4132,9 +4155,9 @@
 
 --- Decision 214 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: End Step (turn 16)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4155,9 +4178,9 @@
 
 --- Decision 215 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Upkeep (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Stack: Delver of Secrets (ability, opponent)
@@ -4175,12 +4198,13 @@
 
 --- Decision 216 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 17)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 38
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Stack: Delver of Secrets (ability, self)
+  Pending: Delver of Secrets (self)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -4195,9 +4219,9 @@
 
 --- Decision 217 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Upkeep (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4213,9 +4237,9 @@
 
 --- Decision 218 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(1): Unholy Heat
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: Draw (turn 17)
+  Self:  17 life | mana: empty | hand(1): Unholy Heat | lib 37
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -4231,11 +4255,12 @@
 
 --- Decision 219 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(1): Unholy Heat
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: Draw (turn 17)
+  Self:  17 life | mana: empty | hand(1): Unholy Heat | lib 37
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
+  Pending: Unholy Heat (self)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -4253,9 +4278,9 @@
 
 --- Decision 220 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: Draw (turn 17)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 37
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Stack: Unholy Heat (spell, self) -> Insectile Aberration (self, slot 0)
@@ -4273,9 +4298,9 @@
 
 --- Decision 221 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Draw (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 37
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [1/1]
   Stack: Monk (ability, opponent) [amt=1] -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Unholy Heat (spell, opponent) -> Insectile Aberration (opponent, slot 48)
@@ -4293,9 +4318,9 @@
 
 --- Decision 222 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Draw (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 37
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Unholy Heat (spell, opponent) -> Insectile Aberration (opponent, slot 48)
@@ -4314,12 +4339,13 @@
 
 --- Decision 223 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: Draw (turn 17)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 37
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Insectile Aberration (self, slot 0)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -4333,9 +4359,9 @@
 
 --- Decision 224 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Draw (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 36
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Stack: Unholy Heat (spell, opponent) -> Insectile Aberration (opponent, slot 48)
@@ -4354,9 +4380,9 @@
 
 --- Decision 225 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Draw (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 36
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4371,9 +4397,9 @@
 
 --- Decision 226 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: First Main (turn 17)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 36
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -4393,9 +4419,9 @@
 
 --- Decision 227 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: First Main (turn 17)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 36
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -4413,9 +4439,9 @@
 
 --- Decision 228 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: First Main (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 36
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4430,9 +4456,9 @@
 
 --- Decision 229 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Begin Combat (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 36
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4451,9 +4477,9 @@
 
 --- Decision 230 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 17)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 36
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -4473,9 +4499,9 @@
 
 --- Decision 231 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(0): (empty)
-  Opp:   5 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 17)
+  Self:  17 life | mana: empty | hand(0): (empty) | lib 36
+  Opp:   5 life | mana: empty | hand count: 5 | lib 40
   Self BF:  Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2] (ATK)
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -4493,9 +4519,9 @@
 
 --- Decision 232 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Atk (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 36
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2] (T,ATK)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4512,9 +4538,9 @@
 
 --- Decision 233 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
-  Opp:   17 life | mana: empty | hand count: 0
+  Step: Declare Blk (turn 17)
+  Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf | lib 40
+  Opp:   17 life | mana: empty | hand count: 0 | lib 36
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2] (T,ATK)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will

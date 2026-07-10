@@ -28,9 +28,9 @@
 
 --- Decision 1 ---
   Priority: Player A (active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -48,9 +48,9 @@
 
 --- Decision 2 ---
   Priority: Player B (non-active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -64,9 +64,9 @@
 
 --- Decision 3 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -74,9 +74,9 @@
 
 --- Decision 4 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Draw (turn 1)
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -84,9 +84,9 @@
 
 --- Decision 5 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -99,9 +99,9 @@
 
 --- Decision 6 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -116,10 +116,11 @@
 
 --- Decision 7 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea
+  Pending: Thoughtseize (self)
   Extras: self_lands_played=1
   Actions:
    0: Player B (20 life)
@@ -132,9 +133,9 @@
 
 --- Decision 8 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Extras: self_lands_played=1
@@ -146,9 +147,9 @@
 
 --- Decision 9 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Extras: self_lands_played=1
@@ -161,9 +162,9 @@
 
 --- Decision 10 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Stack: Edge of Autumn (ability, self) [amt=1] -> Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -174,9 +175,9 @@
 
 --- Decision 11 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 4 | lib 53
   Stack: Edge of Autumn (ability, opponent) [amt=1] -> Thoughtseize (spell, opponent) -> self (player)
   Opp GY:  Edge of Autumn, Underground Sea
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
@@ -190,9 +191,9 @@
 
 --- Decision 12 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 4 | lib 53
   Stack: Edge of Autumn (ability, opponent) [amt=1] -> Thoughtseize (spell, opponent) -> self (player)
   Opp GY:  Edge of Autumn, Underground Sea
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
@@ -207,10 +208,11 @@
 
 --- Decision 13 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 4 | lib 53
   Stack: Edge of Autumn (ability, opponent) [amt=1] -> Thoughtseize (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
   Opp GY:  Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
@@ -224,9 +226,9 @@
 
 --- Decision 14 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Stack: Force of Will (spell, opponent) -> Thoughtseize (self, slot 98) -> Edge of Autumn (ability, self) [amt=1] -> Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
   Opp exile:  Personal Tutor
@@ -242,9 +244,9 @@
 
 --- Decision 15 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Stack: Edge of Autumn (ability, self) [amt=1]
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
@@ -261,9 +263,9 @@
 
 --- Decision 16 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -276,9 +278,9 @@
 
 --- Decision 17 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -293,9 +295,9 @@
 
 --- Decision 18 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -310,9 +312,9 @@
 
 --- Decision 19 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -328,9 +330,9 @@
 
 --- Decision 20 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -343,9 +345,9 @@
 
 --- Decision 21 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Combat (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -358,9 +360,9 @@
 
 --- Decision 22 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Second Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -373,9 +375,9 @@
 
 --- Decision 23 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Step (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -393,9 +395,9 @@
 
 --- Decision 24 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -409,9 +411,9 @@
 
 --- Decision 25 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Draw (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 52
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
   Opp exile:  Personal Tutor
@@ -423,9 +425,9 @@
 
 --- Decision 26 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self GY: Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -441,9 +443,9 @@
 
 --- Decision 27 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Polluted Delta
   Self GY: Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
@@ -458,9 +460,9 @@
 
 --- Decision 28 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Polluted Delta
   Self GY: Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
@@ -476,9 +478,9 @@
 
 --- Decision 29 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 52
   Stack: Edge of Autumn (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Edge of Autumn, Polluted Delta, Force of Will
@@ -495,9 +497,9 @@
 
 --- Decision 30 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Lotus Petal, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Lotus Petal, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -512,9 +514,9 @@
 
 --- Decision 31 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 51
   Stack: Lotus Petal (spell, opponent)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Edge of Autumn, Polluted Delta, Force of Will
@@ -530,9 +532,9 @@
 
 --- Decision 32 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Dark Ritual, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(4): Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Lotus Petal
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
@@ -551,9 +553,9 @@
 
 --- Decision 33 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 3
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 3 | lib 51
   Stack: Ponder (spell, opponent)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -571,10 +573,11 @@
 
 --- Decision 34 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -590,10 +593,11 @@
 
 --- Decision 35 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -606,10 +610,11 @@
 
 --- Decision 36 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(3): Dark Ritual, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -626,9 +631,9 @@
 
 --- Decision 37 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -641,9 +646,9 @@
 
 --- Decision 38 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -658,9 +663,9 @@
 
 --- Decision 39 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -675,9 +680,9 @@
 
 --- Decision 40 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -693,9 +698,9 @@
 
 --- Decision 41 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -708,9 +713,9 @@
 
 --- Decision 42 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Combat (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -723,9 +728,9 @@
 
 --- Decision 43 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Second Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -738,9 +743,9 @@
 
 --- Decision 44 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Step (turn 2)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -758,9 +763,9 @@
 
 --- Decision 45 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -774,9 +779,9 @@
 
 --- Decision 46 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(6): Doomsday, Thoughtseize, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Draw (turn 3)
+  Self:  20 life | mana: empty | hand(6): Doomsday, Thoughtseize, Street Wraith, Ponder, Island, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -788,9 +793,9 @@
 
 --- Decision 47 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Doomsday, Thoughtseize, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(6): Doomsday, Thoughtseize, Street Wraith, Ponder, Island, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -806,9 +811,9 @@
 
 --- Decision 48 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Thoughtseize, Street Wraith, Ponder, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Thoughtseize, Street Wraith, Ponder, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -826,9 +831,9 @@
 
 --- Decision 49 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
@@ -847,11 +852,12 @@
 
 --- Decision 50 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -867,11 +873,12 @@
 
 --- Decision 51 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -884,11 +891,12 @@
 
 --- Decision 52 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -905,9 +913,9 @@
 
 --- Decision 53 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -922,9 +930,9 @@
 
 --- Decision 54 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -941,9 +949,9 @@
 
 --- Decision 55 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -960,9 +968,9 @@
 
 --- Decision 56 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -980,9 +988,9 @@
 
 --- Decision 57 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -997,9 +1005,9 @@
 
 --- Decision 58 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Combat (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1014,9 +1022,9 @@
 
 --- Decision 59 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Second Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1031,9 +1039,9 @@
 
 --- Decision 60 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Step (turn 3)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1053,9 +1061,9 @@
 
 --- Decision 61 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1071,9 +1079,9 @@
 
 --- Decision 62 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Draw (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1087,9 +1095,9 @@
 
 --- Decision 63 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Daze, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Daze, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1106,9 +1114,9 @@
 
 --- Decision 64 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1125,9 +1133,9 @@
 
 --- Decision 65 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1143,9 +1151,9 @@
 
 --- Decision 66 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1162,9 +1170,9 @@
 
 --- Decision 67 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1182,9 +1190,9 @@
 
 --- Decision 68 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1201,9 +1209,9 @@
 
 --- Decision 69 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1221,9 +1229,9 @@
 
 --- Decision 70 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1239,9 +1247,9 @@
 
 --- Decision 71 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1261,9 +1269,9 @@
 
 --- Decision 72 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1280,9 +1288,9 @@
 
 --- Decision 73 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1298,9 +1306,9 @@
 
 --- Decision 74 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: End Combat (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1317,9 +1325,9 @@
 
 --- Decision 75 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Combat (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1335,9 +1343,9 @@
 
 --- Decision 76 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Second Main (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1354,9 +1362,9 @@
 
 --- Decision 77 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Second Main (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1372,9 +1380,9 @@
 
 --- Decision 78 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: End Step (turn 4)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1391,9 +1399,9 @@
 
 --- Decision 79 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Step (turn 4)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1414,9 +1422,9 @@
 
 --- Decision 80 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1431,9 +1439,9 @@
 
 --- Decision 81 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1451,9 +1459,9 @@
 
 --- Decision 82 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Draw (turn 5)
+  Self:  20 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest | lib 49
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1468,9 +1476,9 @@
 
 --- Decision 83 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Draw (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Underground Sea
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1486,9 +1494,9 @@
 
 --- Decision 84 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest | lib 49
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1506,9 +1514,9 @@
 
 --- Decision 85 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 49
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island | Misty Rainforest
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1529,9 +1537,9 @@
 
 --- Decision 86 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 49
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
   Stack: Misty Rainforest (ability, self)
@@ -1548,9 +1556,9 @@
 
 --- Decision 87 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Underground Sea
   Opp BF:   Island
   Stack: Misty Rainforest (ability, opponent)
@@ -1571,12 +1579,13 @@
 
 --- Decision 88 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 49
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
   Stack: Misty Rainforest (ability, self)
+  Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -1597,9 +1606,9 @@
 
 --- Decision 89 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Stack: Undercity Sewers (ability, self) [amt=1]
@@ -1615,9 +1624,9 @@
 
 --- Decision 90 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Stack: Undercity Sewers (ability, opponent) [amt=1]
@@ -1639,12 +1648,13 @@
 
 --- Decision 91 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -1659,9 +1669,9 @@
 
 --- Decision 92 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1676,9 +1686,9 @@
 
 --- Decision 93 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1695,9 +1705,9 @@
 
 --- Decision 94 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1712,9 +1722,9 @@
 
 --- Decision 95 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1733,9 +1743,9 @@
 
 --- Decision 96 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1750,9 +1760,9 @@
 
 --- Decision 97 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1771,9 +1781,9 @@
 
 --- Decision 98 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1790,9 +1800,9 @@
 
 --- Decision 99 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1810,9 +1820,9 @@
 
 --- Decision 100 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1827,9 +1837,9 @@
 
 --- Decision 101 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1846,9 +1856,9 @@
 
 --- Decision 102 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Combat (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1863,9 +1873,9 @@
 
 --- Decision 103 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Combat (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1882,9 +1892,9 @@
 
 --- Decision 104 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Second Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1899,9 +1909,9 @@
 
 --- Decision 105 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Second Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1918,9 +1928,9 @@
 
 --- Decision 106 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Step (turn 5)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1935,9 +1945,9 @@
 
 --- Decision 107 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Step (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1959,9 +1969,9 @@
 
 --- Decision 108 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 6)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1977,9 +1987,9 @@
 
 --- Decision 109 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1995,9 +2005,9 @@
 
 --- Decision 110 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  19 life | mana: empty | hand(5): Doomsday, Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Draw (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2012,9 +2022,9 @@
 
 --- Decision 111 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Draw (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2028,9 +2038,9 @@
 
 --- Decision 112 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Daze, Dark Ritual, Dark Ritual, Verdant Catacombs
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 48
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2048,9 +2058,9 @@
 
 --- Decision 113 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 48
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea | Verdant Catacombs
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2071,9 +2081,9 @@
 
 --- Decision 114 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 48
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Stack: Verdant Catacombs (ability, self)
@@ -2090,9 +2100,9 @@
 
 --- Decision 115 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
   Stack: Verdant Catacombs (ability, opponent)
@@ -2111,12 +2121,13 @@
 
 --- Decision 116 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 48
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Stack: Verdant Catacombs (ability, self)
+  Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -2135,9 +2146,9 @@
 
 --- Decision 117 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2153,9 +2164,9 @@
 
 --- Decision 118 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2170,9 +2181,9 @@
 
 --- Decision 119 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2188,9 +2199,9 @@
 
 --- Decision 120 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2207,9 +2218,9 @@
 
 --- Decision 121 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2225,9 +2236,9 @@
 
 --- Decision 122 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2244,9 +2255,9 @@
 
 --- Decision 123 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2261,9 +2272,9 @@
 
 --- Decision 124 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2282,9 +2293,9 @@
 
 --- Decision 125 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2300,9 +2311,9 @@
 
 --- Decision 126 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2317,9 +2328,9 @@
 
 --- Decision 127 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Combat (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2335,9 +2346,9 @@
 
 --- Decision 128 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: End Combat (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2352,9 +2363,9 @@
 
 --- Decision 129 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Second Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2370,9 +2381,9 @@
 
 --- Decision 130 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Second Main (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2387,9 +2398,9 @@
 
 --- Decision 131 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Step (turn 6)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2405,9 +2416,9 @@
 
 --- Decision 132 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: End Step (turn 6)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2427,9 +2438,9 @@
 
 --- Decision 133 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 7)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2443,9 +2454,9 @@
 
 --- Decision 134 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 7)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2462,9 +2473,9 @@
 
 --- Decision 135 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  19 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 7)
+  Self:  19 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2478,9 +2489,9 @@
 
 --- Decision 136 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Draw (turn 7)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2495,9 +2506,9 @@
 
 --- Decision 137 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2515,11 +2526,12 @@
 
 --- Decision 138 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Thoughtseize, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea
+  Pending: Thoughtseize (self)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -2535,9 +2547,9 @@
 
 --- Decision 139 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea
   Stack: Thoughtseize (spell, self) -> opponent (player)
@@ -2552,9 +2564,9 @@
 
 --- Decision 140 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 7)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Stack: Thoughtseize (spell, opponent) -> self (player)
@@ -2574,12 +2586,13 @@
 
 --- Decision 141 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 7)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Daze, Dark Ritual, Dark Ritual | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Swamp | Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
   Stack: Thoughtseize (spell, opponent) -> self (player)
+  Pending: Daze (self)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -2595,9 +2608,9 @@
 
 --- Decision 142 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T)
   Stack: Daze (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
@@ -2615,9 +2628,9 @@
 
 --- Decision 143 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T)
   Stack: Daze (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
@@ -2634,9 +2647,9 @@
 
 --- Decision 144 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: 1U | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 7)
+  Self:  19 life | mana: 1U | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Stack: Daze (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
@@ -2653,9 +2666,9 @@
 
 --- Decision 145 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
@@ -2677,12 +2690,13 @@
 
 --- Decision 146 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -2700,9 +2714,9 @@
 
 --- Decision 147 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Lotus Petal, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2720,9 +2734,9 @@
 
 --- Decision 148 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Stack: Lotus Petal (spell, self)
@@ -2740,9 +2754,9 @@
 
 --- Decision 149 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2757,9 +2771,9 @@
 
 --- Decision 150 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2776,9 +2790,9 @@
 
 --- Decision 151 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2795,9 +2809,9 @@
 
 --- Decision 152 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2815,9 +2829,9 @@
 
 --- Decision 153 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2832,9 +2846,9 @@
 
 --- Decision 154 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Combat (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2849,9 +2863,9 @@
 
 --- Decision 155 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Second Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2866,9 +2880,9 @@
 
 --- Decision 156 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Step (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2888,9 +2902,9 @@
 
 --- Decision 157 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 8)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 47
+  Opp:   17 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Swamp | Underground Sea
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island (T)
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2905,9 +2919,9 @@
 
 --- Decision 158 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp | Underground Sea
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2924,9 +2938,9 @@
 
 --- Decision 159 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Dauthi Voidwalker
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Draw (turn 8)
+  Self:  18 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Dauthi Voidwalker | lib 46
+  Opp:   17 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Swamp | Underground Sea
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island (T)
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2941,9 +2955,9 @@
 
 --- Decision 160 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Draw (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp | Underground Sea
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2958,9 +2972,9 @@
 
 --- Decision 161 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Dauthi Voidwalker
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  18 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Dauthi Voidwalker | lib 46
+  Opp:   17 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Swamp | Underground Sea
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island (T)
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2980,9 +2994,9 @@
 
 --- Decision 162 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T)
   Stack: Dauthi Voidwalker (spell, opponent)
@@ -3000,9 +3014,9 @@
 
 --- Decision 163 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3017,9 +3031,9 @@
 
 --- Decision 164 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3036,9 +3050,9 @@
 
 --- Decision 165 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3055,9 +3069,9 @@
 
 --- Decision 166 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3075,9 +3089,9 @@
 
 --- Decision 167 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3092,9 +3106,9 @@
 
 --- Decision 168 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Combat (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3109,9 +3123,9 @@
 
 --- Decision 169 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Second Main (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3126,9 +3140,9 @@
 
 --- Decision 170 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Step (turn 8)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3148,9 +3162,9 @@
 
 --- Decision 171 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3167,9 +3181,9 @@
 
 --- Decision 172 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Draw (turn 9)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3188,9 +3202,9 @@
 
 --- Decision 173 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Draw (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Stack: Dark Ritual (spell, self)
@@ -3210,9 +3224,9 @@
 
 --- Decision 174 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: 3B | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Draw (turn 9)
+  Self:  17 life | mana: 3B | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3228,9 +3242,9 @@
 
 --- Decision 175 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3246,9 +3260,9 @@
 
 --- Decision 176 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3266,9 +3280,9 @@
 
 --- Decision 177 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3286,9 +3300,9 @@
 
 --- Decision 178 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3307,9 +3321,9 @@
 
 --- Decision 179 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3325,9 +3339,9 @@
 
 --- Decision 180 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Combat (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3343,9 +3357,9 @@
 
 --- Decision 181 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Second Main (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3361,9 +3375,9 @@
 
 --- Decision 182 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Step (turn 9)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3384,9 +3398,9 @@
 
 --- Decision 183 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 46
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Dauthi Voidwalker [3/2]
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3403,9 +3417,9 @@
 
 --- Decision 184 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Dauthi Voidwalker [3/2]
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3423,9 +3437,9 @@
 
 --- Decision 185 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Island
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Draw (turn 10)
+  Self:  18 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Island | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Dauthi Voidwalker [3/2]
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3442,9 +3456,9 @@
 
 --- Decision 186 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Draw (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Dauthi Voidwalker [3/2]
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3460,9 +3474,9 @@
 
 --- Decision 187 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Island
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Island | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Dauthi Voidwalker [3/2]
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3482,9 +3496,9 @@
 
 --- Decision 188 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island | Dauthi Voidwalker [3/2]
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3505,9 +3519,9 @@
 
 --- Decision 189 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Stack: Dauthi Voidwalker (ability, self) [amt=1]
@@ -3525,9 +3539,9 @@
 
 --- Decision 190 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Stack: Dauthi Voidwalker (ability, opponent) [amt=1]
@@ -3548,12 +3562,13 @@
 
 --- Decision 191 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Stack: Dauthi Voidwalker (ability, self) [amt=1]
+  Pending: Dauthi Voidwalker (self)
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -3569,9 +3584,9 @@
 
 --- Decision 192 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Stack: Dark Ritual (spell, opponent)
@@ -3588,9 +3603,9 @@
 
 --- Decision 193 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Stack: Dark Ritual (spell, self)
@@ -3610,9 +3625,9 @@
 
 --- Decision 194 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: 3B | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  18 life | mana: 3B | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3628,9 +3643,9 @@
 
 --- Decision 195 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: 3B | hand count: 2
+  Step: First Main (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: 3B | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3646,9 +3661,9 @@
 
 --- Decision 196 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3664,9 +3679,9 @@
 
 --- Decision 197 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3684,9 +3699,9 @@
 
 --- Decision 198 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3702,9 +3717,9 @@
 
 --- Decision 199 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3722,9 +3737,9 @@
 
 --- Decision 200 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3740,9 +3755,9 @@
 
 --- Decision 201 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3761,9 +3776,9 @@
 
 --- Decision 202 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3779,9 +3794,9 @@
 
 --- Decision 203 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3797,9 +3812,9 @@
 
 --- Decision 204 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: End Combat (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3815,9 +3830,9 @@
 
 --- Decision 205 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Combat (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3833,9 +3848,9 @@
 
 --- Decision 206 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Second Main (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3851,9 +3866,9 @@
 
 --- Decision 207 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Second Main (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3869,9 +3884,9 @@
 
 --- Decision 208 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: End Step (turn 10)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3887,9 +3902,9 @@
 
 --- Decision 209 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Step (turn 10)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3910,9 +3925,9 @@
 
 --- Decision 210 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 11)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3927,9 +3942,9 @@
 
 --- Decision 211 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3946,9 +3961,9 @@
 
 --- Decision 212 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Draw (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3963,9 +3978,9 @@
 
 --- Decision 213 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Draw (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3980,9 +3995,9 @@
 
 --- Decision 214 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3997,9 +4012,9 @@
 
 --- Decision 215 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4014,9 +4029,9 @@
 
 --- Decision 216 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4031,9 +4046,9 @@
 
 --- Decision 217 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4050,9 +4065,9 @@
 
 --- Decision 218 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4067,9 +4082,9 @@
 
 --- Decision 219 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4086,9 +4101,9 @@
 
 --- Decision 220 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4103,9 +4118,9 @@
 
 --- Decision 221 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4123,9 +4138,9 @@
 
 --- Decision 222 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4140,9 +4155,9 @@
 
 --- Decision 223 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4157,9 +4172,9 @@
 
 --- Decision 224 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Combat (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4174,9 +4189,9 @@
 
 --- Decision 225 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: End Combat (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4191,9 +4206,9 @@
 
 --- Decision 226 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Second Main (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4208,9 +4223,9 @@
 
 --- Decision 227 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Second Main (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4225,9 +4240,9 @@
 
 --- Decision 228 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Step (turn 11)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4242,9 +4257,9 @@
 
 --- Decision 229 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: End Step (turn 11)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4264,9 +4279,9 @@
 
 --- Decision 230 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 12)
+  Self:  18 life | mana: empty | hand(2): Dark Ritual, Dark Ritual | lib 45
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4281,9 +4296,9 @@
 
 --- Decision 231 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 12)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4300,9 +4315,9 @@
 
 --- Decision 232 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(3): Doomsday, Dark Ritual, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Draw (turn 12)
+  Self:  18 life | mana: empty | hand(3): Doomsday, Dark Ritual, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4320,9 +4335,9 @@
 
 --- Decision 233 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: Draw (turn 12)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Dark Ritual | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Swamp (T) | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Stack: Dark Ritual (spell, self)
@@ -4340,9 +4355,9 @@
 
 --- Decision 234 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Draw (turn 12)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Stack: Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
@@ -4362,9 +4377,9 @@
 
 --- Decision 235 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Draw (turn 12)
+  Self:  16 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Stack: Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
@@ -4381,12 +4396,13 @@
 
 --- Decision 236 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Draw (turn 12)
+  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Stack: Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
+  Pending: Force of Will (self)
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Daze
@@ -4402,9 +4418,9 @@
 
 --- Decision 237 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Draw (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Stack: Force of Will (spell, self) -> Dark Ritual (opponent, slot 97) -> Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
@@ -4423,9 +4439,9 @@
 
 --- Decision 238 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Draw (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Stack: Dark Ritual (spell, opponent)
@@ -4444,9 +4460,9 @@
 
 --- Decision 239 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: 3B | hand count: 1
+  Step: Draw (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: 3B | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4461,9 +4477,9 @@
 
 --- Decision 240 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4478,9 +4494,9 @@
 
 --- Decision 241 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Begin Combat (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4497,9 +4513,9 @@
 
 --- Decision 242 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4516,9 +4532,9 @@
 
 --- Decision 243 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Declare Blk (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4536,9 +4552,9 @@
 
 --- Decision 244 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Combat Dmg (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4553,9 +4569,9 @@
 
 --- Decision 245 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: End Combat (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4570,9 +4586,9 @@
 
 --- Decision 246 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Second Main (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4587,9 +4603,9 @@
 
 --- Decision 247 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: End Step (turn 12)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4609,9 +4625,9 @@
 
 --- Decision 248 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4628,9 +4644,9 @@
 
 --- Decision 249 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Personal Tutor, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Draw (turn 13)
+  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Personal Tutor, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4645,9 +4661,9 @@
 
 --- Decision 250 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Personal Tutor, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Personal Tutor, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4666,9 +4682,9 @@
 
 --- Decision 251 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Stack: Personal Tutor (spell, self)
@@ -4687,12 +4703,13 @@
 
 --- Decision 252 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Stack: Personal Tutor (spell, self)
+  Pending: Personal Tutor (self)
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Daze
@@ -4718,9 +4735,9 @@
 
 --- Decision 253 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4735,9 +4752,9 @@
 
 --- Decision 254 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Begin Combat (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4754,9 +4771,9 @@
 
 --- Decision 255 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4773,9 +4790,9 @@
 
 --- Decision 256 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Declare Blk (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4793,9 +4810,9 @@
 
 --- Decision 257 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Combat Dmg (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4810,9 +4827,9 @@
 
 --- Decision 258 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: End Combat (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4827,9 +4844,9 @@
 
 --- Decision 259 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Second Main (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4844,9 +4861,9 @@
 
 --- Decision 260 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: End Step (turn 13)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4866,9 +4883,9 @@
 
 --- Decision 261 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4885,9 +4902,9 @@
 
 --- Decision 262 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Draw (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4902,9 +4919,9 @@
 
 --- Decision 263 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Doomsday, Cavern of Souls
-  Opp:   16 life | mana: empty | hand count: 3
+  Step: First Main (turn 14)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Cavern of Souls | lib 43
+  Opp:   16 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Swamp | Underground Sea | Island
   Opp BF:   Lotus Petal | Undercity Sewers | Island (T)
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4922,9 +4939,9 @@
 
 --- Decision 264 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   16 life | mana: empty | hand count: 3
+  Step: First Main (turn 14)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 43
+  Opp:   16 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Lotus Petal | Undercity Sewers | Island (T)
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -4946,9 +4963,9 @@
 
 --- Decision 265 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4964,9 +4981,9 @@
 
 --- Decision 266 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Begin Combat (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4984,9 +5001,9 @@
 
 --- Decision 267 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5004,9 +5021,9 @@
 
 --- Decision 268 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Declare Blk (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5025,9 +5042,9 @@
 
 --- Decision 269 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Combat Dmg (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5043,9 +5060,9 @@
 
 --- Decision 270 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: End Combat (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5061,9 +5078,9 @@
 
 --- Decision 271 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Second Main (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5079,9 +5096,9 @@
 
 --- Decision 272 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: End Step (turn 14)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island (T)
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5102,9 +5119,9 @@
 
 --- Decision 273 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 15)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 43
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5121,9 +5138,9 @@
 
 --- Decision 274 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Draw (turn 15)
+  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Lotus Petal, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5138,9 +5155,9 @@
 
 --- Decision 275 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Lotus Petal, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Lotus Petal, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5158,9 +5175,9 @@
 
 --- Decision 276 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Lotus Petal (spell, self)
@@ -5178,9 +5195,9 @@
 
 --- Decision 277 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(3): Doomsday, Doomsday, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Lotus Petal | Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5204,9 +5221,9 @@
 
 --- Decision 278 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
@@ -5226,12 +5243,13 @@
 
 --- Decision 279 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Daze
@@ -5300,12 +5318,13 @@
 
 --- Decision 280 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Daze
@@ -5374,12 +5393,13 @@
 
 --- Decision 281 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Daze
@@ -5447,12 +5467,13 @@
 
 --- Decision 282 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Daze
@@ -5519,12 +5540,13 @@
 
 --- Decision 283 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 42
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Daze
@@ -5643,12 +5665,13 @@
 
 --- Decision 284 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 5
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp exile:  Personal Tutor
@@ -5667,12 +5690,13 @@
 
 --- Decision 285 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 5
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp exile:  Personal Tutor
@@ -5690,12 +5714,13 @@
 
 --- Decision 286 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 5
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp exile:  Personal Tutor
@@ -5712,12 +5737,13 @@
 
 --- Decision 287 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 5
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp exile:  Personal Tutor
@@ -5735,9 +5761,9 @@
 
 --- Decision 288 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  8 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  8 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 5
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Doomsday
@@ -5759,9 +5785,9 @@
 
 --- Decision 289 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 4
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Street Wraith, Doomsday
@@ -5783,9 +5809,9 @@
 
 --- Decision 290 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  4 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  4 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 3
+  Opp:   18 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Street Wraith, Street Wraith, Doomsday
@@ -5816,9 +5842,9 @@
 
 --- Decision 291 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Doomsday, Lion's Eye Diamond
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: First Main (turn 16)
+  Self:  18 life | mana: empty | hand(2): Doomsday, Lion's Eye Diamond | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -5836,9 +5862,9 @@
 
 --- Decision 292 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: First Main (turn 16)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -5857,9 +5883,9 @@
 
 --- Decision 293 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 16)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -5880,9 +5906,9 @@
 
 --- Decision 294 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 16)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -5903,9 +5929,9 @@
 
 --- Decision 295 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 16)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -5927,9 +5953,9 @@
 
 --- Decision 296 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 16)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -5948,9 +5974,9 @@
 
 --- Decision 297 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: End Combat (turn 16)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -5969,9 +5995,9 @@
 
 --- Decision 298 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: Second Main (turn 16)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -5990,9 +6016,9 @@
 
 --- Decision 299 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: End Step (turn 16)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -6016,9 +6042,9 @@
 
 --- Decision 300 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 17)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 2
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -6039,9 +6065,9 @@
 
 --- Decision 301 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  2 life | mana: empty | hand(3): Doomsday, Thassa's Oracle, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: Draw (turn 17)
+  Self:  2 life | mana: empty | hand(3): Doomsday, Thassa's Oracle, Street Wraith | lib 1
+  Opp:   18 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Undercity Sewers | Island
   Opp BF:   Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
@@ -6057,9 +6083,9 @@
 
 --- Decision 302 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 3
+  Step: Draw (turn 17)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 3 | lib 1
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -6078,9 +6104,9 @@
 
 --- Decision 303 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(3): Doomsday, Thassa's Oracle, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  2 life | mana: empty | hand(3): Doomsday, Thassa's Oracle, Street Wraith | lib 1
+  Opp:   18 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Undercity Sewers | Island
   Opp BF:   Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
@@ -6101,9 +6127,9 @@
 
 --- Decision 304 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  2 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 1
+  Opp:   18 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Undercity Sewers (T) | Island (T)
   Opp BF:   Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Thassa's Oracle (spell, self)
@@ -6120,9 +6146,9 @@
 
 --- Decision 305 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: First Main (turn 17)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Undercity Sewers (T) | Island (T)
   Stack: Thassa's Oracle (spell, opponent)
@@ -6145,9 +6171,9 @@
 
 --- Decision 306 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  2 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 1
+  Opp:   18 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Thassa's Oracle [1/3] (SICK) | Undercity Sewers (T) | Island (T)
   Opp BF:   Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Thassa's Oracle (ability, self) [amt=1]
@@ -6164,9 +6190,9 @@
 
 --- Decision 307 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(1): Doomsday
-  Opp:   2 life | mana: empty | hand count: 2
+  Step: First Main (turn 17)
+  Self:  18 life | mana: empty | hand(1): Doomsday | lib 42
+  Opp:   2 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Opp BF:   Thassa's Oracle [1/3] (SICK) | Undercity Sewers (T) | Island (T)
   Stack: Thassa's Oracle (ability, opponent) [amt=1]
@@ -6189,12 +6215,13 @@
 
 --- Decision 308 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  2 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 1
+  Opp:   18 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Thassa's Oracle [1/3] (SICK) | Undercity Sewers (T) | Island (T)
   Opp BF:   Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Thassa's Oracle (ability, self) [amt=1]
+  Pending: Thassa's Oracle (self)
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze

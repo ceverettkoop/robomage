@@ -28,9 +28,9 @@
 
 --- Decision 1 ---
   Priority: Player A (active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -48,9 +48,9 @@
 
 --- Decision 2 ---
   Priority: Player B (non-active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -64,9 +64,9 @@
 
 --- Decision 3 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Horizon Canopy
@@ -81,9 +81,9 @@
 
 --- Decision 4 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Horizon Canopy
   Extras: self_lands_played=1
   Actions:
@@ -95,9 +95,9 @@
 
 --- Decision 5 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Horizon Canopy
   Extras: self_lands_played=1
   Actions:
@@ -118,9 +118,9 @@
 
 --- Decision 6 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(8): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Opp BF:   Horizon Canopy
   Opp revealed: Horizon Canopy
   Actions:
@@ -134,9 +134,9 @@
 
 --- Decision 7 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Polluted Delta
   Opp BF:   Horizon Canopy
   Opp revealed: Horizon Canopy
@@ -149,9 +149,9 @@
 
 --- Decision 8 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Polluted Delta
   Opp BF:   Horizon Canopy
   Opp revealed: Horizon Canopy
@@ -165,9 +165,9 @@
 
 --- Decision 9 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Horizon Canopy
   Stack: Edge of Autumn (ability, opponent) [amt=1]
   Opp GY:  Edge of Autumn, Polluted Delta
@@ -182,9 +182,9 @@
 
 --- Decision 10 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Horizon Canopy
   Stack: Edge of Autumn (ability, opponent) [amt=1]
   Opp GY:  Edge of Autumn, Polluted Delta
@@ -201,9 +201,9 @@
 
 --- Decision 11 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Lotus Petal, Personal Tutor, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Lotus Petal, Personal Tutor, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Opp BF:   Horizon Canopy
   Self GY: Edge of Autumn, Polluted Delta
   Opp revealed: Horizon Canopy
@@ -217,9 +217,9 @@
 
 --- Decision 12 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Force of Will, Dark Ritual, Personal Tutor, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Force of Will, Dark Ritual, Personal Tutor, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Opp BF:   Horizon Canopy
   Stack: Lotus Petal (spell, self)
   Self GY: Edge of Autumn, Polluted Delta
@@ -232,9 +232,9 @@
 
 --- Decision 13 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Horizon Canopy
   Stack: Lotus Petal (spell, opponent)
   Opp GY:  Edge of Autumn, Polluted Delta
@@ -249,9 +249,9 @@
 
 --- Decision 14 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Horizon Canopy
   Stack: Lotus Petal (spell, opponent)
   Opp GY:  Edge of Autumn, Polluted Delta
@@ -267,9 +267,9 @@
 
 --- Decision 15 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Force of Will, Dark Ritual, Personal Tutor, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Force of Will, Dark Ritual, Personal Tutor, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Lotus Petal
   Opp BF:   Horizon Canopy
   Self GY: Edge of Autumn, Polluted Delta
@@ -288,9 +288,9 @@
 
 --- Decision 16 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Opp BF:   Horizon Canopy
   Stack: Personal Tutor (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta
@@ -303,9 +303,9 @@
 
 --- Decision 17 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Horizon Canopy
   Stack: Personal Tutor (spell, opponent)
   Opp GY:  Lotus Petal, Edge of Autumn, Polluted Delta
@@ -320,9 +320,9 @@
 
 --- Decision 18 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Horizon Canopy
   Stack: Personal Tutor (spell, opponent)
   Opp GY:  Lotus Petal, Edge of Autumn, Polluted Delta
@@ -339,11 +339,12 @@
 
 --- Decision 19 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Opp BF:   Horizon Canopy
   Stack: Personal Tutor (spell, self)
+  Pending: Personal Tutor (self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta
   Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
@@ -380,9 +381,9 @@
 
 --- Decision 20 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Endurance, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Endurance, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp revealed: Polluted Delta, Lotus Petal, Personal Tutor, Edge of Autumn
@@ -399,9 +400,9 @@
 
 --- Decision 21 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Endurance, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(6): Endurance, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Horizon Canopy | Savannah
   Opp GY:  Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp revealed: Polluted Delta, Lotus Petal, Personal Tutor, Edge of Autumn
@@ -419,9 +420,9 @@
 
 --- Decision 22 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Endurance, Green Sun's Zenith, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Endurance, Green Sun's Zenith, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Savannah (T)
   Self GY: Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -434,9 +435,9 @@
 
 --- Decision 23 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Endurance, Green Sun's Zenith, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Endurance, Green Sun's Zenith, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Savannah (T)
   Self GY: Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -451,9 +452,9 @@
 
 --- Decision 24 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Opp BF:   Savannah (T)
   Stack: Endurance (spell, opponent) [evoke]
   Self GY: Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -470,9 +471,9 @@
 
 --- Decision 25 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Opp BF:   Savannah (T)
   Stack: Endurance (spell, opponent) [evoke]
   Self GY: Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -489,11 +490,12 @@
 
 --- Decision 26 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Force of Will, Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(4): Force of Will, Dark Ritual, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Opp BF:   Savannah (T)
   Stack: Endurance (spell, opponent) [evoke]
+  Pending: Force of Will (self)
   Self GY: Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Horizon Canopy
   Self exile: Ponder
@@ -520,9 +522,9 @@
 
 --- Decision 27 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Thoughtseize, Dark Ritual, Underground Sea, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(4): Thoughtseize, Dark Ritual, Underground Sea, Verdant Catacombs | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Opp BF:   Savannah (T)
   Self GY: Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Endurance, Horizon Canopy
@@ -539,9 +541,9 @@
 
 --- Decision 28 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Thoughtseize, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(3): Thoughtseize, Dark Ritual, Verdant Catacombs | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea
   Opp BF:   Savannah (T)
   Self GY: Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -560,11 +562,12 @@
 
 --- Decision 29 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Thoughtseize, Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(3): Thoughtseize, Dark Ritual, Verdant Catacombs | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea
   Opp BF:   Savannah (T)
+  Pending: Thoughtseize (self)
   Self GY: Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Endurance, Horizon Canopy
   Self exile: Ponder
@@ -590,12 +593,13 @@
 
 --- Decision 30 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
   Opp BF:   Savannah (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
   Self GY: Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Endurance, Horizon Canopy
   Self exile: Ponder
@@ -622,9 +626,9 @@
 
 --- Decision 31 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Savannah, Scryb Ranger, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(5): Savannah, Scryb Ranger, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   17 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Savannah
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -644,9 +648,9 @@
 
 --- Decision 32 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Scryb Ranger, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Scryb Ranger, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   17 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Savannah | Savannah
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -667,9 +671,9 @@
 
 --- Decision 33 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   17 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -687,11 +691,12 @@
 
 --- Decision 34 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   17 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Underground Sea (T)
+  Pending: Scryb Ranger (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -706,9 +711,9 @@
 
 --- Decision 35 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   17 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -737,9 +742,9 @@
 
 --- Decision 36 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 6)
+  Self:  17 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs | lib 50
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -757,9 +762,9 @@
 
 --- Decision 37 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(3): Dark Ritual, Lotus Petal, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Draw (turn 6)
+  Self:  17 life | mana: empty | hand(3): Dark Ritual, Lotus Petal, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -775,9 +780,9 @@
 
 --- Decision 38 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(3): Dark Ritual, Lotus Petal, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(3): Dark Ritual, Lotus Petal, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -797,9 +802,9 @@
 
 --- Decision 39 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Lotus Petal (spell, self)
@@ -818,9 +823,9 @@
 
 --- Decision 40 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -839,9 +844,9 @@
 
 --- Decision 41 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(1): Dark Ritual | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Underground Sea | Verdant Catacombs
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -863,9 +868,9 @@
 
 --- Decision 42 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Verdant Catacombs (ability, self)
@@ -886,12 +891,13 @@
 
 --- Decision 43 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Verdant Catacombs (ability, self)
+  Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Self exile: Ponder
@@ -912,9 +918,9 @@
 
 --- Decision 44 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -931,9 +937,9 @@
 
 --- Decision 45 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -952,9 +958,9 @@
 
 --- Decision 46 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -973,9 +979,9 @@
 
 --- Decision 47 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -995,9 +1001,9 @@
 
 --- Decision 48 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1014,9 +1020,9 @@
 
 --- Decision 49 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Combat (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1033,9 +1039,9 @@
 
 --- Decision 50 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Second Main (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1052,9 +1058,9 @@
 
 --- Decision 51 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Step (turn 6)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1076,9 +1082,9 @@
 
 --- Decision 52 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1093,9 +1099,9 @@
 
 --- Decision 53 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 7)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1113,9 +1119,9 @@
 
 --- Decision 54 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: Draw (turn 7)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1130,9 +1136,9 @@
 
 --- Decision 55 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Draw (turn 7)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1148,9 +1154,9 @@
 
 --- Decision 56 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1172,9 +1178,9 @@
 
 --- Decision 57 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1193,9 +1199,9 @@
 
 --- Decision 58 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1215,9 +1221,9 @@
 
 --- Decision 59 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Green Sun's Zenith (spell, self)
@@ -1236,12 +1242,13 @@
 
 --- Decision 60 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Green Sun's Zenith (spell, self)
+  Pending: Scryb Ranger (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -1256,9 +1263,9 @@
 
 --- Decision 61 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Green Sun's Zenith (spell, self)
@@ -1278,9 +1285,9 @@
 
 --- Decision 62 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Scryb Ranger (ability, opponent) -> Scryb Ranger (opponent, slot 49) -> Green Sun's Zenith (spell, opponent)
@@ -1301,9 +1308,9 @@
 
 --- Decision 63 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Green Sun's Zenith (spell, opponent)
@@ -1324,12 +1331,13 @@
 
 --- Decision 64 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Green Sun's Zenith (spell, self)
+  Pending: Green Sun's Zenith (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -1347,9 +1355,9 @@
 
 --- Decision 65 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1366,9 +1374,9 @@
 
 --- Decision 66 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 7)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1387,9 +1395,9 @@
 
 --- Decision 67 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1409,9 +1417,9 @@
 
 --- Decision 68 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   16 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   16 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (ATK)
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1429,9 +1437,9 @@
 
 --- Decision 69 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 7)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1450,9 +1458,9 @@
 
 --- Decision 70 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  16 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 7)
+  Self:  16 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1473,9 +1481,9 @@
 
 --- Decision 71 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 7)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1492,9 +1500,9 @@
 
 --- Decision 72 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Combat (turn 7)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1511,9 +1519,9 @@
 
 --- Decision 73 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Second Main (turn 7)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1530,9 +1538,9 @@
 
 --- Decision 74 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Step (turn 7)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1554,9 +1562,9 @@
 
 --- Decision 75 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1574,9 +1582,9 @@
 
 --- Decision 76 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  15 life | mana: empty | hand(2): Dark Ritual, Personal Tutor
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Draw (turn 8)
+  Self:  15 life | mana: empty | hand(2): Dark Ritual, Personal Tutor | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1592,9 +1600,9 @@
 
 --- Decision 77 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(2): Dark Ritual, Personal Tutor
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  15 life | mana: empty | hand(2): Dark Ritual, Personal Tutor | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1614,9 +1622,9 @@
 
 --- Decision 78 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Personal Tutor (spell, self)
@@ -1636,12 +1644,13 @@
 
 --- Decision 79 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Personal Tutor (spell, self)
+  Pending: Personal Tutor (self)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Self exile: Ponder
@@ -1670,9 +1679,9 @@
 
 --- Decision 80 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1688,9 +1697,9 @@
 
 --- Decision 81 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1708,9 +1717,9 @@
 
 --- Decision 82 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1728,9 +1737,9 @@
 
 --- Decision 83 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1749,9 +1758,9 @@
 
 --- Decision 84 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1767,9 +1776,9 @@
 
 --- Decision 85 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Combat (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1785,9 +1794,9 @@
 
 --- Decision 86 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Second Main (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1803,9 +1812,9 @@
 
 --- Decision 87 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Step (turn 8)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1826,9 +1835,9 @@
 
 --- Decision 88 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 9)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1843,9 +1852,9 @@
 
 --- Decision 89 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 9)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1863,9 +1872,9 @@
 
 --- Decision 90 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: Draw (turn 9)
+  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1880,9 +1889,9 @@
 
 --- Decision 91 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Draw (turn 9)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -1898,9 +1907,9 @@
 
 --- Decision 92 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -1924,9 +1933,9 @@
 
 --- Decision 93 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Stack: Keen-Eyed Curator (spell, self)
@@ -1944,12 +1953,13 @@
 
 --- Decision 94 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Stack: Keen-Eyed Curator (spell, self)
+  Pending: Scryb Ranger (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -1964,9 +1974,9 @@
 
 --- Decision 95 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Stack: Keen-Eyed Curator (spell, self)
@@ -1985,9 +1995,9 @@
 
 --- Decision 96 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (spell, opponent)
@@ -2007,9 +2017,9 @@
 
 --- Decision 97 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (spell, opponent)
@@ -2029,9 +2039,9 @@
 
 --- Decision 98 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -2053,9 +2063,9 @@
 
 --- Decision 99 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2072,9 +2082,9 @@
 
 --- Decision 100 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 9)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2093,9 +2103,9 @@
 
 --- Decision 101 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 9)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -2115,9 +2125,9 @@
 
 --- Decision 102 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   15 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 9)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (ATK)
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -2135,9 +2145,9 @@
 
 --- Decision 103 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 9)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2156,9 +2166,9 @@
 
 --- Decision 104 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  15 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 9)
+  Self:  15 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2179,9 +2189,9 @@
 
 --- Decision 105 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 9)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2198,9 +2208,9 @@
 
 --- Decision 106 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Combat (turn 9)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2217,9 +2227,9 @@
 
 --- Decision 107 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Second Main (turn 9)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2236,9 +2246,9 @@
 
 --- Decision 108 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Step (turn 9)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2260,9 +2270,9 @@
 
 --- Decision 109 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2280,9 +2290,9 @@
 
 --- Decision 110 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(2): Dark Ritual, Ponder
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Draw (turn 10)
+  Self:  14 life | mana: empty | hand(2): Dark Ritual, Ponder | lib 46
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2298,9 +2308,9 @@
 
 --- Decision 111 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Dark Ritual, Ponder
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(2): Dark Ritual, Ponder | lib 46
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2320,9 +2330,9 @@
 
 --- Decision 112 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 46
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
@@ -2343,12 +2353,13 @@
 
 --- Decision 113 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 46
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Self exile: Ponder
@@ -2365,12 +2376,13 @@
 
 --- Decision 114 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 46
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Self exile: Ponder
@@ -2384,12 +2396,13 @@
 
 --- Decision 115 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 46
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Self exile: Ponder
@@ -2407,9 +2420,9 @@
 
 --- Decision 116 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Dark Ritual, Personal Tutor
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(2): Dark Ritual, Personal Tutor | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Lotus Petal | Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2431,9 +2444,9 @@
 
 --- Decision 117 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Personal Tutor (spell, self)
@@ -2455,12 +2468,13 @@
 
 --- Decision 118 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Personal Tutor (spell, self)
+  Pending: Personal Tutor (self)
   Self GY: Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Self exile: Ponder
@@ -2489,9 +2503,9 @@
 
 --- Decision 119 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: First Main (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2508,9 +2522,9 @@
 
 --- Decision 120 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2529,9 +2543,9 @@
 
 --- Decision 121 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2550,9 +2564,9 @@
 
 --- Decision 122 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2572,9 +2586,9 @@
 
 --- Decision 123 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2591,9 +2605,9 @@
 
 --- Decision 124 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Combat (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2610,9 +2624,9 @@
 
 --- Decision 125 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Second Main (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2629,9 +2643,9 @@
 
 --- Decision 126 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: End Step (turn 10)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2653,9 +2667,9 @@
 
 --- Decision 127 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 11)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -2671,9 +2685,9 @@
 
 --- Decision 128 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2691,9 +2705,9 @@
 
 --- Decision 129 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(5): Savannah, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: Draw (turn 11)
+  Self:  20 life | mana: empty | hand(5): Savannah, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -2709,9 +2723,9 @@
 
 --- Decision 130 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Draw (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -2727,9 +2741,9 @@
 
 --- Decision 131 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Savannah, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(5): Savannah, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -2752,9 +2766,9 @@
 
 --- Decision 132 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -2773,11 +2787,12 @@
 
 --- Decision 133 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -2807,9 +2822,9 @@
 
 --- Decision 134 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Stack: Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
@@ -2829,12 +2844,13 @@
 
 --- Decision 135 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Stack: Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
+  Pending: Scryb Ranger (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -2851,9 +2867,9 @@
 
 --- Decision 136 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(4): Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Stack: Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
@@ -2874,9 +2890,9 @@
 
 --- Decision 137 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self) -> Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
@@ -2893,9 +2909,9 @@
 
 --- Decision 138 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (ability, opponent) -> Force of Will (self)
@@ -2915,9 +2931,9 @@
 
 --- Decision 139 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Stack: Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
@@ -2934,9 +2950,9 @@
 
 --- Decision 140 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Force of Will (self)
@@ -2957,9 +2973,9 @@
 
 --- Decision 141 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -2977,11 +2993,12 @@
 
 --- Decision 142 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -3010,9 +3027,9 @@
 
 --- Decision 143 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Stack: Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
@@ -3029,9 +3046,9 @@
 
 --- Decision 144 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Thoughtseize (self)
@@ -3052,9 +3069,9 @@
 
 --- Decision 145 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3072,11 +3089,12 @@
 
 --- Decision 146 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -3104,9 +3122,9 @@
 
 --- Decision 147 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Lotus Petal (self)
@@ -3127,9 +3145,9 @@
 
 --- Decision 148 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3146,9 +3164,9 @@
 
 --- Decision 149 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3167,9 +3185,9 @@
 
 --- Decision 150 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3190,9 +3208,9 @@
 
 --- Decision 151 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3213,9 +3231,9 @@
 
 --- Decision 152 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   14 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   14 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (ATK)
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3234,9 +3252,9 @@
 
 --- Decision 153 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3255,9 +3273,9 @@
 
 --- Decision 154 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  14 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 11)
+  Self:  14 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3279,9 +3297,9 @@
 
 --- Decision 155 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 11)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3298,9 +3316,9 @@
 
 --- Decision 156 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: End Combat (turn 11)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3317,9 +3335,9 @@
 
 --- Decision 157 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Second Main (turn 11)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3336,9 +3354,9 @@
 
 --- Decision 158 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: End Step (turn 11)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea (T)
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3360,9 +3378,9 @@
 
 --- Decision 159 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3380,9 +3398,9 @@
 
 --- Decision 160 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  10 life | mana: empty | hand(2): Dark Ritual, Lotus Petal
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Draw (turn 12)
+  Self:  10 life | mana: empty | hand(2): Dark Ritual, Lotus Petal | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3398,9 +3416,9 @@
 
 --- Decision 161 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  10 life | mana: empty | hand(2): Dark Ritual, Lotus Petal
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 12)
+  Self:  10 life | mana: empty | hand(2): Dark Ritual, Lotus Petal | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3419,9 +3437,9 @@
 
 --- Decision 162 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Lotus Petal (spell, self)
@@ -3440,9 +3458,9 @@
 
 --- Decision 163 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3458,9 +3476,9 @@
 
 --- Decision 164 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3478,9 +3496,9 @@
 
 --- Decision 165 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3498,9 +3516,9 @@
 
 --- Decision 166 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3519,9 +3537,9 @@
 
 --- Decision 167 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3537,9 +3555,9 @@
 
 --- Decision 168 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: End Combat (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3555,9 +3573,9 @@
 
 --- Decision 169 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Second Main (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3573,9 +3591,9 @@
 
 --- Decision 170 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: End Step (turn 12)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3596,9 +3614,9 @@
 
 --- Decision 171 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 13)
+  Self:  20 life | mana: empty | hand(5): Dryad Arbor, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 47
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3614,9 +3632,9 @@
 
 --- Decision 172 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3634,9 +3652,9 @@
 
 --- Decision 173 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: Draw (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3652,9 +3670,9 @@
 
 --- Decision 174 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Draw (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
@@ -3670,9 +3688,9 @@
 
 --- Decision 175 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3695,9 +3713,9 @@
 
 --- Decision 176 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3716,11 +3734,12 @@
 
 --- Decision 177 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -3747,9 +3766,9 @@
 
 --- Decision 178 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
@@ -3769,12 +3788,13 @@
 
 --- Decision 179 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
+  Pending: Scryb Ranger (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -3791,9 +3811,9 @@
 
 --- Decision 180 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
@@ -3814,9 +3834,9 @@
 
 --- Decision 181 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self) -> Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
@@ -3833,9 +3853,9 @@
 
 --- Decision 182 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (ability, opponent) -> Lotus Petal (self)
@@ -3855,9 +3875,9 @@
 
 --- Decision 183 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
@@ -3874,9 +3894,9 @@
 
 --- Decision 184 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Lotus Petal (self)
@@ -3897,9 +3917,9 @@
 
 --- Decision 185 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -3917,11 +3937,12 @@
 
 --- Decision 186 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -3947,9 +3968,9 @@
 
 --- Decision 187 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
@@ -3970,9 +3991,9 @@
 
 --- Decision 188 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -3989,9 +4010,9 @@
 
 --- Decision 189 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Begin Combat (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4010,9 +4031,9 @@
 
 --- Decision 190 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4033,9 +4054,9 @@
 
 --- Decision 191 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4056,9 +4077,9 @@
 
 --- Decision 192 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   10 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   10 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (ATK)
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4077,9 +4098,9 @@
 
 --- Decision 193 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Declare Atk (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4098,9 +4119,9 @@
 
 --- Decision 194 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  10 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Declare Blk (turn 13)
+  Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4122,9 +4143,9 @@
 
 --- Decision 195 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Combat Dmg (turn 13)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4141,9 +4162,9 @@
 
 --- Decision 196 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: End Combat (turn 13)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4160,9 +4181,9 @@
 
 --- Decision 197 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Second Main (turn 13)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4179,9 +4200,9 @@
 
 --- Decision 198 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: End Step (turn 13)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4203,9 +4224,9 @@
 
 --- Decision 199 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Upkeep (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4223,9 +4244,9 @@
 
 --- Decision 200 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  6 life | mana: empty | hand(2): Dark Ritual, Undercity Sewers
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Draw (turn 14)
+  Self:  6 life | mana: empty | hand(2): Dark Ritual, Undercity Sewers | lib 43
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4241,9 +4262,9 @@
 
 --- Decision 201 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(2): Dark Ritual, Undercity Sewers
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 14)
+  Self:  6 life | mana: empty | hand(2): Dark Ritual, Undercity Sewers | lib 43
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4264,9 +4285,9 @@
 
 --- Decision 202 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 43
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
@@ -4288,12 +4309,13 @@
 
 --- Decision 203 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 43
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Self exile: Personal Tutor, Lotus Petal, Lotus Petal, Thoughtseize, Force of Will, Ponder
@@ -4310,9 +4332,9 @@
 
 --- Decision 204 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4329,9 +4351,9 @@
 
 --- Decision 205 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Begin Combat (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4350,9 +4372,9 @@
 
 --- Decision 206 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Declare Atk (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4371,9 +4393,9 @@
 
 --- Decision 207 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Declare Blk (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4393,9 +4415,9 @@
 
 --- Decision 208 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Combat Dmg (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4412,9 +4434,9 @@
 
 --- Decision 209 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: End Combat (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4431,9 +4453,9 @@
 
 --- Decision 210 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Second Main (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4450,9 +4472,9 @@
 
 --- Decision 211 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: End Step (turn 14)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4474,9 +4496,9 @@
 
 --- Decision 212 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 15)
+  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4492,9 +4514,9 @@
 
 --- Decision 213 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Upkeep (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4512,9 +4534,9 @@
 
 --- Decision 214 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: Draw (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4530,9 +4552,9 @@
 
 --- Decision 215 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Draw (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
@@ -4548,9 +4570,9 @@
 
 --- Decision 216 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4574,9 +4596,9 @@
 
 --- Decision 217 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4595,11 +4617,12 @@
 
 --- Decision 218 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -4625,9 +4648,9 @@
 
 --- Decision 219 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
@@ -4647,12 +4670,13 @@
 
 --- Decision 220 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
+  Pending: Scryb Ranger (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -4669,9 +4693,9 @@
 
 --- Decision 221 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(6): Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
@@ -4692,9 +4716,9 @@
 
 --- Decision 222 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self) -> Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
@@ -4711,9 +4735,9 @@
 
 --- Decision 223 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
@@ -4733,9 +4757,9 @@
 
 --- Decision 224 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
@@ -4752,9 +4776,9 @@
 
 --- Decision 225 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
@@ -4775,9 +4799,9 @@
 
 --- Decision 226 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4795,11 +4819,12 @@
 
 --- Decision 227 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: First Main (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -4824,9 +4849,9 @@
 
 --- Decision 228 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
@@ -4847,9 +4872,9 @@
 
 --- Decision 229 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -4866,9 +4891,9 @@
 
 --- Decision 230 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Begin Combat (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -4887,9 +4912,9 @@
 
 --- Decision 231 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4910,9 +4935,9 @@
 
 --- Decision 232 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4933,9 +4958,9 @@
 
 --- Decision 233 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   6 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 15)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   6 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (ATK)
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -4954,9 +4979,9 @@
 
 --- Decision 234 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Declare Atk (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -4975,9 +5000,9 @@
 
 --- Decision 235 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  6 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Declare Blk (turn 15)
+  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -4999,9 +5024,9 @@
 
 --- Decision 236 ---
   Priority: Player B (non-active)
-  Step: Combat Dmg
-  Self:  2 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Combat Dmg (turn 15)
+  Self:  2 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5018,9 +5043,9 @@
 
 --- Decision 237 ---
   Priority: Player B (non-active)
-  Step: End Combat
-  Self:  2 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: End Combat (turn 15)
+  Self:  2 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5037,9 +5062,9 @@
 
 --- Decision 238 ---
   Priority: Player B (non-active)
-  Step: Second Main
-  Self:  2 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Second Main (turn 15)
+  Self:  2 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5056,9 +5081,9 @@
 
 --- Decision 239 ---
   Priority: Player B (non-active)
-  Step: End Step
-  Self:  2 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: End Step (turn 15)
+  Self:  2 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5080,9 +5105,9 @@
 
 --- Decision 240 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  2 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Upkeep (turn 16)
+  Self:  2 life | mana: empty | hand(1): Dark Ritual | lib 42
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5100,9 +5125,9 @@
 
 --- Decision 241 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  2 life | mana: empty | hand(2): Dark Ritual, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Draw (turn 16)
+  Self:  2 life | mana: empty | hand(2): Dark Ritual, Misty Rainforest | lib 41
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5118,9 +5143,9 @@
 
 --- Decision 242 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(2): Dark Ritual, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 16)
+  Self:  2 life | mana: empty | hand(2): Dark Ritual, Misty Rainforest | lib 41
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5139,9 +5164,9 @@
 
 --- Decision 243 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 16)
+  Self:  2 life | mana: empty | hand(1): Dark Ritual | lib 41
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Misty Rainforest
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5163,9 +5188,9 @@
 
 --- Decision 244 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 41
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Misty Rainforest (ability, self)
@@ -5186,12 +5211,13 @@
 
 --- Decision 245 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 41
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Misty Rainforest (ability, self)
+  Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Self exile: Personal Tutor, Personal Tutor, Personal Tutor, Lotus Petal, Lotus Petal, Thoughtseize, Force of Will, Ponder
@@ -5211,9 +5237,9 @@
 
 --- Decision 246 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5230,9 +5256,9 @@
 
 --- Decision 247 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Begin Combat (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5251,9 +5277,9 @@
 
 --- Decision 248 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Declare Atk (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5272,9 +5298,9 @@
 
 --- Decision 249 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Declare Blk (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5294,9 +5320,9 @@
 
 --- Decision 250 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Combat Dmg (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5313,9 +5339,9 @@
 
 --- Decision 251 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: End Combat (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5332,9 +5358,9 @@
 
 --- Decision 252 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Second Main (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5351,9 +5377,9 @@
 
 --- Decision 253 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: End Step (turn 16)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5375,9 +5401,9 @@
 
 --- Decision 254 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: Upkeep (turn 17)
+  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 45
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -5393,9 +5419,9 @@
 
 --- Decision 255 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Upkeep (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 7 | lib 45
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5413,9 +5439,9 @@
 
 --- Decision 256 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: Draw (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -5431,9 +5457,9 @@
 
 --- Decision 257 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 8
+  Step: Draw (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 8 | lib 44
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
@@ -5449,9 +5475,9 @@
 
 --- Decision 258 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -5476,9 +5502,9 @@
 
 --- Decision 259 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -5497,11 +5523,12 @@
 
 --- Decision 260 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -5526,9 +5553,9 @@
 
 --- Decision 261 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
@@ -5548,12 +5575,13 @@
 
 --- Decision 262 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
+  Pending: Scryb Ranger (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -5570,9 +5598,9 @@
 
 --- Decision 263 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(7): Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
@@ -5593,9 +5621,9 @@
 
 --- Decision 264 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self) -> Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
@@ -5612,9 +5640,9 @@
 
 --- Decision 265 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 8
+  Step: First Main (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 8 | lib 44
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
@@ -5634,9 +5662,9 @@
 
 --- Decision 266 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
@@ -5653,9 +5681,9 @@
 
 --- Decision 267 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 8
+  Step: First Main (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 8 | lib 44
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
@@ -5676,9 +5704,9 @@
 
 --- Decision 268 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -5696,11 +5724,12 @@
 
 --- Decision 269 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: First Main (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
+  Pending: Keen-Eyed Curator (self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Self exile: Green Sun's Zenith
@@ -5724,9 +5753,9 @@
 
 --- Decision 270 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 8
+  Step: First Main (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 8 | lib 44
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Keen-Eyed Curator (ability, opponent) -> Edge of Autumn (self)
@@ -5747,9 +5776,9 @@
 
 --- Decision 271 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 8
+  Step: First Main (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 8 | lib 44
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
@@ -5766,9 +5795,9 @@
 
 --- Decision 272 ---
   Priority: Player B (non-active)
-  Step: Begin Combat
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 8
+  Step: Begin Combat (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 8 | lib 44
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
@@ -5787,9 +5816,9 @@
 
 --- Decision 273 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -5810,9 +5839,9 @@
 
 --- Decision 274 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -5833,9 +5862,9 @@
 
 --- Decision 275 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills
-  Opp:   1 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 17)
+  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Gaea's Cradle, Knight of the Reliquary, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills | lib 44
+  Opp:   1 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (ATK)
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
@@ -5854,9 +5883,9 @@
 
 --- Decision 276 ---
   Priority: Player B (non-active)
-  Step: Declare Atk
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 8
+  Step: Declare Atk (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 8 | lib 44
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
@@ -5875,9 +5904,9 @@
 
 --- Decision 277 ---
   Priority: Player B (non-active)
-  Step: Declare Blk
-  Self:  1 life | mana: empty | hand(1): Dark Ritual
-  Opp:   20 life | mana: empty | hand count: 8
+  Step: Declare Blk (turn 17)
+  Self:  1 life | mana: empty | hand(1): Dark Ritual | lib 40
+  Opp:   20 life | mana: empty | hand count: 8 | lib 44
   Self BF:  Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta

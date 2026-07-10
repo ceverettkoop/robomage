@@ -260,36 +260,40 @@ _REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-h
 _OPP_KNOWN_HAND_SLOTS   = MAX_HAND_SLOTS       # known opponent-hand card identities
 _OPP_KNOWN_HAND_SLOT_SIZE = 1                  # card id per slot
 
-_SELF_PERM_START     = _GLOBAL_SIZE                                                  # 36
-_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 1812
-_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 3588
-_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 4032
-_EXILE_START         = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 4160
-_HAND_START          = _EXILE_START + _EXILE_SLOTS_TOTAL * _EXILE_SLOT_SIZE          # 4288
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 4170
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 4682
-_MATCH_CTX_START     = _HIST_END                                                     # 4682
-_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 4686
-_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 4689
-_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 4690
-_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 4695
-_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 4695
-_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 5719
-_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 5719
-_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 5729
+# Offset chain is fully derived from the block-size constants above and pinned by
+# the `assert _EXTRAS_END == STATE_SIZE` below, so absolute indices are intentionally
+# NOT annotated here (they went stale when the layout last changed). Cross-reference
+# the byte ranges in machine_io.h's layout block, not literals in this file.
+_SELF_PERM_START     = _GLOBAL_SIZE
+_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE
+_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE
+_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE
+_EXILE_START         = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE
+_HAND_START          = _EXILE_START + _EXILE_SLOTS_TOTAL * _EXILE_SLOT_SIZE
+_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE
+_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY
+_MATCH_CTX_START     = _HIST_END
+_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE
+_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE
+_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE
+_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
+_REVEALED_START      = _KNOWN_TOP_LIB_END
+_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE
+_OPP_KNOWN_HAND_START = _REVEALED_END
+_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
 # sentinel = none) + its controller-is-viewer flag. The source may not be on the
 # stack yet (targets are announced before the spell moves there), so this is the
 # only place the observation shows WHAT is asking for the current choice.
-_PENDING_DECISION_START = _OPP_KNOWN_HAND_END                                        # 5729
+_PENDING_DECISION_START = _OPP_KNOWN_HAND_END
 _PENDING_DECISION_SIZE  = 2                    # source card id + ctrl_is_self
-_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE           # 5731
-# Global extras (see machine_io.h [5731-5749]): self/opp lands_played/10,
+_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE
+# Global extras (see machine_io.h [5955-5973]): self/opp lands_played/10,
 # viewer_has_priority, self/opp is_monarch, self/opp city's blessing, self/opp
 # revolt, self/opp pending extra turns/3, is_day, is_night, then the
 # MandatoryChoice one-hot (NONE at index 0).
-_EXTRAS_START        = _PENDING_DECISION_END                                         # 5731
+_EXTRAS_START        = _PENDING_DECISION_END
 _EXTRAS_LANDS_SELF   = _EXTRAS_START + 0
 _EXTRAS_LANDS_OPP    = _EXTRAS_START + 1
 _EXTRAS_HAS_PRIORITY = _EXTRAS_START + 2
@@ -303,8 +307,8 @@ _EXTRAS_EXTRA_TURNS_SELF = _EXTRAS_START + 9
 _EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 10
 _EXTRAS_IS_DAY       = _EXTRAS_START + 11
 _EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
-_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13                                         # 5744
-_EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES                 # 5750
+_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13
+_EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
 
 assert _EXTRAS_END == STATE_SIZE, (_EXTRAS_END, STATE_SIZE)
 
@@ -387,12 +391,36 @@ def _slot_card_idx(obs, i):
     return int(round(float(obs[i]) * N_CARD_TYPES))
 
 
+# Status offsets within a permanent slot (mirror the per-slot layout in
+# src/machine_io.h; the card id sits LAST, at _PERM_CARD_OFF)
+_OFF_POWER        = 0
+_OFF_TOUGHNESS    = 1
+_OFF_IS_TAPPED    = 2
+_OFF_IS_ATTACKING = 3
+_OFF_IS_BLOCKING  = 4
+_OFF_HAS_SICKNESS = 5
+_OFF_DAMAGE       = 6
+_OFF_CTRL_IS_SELF = 7
+_OFF_IS_CREATURE  = 8    # 1.0 if this slot is a creature
+_OFF_IS_LAND      = 9    # 1.0 if this slot is a land
+_OFF_LOYALTY      = 10   # loyalty / 10 (planeswalkers; 0 otherwise)
+_OFF_P1P1_NET     = 11   # net (+1/+1 minus -1/-1) counters / 10, SIGNED
+_OFF_OTHER_COUNTERS = 12 # total counters of every other kind / 10
+_OFF_ATTACHED_TO  = 13   # norm_ref: what this equipment/aura is attached to
+_OFF_ATTACHED_BY  = 14   # norm_ref: the equipment/aura attached to this
+_OFF_ATTACK_TGT   = 15   # norm_ref: attacked walker's slot (0.0 = the player)
+_OFF_BLOCKING_TGT = 16   # norm_ref: the attacker this blocker blocks
+_OFF_IS_BLOCKED   = 17   # attacker was blocked at declare-blockers (CR 509.1h)
+_OFF_IS_PHASED_OUT = 18  # phased-out permanents ARE serialized, with this set
+_OFF_KEYWORDS_START = 19 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
+                         # _OBS_KEYWORDS order from _enums.py)
+
 _SELF_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _SELF_PERM_START
-_SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + 8
-_SELF_PERM_PHASED_IDX = _SELF_PERM_POWER_IDX + 18
+_SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + _OFF_IS_CREATURE
+_SELF_PERM_PHASED_IDX = _SELF_PERM_POWER_IDX + _OFF_IS_PHASED_OUT
 _OPP_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _OPP_PERM_START
-_OPP_PERM_CREATURE_IDX = _OPP_PERM_POWER_IDX + 8
-_OPP_PERM_PHASED_IDX = _OPP_PERM_POWER_IDX + 18
+_OPP_PERM_CREATURE_IDX = _OPP_PERM_POWER_IDX + _OFF_IS_CREATURE
+_OPP_PERM_PHASED_IDX = _OPP_PERM_POWER_IDX + _OFF_IS_PHASED_OUT
 
 def _board_power_advantage(obs):
     """Return self_power - opp_power from the observation vector.
@@ -949,30 +977,6 @@ def _gather_costs(matrix, ids):
 # Start of bf_ability_costs block in the full obs vector
 # (5 per-action blocks: cats | ids | ctrl | zone_ref | slot_ref)
 _BF_COST_START    = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS
-# Status offsets within a permanent slot (mirror the per-slot layout in
-# src/machine_io.h; the card id sits LAST, at _PERM_CARD_OFF)
-_OFF_POWER        = 0
-_OFF_TOUGHNESS    = 1
-_OFF_IS_TAPPED    = 2
-_OFF_IS_ATTACKING = 3
-_OFF_IS_BLOCKING  = 4
-_OFF_HAS_SICKNESS = 5
-_OFF_DAMAGE       = 6
-_OFF_CTRL_IS_SELF = 7
-_OFF_IS_CREATURE  = 8    # 1.0 if this slot is a creature
-_OFF_IS_LAND      = 9    # 1.0 if this slot is a land
-_OFF_LOYALTY      = 10   # loyalty / 10 (planeswalkers; 0 otherwise)
-_OFF_P1P1_NET     = 11   # net (+1/+1 minus -1/-1) counters / 10, SIGNED
-_OFF_OTHER_COUNTERS = 12 # total counters of every other kind / 10
-_OFF_ATTACHED_TO  = 13   # norm_ref: what this equipment/aura is attached to
-_OFF_ATTACHED_BY  = 14   # norm_ref: the equipment/aura attached to this
-_OFF_ATTACK_TGT   = 15   # norm_ref: attacked walker's slot (0.0 = the player)
-_OFF_BLOCKING_TGT = 16   # norm_ref: the attacker this blocker blocks
-_OFF_IS_BLOCKED   = 17   # attacker was blocked at declare-blockers (CR 509.1h)
-_OFF_IS_PHASED_OUT = 18  # phased-out permanents ARE serialized, with this set
-_OFF_KEYWORDS_START = 19 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
-                         # _OBS_KEYWORDS order from _enums.py)
-
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
 _AETHER_VIAL_VOCAB_IDX   = 121

@@ -28,9 +28,9 @@
 
 --- Decision 1 ---
   Priority: Player A (active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -48,9 +48,9 @@
 
 --- Decision 2 ---
   Priority: Player B (non-active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -64,9 +64,9 @@
 
 --- Decision 3 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -74,9 +74,9 @@
 
 --- Decision 4 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Draw (turn 1)
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -84,9 +84,9 @@
 
 --- Decision 5 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -99,9 +99,9 @@
 
 --- Decision 6 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -116,10 +116,11 @@
 
 --- Decision 7 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea
+  Pending: Thoughtseize (self)
   Extras: self_lands_played=1
   Actions:
    0: Player B (20 life)
@@ -132,9 +133,9 @@
 
 --- Decision 8 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Extras: self_lands_played=1
@@ -146,9 +147,9 @@
 
 --- Decision 9 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Extras: self_lands_played=1
@@ -161,9 +162,9 @@
 
 --- Decision 10 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Stack: Edge of Autumn (ability, self) [amt=1] -> Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -177,9 +178,9 @@
 
 --- Decision 11 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -201,10 +202,11 @@
 
 --- Decision 12 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
   Self GY: Edge of Autumn, Underground Sea
   Known opp hand: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
@@ -223,9 +225,9 @@
 
 --- Decision 13 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 1)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -238,9 +240,9 @@
 
 --- Decision 14 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Begin Combat (turn 1)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -255,9 +257,9 @@
 
 --- Decision 15 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Declare Atk (turn 1)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -272,9 +274,9 @@
 
 --- Decision 16 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Declare Blk (turn 1)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -290,9 +292,9 @@
 
 --- Decision 17 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Combat Dmg (turn 1)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -305,9 +307,9 @@
 
 --- Decision 18 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: End Combat (turn 1)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -320,9 +322,9 @@
 
 --- Decision 19 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Second Main (turn 1)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -335,9 +337,9 @@
 
 --- Decision 20 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: End Step (turn 1)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -355,9 +357,9 @@
 
 --- Decision 21 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: Upkeep (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -371,9 +373,9 @@
 
 --- Decision 22 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Draw (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
   Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
@@ -385,9 +387,9 @@
 
 --- Decision 23 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
@@ -403,9 +405,9 @@
 
 --- Decision 24 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Stack: Mishra's Bauble (spell, opponent)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
@@ -420,9 +422,9 @@
 
 --- Decision 25 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Mishra's Bauble
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
@@ -439,9 +441,9 @@
 
 --- Decision 26 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Mishra's Bauble | Polluted Delta
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
@@ -457,10 +459,11 @@
 
 --- Decision 27 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Mishra's Bauble | Polluted Delta
+  Pending: Mishra's Bauble (self)
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
@@ -476,9 +479,9 @@
 
 --- Decision 28 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Polluted Delta
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble, Dragon's Rage Channeler
@@ -496,9 +499,9 @@
 
 --- Decision 29 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
   Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -515,10 +518,11 @@
 
 --- Decision 30 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
+  Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
@@ -537,9 +541,9 @@
 
 --- Decision 31 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Island
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -556,9 +560,9 @@
 
 --- Decision 32 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(4): Daze, Ponder, Volcanic Island, Scalding Tarn | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -572,9 +576,9 @@
 
 --- Decision 33 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 4 | lib 51
   Opp BF:   Island (T)
   Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
@@ -596,11 +600,12 @@
 
 --- Decision 34 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
+  Pending: Brainstorm (self)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
@@ -620,11 +625,12 @@
 
 --- Decision 35 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
+  Pending: Brainstorm (self)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Known top: Dragon's Rage Channeler, ?, ?, ?, ?
@@ -643,9 +649,9 @@
 
 --- Decision 36 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Stack: Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
@@ -665,9 +671,9 @@
 
 --- Decision 37 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -681,9 +687,9 @@
 
 --- Decision 38 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -699,9 +705,9 @@
 
 --- Decision 39 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -717,9 +723,9 @@
 
 --- Decision 40 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -736,9 +742,9 @@
 
 --- Decision 41 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -752,9 +758,9 @@
 
 --- Decision 42 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Combat (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -768,9 +774,9 @@
 
 --- Decision 43 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Second Main (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -784,9 +790,9 @@
 
 --- Decision 44 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Step (turn 2)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -806,9 +812,9 @@
 
 --- Decision 45 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 3)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
   Stack: Mishra's Bauble (ability, opponent)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
@@ -825,9 +831,9 @@
 
 --- Decision 46 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Upkeep (turn 3)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -842,9 +848,9 @@
 
 --- Decision 47 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(6): Doomsday, Thoughtseize, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Draw (turn 3)
+  Self:  18 life | mana: empty | hand(6): Doomsday, Thoughtseize, Street Wraith, Ponder, Island, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -857,9 +863,9 @@
 
 --- Decision 48 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(6): Doomsday, Thoughtseize, Street Wraith, Ponder, Island, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(6): Doomsday, Thoughtseize, Street Wraith, Ponder, Island, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -876,9 +882,9 @@
 
 --- Decision 49 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Thoughtseize, Street Wraith, Ponder, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Thoughtseize, Street Wraith, Ponder, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
@@ -897,9 +903,9 @@
 
 --- Decision 50 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
@@ -915,9 +921,9 @@
 
 --- Decision 51 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
@@ -933,9 +939,9 @@
 
 --- Decision 52 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
@@ -953,11 +959,12 @@
 
 --- Decision 53 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Lightning Bolt, Daze, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(7): Lightning Bolt, Daze, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
+  Pending: Daze (self)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
   Known top: Dragon's Rage Channeler, ?, ?, ?, ?
@@ -972,9 +979,9 @@
 
 --- Decision 54 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
@@ -992,9 +999,9 @@
 
 --- Decision 55 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
@@ -1010,9 +1017,9 @@
 
 --- Decision 56 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1026,9 +1033,9 @@
 
 --- Decision 57 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Begin Combat (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1044,9 +1051,9 @@
 
 --- Decision 58 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Declare Atk (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1062,9 +1069,9 @@
 
 --- Decision 59 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Declare Blk (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1081,9 +1088,9 @@
 
 --- Decision 60 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Combat Dmg (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1097,9 +1104,9 @@
 
 --- Decision 61 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: End Combat (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1113,9 +1120,9 @@
 
 --- Decision 62 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Second Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1129,9 +1136,9 @@
 
 --- Decision 63 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: End Step (turn 3)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1150,9 +1157,9 @@
 
 --- Decision 64 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Upkeep (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1167,9 +1174,9 @@
 
 --- Decision 65 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: Draw (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 7 | lib 48
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1182,9 +1189,9 @@
 
 --- Decision 66 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Opp BF:   Island (T)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1201,9 +1208,9 @@
 
 --- Decision 67 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Island
   Opp BF:   Island (T)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1220,9 +1227,9 @@
 
 --- Decision 68 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
@@ -1242,12 +1249,13 @@
 
 --- Decision 69 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1262,12 +1270,13 @@
 
 --- Decision 70 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1279,12 +1288,13 @@
 
 --- Decision 71 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Known top: Ponder, Ponder, Volcanic Island, ?, ?
@@ -1300,9 +1310,9 @@
 
 --- Decision 72 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1317,9 +1327,9 @@
 
 --- Decision 73 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Begin Combat (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1336,9 +1346,9 @@
 
 --- Decision 74 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Declare Atk (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1355,9 +1365,9 @@
 
 --- Decision 75 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Declare Blk (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1375,9 +1385,9 @@
 
 --- Decision 76 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Combat Dmg (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1392,9 +1402,9 @@
 
 --- Decision 77 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: End Combat (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1409,9 +1419,9 @@
 
 --- Decision 78 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Second Main (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1426,9 +1436,9 @@
 
 --- Decision 79 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: End Step (turn 4)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1448,9 +1458,9 @@
 
 --- Decision 80 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1466,9 +1476,9 @@
 
 --- Decision 81 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Draw (turn 5)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1483,9 +1493,9 @@
 
 --- Decision 82 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Draw (turn 5)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Island
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1501,9 +1511,9 @@
 
 --- Decision 83 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Draw (turn 5)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest | lib 50
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Opp BF:   Island (T)
   Stack: Edge of Autumn (ability, self) [amt=1]
   Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1521,9 +1531,9 @@
 
 --- Decision 84 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Draw (turn 5)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Opp BF:   Island (T)
   Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1537,9 +1547,9 @@
 
 --- Decision 85 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Opp BF:   Island (T)
   Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1556,9 +1566,9 @@
 
 --- Decision 86 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Misty Rainforest
   Opp BF:   Island (T)
   Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1578,9 +1588,9 @@
 
 --- Decision 87 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Opp BF:   Island (T)
   Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1598,11 +1608,12 @@
 
 --- Decision 88 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Opp BF:   Island (T)
   Stack: Misty Rainforest (ability, self)
+  Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Known opp hand: Scalding Tarn
@@ -1622,9 +1633,9 @@
 
 --- Decision 89 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
@@ -1644,12 +1655,13 @@
 
 --- Decision 90 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Known opp hand: Scalding Tarn
@@ -1664,9 +1676,9 @@
 
 --- Decision 91 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1681,9 +1693,9 @@
 
 --- Decision 92 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Begin Combat (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1700,9 +1712,9 @@
 
 --- Decision 93 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Declare Atk (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1719,9 +1731,9 @@
 
 --- Decision 94 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Declare Blk (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1739,9 +1751,9 @@
 
 --- Decision 95 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Combat Dmg (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1756,9 +1768,9 @@
 
 --- Decision 96 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: End Combat (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1773,9 +1785,9 @@
 
 --- Decision 97 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Second Main (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1790,9 +1802,9 @@
 
 --- Decision 98 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: End Step (turn 5)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1812,9 +1824,9 @@
 
 --- Decision 99 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Upkeep (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1830,9 +1842,9 @@
 
 --- Decision 100 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: Draw (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 7 | lib 46
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -1846,9 +1858,9 @@
 
 --- Decision 101 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 46
+  Opp:   17 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Island
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1869,9 +1881,9 @@
 
 --- Decision 102 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
@@ -1890,12 +1902,13 @@
 
 --- Decision 103 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 46
+  Opp:   17 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Island (T)
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Known top: Volcanic Island, ?, ?, ?, ?
@@ -1910,12 +1923,13 @@
 
 --- Decision 104 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 46
+  Opp:   17 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Island (T)
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Known top: Volcanic Island, ?, ?, ?, ?
@@ -1927,12 +1941,13 @@
 
 --- Decision 105 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 46
+  Opp:   17 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Island (T)
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Known top: Thundering Falls, Mishra's Bauble, Volcanic Island, ?, ?
@@ -1947,9 +1962,9 @@
 
 --- Decision 106 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Island (T)
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1968,9 +1983,9 @@
 
 --- Decision 107 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1990,9 +2005,9 @@
 
 --- Decision 108 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T) | Volcanic Island (T)
   Stack: Dragon's Rage Channeler (spell, opponent)
@@ -2011,9 +2026,9 @@
 
 --- Decision 109 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2028,9 +2043,9 @@
 
 --- Decision 110 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Begin Combat (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2047,9 +2062,9 @@
 
 --- Decision 111 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Atk (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2066,9 +2081,9 @@
 
 --- Decision 112 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Declare Blk (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2086,9 +2101,9 @@
 
 --- Decision 113 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Combat Dmg (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2103,9 +2118,9 @@
 
 --- Decision 114 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Combat (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2120,9 +2135,9 @@
 
 --- Decision 115 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Second Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2137,9 +2152,9 @@
 
 --- Decision 116 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: End Step (turn 6)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2159,9 +2174,9 @@
 
 --- Decision 117 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 47
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2177,9 +2192,9 @@
 
 --- Decision 118 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Draw (turn 7)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2193,9 +2208,9 @@
 
 --- Decision 119 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2212,11 +2227,12 @@
 
 --- Decision 120 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Pending: Thoughtseize (self)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Known opp hand: Scalding Tarn
@@ -2232,9 +2248,9 @@
 
 --- Decision 121 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
@@ -2259,12 +2275,13 @@
 
 --- Decision 122 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Known opp hand: Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
@@ -2280,9 +2297,9 @@
 
 --- Decision 123 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 7)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2296,9 +2313,9 @@
 
 --- Decision 124 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 7)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2314,9 +2331,9 @@
 
 --- Decision 125 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 7)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2332,9 +2349,9 @@
 
 --- Decision 126 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 7)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2351,9 +2368,9 @@
 
 --- Decision 127 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 7)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2367,9 +2384,9 @@
 
 --- Decision 128 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Combat (turn 7)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2383,9 +2400,9 @@
 
 --- Decision 129 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Second Main (turn 7)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2399,9 +2416,9 @@
 
 --- Decision 130 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: End Step (turn 7)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2420,9 +2437,9 @@
 
 --- Decision 131 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 8)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2438,9 +2455,9 @@
 
 --- Decision 132 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: Draw (turn 8)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2454,9 +2471,9 @@
 
 --- Decision 133 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Mishra's Bauble, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   15 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(5): Mishra's Bauble, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   15 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -2477,9 +2494,9 @@
 
 --- Decision 134 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
@@ -2497,9 +2514,9 @@
 
 --- Decision 135 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
@@ -2516,12 +2533,13 @@
 
 --- Decision 136 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(3): Doomsday, Force of Will, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(3): Doomsday, Force of Will, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
+  Pending: Force of Will (self)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Self exile: Thassa's Oracle
@@ -2536,9 +2554,9 @@
 
 --- Decision 137 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Stack: Force of Will (spell, self) -> Mishra's Bauble (opponent, slot 98) -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
@@ -2557,9 +2575,9 @@
 
 --- Decision 138 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1]
@@ -2579,12 +2597,13 @@
 
 --- Decision 139 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(4): Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1]
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -2599,9 +2618,9 @@
 
 --- Decision 140 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2616,9 +2635,9 @@
 
 --- Decision 141 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(4): Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 43
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Self GY: Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -2639,9 +2658,9 @@
 
 --- Decision 142 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 3
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Ponder (spell, opponent)
@@ -2661,12 +2680,13 @@
 
 --- Decision 143 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls | lib 43
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Ponder (spell, self)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -2680,9 +2700,9 @@
 
 --- Decision 144 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   19 life | mana: empty | hand count: 3
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 3 | lib 42
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Stack: Ponder (spell, opponent)
@@ -2702,12 +2722,13 @@
 
 --- Decision 145 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls | lib 42
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -2722,12 +2743,13 @@
 
 --- Decision 146 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls | lib 42
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -2739,12 +2761,13 @@
 
 --- Decision 147 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls | lib 42
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -2760,9 +2783,9 @@
 
 --- Decision 148 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(4): Force of Will, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(4): Force of Will, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 41
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -2781,9 +2804,9 @@
 
 --- Decision 149 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 41
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island | Scalding Tarn
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -2803,9 +2826,9 @@
 
 --- Decision 150 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Stack: Scalding Tarn (ability, opponent)
@@ -2825,12 +2848,13 @@
 
 --- Decision 151 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: First Main (turn 8)
+  Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 41
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Scalding Tarn (ability, self)
+  Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -2849,9 +2873,9 @@
 
 --- Decision 152 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2867,9 +2891,9 @@
 
 --- Decision 153 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Begin Combat (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2889,9 +2913,9 @@
 
 --- Decision 154 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 8)
+  Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 40
+  Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island (T) | Mountain | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -2908,9 +2932,9 @@
 
 --- Decision 155 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Declare Atk (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2928,9 +2952,9 @@
 
 --- Decision 156 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Declare Blk (turn 8)
+  Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2950,9 +2974,9 @@
 
 --- Decision 157 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Combat Dmg (turn 8)
+  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2968,9 +2992,9 @@
 
 --- Decision 158 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: End Combat (turn 8)
+  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2986,9 +3010,9 @@
 
 --- Decision 159 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Second Main (turn 8)
+  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3004,9 +3028,9 @@
 
 --- Decision 160 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: End Step (turn 8)
+  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3027,9 +3051,9 @@
 
 --- Decision 161 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Upkeep (turn 9)
+  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3046,9 +3070,9 @@
 
 --- Decision 162 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Draw (turn 9)
+  Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3063,9 +3087,9 @@
 
 --- Decision 163 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 9)
+  Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3083,11 +3107,12 @@
 
 --- Decision 164 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 9)
+  Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Pending: Thoughtseize (self)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Self exile: Thassa's Oracle
@@ -3104,9 +3129,9 @@
 
 --- Decision 165 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 9)
+  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Stack: Thoughtseize (spell, self) -> opponent (player)
@@ -3129,12 +3154,13 @@
 
 --- Decision 166 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: First Main (turn 9)
+  Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Self exile: Thassa's Oracle
@@ -3150,9 +3176,9 @@
 
 --- Decision 167 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: First Main (turn 9)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3167,9 +3193,9 @@
 
 --- Decision 168 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 9)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3186,9 +3212,9 @@
 
 --- Decision 169 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 9)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3205,9 +3231,9 @@
 
 --- Decision 170 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 9)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3225,9 +3251,9 @@
 
 --- Decision 171 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 9)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3242,9 +3268,9 @@
 
 --- Decision 172 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Combat (turn 9)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3259,9 +3285,9 @@
 
 --- Decision 173 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Second Main (turn 9)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3276,9 +3302,9 @@
 
 --- Decision 174 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: End Step (turn 9)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3298,9 +3324,9 @@
 
 --- Decision 175 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 10)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3317,9 +3343,9 @@
 
 --- Decision 176 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   18 life | mana: empty | hand count: 3
+  Step: Draw (turn 10)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   18 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3334,9 +3360,9 @@
 
 --- Decision 177 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls
-  Opp:   9 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Self GY: Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -3353,9 +3379,9 @@
 
 --- Decision 178 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls
-  Opp:   9 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Scalding Tarn
   Opp BF:   Undercity Sewers (T)
   Self GY: Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -3374,9 +3400,9 @@
 
 --- Decision 179 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 39
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Stack: Scalding Tarn (ability, opponent)
@@ -3396,12 +3422,13 @@
 
 --- Decision 180 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls
-  Opp:   9 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Scalding Tarn (ability, self)
+  Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -3418,9 +3445,9 @@
 
 --- Decision 181 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3436,9 +3463,9 @@
 
 --- Decision 182 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 10)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3458,9 +3485,9 @@
 
 --- Decision 183 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls
-  Opp:   9 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 10)
+  Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 38
+  Opp:   9 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -3477,9 +3504,9 @@
 
 --- Decision 184 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 10)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3497,9 +3524,9 @@
 
 --- Decision 185 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 10)
+  Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3519,9 +3546,9 @@
 
 --- Decision 186 ---
   Priority: Player A (non-active)
-  Step: Combat Dmg
-  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 10)
+  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3537,9 +3564,9 @@
 
 --- Decision 187 ---
   Priority: Player A (non-active)
-  Step: End Combat
-  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: End Combat (turn 10)
+  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3555,9 +3582,9 @@
 
 --- Decision 188 ---
   Priority: Player A (non-active)
-  Step: Second Main
-  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Second Main (turn 10)
+  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3573,9 +3600,9 @@
 
 --- Decision 189 ---
   Priority: Player A (non-active)
-  Step: End Step
-  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: End Step (turn 10)
+  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3596,9 +3623,9 @@
 
 --- Decision 190 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 11)
+  Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3615,9 +3642,9 @@
 
 --- Decision 191 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Draw (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3633,9 +3660,9 @@
 
 --- Decision 192 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3651,9 +3678,9 @@
 
 --- Decision 193 ---
   Priority: Player A (active)
-  Step: Begin Combat
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3671,9 +3698,9 @@
 
 --- Decision 194 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3691,9 +3718,9 @@
 
 --- Decision 195 ---
   Priority: Player A (active)
-  Step: Declare Blk
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3712,9 +3739,9 @@
 
 --- Decision 196 ---
   Priority: Player A (active)
-  Step: Combat Dmg
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3730,9 +3757,9 @@
 
 --- Decision 197 ---
   Priority: Player A (active)
-  Step: End Combat
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: End Combat (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3748,9 +3775,9 @@
 
 --- Decision 198 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Second Main (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3766,9 +3793,9 @@
 
 --- Decision 199 ---
   Priority: Player A (active)
-  Step: End Step
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: End Step (turn 11)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3789,9 +3816,9 @@
 
 --- Decision 200 ---
   Priority: Player A (non-active)
-  Step: Upkeep
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 12)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3809,9 +3836,9 @@
 
 --- Decision 201 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(3): Force of Will, Lightning Bolt, Thundering Falls
-  Opp:   6 life | mana: empty | hand count: 3
+  Step: Draw (turn 12)
+  Self:  17 life | mana: empty | hand(3): Force of Will, Lightning Bolt, Thundering Falls | lib 37
+  Opp:   6 life | mana: empty | hand count: 3 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -3827,11 +3854,12 @@
 
 --- Decision 202 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(3): Force of Will, Lightning Bolt, Thundering Falls
-  Opp:   6 life | mana: empty | hand count: 3
+  Step: Draw (turn 12)
+  Self:  17 life | mana: empty | hand(3): Force of Will, Lightning Bolt, Thundering Falls | lib 37
+  Opp:   6 life | mana: empty | hand count: 3 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
+  Pending: Lightning Bolt (self)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -3849,9 +3877,9 @@
 
 --- Decision 203 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Draw (turn 12)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Lightning Bolt (spell, opponent) -> self (player)
@@ -3872,12 +3900,13 @@
 
 --- Decision 204 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls
-  Opp:   6 life | mana: empty | hand count: 3
+  Step: Draw (turn 12)
+  Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 37
+  Opp:   6 life | mana: empty | hand count: 3 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -3891,9 +3920,9 @@
 
 --- Decision 205 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Draw (turn 12)
+  Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Stack: Lightning Bolt (spell, opponent) -> self (player)
@@ -3913,9 +3942,9 @@
 
 --- Decision 206 ---
   Priority: Player A (non-active)
-  Step: Draw
-  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Draw (turn 12)
+  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3931,9 +3960,9 @@
 
 --- Decision 207 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls
-  Opp:   3 life | mana: empty | hand count: 3
+  Step: First Main (turn 12)
+  Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 36
+  Opp:   3 life | mana: empty | hand count: 3 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
   Self GY: Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -3951,9 +3980,9 @@
 
 --- Decision 208 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 1
+  Step: First Main (turn 12)
+  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 1 | lib 36
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Stack: Thundering Falls (ability, opponent) [amt=1]
@@ -3974,12 +4003,13 @@
 
 --- Decision 209 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(1): Force of Will
-  Opp:   3 life | mana: empty | hand count: 3
+  Step: First Main (turn 12)
+  Self:  17 life | mana: empty | hand(1): Force of Will | lib 36
+  Opp:   3 life | mana: empty | hand count: 3 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Opp BF:   Undercity Sewers
   Stack: Thundering Falls (ability, self) [amt=1]
+  Pending: Thundering Falls (self)
   Self GY: Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp exile:  Thassa's Oracle
@@ -3994,9 +4024,9 @@
 
 --- Decision 210 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 1
+  Step: First Main (turn 12)
+  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4012,9 +4042,9 @@
 
 --- Decision 211 ---
   Priority: Player A (non-active)
-  Step: Begin Combat
-  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 1
+  Step: Begin Combat (turn 12)
+  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4034,9 +4064,9 @@
 
 --- Decision 212 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(1): Force of Will
-  Opp:   3 life | mana: empty | hand count: 3
+  Step: Declare Atk (turn 12)
+  Self:  17 life | mana: empty | hand(1): Force of Will | lib 35
+  Opp:   3 life | mana: empty | hand count: 3 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Opp BF:   Undercity Sewers
   Self GY: Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -4053,9 +4083,9 @@
 
 --- Decision 213 ---
   Priority: Player A (non-active)
-  Step: Declare Atk
-  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 1
+  Step: Declare Atk (turn 12)
+  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -4073,9 +4103,9 @@
 
 --- Decision 214 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
-  Opp:   17 life | mana: empty | hand count: 1
+  Step: Declare Blk (turn 12)
+  Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith | lib 44
+  Opp:   17 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea

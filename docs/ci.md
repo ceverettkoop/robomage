@@ -31,6 +31,7 @@ any **error** (warnings alone still pass).
 |---|---|---|
 | `pygen` | `train/_enums.py` and `train/card_costs.py` are in sync with their C++ inputs | a stale committed copy (someone changed a C++ input without running `make pygen`) |
 | `vocab` | every card in the top-level and `league/` decks resolves to a `card_vocab.h` entry (DFC deck names resolve through their script's front face) | any deck card missing from the vocab |
+| `obsinv` | structural per-decision invariants on the raw machine-mode observation across a few seeded scripted games (`train/test_obs_invariants.py`): card-id / entity-ref floats decode in range, recency-packed zones (GY/exile) have no holes, one-hots are one-hot, player counts non-negative, a declared companion is revealed to the opponent | any observation-encoding invariant violation (a silent `serialize_state` layout/encoding regression) |
 | `replay` | the byte-identical replay corpus (`train/regression/corpus/`, decks delver/doomsday/mav in every seating) still reproduces exactly | any transcript drift |
 | `smoke` | deterministic league games with the scripted **hard** agent across the league mirrors + a ring of crosses (fixed seeds) | a crash, an incomplete game, or an `ERROR:`/`FATAL:` line |
 | `fuzz` | short random coverage fuzz (the `explore` agent) over the league mirrors (fixed seeds on PR) | same as smoke |
@@ -77,6 +78,10 @@ the delta.
 1. **PR gate failure:** run `make check` (same command, same fixed seed). The
    failing tier names the transcript file under `ci_out/`; open it. Download the
    run's `ci-transcripts-*` artifact if you want the exact CI transcripts.
+   - An **`obsinv`** failure prints the exact violated invariant (decision index,
+     seat, block, slot, raw value); reproduce it directly with
+     `train/.venv/bin/python train/test_obs_invariants.py` (fixed internal seeds,
+     so it replays identically).
 2. **Nightly-fuzz failure:** the job summary prints the seed and the exact
    `ci_check.py --tier fuzz ... --seed <SEED>` line — run it locally to replay
    the same games. The `nightly-fuzz-*` artifact has the transcripts.

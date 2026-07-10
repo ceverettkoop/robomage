@@ -17,9 +17,9 @@ Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 looked up in a learned nn.Embedding. This decouples the observation size from the
 vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slots.
 
-Index layout must stay in sync with src/machine_io.h:
+Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 5974):
   obs[0:36]            global context (player stats, step, flags, stack size)
-  obs[36:3588]         96 permanent slots × 37 floats
+  obs[36:3684]         96 permanent slots × 38 floats
                          slots 0-47: self; slots 48-95: opponent
                          0-10  status: power, toughness, tapped, attacking, blocking,
                                sickness, damage, controller_is_self, is_creature,
@@ -33,29 +33,31 @@ Index layout must stay in sync with src/machine_io.h:
                          19-34 keyword multi-hot (N_OBS_KEYWORDS = 16)
                          35    chosen-name id (Pithing Needle / Disruptor Flute named
                                card, Petrified Hamlet named land; sentinel = none)
-                         36    card id (LAST)
-  obs[3588:4032]       12 stack slots × 37 floats (controller_is_self + card id +
+                         36    returnable-exile id (card this permanent exiled that still
+                               has a return path — Static Prison / Phelia; sentinel = none)
+                         37    card id (LAST)
+  obs[3684:4128]       12 stack slots × 37 floats (controller_is_self + card id +
                          is_spell + x_or_amount/10 + 7 cast qualifiers +
                          chosen-mode multi-hot(6) + 4 announced-target sub-slots ×
                          [present, is_player, controller_is_self, slot_ref, card id])
-  obs[4032:4160]      128 graveyard slots × 1 float (card id, recency-ordered)
+  obs[4128:4256]      128 graveyard slots × 1 float (card id, recency-ordered)
                          slots 0-63: self; slots 64-127: opponent
-  obs[4160:4288]      128 exile slots × 1 float (card id, recency-ordered)
+  obs[4256:4384]      128 exile slots × 1 float (card id, recency-ordered)
                          slots 0-63: self; slots 64-127: opponent
-  obs[4288:4298]       10 hand slots    × 1 float  (card id)
-  obs[4298:4810]      128 action history entries × 4 floats (newest first)
+  obs[4384:4394]       10 hand slots    × 1 float  (card id)
+  obs[4394:4906]      128 action history entries × 4 floats (newest first)
                          per entry: category_norm, card_id_norm, is_self, turn/50
-  obs[4810:4814]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-  obs[4814:4817]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-  obs[4817]            current game turn / 50
-  obs[4818:4823]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
-  obs[4823:5847]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
-  obs[5847:5857]       10 known opponent-hand slots × 1 float (card id)
-  obs[5857:5859]       pending-decision context (source card id + ctrl_is_self)
-  obs[5859:5878]       global extras (self/opp lands played, viewer_has_priority,
+  obs[4906:4910]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+  obs[4910:4913]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+  obs[4913]            current game turn / 50
+  obs[4914:4919]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
+  obs[4919:5943]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
+  obs[5943:5953]       10 known opponent-hand slots × 1 float (card id)
+  obs[5953:5955]       pending-decision context (source card id + ctrl_is_self)
+  obs[5955:5974]       global extras (self/opp lands played, viewer_has_priority,
                          self/opp monarch, city's blessing, revolt, pending extra
                          turns, is_day, is_night, MandatoryChoice one-hot(6))
-  obs[5878:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
+  obs[5974:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
                          (appended by env.py; refs are normalized entity-slot
                          references, (idx+1)/108 with 0.0 = none)
 """
@@ -185,41 +187,45 @@ _REF_ZONE_EMBED    = 4    # learned embedding dim for the per-action zone_ref
 _PER_ACTION_DIM    = 32   # per-action feature width fed to the action scorer
 _HIST_RECENT_K     = 16   # most-recent history entries embedded per-entry
 
-_PERM_START  = _GLOBAL_SIZE                                    # 36
-_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 3588
-_STACK_START = _PERM_END                                       # 3588
-_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 4032
-_GY_START    = _STACK_END                                      # 4032
-_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 4160
-_EXILE_START = _GY_END                                         # 4160
-_EXILE_END   = _EXILE_START + _EXILE_SLOTS * _EXILE_SLOT_SIZE  # 4288
-_HAND_START  = _EXILE_END                                      # 4288
-_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 4170
-_HIST_START  = _HAND_END                                       # 4170
-_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 4682
-# obs[4682:4686] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-# obs[4686:4689] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-_MATCH_CTX_START      = _HIST_END                              # 4682
-_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 4686 (library ctx start)
-_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 4689 (current turn idx)
-_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 4689
-_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 4690
-_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 4695
-_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 4695
-_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 5719
-_OPP_KNOWN_HAND_START = _REVEALED_END                         # 5719
-_OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 5729
+# Offset chain is fully derived from the block-size constants above and pinned by
+# the `assert _STATE_END == _ENV_STATE_SIZE` below, so absolute indices are NOT
+# annotated here (they went stale when the layout last changed). Cross-reference
+# the byte ranges in machine_io.h's layout block, not literals in this file.
+_PERM_START  = _GLOBAL_SIZE
+_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE
+_STACK_START = _PERM_END
+_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE
+_GY_START    = _STACK_END
+_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE
+_EXILE_START = _GY_END
+_EXILE_END   = _EXILE_START + _EXILE_SLOTS * _EXILE_SLOT_SIZE
+_HAND_START  = _EXILE_END
+_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE
+_HIST_START  = _HAND_END
+_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE
+# Then: match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase),
+# library counts & post-board (self_lib/60, opp_lib/60, is_post_board).
+_MATCH_CTX_START      = _HIST_END
+_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # library ctx start
+_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # current turn idx
+_CUR_TURN_IDX         = _LIBRARY_CTX_END
+_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1
+_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
+_REVEALED_START       = _KNOWN_TOP_LIB_END
+_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE
+_OPP_KNOWN_HAND_START = _REVEALED_END
+_OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (sentinel = none) + its controller-is-viewer flag.
-_PENDING_START        = _OPP_KNOWN_HAND_END                   # 5729
+_PENDING_START        = _OPP_KNOWN_HAND_END
 _PENDING_SIZE         = 2
-_PENDING_END          = _PENDING_START + _PENDING_SIZE        # 5731
-# Global extras (machine_io.h [5731:5750]): self/opp lands played, priority,
+_PENDING_END          = _PENDING_START + _PENDING_SIZE
+# Global extras (machine_io.h [5955:5974]): self/opp lands played, priority,
 # monarch, city's blessing, revolt, pending extra turns, day/night flags, plus
 # the MandatoryChoice one-hot. Cheap scalar facts — passed through raw.
-_EXTRAS_START         = _PENDING_END                          # 5731
+_EXTRAS_START         = _PENDING_END
 _EXTRAS_SIZE          = 13 + N_MANDATORY_CHOICES              # 19
-_EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE          # 5750
+_EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE
 _STATE_END            = _EXTRAS_END
 # obs[_STATE_END:] = action metadata + cost features appended by env.py
 # Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE).

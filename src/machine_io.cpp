@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "card_vocab.h"
+#include "error.h"
 #include "classes/game.h"
 #include "classes/match_state.h"
 #include "components/ability.h"
@@ -734,11 +735,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(gs->self_is_player_a ? 1.0f : 0.0f);
     state.push_back(static_cast<float>(gs->stack_size) / 10.0f);
 
-    // Self permanents (48 x 37 = 1776)
+    // Self permanents (48 x 38 = 1824)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->self_permanents[i]);
 
-    // Opp permanents (48 x 37 = 1776)
+    // Opp permanents (48 x 38 = 1824)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
@@ -844,7 +845,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
 
     // Global extras (19 floats): lands played, priority, monarch, city's blessing,
     // revolt, pending extra turns, day/night, mandatory-choice one-hot. See the
-    // [5859-5877] block in machine_io.h.
+    // [5955-5973] block in machine_io.h.
     state.push_back(static_cast<float>(gs->self.lands_played_this_turn) / 10.0f);
     state.push_back(static_cast<float>(gs->opponent.lands_played_this_turn) / 10.0f);
     state.push_back(gs->viewer_has_priority ? 1.0f : 0.0f);
@@ -862,6 +863,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     for (int i = 0; i < 6; i++)
         state.push_back(gs->pending_choice_kind == i ? 1.0f : 0.0f);
 
-    assert(static_cast<int>(state.size()) == STATE_SIZE);
+    // Loud, NDEBUG-surviving length check: cli_output fwrites STATE_SIZE floats from this
+    // buffer, so an under-fill would silently OOB-read under BUILD=RELEASE (where assert() is
+    // compiled out). fatal_error exits the process rather than corrupting the BQUERY payload.
+    if (static_cast<int>(state.size()) != STATE_SIZE)
+        fatal_error("serialize_state: state vector size " + std::to_string(state.size()) +
+                    " != STATE_SIZE " + std::to_string(STATE_SIZE));
     return state;
 }
