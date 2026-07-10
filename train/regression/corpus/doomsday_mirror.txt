@@ -1351,7 +1351,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Island
   Opp BF:   Underground Sea
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Extras: self_lands_played=1, self_revolt
@@ -1367,7 +1367,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Underground Sea
   Opp BF:   Island
-  Stack: Misty Rainforest (ability, opponent) [amt=1]
+  Stack: Misty Rainforest (ability, opponent)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1387,7 +1387,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Island
   Opp BF:   Underground Sea
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Extras: self_lands_played=1, self_revolt
@@ -1824,7 +1824,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -1841,7 +1841,7 @@
   Opp:   18 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
-  Stack: Verdant Catacombs (ability, opponent) [amt=1]
+  Stack: Verdant Catacombs (ability, opponent)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Extras: opp_lands_played=1, opp_revolt
@@ -1860,7 +1860,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt

@@ -1126,7 +1126,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Savannah | Talon Gates of Madara
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Extras: self_lands_played=1, self_revolt
@@ -1145,7 +1145,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Savannah | Talon Gates of Madara
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Extras: self_lands_played=1, self_revolt
@@ -2725,7 +2725,7 @@
   Opp:   19 life | mana: empty | hand count: 1
   Self BF:  Island
   Opp BF:   Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [6/6] (T) | Talon Gates of Madara
-  Stack: Windswept Heath (ability, opponent) [amt=1]
+  Stack: Windswept Heath (ability, opponent)
   Self GY: Undercity Sewers, Force of Will, Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Windswept Heath, Green Sun's Zenith, Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
   Extras: opp_lands_played=1, self_revolt, opp_revolt
@@ -2745,7 +2745,7 @@
   Opp:   14 life | mana: empty | hand count: 4
   Self BF:  Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [6/6] (T) | Talon Gates of Madara
   Opp BF:   Island
-  Stack: Windswept Heath (ability, self) [amt=1]
+  Stack: Windswept Heath (ability, self)
   Self GY: Windswept Heath, Green Sun's Zenith, Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Undercity Sewers, Force of Will, Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt, opp_revolt
@@ -3563,7 +3563,7 @@
   Opp:   19 life | mana: empty | hand count: 1
   Self BF:  Underground Sea | Island (T)
   Opp BF:   Forest | Gaea's Cradle | Knight of the Reliquary [7/7] (T) | Plains | Talon Gates of Madara
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Self GY: Polluted Delta, Ponder, Undercity Sewers, Force of Will, Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dryad Arbor, Windswept Heath, Green Sun's Zenith, Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
   Extras: self_lands_played=1, self_revolt
@@ -3583,7 +3583,7 @@
   Opp:   19 life | mana: empty | hand count: 1
   Self BF:  Underground Sea | Island (T)
   Opp BF:   Forest | Gaea's Cradle | Knight of the Reliquary [7/7] (T) | Plains | Talon Gates of Madara
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Self GY: Polluted Delta, Ponder, Undercity Sewers, Force of Will, Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dryad Arbor, Windswept Heath, Green Sun's Zenith, Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
   Extras: self_lands_played=1, self_revolt
@@ -4001,7 +4001,7 @@
   Opp:   18 life | mana: empty | hand count: 1
   Self BF:  Swamp | Underground Sea | Island (T)
   Opp BF:   Gaea's Cradle (T) | Knight of the Reliquary [10/10] (T) | Noble Hierarch [0/1] (SICK) | Plains | Talon Gates of Madara
-  Stack: Windswept Heath (ability, opponent) [amt=1]
+  Stack: Windswept Heath (ability, opponent)
   Self GY: Polluted Delta, Ponder, Undercity Sewers, Force of Will, Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Windswept Heath, Horizon Canopy, Forest, Dryad Arbor, Windswept Heath, Green Sun's Zenith, Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
   Extras: opp_lands_played=1, opp_revolt
@@ -4021,7 +4021,7 @@
   Opp:   13 life | mana: empty | hand count: 4
   Self BF:  Gaea's Cradle (T) | Knight of the Reliquary [10/10] (T) | Noble Hierarch [0/1] (SICK) | Plains | Talon Gates of Madara
   Opp BF:   Swamp | Underground Sea | Island (T)
-  Stack: Windswept Heath (ability, self) [amt=1]
+  Stack: Windswept Heath (ability, self)
   Self GY: Windswept Heath, Horizon Canopy, Forest, Dryad Arbor, Windswept Heath, Green Sun's Zenith, Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Polluted Delta, Ponder, Undercity Sewers, Force of Will, Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -4614,7 +4614,7 @@
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Swamp (T) | Underground Sea | Island
   Opp BF:   Gaea's Cradle | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [13/13] (T) | Noble Hierarch [0/1] | Talon Gates of Madara
-  Stack: Wooded Foothills (ability, opponent) [amt=1] -> Knight of the Reliquary (ability, opponent) [amt=1] -> Knight of the Reliquary (ability, opponent) [amt=1]
+  Stack: Wooded Foothills (ability, opponent) -> Knight of the Reliquary (ability, opponent) [amt=1] -> Knight of the Reliquary (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Polluted Delta, Ponder, Undercity Sewers, Force of Will, Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Wooded Foothills, Savannah, Plains, Windswept Heath, Horizon Canopy, Forest, Dryad Arbor, Windswept Heath, Green Sun's Zenith, Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
   Extras: opp_lands_played=1, opp_revolt
@@ -4634,7 +4634,7 @@
   Opp:   11 life | mana: empty | hand count: 4
   Self BF:  Gaea's Cradle | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [13/13] (T) | Noble Hierarch [0/1] | Talon Gates of Madara
   Opp BF:   Swamp (T) | Underground Sea | Island
-  Stack: Wooded Foothills (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1]
+  Stack: Wooded Foothills (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1]
   Self GY: Wooded Foothills, Savannah, Plains, Windswept Heath, Horizon Canopy, Forest, Dryad Arbor, Windswept Heath, Green Sun's Zenith, Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Thoughtseize, Polluted Delta, Ponder, Undercity Sewers, Force of Will, Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt

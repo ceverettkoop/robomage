@@ -95,7 +95,21 @@ program:$(C_OBJ) $(CXX_OBJ)
 check: all
 	$(PYTHON) train/ci_check.py
 
-.PHONY: all pygen check clean
+# Regenerate every derived artifact after an intentional C++ change: provision
+# the card set (codegen reads card scripts), force-rerun both generators, and
+# re-record the replay corpus with the fresh binary. Run this when `make check`
+# reports stale codegen or corpus drift, then commit the results. The generators
+# run unconditionally here (not via the incremental pygen file targets) because
+# ci_check's pygen tier restores the committed copies with `git checkout`, which
+# bumps their mtimes past the C++ headers and turns the mtime-based `pygen`
+# target into a silent no-op on stale content.
+regen: all
+	$(PYTHON) tools/forge_fetch/provision_decks.py
+	$(PYTHON) train/gen_enums.py
+	$(PYTHON) train/gen_card_costs.py
+	$(PYTHON) train/regression/replay_diff.py record
+
+.PHONY: all pygen check regen clean
 
 # Remove everything under the object tree (the compile rules mkdir -p subdirs
 # back on demand), not per-level globs that silently miss deeper nesting, plus

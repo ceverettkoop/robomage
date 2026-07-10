@@ -84,7 +84,12 @@ the delta.
 ## Intentionally changing behavior
 
 Some tiers pin current behavior, so an **intended** change must update them in
-the same commit (the diff is part of the review):
+the same commit (the diff is part of the review).
+
+**The one-command path is `make regen`** — it builds, provisions the card set,
+force-reruns both codegen generators, and re-records the replay corpus; then you
+review and commit the changed files. Prefer it over the individual steps below
+(which document what it does):
 
 - **`replay` drift** from a deliberate engine/agent/card-data change:
   re-record the corpus and commit it.
@@ -104,8 +109,13 @@ the same commit (the diff is part of the review):
   `card_costs.py` is complete).
   ```bash
   train/.venv/bin/python tools/forge_fetch/provision_decks.py
-  make pygen
+  train/.venv/bin/python train/gen_enums.py
+  train/.venv/bin/python train/gen_card_costs.py
   ```
+  Run the generators directly (or use `make regen`) rather than `make pygen`
+  here: ci_check's pygen tier restores the committed copies with `git
+  checkout`, which bumps their mtimes past the C++ inputs, so the incremental
+  `pygen` file targets can report "nothing to be done" on stale content.
 
 `train/fuzz_campaign.py` remains the manual, exploratory fuzz-campaign tool (dumps
 a transcript for review; always exits 0). `ci_check.py` is the gating wrapper.

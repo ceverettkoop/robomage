@@ -99,7 +99,7 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
   Opp:   20 life | mana: empty | hand count: 7
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -326,7 +326,7 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
   Extras: self_lands_played=1, self_revolt, opp_revolt
@@ -763,7 +763,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Island
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Self GY: Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
   Extras: self_lands_played=1, self_revolt
@@ -976,7 +976,7 @@
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Delver of Secrets [1/1] (SICK) | Island (T)
   Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -1443,7 +1443,7 @@
   Opp:   12 life | mana: empty | hand count: 2
   Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Volcanic Island, Polluted Delta
   Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Extras: self_lands_played=1, self_revolt

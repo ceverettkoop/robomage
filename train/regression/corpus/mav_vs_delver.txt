@@ -236,7 +236,7 @@
   Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Horizon Canopy
-  Stack: Polluted Delta (ability, opponent) [amt=1] -> Mishra's Bauble (ability, opponent) -> self (player)
+  Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Opp GY:  Polluted Delta, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -252,7 +252,7 @@
   Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Horizon Canopy
-  Stack: Polluted Delta (ability, opponent) [amt=1] -> Mishra's Bauble (ability, opponent) -> self (player)
+  Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Opp GY:  Polluted Delta, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -270,7 +270,7 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
   Opp:   20 life | mana: empty | hand count: 6
   Opp BF:   Horizon Canopy
-  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1388,7 +1388,7 @@
   Opp:   17 life | mana: empty | hand count: 5
   Self BF:  Island (T) | Volcanic Island (T)
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
-  Stack: Scalding Tarn (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Scalding Tarn (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Extras: self_lands_played=1, self_revolt
@@ -1460,7 +1460,7 @@
   Opp:   20 life | mana: empty | hand count: 2
   Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Stack: Mishra's Bauble (ability, opponent) [amt=1] -> Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Mishra's Bauble (ability, opponent) -> Mishra's Bauble (ability, opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Actions:
@@ -1478,7 +1478,7 @@
   Opp:   20 life | mana: empty | hand count: 3
   Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Stack: Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Mishra's Bauble (ability, opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Actions:
@@ -2067,7 +2067,7 @@
   Opp:   11 life | mana: empty | hand count: 5
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
-  Stack: Wooded Foothills (ability, self) [amt=1]
+  Stack: Wooded Foothills (ability, self)
   Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Extras: self_lands_played=1, self_revolt
@@ -2650,7 +2650,7 @@
   Opp:   2 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Extras: self_lands_played=1, self_revolt

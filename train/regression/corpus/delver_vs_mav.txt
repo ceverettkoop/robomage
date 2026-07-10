@@ -134,7 +134,7 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
   Opp:   20 life | mana: empty | hand count: 7
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
   Extras: self_lands_played=1, self_revolt
@@ -428,7 +428,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Island
   Opp BF:   Savannah
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
   Extras: self_lands_played=1, self_revolt
@@ -1573,7 +1573,7 @@
   Opp:   17 life | mana: empty | hand count: 3
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
-  Stack: Wooded Foothills (ability, opponent) [amt=1]
+  Stack: Wooded Foothills (ability, opponent)
   Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Extras: opp_lands_played=1, opp_revolt
@@ -1592,7 +1592,7 @@
   Opp:   11 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Stack: Wooded Foothills (ability, self) [amt=1]
+  Stack: Wooded Foothills (ability, self)
   Self GY: Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
   Extras: self_lands_played=1, self_revolt
@@ -2055,7 +2055,7 @@
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Karakas | Savannah | Talon Gates of Madara
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
-  Stack: Windswept Heath (ability, self) [amt=1]
+  Stack: Windswept Heath (ability, self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
   Opp GY:  Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Extras: self_lands_played=1, self_revolt
@@ -2145,7 +2145,7 @@
   Opp:   1 life | mana: empty | hand count: 2
   Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Opp BF:   Forest | Karakas | Savannah | Talon Gates of Madara
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
   Extras: self_lands_played=1, self_revolt

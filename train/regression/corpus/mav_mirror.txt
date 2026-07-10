@@ -1104,7 +1104,7 @@
   Opp:   13 life | mana: empty | hand count: 5
   Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Stack: Windswept Heath (ability, self) [amt=1] -> Scryb Ranger (ability, self) -> Dryad Arbor (self)
+  Stack: Windswept Heath (ability, self) -> Scryb Ranger (ability, self) -> Dryad Arbor (self)
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Extras: self_lands_played=1, self_revolt
