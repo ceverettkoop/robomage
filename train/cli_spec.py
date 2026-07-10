@@ -321,8 +321,9 @@ def sim_args():
     """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
     return [
         Arg("model", "str", required=True, help="Path to model .zip", suggest="checkpoint"),
-        Arg("--opponent", "str", required=True, suggest="checkpoint",
-            help="Opponent model .zip path, or 'scripted' for rule-based agent"),
+        Arg("--opponent", "str", default="scripted", suggest="checkpoint",
+            help="Opponent controller: a model .zip path/shorthand, or 'scripted' "
+                 "for the rule-based agent piloting the opponent deck (the default)"),
         Arg("--deck-a", "str", default=None, suggest="deck",
             help="Model's deck (.dk stem) — the deck it pilots. Inferred from the "
                  "model's deck-pilot filename ({deck}__final.zip) if omitted."),
@@ -554,6 +555,21 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
         ]),
 ])
 
+# tui_analysis.py — the analysis REPL as a full-screen Textual app: game list,
+# board-state pager (one decision step at a time), a clickable V(s) histogram
+# for seeking, and every REPL analysis view. Same sim args as analysis.py minus
+# the chart-output flags (charts stay in analysis.py's report/interactive).
+ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, subs=[
+    Sub("browse",
+        "Full-screen analysis browser: page through board states with a "
+        "clickable V(s) histogram, plus every analysis view", mode="interactive",
+        items=[
+            *[a for a in sim_args() if a.name not in ("--out", "--show")],
+            Arg("--n-games", "int", default=20,
+                help="Games to simulate on startup (default: 20)"),
+        ]),
+])
+
 # play.py — interactive game; the TUI path delegates to tui_game.py (placeholder).
 PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
     Sub("play", "Play interactively against a trained model", mode="interactive", items=[
@@ -605,7 +621,7 @@ HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
     ]),
 ])
 
-ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, PLAY_TOOL, HARNESS_TOOL]
+ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, ANALYSIS_TUI_TOOL, PLAY_TOOL, HARNESS_TOOL]
 
 
 # ── argparse bridge (used by the scripts) ─────────────────────────────────────

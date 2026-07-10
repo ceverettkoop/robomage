@@ -487,13 +487,17 @@ class LauncherApp(App):
     def _script_abs(self):
         return os.path.join(REPO_ROOT, self._tool.script)
 
-    def _is_play_mode(self):
-        """True when the selected command is the interactive play board (play.py).
+    # Scripts that take over the whole terminal with their own Textual app:
+    # play.py launches the game board (tui_game.py) and tui_analysis.py is the
+    # analysis browser. Teeing either through `script` would fill the log with
+    # terminal escape sequences, so they run without logging.
+    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py"})
 
-        Play launches the full-screen Textual game board (tui_game.py); teeing it
-        through `script` would fill the log with terminal escape sequences, so
-        play mode runs without logging."""
-        return bool(self._tool) and os.path.basename(self._tool.script) == "play.py"
+    def _is_play_mode(self):
+        """True when the selected command is itself a full-screen Textual app
+        (see _FULLSCREEN_SCRIPTS) — it runs in the terminal without logging."""
+        return bool(self._tool) and (os.path.basename(self._tool.script)
+                                     in self._FULLSCREEN_SCRIPTS)
 
     def _collect(self):
         """Return (argv, missing_required_names)."""

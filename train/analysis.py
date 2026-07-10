@@ -641,19 +641,31 @@ def _replay_to_step(env, game, step):
     return obs, True, prefix_reward
 
 
-def _rollout_from(model, env, opp_model, obs, model_is_a, first_action):
+def _rollout_from(model, env, opp_model, obs, model_is_a, first_action,
+                  record=False):
     """Play a branch to completion: take `first_action`, then let the model and
     opponent finish the game (via runner.drive_game). Returns a dict with the
     branch's model V(s) trajectory, final result (+1/-1/0 from the model's
     perspective), and the number of model decisions after the branch.
+
+    With ``record=True`` the dict also carries ``"trace"`` — the full
+    per-decision record of the branch (observations, interp features, legal
+    counts, policy probs, model actions, decoded opponent actions, the
+    interleaved action log incl. `first_action`, and per-decision prefix
+    indexes): everything `_assemble_branch_trace` needs to graft the branch
+    onto its source game's prefix as a complete, replayable game trace.
     """
     import torch
     import runner
 
     branch_vals = []
+    trace = ({"observations": [], "interp": [], "num_choices": [], "probs": [],
+              "actions": [], "opp_actions": [], "prefix_idx": []}
+             if record else None)
     total_reward = 0.0
     obs, reward, terminated, truncated, _ = env.step(first_action)
     total_reward += reward
+    rec_actions = []
 
     if not (terminated or truncated):
         ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model, model_is_a)
@@ -664,23 +676,92 @@ def _rollout_from(model, env, opp_model, obs, model_is_a, first_action):
             obs_t = torch.as_tensor(d.obs, dtype=torch.float32).unsqueeze(0)
             with torch.no_grad():
                 branch_vals.append(model.policy.predict_values(obs_t).item())
+            if record:
+                trace["observations"].append(d.obs.copy())
+                trace["interp"].append(_extract_interpretable(d.obs))
+                trace["num_choices"].append(d.num_choices)
+                trace["probs"].append(_get_policy_probs(model, d.obs, d.num_choices))
+                trace["prefix_idx"].append(d.index)
 
-        rec = runner.drive_game(env, obs, ctrl_a, ctrl_b, on_query=on_query)
+        on_action = None
+        if record:
+            def on_action(d, action):
+                if d.controller is ctrl_model:
+                    trace["actions"].append(int(action))
+                else:
+                    trace["opp_actions"].append({
+                        "desc": _action_desc(d.obs, action),
+                        "before_model_step": len(trace["observations"]),
+                    })
+
+        rec = runner.drive_game(env, obs, ctrl_a, ctrl_b,
+                                on_query=on_query, on_action=on_action)
         total_reward += rec.reward
+        rec_actions = rec.actions
 
     result = total_reward if model_is_a else -total_reward
-    return {
+    out = {
         "values": branch_vals,
         "result": result,
         "n_decisions": len(branch_vals),
     }
+    if record:
+        trace["full_actions"] = [int(first_action)] + list(rec_actions)
+        out["trace"] = trace
+    return out
 
 
-def _run_whatif(model, env, opp_model, game, game_idx, step, k):
+def _assemble_branch_trace(game, game_idx, step, branch, t):
+    """Graft a recorded whatif branch onto its source game's prefix, yielding
+    a complete game-trace dict in `_collect_game_traces`' schema (including
+    the seed/action-log replay keys, so a branch trace can itself be stepped
+    through, analyzed, and re-branched with whatif).
+
+    The prefix rows (decisions 0..step) are copied from the source game — the
+    replay is byte-identical up to the branch point (verified by
+    `_replay_to_step`) — with the branch's action substituted at decision
+    `step`; everything after comes from the branch's recorded rollout `t`.
+    The ``"whatif"`` key marks the trace as synthetic (a counterfactual line,
+    not an independently sampled game), so statistics pools can exclude it.
+    """
+    n_pre = step + 1                      # prefix decisions incl. the branch point
+    prefix = game["prefix_len"][step]     # engine actions fed before decision `step`
+    opp_actions = [dict(oa) for oa in game.get("opp_actions", [])
+                   if oa["before_model_step"] <= step]
+    opp_actions += [{"desc": oa["desc"],
+                     "before_model_step": oa["before_model_step"] + n_pre}
+                    for oa in t["opp_actions"]]
+    return {
+        "observations": list(game["observations"][:n_pre]) + t["observations"],
+        "values": list(game["values"][:n_pre]) + branch["values"],
+        "interp_features": list(game["interp_features"][:n_pre]) + t["interp"],
+        "actions": list(game["actions"][:step]) + [branch["action"]] + t["actions"],
+        "num_choices": list(game["num_choices"][:n_pre]) + t["num_choices"],
+        "action_probs": list(game["action_probs"][:n_pre]) + t["probs"],
+        "opp_actions": opp_actions,
+        "engine_seed": game["engine_seed"],
+        "full_actions": list(game["full_actions"][:prefix]) + t["full_actions"],
+        "prefix_len": (list(game["prefix_len"][:n_pre])
+                       + [prefix + 1 + ix for ix in t["prefix_idx"]]),
+        "result": branch["result"],
+        "model_is_a": game["model_is_a"],
+        "whatif": {"src_game": game_idx, "step": step,
+                   "action": branch["action"], "desc": branch["desc"]},
+    }
+
+
+def _run_whatif(model, env, opp_model, game, game_idx, step, k,
+                make_traces=False):
     """Counterfactual rollout: at model decision `step` of `game`, branch on the
     chosen action and the top-`k` alternatives (by recorded policy probability),
     rolling each to completion from the SAME seed. Returns a list of branch dicts
     (chosen first) or None if the game can't be replayed.
+
+    With ``make_traces=True`` each ALTERNATIVE branch dict also carries
+    ``"trace_game"`` — the branch grafted onto the source game's prefix as a
+    complete game trace (see `_assemble_branch_trace`) that can be browsed and
+    re-branched like any simulated game. The chosen branch gets no trace: its
+    line IS the source game.
     """
     if not _game_is_replayable(game):
         print("  This game has no recorded seed/action log — it predates the "
@@ -724,7 +805,8 @@ def _run_whatif(model, env, opp_model, game, game_idx, step, k):
         prefix_result = prefix_reward if game["model_is_a"] else -prefix_reward
         desc = _action_desc(obs0, act)
         p = probs[act] if probs is not None else None
-        roll = _rollout_from(model, env, opp_model, obs, game["model_is_a"], act)
+        roll = _rollout_from(model, env, opp_model, obs, game["model_is_a"], act,
+                             record=make_traces and act != chosen)
         branch = {
             "action": act,
             "desc": desc,
@@ -735,6 +817,9 @@ def _run_whatif(model, env, opp_model, game, game_idx, step, k):
             "n_decisions": roll["n_decisions"],
             "values": roll["values"],
         }
+        if roll.get("trace") is not None:
+            branch["trace_game"] = _assemble_branch_trace(
+                game, game_idx, step, branch, roll["trace"])
         branches.append(branch)
 
     # Determinism sanity check on the chosen branch: replaying the recorded
