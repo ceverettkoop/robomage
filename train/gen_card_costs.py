@@ -25,10 +25,23 @@ def parse_n_card_types(path):
 N_TYPES = parse_n_card_types(MACHINE_IO_H)
 
 def parse_vocab(path):
-    """Return {card_name: index} from card_vocab.h."""
+    """Return {card_name: index} from card_vocab.h.
+
+    Matches both real card entries {"Name", N} and the token band's
+    {"script_stem", "Display Name", N} (only the display name precedes the
+    index, so the stem is never captured).
+    """
     text = open(path).read()
     return {m.group(1): int(m.group(2))
             for m in re.finditer(r'"([^"]+)"\s*,\s*(\d+)', text)}
+
+def parse_token_vocab_base(path):
+    """Read TOKEN_VOCAB_BASE (first index of the token identity band) from
+    card_vocab.h. Token band entries are script-less by design (tokens have no
+    cast cost), so indices >= this get silent zero-cost rows instead of the
+    missing-script warning; N_TYPES (no band) if the constant is absent."""
+    m = re.search(r'TOKEN_VOCAB_BASE\s*=\s*(\d+)', open(path).read())
+    return int(m.group(1)) if m else N_TYPES
 
 def parse_mana_cost(cost_str):
     """Parse a ManaCost field value into a 7-int list [W,U,B,R,G,C,generic]."""
@@ -107,6 +120,7 @@ def get_is_land(card_name):
 
 def main():
     vocab = parse_vocab(VOCAB_H)
+    token_base = parse_token_vocab_base(VOCAB_H)
     print(f"Found {len(vocab)} cards in vocab: {list(vocab)}")
 
     cast_matrix  = [[0] * N_FEATS for _ in range(N_TYPES)]
@@ -114,11 +128,20 @@ def main():
     # _CARD_ABILITY_COST_MATRIX stays all-zeros until non-mana activated
     # abilities are parsed from card scripts (Cost$ field is not yet used by C++).
 
+    n_tokens = 0
     for name, idx in vocab.items():
+        if idx >= token_base:
+            # Token identity band: no card script exists (and a name like "Cat"
+            # would prefix-match an unrelated card file). Tokens have no cast
+            # cost — keep the zero row and non-land status silently.
+            n_tokens += 1
+            continue
         cost = get_mana_cost(name)
         cast_matrix[idx] = cost
         is_land[idx] = get_is_land(name)
         print(f"  [{idx}] {name}: {cost}{' (land)' if is_land[idx] else ''}")
+    if n_tokens:
+        print(f"  [{token_base}+] token band: {n_tokens} zero-cost rows")
 
     # Emit card_costs.py
     lines = [

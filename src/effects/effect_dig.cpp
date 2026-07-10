@@ -32,6 +32,12 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership dig_owner = ab.controller;
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
         dig_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    // The LOOKER (who sees the cards and makes the choices) is always the ability's controller.
+    // For a fateseal on an opponent's library (Jace +2) that differs from dig_owner: the owner
+    // must NOT learn any card placed back on top, and private card-name logs are pinned to the
+    // looker and redacted from the owner.
+    Zone::Ownership looker = ab.controller;
+    bool owner_sees = (dig_owner == looker);
     // Resolve dynamic dig count (e.g. Count$Devotion.Blue)
     size_t effective_dig_num = ab.dig_num;
     if (!ab.dig_num_expr.empty()) {
@@ -150,19 +156,19 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
         on_bottom = (ab.dig_library_position != 0);
     }
     for (Entity chosen : chosen_cards) {
-        orderer->add_to_zone(on_bottom, chosen, chosen_dest);
+        orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees);
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         if (chosen_dest == Zone::LIBRARY) {
-            game_log_private(dig_owner, "%s puts %s on the %s of their library.\n", player_name(dig_owner).c_str(),
+            game_log_private(looker, "%s puts %s on the %s of their library.\n", player_name(dig_owner).c_str(),
                 cd.name.c_str(), on_bottom ? "bottom" : "top");
-            game_log_redacted(dig_owner, "%s puts a card on the %s of their library.\n",
+            game_log_redacted(looker, "%s puts a card on the %s of their library.\n",
                 player_name(dig_owner).c_str(), on_bottom ? "bottom" : "top");
         } else if (chosen_dest == Zone::BATTLEFIELD) {
             // Public information once it hits the battlefield.
             game_log("%s puts %s onto the battlefield.\n", player_name(dig_owner).c_str(), cd.name.c_str());
         } else {
-            game_log_private(dig_owner, "%s puts %s into hand.\n", player_name(dig_owner).c_str(), cd.name.c_str());
-            game_log_redacted(dig_owner, "%s puts a card into hand.\n", player_name(dig_owner).c_str());
+            game_log_private(looker, "%s puts %s into hand.\n", player_name(dig_owner).c_str(), cd.name.c_str());
+            game_log_redacted(looker, "%s puts a card into hand.\n", player_name(dig_owner).c_str());
         }
     }
 
@@ -179,7 +185,7 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // them on top instead (i.e. you may bottom the looked-at card, else it stays put).
     bool rest_on_bottom = (ab.dig_rest_library_position != 0);
     for (auto e : remaining) {
-        orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY);
+        orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY, owner_sees);
     }
     game_log("%s puts %zu card(s) on the %s of their library.\n", player_name(dig_owner).c_str(),
              remaining.size(), rest_on_bottom ? "bottom" : "top");

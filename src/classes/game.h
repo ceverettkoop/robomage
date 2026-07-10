@@ -204,7 +204,8 @@ struct Game {
         // into g_active_statics every SBA pass (see gather_active_statics). Persists for the game.
         std::vector<Emblem> emblems;
         // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
-        // the monarch). Internal game state only — deliberately NOT in the obs/state vector.
+        // the monarch). Serialized into the state vector's global-extras block (per-player
+        // is_monarch flags; see machine_io.h).
         Entity monarch_entity = MAX_ENTITIES;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells

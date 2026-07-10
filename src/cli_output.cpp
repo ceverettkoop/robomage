@@ -108,9 +108,13 @@ void game_log_redacted(Zone::Ownership owner, const char* fmt, ...) {
 void cli_emit_machine_query(const Query* q, const GameState* gs) {
     const auto& state_vec = serialize_state(gs);
 
-    // Text header line: "BQUERY: N\n"
+    // Text header line: "BQUERY: N STATE_SIZE MAX_ACTIONS\n"
+    // The two trailing sizes are a runtime layout handshake: the Python driver
+    // asserts them against its own imported STATE_SIZE / MAX_ACTIONS so a C++
+    // layout change without regenerated Python constants fails loudly instead of
+    // silently misframing the binary payload.
     // Followed immediately by binary payload (no text parsing needed on Python side).
-    printf("BQUERY: %d\n", q->num_choices);
+    printf("BQUERY: %d %d %d\n", q->num_choices, STATE_SIZE, MAX_ACTIONS);
 
     // Binary state vector (STATE_SIZE float32s)
     fwrite(state_vec.data(), sizeof(float), static_cast<size_t>(STATE_SIZE), stdout);
@@ -123,8 +127,10 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
     float   ctrl[MAX_ACTIONS];
     float   pub [MAX_ACTIONS]  = {};  // 1.0 = card identity publicly known (revealed), else 0.0
     int32_t zone[MAX_ACTIONS]  = {};  // ActionRefZone of the choice's entity (REF_NONE = none)
+    int32_t refs[MAX_ACTIONS];        // entity-reference slot of the choice's source (-1 = none)
     std::fill(ids,  ids  + MAX_ACTIONS, id_null);
     std::fill(ctrl, ctrl + MAX_ACTIONS, ctrl_null);
+    std::fill(refs, refs + MAX_ACTIONS, static_cast<int32_t>(-1));
 
     for (int i = 0; i < q->num_choices; i++) {
         cats[i] = q->choices[i].category;
@@ -136,6 +142,7 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
             : ctrl_null;
         pub[i]  = q->choices[i].card_is_public ? 1.0f : 0.0f;
         zone[i] = static_cast<int32_t>(q->choices[i].zone_ref);
+        refs[i] = static_cast<int32_t>(q->choices[i].slot_ref);
     }
 
     fwrite(cats, sizeof(int32_t), MAX_ACTIONS, stdout);
@@ -143,6 +150,7 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
     fwrite(ctrl, sizeof(float),   MAX_ACTIONS, stdout);
     fwrite(pub,  sizeof(float),   MAX_ACTIONS, stdout);
     fwrite(zone, sizeof(int32_t), MAX_ACTIONS, stdout);
+    fwrite(refs, sizeof(int32_t), MAX_ACTIONS, stdout);
 
     // Human-readable per-action descriptions (e.g. "Target Player B (20 life)",
     // "Pay 4 life", "Put on top"), only under --narrative so the ML training path

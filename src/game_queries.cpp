@@ -506,6 +506,40 @@ Zone::Ownership last_known_controller(Entity e) {
     return Zone::UNKNOWN;
 }
 
+Entity returnable_exiled_card(Entity host) {
+    if (host == 0 || !global_coordinator.entity_has_component<Permanent>(host)) return 0;
+    const auto &exiled = global_coordinator.GetComponent<Permanent>(host).exiled_with;
+    // Most-recent-first: cards are push_back'd as they are exiled, so the last entry is the
+    // most recently exiled card. Return the first one that still has a live return path.
+    for (auto it = exiled.rbegin(); it != exiled.rend(); ++it) {
+        Entity card = *it;
+        if (card == 0) continue;
+        // The card must still physically be in the exile zone. A Static-Prison-class host can
+        // exile a TOKEN; the token then ceases to exist (SBA) and its entity id may be recycled
+        // onto an unrelated object — but the delayed trigger persists (it watches the host, not
+        // the card), so without this guard we'd report a phantom/wrong "holding" id.
+        if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+        if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
+        for (const auto &dt : cur_game.delayed_triggers) {
+            const Ability &fa = dt.ability;
+            // A return path is a ChangeZone that would pull the card OUT of exile.
+            if (fa.category != "ChangeZone") continue;
+            if (fa.origin != Zone::EXILE || fa.destination == Zone::EXILE) continue;
+            // Shape A tags the card in the fire ability's restore_remembered_exiled_with (and
+            // watches the host); shape B tags it in the trigger's remembered_objects (and mirrors
+            // it into restore_remembered_exiled_with). Either reference means this card returns.
+            bool references_card = false;
+            for (Entity e : fa.restore_remembered_exiled_with)
+                if (e == card) { references_card = true; break; }
+            if (!references_card)
+                for (Entity e : dt.remembered_objects)
+                    if (e == card) { references_card = true; break; }
+            if (references_card) return card;
+        }
+    }
+    return 0;
+}
+
 static Zone::Ownership opponent_of(Zone::Ownership p) {
     if (p == Zone::PLAYER_A) return Zone::PLAYER_B;
     if (p == Zone::PLAYER_B) return Zone::PLAYER_A;

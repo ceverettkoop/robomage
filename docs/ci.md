@@ -31,6 +31,7 @@ any **error** (warnings alone still pass).
 |---|---|---|
 | `pygen` | `train/_enums.py` and `train/card_costs.py` are in sync with their C++ inputs | a stale committed copy (someone changed a C++ input without running `make pygen`) |
 | `vocab` | every card in the top-level and `league/` decks resolves to a `card_vocab.h` entry (DFC deck names resolve through their script's front face) | any deck card missing from the vocab |
+| `obsinv` | structural per-decision invariants on the raw machine-mode observation across a few seeded scripted games (`train/test_obs_invariants.py`): card-id / entity-ref floats decode in range, recency-packed zones (GY/exile) have no holes, one-hots are one-hot, player counts non-negative, a declared companion is revealed to the opponent | any observation-encoding invariant violation (a silent `serialize_state` layout/encoding regression) |
 | `replay` | the byte-identical replay corpus (`train/regression/corpus/`, decks delver/doomsday/mav in every seating) still reproduces exactly | any transcript drift |
 | `smoke` | deterministic league games with the scripted **hard** agent across the league mirrors + a ring of crosses (fixed seeds) | a crash, an incomplete game, or an `ERROR:`/`FATAL:` line |
 | `fuzz` | short random coverage fuzz (the `explore` agent) over the league mirrors (fixed seeds on PR) | same as smoke |
@@ -77,6 +78,10 @@ the delta.
 1. **PR gate failure:** run `make check` (same command, same fixed seed). The
    failing tier names the transcript file under `ci_out/`; open it. Download the
    run's `ci-transcripts-*` artifact if you want the exact CI transcripts.
+   - An **`obsinv`** failure prints the exact violated invariant (decision index,
+     seat, block, slot, raw value); reproduce it directly with
+     `train/.venv/bin/python train/test_obs_invariants.py` (fixed internal seeds,
+     so it replays identically).
 2. **Nightly-fuzz failure:** the job summary prints the seed and the exact
    `ci_check.py --tier fuzz ... --seed <SEED>` line — run it locally to replay
    the same games. The `nightly-fuzz-*` artifact has the transcripts.
@@ -84,7 +89,12 @@ the delta.
 ## Intentionally changing behavior
 
 Some tiers pin current behavior, so an **intended** change must update them in
-the same commit (the diff is part of the review):
+the same commit (the diff is part of the review).
+
+**The one-command path is `make regen`** — it builds, provisions the card set,
+force-reruns both codegen generators, and re-records the replay corpus; then you
+review and commit the changed files. Prefer it over the individual steps below
+(which document what it does):
 
 - **`replay` drift** from a deliberate engine/agent/card-data change:
   re-record the corpus and commit it.
@@ -104,8 +114,13 @@ the same commit (the diff is part of the review):
   `card_costs.py` is complete).
   ```bash
   train/.venv/bin/python tools/forge_fetch/provision_decks.py
-  make pygen
+  train/.venv/bin/python train/gen_enums.py
+  train/.venv/bin/python train/gen_card_costs.py
   ```
+  Run the generators directly (or use `make regen`) rather than `make pygen`
+  here: ci_check's pygen tier restores the committed copies with `git
+  checkout`, which bumps their mtimes past the C++ inputs, so the incremental
+  `pygen` file targets can report "nothing to be done" on stale content.
 
 `train/fuzz_campaign.py` remains the manual, exploratory fuzz-campaign tool (dumps
 a transcript for review; always exits 0). `ci_check.py` is the gating wrapper.

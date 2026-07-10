@@ -28,9 +28,9 @@
 
 --- Decision 1 ---
   Priority: Player A (active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -48,9 +48,9 @@
 
 --- Decision 2 ---
   Priority: Player B (non-active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -64,9 +64,9 @@
 
 --- Decision 3 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Horizon Canopy
@@ -81,10 +81,11 @@
 
 --- Decision 4 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -94,10 +95,11 @@
 
 --- Decision 5 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -116,10 +118,11 @@
 
 --- Decision 6 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(8): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -132,11 +135,12 @@
 
 --- Decision 7 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Horizon Canopy
   Stack: Mishra's Bauble (spell, opponent)
+  Opp revealed: Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -146,11 +150,12 @@
 
 --- Decision 8 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Horizon Canopy
   Stack: Mishra's Bauble (spell, opponent)
+  Opp revealed: Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -161,11 +166,12 @@
 
 --- Decision 9 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Mishra's Bauble
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -178,11 +184,13 @@
 
 --- Decision 10 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Mishra's Bauble | Polluted Delta
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)
@@ -193,11 +201,14 @@
 
 --- Decision 11 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Mishra's Bauble | Polluted Delta
   Opp BF:   Horizon Canopy
+  Pending: Mishra's Bauble (self)
+  Opp revealed: Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Player A (20 life)
    1: Player B (20 life)
@@ -209,13 +220,15 @@
 
 --- Decision 12 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Polluted Delta
   Opp BF:   Horizon Canopy
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble
+  Opp revealed: Horizon Canopy
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)
@@ -227,12 +240,14 @@
 
 --- Decision 13 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Horizon Canopy
   Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
-  Opp GY:  Mishra's Bauble, Polluted Delta
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Mishra's Bauble
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -242,12 +257,14 @@
 
 --- Decision 14 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Horizon Canopy
   Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
-  Opp GY:  Mishra's Bauble, Polluted Delta
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Mishra's Bauble
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -259,12 +276,15 @@
 
 --- Decision 15 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Opp BF:   Horizon Canopy
   Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp revealed: Horizon Canopy
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Island
@@ -279,13 +299,15 @@
 
 --- Decision 16 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Island
   Opp BF:   Horizon Canopy
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp revealed: Horizon Canopy
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Brainstorm
@@ -296,13 +318,15 @@
 
 --- Decision 17 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Island (T)
   Opp BF:   Horizon Canopy
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp revealed: Horizon Canopy
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -310,13 +334,15 @@
 
 --- Decision 18 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Horizon Canopy
   Opp BF:   Island (T)
   Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
-  Opp GY:  Mishra's Bauble, Polluted Delta
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -326,13 +352,15 @@
 
 --- Decision 19 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 5
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Horizon Canopy
   Opp BF:   Island (T)
   Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
-  Opp GY:  Mishra's Bauble, Polluted Delta
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -348,13 +376,16 @@
 
 --- Decision 20 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Island (T)
   Opp BF:   Horizon Canopy
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Pending: Brainstorm (self)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp revealed: Horizon Canopy
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -371,13 +402,17 @@
 
 --- Decision 21 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Island (T)
   Opp BF:   Horizon Canopy
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Pending: Brainstorm (self)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Horizon Canopy
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
    1: Lightning Bolt
@@ -408,12 +443,13 @@
 
 --- Decision 22 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Endurance, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Endurance, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 52
+  Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Horizon Canopy
   Opp BF:   Island (T)
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -427,12 +463,14 @@
 
 --- Decision 23 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Endurance, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(6): Endurance, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 52
+  Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Horizon Canopy | Savannah
   Opp BF:   Island (T)
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -446,13 +484,15 @@
 
 --- Decision 24 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Endurance, Green Sun's Zenith, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Endurance, Green Sun's Zenith, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 51
+  Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Savannah (T)
   Opp BF:   Island (T)
   Self GY: Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Endurance (alternate cost)
@@ -460,13 +500,15 @@
 
 --- Decision 25 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Endurance, Green Sun's Zenith, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Endurance, Green Sun's Zenith, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 51
+  Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Savannah (T)
   Opp BF:   Island (T)
   Self GY: Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Green Sun's Zenith
   >> A/A: 0 (Exile Green Sun's Zenith)
@@ -476,14 +518,18 @@
 
 --- Decision 26 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Savannah (T)
-  Stack: Endurance (spell, opponent)
-  Self GY: Mishra's Bauble, Brainstorm, Polluted Delta
+  Stack: Endurance (spell, opponent) [evoke]
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -491,14 +537,18 @@
 
 --- Decision 27 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Savannah (T)
-  Stack: Endurance (spell, opponent)
-  Self GY: Mishra's Bauble, Brainstorm, Polluted Delta
+  Stack: Endurance (spell, opponent) [evoke]
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Return Island
   >> B/B: 0 (Return Island)
@@ -508,13 +558,18 @@
 
 --- Decision 28 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Lightning Bolt, Daze, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Opp BF:   Savannah (T)
-  Stack: Endurance (spell, opponent)
-  Self GY: Mishra's Bauble, Brainstorm, Polluted Delta
+  Stack: Endurance (spell, opponent) [evoke]
+  Pending: Daze (self)
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
+  Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Endurance
   >> B/B: 0 (Endurance)
@@ -526,13 +581,16 @@
 
 --- Decision 29 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 51
+  Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Savannah (T)
-  Stack: Daze (spell, opponent) -> Endurance (self) -> Endurance (spell, self)
+  Stack: Daze (spell, opponent) -> Endurance (self, slot 97) -> Endurance (spell, self) [evoke]
   Self GY: Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Polluted Delta, Daze, Island, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
   >> A/A: 0 (Don't pay (spell is countered))
@@ -550,12 +608,14 @@
 
 --- Decision 30 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Opp BF:   Savannah (T)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Actions:
    0: Pass priority
    1: Play Island
@@ -568,13 +628,16 @@
 
 --- Decision 31 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island
   Opp BF:   Savannah (T)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Ponder
@@ -588,14 +651,18 @@
 
 --- Decision 32 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Savannah (T)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Pending: Ponder (self)
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
+  Extras: self_lands_played=1
   Actions:
    0: Volcanic Island
    1: Ponder
@@ -606,14 +673,18 @@
 
 --- Decision 33 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Savannah (T)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Pending: Ponder (self)
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
+  Extras: self_lands_played=1
   Actions:
    0: Ponder
    1: Ponder
@@ -621,14 +692,19 @@
 
 --- Decision 34 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Savannah (T)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Pending: Ponder (self)
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Ponder, Ponder, Volcanic Island, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
+  Extras: self_lands_played=1
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -648,13 +724,15 @@
 
 --- Decision 35 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Savannah, Scryb Ranger, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(6): Savannah, Scryb Ranger, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   19 life | mana: empty | hand count: 7 | lib 47
   Self BF:  Savannah
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -667,13 +745,16 @@
 
 --- Decision 36 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Scryb Ranger, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(5): Scryb Ranger, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   19 life | mana: empty | hand count: 7 | lib 47
   Self BF:  Savannah | Savannah
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Scryb Ranger
@@ -686,13 +767,16 @@
 
 --- Decision 37 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
-  Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   19 life | mana: empty | hand count: 7 | lib 47
+  Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -702,13 +786,17 @@
 
 --- Decision 38 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
-  Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   19 life | mana: empty | hand count: 7 | lib 47
+  Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Island (T)
+  Pending: Scryb Ranger (self)
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Scryb Ranger
   >> A/A: 0 (Scryb Ranger)
@@ -717,13 +805,16 @@
 
 --- Decision 39 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 7
-  Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   19 life | mana: empty | hand count: 7 | lib 47
+  Self BF:  Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Return Savannah to hand
    1: Return Savannah to hand
@@ -745,13 +836,16 @@
 
 --- Decision 40 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 46
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (SICK)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -769,14 +863,18 @@
 
 --- Decision 41 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 46
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Pending: Ponder (self)
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Volcanic Island
    1: Mishra's Bauble
@@ -787,14 +885,18 @@
 
 --- Decision 42 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 46
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Pending: Ponder (self)
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Mishra's Bauble
    1: Thundering Falls
@@ -802,14 +904,18 @@
 
 --- Decision 43 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 46
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Pending: Ponder (self)
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Thundering Falls, Mishra's Bauble, Volcanic Island, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -820,13 +926,16 @@
 
 --- Decision 44 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (SICK)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
+  Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -839,13 +948,17 @@
 
 --- Decision 45 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T) | Volcanic Island
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (SICK)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
+  Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp exile:  Green Sun's Zenith
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler
@@ -869,13 +982,15 @@
 
 --- Decision 46 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(5): Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 6
-  Self BF:  Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(5): Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   19 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares
@@ -886,13 +1001,16 @@
 
 --- Decision 47 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(5): Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 6
-  Self BF:  Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(5): Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   19 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Pending: Swords to Plowshares (self)
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Dragon's Rage Channeler
    1: Scryb Ranger
@@ -904,14 +1022,16 @@
 
 --- Decision 48 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 6
-  Self BF:  Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Stack: Swords to Plowshares (spell, self) -> Dragon's Rage Channeler (opponent)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   19 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Stack: Swords to Plowshares (spell, self) -> Dragon's Rage Channeler (opponent, slot 48)
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -924,13 +1044,17 @@
 
 --- Decision 49 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   22 life | mana: empty | hand count: 6
-  Self BF:  Savannah (T) | Scryb Ranger [1/1]
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 50
+  Opp:   22 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -940,13 +1064,17 @@
 
 --- Decision 50 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   22 life | mana: empty | hand count: 6
-  Self BF:  Savannah (T) | Scryb Ranger [1/1]
+  Step: Draw (turn 7)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   22 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -954,13 +1082,17 @@
 
 --- Decision 51 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   22 life | mana: empty | hand count: 6
-  Self BF:  Savannah (T) | Scryb Ranger [1/1]
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   22 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -974,13 +1106,17 @@
 
 --- Decision 52 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   22 life | mana: empty | hand count: 6
-  Self BF:  Savannah | Savannah (T) | Scryb Ranger [1/1]
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   22 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -991,13 +1127,18 @@
 
 --- Decision 53 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   22 life | mana: empty | hand count: 6
-  Self BF:  Savannah | Savannah (T) | Scryb Ranger [1/1]
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   22 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Pending: Scryb Ranger (self)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Scryb Ranger
   >> A/A: 0 (Scryb Ranger)
@@ -1006,13 +1147,17 @@
 
 --- Decision 54 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   22 life | mana: empty | hand count: 6
-  Self BF:  Savannah | Savannah (T) | Scryb Ranger [1/1]
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   22 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Return Savannah to hand
    1: Return Savannah to hand
@@ -1026,13 +1171,17 @@
 
 --- Decision 55 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   22 life | mana: empty | hand count: 6
-  Self BF:  Savannah (T) | Scryb Ranger [1/1]
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   22 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
    1: Confirm attackers
@@ -1044,13 +1193,17 @@
 
 --- Decision 56 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   22 life | mana: empty | hand count: 6
-  Self BF:  Savannah (T) | Scryb Ranger [1/1] (ATK)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   22 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (ATK)
   Opp BF:   Island (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1068,13 +1221,17 @@
 
 --- Decision 57 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  21 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 8)
+  Self:  21 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island | Volcanic Island
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -1084,13 +1241,18 @@
 
 --- Decision 58 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  21 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   20 life | mana: empty | hand count: 5
+  Step: Upkeep (turn 8)
+  Self:  21 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island | Volcanic Island
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Pending: Lightning Bolt (self)
+  Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Player A (20 life)
    1: Player B (21 life)
@@ -1106,13 +1268,17 @@
 
 --- Decision 59 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(6): Dragon's Rage Channeler, Mishra's Bauble, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(6): Dragon's Rage Channeler, Mishra's Bauble, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1127,13 +1293,17 @@
 
 --- Decision 60 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(5): Dragon's Rage Channeler, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(5): Dragon's Rage Channeler, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Mishra's Bauble | Island | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1148,14 +1318,18 @@
 
 --- Decision 61 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Mishra's Bauble | Island (T) | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)
@@ -1165,14 +1339,19 @@
 
 --- Decision 62 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Mishra's Bauble | Island (T) | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Pending: Mishra's Bauble (self)
+  Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Player A (17 life)
    1: Player B (21 life)
@@ -1191,14 +1370,20 @@
 
 --- Decision 63 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T) | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Pending: Ponder (self)
+  Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_revolt
   Actions:
    0: Volcanic Island
    1: Flooded Strand
@@ -1209,14 +1394,20 @@
 
 --- Decision 64 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T) | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Pending: Ponder (self)
+  Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_revolt
   Actions:
    0: Flooded Strand
    1: Mishra's Bauble
@@ -1224,14 +1415,20 @@
 
 --- Decision 65 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 44
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T) | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Pending: Ponder (self)
+  Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Mishra's Bauble, Flooded Strand, Volcanic Island, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_revolt
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1242,13 +1439,18 @@
 
 --- Decision 66 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(5): Dragon's Rage Channeler, Mishra's Bauble, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(5): Dragon's Rage Channeler, Mishra's Bauble, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 43
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T) | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Self GY: Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1262,13 +1464,18 @@
 
 --- Decision 67 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(4): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 43
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Mishra's Bauble | Island (T) | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Self GY: Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1281,13 +1488,18 @@
 
 --- Decision 68 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls | lib 43
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Mishra's Bauble | Island (T) | Volcanic Island (T) | Scalding Tarn
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Self GY: Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)
@@ -1298,13 +1510,19 @@
 
 --- Decision 69 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls | lib 43
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Mishra's Bauble | Island (T) | Volcanic Island (T) | Scalding Tarn
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Pending: Mishra's Bauble (self)
+  Self GY: Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Player A (17 life)
    1: Player B (21 life)
@@ -1316,14 +1534,19 @@
 
 --- Decision 70 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  21 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  21 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls | lib 43
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T) | Volcanic Island (T) | Scalding Tarn
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Self GY: Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)
@@ -1337,14 +1560,20 @@
 
 --- Decision 71 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls | lib 43
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T) | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Scalding Tarn (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Pending: Scalding Tarn (self)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Mountain
@@ -1362,13 +1591,17 @@
 
 --- Decision 72 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls | lib 42
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T) | Mountain | Volcanic Island (T)
-  Opp BF:   Savannah (T) | Scryb Ranger [1/1] (T)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler
@@ -1390,13 +1623,16 @@
 
 --- Decision 73 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Opp BF:   Savannah | Scryb Ranger [1/1]
-  Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: Upkeep (turn 9)
+  Self:  20 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls | lib 42
+  Opp:   17 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Opp BF:   Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Delayed trigger
    1: Delayed trigger
@@ -1407,14 +1643,17 @@
 
 --- Decision 74 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Step: Upkeep (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   20 life | mana: empty | hand count: 2 | lib 42
+  Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Stack: Mishra's Bauble (ability, opponent) -> Mishra's Bauble (ability, opponent)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1425,14 +1664,17 @@
 
 --- Decision 75 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 3
-  Self BF:  Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Step: Upkeep (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   20 life | mana: empty | hand count: 3 | lib 41
+  Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Stack: Mishra's Bauble (ability, opponent)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1443,13 +1685,16 @@
 
 --- Decision 76 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: Upkeep (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1459,13 +1704,16 @@
 
 --- Decision 77 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  17 life | mana: empty | hand(6): Birds of Paradise, Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: Draw (turn 9)
+  Self:  17 life | mana: empty | hand(6): Birds of Paradise, Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1473,13 +1721,16 @@
 
 --- Decision 78 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(6): Birds of Paradise, Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(6): Birds of Paradise, Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1496,14 +1747,17 @@
 
 --- Decision 79 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Stack: Birds of Paradise (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1513,14 +1767,18 @@
 
 --- Decision 80 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Stack: Birds of Paradise (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Pending: Scryb Ranger (self)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Dragon's Rage Channeler
    1: Scryb Ranger
@@ -1530,14 +1788,17 @@
 
 --- Decision 81 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Stack: Birds of Paradise (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Return Savannah to hand
   >> A/A: 0 (Return Savannah to hand)
@@ -1550,13 +1811,17 @@
 
 --- Decision 82 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(6): Green Sun's Zenith, Savannah, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Birds of Paradise [0/1] (SICK) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(6): Green Sun's Zenith, Savannah, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Birds of Paradise [0/1] [Flying] (SICK) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1570,13 +1835,17 @@
 
 --- Decision 83 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -1586,13 +1855,17 @@
 
 --- Decision 84 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: Declare Atk (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
    1: Confirm attackers
@@ -1606,13 +1879,17 @@
 
 --- Decision 85 ---
   Priority: Player A (active)
-  Step: Second Main
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 4
-  Self BF:  Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: Second Main (turn 9)
+  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 40
+  Self BF:  Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -1625,13 +1902,16 @@
 
 --- Decision 86 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: Upkeep (turn 10)
+  Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Thundering Falls | lib 40
+  Opp:   17 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -1641,13 +1921,17 @@
 
 --- Decision 87 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: Upkeep (turn 10)
+  Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Thundering Falls | lib 40
+  Opp:   17 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Pending: Lightning Bolt (self)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Player A (17 life)
    1: Player B (20 life)
@@ -1666,14 +1950,18 @@
 
 --- Decision 88 ---
   Priority: Player B (active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls
-  Opp:   17 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
-  Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: Upkeep (turn 10)
+  Self:  20 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Thundering Falls | lib 40
+  Opp:   17 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
+  Pending: Dragon's Rage Channeler (self)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Put Murktide Regent on top of library
    1: Put Murktide Regent into graveyard
@@ -1686,13 +1974,16 @@
 
 --- Decision 89 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Volcanic Island, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: First Main (turn 10)
+  Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Volcanic Island, Scalding Tarn, Thundering Falls | lib 38
+  Opp:   14 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1708,13 +1999,16 @@
 
 --- Decision 90 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Volcanic Island, Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T)
-  Opp BF:   Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: First Main (turn 10)
+  Self:  20 life | mana: empty | hand(3): Volcanic Island, Scalding Tarn, Thundering Falls | lib 38
+  Opp:   14 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T)
+  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1729,13 +2023,17 @@
 
 --- Decision 91 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  20 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls
-  Opp:   14 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: Declare Atk (turn 10)
+  Self:  20 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls | lib 38
+  Opp:   14 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1749,13 +2047,17 @@
 
 --- Decision 92 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  14 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: Declare Blk (turn 10)
+  Self:  14 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
   Actions:
    0: Birds of Paradise [0/1]
    1: Scryb Ranger [1/1]
@@ -1774,13 +2076,16 @@
 
 --- Decision 93 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  11 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: Upkeep (turn 11)
+  Self:  11 life | mana: empty | hand(5): Green Sun's Zenith, Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 48
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1790,13 +2095,16 @@
 
 --- Decision 94 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  11 life | mana: empty | hand(6): Green Sun's Zenith, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: Draw (turn 11)
+  Self:  11 life | mana: empty | hand(6): Green Sun's Zenith, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1804,13 +2112,16 @@
 
 --- Decision 95 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(6): Green Sun's Zenith, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: First Main (turn 11)
+  Self:  11 life | mana: empty | hand(6): Green Sun's Zenith, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1826,13 +2137,16 @@
 
 --- Decision 96 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(6): Green Sun's Zenith, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: First Main (turn 11)
+  Self:  11 life | mana: empty | hand(6): Green Sun's Zenith, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: X = 0
    1: X = 1
@@ -1844,14 +2158,17 @@
 
 --- Decision 97 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Step: First Main (turn 11)
+  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1861,14 +2178,18 @@
 
 --- Decision 98 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Step: First Main (turn 11)
+  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Pending: Scryb Ranger (self)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -1880,14 +2201,17 @@
 
 --- Decision 99 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Step: First Main (turn 11)
+  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Return Savannah to hand
   >> A/A: 0 (Return Savannah to hand)
@@ -1901,14 +2225,19 @@
 
 --- Decision 100 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(6): Savannah, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Step: First Main (turn 11)
+  Self:  11 life | mana: empty | hand(6): Savannah, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Pending: Green Sun's Zenith (self)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: self_revolt
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -1920,13 +2249,17 @@
 
 --- Decision 101 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(6): Savannah, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: First Main (turn 11)
+  Self:  11 life | mana: empty | hand(6): Savannah, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1941,13 +2274,17 @@
 
 --- Decision 102 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
+  Step: Declare Atk (turn 11)
+  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
    1: Confirm attackers
@@ -1966,13 +2303,16 @@
 
 --- Decision 103 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(3): Wooded Foothills, Scalding Tarn, Thundering Falls
-  Opp:   11 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: First Main (turn 12)
+  Self:  20 life | mana: empty | hand(3): Wooded Foothills, Scalding Tarn, Thundering Falls | lib 37
+  Opp:   11 life | mana: empty | hand count: 5 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
@@ -1984,13 +2324,17 @@
 
 --- Decision 104 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls
-  Opp:   11 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Island | Mountain | Wooded Foothills | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: First Main (turn 12)
+  Self:  20 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls | lib 37
+  Opp:   11 life | mana: empty | hand count: 5 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Wooded Foothills | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wooded Foothills (ChangeZone)
@@ -2004,14 +2348,19 @@
 
 --- Decision 105 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls
-  Opp:   11 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1]
+  Step: First Main (turn 12)
+  Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls | lib 37
+  Opp:   11 life | mana: empty | hand count: 5 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Stack: Wooded Foothills (ability, self)
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Pending: Wooded Foothills (self)
+  Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Volcanic Island
@@ -2028,13 +2377,17 @@
 
 --- Decision 106 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls
-  Opp:   11 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: Declare Atk (turn 12)
+  Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls | lib 36
+  Opp:   11 life | mana: empty | hand count: 5 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2050,13 +2403,17 @@
 
 --- Decision 107 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Declare Blk (turn 12)
+  Self:  11 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: opp_lands_played=1, opp_revolt, mandatory_choice=Declare Blk
   Actions:
    0: Scryb Ranger [1/1]
    1: Confirm blockers
@@ -2075,13 +2432,16 @@
 
 --- Decision 108 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Upkeep (turn 13)
+  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 47
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -2091,13 +2451,16 @@
 
 --- Decision 109 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  5 life | mana: empty | hand(6): Knight of the Reliquary, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Draw (turn 13)
+  Self:  5 life | mana: empty | hand(6): Knight of the Reliquary, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -2105,13 +2468,16 @@
 
 --- Decision 110 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(6): Knight of the Reliquary, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: First Main (turn 13)
+  Self:  5 life | mana: empty | hand(6): Knight of the Reliquary, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2130,14 +2496,17 @@
 
 --- Decision 111 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Step: First Main (turn 13)
+  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Stack: Knight of the Reliquary (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -2147,14 +2516,18 @@
 
 --- Decision 112 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Step: First Main (turn 13)
+  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Stack: Knight of the Reliquary (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Pending: Scryb Ranger (self)
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -2167,14 +2540,17 @@
 
 --- Decision 113 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Step: First Main (turn 13)
+  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Stack: Knight of the Reliquary (spell, self)
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Return Dryad Arbor to hand
    1: Return Savannah to hand
@@ -2189,13 +2565,17 @@
 
 --- Decision 114 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(6): Dryad Arbor, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: First Main (turn 13)
+  Self:  5 life | mana: empty | hand(6): Dryad Arbor, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Dryad Arbor
@@ -2210,13 +2590,17 @@
 
 --- Decision 115 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Declare Atk (turn 13)
+  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
    1: Confirm attackers
@@ -2235,13 +2619,16 @@
 
 --- Decision 116 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Volcanic Island, Scalding Tarn, Thundering Falls
-  Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1]
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: First Main (turn 14)
+  Self:  19 life | mana: empty | hand(3): Volcanic Island, Scalding Tarn, Thundering Falls | lib 35
+  Opp:   5 life | mana: empty | hand count: 5 | lib 46
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -2258,13 +2645,17 @@
 
 --- Decision 117 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls
-  Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1]
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Step: Declare Atk (turn 14)
+  Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls | lib 35
+  Opp:   5 life | mana: empty | hand count: 5 | lib 46
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Savannah, Scryb Ranger, Swords to Plowshares
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2280,13 +2671,17 @@
 
 --- Decision 118 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Declare Blk (turn 14)
+  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
   Actions:
    0: Scryb Ranger [1/1]
    1: Confirm blockers
@@ -2296,13 +2691,17 @@
 
 --- Decision 119 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1]
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Declare Blk (turn 14)
+  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [3/3]
    1: Dragon's Rage Channeler [3/3]
@@ -2318,13 +2717,17 @@
 
 --- Decision 120 ---
   Priority: Player A (non-active)
-  Step: Declare Blk
-  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] (BLK)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Declare Blk (turn 14)
+  Self:  5 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (BLK->Dragon's Rage Channeler)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK,BLOCKED) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> A/A: 0 (Confirm blockers)
@@ -2344,13 +2747,16 @@
 
 --- Decision 121 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Dryad Arbor [1/1] | Knight of the Reliquary [3/3] | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Upkeep (turn 15)
+  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 46
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Knight of the Reliquary [3/3] | Savannah
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)
@@ -2360,13 +2766,16 @@
 
 --- Decision 122 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  2 life | mana: empty | hand(6): Noble Hierarch, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Dryad Arbor [1/1] | Knight of the Reliquary [3/3] | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: Draw (turn 15)
+  Self:  2 life | mana: empty | hand(6): Noble Hierarch, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 45
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Knight of the Reliquary [3/3] | Savannah
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)
@@ -2374,13 +2783,16 @@
 
 --- Decision 123 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(6): Noble Hierarch, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Dryad Arbor [1/1] | Knight of the Reliquary [3/3] | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: First Main (turn 15)
+  Self:  2 life | mana: empty | hand(6): Noble Hierarch, Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 45
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Knight of the Reliquary [3/3] | Savannah
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2397,14 +2809,17 @@
 
 --- Decision 124 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Dryad Arbor [1/1] (T) | Knight of the Reliquary [3/3] | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Step: First Main (turn 15)
+  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 45
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T) | Knight of the Reliquary [3/3] | Savannah
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Stack: Noble Hierarch (spell, self)
-  Self GY: Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)
@@ -2412,14 +2827,17 @@
 
 --- Decision 125 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Dryad Arbor [1/1] (T) | Knight of the Reliquary [3/3] (T) | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Step: First Main (turn 15)
+  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 45
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T) | Knight of the Reliquary [3/3] (T) | Savannah
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Stack: Noble Hierarch (spell, self)
-  Self GY: Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Sacrifice Dryad Arbor
    1: Sacrifice Savannah
@@ -2432,14 +2850,19 @@
 
 --- Decision 126 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Knight of the Reliquary [4/4] (T) | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Stack: Knight of the Reliquary (ability, self) -> Noble Hierarch (spell, self)
-  Self GY: Dryad Arbor, Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: First Main (turn 15)
+  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 45
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] | Knight of the Reliquary [4/4] (T) | Savannah
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Noble Hierarch (spell, self)
+  Pending: Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: self_revolt
   Actions:
    0: Fail to find
    1: Forest
@@ -2466,13 +2889,17 @@
 
 --- Decision 127 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] | Forest | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Dryad Arbor, Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: First Main (turn 15)
+  Self:  2 life | mana: empty | hand(5): Savannah, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Windswept Heath | lib 44
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] | Forest | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2489,13 +2916,17 @@
 
 --- Decision 128 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 2
-  Self BF:  Birds of Paradise [0/1] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Thalia, Guardian of Thraben [2/1] (SICK)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Dryad Arbor, Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
-  Opp GY:  Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
+  Step: First Main (turn 15)
+  Self:  2 life | mana: empty | hand(4): Savannah, Wasteland, Windswept Heath, Windswept Heath | lib 44
+  Opp:   19 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Self GY: Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Self exile: Green Sun's Zenith
+  Opp exile:  Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2517,13 +2948,16 @@
 
 --- Decision 129 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(3): Delver of Secrets, Scalding Tarn, Thundering Falls
-  Opp:   2 life | mana: empty | hand count: 3
-  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] (SICK)
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
+  Step: First Main (turn 16)
+  Self:  19 life | mana: empty | hand(3): Delver of Secrets, Scalding Tarn, Thundering Falls | lib 34
+  Opp:   2 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2537,13 +2971,16 @@
 
 --- Decision 130 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls
-  Opp:   2 life | mana: empty | hand count: 3
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] (SICK)
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
+  Step: First Main (turn 16)
+  Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls | lib 34
+  Opp:   2 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2554,13 +2991,17 @@
 
 --- Decision 131 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(1): Thundering Falls
-  Opp:   2 life | mana: empty | hand count: 3
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island | Scalding Tarn
-  Opp BF:   Birds of Paradise [0/1] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] (SICK)
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
+  Step: First Main (turn 16)
+  Self:  19 life | mana: empty | hand(1): Thundering Falls | lib 34
+  Opp:   2 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island | Scalding Tarn
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)
@@ -2574,14 +3015,19 @@
 
 --- Decision 132 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(1): Thundering Falls
-  Opp:   2 life | mana: empty | hand count: 3
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] (SICK)
+  Step: First Main (turn 16)
+  Self:  18 life | mana: empty | hand(1): Thundering Falls | lib 34
+  Opp:   2 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Stack: Scalding Tarn (ability, self)
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
+  Pending: Scalding Tarn (self)
+  Self GY: Scalding Tarn, Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
   >> B/B: 0 (Fail to find)
@@ -2596,13 +3042,17 @@
 
 --- Decision 133 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(1): Thundering Falls
-  Opp:   2 life | mana: empty | hand count: 3
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] (ATK) | Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Birds of Paradise [0/1] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] (SICK)
-  Self GY: Murktide Regent, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Polluted Delta, Wooded Foothills, Scalding Tarn, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Horizon Canopy, Scryb Ranger, Swords to Plowshares
+  Step: Declare Atk (turn 16)
+  Self:  18 life | mana: empty | hand(1): Thundering Falls | lib 34
+  Opp:   2 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island (T) | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
+  Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Scalding Tarn, Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Self exile: Dragon's Rage Channeler
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)

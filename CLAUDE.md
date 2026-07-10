@@ -646,14 +646,19 @@ layout block — don't hardcode them here):
 
 **BQUERY format:**
 ```
-BQUERY: <N>\n
+BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 [float32 × STATE_SIZE  — state vector]
 [int32   × MAX_ACTIONS — action categories (padded)]
 [float32 × MAX_ACTIONS — action card IDs (padded)]
 [float32 × MAX_ACTIONS — action controller_is_self flags (padded)]
 [float32 × MAX_ACTIONS — action card_is_public flags (padded)]
+[int32   × MAX_ACTIONS — action zone_ref (ActionRefZone; padded)]
+[int32   × MAX_ACTIONS — action slot_ref (entity-reference slot, -1 = none; padded)]
 ```
-- `N` = number of legal choices
+- `N` = number of legal choices; the trailing `STATE_SIZE`/`MAX_ACTIONS` are a runtime
+  layout handshake (the Python driver asserts them against its own imported constants so a
+  C++ layout change without regenerated Python constants fails loudly instead of misframing
+  the payload)
 - State vector: `STATE_SIZE` floats, serialized from the **priority player's** ("self") perspective
 - Action categories: `ActionCategory` enum integers
 - Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` as null sentinel
@@ -666,7 +671,7 @@ BQUERY: <N>\n
   float per slot (`norm_card_id`), *not* a one-hot.
 - **`ActionCategory` values and meanings** — the enum in `src/classes/action.h` (mirrored to
   Python by codegen in `train/_enums.py`; `ACTION_CATEGORY_MAX` is generated from it).
-- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + 3*MAX_ACTIONS` metadata +
+- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + 5*MAX_ACTIONS` metadata +
   hand/battlefield cost features) — `train/env.py`.
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
@@ -696,17 +701,18 @@ BQUERY: <N>\n
   (decks resolve relative to `bin/resources/decks/`; W/L/D summary to stdout, any draw is a finding).
 - `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
-- `train/test_sideboard_mask.py` — standalone regression script for the bo3 sideboard-observation
-  fixes: env-side masking of the stale prior game's board (`RoboMageEnv`), the pending-decision
-  context slots identifying the chosen IN card during the OUT query, and the history/action
-  controller-flag repoint to the sideboarding seat. Not wired into `ci_check.py` or the Makefile —
-  run manually after touching bo3 sideboard handling: `train/.venv/bin/python train/test_sideboard_mask.py`
-- `train/test_revealed_accumulator.py` — standalone regression script for the opponent
-  revealed-cards multi-hot accumulator (the engine's belief-state tracking of cards the opponent
-  has ever revealed): empty-start, single-game reveal-and-persist, negative (library-only) case,
-  tutor reveal to a hidden zone, and cross-game persistence across a bo3 reset. Not wired into
-  `ci_check.py` or the Makefile — run manually after touching revealed-card tracking:
-  `train/.venv/bin/python train/test_revealed_accumulator.py`
+- `train/test_obs_invariants.py` — standalone regression script asserting per-decision structural
+  invariants on the RAW machine-mode observation state vector across a few seeded scripted games
+  (delver vs maverick, exile-heavy bw_dnt vs delver, and a Yorion companion probe). Checks: every
+  card-id-family float (perm card/chosen-name/returnable ids, stack + target ids, GY/exile/hand/
+  known-top/known-opp-hand slots, pending-decision, history) decodes to `-1` or `[0, N_CARD_TYPES)`;
+  every `norm_ref` float round-trips into `[-1, 107]`; GY/exile blocks are recency-packed with no
+  holes; a returnable-exile id implies that card is in an exile block; `chosen_name` only on
+  non-empty slots; the step one-hot sums to 1 and the mandatory-choice one-hot to ≤1; player
+  life/hand/library counts are finite and non-negative; a declared companion is revealed to the
+  opponent for the whole game proper. Every offset/constant is imported from `env`/`_enums` (zero
+  magic numbers, so it is layout-change-proof). **Wired into `ci_check.py` as the `obsinv` tier, so
+  `make check` runs it**; also runnable standalone: `train/.venv/bin/python train/test_obs_invariants.py`
 - `src/machine_io.h` — state vector layout documentation and constants
 - `src/input_logger.cpp` — machine mode BQUERY emission, replay, and CLI input handling
 - `src/card_vocab.h` — card name → vocab index mapping for one-hot encoding

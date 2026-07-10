@@ -435,9 +435,11 @@ inline bool on_battlefield(Entity e) {
 // it (or battlefield_permanents() below) over open-coding the
 // Permanent+Zone+BATTLEFIELD(+phased)(+controller) check, so the phasing rule lives in
 // exactly one place. The only code that should read Permanent::is_phased_out directly
-// is the phasing subsystem itself (the untap-step phase-in/skip in game.cpp) and the
+// is the phasing subsystem itself (the untap-step phase-in/skip in game.cpp), the
 // rare loop that must still process phased-out permanents (e.g. resetting their cached
-// P/T before skipping them when gathering static abilities).
+// P/T before skipping them when gathering static abilities), and the ML serialization
+// (machine_io.cpp's populate_gamestate), which deliberately INCLUDES phased-out
+// permanents in the observation with an is_phased_out flag instead of hiding them.
 inline bool is_battlefield_permanent(Entity e, Zone::Ownership ctrl = Zone::UNKNOWN) {
     if (!global_coordinator.entity_has_component<Permanent>(e)) return false;
     if (!global_coordinator.entity_has_component<Zone>(e)) return false;
@@ -458,6 +460,23 @@ inline std::vector<Entity> battlefield_permanents(
         if (is_battlefield_permanent(e, ctrl)) out.push_back(e);
     return out;
 }
+
+// The most recently exiled card linked to `host` (Permanent::exiled_with) that STILL has a live
+// "return it from exile" path scheduled in cur_game.delayed_triggers, or 0 if none. This
+// distinguishes an exile-with-return host (a Static Prison holding a real Murktide) from a
+// permanent exiler with no return (Skyclave Apparition) or one holding a token. Two return
+// shapes exist (see effect_change_zone.cpp / effect_delayed_trigger.cpp):
+//   (A) "exile until host leaves" (Static Prison, Sheltered by Ghosts): a fire_on_leave_battlefield
+//       trigger watching `host`, whose ChangeZone fire ability moves the card EXILE -> its origin,
+//       with the card in the fire ability's restore_remembered_exiled_with.
+//   (B) end-of-turn blink (Flickerwisp / Phelia): a phase-based trigger whose ChangeZone fire
+//       ability moves the card EXILE -> battlefield, with the card in the trigger's
+//       remembered_objects (also mirrored into restore_remembered_exiled_with).
+// Skyclave Apparition / Keen-Eyed Curator populate exiled_with but register NO such trigger, so
+// they return 0. Conservative: any ChangeZone delayed trigger that would move the card OUT of exile
+// (origin EXILE, destination != EXILE) and references that card counts as a return path. Defined in
+// game_queries.cpp (needs cur_game.delayed_triggers).
+Entity returnable_exiled_card(Entity host);
 
 // Unblocked attackers controlled by `ctrl` (CR 509.1h): battlefield creatures that are
 // attacking and were not blocked at declare-blockers. Used to gate and pay Ninjutsu

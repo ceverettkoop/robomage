@@ -11,36 +11,59 @@ Two coordinate systems appear here:
   * `state` — the first STATE_SIZE floats of an observation (the perspective-
     normalised game state). All zone decoders below operate on `state`.
   * `obs`   — the full observation: `state` followed by the per-action metadata
-    (categories, card ids, controller flags). The `action_*` helpers read that
-    appended block.
+    (categories, card ids, controller flags, zone refs, entity-slot refs). The
+    `action_*` helpers read that appended block.
 """
 
 import numpy as np
 
 from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
-                 _GY_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
+                 _GY_START, _EXILE_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
+                 _PERM_SLOTS, _PERM_CARD_OFF, _PERM_CHOSEN_NAME_OFF,
+                 _PERM_RETURNABLE_OFF,
+                 N_ENTITY_REF_SLOTS,
                  _STACK_SLOT_SIZE, _STACK_SLOTS, _STACK_MODE_SLOTS,
+                 _STACK_XAMT_OFF, _STACK_QUAL_START, _STACK_QUALS,
+                 _STACK_MODE_START, _STACK_TGT_START,
                  _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
                  _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
+                 _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
+                 _KNOWN_TOP_LIB_SLOT_SIZE, _REVEALED_START, _REVEALED_SIZE,
+                 _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
+                 _OPP_KNOWN_HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
+                 MAX_GY_SLOTS, MANDATORY_CATS,
                  _PENDING_DECISION_START, _MATCH_CTX_START,
                  _SELF_BLOCK_START, _OPP_BLOCK_START,
                  _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
                  _IS_ACTIVE_IDX, _SELF_IS_A_IDX, _STACK_SIZE_IDX,
+                 _OFF_P1P1_NET, _OFF_OTHER_COUNTERS, _OFF_ATTACHED_TO,
+                 _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
+                 _OFF_IS_BLOCKED, _OFF_IS_PHASED_OUT, _OFF_KEYWORDS_START,
+                 _EXTRAS_LANDS_SELF, _EXTRAS_LANDS_OPP, _EXTRAS_HAS_PRIORITY,
+                 _EXTRAS_MONARCH_SELF, _EXTRAS_MONARCH_OPP,
+                 _EXTRAS_BLESSING_SELF, _EXTRAS_BLESSING_OPP,
+                 _EXTRAS_REVOLT_SELF, _EXTRAS_REVOLT_OPP,
+                 _EXTRAS_EXTRA_TURNS_SELF, _EXTRAS_EXTRA_TURNS_OPP,
+                 _EXTRAS_IS_DAY, _EXTRAS_IS_NIGHT, _EXTRAS_MC_ONEHOT_START,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
                         _CARD_COST_MATRIX, _LAND_VOCAB_IDS)
 
 # ── Engine constants (card identity is a single normalized id float per slot) ──
-STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + modes + targets (25)
+STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + x/quals + modes + targets (37)
 GY_SLOT_SIZE = _GY_SLOT_SIZE                       # card-id only
-_OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE      # opp graveyard begins after 64 self slots
+_OPP_GY_START = _GY_START + MAX_GY_SLOTS * GY_SLOT_SIZE  # opp gy begins after the self slots
+# Exile blocks mirror the graveyard layout (MAX_GY_SLOTS card-id slots per side,
+# recency-ordered); the shared _decode_graveyard decoder handles them too.
+_OPP_EXILE_START = _EXILE_START + MAX_GY_SLOTS * GY_SLOT_SIZE  # opp exile after the self slots
 
 # State-vector context indices (derived from env layout)
 _IDX_SELF_LIB = _LIBRARY_CTX_START                 # self_library_ct / 60
 _IDX_OPP_LIB = _LIBRARY_CTX_START + 1              # opp_library_ct  / 60
+_IDX_POST_BOARD = _LIBRARY_CTX_START + 2           # is_post_board (0/1; game 2+ of bo3)
 _IDX_TURN = _CUR_TURN_IDX                          # turn / 50
 
 # Bo3 match-context indices (self-perspective; see src/machine_io.h layout).
@@ -49,7 +72,9 @@ _IDX_SELF_WINS   = _MATCH_CTX_START + 1            # self_match_wins / 2
 _IDX_OPP_WINS    = _MATCH_CTX_START + 2            # opp_match_wins  / 2
 _IDX_SIDEBOARD   = _MATCH_CTX_START + 3            # is_sideboard_phase (0/1)
 
-# Permanent slot field offsets
+# Permanent slot field offsets (src/machine_io.h perm-slot layout; the enriched
+# fields at 11-18, the keyword multi-hot at 19-34 and the card id at 35 are
+# imported from env.py above — _OFF_P1P1_NET .. _OFF_KEYWORDS_START).
 _OFF_POWER = 0
 _OFF_TOUGHNESS = 1
 _OFF_TAPPED = 2
@@ -61,18 +86,41 @@ _OFF_CTRL = 7
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND = 9
 _OFF_LOYALTY = 10                                  # planeswalker loyalty (loyalty/10)
-_OFF_CARD_ID = 11                                  # offset of the card-id float within a permanent slot
+_OFF_CHOSEN_NAME = _PERM_CHOSEN_NAME_OFF           # chosen-name card-id float (3rd-last in the slot, 35)
+_OFF_RETURNABLE = _PERM_RETURNABLE_OFF             # returnable-exile card-id float (2nd-last in the slot, 36)
+_OFF_CARD_ID = _PERM_CARD_OFF                      # card-id float, always LAST in the slot (37)
+
+# Stack-slot cast-qualifier display names, in serialized order (the stack slot's
+# [4-10] flags; see src/machine_io.h). All 0.0 for abilities.
+_STACK_QUAL_NAMES = ("copy", "kicked", "flashback", "evoke", "escape",
+                     "offspring", "impending")
 
 _NULL_SENTINEL = _ACTION_CARD_ID_NULL              # -1.0 / N_CARD_TYPES
 _TOKEN_IDX = N_CARD_TYPES - 1
 
-# Action-metadata categories that constitute a mandatory attacker/blocker loop.
-MANDATORY_CATS = frozenset({2, 3, 4, 5})
+# MANDATORY_CATS (the mandatory attacker/blocker loop categories) is defined
+# once in env.py, built from the generated CAT_* names, and imported above so
+# there is a single source for it.
 
-# Action-category / step / zone-ref display names are generated from the C++
-# enums by train/gen_enums.py — the single source of truth for both the integer
-# values and these names. Re-run that script after changing the C++ enums.
-from _enums import _CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX  # noqa: E402
+# Action-category / step / zone-ref display names AND the name-keyed CAT_*
+# integers are generated from the C++ enums by train/gen_enums.py — the single
+# source of truth for both the values and these names. Re-run it after changing
+# the C++ enums.
+from _enums import (_CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX,  # noqa: E402
+                    _MC_NAMES, _OBS_KEYWORDS,
+                    CAT_PASS_PRIORITY, CAT_CAST_SPELL, CAT_PLAY_LAND,
+                    CAT_ACTIVATE_ABILITY, CAT_SELECT_TARGET, CAT_SELECT_ATTACKER,
+                    CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
+                    CAT_CONFIRM_BLOCKERS, CAT_MULLIGAN, CAT_BOTTOM_DECK_CARD,
+                    CAT_MANA_W, CAT_MANA_C, CAT_SEARCH_LIBRARY, CAT_TOP_LIBRARY,
+                    CAT_PAYING_COSTS, CAT_DIG_CHOICE, CAT_OTHER_CHOICE)
+
+# Categories whose choice references a specific board/stack entity, where an
+# "@slotN" suffix disambiguates same-named cards: select attacker/blocker,
+# activate, target, pay cost.
+_SLOT_REF_CATS = frozenset({CAT_SELECT_ATTACKER, CAT_SELECT_BLOCKER,
+                            CAT_ACTIVATE_ABILITY, CAT_SELECT_TARGET,
+                            CAT_PAYING_COSTS})
 
 _MANA_COLORS = ("W", "U", "B", "R", "G", "C")
 
@@ -173,6 +221,42 @@ def onehot_to_index(state, base):
     """Decode the card-id float at `base` to its vocab index, or -1 if empty."""
     idx = _slot_card_idx(state, base)
     return idx if idx >= 0 else -1
+
+
+# ── Entity-slot references ────────────────────────────────────────────────────
+# Unified viewer-relative slot space (src/machine_io.h norm_ref): 0-47 self perm
+# slots, 48-95 opp perm slots, 96-107 stack slots (0 = top), -1 = none. In the
+# float state vector (and the obs action refs block) a ref is normalized
+# (idx + 1) / N_ENTITY_REF_SLOTS, so 0.0 is the "none" sentinel.
+
+def decode_slot_ref(val):
+    """Decode a normalized entity-slot ref float to its slot index (-1 = none)."""
+    return int(round(float(val) * N_ENTITY_REF_SLOTS)) - 1
+
+
+def slot_ref_card_name(state, ref):
+    """Resolve an entity-slot ref to the referenced slot's card name, or None.
+
+    Reads the perm/stack sections of `state`; an out-of-range ref or an empty
+    referenced slot yields None."""
+    if ref < 0:
+        return None
+    if ref < _PERM_SLOTS:                      # self permanent slot
+        base = _SELF_PERM_START + ref * PERM_SLOT_SIZE + _OFF_CARD_ID
+    elif ref < 2 * _PERM_SLOTS:                # opp permanent slot
+        base = _OPP_PERM_START + (ref - _PERM_SLOTS) * PERM_SLOT_SIZE + _OFF_CARD_ID
+    elif ref < N_ENTITY_REF_SLOTS:             # stack slot (card id at offset 1)
+        base = _STACK_START + (ref - 2 * _PERM_SLOTS) * STACK_SLOT_SIZE + 1
+    else:
+        return None
+    return onehot_to_card(state, base)
+
+
+def _ref_desc(state, ref):
+    """Compact display for a slot ref: the referenced card's name when it
+    resolves, else "slot N"."""
+    name = slot_ref_card_name(state, ref)
+    return name if name is not None else f"slot {ref}"
 
 
 # Border colors by MTG color, for TUI card rendering. Black renders as a muted
@@ -345,7 +429,7 @@ def decode_step(state):
     return _STEP_NAMES[idx] if idx < len(_STEP_NAMES) else f"Step({idx})"
 
 
-def _decode_permanents(state, start, count=48, counters=None, token_names=None):
+def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_names=None):
     """Decode permanent slots into a list of dicts (non-empty only).
 
     `counters` is the per-slot typed-counter summary list the engine emits
@@ -391,14 +475,57 @@ def _decode_permanents(state, start, count=48, counters=None, token_names=None):
         loyalty = int(round(state[base + _OFF_LOYALTY] * 10))
         if loyalty != 0:
             p["loyalty"] = loyalty
+        # Card name chosen on this permanent (Pithing Needle / Disruptor Flute
+        # named card, Petrified Hamlet named land); sentinel = none.
+        naming = onehot_to_card(state, base + _OFF_CHOSEN_NAME)
+        if naming is not None:
+            p["naming"] = naming
+        # Card this permanent has exiled that still has a return path (Static Prison
+        # holding a real card, Flickerwisp/Phelia EOT blink); sentinel = none.
+        holding = onehot_to_card(state, base + _OFF_RETURNABLE)
+        if holding is not None:
+            p["holding"] = holding
+        # Enriched fields (only non-default values are recorded, matching the
+        # status-flag style above so fmt_perm stays compact).
+        p1p1 = int(round(state[base + _OFF_P1P1_NET] * 10))
+        if p1p1 != 0:
+            p["p1p1"] = p1p1                      # net +1/+1 counters, signed
+        other_ctrs = int(round(state[base + _OFF_OTHER_COUNTERS] * 10))
+        if other_ctrs != 0:
+            p["other_counters"] = other_ctrs
+        ref = decode_slot_ref(state[base + _OFF_ATTACHED_TO])
+        if ref >= 0:                              # equipment/aura: its host
+            p["attached_to"] = _ref_desc(state, ref)
+            p["attached_to_slot"] = ref
+        ref = decode_slot_ref(state[base + _OFF_ATTACHED_BY])
+        if ref >= 0:                              # host: its equipment/aura
+            p["attached_by"] = _ref_desc(state, ref)
+            p["attached_by_slot"] = ref
+        ref = decode_slot_ref(state[base + _OFF_ATTACK_TGT])
+        if ref >= 0:                              # attacked planeswalker (else: the player)
+            p["attack_target"] = _ref_desc(state, ref)
+            p["attack_target_slot"] = ref
+        ref = decode_slot_ref(state[base + _OFF_BLOCKING_TGT])
+        if ref >= 0:                              # the attacker this blocker blocks
+            p["blocking_target"] = _ref_desc(state, ref)
+            p["blocking_target_slot"] = ref
+        if state[base + _OFF_IS_BLOCKED] > 0.5:
+            p["blocked"] = True                   # attacker was blocked (CR 509.1h)
+        if state[base + _OFF_IS_PHASED_OUT] > 0.5:
+            p["phased_out"] = True
+        kws = [_OBS_KEYWORDS[k] for k in range(len(_OBS_KEYWORDS))
+               if state[base + _OFF_KEYWORDS_START + k] > 0.5]
+        if kws:
+            p["keywords"] = kws
         perms.append(p)
     return perms
 
 
 def _decode_hand(state):
-    """Decode self hand (10 slots x 128 one-hot) into a list of dicts."""
+    """Decode self hand (MAX_HAND_SLOTS slots, 1 normalized card-id float each)
+    into a list of dicts."""
     cards = []
-    for i in range(10):
+    for i in range(MAX_HAND_SLOTS):
         idx = onehot_to_index(state, _HAND_START + i * _HAND_SLOT_SIZE)
         if idx >= 0:
             cards.append({"name": card_index_to_name(idx), "card_idx": idx})
@@ -406,50 +533,109 @@ def _decode_hand(state):
 
 
 def _decode_graveyard(state, start):
-    """Decode a graveyard zone (64 slots x 128 one-hot) into card names."""
+    """Decode a graveyard zone (MAX_GY_SLOTS slots, 1 normalized card-id float
+    each) into card names."""
     cards = []
-    for i in range(64):
+    for i in range(MAX_GY_SLOTS):
         card = onehot_to_card(state, start + i * GY_SLOT_SIZE)
         if card is not None:
             cards.append(card)
     return cards
 
 
+def _decode_known_top_library(state):
+    """Decode the viewer's known top-of-library block (belief state).
+
+    Returns a list of one entry per known-window slot (index 0 = top), each a
+    card name or "?" for an unknown (sentinel) slot, but ONLY when at least one
+    slot is known; otherwise returns [] so callers can hide the block. Set by
+    Ponder/Brainstorm/Rearrange/Sylvan, cleared to unknown on shuffle."""
+    names = []
+    any_known = False
+    for i in range(_KNOWN_TOP_LIB_SLOTS):
+        idx = onehot_to_index(state, _KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE)
+        if idx >= 0:
+            any_known = True
+            names.append(card_index_to_name(idx))
+        else:
+            names.append("?")
+    return names if any_known else []
+
+
+def _decode_opp_known_hand(state):
+    """Decode the viewer's known opponent-hand cards block (belief state).
+
+    Returns the card names of the non-sentinel slots only (identities of
+    opponent-hand cards the viewer has had revealed, e.g. by Thoughtseize);
+    empty list when nothing is known."""
+    names = []
+    for i in range(_OPP_KNOWN_HAND_SLOTS):
+        idx = onehot_to_index(state, _OPP_KNOWN_HAND_START + i * _OPP_KNOWN_HAND_SLOT_SIZE)
+        if idx >= 0:
+            names.append(card_index_to_name(idx))
+    return names
+
+
+def _decode_opp_revealed(state):
+    """Decode the opponent revealed-cards multi-hot (belief state).
+
+    Returns the card names of the set bits only — every distinct card the
+    opponent-of-viewer has ever revealed this match (entered a public zone or
+    was revealed by a tutor); empty list when none seen yet."""
+    names = []
+    for idx in range(_REVEALED_SIZE):
+        if state[_REVEALED_START + idx] > 0.5:
+            names.append(card_index_to_name(idx))
+    return names
+
+
 def _decode_stack(state, labels=SELF_OPP_LABELS):
-    """Decode the stack (12 slots x 25: ctrl + card id + is_spell + chosen-mode
-    multi-hot(6) + 4 announced-target sub-slots of [present, is_player, ctrl, card id])."""
+    """Decode the stack (12 slots x 37: ctrl + card id + is_spell + x_or_amount +
+    cast-qualifier flags(7) + chosen-mode multi-hot(6) + 4 announced-target
+    sub-slots of [present, is_player, ctrl, slot_ref, card id])."""
     entries = []
     for i in range(_STACK_SLOTS):
         base = _STACK_START + i * STACK_SLOT_SIZE
         idx = onehot_to_index(state, base + 1)  # skip controller_is_self float
         if idx < 0:
             continue
-        modes = [m for m in range(_STACK_MODE_SLOTS) if state[base + 3 + m] > 0.5]
+        is_spell = state[base + 2] > 0.5
+        x_amt = int(round(state[base + _STACK_XAMT_OFF] * 10))
+        quals = [_STACK_QUAL_NAMES[q] for q in range(_STACK_QUALS)
+                 if state[base + _STACK_QUAL_START + q] > 0.5]
+        modes = [m for m in range(_STACK_MODE_SLOTS)
+                 if state[base + _STACK_MODE_START + m] > 0.5]
         targets = []
         target_refs = []
         for t in range(_STACK_TGT_SLOTS):
-            tbase = base + 3 + _STACK_MODE_SLOTS + t * _STACK_TGT_FIELDS
+            tbase = base + _STACK_TGT_START + t * _STACK_TGT_FIELDS
             if state[tbase] < 0.5:  # present flag
                 continue
             is_self = state[tbase + 2] > 0.5
             is_player = state[tbase + 1] > 0.5
+            slot = decode_slot_ref(state[tbase + 3])   # -1 for players / non-serialized
             ctrl = labels["self"] if is_self else labels["opponent"]
-            tidx = -1 if is_player else onehot_to_index(state, tbase + 3)
+            tidx = -1 if is_player else onehot_to_index(state, tbase + 4)
             if is_player:
                 targets.append(f"{ctrl} (player)")
             else:
                 tname = card_index_to_name(tidx) if tidx >= 0 else "?"
-                targets.append(f"{tname} ({ctrl})")
+                slot_str = f", slot {slot}" if slot >= 0 else ""
+                targets.append(f"{tname} ({ctrl}{slot_str})")
             # Structured form for UIs that highlight the target on the board.
             # `is_self` is viewer-relative (like the rest of the state vector); a
             # mirrored decode must flip it to the human frame at the call site.
+            # `slot` is the target's entity-slot ref (-1 = none/player), which
+            # disambiguates two same-named permanents.
             target_refs.append({"is_player": is_player, "is_self": is_self,
-                                "card_idx": tidx})
+                                "card_idx": tidx, "slot": slot})
         entries.append({
             "name": card_index_to_name(idx),
             "card_idx": idx,
             "controller": labels["self"] if state[base] > 0.5 else labels["opponent"],
-            "is_spell": state[base + 2] > 0.5,
+            "is_spell": is_spell,
+            "x_or_amount": x_amt,  # spell: X paid at cast; ability: its amount
+            "qualifiers": quals,   # set cast-qualifier names (empty = plain cast)
             "modes": modes,       # chosen modal mode indices (empty = not modal)
             "targets": targets,   # announced targets, human-readable
             "target_refs": target_refs,  # structured targets (see note above)
@@ -492,27 +678,87 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
             state, _OPP_PERM_START,
             counters=perm_counters[1] if perm_counters else None,
             token_names=perm_token_names[1] if perm_token_names else None),
+        # NOTE: the action-history ring ([4394-4905] in src/machine_io.h — 128
+        # entries x 4 floats) is DELIBERATELY not decoded here. It is bulky, only
+        # useful for the policy network's temporal context, and never surfaced in
+        # the human-readable board dump; it is the one intentional coverage skip.
         "stack": _decode_stack(state, labels),
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
         "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
+        "self_exile": _decode_graveyard(state, _EXILE_START),
+        "opp_exile": _decode_graveyard(state, _OPP_EXILE_START),
+        "known_top_library": _decode_known_top_library(state),
+        "opp_known_hand": _decode_opp_known_hand(state),
+        "opp_revealed": _decode_opp_revealed(state),
         "pending_decision": _decode_pending_decision(state),
         "match": _decode_match_context(state),
+        "extras": _decode_extras(state),
     }
+
+
+def _decode_extras(state):
+    """Decode the global-extras block into a dict of NON-DEFAULT values only.
+
+    Keys are present only when the value differs from its default (0 / False /
+    priority held), so an empty dict means "nothing notable" and callers can
+    render it compactly. Boolean keys hold True when set; `has_priority` is the
+    one inverted case — it appears (as False) only when the viewer does NOT
+    hold priority. `mandatory_choice` is the pending MandatoryChoice display
+    name (_MC_NAMES; absent when NONE)."""
+    ex = {}
+    lands = int(round(float(state[_EXTRAS_LANDS_SELF]) * 10))
+    if lands:
+        ex["self_lands_played"] = lands
+    lands = int(round(float(state[_EXTRAS_LANDS_OPP]) * 10))
+    if lands:
+        ex["opp_lands_played"] = lands
+    if state[_EXTRAS_HAS_PRIORITY] < 0.5:
+        ex["has_priority"] = False
+    if state[_EXTRAS_MONARCH_SELF] > 0.5:
+        ex["self_monarch"] = True
+    if state[_EXTRAS_MONARCH_OPP] > 0.5:
+        ex["opp_monarch"] = True
+    if state[_EXTRAS_BLESSING_SELF] > 0.5:
+        ex["self_citys_blessing"] = True
+    if state[_EXTRAS_BLESSING_OPP] > 0.5:
+        ex["opp_citys_blessing"] = True
+    if state[_EXTRAS_REVOLT_SELF] > 0.5:
+        ex["self_revolt"] = True
+    if state[_EXTRAS_REVOLT_OPP] > 0.5:
+        ex["opp_revolt"] = True
+    turns = int(round(float(state[_EXTRAS_EXTRA_TURNS_SELF]) * 3))
+    if turns:
+        ex["self_extra_turns"] = turns
+    turns = int(round(float(state[_EXTRAS_EXTRA_TURNS_OPP]) * 3))
+    if turns:
+        ex["opp_extra_turns"] = turns
+    if state[_EXTRAS_IS_DAY] > 0.5:
+        ex["day"] = True
+    if state[_EXTRAS_IS_NIGHT] > 0.5:
+        ex["night"] = True
+    mc_vec = state[_EXTRAS_MC_ONEHOT_START:_EXTRAS_MC_ONEHOT_START + len(_MC_NAMES)]
+    mc = int(np.argmax(mc_vec))
+    if mc > 0 and mc_vec[mc] > 0.5:               # NONE (index 0) is the default
+        ex["mandatory_choice"] = _MC_NAMES[mc]
+    return ex
 
 
 def _decode_match_context(state):
     """Decode the bo3 match-context block (self-perspective).
 
-    Returns {"game_number", "self_wins", "opp_wins", "is_sideboard"}. In a
-    single-game (bo1) match every field is 0 / False, so callers can treat a
-    game_number of 0 as "not a bo3 match". self_wins/opp_wins are viewer-relative
-    (like the rest of the state vector) — a mirrored decode must swap them."""
+    Returns {"game_number", "self_wins", "opp_wins", "is_sideboard",
+    "is_post_board"}. In a single-game (bo1) match every field is 0 / False, so
+    callers can treat a game_number of 0 as "not a bo3 match". is_post_board is
+    True in game 2+ of a bo3 (a game played after sideboarding). self_wins/opp_wins
+    are viewer-relative (like the rest of the state vector) — a mirrored decode
+    must swap them."""
     return {
         "game_number": int(round(float(state[_IDX_GAME_NUMBER]) * 3)),
         "self_wins": int(round(float(state[_IDX_SELF_WINS]) * 2)),
         "opp_wins": int(round(float(state[_IDX_OPP_WINS]) * 2)),
         "is_sideboard": float(state[_IDX_SIDEBOARD]) > 0.5,
+        "is_post_board": float(state[_IDX_POST_BOARD]) > 0.5,
     }
 
 
@@ -558,6 +804,18 @@ def action_zone_refs(obs, num_choices=MAX_ACTIONS):
     return np.round(raw * REF_ZONE_MAX).astype(int)
 
 
+def action_slot_refs(obs, num_choices=MAX_ACTIONS):
+    """Integer entity-slot ref per legal action (-1 = no referenced entity).
+
+    Fifth action-metadata block (cats|ids|ctrl|zone|refs): the slot in the
+    unified entity-reference space (0-47 self perms, 48-95 opp perms, 96-107
+    stack) of the choice's source entity, normalized like the in-state ref
+    fields ((idx + 1) / N_ENTITY_REF_SLOTS, 0.0 = none).
+    """
+    raw = obs[STATE_SIZE + 4 * MAX_ACTIONS: STATE_SIZE + 4 * MAX_ACTIONS + num_choices]
+    return (np.round(raw * N_ENTITY_REF_SLOTS) - 1).astype(int)
+
+
 def _ctrl_str(ctrl_val, labels=SELF_OPP_LABELS):
     """Resolve a viewer-relative controller flag to a label word, or None.
 
@@ -576,25 +834,36 @@ def _ctrl_str(ctrl_val, labels=SELF_OPP_LABELS):
     return labels["own"] if v > 0.5 else labels["opp"]
 
 
-def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
+def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS,
+                    slot_ref=-1):
     """Build a concise human-readable action description.
 
     `ctrl_str` is the already-resolved controller word (see `_ctrl_str`) and is
     used verbatim; `labels` is accepted for signature symmetry with the other
     formatters so a caller can pass one label map everywhere — it does not
     re-map an already-resolved `ctrl_str`.
+
+    `slot_ref` is the action's entity-slot ref (see `action_slot_refs`); when
+    it points at a battlefield/stack slot AND the action is one whose entity a
+    caller may need to disambiguate (target / attacker / blocker / activate /
+    pay-cost), an "@slotN" suffix is appended — two same-named permanents are
+    otherwise indistinguishable in the menu.
     """
+    suffix = (f" @slot{slot_ref}"
+              if slot_ref >= 0 and cat in _SLOT_REF_CATS else "")
+    if suffix:
+        return describe_action(cat, card_name, ctrl_str, labels) + suffix
     owner = f" ({ctrl_str})" if ctrl_str else ""
     name = card_name or ""
-    if cat == 0:
+    if cat == CAT_PASS_PRIORITY:
         return "Pass priority"
-    elif cat == 7:
+    elif cat == CAT_CAST_SPELL:
         return f"Cast {name}"
-    elif cat == 9:
+    elif cat == CAT_PLAY_LAND:
         return f"Play land: {name}"
-    elif cat == 6:
+    elif cat == CAT_ACTIVATE_ABILITY:
         return f"Activate {name}{owner}"
-    elif cat == 8:
+    elif cat == CAT_SELECT_TARGET:
         if name:
             return f"Target {name}{owner}"
         # No card → a player target. The controller word tells us which player;
@@ -605,29 +874,29 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
         if ctrl_str == labels["opp"]:
             return "Target opponent"
         return "Target player"
-    elif cat == 2:
+    elif cat == CAT_SELECT_ATTACKER:
         return f"Select attacker: {name}"
-    elif cat == 3:
+    elif cat == CAT_CONFIRM_ATTACKERS:
         return "Confirm attackers"
-    elif cat == 4:
+    elif cat == CAT_SELECT_BLOCKER:
         return f"Select blocker: {name}"
-    elif cat == 5:
+    elif cat == CAT_CONFIRM_BLOCKERS:
         return "Confirm blockers"
-    elif cat == 11:
+    elif cat == CAT_MULLIGAN:
         return f"Mulligan ({name})" if name else "Mulligan"
-    elif cat == 12:
+    elif cat == CAT_BOTTOM_DECK_CARD:
         return f"Bottom: {name}"
-    elif 13 <= cat <= 18:
-        return f"Tap {name} for {{{_MANA_COLORS[cat - 13]}}}"
-    elif cat == 19:
+    elif CAT_MANA_W <= cat <= CAT_MANA_C:
+        return f"Tap {name} for {{{_MANA_COLORS[cat - CAT_MANA_W]}}}"
+    elif cat == CAT_SEARCH_LIBRARY:
         return f"Search: {name}" if name else "Fail to find"
-    elif cat == 20:
+    elif cat == CAT_TOP_LIBRARY:
         return f"Put on top: {name}"
-    elif cat == 22:
+    elif cat == CAT_PAYING_COSTS:
         return f"Pay cost: {name}{owner}"
-    elif cat == 23:
+    elif cat == CAT_DIG_CHOICE:
         return f"Dig choice: {name}"
-    elif cat == 10:
+    elif cat == CAT_OTHER_CHOICE:
         return f"Choice: {name}{owner}" if name else "Choice"
     else:
         cat_name = _CAT_NAMES.get(cat, f"?({cat})")
@@ -635,18 +904,25 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
 
 
 def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
-                   labels=SELF_OPP_LABELS, descriptions=None, zone_refs=None):
+                   labels=SELF_OPP_LABELS, descriptions=None, zone_refs=None,
+                   slot_refs=None):
     """Decode the per-action arrays into a list of dicts.
 
     Each dict: index, category (int), category_name, card (name or None),
     card_idx (vocab index or -1), controller ('own'|'opp'|None), description,
     card_is_public (bool — card identity publicly known, e.g. a revealed tutor),
-    zone_ref (int ActionRefZone of the referenced entity, 0 = none).
+    zone_ref (int ActionRefZone of the referenced entity, 0 = none),
+    slot_ref (int entity-slot ref of the referenced entity, -1 = none).
 
     `zone_refs` is the per-action ActionRefZone array (decode.action_zone_refs /
     env side-channel); it disambiguates a card that appears in two zones at once
     (e.g. a hand card being discarded vs. a same-named battlefield permanent),
     which card_idx + controller alone cannot tell apart.
+
+    `slot_refs` is the per-action entity-slot ref array (decode.action_slot_refs):
+    which battlefield/stack SLOT the choice's source entity occupies, so two
+    same-named permanents are distinguishable. When given, entity-referencing
+    reconstructed descriptions gain an "@slotN" suffix (see `describe_action`).
 
     `public_flags` is the per-action card_is_public array (env._action_public);
     None means "unknown", treated as not-public. `labels` substitutes the
@@ -665,15 +941,18 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
         card_name = card_index_to_name(card_idx) if card_idx >= 0 else None
         ctrl_str = _ctrl_str(float(ctrl[i]), labels)
         is_public = bool(public_flags[i] > 0.5) if public_flags is not None else False
+        slot_ref = (int(slot_refs[i]) if slot_refs is not None
+                    and i < len(slot_refs) else -1)
         engine_desc = (descriptions[i] if descriptions is not None
                        and i < len(descriptions) and descriptions[i].strip() else None)
         if engine_desc is not None:
             desc = engine_desc
-        elif cat == 11:
+        elif cat == CAT_MULLIGAN:
             # Mulligan query: index 0 = keep, index 1 = mulligan.
             desc = "Keep hand" if i == 0 else "Mulligan"
         else:
-            desc = describe_action(cat, card_name, ctrl_str, labels)
+            desc = describe_action(cat, card_name, ctrl_str, labels,
+                                   slot_ref=slot_ref)
         actions.append({
             "index": i,
             "category": cat,
@@ -684,6 +963,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
             "description": desc,
             "card_is_public": is_public,
             "zone_ref": int(zone_refs[i]) if zone_refs is not None and i < len(zone_refs) else 0,
+            "slot_ref": slot_ref,
         })
     return actions
 
@@ -700,13 +980,14 @@ def decode_actions_from_obs(obs, num_choices, public_flags=None,
     return decode_actions(action_categories(obs, num_choices),
                           action_card_ids(obs), action_ctrls(obs), num_choices,
                           public_flags, labels, descriptions,
-                          zone_refs=action_zone_refs(obs, num_choices))
+                          zone_refs=action_zone_refs(obs, num_choices),
+                          slot_refs=action_slot_refs(obs, num_choices))
 
 
 # ── Decision-type classification (all read the integer category array) ────────
 
 def is_mulligan(cats):
-    return len(cats) > 0 and all(c == 11 for c in cats)
+    return len(cats) > 0 and all(c == CAT_MULLIGAN for c in cats)
 
 
 def is_bottom(cats):
@@ -741,6 +1022,11 @@ def fmt_stack_entry(e):
     """Format a decoded stack-entry dict (from _decode_stack)."""
     kind = "spell" if e["is_spell"] else "ability"
     s = f"{e['name']} ({kind}, {e['controller']})"
+    if e.get("x_or_amount"):
+        s += (f" [X={e['x_or_amount']}]" if e["is_spell"]
+              else f" [amt={e['x_or_amount']}]")
+    if e.get("qualifiers"):
+        s += f" [{','.join(e['qualifiers'])}]"
     if e.get("modes"):
         s += f" [modes {','.join(str(m) for m in e['modes'])}]"
     if e.get("targets"):
@@ -758,27 +1044,62 @@ def format_state_lines(gs):
     lines = [
         f"Priority: {gs['priority_player']}"
         f" ({'active' if gs['is_active_player'] else 'non-active'})",
-        f"Step: {gs['step']}",
+        f"Step: {gs['step']} (turn {gs['turn']})",
     ]
     hand_names = [c["name"] for c in gs["self_hand"]]
     lines.append(f"Self:  {gs['self']['life']} life"
                  f" | mana: {fmt_mana(gs['self']['mana'])}"
                  f"{fmt_resources(gs['self'])}"
-                 f" | hand({gs['self']['hand_count']}): {', '.join(hand_names) or '(empty)'}")
+                 f" | hand({gs['self']['hand_count']}): {', '.join(hand_names) or '(empty)'}"
+                 f" | lib {gs['self_library']}")
     lines.append(f"Opp:   {gs['opponent']['life']} life"
                  f" | mana: {fmt_mana(gs['opponent']['mana'])}"
                  f"{fmt_resources(gs['opponent'])}"
-                 f" | hand count: {gs['opponent']['hand_count']}")
+                 f" | hand count: {gs['opponent']['hand_count']}"
+                 f" | lib {gs['opp_library']}")
     if gs["self_battlefield"]:
         lines.append(f"Self BF:  {' | '.join(fmt_perm(p) for p in gs['self_battlefield'])}")
     if gs["opp_battlefield"]:
         lines.append(f"Opp BF:   {' | '.join(fmt_perm(p) for p in gs['opp_battlefield'])}")
     if gs["stack"]:
         lines.append(f"Stack: {' -> '.join(fmt_stack_entry(e) for e in gs['stack'])}")
+    # Source of the current mid-resolution choice (may not be on the stack yet,
+    # since targets are announced before the spell moves there).
+    pend = gs.get("pending_decision")
+    if pend:
+        lines.append(f"Pending: {pend['name']}"
+                     f" ({'self' if pend['is_self'] else 'opp'})")
     if gs["self_graveyard"]:
         lines.append(f"Self GY: {', '.join(gs['self_graveyard'])}")
     if gs["opp_graveyard"]:
         lines.append(f"Opp GY:  {', '.join(gs['opp_graveyard'])}")
+    if gs.get("self_exile"):
+        lines.append(f"Self exile: {', '.join(gs['self_exile'])}")
+    if gs.get("opp_exile"):
+        lines.append(f"Opp exile:  {', '.join(gs['opp_exile'])}")
+    # Belief-state blocks (shown only when the viewer actually knows something).
+    if gs.get("known_top_library"):
+        lines.append(f"Known top: {', '.join(gs['known_top_library'])}")
+    if gs.get("opp_known_hand"):
+        lines.append(f"Known opp hand: {', '.join(gs['opp_known_hand'])}")
+    if gs.get("opp_revealed"):
+        lines.append(f"Opp revealed: {', '.join(gs['opp_revealed'])}")
+    # Bo3 match context (game_number == 0 in bo1, so this line is omitted there).
+    match = gs.get("match") or {}
+    if match.get("game_number"):
+        mstr = (f"Match: game {match['game_number']}"
+                f" | wins {match['self_wins']}-{match['opp_wins']}")
+        if match.get("is_post_board"):
+            mstr += " | post-board"
+        if match.get("is_sideboard"):
+            mstr += " | sideboarding"
+        lines.append(mstr)
+    extras = gs.get("extras") or {}
+    if extras:
+        # _decode_extras records only non-default values: a boolean True renders
+        # as its bare key, everything else as key=value.
+        parts = [k if v is True else f"{k}={v}" for k, v in extras.items()]
+        lines.append(f"Extras: {', '.join(parts)}")
     return lines
 
 
@@ -823,17 +1144,42 @@ def fmt_perm(p):
         s += "]"
     if "loyalty" in p:
         s += f" [loy {p['loyalty']}]"
+    if "naming" in p:
+        s += f" [naming: {p['naming']}]"
+    if "holding" in p:
+        s += f" [holding: {p['holding']}]"
     if "counters" in p:
         s += f" [{p['counters']}]"
+    elif "p1p1" in p or "other_counters" in p:
+        # Serialized counter summary (no narrative side-channel available).
+        parts = []
+        if "p1p1" in p:
+            parts.append(f"p1p1 {p['p1p1']:+d}")
+        if "other_counters" in p:
+            parts.append(f"ctrs {p['other_counters']}")
+        s += f" [{', '.join(parts)}]"
+    if "keywords" in p:
+        s += f" [{', '.join(p['keywords'])}]"
+    if "attached_to" in p:
+        s += f" (->{p['attached_to']})"
+    if "attached_by" in p:
+        s += f" (eq:{p['attached_by']})"
     flags = []
     if p.get("tapped"):
         flags.append("T")
     if p.get("attacking"):
-        flags.append("ATK")
+        # Attacking a planeswalker names it; a plain ATK attacks the player.
+        flags.append("ATK" + (f"->{p['attack_target']}"
+                              if "attack_target" in p else ""))
     if p.get("blocking"):
-        flags.append("BLK")
+        flags.append("BLK" + (f"->{p['blocking_target']}"
+                              if "blocking_target" in p else ""))
+    if p.get("blocked"):
+        flags.append("BLOCKED")
     if p.get("summoning_sick"):
         flags.append("SICK")
+    if p.get("phased_out"):
+        flags.append("PHASED")
     if flags:
         s += f" ({','.join(flags)})"
     return s

@@ -67,7 +67,10 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Action-category display names come from the generated C++ enum tables
 # (train/gen_enums.py), the single source of truth.
-from _enums import _CAT_NAMES, _REF_NAMES, REF_ZONE_MAX
+from _enums import (
+    _CAT_NAMES, _REF_NAMES, REF_ZONE_MAX,
+    CAT_PASS_PRIORITY, CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL, CAT_SELECT_TARGET,
+    CAT_PLAY_LAND, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE)
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 import decode
 import viz
@@ -81,6 +84,7 @@ from env import (ACTION_CATEGORY_MAX, RoboMageEnv,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
                  _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx,
                  _PERM_CARD_OFF, _CUR_TURN_IDX,
+                 _OFF_IS_PHASED_OUT, N_ENTITY_REF_SLOTS,
                  _SELF_BLOCK_START, _OPP_BLOCK_START,
                  _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
@@ -137,24 +141,29 @@ _FEAT = {name: i for i, name in enumerate(_INTERP_FEATURE_NAMES)}
 
 # Permanent slot layout (derived from env.py / machine_io.h). Card identity is a
 # single normalized id float per slot; decode via _slot_card_idx (round(val*N)).
-_PERM_START   = _SELF_PERM_START          # 34 (self slots first, then opponent)
+_PERM_START   = _SELF_PERM_START          # 36 (self slots first, then opponent)
 _PERM_SLOTS   = _ENV_PERM_SLOTS * 2       # 96 = 48 self + 48 opponent
-_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 12 (11 status incl. loyalty + 1 card id)
+_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 38 (status + counters + refs + keywords + chosen-name id + returnable-exile id + card id)
 _SELF_PERM_SLOTS = _ENV_PERM_SLOTS        # 48: slots 0-47 = self, 48-95 = opponent
 # Per-slot offsets: power(0), toughness(1), tapped(2), attacking(3), blocking(4),
 #                   sickness(5), damage(6), controller_is_self(7), is_creature(8),
-#                   is_land(9), loyalty(10), card_id(11 = _PERM_CARD_OFF from env.py)
+#                   is_land(9), loyalty(10), then the enriched fields — counters
+#                   (11-12), attachment/combat refs (13-16), is_blocked(17),
+#                   is_phased_out(18 = _OFF_IS_PHASED_OUT), keyword multi-hot
+#                   (19-34), chosen-name id(35), returnable-exile id(36), and
+#                   card_id(37 = _PERM_CARD_OFF from env.py, LAST)
 _PERM_LOYALTY_OFF = 10
 _GY_START_OBS    = _GY_START
 _GY_SLOTS        = _GY_SLOTS_TOTAL        # 128
 _GY_SLOT_SZ      = _GY_SLOT_SIZE          # 1
 _GY_SELF_SLOTS   = _GY_SLOTS_TOTAL // 2   # slots 0-63 = self GY, 64-127 = opp GY
 
-# Stack layout: 12 slots x 25 floats. Per slot: controller_is_self(1), card id(1),
-# is_spell(1), chosen-mode multi-hot(6), 4 announced-target sub-slots x 4 floats.
+# Stack layout: 12 slots x 37 floats. Per slot: controller_is_self(1), card id(1),
+# is_spell(1), x_or_amount(1), cast qualifiers(7), chosen-mode multi-hot(6),
+# 4 announced-target sub-slots x 5 floats (present, is_player, ctrl, slot_ref, card id).
 _STACK_START   = _ENV_STACK_START
 _STACK_SLOTS   = _ENV_STACK_SLOTS
-_STACK_SLOT_SZ = _STACK_SLOT_SIZE         # 25
+_STACK_SLOT_SZ = _STACK_SLOT_SIZE         # 37
 
 # Hand layout: 10 slots x 1 float (imported _HAND_START from env.py)
 _HAND_SLOTS = 10
@@ -216,6 +225,11 @@ def _extract_interpretable(obs):
 
         # Check if slot is occupied (card id present)
         if _slot_card_idx(obs, base + _PERM_CARD_OFF) < 0:
+            continue
+        # Phased-out permanents are serialized (so the model can anticipate the
+        # phase-in) but the rules treat them as nonexistent (CR 702.26e) — keep
+        # them out of the board stats so they don't inflate counts/power sums.
+        if obs[base + _OFF_IS_PHASED_OUT] > 0.5:
             continue
 
         is_self = slot < _SELF_PERM_SLOTS
@@ -853,12 +867,17 @@ def _print_whatif_table(branches):
 def _action_desc(obs, i):
     """Human-readable description of legal-action slot i ("CAST (Lightning Bolt)").
     Tokens render as "Token"; a target choice with no card entity is a player.
-    The action's zone_ref is appended when set ("TARGET (Wasteland @opp bf)")."""
+    The action's zone_ref is appended when set ("TARGET (Wasteland @opp bf)"),
+    and its entity-slot ref when set ("TARGET (Wasteland @opp bf @slot48)")."""
     cat = int(round(obs[STATE_SIZE + i] * ACTION_CATEGORY_MAX))
     cat_name = _CAT_NAMES.get(cat, str(cat))
 
     zone = int(round(obs[STATE_SIZE + 3 * MAX_ACTIONS + i] * REF_ZONE_MAX))
     zone_str = f" @{_REF_NAMES.get(zone, zone)}" if zone > 0 else ""
+    # Entity-slot ref (5th metadata block; -1 = none) disambiguates same-named cards.
+    slot = int(round(obs[STATE_SIZE + 4 * MAX_ACTIONS + i] * N_ENTITY_REF_SLOTS)) - 1
+    if slot >= 0:
+        zone_str += f" @slot{slot}"
 
     card_raw = obs[STATE_SIZE + MAX_ACTIONS + i]
     if card_raw < 0:
@@ -1265,11 +1284,13 @@ def _perm_summaries(obs, slot_range):
         damage    = obs[base + 6] * 10.0
         is_creat  = obs[base + 8] > 0.5
         loyalty   = obs[base + _PERM_LOYALTY_OFF] * 10.0
+        phased    = obs[base + _OFF_IS_PHASED_OUT] > 0.5
         flags = []
         if tapped:        flags.append("tapped")
         if attacking:     flags.append("atk")
         if blocking:      flags.append("blk")
         if sickness:      flags.append("sick")
+        if phased:        flags.append("phased")
         if damage > 0.4:  flags.append(f"dmg={damage:.0f}")
         if loyalty > 0.4: flags.append(f"loy={loyalty:.0f}")
         flag_str = f" [{', '.join(flags)}]" if flags else ""
@@ -1455,7 +1476,7 @@ def _sim_targeting(games):
             chosen_cat = _obs_action_cat(obs, action)
 
             # Link CAST -> TARGET
-            if chosen_cat == 7:  # CAST
+            if chosen_cat == CAT_CAST_SPELL:
                 cid = _obs_card_id(obs, action)
                 if 0 <= cid < len(_VOCAB_NAMES):
                     cast_name = decode.card_index_to_name(cid)
@@ -1464,7 +1485,7 @@ def _sim_targeting(games):
                         obs2 = observations[sj]
                         act2 = actions[sj]
                         cat2 = _obs_action_cat(obs2, act2)
-                        if cat2 == 8:  # TARGET
+                        if cat2 == CAT_SELECT_TARGET:
                             tgt_cid = _obs_card_id(obs2, act2)
                             tgt_ctrl = _obs_ctrl_flag(obs2, act2)
                             tgt_name = _resolve_card_name(tgt_cid)
@@ -1474,7 +1495,7 @@ def _sim_targeting(games):
                             alt_self = 0
                             alt_opp = 0
                             for k in range(nc2):
-                                if _obs_action_cat(obs2, k) == 8:
+                                if _obs_action_cat(obs2, k) == CAT_SELECT_TARGET:
                                     cf = _obs_ctrl_flag(obs2, k)
                                     if cf == 1:
                                         alt_self += 1
@@ -1485,22 +1506,22 @@ def _sim_targeting(games):
                                 alt_self, alt_opp,
                             ))
                             break
-                        elif cat2 != 0:  # non-PASS means no target for this cast
+                        elif cat2 != CAT_PASS_PRIORITY:  # non-PASS means no target for this cast
                             break
 
             # Hold analysis: PASS when CAST was available
             castable = set()
             for k in range(nc):
-                if _obs_action_cat(obs, k) == 7:
+                if _obs_action_cat(obs, k) == CAT_CAST_SPELL:
                     kid = _obs_card_id(obs, k)
                     if 0 <= kid < len(_VOCAB_NAMES):
                         castable.add(decode.card_index_to_name(kid))
             if not castable:
                 continue
-            if chosen_cat == 0:  # PASS
+            if chosen_cat == CAT_PASS_PRIORITY:
                 for name in castable:
                     hold_stats.setdefault(name, []).append((result,))
-            elif chosen_cat == 7:
+            elif chosen_cat == CAT_CAST_SPELL:
                 cid = _obs_card_id(obs, action)
                 if 0 <= cid < len(_VOCAB_NAMES):
                     cast_stats.setdefault(decode.card_index_to_name(cid), []).append((result,))
@@ -1579,9 +1600,9 @@ def _sim_targeting(games):
 
 def _sim_sideboard_report(games):
     """Report sideboard decisions made by model and scripted agent across games."""
-    _CAT_SB_IN   = 24
-    _CAT_SB_OUT  = 25
-    _CAT_SB_DONE = 26
+    _CAT_SB_IN   = CAT_SIDEBOARD_IN
+    _CAT_SB_OUT  = CAT_SIDEBOARD_OUT
+    _CAT_SB_DONE = CAT_SIDEBOARD_DONE
 
     # Per-phase records: list of (match_idx, after_game_num, cards_in, cards_out).
     # after_game_num is 1-based: the game that just ended (so a 2-game match has
@@ -1719,7 +1740,7 @@ def _sim_sideboard_report(games):
             print(f"        OUT: {_count_str(c_out)}")
 
 
-_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = 24, 25, 26
+_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE
 
 # Fungible card classes for the NET sideboard-impact table: swapping one
 # fetchland for another is mana-base tuning, not a card-choice signal, so all
@@ -3457,7 +3478,7 @@ def _analyze_clusters(games, verbose=True):
 # ── Card importance (value attribution per card) ─────────────────────────────
 
 # Action categories used for per-card attribution.
-_CAT_ACTIVATE, _CAT_CAST, _CAT_LAND = 6, 7, 9
+_CAT_ACTIVATE, _CAT_CAST, _CAT_LAND = CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL, CAT_PLAY_LAND
 
 
 def _analyze_cardvalue(games, top_n=30, verbose=True):

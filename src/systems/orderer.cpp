@@ -69,7 +69,8 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
     mark_card_revealed(target, controller);
 }
 
-void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination) {
+void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
+                          bool top_seen_by_owner) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
@@ -164,17 +165,20 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
-    // LIBRARY, STACK, and GRAVEYARD are ordered zones where distance_from_top is meaningful.
+    // LIBRARY, STACK, GRAVEYARD, and EXILE are ordered zones where distance_from_top is meaningful.
     Zone::ZoneValue origin = target_zone.location;
-    if (origin == Zone::LIBRARY || origin == Zone::STACK || origin == Zone::GRAVEYARD) {
+    if (origin == Zone::LIBRARY || origin == Zone::STACK || origin == Zone::GRAVEYARD ||
+        origin == Zone::EXILE) {
         size_t departing_pos = target_zone.distance_from_top;
         Zone::Ownership owner = target_zone.owner;
         for (auto &&card : mEntities) {
             if (card == target) continue;
             auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
             if (cmp_zone.location != origin) continue;
-            // Library and graveyard are per-player; stack is shared
-            if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD) && cmp_zone.owner != owner) continue;
+            // Library, graveyard, and exile are per-player; stack is shared
+            if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD || origin == Zone::EXILE) &&
+                cmp_zone.owner != owner)
+                continue;
             if (cmp_zone.distance_from_top > departing_pos) {
                 cmp_zone.distance_from_top--;
             }
@@ -192,9 +196,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     }
 
     // If a card is being placed on top of a library, it becomes the new known top.
+    // The push is unconditional even for a fateseal (top_seen_by_owner == false): the owner's
+    // previously-known top entries must still shift one position deeper. But when the owner does
+    // NOT see the card (the looker is the opponent), record an UNKNOWN marker (-1) instead of the
+    // real identity, so the cache positions stay honest without leaking a card they never saw.
     if (!on_bottom && destination == Zone::LIBRARY) {
         int vocab_idx = -1;
-        if (global_coordinator.entity_has_component<CardData>(target)) {
+        if (top_seen_by_owner && global_coordinator.entity_has_component<CardData>(target)) {
             vocab_idx = card_name_to_index(
                 global_coordinator.GetComponent<CardData>(target).name);
         }
@@ -205,8 +213,10 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         if (card == target) continue;
         auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
         if (cmp_zone.location != destination) continue;
-        // Library and graveyard are per-player; only shift cards belonging to the same owner
-        if ((destination == Zone::LIBRARY || destination == Zone::GRAVEYARD) && cmp_zone.owner != target_zone.owner)
+        // Library, graveyard, and exile are per-player; only shift cards belonging to the same owner
+        if ((destination == Zone::LIBRARY || destination == Zone::GRAVEYARD ||
+             destination == Zone::EXILE) &&
+            cmp_zone.owner != target_zone.owner)
             continue;
         if (!on_bottom) {
             // placing on top: shift everything else down one

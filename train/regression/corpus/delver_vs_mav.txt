@@ -28,9 +28,9 @@
 
 --- Decision 1 ---
   Priority: Player A (active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -48,9 +48,9 @@
 
 --- Decision 2 ---
   Priority: Player B (non-active)
-  Step: Untap
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
@@ -64,9 +64,9 @@
 
 --- Decision 3 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)
@@ -79,10 +79,11 @@
 
 --- Decision 4 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Stack: Once Upon a Time (spell, self)
+  Pending: Once Upon a Time (self)
   Actions:
    0: Take nothing
    1: Wasteland
@@ -97,10 +98,11 @@
 
 --- Decision 5 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -112,11 +114,13 @@
 
 --- Decision 6 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)
@@ -130,12 +134,15 @@
 
 --- Decision 7 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Stack: Misty Rainforest (ability, self)
+  Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Island
@@ -151,12 +158,14 @@
 
 --- Decision 8 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Island
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Ponder
@@ -167,13 +176,15 @@
 
 --- Decision 9 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -186,13 +197,16 @@
 
 --- Decision 10 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Unholy Heat
    1: Scalding Tarn
@@ -203,13 +217,16 @@
 
 --- Decision 11 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Scalding Tarn
    1: Mishra's Bauble
@@ -217,13 +234,17 @@
 
 --- Decision 12 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
+  Pending: Ponder (self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
+  Known top: Mishra's Bauble, Scalding Tarn, Unholy Heat, ?, ?
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -234,12 +255,15 @@
 
 --- Decision 13 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Scalding Tarn, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Island (T)
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Known top: Scalding Tarn, Unholy Heat, ?, ?, ?
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Mishra's Bauble
@@ -249,13 +273,16 @@
 
 --- Decision 14 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Island (T)
   Stack: Mishra's Bauble (spell, self)
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Known top: Scalding Tarn, Unholy Heat, ?, ?, ?
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -266,12 +293,15 @@
 
 --- Decision 15 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Mishra's Bauble | Island (T)
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Known top: Scalding Tarn, Unholy Heat, ?, ?, ?
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)
@@ -281,12 +311,16 @@
 
 --- Decision 16 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Mishra's Bauble | Island (T)
+  Pending: Mishra's Bauble (self)
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Known top: Scalding Tarn, Unholy Heat, ?, ?, ?
+  Opp revealed: Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Player B (20 life)
    1: Player A (19 life)
@@ -314,12 +348,13 @@
 
 --- Decision 17 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(8): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Savannah, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Savannah, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Opp BF:   Island (T)
   Self GY: Once Upon a Time
   Opp GY:  Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Island, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -332,13 +367,15 @@
 
 --- Decision 18 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Savannah
   Opp BF:   Island (T)
   Self GY: Once Upon a Time
   Opp GY:  Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Island, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -351,13 +388,15 @@
 
 --- Decision 19 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
-  Opp:   19 life | mana: empty | hand count: 6
+  Step: Second Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Savannah
   Opp BF:   Island (T)
   Self GY: Once Upon a Time
   Opp GY:  Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Island, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -371,13 +410,14 @@
 
 --- Decision 20 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Unholy Heat, Scalding Tarn, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Unholy Heat, Scalding Tarn, Scalding Tarn, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Island
   Opp BF:   Savannah
   Self GY: Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -389,13 +429,15 @@
 
 --- Decision 21 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Island | Scalding Tarn
   Opp BF:   Savannah
   Self GY: Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)
@@ -409,14 +451,17 @@
 
 --- Decision 22 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Island
   Opp BF:   Savannah
   Stack: Scalding Tarn (ability, self)
-  Self GY: Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Pending: Scalding Tarn (self)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Mountain
@@ -432,13 +477,15 @@
 
 --- Decision 23 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 48
+  Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Island | Mountain
   Opp BF:   Savannah
-  Self GY: Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler
@@ -449,14 +496,16 @@
 
 --- Decision 24 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 7
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 48
+  Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Island | Mountain (T)
   Opp BF:   Savannah
   Stack: Dragon's Rage Channeler (spell, self)
-  Self GY: Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -467,13 +516,15 @@
 
 --- Decision 25 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Savannah
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Self GY: Once Upon a Time
-  Opp GY:  Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares
@@ -483,13 +534,16 @@
 
 --- Decision 26 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Savannah
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Pending: Swords to Plowshares (self)
   Self GY: Once Upon a Time
-  Opp GY:  Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Dragon's Rage Channeler
   >> B/B: 0 (Dragon's Rage Channeler)
@@ -500,14 +554,16 @@
 
 --- Decision 27 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Opp BF:   Savannah (T)
-  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self)
-  Self GY: Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -516,14 +572,16 @@
 
 --- Decision 28 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Opp BF:   Savannah (T)
-  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self)
-  Self GY: Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Return Island
   >> A/A: 0 (Return Island)
@@ -533,14 +591,17 @@
 
 --- Decision 29 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(6): Daze, Daze, Unholy Heat, Island, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(6): Daze, Daze, Unholy Heat, Island, Scalding Tarn, Wasteland | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Opp BF:   Savannah (T)
-  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self)
-  Self GY: Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
+  Pending: Daze (self)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Swords to Plowshares
   >> A/A: 0 (Swords to Plowshares)
@@ -554,14 +615,17 @@
 
 --- Decision 30 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Daze, Unholy Heat, Island, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 6
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Daze, Unholy Heat, Island, Scalding Tarn, Wasteland | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Opp BF:   Savannah (T)
-  Stack: Dragon's Rage Channeler (ability, self) -> Daze (spell, self) -> Swords to Plowshares (opponent) -> Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self)
-  Self GY: Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Daze (spell, self) -> Swords to Plowshares (opponent, slot 98) -> Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
+  Pending: Dragon's Rage Channeler (self)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Dragon's Rage Channeler on top of library
    1: Put Dragon's Rage Channeler into graveyard
@@ -574,14 +638,16 @@
 
 --- Decision 31 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Savannah (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Mountain (T)
-  Stack: Daze (spell, opponent) -> Swords to Plowshares (self) -> Swords to Plowshares (spell, self) -> Dragon's Rage Channeler (opponent)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
+  Stack: Daze (spell, opponent) -> Swords to Plowshares (self, slot 97) -> Swords to Plowshares (spell, self) -> Dragon's Rage Channeler (opponent, slot 48)
   Self GY: Once Upon a Time
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Ponder, Misty Rainforest, Scalding Tarn
+  Opp GY:  Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
   >> B/B: 0 (Don't pay (spell is countered))
@@ -599,13 +665,14 @@
 
 --- Decision 32 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Wasteland, Windswept Heath | lib 50
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Mountain (T)
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Talon Gates of Madara
@@ -620,13 +687,16 @@
 
 --- Decision 33 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 50
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Mountain (T)
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
+  Pending: Talon Gates of Madara (self)
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: No target
    1: Dragon's Rage Channeler
@@ -638,13 +708,15 @@
 
 --- Decision 34 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 50
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Mountain (T)
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -654,13 +726,15 @@
 
 --- Decision 35 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 50
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Mountain (T)
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: X = 0
    1: X = 1
@@ -674,14 +748,17 @@
 
 --- Decision 36 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 5
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 50
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Savannah (T) | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Pending: Green Sun's Zenith (self)
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
+  Extras: self_lands_played=1
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -701,13 +778,14 @@
 
 --- Decision 37 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(5): Daze, Unholy Heat, Island, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Mountain
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(5): Daze, Unholy Heat, Island, Scalding Tarn, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Mountain
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Once Upon a Time, Swords to Plowshares
+  Self GY: Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Cast Unholy Heat
@@ -717,13 +795,15 @@
 
 --- Decision 38 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(5): Daze, Unholy Heat, Island, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Mountain
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(5): Daze, Unholy Heat, Island, Scalding Tarn, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Mountain
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Once Upon a Time, Swords to Plowshares
+  Pending: Unholy Heat (self)
+  Self GY: Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Dryad Arbor
    1: Dragon's Rage Channeler
@@ -739,14 +819,16 @@
 
 --- Decision 39 ---
   Priority: Player A (active)
-  Step: Upkeep
-  Self:  18 life | mana: empty | hand(4): Daze, Island, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Mountain (T)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(4): Daze, Island, Scalding Tarn, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Mountain (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Stack: Dragon's Rage Channeler (ability, self) -> Unholy Heat (spell, self) -> Dryad Arbor (opponent)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Once Upon a Time, Swords to Plowshares
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Dryad Arbor (opponent, slot 48)
+  Pending: Dragon's Rage Channeler (self)
+  Self GY: Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Put Delver of Secrets on top of library
    1: Put Delver of Secrets into graveyard
@@ -760,13 +842,15 @@
 
 --- Decision 40 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Daze, Island, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Mountain (T)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Daze, Island, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Mountain (T)
   Opp BF:   Savannah (T) | Talon Gates of Madara
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Once Upon a Time, Swords to Plowshares
+  Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Island
@@ -782,13 +866,15 @@
 
 --- Decision 41 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(4): Daze, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   20 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain (T)
+  Step: Declare Atk (turn 5)
+  Self:  18 life | mana: empty | hand(4): Daze, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain (T)
   Opp BF:   Savannah (T) | Talon Gates of Madara
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Once Upon a Time, Swords to Plowshares
+  Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -807,13 +893,14 @@
 
 --- Decision 42 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(6): Karakas, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(6): Karakas, Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain (T)
-  Self GY: Dryad Arbor, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T)
+  Self GY: Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Play Karakas
@@ -826,13 +913,15 @@
 
 --- Decision 43 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Karakas | Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain (T)
-  Self GY: Dryad Arbor, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T)
+  Self GY: Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Keen-Eyed Curator
@@ -846,14 +935,16 @@
 
 --- Decision 44 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Daze, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   17 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] (T) | Island | Mountain (T)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Daze, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
   Stack: Keen-Eyed Curator (spell, opponent)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Once Upon a Time, Swords to Plowshares
+  Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -861,14 +952,16 @@
 
 --- Decision 45 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Daze, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   17 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] (T) | Island | Mountain (T)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Daze, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
   Stack: Keen-Eyed Curator (spell, opponent)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Once Upon a Time, Swords to Plowshares
+  Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: opp_lands_played=1
   Actions:
    0: Return Island
   >> A/A: 0 (Return Island)
@@ -878,14 +971,17 @@
 
 --- Decision 46 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Daze, Island, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   17 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] (T) | Mountain (T)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(5): Daze, Island, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
   Stack: Keen-Eyed Curator (spell, opponent)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Once Upon a Time, Swords to Plowshares
+  Pending: Daze (self)
+  Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: opp_lands_played=1, self_revolt
   Actions:
    0: Keen-Eyed Curator
   >> A/A: 0 (Keen-Eyed Curator)
@@ -899,14 +995,17 @@
 
 --- Decision 47 ---
   Priority: Player A (non-active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Island, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   17 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] (T) | Mountain (T)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Island, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Dragon's Rage Channeler (ability, self) -> Daze (spell, self) -> Keen-Eyed Curator (opponent) -> Keen-Eyed Curator (spell, opponent)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Once Upon a Time, Swords to Plowshares
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Daze (spell, self) -> Keen-Eyed Curator (opponent, slot 98) -> Keen-Eyed Curator (spell, opponent)
+  Pending: Dragon's Rage Channeler (self)
+  Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: opp_lands_played=1, self_revolt
   Actions:
    0: Put Dragon's Rage Channeler on top of library
    1: Put Dragon's Rage Channeler into graveyard
@@ -918,14 +1017,16 @@
 
 --- Decision 48 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Mountain (T)
-  Stack: Daze (spell, opponent) -> Keen-Eyed Curator (self) -> Keen-Eyed Curator (spell, self)
-  Self GY: Dryad Arbor, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Mountain (T)
+  Stack: Daze (spell, opponent) -> Keen-Eyed Curator (self, slot 97) -> Keen-Eyed Curator (spell, self)
+  Self GY: Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
   >> B/B: 0 (Don't pay (spell is countered))
@@ -943,13 +1044,14 @@
 
 --- Decision 49 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(5): Murktide Regent, Island, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   17 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] | Mountain
+  Step: First Main (turn 7)
+  Self:  18 life | mana: empty | hand(5): Murktide Regent, Island, Wooded Foothills, Scalding Tarn, Wasteland | lib 43
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Mountain
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Keen-Eyed Curator, Once Upon a Time, Swords to Plowshares
+  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Play Island
@@ -965,13 +1067,15 @@
 
 --- Decision 50 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  18 life | mana: empty | hand(4): Murktide Regent, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   17 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain
+  Step: Declare Atk (turn 7)
+  Self:  18 life | mana: empty | hand(4): Murktide Regent, Wooded Foothills, Scalding Tarn, Wasteland | lib 43
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Keen-Eyed Curator, Once Upon a Time, Swords to Plowshares
+  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -990,13 +1094,14 @@
 
 --- Decision 51 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(5): Knight of the Reliquary, Once Upon a Time, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 8)
+  Self:  14 life | mana: empty | hand(5): Knight of the Reliquary, Once Upon a Time, Wasteland, Wasteland, Windswept Heath | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas | Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Keen-Eyed Curator, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time
@@ -1010,14 +1115,16 @@
 
 --- Decision 52 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 8)
+  Self:  14 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 48
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
   Stack: Once Upon a Time (spell, self)
-  Self GY: Dryad Arbor, Keen-Eyed Curator, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Pending: Once Upon a Time (self)
+  Self GY: Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Take nothing
    1: Endurance
@@ -1032,13 +1139,14 @@
 
 --- Decision 53 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(5): Endurance, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 8)
+  Self:  14 life | mana: empty | hand(5): Endurance, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Endurance (alternate cost)
@@ -1046,13 +1154,14 @@
 
 --- Decision 54 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(5): Endurance, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 8)
+  Self:  14 life | mana: empty | hand(5): Endurance, Knight of the Reliquary, Wasteland, Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Exile Knight of the Reliquary
   >> B/B: 0 (Exile Knight of the Reliquary)
@@ -1064,13 +1173,15 @@
 
 --- Decision 55 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(3): Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
-  Self BF:  Endurance [3/4] (SICK) | Karakas (T) | Savannah (T) | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Step: Draw (turn 8)
+  Self:  14 life | mana: empty | hand(3): Wasteland, Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
+  Self BF:  Endurance [3/4] [Reach, Flash] (SICK) | Karakas (T) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Endurance (ChangeZoneAll, targeted)
    1: Endurance (evoke: sacrifice)
@@ -1080,13 +1191,16 @@
 
 --- Decision 56 ---
   Priority: Player B (active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(3): Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
-  Self BF:  Endurance [3/4] (SICK) | Karakas (T) | Savannah (T) | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Step: Draw (turn 8)
+  Self:  14 life | mana: empty | hand(3): Wasteland, Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
+  Self BF:  Endurance [3/4] [Reach, Flash] (SICK) | Karakas (T) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Pending: Endurance (self)
+  Self GY: Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: No target
    1: Player A (18 life)
@@ -1102,13 +1216,16 @@
 
 --- Decision 57 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(3): Wasteland, Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(3): Wasteland, Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1120,13 +1237,16 @@
 
 --- Decision 58 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1134,13 +1254,16 @@
 
 --- Decision 59 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Begin Combat (turn 8)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1150,13 +1273,16 @@
 
 --- Decision 60 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Declare Atk (turn 8)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1166,13 +1292,16 @@
 
 --- Decision 61 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Declare Blk (turn 8)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1183,13 +1312,16 @@
 
 --- Decision 62 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Combat Dmg (turn 8)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1197,13 +1329,16 @@
 
 --- Decision 63 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: End Combat (turn 8)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1211,13 +1346,16 @@
 
 --- Decision 64 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Second Main (turn 8)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1225,13 +1363,16 @@
 
 --- Decision 65 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: End Step (turn 8)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1244,13 +1385,15 @@
 
 --- Decision 66 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Upkeep (turn 9)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1260,13 +1403,15 @@
 
 --- Decision 67 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Murktide Regent, Brainstorm, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(5): Murktide Regent, Brainstorm, Wooded Foothills, Scalding Tarn, Wasteland | lib 42
+  Opp:   14 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Cast Brainstorm
@@ -1278,14 +1423,16 @@
 
 --- Decision 68 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 9)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 42
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Brainstorm (spell, opponent)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Brainstorm (spell, opponent)
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1297,14 +1444,17 @@
 
 --- Decision 69 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(4): Murktide Regent, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(4): Murktide Regent, Wooded Foothills, Scalding Tarn, Wasteland | lib 42
+  Opp:   14 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Stack: Dragon's Rage Channeler (ability, self) -> Brainstorm (spell, self)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Brainstorm (spell, self)
+  Pending: Dragon's Rage Channeler (self)
+  Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Put Lightning Bolt on top of library
    1: Put Lightning Bolt into graveyard
@@ -1314,14 +1464,16 @@
 
 --- Decision 70 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 9)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 41
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Stack: Brainstorm (spell, opponent)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1336,14 +1488,17 @@
 
 --- Decision 71 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(7): Murktide Regent, Lightning Bolt, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(7): Murktide Regent, Lightning Bolt, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland | lib 38
+  Opp:   14 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
   Stack: Brainstorm (spell, self)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Pending: Brainstorm (self)
+  Self GY: Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Murktide Regent
    1: Lightning Bolt
@@ -1359,14 +1514,18 @@
 
 --- Decision 72 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(6): Lightning Bolt, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(6): Lightning Bolt, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland | lib 39
+  Opp:   14 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
   Stack: Brainstorm (spell, self)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Pending: Brainstorm (self)
+  Self GY: Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Known top: Murktide Regent, ?, ?, ?, ?
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Lightning Bolt
    1: Lightning Bolt
@@ -1380,13 +1539,16 @@
 
 --- Decision 73 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(5): Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland | lib 40
+  Opp:   14 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Self GY: Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Known top: Lightning Bolt, Murktide Regent, ?, ?, ?
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -1397,13 +1559,17 @@
 
 --- Decision 74 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(5): Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(5): Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland | lib 40
+  Opp:   14 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Pending: Lightning Bolt (self)
+  Self GY: Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Known top: Lightning Bolt, Murktide Regent, ?, ?, ?
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Player B (14 life)
    1: Player A (18 life)
@@ -1417,14 +1583,16 @@
 
 --- Decision 75 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 9)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 40
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Lightning Bolt (spell, opponent) -> self (player)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1436,14 +1604,18 @@
 
 --- Decision 76 ---
   Priority: Player A (active)
-  Step: Draw
-  Self:  18 life | mana: empty | hand(4): Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Step: Draw (turn 9)
+  Self:  18 life | mana: empty | hand(4): Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland | lib 40
+  Opp:   14 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
+  Pending: Dragon's Rage Channeler (self)
+  Self GY: Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Known top: Lightning Bolt, Murktide Regent, ?, ?, ?
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Put Lightning Bolt on top of library
    1: Put Lightning Bolt into graveyard
@@ -1453,14 +1625,16 @@
 
 --- Decision 77 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 9)
+  Self:  14 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 39
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
   Stack: Lightning Bolt (spell, opponent) -> self (player)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1471,13 +1645,15 @@
 
 --- Decision 78 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  11 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   18 life | mana: empty | hand count: 4
+  Step: Draw (turn 9)
+  Self:  11 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   18 life | mana: empty | hand count: 4 | lib 39
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1485,13 +1661,16 @@
 
 --- Decision 79 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(4): Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
-  Opp:   11 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Step: First Main (turn 9)
+  Self:  18 life | mana: empty | hand(4): Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland | lib 39
+  Opp:   11 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Self GY: Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Known top: Murktide Regent, ?, ?, ?, ?
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
@@ -1503,13 +1682,17 @@
 
 --- Decision 80 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  18 life | mana: empty | hand(3): Lightning Bolt, Scalding Tarn, Wasteland
-  Opp:   11 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T) | Wooded Foothills
+  Step: First Main (turn 9)
+  Self:  18 life | mana: empty | hand(3): Lightning Bolt, Scalding Tarn, Wasteland | lib 39
+  Opp:   11 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T) | Wooded Foothills
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Self GY: Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Known top: Murktide Regent, ?, ?, ?, ?
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wooded Foothills (ChangeZone)
@@ -1521,14 +1704,17 @@
 
 --- Decision 81 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   17 life | mana: empty | hand count: 3
+  Step: First Main (turn 9)
+  Self:  11 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   17 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
   Stack: Wooded Foothills (ability, opponent)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Wooded Foothills, Misty Rainforest, Scalding Tarn
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1539,14 +1725,19 @@
 
 --- Decision 82 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(3): Lightning Bolt, Scalding Tarn, Wasteland
-  Opp:   11 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(3): Lightning Bolt, Scalding Tarn, Wasteland | lib 39
+  Opp:   11 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
   Stack: Wooded Foothills (ability, self)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Wooded Foothills, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Pending: Wooded Foothills (self)
+  Self GY: Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Known top: Murktide Regent, ?, ?, ?, ?
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Volcanic Island
@@ -1561,13 +1752,16 @@
 
 --- Decision 83 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(3): Lightning Bolt, Scalding Tarn, Wasteland
-  Opp:   11 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T) | Volcanic Island
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(3): Lightning Bolt, Scalding Tarn, Wasteland | lib 38
+  Opp:   11 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T) | Volcanic Island
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Wooded Foothills, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Self GY: Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -1577,13 +1771,17 @@
 
 --- Decision 84 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(3): Lightning Bolt, Scalding Tarn, Wasteland
-  Opp:   11 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T) | Volcanic Island
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(3): Lightning Bolt, Scalding Tarn, Wasteland | lib 38
+  Opp:   11 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T) | Volcanic Island
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Wooded Foothills, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
+  Pending: Lightning Bolt (self)
+  Self GY: Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Player B (11 life)
    1: Player A (17 life)
@@ -1597,14 +1795,17 @@
 
 --- Decision 85 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 9)
+  Self:  11 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T) | Volcanic Island (T)
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Lightning Bolt (spell, opponent) -> self (player)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Wooded Foothills, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T) | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1614,14 +1815,18 @@
 
 --- Decision 86 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  11 life | mana: empty | hand(2): Wasteland, Windswept Heath
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 9)
+  Self:  11 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 47
+  Opp:   17 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Karakas (T) | Savannah (T) | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T) | Volcanic Island (T)
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Lightning Bolt (spell, opponent) -> self (player)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Wooded Foothills, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T) | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Lightning Bolt (spell, opponent) -> self (player)
+  Pending: Wasteland (self)
+  Self GY: Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Volcanic Island
    1: Karakas
@@ -1641,14 +1846,18 @@
 
 --- Decision 87 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland
-  Opp:   11 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Step: First Main (turn 9)
+  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland | lib 38
+  Opp:   11 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara
-  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
+  Pending: Dragon's Rage Channeler (self)
+  Self GY: Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Put Unholy Heat on top of library
    1: Put Unholy Heat into graveyard
@@ -1663,13 +1872,16 @@
 
 --- Decision 88 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland
-  Opp:   8 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain (T)
+  Step: Declare Atk (turn 9)
+  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland | lib 37
+  Opp:   8 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island (T) | Mountain (T)
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
+  Self GY: Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1688,13 +1900,15 @@
 
 --- Decision 89 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(3): Wasteland, Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  5 life | mana: empty | hand(3): Wasteland, Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1706,13 +1920,16 @@
 
 --- Decision 90 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 10)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1720,13 +1937,16 @@
 
 --- Decision 91 ---
   Priority: Player B (active)
-  Step: Begin Combat
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Begin Combat (turn 10)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1736,13 +1956,16 @@
 
 --- Decision 92 ---
   Priority: Player B (active)
-  Step: Declare Atk
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Declare Atk (turn 10)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1752,13 +1975,16 @@
 
 --- Decision 93 ---
   Priority: Player B (active)
-  Step: Declare Blk
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Declare Blk (turn 10)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1769,13 +1995,16 @@
 
 --- Decision 94 ---
   Priority: Player B (active)
-  Step: Combat Dmg
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Combat Dmg (turn 10)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1783,13 +2012,16 @@
 
 --- Decision 95 ---
   Priority: Player B (active)
-  Step: End Combat
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: End Combat (turn 10)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1797,13 +2029,16 @@
 
 --- Decision 96 ---
   Priority: Player B (active)
-  Step: Second Main
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Second Main (turn 10)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1811,13 +2046,16 @@
 
 --- Decision 97 ---
   Priority: Player B (active)
-  Step: End Step
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: End Step (turn 10)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain (T)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain (T)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1830,13 +2068,15 @@
 
 --- Decision 98 ---
   Priority: Player B (non-active)
-  Step: Upkeep
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: Upkeep (turn 11)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1846,13 +2086,15 @@
 
 --- Decision 99 ---
   Priority: Player B (non-active)
-  Step: Draw
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 3
+  Step: Draw (turn 11)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 3 | lib 36
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1860,13 +2102,15 @@
 
 --- Decision 100 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(3): Volcanic Island, Scalding Tarn, Wasteland
-  Opp:   5 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain
+  Step: First Main (turn 11)
+  Self:  17 life | mana: empty | hand(3): Volcanic Island, Scalding Tarn, Wasteland | lib 36
+  Opp:   5 life | mana: empty | hand count: 2 | lib 46
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain
   Opp BF:   Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
+  Self GY: Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1878,13 +2122,16 @@
 
 --- Decision 101 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 11)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1894,13 +2141,17 @@
 
 --- Decision 102 ---
   Priority: Player B (non-active)
-  Step: First Main
-  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 11)
+  Self:  5 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 46
+  Opp:   17 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Wasteland
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
+  Pending: Wasteland (self)
+  Self GY: Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: opp_lands_played=1
   Actions:
    0: Volcanic Island
    1: Karakas
@@ -1920,13 +2171,16 @@
 
 --- Decision 103 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland
-  Opp:   5 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain
+  Step: Declare Atk (turn 11)
+  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland | lib 36
+  Opp:   5 life | mana: empty | hand count: 2 | lib 46
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain
   Opp BF:   Karakas | Savannah | Talon Gates of Madara
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
+  Self GY: Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1945,13 +2199,15 @@
 
 --- Decision 104 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(3): Windswept Heath, Wooded Foothills, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 12)
+  Self:  2 life | mana: empty | hand(3): Windswept Heath, Wooded Foothills, Wooded Foothills | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Karakas | Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1963,13 +2219,16 @@
 
 --- Decision 105 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  2 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 12)
+  Self:  2 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Karakas | Savannah | Talon Gates of Madara | Windswept Heath
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
+  Self GY: Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Windswept Heath (ChangeZone)
@@ -1983,14 +2242,18 @@
 
 --- Decision 106 ---
   Priority: Player B (active)
-  Step: First Main
-  Self:  1 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
-  Opp:   17 life | mana: empty | hand count: 2
+  Step: First Main (turn 12)
+  Self:  1 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills | lib 45
+  Opp:   17 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Karakas | Savannah | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain
   Stack: Windswept Heath (ability, self)
-  Self GY: Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath
-  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn
+  Pending: Windswept Heath (self)
+  Self GY: Windswept Heath, Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Self exile: Knight of the Reliquary
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Forest
@@ -2014,13 +2277,15 @@
 
 --- Decision 107 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(3): Delver of Secrets, Scalding Tarn, Wasteland
-  Opp:   1 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain
+  Step: First Main (turn 13)
+  Self:  17 life | mana: empty | hand(3): Delver of Secrets, Scalding Tarn, Wasteland | lib 35
+  Opp:   1 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain
   Opp BF:   Forest | Karakas | Savannah | Talon Gates of Madara
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath
+  Self GY: Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Windswept Heath, Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2034,13 +2299,15 @@
 
 --- Decision 108 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland
-  Opp:   1 life | mana: empty | hand count: 2
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Island (T) | Mountain
+  Step: First Main (turn 13)
+  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland | lib 35
+  Opp:   1 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Opp BF:   Forest | Karakas | Savannah | Talon Gates of Madara
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath
+  Self GY: Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Windswept Heath, Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2051,13 +2318,16 @@
 
 --- Decision 109 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  17 life | mana: empty | hand(1): Wasteland
-  Opp:   1 life | mana: empty | hand count: 2
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Island (T) | Mountain | Scalding Tarn
+  Step: First Main (turn 13)
+  Self:  17 life | mana: empty | hand(1): Wasteland | lib 35
+  Opp:   1 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Scalding Tarn
   Opp BF:   Forest | Karakas | Savannah | Talon Gates of Madara
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath
+  Self GY: Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Windswept Heath, Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)
@@ -2071,14 +2341,18 @@
 
 --- Decision 110 ---
   Priority: Player A (active)
-  Step: First Main
-  Self:  16 life | mana: empty | hand(1): Wasteland
-  Opp:   1 life | mana: empty | hand count: 2
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Island (T) | Mountain
+  Step: First Main (turn 13)
+  Self:  16 life | mana: empty | hand(1): Wasteland | lib 35
+  Opp:   1 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain
   Opp BF:   Forest | Karakas | Savannah | Talon Gates of Madara
   Stack: Scalding Tarn (ability, self)
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath
+  Pending: Scalding Tarn (self)
+  Self GY: Scalding Tarn, Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Windswept Heath, Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Volcanic Island
@@ -2094,13 +2368,16 @@
 
 --- Decision 111 ---
   Priority: Player A (active)
-  Step: Declare Atk
-  Self:  16 life | mana: empty | hand(1): Wasteland
-  Opp:   1 life | mana: empty | hand count: 2
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain | Volcanic Island
+  Step: Declare Atk (turn 13)
+  Self:  16 life | mana: empty | hand(1): Wasteland | lib 34
+  Opp:   1 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island (T) | Mountain | Volcanic Island
   Opp BF:   Forest | Karakas | Savannah | Talon Gates of Madara
-  Self GY: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Scalding Tarn
-  Opp GY:  Dryad Arbor, Endurance, Keen-Eyed Curator, Once Upon a Time, Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath
+  Self GY: Scalding Tarn, Volcanic Island, Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Windswept Heath, Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)

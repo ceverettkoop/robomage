@@ -214,6 +214,55 @@ inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_
 // Slot N_CARD_TYPES - 1 is reserved as sentinel for all tokens in the ML observation.
 static constexpr int TOKEN_SENTINEL = N_CARD_TYPES - 1;
 
+// ── Token identity band ───────────────────────────────────────────────────────
+// Vocab indices 900-1022 are reserved for REGISTERED token scripts, so the model can
+// tell a Construct from a Clue; TOKEN_SENTINEL (1023) stays the fallback for any token
+// whose script is not registered here. Entries are keyed by token SCRIPT filename stem
+// (Token::script_name — display names collide across scripts, stems do not). Keep this
+// table modest: only token scripts actually created by cards in card_vocab_entries
+// (TokenScript$ references plus the engine-synthesized Amass/Investigate/Mobilize stems).
+struct TokenVocabEntry {
+    const char *script;  // token script stem (matches Token::script_name)
+    const char *name;    // display name for observers (card_index_to_name)
+    int index;
+};
+
+inline constexpr int TOKEN_VOCAB_BASE = 900;  // first index of the token band
+
+inline constexpr TokenVocabEntry token_vocab_entries[] = {
+    {"b_0_0_orc_army", "Orc Army", 900},                             // Orcish Bowmasters (Amass)
+    {"c_0_0_a_construct_total_artifacts", "Construct", 901},         // Urza's Saga
+    {"c_0_1_eldrazi_spawn_sac", "Eldrazi Spawn", 902},               // Glaring Fleshraker, Kozilek's Command
+    {"c_1_1_a_insect_flying", "Insect", 903},                        // Canoptek Scarab Swarm
+    {"c_1_1_shapeshifter_changeling", "Shapeshifter", 904},          // Abundant Countryside
+    {"c_4_4_a_construct_flying_haste", "Construct 4/4", 905},        // The Fantasticar
+    {"c_a_clue_draw", "Clue", 906},                                  // Investigate (Tamiyo)
+    {"c_a_powerstone", "Powerstone", 907},                           // Cityscape Leveler
+    {"moloid", "Moloid", 908},                                       // Mole Man, Moloid Master
+    {"r_1_1_warrior", "Warrior", 909},                               // Mobilize (Voice of Victory, Stadium Headliner)
+    {"r_2_2_human_knight_trample_haste", "Human Knight", 910},       // Forth Eorlingas!
+    {"u_1_1_fish", "Fish", 911},                                     // Into the Flood Maw
+    {"u_x_x_illusion", "Illusion", 912},                             // Skyclave Apparition
+    {"w_1_1_cat", "Cat", 913},                                       // Ocelot Pride
+    {"w_2_1_cat_warrior", "Cat Warrior", 914},                       // Ajani, Nacatl Pariah
+    {"w_1_1_monk_prowess", "Monk", 915},                             // Cori-Steel Cutter
+};
+
+inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);
+
+// Maps a token script stem to its vocab index in the token band, or -1 when the
+// script is unregistered (callers then fall back to TOKEN_SENTINEL).
+inline int token_script_to_index(const std::string &script_name) {
+    static const std::unordered_map<std::string, int> vocab = [] {
+        std::unordered_map<std::string, int> m;
+        for (int i = 0; i < TOKEN_VOCAB_SIZE; i++)
+            m[token_vocab_entries[i].script] = token_vocab_entries[i].index;
+        return m;
+    }();
+    auto it = vocab.find(script_name);
+    return it != vocab.end() ? it->second : -1;
+}
+
 // Fold a UTF-8 card name to ASCII so an accented Forge `Name:` (the .txt is
 // gitignored and re-fetched accented, e.g. Lorien Revealed's script carries an
 // accented "o") still matches an ASCII vocab entry. Transliterates the Latin-1
@@ -270,6 +319,8 @@ inline const char* card_index_to_name(int idx) {
         table[TOKEN_SENTINEL] = "Token";
         for (int i = 0; i < CARD_VOCAB_SIZE; i++)
             table[card_vocab_entries[i].index] = card_vocab_entries[i].name;
+        for (int i = 0; i < TOKEN_VOCAB_SIZE; i++)
+            table[token_vocab_entries[i].index] = token_vocab_entries[i].name;
         return table;
     }();
     if (idx < 0 || idx >= N_CARD_TYPES) return "???";
