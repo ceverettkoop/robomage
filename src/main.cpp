@@ -314,7 +314,8 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
 
         game_log("Choose card to remove from main deck (replacing with %s):\n", card_in.c_str());
         // Expose the chosen IN card as the pending-decision source so the OUT
-        // query's observation shows which card this cut is FOR (slots [3183-3184]).
+        // query's observation shows which card this cut is FOR (the
+        // pending-decision context slots — see the machine_io.h layout).
         PendingDecisionScope pending(actions[static_cast<size_t>(choice)].source_entity);
         populate_gamestate(&gs, player);
         int out_choice = InputLogger::instance().get_input(out_actions);

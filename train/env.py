@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a BQUERY line to stdout:
 
-    BQUERY: <num_choices>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl><float32[MAX_ACTIONS] pub><int32[MAX_ACTIONS] zone><int32[MAX_ACTIONS] refs>
+    BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl><float32[MAX_ACTIONS] pub><int32[MAX_ACTIONS] zone><int32[MAX_ACTIONS] refs>
 
 The environment sends back a single integer on stdin.
 
@@ -64,16 +64,53 @@ except ImportError:
 # ACTION_CATEGORY_MAX is generated from the C++ ActionCategory enum (single source
 # of truth) by train/gen_enums.py — import it so this module never drifts from the
 # engine's category normalization (used for both the action block and history).
+# Every value below is GENERATED from the C++ headers by train/gen_enums.py — the
+# single source of truth. Import them (never re-type the literals) so this module
+# cannot drift from the engine: the layout/size constants (STATE_SIZE, MAX_ACTIONS,
+# the per-zone slot widths, ...), the name-keyed CAT_* ActionCategory ints, and the
+# derived-block widths this module needs. STATE_SIZE now being generated turns the
+# `_EXTRAS_END == STATE_SIZE` assert below into a real C++↔Python cross-check.
 try:
-    from _enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES
+    from _enums import (
+        ACTION_CATEGORY_MAX, REF_ZONE_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
+        STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
+        PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
+        MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
+        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        N_CARD_TYPES as _ENUM_N_CARD_TYPES,
+        CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
+        CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
+        CAT_CONFIRM_BLOCKERS, CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL,
+        CAT_SELECT_TARGET, CAT_PLAY_LAND, CAT_MULLIGAN, CAT_SEARCH_LIBRARY,
+        CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
+        CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
+        CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
+        CAT_SHUFFLE)
 except ImportError:
-    from train._enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES
+    from train._enums import (
+        ACTION_CATEGORY_MAX, REF_ZONE_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
+        STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
+        PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
+        MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
+        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        N_CARD_TYPES as _ENUM_N_CARD_TYPES,
+        CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
+        CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
+        CAT_CONFIRM_BLOCKERS, CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL,
+        CAT_SELECT_TARGET, CAT_PLAY_LAND, CAT_MULLIGAN, CAT_SEARCH_LIBRARY,
+        CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
+        CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
+        CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
+        CAT_SHUFFLE)
 
-STATE_SIZE = 5654  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
+# STATE_SIZE / MAX_ACTIONS are imported from _enums (src/machine_io.h,
+# src/classes/gamestate.h). Card identity is 1 id float/slot, not a one-hot.
+# N_CARD_TYPES comes from card_costs (generated from card_vocab.h); assert it
+# agrees with the engine's machine_io.h value so the two generators can't drift.
+assert _ENUM_N_CARD_TYPES == N_CARD_TYPES, (_ENUM_N_CARD_TYPES, N_CARD_TYPES)
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
-MAX_ACTIONS = 64         # practical upper bound on num_choices per step
 # Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of
 # cats(int32)/ids/ctrl(float32)/pub(float32)/zone(int32)/refs(int32)
 _BQUERY_STATE_BYTES = STATE_SIZE * 4
@@ -85,21 +122,18 @@ _BQUERY_ZONE_BYTES  = MAX_ACTIONS * 4  # int32 — ActionRefZone per action
 _BQUERY_REFS_BYTES  = MAX_ACTIONS * 4  # int32 — entity-slot ref of the choice's source (-1 = none)
 # Per-action human-readable descriptions, emitted ONLY under --narrative
 # (gated on the engine side too). Fixed [MAX_ACTIONS][MAX_CHOICE_DESC] NUL-padded
-# char block — must match MAX_CHOICE_DESC in src/classes/gamestate.h.
-MAX_CHOICE_DESC     = 128
+# char block. MAX_CHOICE_DESC imported from _enums (src/classes/gamestate.h).
 _BQUERY_DESC_BYTES  = MAX_ACTIONS * MAX_CHOICE_DESC
 # Per-permanent typed-counter summaries ("+1/+1:2, time:3"), also narrative-only.
 # Fixed [2*N_PERM_SLOTS][PERM_COUNTERS_LEN] NUL-padded char block (48 self slots
-# then 48 opp slots, aligned with the state vector's permanent blocks) — must
-# match PERM_COUNTERS_LEN / MAX_BATTLEFIELD_SLOTS in src/classes/gamestate.h.
-PERM_COUNTERS_LEN   = 64
-N_PERM_SLOTS        = 48
+# then 48 opp slots, aligned with the state vector's permanent blocks).
+# PERM_COUNTERS_LEN / MAX_BATTLEFIELD_SLOTS imported from _enums (gamestate.h).
+N_PERM_SLOTS        = MAX_BATTLEFIELD_SLOTS
 _BQUERY_PERM_CTRS_BYTES = 2 * N_PERM_SLOTS * PERM_COUNTERS_LEN
 # Per-permanent token names (narrative-only, slot-aligned like the counters block).
 # Every token shares the generic TOKEN_SENTINEL card id in the state vector, so this
-# is the only channel carrying a token's real name to observers. Must match
-# PERM_TOKEN_NAME_LEN / MAX_BATTLEFIELD_SLOTS in src/classes/gamestate.h.
-PERM_TOKEN_NAME_LEN = 32
+# is the only channel carrying a token's real name to observers.
+# PERM_TOKEN_NAME_LEN imported from _enums (src/classes/gamestate.h).
 _BQUERY_PERM_TOKS_BYTES = 2 * N_PERM_SLOTS * PERM_TOKEN_NAME_LEN
 # ACTION_CATEGORY_MAX imported from _enums above (mirrors src/classes/action.h).
 
@@ -150,9 +184,9 @@ assert SHAPING_EPISODE_CAP < 1.0, SHAPING_EPISODE_CAP
 assert SHAPING_EPISODE_CAP_DOOMSDAY < 1.0, SHAPING_EPISODE_CAP_DOOMSDAY
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
-MAX_HAND_SLOTS = 10
-_HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
-_BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
+# MAX_HAND_SLOTS imported from _enums (src/classes/gamestate.h).
+_HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS         # 10 * 7 = 70
+_BF_ABILITY_FEATS = MAX_BATTLEFIELD_SLOTS * _N_COST_FEATS  # 48 * 7 = 336
 # Action metadata in the obs: cats | ids | ctrl | zone_ref | slot_ref (5 blocks
 # of MAX_ACTIONS). pub stays a side-channel (self._action_public), not in the obs.
 OBS_SIZE = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 6380
@@ -188,35 +222,38 @@ _IS_ACTIVE_IDX  = _STEP_ONEHOT_START + _STEP_ONEHOT_SIZE            # 33: priori
 _SELF_IS_A_IDX  = _IS_ACTIVE_IDX + 1                                # 34: "self" is Player A
 _STACK_SIZE_IDX = _SELF_IS_A_IDX + 1                                # 35: stack size / 10
 _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full header width
-_PERM_SLOTS             = 48                   # per-player; 96 total (self + opp)
+_PERM_SLOTS             = MAX_BATTLEFIELD_SLOTS  # per-player; 96 total (self + opp)
 # 11 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
-# + keyword multi-hot + 1 card id (LAST) = 36
+# + keyword multi-hot + 1 card id (LAST) = 36. Keep the derived formula and
+# cross-check it against the engine's PERM_SLOT_SIZE (machine_io.h) so a change
+# to either side is caught here.
 _PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 1
-_STACK_SLOTS            = 12
+assert _PERM_SLOT_SIZE == PERM_SLOT_SIZE, (_PERM_SLOT_SIZE, PERM_SLOT_SIZE)
+_STACK_SLOTS            = MAX_STACK_DISPLAY
 _STACK_XAMT_OFF         = 3                    # x_or_amount / 10 within a stack slot
 _STACK_QUAL_START       = 4                    # cast qualifiers (is_copy, kicked, flashback, ...)
 _STACK_QUALS            = 7
-_STACK_MODE_SLOTS       = 6                    # chosen-mode multi-hot width per stack slot
+_STACK_MODE_SLOTS       = MAX_STACK_MODES      # chosen-mode multi-hot width per stack slot
 _STACK_MODE_START       = _STACK_QUAL_START + _STACK_QUALS                    # 11
-_STACK_TGT_SLOTS        = 4                    # announced-target sub-slots per stack slot
+_STACK_TGT_SLOTS        = MAX_STACK_TGTS       # announced-target sub-slots per stack slot
 _STACK_TGT_FIELDS       = 5                    # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
 _STACK_TGT_START        = _STACK_MODE_START + _STACK_MODE_SLOTS               # 17
 # ctrl + card id + is_spell, then x_or_amount + qualifiers, then mode multi-hot,
 # then target sub-slots (37 total)
 _STACK_SLOT_SIZE        = _STACK_TGT_START + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
-_GY_SLOTS_TOTAL         = 128                  # 64 self + 64 opponent
+_GY_SLOTS_TOTAL         = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent
 _GY_SLOT_SIZE           = 1                    # card id only
-_HAND_SLOTS_TOTAL       = 10
+_HAND_SLOTS_TOTAL       = MAX_HAND_SLOTS
 _HAND_SLOT_SIZE         = 1
-_ACTION_HISTORY_SIZE    = 128                  # entries in the action history ring
+_ACTION_HISTORY_SIZE    = ACTION_HISTORY_SIZE  # entries in the action history ring (src/classes/game.h)
 _ACTION_HISTORY_ENTRY   = 4                    # cat_norm, card_id, is_self, turn/50
 _MATCH_CTX_SIZE         = 4                    # game_number, self_wins, opp_wins, sideboard_phase
 _LIBRARY_CTX_SIZE       = 3                    # self_lib/60, opp_lib/60, is_post_board
 _CUR_TURN_SIZE          = 1                    # current turn / 50
-_KNOWN_TOP_LIB_SLOTS    = 5                    # serialized known top-of-library cards
+_KNOWN_TOP_LIB_SLOTS    = KNOWN_TOP_LIBRARY_SIZE  # serialized known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = 1                   # card id per slot
 _REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-hot (only vocab-width block)
-_OPP_KNOWN_HAND_SLOTS   = 10                   # known opponent-hand card identities
+_OPP_KNOWN_HAND_SLOTS   = MAX_HAND_SLOTS       # known opponent-hand card identities
 _OPP_KNOWN_HAND_SLOT_SIZE = 1                  # card id per slot
 
 _SELF_PERM_START     = _GLOBAL_SIZE                                                  # 36
@@ -641,7 +678,27 @@ class RoboMageEnv(gym.Env):
                 continue
 
             if line.startswith(b"BQUERY: "):
-                n = int(line[8:])
+                # Header: "BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>".
+                # The two trailing sizes are a runtime layout handshake — assert
+                # them against our imported constants so a C++ layout change
+                # without regenerated Python constants fails loudly here instead
+                # of silently misframing the binary payload below.
+                fields = line[8:].split()
+                if len(fields) != 3:
+                    raise RuntimeError(
+                        "malformed BQUERY header "
+                        f"{line!r}: expected 'BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>' "
+                        "(3 fields) — engine and Python driver are out of sync; "
+                        "regenerate train/_enums.py via `make regen`")
+                n = int(fields[0])
+                eng_state_size = int(fields[1])
+                eng_max_actions = int(fields[2])
+                if eng_state_size != STATE_SIZE or eng_max_actions != MAX_ACTIONS:
+                    raise RuntimeError(
+                        "BQUERY layout mismatch — "
+                        f"engine STATE_SIZE={eng_state_size} != python STATE_SIZE={STATE_SIZE}; "
+                        f"engine MAX_ACTIONS={eng_max_actions} != python MAX_ACTIONS={MAX_ACTIONS} — "
+                        "regenerate train/_enums.py via `make regen`")
                 self._num_choices = min(n, MAX_ACTIONS)
 
                 # Binary reads: state floats, then padded action metadata
@@ -695,7 +752,7 @@ class RoboMageEnv(gym.Env):
 
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 self._pending_confirm = any(
-                    c in _MANDATORY_CATS for c in cats_int[:self._num_choices])
+                    c in MANDATORY_CATS for c in cats_int[:self._num_choices])
 
                 # Sideboard decisions observe the stale terminal board of the
                 # previous game — mask it down to the sideboard-relevant blocks
@@ -752,7 +809,8 @@ class RoboMageEnv(gym.Env):
             # Return a zero obs on terminal step — will be replaced by reset()
             return np.zeros(OBS_SIZE, dtype=np.float32), info
 
-        # np.concatenate already produced a fresh array; no copy needed
+        # self._obs is a reused preallocated buffer mutated in place each step;
+        # callers that retain the array across steps must .copy() it themselves.
         return self._obs, info
 
     def _print_narrative_line(self, line: str):
@@ -793,37 +851,44 @@ class NarrativeEnv(RoboMageEnv):
         return out
 
 
-# ── Action category constants (mirror ActionCategory enum in classes/action.h) ─
-_CAT_PASS       = 0
-_CAT_MANA       = 1   # legacy, no longer emitted by the game (mana activations arrive
-                      # as the per-color MANA_W..MANA_C categories — see _MANA_CATS)
-_MANA_CATS      = frozenset(range(13, 19))  # MANA_W..MANA_C — mana-source activations
-                      # (in machine mode only instant-speed cracks, e.g. LED, at priority)
-_CAT_MANA_U     = 14  # tap for blue mana (MANA_U) — the color the scripted Doomsday
+# ── Action category constants ────────────────────────────────────────────────
+# The integer values come from the C++ ActionCategory enum via _enums.py (the
+# CAT_* names imported at the top of this module). These short local aliases
+# (and the mandatory/mana category sets) are the names the rest of the Python
+# side — env, scripted_agent (imports these _CAT_* from env), decode — uses.
+_CAT_PASS       = CAT_PASS_PRIORITY
+_CAT_MANA       = CAT_MANA_ABILITY  # legacy, no longer emitted by the game (mana
+                      # activations arrive as the per-color MANA_W..MANA_C cats — see _MANA_CATS)
+_MANA_CATS      = frozenset(range(CAT_MANA_W, CAT_MANA_C + 1))  # MANA_W..MANA_C — mana-source
+                      # activations (machine mode: only instant-speed cracks, e.g. LED, at priority)
+_CAT_MANA_U     = CAT_MANA_U  # tap for blue mana — the color the scripted Doomsday
                       # agent floats off a Lion's Eye Diamond crack (Oracle's UU)
-_CAT_SEL_ATK    = 2
-_MANDATORY_CATS = frozenset({2, 3, 4, 5})  # attacker/blocker confirm categories
-_CAT_CONF_ATK   = 3
-_CAT_SEL_BLK    = 4
-_CAT_CONF_BLK   = 5
-_CAT_ACTIVATE   = 6   # activate a non-mana ability (fetch lands, Wasteland destroy)
-_CAT_CAST       = 7
-_CAT_TARGET     = 8
-_CAT_LAND       = 9
-_CAT_MULLIGAN   = 11
-_CAT_SEARCH     = 19  # search library (action 0 = fail to find, 1+ = actual cards)
-_CAT_OTHER      = 10  # generic/unclassified choice (fallback default)
-_CAT_DISCARD    = 30  # choose a card to discard (cost, effect, or cleanup)
-_CAT_PAYING     = 22  # paying costs (tap lands for mana, pitch cards)
-_CAT_CHOOSE_X   = 29  # X-value ladder, or delve exile count (delve count actions carry
+_CAT_SEL_ATK    = CAT_SELECT_ATTACKER
+# Attacker/blocker confirm categories — the ONE canonical definition (decode.py
+# imports MANDATORY_CATS from here). Built from the CAT_* names, not raw ints.
+MANDATORY_CATS  = frozenset({CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS,
+                             CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS})
+_CAT_CONF_ATK   = CAT_CONFIRM_ATTACKERS
+_CAT_SEL_BLK    = CAT_SELECT_BLOCKER
+_CAT_CONF_BLK   = CAT_CONFIRM_BLOCKERS
+_CAT_ACTIVATE   = CAT_ACTIVATE_ABILITY  # activate a non-mana ability (fetch lands, Wasteland destroy)
+_CAT_CAST       = CAT_CAST_SPELL
+_CAT_TARGET     = CAT_SELECT_TARGET
+_CAT_LAND       = CAT_PLAY_LAND
+_CAT_MULLIGAN   = CAT_MULLIGAN
+_CAT_SEARCH     = CAT_SEARCH_LIBRARY  # search library (action 0 = fail to find, 1+ = actual cards)
+_CAT_OTHER      = CAT_OTHER_CHOICE  # generic/unclassified choice (fallback default)
+_CAT_DISCARD    = CAT_DISCARD  # choose a card to discard (cost, effect, or cleanup)
+_CAT_PAYING     = CAT_PAYING_COSTS  # paying costs (tap lands for mana, pitch cards)
+_CAT_CHOOSE_X   = CAT_CHOOSE_X  # X-value ladder, or delve exile count (delve count actions carry
                       # the spell's card id; an X ladder has the null card-id sentinel)
-_CAT_CHOOSE_CARD = 44  # choose a card from a non-library zone (e.g. delve per-card exile)
-_CAT_DIG        = 23  # dig choice (Once Upon a Time: pick creature/land from top N)
-_CAT_SB_IN      = 24  # sideboard: choose card from sideboard to add
-_CAT_SB_OUT     = 25  # sideboard: choose card from main deck to remove
-_CAT_SB_DONE    = 26  # sideboard: finish sideboarding
-_CAT_COMPANION  = 46  # pay {3}: put your companion from the sideboard into your hand
-_CAT_YESNO      = 41  # optional yes/no confirmation (OPTIONAL_YESNO; 0=Decline, 1=Accept)
+_CAT_CHOOSE_CARD = CAT_CHOOSE_CARD  # choose a card from a non-library zone (e.g. delve per-card exile)
+_CAT_DIG        = CAT_DIG_CHOICE  # dig choice (Once Upon a Time: pick creature/land from top N)
+_CAT_SB_IN      = CAT_SIDEBOARD_IN  # sideboard: choose card from sideboard to add
+_CAT_SB_OUT     = CAT_SIDEBOARD_OUT  # sideboard: choose card from main deck to remove
+_CAT_SB_DONE    = CAT_SIDEBOARD_DONE  # sideboard: finish sideboarding
+_CAT_COMPANION  = CAT_COMPANION  # pay {3}: put your companion from the sideboard into your hand
+_CAT_YESNO      = CAT_OPTIONAL_YESNO  # optional yes/no confirmation (OPTIONAL_YESNO; 0=Decline, 1=Accept)
 
 # Colored mana requirements per card vocab index (card_vocab.h).
 # Keys are color pool indices: W=0, U=1, B=2, R=3, G=4, C=5.
@@ -979,8 +1044,8 @@ _MULTI_MANA_LAND_IDS     = frozenset({123, 261,  # Ancient Tomb, Urza's Workshop
                                       _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
                                       _URZAS_TOWER_VOCAB_IDX})
 
-_CAT_TOP_LIBRARY = 20  # choose card to put on top of library (Doomsday pile ordering)
-_CAT_SHUFFLE     = 21  # shuffle choice (0 = don't shuffle, 1 = shuffle)
+_CAT_TOP_LIBRARY = CAT_TOP_LIBRARY  # choose card to put on top of library (Doomsday pile ordering)
+_CAT_SHUFFLE     = CAT_SHUFFLE  # shuffle choice (0 = don't shuffle, 1 = shuffle)
 
 
 def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:

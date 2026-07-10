@@ -8,6 +8,75 @@
 ACTION_CATEGORY_MAX = 46
 N_ACTION_CATEGORIES = 47
 
+# ── Observation layout / size constants (parsed from the C++ headers, the
+# single source of truth). train/env.py imports these instead of hand-
+# copying the numbers; the header naming each constant follows it. ──
+MAX_ACTIONS = 64  # src/classes/gamestate.h
+MAX_CHOICE_DESC = 128  # src/classes/gamestate.h
+PERM_COUNTERS_LEN = 64  # src/classes/gamestate.h
+PERM_TOKEN_NAME_LEN = 32  # src/classes/gamestate.h
+MAX_BATTLEFIELD_SLOTS = 48  # src/classes/gamestate.h
+MAX_STACK_DISPLAY = 12  # src/classes/gamestate.h
+MAX_STACK_MODES = 6  # src/classes/gamestate.h
+MAX_STACK_TGTS = 4  # src/classes/gamestate.h
+MAX_GY_SLOTS = 64  # src/classes/gamestate.h
+MAX_HAND_SLOTS = 10  # src/classes/gamestate.h
+KNOWN_TOP_LIBRARY_SIZE = 5  # src/classes/game.h
+ACTION_HISTORY_SIZE = 128  # src/classes/game.h
+STATE_SIZE = 5654  # src/machine_io.h
+N_CARD_TYPES = 1024  # src/machine_io.h
+PERM_SLOT_SIZE = 36  # src/machine_io.h
+
+# Name-keyed ActionCategory constants: CAT_<ENUM_NAME> = value, for every
+# entry in the C++ ActionCategory enum (src/classes/action.h).
+CAT_PASS_PRIORITY = 0
+CAT_MANA_ABILITY = 1
+CAT_SELECT_ATTACKER = 2
+CAT_CONFIRM_ATTACKERS = 3
+CAT_SELECT_BLOCKER = 4
+CAT_CONFIRM_BLOCKERS = 5
+CAT_ACTIVATE_ABILITY = 6
+CAT_CAST_SPELL = 7
+CAT_SELECT_TARGET = 8
+CAT_PLAY_LAND = 9
+CAT_OTHER_CHOICE = 10
+CAT_MULLIGAN = 11
+CAT_BOTTOM_DECK_CARD = 12
+CAT_MANA_W = 13
+CAT_MANA_U = 14
+CAT_MANA_B = 15
+CAT_MANA_R = 16
+CAT_MANA_G = 17
+CAT_MANA_C = 18
+CAT_SEARCH_LIBRARY = 19
+CAT_TOP_LIBRARY = 20
+CAT_SHUFFLE = 21
+CAT_PAYING_COSTS = 22
+CAT_DIG_CHOICE = 23
+CAT_SIDEBOARD_IN = 24
+CAT_SIDEBOARD_OUT = 25
+CAT_SIDEBOARD_DONE = 26
+CAT_SACRIFICE_PERMANENT = 27
+CAT_RETURN_PERMANENT = 28
+CAT_CHOOSE_X = 29
+CAT_DISCARD = 30
+CAT_CHOOSE_MODE = 31
+CAT_CHOOSE_MANA_COLOR = 32
+CAT_PAY_UNLESS = 33
+CAT_NAME_CARD = 34
+CAT_CHOOSE_TYPE = 35
+CAT_KEEP_LEGEND = 36
+CAT_ORDER_TRIGGERS = 37
+CAT_CHOOSE_REPLACEMENT = 38
+CAT_ATTACK_TARGET = 39
+CAT_BLOCK_TARGET = 40
+CAT_OPTIONAL_YESNO = 41
+CAT_PLAY_FREE = 42
+CAT_SYLVAN_CHOICE = 43
+CAT_CHOOSE_CARD = 44
+CAT_ASSIGN_DAMAGE = 45
+CAT_COMPANION = 46
+
 # ActionCategory value -> short display name.
 _CAT_NAMES = {
     0: "PASS",  # PASS_PRIORITY

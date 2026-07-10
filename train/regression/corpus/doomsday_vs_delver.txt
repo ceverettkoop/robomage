@@ -206,6 +206,8 @@
   Opp:   20 life | mana: empty | hand count: 7
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
+  Known opp hand: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
@@ -226,6 +228,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -239,6 +243,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -254,6 +260,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -269,6 +277,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -285,6 +295,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -298,6 +310,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -311,6 +325,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -324,6 +340,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -342,6 +360,8 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -356,6 +376,8 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -368,6 +390,7 @@
   Opp:   18 life | mana: empty | hand count: 5
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -386,6 +409,8 @@
   Stack: Mishra's Bauble (spell, opponent)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Known opp hand: Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -401,6 +426,7 @@
   Self BF:  Mishra's Bauble
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -419,6 +445,7 @@
   Self BF:  Mishra's Bauble | Polluted Delta
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -436,6 +463,7 @@
   Self BF:  Mishra's Bauble | Polluted Delta
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Player A (18 life)
@@ -455,6 +483,7 @@
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -473,6 +502,8 @@
   Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Brainstorm, Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -490,6 +521,7 @@
   Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -512,6 +544,7 @@
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -530,6 +563,7 @@
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -545,6 +579,8 @@
   Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -567,6 +603,7 @@
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
@@ -590,6 +627,8 @@
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Lightning Bolt
@@ -611,6 +650,8 @@
   Stack: Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -630,6 +671,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -644,6 +687,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -660,6 +705,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -676,6 +723,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -693,6 +742,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -707,6 +758,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -721,6 +774,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -735,6 +790,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -756,6 +813,8 @@
   Stack: Mishra's Bauble (ability, opponent)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -772,6 +831,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -787,6 +848,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -800,6 +863,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Island
@@ -818,6 +883,8 @@
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -838,6 +905,8 @@
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Daze, Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -854,6 +923,8 @@
   Stack: Ponder (spell, opponent)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -870,6 +941,8 @@
   Stack: Ponder (spell, opponent)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
   Actions:
    0: Return Island
@@ -887,6 +960,8 @@
   Stack: Ponder (spell, opponent)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1, self_revolt
   Actions:
    0: Ponder
@@ -904,6 +979,8 @@
   Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -922,6 +999,8 @@
   Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
@@ -937,6 +1016,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -951,6 +1032,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -967,6 +1050,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -983,6 +1068,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1000,6 +1087,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1014,6 +1103,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1028,6 +1119,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1042,6 +1135,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1061,6 +1156,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1076,6 +1173,8 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1089,6 +1188,7 @@
   Opp BF:   Island (T)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Island
@@ -1108,6 +1208,7 @@
   Opp BF:   Island (T)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1127,6 +1228,8 @@
   Stack: Ponder (spell, opponent)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1147,6 +1250,7 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Volcanic Island
@@ -1166,6 +1270,7 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Ponder
@@ -1182,6 +1287,8 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Ponder, Ponder, Volcanic Island, ?, ?
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Don't shuffle
@@ -1200,6 +1307,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1215,6 +1324,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1232,6 +1343,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1249,6 +1362,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1267,6 +1382,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1282,6 +1399,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1297,6 +1416,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1312,6 +1433,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1332,6 +1455,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1348,6 +1473,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1363,6 +1490,8 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Sacrifice Island
   >> A/A: 0 (Sacrifice Island)
@@ -1379,6 +1508,8 @@
   Stack: Edge of Autumn (ability, self) [amt=1]
   Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1396,6 +1527,8 @@
   Opp BF:   Island (T)
   Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1410,6 +1543,8 @@
   Opp BF:   Island (T)
   Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1428,6 +1563,8 @@
   Opp BF:   Island (T)
   Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1448,6 +1585,8 @@
   Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1466,6 +1605,8 @@
   Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -1489,6 +1630,8 @@
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1509,6 +1652,8 @@
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Personal Tutor on top of library
@@ -1526,6 +1671,8 @@
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1541,6 +1688,8 @@
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1558,6 +1707,8 @@
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1575,6 +1726,8 @@
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1593,6 +1746,8 @@
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1608,6 +1763,8 @@
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1623,6 +1780,8 @@
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1638,6 +1797,8 @@
   Opp BF:   Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1658,6 +1819,8 @@
   Opp BF:   Island
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1674,6 +1837,8 @@
   Opp BF:   Island
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1688,6 +1853,8 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1710,6 +1877,8 @@
   Stack: Ponder (spell, opponent)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1729,6 +1898,8 @@
   Stack: Ponder (spell, self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Volcanic Island
    1: Mishra's Bauble
@@ -1747,6 +1918,8 @@
   Stack: Ponder (spell, self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Mishra's Bauble
    1: Thundering Falls
@@ -1762,6 +1935,8 @@
   Stack: Ponder (spell, self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Thundering Falls, Mishra's Bauble, Volcanic Island, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1779,6 +1954,8 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1798,6 +1975,8 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1819,6 +1998,8 @@
   Stack: Dragon's Rage Channeler (spell, opponent)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1837,6 +2018,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1852,6 +2035,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1869,6 +2054,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1886,6 +2073,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1904,6 +2093,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1919,6 +2110,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1934,6 +2127,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1949,6 +2144,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1969,6 +2166,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1985,6 +2184,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1999,6 +2200,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Thoughtseize
@@ -2016,6 +2219,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Player B (19 life)
    1: Player A (17 life)
@@ -2035,6 +2240,8 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)
@@ -2060,6 +2267,8 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Lightning Bolt
    1: Ponder
@@ -2078,6 +2287,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2092,6 +2303,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2108,6 +2321,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2124,6 +2339,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2141,6 +2358,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2155,6 +2374,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2169,6 +2390,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2183,6 +2406,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2202,6 +2427,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2218,6 +2445,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2232,6 +2461,8 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2254,6 +2485,8 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)
@@ -2272,6 +2505,8 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Exile Thassa's Oracle
   >> A/A: 0 (Exile Thassa's Oracle)
@@ -2289,6 +2524,8 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Mishra's Bauble
   >> A/A: 0 (Mishra's Bauble)
@@ -2306,6 +2543,8 @@
   Stack: Force of Will (spell, self) -> Mishra's Bauble (opponent, slot 98) -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2324,6 +2563,8 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1]
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2343,6 +2584,8 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1]
   Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Put Volcanic Island on top of library
    1: Put Volcanic Island into graveyard
@@ -2359,6 +2602,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2373,6 +2618,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2395,6 +2641,8 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Ponder (spell, opponent)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2414,6 +2662,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Ponder (spell, self)
   Self GY: Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Put Flooded Strand on top of library
    1: Put Flooded Strand into graveyard
@@ -2431,6 +2680,8 @@
   Stack: Ponder (spell, opponent)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2450,6 +2701,7 @@
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Mishra's Bauble
    1: Brainstorm
@@ -2468,6 +2720,7 @@
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Brainstorm
    1: Force of Will
@@ -2483,6 +2736,8 @@
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Force of Will, Brainstorm, Mishra's Bauble, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -2500,6 +2755,8 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Brainstorm, Mishra's Bauble, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2518,6 +2775,8 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Brainstorm, Mishra's Bauble, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2538,6 +2797,8 @@
   Stack: Scalding Tarn (ability, opponent)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2557,6 +2818,8 @@
   Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Brainstorm, Mishra's Bauble, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -2577,6 +2840,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2592,6 +2857,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2611,6 +2878,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -2628,6 +2896,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2645,6 +2915,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2664,6 +2936,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2679,6 +2953,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2694,6 +2970,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2709,6 +2987,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2729,6 +3009,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2745,6 +3027,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2759,6 +3043,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Thoughtseize
@@ -2776,6 +3062,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Player B (18 life)
    1: Player A (11 life)
@@ -2795,6 +3083,8 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2817,6 +3107,8 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Force of Will, Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Force of Will
   >> A/A: 0 (Force of Will)
@@ -2834,6 +3126,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2848,6 +3142,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2864,6 +3160,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2880,6 +3178,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2897,6 +3197,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2911,6 +3213,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2925,6 +3229,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2939,6 +3245,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2958,6 +3266,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2974,6 +3284,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Scalding Tarn, Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2988,6 +3300,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -3005,6 +3318,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3025,6 +3339,8 @@
   Stack: Scalding Tarn (ability, opponent)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3044,6 +3360,7 @@
   Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -3063,6 +3380,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3078,6 +3397,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3097,6 +3418,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -3114,6 +3436,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3131,6 +3455,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3150,6 +3476,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3165,6 +3493,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3180,6 +3510,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3195,6 +3527,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3215,6 +3549,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3231,6 +3567,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3246,6 +3584,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3261,6 +3601,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3278,6 +3620,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3295,6 +3639,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3313,6 +3659,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3328,6 +3676,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3343,6 +3693,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3358,6 +3710,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3378,6 +3732,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3395,6 +3751,7 @@
   Opp BF:   Undercity Sewers
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -3411,6 +3768,7 @@
   Opp BF:   Undercity Sewers
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Player A (6 life)
    1: Player B (17 life)
@@ -3432,6 +3790,8 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Lightning Bolt (spell, opponent) -> self (player)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3452,6 +3812,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Put Wasteland on top of library
    1: Put Wasteland into graveyard
@@ -3469,6 +3830,8 @@
   Stack: Lightning Bolt (spell, opponent) -> self (player)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3487,6 +3850,8 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Thundering Falls
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3502,6 +3867,7 @@
   Opp BF:   Undercity Sewers
   Self GY: Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -3521,6 +3887,7 @@
   Stack: Thundering Falls (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -3542,6 +3909,7 @@
   Stack: Thundering Falls (ability, self) [amt=1]
   Self GY: Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Put Cori-Steel Cutter on top of library
@@ -3559,6 +3927,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -3575,6 +3944,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -3595,6 +3965,7 @@
   Opp BF:   Undercity Sewers
   Self GY: Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -3612,6 +3983,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -3630,6 +4002,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority

@@ -122,6 +122,7 @@
   Self:  20 life | mana: empty | hand(8): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp:   20 life | mana: empty | hand count: 6
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -138,6 +139,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self BF:  Polluted Delta
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -152,6 +154,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self BF:  Polluted Delta
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1
   Actions:
    0: Sacrifice Polluted Delta
@@ -168,6 +171,7 @@
   Self BF:  Horizon Canopy
   Stack: Edge of Autumn (ability, opponent) [amt=1]
   Opp GY:  Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -184,6 +188,7 @@
   Self BF:  Horizon Canopy
   Stack: Edge of Autumn (ability, opponent) [amt=1]
   Opp GY:  Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -201,6 +206,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Opp BF:   Horizon Canopy
   Self GY: Edge of Autumn, Polluted Delta
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -217,6 +223,7 @@
   Opp BF:   Horizon Canopy
   Stack: Lotus Petal (spell, self)
   Self GY: Edge of Autumn, Polluted Delta
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -231,6 +238,7 @@
   Self BF:  Horizon Canopy
   Stack: Lotus Petal (spell, opponent)
   Opp GY:  Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Lotus Petal, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -247,6 +255,7 @@
   Self BF:  Horizon Canopy
   Stack: Lotus Petal (spell, opponent)
   Opp GY:  Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Lotus Petal, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -264,6 +273,7 @@
   Self BF:  Lotus Petal
   Opp BF:   Horizon Canopy
   Self GY: Edge of Autumn, Polluted Delta
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -284,6 +294,7 @@
   Opp BF:   Horizon Canopy
   Stack: Personal Tutor (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -298,6 +309,7 @@
   Self BF:  Horizon Canopy
   Stack: Personal Tutor (spell, opponent)
   Opp GY:  Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -314,6 +326,7 @@
   Self BF:  Horizon Canopy
   Stack: Personal Tutor (spell, opponent)
   Opp GY:  Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -332,6 +345,7 @@
   Opp BF:   Horizon Canopy
   Stack: Personal Tutor (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -371,6 +385,7 @@
   Opp:   20 life | mana: empty | hand count: 5
   Self BF:  Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -389,6 +404,7 @@
   Opp:   20 life | mana: empty | hand count: 5
   Self BF:  Horizon Canopy | Savannah
   Opp GY:  Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -409,6 +425,7 @@
   Self BF:  Savannah (T)
   Self GY: Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -423,6 +440,7 @@
   Self BF:  Savannah (T)
   Self GY: Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Green Sun's Zenith
@@ -440,6 +458,7 @@
   Stack: Endurance (spell, opponent) [evoke]
   Self GY: Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -457,6 +476,7 @@
   Stack: Endurance (spell, opponent) [evoke]
   Self GY: Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Exile Ponder
@@ -474,6 +494,7 @@
   Stack: Endurance (spell, opponent) [evoke]
   Self GY: Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Endurance
@@ -501,6 +522,7 @@
   Opp BF:   Savannah (T)
   Self GY: Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -518,6 +540,7 @@
   Opp BF:   Savannah (T)
   Self GY: Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -536,6 +559,7 @@
   Opp BF:   Savannah (T)
   Self GY: Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Player A (20 life)
@@ -564,6 +588,8 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Endurance, Horizon Canopy
+  Known opp hand: Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Swords to Plowshares
@@ -591,6 +617,7 @@
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -610,6 +637,7 @@
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -630,6 +658,7 @@
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -647,6 +676,7 @@
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Scryb Ranger
@@ -663,6 +693,7 @@
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Return Savannah to hand
@@ -691,6 +722,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -707,6 +740,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -721,6 +756,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
@@ -740,6 +777,8 @@
   Stack: Lotus Petal (spell, self)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -756,6 +795,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
@@ -773,6 +814,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -794,6 +837,8 @@
   Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -813,6 +858,8 @@
   Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -834,6 +881,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -849,6 +898,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -866,6 +917,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -883,6 +936,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -901,6 +956,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -916,6 +973,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -931,6 +990,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -946,6 +1007,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -966,6 +1029,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -980,6 +1044,8 @@
   Opp BF:   Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -996,6 +1062,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1010,6 +1077,8 @@
   Opp BF:   Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1024,6 +1093,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1045,6 +1115,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1063,6 +1134,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: X = 0
@@ -1083,6 +1155,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1101,6 +1174,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Scryb Ranger
@@ -1118,6 +1192,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Return Savannah to hand
@@ -1137,6 +1212,8 @@
   Stack: Scryb Ranger (ability, opponent) -> Scryb Ranger (opponent, slot 49) -> Green Sun's Zenith (spell, opponent)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1156,6 +1233,8 @@
   Stack: Green Sun's Zenith (spell, opponent)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1175,6 +1254,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -1194,6 +1274,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1209,6 +1291,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1226,6 +1310,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -1245,6 +1330,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1262,6 +1348,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1279,6 +1367,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1298,6 +1388,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1313,6 +1405,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1328,6 +1422,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1343,6 +1439,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1363,6 +1461,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1379,6 +1479,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1393,6 +1495,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1412,6 +1516,8 @@
   Stack: Personal Tutor (spell, self)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1430,6 +1536,8 @@
   Stack: Personal Tutor (spell, self)
   Self GY: Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Fail to find
    1: Doomsday
@@ -1459,6 +1567,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1473,6 +1583,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1489,6 +1601,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1505,6 +1619,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1522,6 +1638,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1536,6 +1654,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1550,6 +1670,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1564,6 +1686,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1583,6 +1707,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1597,6 +1722,8 @@
   Opp BF:   Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1613,6 +1740,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1627,6 +1755,8 @@
   Opp BF:   Dryad Arbor [1/1] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1641,6 +1771,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1665,6 +1796,7 @@
   Stack: Keen-Eyed Curator (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1682,6 +1814,7 @@
   Stack: Keen-Eyed Curator (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Dryad Arbor
    1: Scryb Ranger
@@ -1699,6 +1832,7 @@
   Stack: Keen-Eyed Curator (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Return Dryad Arbor to hand
    1: Return Savannah to hand
@@ -1717,6 +1851,8 @@
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (spell, opponent)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1735,6 +1871,8 @@
   Stack: Keen-Eyed Curator (spell, opponent)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1752,6 +1890,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1773,6 +1912,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1788,6 +1929,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1805,6 +1948,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -1824,6 +1968,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1841,6 +1986,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1858,6 +2005,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1877,6 +2026,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1892,6 +2043,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1907,6 +2060,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1922,6 +2077,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1942,6 +2099,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1958,6 +2117,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1972,6 +2133,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1991,6 +2154,8 @@
   Stack: Ponder (spell, self)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2010,6 +2175,8 @@
   Stack: Ponder (spell, self)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Ponder
    1: Flooded Strand
@@ -2028,6 +2195,8 @@
   Stack: Ponder (spell, self)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Flooded Strand
    1: Personal Tutor
@@ -2043,6 +2212,9 @@
   Stack: Ponder (spell, self)
   Self GY: Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Personal Tutor, Flooded Strand, Ponder, ?, ?
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -2060,6 +2232,9 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Ponder, ?, ?, ?
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2080,6 +2255,9 @@
   Stack: Personal Tutor (spell, self)
   Self GY: Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Ponder, ?, ?, ?
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2099,6 +2277,9 @@
   Stack: Personal Tutor (spell, self)
   Self GY: Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Ponder, ?, ?, ?
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Fail to find
@@ -2127,6 +2308,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2142,6 +2325,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2159,6 +2344,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2176,6 +2363,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2194,6 +2383,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2209,6 +2400,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2224,6 +2417,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2239,6 +2434,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2259,6 +2456,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)
@@ -2274,6 +2472,8 @@
   Opp BF:   Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2290,6 +2490,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)
@@ -2305,6 +2506,8 @@
   Opp BF:   Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2319,6 +2522,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2341,6 +2545,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2359,6 +2564,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Force of Will
@@ -2391,6 +2597,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2410,6 +2617,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Dryad Arbor
@@ -2429,6 +2637,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Return Dryad Arbor to hand
@@ -2449,6 +2658,7 @@
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self) -> Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2465,6 +2675,8 @@
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (ability, opponent) -> Force of Will (self)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2483,6 +2695,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Force of Will (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2499,6 +2712,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Force of Will (self)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2517,6 +2732,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2534,6 +2750,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Thoughtseize
@@ -2565,6 +2782,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2581,6 +2799,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Thoughtseize (self)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Thoughtseize, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2599,6 +2819,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2616,6 +2837,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Lotus Petal
@@ -2646,6 +2868,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Lotus Petal (self)
   Self GY: Personal Tutor, Lotus Petal, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2664,6 +2888,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2679,6 +2905,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2696,6 +2924,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
@@ -2716,6 +2945,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -2736,6 +2966,7 @@
   Opp BF:   Swamp | Underground Sea (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -2754,6 +2985,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2771,6 +3004,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2791,6 +3026,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2806,6 +3043,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2821,6 +3060,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2836,6 +3077,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2856,6 +3099,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2872,6 +3117,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2886,6 +3133,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2904,6 +3153,8 @@
   Stack: Lotus Petal (spell, self)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2920,6 +3171,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2934,6 +3187,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2950,6 +3205,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2966,6 +3223,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2983,6 +3242,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2997,6 +3258,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3011,6 +3274,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3025,6 +3290,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3044,6 +3311,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)
@@ -3059,6 +3327,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3075,6 +3345,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)
@@ -3090,6 +3361,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3104,6 +3377,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Dryad Arbor
@@ -3126,6 +3400,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3144,6 +3419,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Lotus Petal
@@ -3173,6 +3449,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3192,6 +3469,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Dryad Arbor
@@ -3211,6 +3489,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Return Dryad Arbor to hand
@@ -3231,6 +3510,7 @@
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self) -> Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3247,6 +3527,8 @@
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (ability, opponent) -> Lotus Petal (self)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3265,6 +3547,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Lotus Petal (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3281,6 +3564,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Lotus Petal (self)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3299,6 +3584,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3316,6 +3602,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Personal Tutor
@@ -3344,6 +3631,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
   Self GY: Personal Tutor, Ponder, Personal Tutor, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3362,6 +3651,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3377,6 +3668,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3394,6 +3687,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
@@ -3414,6 +3708,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -3434,6 +3729,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -3452,6 +3748,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3469,6 +3767,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3489,6 +3789,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3504,6 +3806,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3519,6 +3823,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3534,6 +3840,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3554,6 +3862,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3570,6 +3880,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3584,6 +3896,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Play Undercity Sewers
@@ -3604,6 +3918,8 @@
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3624,6 +3940,8 @@
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Put Personal Tutor on top of library
@@ -3641,6 +3959,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3656,6 +3976,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3673,6 +3995,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3690,6 +4014,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3708,6 +4034,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3723,6 +4051,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3738,6 +4068,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3753,6 +4085,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3773,6 +4107,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)
@@ -3788,6 +4123,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3804,6 +4141,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)
@@ -3819,6 +4157,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3833,6 +4173,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Dryad Arbor
@@ -3856,6 +4197,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3874,6 +4216,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Personal Tutor
@@ -3902,6 +4245,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3921,6 +4265,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Dryad Arbor
@@ -3940,6 +4285,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Return Dryad Arbor to hand
@@ -3960,6 +4306,7 @@
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self) -> Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3976,6 +4323,8 @@
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3994,6 +4343,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4010,6 +4360,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Personal Tutor, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4028,6 +4380,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4045,6 +4398,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Personal Tutor
@@ -4072,6 +4426,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
   Self GY: Personal Tutor, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4090,6 +4446,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4105,6 +4463,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4122,6 +4482,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
@@ -4142,6 +4503,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -4162,6 +4524,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T) | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -4180,6 +4543,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4197,6 +4562,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4217,6 +4584,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4232,6 +4601,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4247,6 +4618,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4262,6 +4635,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4282,6 +4657,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -4298,6 +4675,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -4312,6 +4691,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -4329,6 +4710,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -4350,6 +4733,8 @@
   Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4369,6 +4754,8 @@
   Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -4389,6 +4776,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4404,6 +4793,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4421,6 +4812,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4438,6 +4831,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4456,6 +4851,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4471,6 +4868,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4486,6 +4885,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4501,6 +4902,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4521,6 +4924,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)
@@ -4536,6 +4940,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -4552,6 +4958,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)
@@ -4567,6 +4974,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -4581,6 +4990,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Dryad Arbor
@@ -4605,6 +5015,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -4623,6 +5034,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Personal Tutor
@@ -4650,6 +5062,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -4669,6 +5082,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Dryad Arbor
@@ -4688,6 +5102,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Return Dryad Arbor to hand
@@ -4708,6 +5123,7 @@
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self) -> Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4724,6 +5140,8 @@
   Stack: Scryb Ranger (ability, opponent) -> Dryad Arbor (opponent) -> Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4742,6 +5160,7 @@
   Stack: Keen-Eyed Curator (ability, self) -> Personal Tutor (opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4758,6 +5177,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Personal Tutor (self)
   Self GY: Misty Rainforest, Personal Tutor, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4776,6 +5197,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -4793,6 +5215,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Edge of Autumn
@@ -4819,6 +5242,8 @@
   Stack: Keen-Eyed Curator (ability, opponent) -> Edge of Autumn (self)
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Edge of Autumn, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4837,6 +5262,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4852,6 +5279,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4869,6 +5298,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
@@ -4889,6 +5319,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -4909,6 +5340,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Thoughtseize, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -4927,6 +5359,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -4944,6 +5378,8 @@
   Opp BF:   Keen-Eyed Curator [3/3] (T,ATK) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T,ATK)
   Self GY: Misty Rainforest, Ponder, Verdant Catacombs, Polluted Delta
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known opp hand: Wasteland, Windswept Heath, Windswept Heath
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority

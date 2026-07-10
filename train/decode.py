@@ -26,7 +26,12 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _STACK_MODE_START, _STACK_TGT_START,
                  _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
                  _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
+                 _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
+                 _KNOWN_TOP_LIB_SLOT_SIZE, _REVEALED_START, _REVEALED_SIZE,
+                 _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
+                 _OPP_KNOWN_HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
+                 MAX_GY_SLOTS, MANDATORY_CATS,
                  _PENDING_DECISION_START, _MATCH_CTX_START,
                  _SELF_BLOCK_START, _OPP_BLOCK_START,
                  _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
@@ -48,11 +53,12 @@ from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
 # ── Engine constants (card identity is a single normalized id float per slot) ──
 STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + x/quals + modes + targets (37)
 GY_SLOT_SIZE = _GY_SLOT_SIZE                       # card-id only
-_OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE      # opp graveyard begins after 64 self slots
+_OPP_GY_START = _GY_START + MAX_GY_SLOTS * GY_SLOT_SIZE  # opp gy begins after the self slots
 
 # State-vector context indices (derived from env layout)
 _IDX_SELF_LIB = _LIBRARY_CTX_START                 # self_library_ct / 60
 _IDX_OPP_LIB = _LIBRARY_CTX_START + 1              # opp_library_ct  / 60
+_IDX_POST_BOARD = _LIBRARY_CTX_START + 2           # is_post_board (0/1; game 2+ of bo3)
 _IDX_TURN = _CUR_TURN_IDX                          # turn / 50
 
 # Bo3 match-context indices (self-perspective; see src/machine_io.h layout).
@@ -85,19 +91,29 @@ _STACK_QUAL_NAMES = ("copy", "kicked", "flashback", "evoke", "escape",
 _NULL_SENTINEL = _ACTION_CARD_ID_NULL              # -1.0 / N_CARD_TYPES
 _TOKEN_IDX = N_CARD_TYPES - 1
 
-# Action-metadata categories that constitute a mandatory attacker/blocker loop.
-MANDATORY_CATS = frozenset({2, 3, 4, 5})
+# MANDATORY_CATS (the mandatory attacker/blocker loop categories) is defined
+# once in env.py, built from the generated CAT_* names, and imported above so
+# there is a single source for it.
+
+# Action-category / step / zone-ref display names AND the name-keyed CAT_*
+# integers are generated from the C++ enums by train/gen_enums.py — the single
+# source of truth for both the values and these names. Re-run it after changing
+# the C++ enums.
+from _enums import (_CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX,  # noqa: E402
+                    _MC_NAMES, _OBS_KEYWORDS,
+                    CAT_PASS_PRIORITY, CAT_CAST_SPELL, CAT_PLAY_LAND,
+                    CAT_ACTIVATE_ABILITY, CAT_SELECT_TARGET, CAT_SELECT_ATTACKER,
+                    CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
+                    CAT_CONFIRM_BLOCKERS, CAT_MULLIGAN, CAT_BOTTOM_DECK_CARD,
+                    CAT_MANA_W, CAT_MANA_C, CAT_SEARCH_LIBRARY, CAT_TOP_LIBRARY,
+                    CAT_PAYING_COSTS, CAT_DIG_CHOICE, CAT_OTHER_CHOICE)
 
 # Categories whose choice references a specific board/stack entity, where an
 # "@slotN" suffix disambiguates same-named cards: select attacker/blocker,
 # activate, target, pay cost.
-_SLOT_REF_CATS = frozenset({2, 4, 6, 8, 22})
-
-# Action-category / step / zone-ref display names are generated from the C++
-# enums by train/gen_enums.py — the single source of truth for both the integer
-# values and these names. Re-run that script after changing the C++ enums.
-from _enums import (_CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX,  # noqa: E402
-                    _MC_NAMES, _OBS_KEYWORDS)
+_SLOT_REF_CATS = frozenset({CAT_SELECT_ATTACKER, CAT_SELECT_BLOCKER,
+                            CAT_ACTIVATE_ABILITY, CAT_SELECT_TARGET,
+                            CAT_PAYING_COSTS})
 
 _MANA_COLORS = ("W", "U", "B", "R", "G", "C")
 
@@ -406,7 +422,7 @@ def decode_step(state):
     return _STEP_NAMES[idx] if idx < len(_STEP_NAMES) else f"Step({idx})"
 
 
-def _decode_permanents(state, start, count=48, counters=None, token_names=None):
+def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_names=None):
     """Decode permanent slots into a list of dicts (non-empty only).
 
     `counters` is the per-slot typed-counter summary list the engine emits
@@ -489,9 +505,10 @@ def _decode_permanents(state, start, count=48, counters=None, token_names=None):
 
 
 def _decode_hand(state):
-    """Decode self hand (10 slots x 128 one-hot) into a list of dicts."""
+    """Decode self hand (MAX_HAND_SLOTS slots, 1 normalized card-id float each)
+    into a list of dicts."""
     cards = []
-    for i in range(10):
+    for i in range(MAX_HAND_SLOTS):
         idx = onehot_to_index(state, _HAND_START + i * _HAND_SLOT_SIZE)
         if idx >= 0:
             cards.append({"name": card_index_to_name(idx), "card_idx": idx})
@@ -499,13 +516,60 @@ def _decode_hand(state):
 
 
 def _decode_graveyard(state, start):
-    """Decode a graveyard zone (64 slots x 128 one-hot) into card names."""
+    """Decode a graveyard zone (MAX_GY_SLOTS slots, 1 normalized card-id float
+    each) into card names."""
     cards = []
-    for i in range(64):
+    for i in range(MAX_GY_SLOTS):
         card = onehot_to_card(state, start + i * GY_SLOT_SIZE)
         if card is not None:
             cards.append(card)
     return cards
+
+
+def _decode_known_top_library(state):
+    """Decode the viewer's known top-of-library block (belief state).
+
+    Returns a list of one entry per known-window slot (index 0 = top), each a
+    card name or "?" for an unknown (sentinel) slot, but ONLY when at least one
+    slot is known; otherwise returns [] so callers can hide the block. Set by
+    Ponder/Brainstorm/Rearrange/Sylvan, cleared to unknown on shuffle."""
+    names = []
+    any_known = False
+    for i in range(_KNOWN_TOP_LIB_SLOTS):
+        idx = onehot_to_index(state, _KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE)
+        if idx >= 0:
+            any_known = True
+            names.append(card_index_to_name(idx))
+        else:
+            names.append("?")
+    return names if any_known else []
+
+
+def _decode_opp_known_hand(state):
+    """Decode the viewer's known opponent-hand cards block (belief state).
+
+    Returns the card names of the non-sentinel slots only (identities of
+    opponent-hand cards the viewer has had revealed, e.g. by Thoughtseize);
+    empty list when nothing is known."""
+    names = []
+    for i in range(_OPP_KNOWN_HAND_SLOTS):
+        idx = onehot_to_index(state, _OPP_KNOWN_HAND_START + i * _OPP_KNOWN_HAND_SLOT_SIZE)
+        if idx >= 0:
+            names.append(card_index_to_name(idx))
+    return names
+
+
+def _decode_opp_revealed(state):
+    """Decode the opponent revealed-cards multi-hot (belief state).
+
+    Returns the card names of the set bits only — every distinct card the
+    opponent-of-viewer has ever revealed this match (entered a public zone or
+    was revealed by a tutor); empty list when none seen yet."""
+    names = []
+    for idx in range(_REVEALED_SIZE):
+        if state[_REVEALED_START + idx] > 0.5:
+            names.append(card_index_to_name(idx))
+    return names
 
 
 def _decode_stack(state, labels=SELF_OPP_LABELS):
@@ -601,6 +665,9 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
         "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
+        "known_top_library": _decode_known_top_library(state),
+        "opp_known_hand": _decode_opp_known_hand(state),
+        "opp_revealed": _decode_opp_revealed(state),
         "pending_decision": _decode_pending_decision(state),
         "match": _decode_match_context(state),
         "extras": _decode_extras(state),
@@ -657,15 +724,18 @@ def _decode_extras(state):
 def _decode_match_context(state):
     """Decode the bo3 match-context block (self-perspective).
 
-    Returns {"game_number", "self_wins", "opp_wins", "is_sideboard"}. In a
-    single-game (bo1) match every field is 0 / False, so callers can treat a
-    game_number of 0 as "not a bo3 match". self_wins/opp_wins are viewer-relative
-    (like the rest of the state vector) — a mirrored decode must swap them."""
+    Returns {"game_number", "self_wins", "opp_wins", "is_sideboard",
+    "is_post_board"}. In a single-game (bo1) match every field is 0 / False, so
+    callers can treat a game_number of 0 as "not a bo3 match". is_post_board is
+    True in game 2+ of a bo3 (a game played after sideboarding). self_wins/opp_wins
+    are viewer-relative (like the rest of the state vector) — a mirrored decode
+    must swap them."""
     return {
         "game_number": int(round(float(state[_IDX_GAME_NUMBER]) * 3)),
         "self_wins": int(round(float(state[_IDX_SELF_WINS]) * 2)),
         "opp_wins": int(round(float(state[_IDX_OPP_WINS]) * 2)),
         "is_sideboard": float(state[_IDX_SIDEBOARD]) > 0.5,
+        "is_post_board": float(state[_IDX_POST_BOARD]) > 0.5,
     }
 
 
@@ -762,15 +832,15 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS,
         return describe_action(cat, card_name, ctrl_str, labels) + suffix
     owner = f" ({ctrl_str})" if ctrl_str else ""
     name = card_name or ""
-    if cat == 0:
+    if cat == CAT_PASS_PRIORITY:
         return "Pass priority"
-    elif cat == 7:
+    elif cat == CAT_CAST_SPELL:
         return f"Cast {name}"
-    elif cat == 9:
+    elif cat == CAT_PLAY_LAND:
         return f"Play land: {name}"
-    elif cat == 6:
+    elif cat == CAT_ACTIVATE_ABILITY:
         return f"Activate {name}{owner}"
-    elif cat == 8:
+    elif cat == CAT_SELECT_TARGET:
         if name:
             return f"Target {name}{owner}"
         # No card → a player target. The controller word tells us which player;
@@ -781,29 +851,29 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS,
         if ctrl_str == labels["opp"]:
             return "Target opponent"
         return "Target player"
-    elif cat == 2:
+    elif cat == CAT_SELECT_ATTACKER:
         return f"Select attacker: {name}"
-    elif cat == 3:
+    elif cat == CAT_CONFIRM_ATTACKERS:
         return "Confirm attackers"
-    elif cat == 4:
+    elif cat == CAT_SELECT_BLOCKER:
         return f"Select blocker: {name}"
-    elif cat == 5:
+    elif cat == CAT_CONFIRM_BLOCKERS:
         return "Confirm blockers"
-    elif cat == 11:
+    elif cat == CAT_MULLIGAN:
         return f"Mulligan ({name})" if name else "Mulligan"
-    elif cat == 12:
+    elif cat == CAT_BOTTOM_DECK_CARD:
         return f"Bottom: {name}"
-    elif 13 <= cat <= 18:
-        return f"Tap {name} for {{{_MANA_COLORS[cat - 13]}}}"
-    elif cat == 19:
+    elif CAT_MANA_W <= cat <= CAT_MANA_C:
+        return f"Tap {name} for {{{_MANA_COLORS[cat - CAT_MANA_W]}}}"
+    elif cat == CAT_SEARCH_LIBRARY:
         return f"Search: {name}" if name else "Fail to find"
-    elif cat == 20:
+    elif cat == CAT_TOP_LIBRARY:
         return f"Put on top: {name}"
-    elif cat == 22:
+    elif cat == CAT_PAYING_COSTS:
         return f"Pay cost: {name}{owner}"
-    elif cat == 23:
+    elif cat == CAT_DIG_CHOICE:
         return f"Dig choice: {name}"
-    elif cat == 10:
+    elif cat == CAT_OTHER_CHOICE:
         return f"Choice: {name}{owner}" if name else "Choice"
     else:
         cat_name = _CAT_NAMES.get(cat, f"?({cat})")
@@ -854,7 +924,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
                        and i < len(descriptions) and descriptions[i].strip() else None)
         if engine_desc is not None:
             desc = engine_desc
-        elif cat == 11:
+        elif cat == CAT_MULLIGAN:
             # Mulligan query: index 0 = keep, index 1 = mulligan.
             desc = "Keep hand" if i == 0 else "Mulligan"
         else:
@@ -894,7 +964,7 @@ def decode_actions_from_obs(obs, num_choices, public_flags=None,
 # ── Decision-type classification (all read the integer category array) ────────
 
 def is_mulligan(cats):
-    return len(cats) > 0 and all(c == 11 for c in cats)
+    return len(cats) > 0 and all(c == CAT_MULLIGAN for c in cats)
 
 
 def is_bottom(cats):
@@ -972,6 +1042,23 @@ def format_state_lines(gs):
         lines.append(f"Self GY: {', '.join(gs['self_graveyard'])}")
     if gs["opp_graveyard"]:
         lines.append(f"Opp GY:  {', '.join(gs['opp_graveyard'])}")
+    # Belief-state blocks (shown only when the viewer actually knows something).
+    if gs.get("known_top_library"):
+        lines.append(f"Known top: {', '.join(gs['known_top_library'])}")
+    if gs.get("opp_known_hand"):
+        lines.append(f"Known opp hand: {', '.join(gs['opp_known_hand'])}")
+    if gs.get("opp_revealed"):
+        lines.append(f"Opp revealed: {', '.join(gs['opp_revealed'])}")
+    # Bo3 match context (game_number == 0 in bo1, so this line is omitted there).
+    match = gs.get("match") or {}
+    if match.get("game_number"):
+        mstr = (f"Match: game {match['game_number']}"
+                f" | wins {match['self_wins']}-{match['opp_wins']}")
+        if match.get("is_post_board"):
+            mstr += " | post-board"
+        if match.get("is_sideboard"):
+            mstr += " | sideboarding"
+        lines.append(mstr)
     extras = gs.get("extras") or {}
     if extras:
         # _decode_extras records only non-default values: a boolean True renders

@@ -694,7 +694,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.clear();
     state.reserve(static_cast<size_t>(STATE_SIZE));
 
-    // Header: self (9) + opp (9) + step one-hot (13) + flags (3) = 34
+    // Header: self (10) + opp (10) + step one-hot (13) + flags (3) = 36
     push_player_block(state, gs->self);
     push_player_block(state, gs->opponent);
     for (int i = 0; i < 13; i++)

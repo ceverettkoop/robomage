@@ -108,9 +108,13 @@ void game_log_redacted(Zone::Ownership owner, const char* fmt, ...) {
 void cli_emit_machine_query(const Query* q, const GameState* gs) {
     const auto& state_vec = serialize_state(gs);
 
-    // Text header line: "BQUERY: N\n"
+    // Text header line: "BQUERY: N STATE_SIZE MAX_ACTIONS\n"
+    // The two trailing sizes are a runtime layout handshake: the Python driver
+    // asserts them against its own imported STATE_SIZE / MAX_ACTIONS so a C++
+    // layout change without regenerated Python constants fails loudly instead of
+    // silently misframing the binary payload.
     // Followed immediately by binary payload (no text parsing needed on Python side).
-    printf("BQUERY: %d\n", q->num_choices);
+    printf("BQUERY: %d %d %d\n", q->num_choices, STATE_SIZE, MAX_ACTIONS);
 
     // Binary state vector (STATE_SIZE float32s)
     fwrite(state_vec.data(), sizeof(float), static_cast<size_t>(STATE_SIZE), stdout);

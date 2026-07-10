@@ -5,7 +5,11 @@
 #include "classes/action.h"
 #include <vector>
 
-// BQUERY format (machine mode): a text header line "BQUERY: <num_choices>\n"
+// BQUERY format (machine mode): a text header line
+// "BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>\n"
+// (the two trailing sizes are a runtime layout handshake — the Python driver
+// asserts them against its own imported constants so a C++ layout change without
+// regenerated Python constants fails loudly instead of misframing the payload)
 // followed immediately by a binary payload (see cli_emit_machine_query):
 //   float32[STATE_SIZE] state, int32[MAX_ACTIONS] cats,
 //   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl,
@@ -56,8 +60,9 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// NOTE: Exile zones are populated in GameState but NOT serialized.
-// Add them back once cards that use exile are implemented.
+// NOTE: Exile zones are NOT collected into GameState (populate_gamestate pass A
+// skips them, so the arrays stay zeroed) nor serialized. Add them once cards
+// that use exile are implemented.
 //
 // Fixed-size state vector layout (STATE_SIZE = 5654 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):

@@ -122,6 +122,7 @@
   Self:  20 life | mana: empty | hand(8): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn
   Opp:   20 life | mana: empty | hand count: 6
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -139,6 +140,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Horizon Canopy
   Stack: Mishra's Bauble (spell, opponent)
+  Opp revealed: Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -153,6 +155,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Horizon Canopy
   Stack: Mishra's Bauble (spell, opponent)
+  Opp revealed: Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -168,6 +171,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self BF:  Mishra's Bauble
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -185,6 +189,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self BF:  Mishra's Bauble | Polluted Delta
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -201,6 +206,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self BF:  Mishra's Bauble | Polluted Delta
   Opp BF:   Horizon Canopy
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1
   Actions:
    0: Player A (20 life)
@@ -220,6 +226,7 @@
   Opp BF:   Horizon Canopy
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -238,6 +245,7 @@
   Self BF:  Horizon Canopy
   Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -254,6 +262,7 @@
   Self BF:  Horizon Canopy
   Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -272,6 +281,7 @@
   Opp BF:   Horizon Canopy
   Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -294,6 +304,7 @@
   Opp BF:   Horizon Canopy
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -312,6 +323,7 @@
   Opp BF:   Horizon Canopy
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -327,6 +339,7 @@
   Opp BF:   Island (T)
   Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -344,6 +357,7 @@
   Opp BF:   Island (T)
   Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -367,6 +381,7 @@
   Opp BF:   Horizon Canopy
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
@@ -391,6 +406,8 @@
   Opp BF:   Horizon Canopy
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
@@ -428,6 +445,7 @@
   Self BF:  Horizon Canopy
   Opp BF:   Island (T)
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -447,6 +465,7 @@
   Self BF:  Horizon Canopy | Savannah
   Opp BF:   Island (T)
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -468,6 +487,7 @@
   Opp BF:   Island (T)
   Self GY: Horizon Canopy
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -483,6 +503,7 @@
   Opp BF:   Island (T)
   Self GY: Horizon Canopy
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Green Sun's Zenith
@@ -501,6 +522,8 @@
   Stack: Endurance (spell, opponent) [evoke]
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Horizon Canopy
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -517,6 +540,8 @@
   Stack: Endurance (spell, opponent) [evoke]
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Horizon Canopy
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Return Island
@@ -534,6 +559,8 @@
   Stack: Endurance (spell, opponent) [evoke]
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Horizon Canopy
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Endurance
@@ -553,6 +580,7 @@
   Stack: Daze (spell, opponent) -> Endurance (self, slot 97) -> Endurance (spell, self) [evoke]
   Self GY: Horizon Canopy
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
@@ -577,6 +605,7 @@
   Opp BF:   Savannah (T)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Actions:
    0: Pass priority
    1: Play Island
@@ -596,6 +625,7 @@
   Opp BF:   Savannah (T)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -618,6 +648,7 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Volcanic Island
@@ -637,6 +668,7 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Ponder
@@ -653,6 +685,8 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Known top: Ponder, Ponder, Volcanic Island, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Don't shuffle
@@ -680,6 +714,7 @@
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -699,6 +734,7 @@
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -719,6 +755,7 @@
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -736,6 +773,7 @@
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
    0: Scryb Ranger
@@ -752,6 +790,7 @@
   Opp BF:   Island (T)
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
    0: Return Savannah to hand
@@ -781,6 +820,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -806,6 +847,8 @@
   Stack: Ponder (spell, self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Volcanic Island
    1: Mishra's Bauble
@@ -824,6 +867,8 @@
   Stack: Ponder (spell, self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Mishra's Bauble
    1: Thundering Falls
@@ -839,6 +884,8 @@
   Stack: Ponder (spell, self)
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Known top: Thundering Falls, Mishra's Bauble, Volcanic Island, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -856,6 +903,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -875,6 +924,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Endurance, Horizon Canopy
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -906,6 +957,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares
@@ -923,6 +975,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Dragon's Rage Channeler
    1: Scryb Ranger
@@ -942,6 +995,7 @@
   Stack: Swords to Plowshares (spell, self) -> Dragon's Rage Channeler (opponent, slot 48)
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -961,6 +1015,7 @@
   Opp BF:   Island (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -978,6 +1033,7 @@
   Opp BF:   Island (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -993,6 +1049,7 @@
   Opp BF:   Island (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1014,6 +1071,7 @@
   Opp BF:   Island (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1032,6 +1090,7 @@
   Opp BF:   Island (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Scryb Ranger
@@ -1048,6 +1107,7 @@
   Opp BF:   Island (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Return Savannah to hand
@@ -1069,6 +1129,7 @@
   Opp BF:   Island (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -1088,6 +1149,7 @@
   Opp BF:   Island (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1113,6 +1175,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -1129,6 +1193,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Mishra's Bauble, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Player A (20 life)
    1: Player B (21 life)
@@ -1151,6 +1217,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1172,6 +1240,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1194,6 +1264,8 @@
   Stack: Ponder (spell, self)
   Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)
@@ -1211,6 +1283,8 @@
   Stack: Ponder (spell, self)
   Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Player A (17 life)
    1: Player B (21 life)
@@ -1237,6 +1311,8 @@
   Stack: Ponder (spell, self)
   Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_revolt
   Actions:
    0: Volcanic Island
@@ -1256,6 +1332,8 @@
   Stack: Ponder (spell, self)
   Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Volcanic Island, ?, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_revolt
   Actions:
    0: Flooded Strand
@@ -1272,6 +1350,8 @@
   Stack: Ponder (spell, self)
   Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Mishra's Bauble, Flooded Strand, Volcanic Island, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_revolt
   Actions:
    0: Don't shuffle
@@ -1290,6 +1370,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1311,6 +1393,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1331,6 +1415,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1349,6 +1435,8 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Player A (17 life)
@@ -1369,6 +1457,8 @@
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1391,6 +1481,8 @@
   Stack: Scalding Tarn (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Known top: Flooded Strand, Volcanic Island, ?, ?, ?
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -1416,6 +1508,7 @@
   Opp BF:   Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (T)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1445,6 +1538,7 @@
   Opp BF:   Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Delayed trigger
    1: Delayed trigger
@@ -1463,6 +1557,7 @@
   Stack: Mishra's Bauble (ability, opponent) -> Mishra's Bauble (ability, opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1481,6 +1576,7 @@
   Stack: Mishra's Bauble (ability, opponent)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1498,6 +1594,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1514,6 +1611,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1528,6 +1626,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1552,6 +1651,7 @@
   Stack: Birds of Paradise (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1569,6 +1669,7 @@
   Stack: Birds of Paradise (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Dragon's Rage Channeler
    1: Scryb Ranger
@@ -1586,6 +1687,7 @@
   Stack: Birds of Paradise (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Return Savannah to hand
   >> A/A: 0 (Return Savannah to hand)
@@ -1605,6 +1707,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1626,6 +1729,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1643,6 +1747,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -1664,6 +1769,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1684,6 +1790,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -1700,6 +1807,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Player A (17 life)
    1: Player B (20 life)
@@ -1726,6 +1834,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Put Murktide Regent on top of library
    1: Put Murktide Regent into graveyard
@@ -1745,6 +1854,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1767,6 +1877,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1788,6 +1899,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1809,6 +1921,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: opp_lands_played=1, mandatory_choice=Declare Blk
   Actions:
    0: Birds of Paradise [0/1]
@@ -1835,6 +1948,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1851,6 +1965,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1865,6 +1980,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1887,6 +2003,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: X = 0
    1: X = 1
@@ -1906,6 +2023,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1923,6 +2041,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -1942,6 +2061,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Return Savannah to hand
   >> A/A: 0 (Return Savannah to hand)
@@ -1963,6 +2083,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Fail to find
@@ -1982,6 +2103,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2004,6 +2126,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Volcanic Island (T) | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -2030,6 +2153,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
@@ -2048,6 +2172,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2070,6 +2195,7 @@
   Stack: Wooded Foothills (ability, self)
   Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -2094,6 +2220,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -2117,6 +2244,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt, mandatory_choice=Declare Blk
   Actions:
    0: Scryb Ranger [1/1]
@@ -2143,6 +2271,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -2159,6 +2288,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -2173,6 +2303,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2199,6 +2330,7 @@
   Stack: Knight of the Reliquary (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -2216,6 +2348,7 @@
   Stack: Knight of the Reliquary (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -2236,6 +2369,7 @@
   Stack: Knight of the Reliquary (spell, self)
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Return Dryad Arbor to hand
    1: Return Savannah to hand
@@ -2257,6 +2391,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2279,6 +2414,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -2305,6 +2441,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Savannah, Scryb Ranger, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -2328,6 +2465,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (SICK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash]
   Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Savannah, Scryb Ranger, Swords to Plowshares
   Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -2351,6 +2489,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: opp_lands_played=1, mandatory_choice=Declare Blk
   Actions:
    0: Scryb Ranger [1/1]
@@ -2368,6 +2507,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: opp_lands_played=1, mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [3/3]
@@ -2391,6 +2531,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK,BLOCKED) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: opp_lands_played=1, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
@@ -2418,6 +2559,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)
@@ -2434,6 +2576,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)
@@ -2448,6 +2591,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -2472,6 +2616,7 @@
   Stack: Noble Hierarch (spell, self)
   Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)
@@ -2487,6 +2632,7 @@
   Stack: Noble Hierarch (spell, self)
   Self GY: Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Sacrifice Dryad Arbor
    1: Sacrifice Savannah
@@ -2507,6 +2653,7 @@
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Noble Hierarch (spell, self)
   Self GY: Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Fail to find
@@ -2541,6 +2688,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2565,6 +2713,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island
   Self GY: Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wooded Foothills, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2594,6 +2743,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2614,6 +2764,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2631,6 +2782,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Self GY: Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2653,6 +2805,7 @@
   Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -2675,6 +2828,7 @@
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Knight of the Reliquary [4/4] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Self GY: Scalding Tarn, Wooded Foothills, Lightning Bolt, Murktide Regent, Scalding Tarn, Mishra's Bauble, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Dryad Arbor, Scryb Ranger, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Birds of Paradise, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Knight of the Reliquary, Noble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Thalia, Guardian of Thraben
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers

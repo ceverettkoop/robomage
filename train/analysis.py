@@ -67,7 +67,10 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Action-category display names come from the generated C++ enum tables
 # (train/gen_enums.py), the single source of truth.
-from _enums import _CAT_NAMES, _REF_NAMES, REF_ZONE_MAX
+from _enums import (
+    _CAT_NAMES, _REF_NAMES, REF_ZONE_MAX,
+    CAT_PASS_PRIORITY, CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL, CAT_SELECT_TARGET,
+    CAT_PLAY_LAND, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE)
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 import decode
 import viz
@@ -1472,7 +1475,7 @@ def _sim_targeting(games):
             chosen_cat = _obs_action_cat(obs, action)
 
             # Link CAST -> TARGET
-            if chosen_cat == 7:  # CAST
+            if chosen_cat == CAT_CAST_SPELL:
                 cid = _obs_card_id(obs, action)
                 if 0 <= cid < len(_VOCAB_NAMES):
                     cast_name = decode.card_index_to_name(cid)
@@ -1481,7 +1484,7 @@ def _sim_targeting(games):
                         obs2 = observations[sj]
                         act2 = actions[sj]
                         cat2 = _obs_action_cat(obs2, act2)
-                        if cat2 == 8:  # TARGET
+                        if cat2 == CAT_SELECT_TARGET:
                             tgt_cid = _obs_card_id(obs2, act2)
                             tgt_ctrl = _obs_ctrl_flag(obs2, act2)
                             tgt_name = _resolve_card_name(tgt_cid)
@@ -1491,7 +1494,7 @@ def _sim_targeting(games):
                             alt_self = 0
                             alt_opp = 0
                             for k in range(nc2):
-                                if _obs_action_cat(obs2, k) == 8:
+                                if _obs_action_cat(obs2, k) == CAT_SELECT_TARGET:
                                     cf = _obs_ctrl_flag(obs2, k)
                                     if cf == 1:
                                         alt_self += 1
@@ -1502,22 +1505,22 @@ def _sim_targeting(games):
                                 alt_self, alt_opp,
                             ))
                             break
-                        elif cat2 != 0:  # non-PASS means no target for this cast
+                        elif cat2 != CAT_PASS_PRIORITY:  # non-PASS means no target for this cast
                             break
 
             # Hold analysis: PASS when CAST was available
             castable = set()
             for k in range(nc):
-                if _obs_action_cat(obs, k) == 7:
+                if _obs_action_cat(obs, k) == CAT_CAST_SPELL:
                     kid = _obs_card_id(obs, k)
                     if 0 <= kid < len(_VOCAB_NAMES):
                         castable.add(decode.card_index_to_name(kid))
             if not castable:
                 continue
-            if chosen_cat == 0:  # PASS
+            if chosen_cat == CAT_PASS_PRIORITY:
                 for name in castable:
                     hold_stats.setdefault(name, []).append((result,))
-            elif chosen_cat == 7:
+            elif chosen_cat == CAT_CAST_SPELL:
                 cid = _obs_card_id(obs, action)
                 if 0 <= cid < len(_VOCAB_NAMES):
                     cast_stats.setdefault(decode.card_index_to_name(cid), []).append((result,))
@@ -1596,9 +1599,9 @@ def _sim_targeting(games):
 
 def _sim_sideboard_report(games):
     """Report sideboard decisions made by model and scripted agent across games."""
-    _CAT_SB_IN   = 24
-    _CAT_SB_OUT  = 25
-    _CAT_SB_DONE = 26
+    _CAT_SB_IN   = CAT_SIDEBOARD_IN
+    _CAT_SB_OUT  = CAT_SIDEBOARD_OUT
+    _CAT_SB_DONE = CAT_SIDEBOARD_DONE
 
     # Per-phase records: list of (match_idx, after_game_num, cards_in, cards_out).
     # after_game_num is 1-based: the game that just ended (so a 2-game match has
@@ -1736,7 +1739,7 @@ def _sim_sideboard_report(games):
             print(f"        OUT: {_count_str(c_out)}")
 
 
-_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = 24, 25, 26
+_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE
 
 # Fungible card classes for the NET sideboard-impact table: swapping one
 # fetchland for another is mana-base tuning, not a card-choice signal, so all
@@ -3474,7 +3477,7 @@ def _analyze_clusters(games, verbose=True):
 # ── Card importance (value attribution per card) ─────────────────────────────
 
 # Action categories used for per-card attribution.
-_CAT_ACTIVATE, _CAT_CAST, _CAT_LAND = 6, 7, 9
+_CAT_ACTIVATE, _CAT_CAST, _CAT_LAND = CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL, CAT_PLAY_LAND
 
 
 def _analyze_cardvalue(games, top_n=30, verbose=True):

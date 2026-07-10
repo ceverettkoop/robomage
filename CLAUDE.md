@@ -646,14 +646,19 @@ layout block — don't hardcode them here):
 
 **BQUERY format:**
 ```
-BQUERY: <N>\n
+BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 [float32 × STATE_SIZE  — state vector]
 [int32   × MAX_ACTIONS — action categories (padded)]
 [float32 × MAX_ACTIONS — action card IDs (padded)]
 [float32 × MAX_ACTIONS — action controller_is_self flags (padded)]
 [float32 × MAX_ACTIONS — action card_is_public flags (padded)]
+[int32   × MAX_ACTIONS — action zone_ref (ActionRefZone; padded)]
+[int32   × MAX_ACTIONS — action slot_ref (entity-reference slot, -1 = none; padded)]
 ```
-- `N` = number of legal choices
+- `N` = number of legal choices; the trailing `STATE_SIZE`/`MAX_ACTIONS` are a runtime
+  layout handshake (the Python driver asserts them against its own imported constants so a
+  C++ layout change without regenerated Python constants fails loudly instead of misframing
+  the payload)
 - State vector: `STATE_SIZE` floats, serialized from the **priority player's** ("self") perspective
 - Action categories: `ActionCategory` enum integers
 - Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` as null sentinel
@@ -666,7 +671,7 @@ BQUERY: <N>\n
   float per slot (`norm_card_id`), *not* a one-hot.
 - **`ActionCategory` values and meanings** — the enum in `src/classes/action.h` (mirrored to
   Python by codegen in `train/_enums.py`; `ACTION_CATEGORY_MAX` is generated from it).
-- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + 3*MAX_ACTIONS` metadata +
+- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + 5*MAX_ACTIONS` metadata +
   hand/battlefield cost features) — `train/env.py`.
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.

@@ -296,8 +296,8 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         GameState gs;
         Query q;
         // During sideboarding, priority/active-player flags don't reflect who is
-        // sideboarding. Use the sideboard player as the viewer so obs[32]
-        // (self_is_player_a) correctly identifies the sideboarding side.
+        // sideboarding. Use the sideboard player as the viewer so state index
+        // [34] (self_is_player_a) correctly identifies the sideboarding side.
         Zone::Ownership viewer = sideboard_phase ? sideboard_phase_player : Zone::UNKNOWN;
         populate_gamestate(&gs, viewer);
         populate_query(&q, actions);

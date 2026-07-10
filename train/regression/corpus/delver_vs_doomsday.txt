@@ -154,6 +154,7 @@
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
   Opp GY:  Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Island
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -170,6 +171,7 @@
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
   Opp GY:  Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Island
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Exile Personal Tutor
@@ -187,6 +189,7 @@
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
   Opp GY:  Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Island
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Ponder
@@ -203,6 +206,7 @@
   Self BF:  Island (T)
   Stack: Force of Will (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Misty Rainforest
+  Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -218,6 +222,7 @@
   Self BF:  Island (T)
   Stack: Force of Will (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Misty Rainforest
+  Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Return Island
@@ -233,6 +238,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Stack: Force of Will (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Misty Rainforest
+  Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Force of Will
@@ -251,6 +257,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Stack: Daze (spell, opponent) -> Force of Will (self, slot 97) -> Force of Will (spell, self) -> Ponder (opponent, slot 98) -> Ponder (spell, opponent)
   Opp GY:  Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
@@ -269,6 +276,7 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Misty Rainforest
   Opp GY:  Force of Will
+  Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Unholy Heat
@@ -286,6 +294,7 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Misty Rainforest
   Opp GY:  Force of Will
+  Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
@@ -300,6 +309,8 @@
   Stack: Ponder (spell, self)
   Self GY: Daze, Misty Rainforest
   Opp GY:  Force of Will
+  Known top: Cori-Steel Cutter, Dragon's Rage Channeler, Unholy Heat, ?, ?
+  Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Don't shuffle
@@ -325,6 +336,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -342,6 +354,7 @@
   Self BF:  Polluted Delta
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -357,6 +370,7 @@
   Self BF:  Polluted Delta
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Sacrifice Polluted Delta
@@ -374,6 +388,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -391,6 +406,7 @@
   Self BF:  Lotus Petal
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -413,6 +429,7 @@
   Stack: Ponder (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Doomsday
@@ -430,6 +447,7 @@
   Stack: Ponder (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Daze
@@ -444,6 +462,8 @@
   Stack: Ponder (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Dark Ritual, Daze, Doomsday, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Don't shuffle
@@ -469,6 +489,8 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Known top: Unholy Heat, ?, ?, ?, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
    1: Play Island
@@ -495,6 +517,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -512,6 +536,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -528,6 +554,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -546,6 +574,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -564,6 +594,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -583,6 +615,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -599,6 +633,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -615,6 +651,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -631,6 +669,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -652,6 +692,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -669,6 +711,8 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -684,6 +728,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -701,6 +746,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -721,6 +767,8 @@
   Stack: Scalding Tarn (ability, opponent)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Scalding Tarn, Misty Rainforest, Ponder, Daze, Island
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -741,6 +789,7 @@
   Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -764,6 +813,7 @@
   Opp BF:   Underground Sea
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -785,6 +835,7 @@
   Stack: Dragon's Rage Channeler (spell, self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -801,6 +852,8 @@
   Stack: Dragon's Rage Channeler (spell, opponent)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -819,6 +872,8 @@
   Stack: Dragon's Rage Channeler (spell, opponent)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Return Underground Sea
@@ -836,6 +891,8 @@
   Stack: Dragon's Rage Channeler (spell, opponent)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Dragon's Rage Channeler
@@ -853,6 +910,7 @@
   Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -868,6 +926,7 @@
   Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Return Island
@@ -885,6 +944,7 @@
   Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Daze
@@ -905,6 +965,8 @@
   Stack: Daze (spell, opponent) -> Daze (self, slot 97) -> Daze (spell, self) -> Dragon's Rage Channeler (opponent, slot 98) -> Dragon's Rage Channeler (spell, opponent)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
@@ -930,6 +992,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -947,6 +1010,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -963,6 +1027,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -981,6 +1046,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -999,6 +1065,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1018,6 +1085,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1034,6 +1102,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1050,6 +1119,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1066,6 +1136,7 @@
   Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1087,6 +1158,7 @@
   Opp BF:   Underground Sea
   Self GY: Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Cast Unholy Heat
@@ -1103,6 +1175,7 @@
   Opp BF:   Underground Sea
   Self GY: Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Dragon's Rage Channeler
   >> A/A: 0 (Dragon's Rage Channeler)
@@ -1122,6 +1195,7 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Unholy Heat (spell, opponent) -> Dragon's Rage Channeler (opponent, slot 48)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1142,6 +1216,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
   Self GY: Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Put Lightning Bolt on top of library
    1: Put Lightning Bolt into graveyard
@@ -1159,6 +1234,7 @@
   Stack: Unholy Heat (spell, opponent) -> Dragon's Rage Channeler (opponent, slot 48)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1178,6 +1254,7 @@
   Opp BF:   Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1196,6 +1273,7 @@
   Opp BF:   Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1212,6 +1290,7 @@
   Opp BF:   Underground Sea
   Self GY: Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1230,6 +1309,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1246,6 +1326,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1264,6 +1345,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1282,6 +1364,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1301,6 +1384,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1317,6 +1401,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1333,6 +1418,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1349,6 +1435,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1370,6 +1457,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1387,6 +1475,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1402,6 +1491,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
@@ -1422,6 +1512,7 @@
   Stack: Lotus Petal (spell, self)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1439,6 +1530,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
@@ -1459,6 +1551,7 @@
   Stack: Dark Ritual (spell, self)
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1476,6 +1569,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
@@ -1494,6 +1588,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1516,6 +1611,7 @@
   Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1535,6 +1631,7 @@
   Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -1556,6 +1653,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1572,6 +1670,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1589,6 +1688,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1606,6 +1706,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1624,6 +1725,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1639,6 +1741,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1654,6 +1757,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1669,6 +1773,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1689,6 +1794,7 @@
   Opp BF:   Island | Mountain
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1705,6 +1811,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -1721,6 +1828,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Player B (18 life)
    1: Player A (18 life)
@@ -1740,6 +1848,7 @@
   Stack: Lightning Bolt (spell, opponent) -> self (player)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1757,6 +1866,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1771,6 +1881,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1787,6 +1898,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1804,6 +1916,7 @@
   Opp BF:   Lotus Petal | Swamp | Underground Sea (T)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Underground Sea
@@ -1824,6 +1937,7 @@
   Stack: Wasteland (ability, opponent) -> Underground Sea (self, slot 2)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1842,6 +1956,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1857,6 +1972,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1874,6 +1990,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1891,6 +2008,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1909,6 +2027,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1924,6 +2043,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1939,6 +2059,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1954,6 +2075,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1974,6 +2096,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -1990,6 +2113,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2004,6 +2128,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2018,6 +2143,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2034,6 +2160,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2050,6 +2177,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2067,6 +2195,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2081,6 +2210,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2095,6 +2225,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2109,6 +2240,7 @@
   Opp BF:   Island | Mountain (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2128,6 +2260,7 @@
   Opp BF:   Island | Mountain
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2144,6 +2277,7 @@
   Opp BF:   Island | Mountain
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2158,6 +2292,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -2179,6 +2314,7 @@
   Stack: Dragon's Rage Channeler (spell, opponent)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2196,6 +2332,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -2215,6 +2352,7 @@
   Stack: Thundering Falls (ability, opponent) [amt=1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2235,6 +2373,7 @@
   Stack: Thundering Falls (ability, self) [amt=1]
   Self GY: Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Put Force of Will on top of library
@@ -2252,6 +2391,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2267,6 +2407,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2284,6 +2425,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2301,6 +2443,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2319,6 +2462,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2334,6 +2478,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2349,6 +2494,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2364,6 +2510,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2384,6 +2531,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2400,6 +2548,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2414,6 +2563,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2428,6 +2578,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2444,6 +2595,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2460,6 +2612,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2477,6 +2630,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2491,6 +2645,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2505,6 +2660,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2519,6 +2675,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T) | Thundering Falls (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2538,6 +2695,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Thundering Falls
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2554,6 +2712,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Thundering Falls
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2568,6 +2727,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -2590,6 +2750,7 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Cori-Steel Cutter (spell, opponent)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2609,6 +2770,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
   Self GY: Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Put Lightning Bolt on top of library
    1: Put Lightning Bolt into graveyard
@@ -2626,6 +2788,7 @@
   Stack: Cori-Steel Cutter (spell, opponent)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -2642,6 +2805,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -2658,6 +2822,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2678,6 +2843,7 @@
   Stack: Flooded Strand (ability, opponent)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2697,6 +2863,7 @@
   Stack: Flooded Strand (ability, self)
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -2718,6 +2885,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2740,6 +2908,7 @@
   Stack: Cori-Steel Cutter (spell, self)
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler (Surveil)
@@ -2759,6 +2928,7 @@
   Stack: Cori-Steel Cutter (ability, opponent) -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Cori-Steel Cutter (spell, opponent)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2779,6 +2949,7 @@
   Stack: Cori-Steel Cutter (ability, self) -> Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token
@@ -2797,6 +2968,7 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Cori-Steel Cutter (spell, opponent)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2817,6 +2989,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Volcanic Island on top of library
@@ -2835,6 +3008,7 @@
   Stack: Cori-Steel Cutter (spell, opponent)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2852,6 +3026,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2867,6 +3042,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2886,6 +3062,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -2903,6 +3080,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2920,6 +3098,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2939,6 +3118,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2954,6 +3134,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2969,6 +3150,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2984,6 +3166,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -3004,6 +3187,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3020,6 +3204,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3034,6 +3219,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3048,6 +3234,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3064,6 +3251,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3080,6 +3268,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3097,6 +3286,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3111,6 +3301,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3125,6 +3316,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3139,6 +3331,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3158,6 +3351,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3174,6 +3368,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3188,6 +3383,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Cast Delver of Secrets
@@ -3208,6 +3404,7 @@
   Stack: Delver of Secrets (spell, opponent)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3224,6 +3421,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter
@@ -3243,6 +3441,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Delver of Secrets [1/1]
    1: Dragon's Rage Channeler [3/3]
@@ -3261,6 +3460,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3275,6 +3475,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3293,6 +3494,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: mandatory_choice=Declare Atk
   Actions:
    0: Delver of Secrets [2/2]
@@ -3314,6 +3516,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: mandatory_choice=Declare Atk
   Actions:
    0: Monk token [1/1]
@@ -3335,6 +3538,7 @@
   Opp BF:   Lotus Petal | Swamp
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -3354,6 +3558,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3370,6 +3575,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3390,6 +3596,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3404,6 +3611,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3418,6 +3626,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3432,6 +3641,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3451,6 +3661,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3467,6 +3678,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3481,6 +3693,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Play Bloodstained Mire
@@ -3498,6 +3711,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -3519,6 +3733,7 @@
   Stack: Bloodstained Mire (ability, self)
   Self GY: Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3538,6 +3753,7 @@
   Stack: Bloodstained Mire (ability, self)
   Self GY: Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -3561,6 +3777,7 @@
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3581,6 +3798,7 @@
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Misty Rainforest on top of library
@@ -3598,6 +3816,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3613,6 +3832,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3630,6 +3850,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3647,6 +3868,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3665,6 +3887,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3680,6 +3903,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3695,6 +3919,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3710,6 +3935,7 @@
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3732,6 +3958,7 @@
   Stack: Delver of Secrets (ability, opponent)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3750,6 +3977,7 @@
   Stack: Delver of Secrets (ability, self)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Actions:
    0: Don't reveal
    1: Reveal
@@ -3767,6 +3995,7 @@
   Opp BF:   Insectile Aberration [4/3] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter (->Insectile Aberration) | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3783,6 +4012,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Actions:
    0: Pass priority
    1: Cast Unholy Heat
@@ -3799,6 +4029,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Actions:
    0: Insectile Aberration
    1: Dragon's Rage Channeler
@@ -3820,6 +4051,7 @@
   Stack: Unholy Heat (spell, self) -> Insectile Aberration (self, slot 0)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Actions:
    0: Dragon's Rage Channeler (Surveil)
    1: Monk token (ProwessBonus)
@@ -3838,6 +4070,7 @@
   Stack: Monk (ability, opponent) [amt=1] -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Unholy Heat (spell, opponent) -> Insectile Aberration (opponent, slot 48)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3856,6 +4089,7 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Unholy Heat (spell, opponent) -> Insectile Aberration (opponent, slot 48)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3875,6 +4109,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Insectile Aberration (self, slot 0)
   Self GY: Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Actions:
    0: Put Brainstorm on top of library
    1: Put Brainstorm into graveyard
@@ -3892,6 +4127,7 @@
   Stack: Unholy Heat (spell, opponent) -> Insectile Aberration (opponent, slot 48)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Cast Dark Ritual
@@ -3910,6 +4146,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Insectile Aberration, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -3925,6 +4162,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -3945,6 +4183,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Extras: self_revolt
   Actions:
    0: Dragon's Rage Channeler [3/3]
@@ -3963,6 +4202,7 @@
   Opp BF:   Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Insectile Aberration, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -3978,6 +4218,7 @@
   Opp BF:   Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Insectile Aberration, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -3997,6 +4238,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Extras: self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
@@ -4017,6 +4259,7 @@
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Extras: self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -4035,6 +4278,7 @@
   Opp BF:   Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2] (T,ATK)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Insectile Aberration, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -4052,6 +4296,7 @@
   Opp BF:   Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2] (T,ATK)
   Self GY: Misty Rainforest, Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Delver of Secrets, Unholy Heat, Brainstorm, Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Insectile Aberration, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: opp_revolt
   Actions:
    0: Pass priority

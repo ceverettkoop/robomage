@@ -101,6 +101,7 @@
   Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
   Opp:   20 life | mana: empty | hand count: 7
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
   Actions:
    0: Pass priority
    1: Play Horizon Canopy
@@ -120,6 +121,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Horizon Canopy
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -135,6 +137,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Horizon Canopy
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -159,6 +162,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Opp BF:   Horizon Canopy
   Self GY: Once Upon a Time
+  Opp revealed: Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -177,6 +181,7 @@
   Self BF:  Savannah
   Opp BF:   Horizon Canopy
   Self GY: Once Upon a Time
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -191,6 +196,7 @@
   Self BF:  Horizon Canopy
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -207,6 +213,7 @@
   Self BF:  Horizon Canopy
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -227,6 +234,7 @@
   Self BF:  Savannah
   Opp BF:   Horizon Canopy
   Self GY: Once Upon a Time
+  Opp revealed: Horizon Canopy
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -247,6 +255,7 @@
   Self BF:  Horizon Canopy
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -266,6 +275,7 @@
   Self BF:  Horizon Canopy | Savannah
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -287,6 +297,7 @@
   Opp BF:   Savannah
   Self GY: Horizon Canopy
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -302,6 +313,7 @@
   Opp BF:   Savannah
   Self GY: Horizon Canopy
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Green Sun's Zenith
@@ -321,6 +333,7 @@
   Opp BF:   Savannah
   Self GY: Horizon Canopy
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Endurance (ChangeZoneAll, targeted)
@@ -338,6 +351,7 @@
   Opp BF:   Savannah
   Self GY: Horizon Canopy
   Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: No target
@@ -359,6 +373,7 @@
   Stack: Endurance (ability, opponent) -> Endurance (ability, opponent)
   Self GY: Once Upon a Time
   Opp GY:  Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -377,6 +392,7 @@
   Stack: Endurance (ability, opponent) -> Endurance (ability, opponent)
   Self GY: Once Upon a Time
   Opp GY:  Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Endurance
@@ -411,6 +427,7 @@
   Opp BF:   Savannah (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Actions:
    0: Pass priority
    1: Play Talon Gates of Madara
@@ -432,6 +449,7 @@
   Opp BF:   Savannah (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: No target
@@ -450,6 +468,7 @@
   Opp BF:   Savannah (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -467,6 +486,7 @@
   Opp BF:   Savannah (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: X = 0
@@ -489,6 +509,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah
   Extras: self_lands_played=1
   Actions:
    0: Fail to find
@@ -516,6 +537,7 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares
@@ -532,6 +554,7 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Dryad Arbor
   >> A/A: 0 (Dryad Arbor)
@@ -554,6 +577,7 @@
   Opp BF:   Savannah (T) | Talon Gates of Madara
   Self GY: Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -583,6 +607,7 @@
   Opp BF:   Savannah (T) | Savannah
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -605,6 +630,7 @@
   Opp BF:   Savannah (T) | Savannah
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -623,6 +649,7 @@
   Opp BF:   Savannah (T) | Savannah
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -640,6 +667,7 @@
   Opp BF:   Savannah (T) | Savannah
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Extras: self_lands_played=1
   Actions:
    0: Savannah
@@ -673,6 +701,7 @@
   Opp BF:   Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -692,6 +721,7 @@
   Opp BF:   Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -711,6 +741,7 @@
   Opp BF:   Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: X = 0
@@ -731,6 +762,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -749,6 +781,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Savannah
@@ -775,6 +808,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Fail to find
@@ -810,6 +844,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Actions:
    0: Plains
    1: Green Sun's Zenith
@@ -828,6 +863,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Actions:
    0: Green Sun's Zenith
    1: Swords to Plowshares
@@ -845,6 +881,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Actions:
    0: Pay 4 life
    1: Put on top of library
@@ -863,6 +900,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Actions:
    0: Pay 4 life
    1: Put on top of library
@@ -879,6 +917,7 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Actions:
    0: Pass priority
    1: Play Plains
@@ -897,6 +936,7 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -915,6 +955,7 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Extras: self_lands_played=1
   Actions:
    0: X = 0
@@ -938,6 +979,7 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Savannah, Swords to Plowshares
   Extras: self_lands_played=1
   Actions:
    0: Fail to find
@@ -964,6 +1006,7 @@
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Cast Scryb Ranger
@@ -983,6 +1026,7 @@
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -999,6 +1043,7 @@
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1013,6 +1058,7 @@
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1031,6 +1077,7 @@
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1049,6 +1096,7 @@
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Dryad Arbor
@@ -1066,6 +1114,7 @@
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Return Dryad Arbor to hand
@@ -1085,6 +1134,7 @@
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self)
   Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1107,6 +1157,7 @@
   Stack: Windswept Heath (ability, self) -> Scryb Ranger (ability, self) -> Dryad Arbor (self)
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -1129,6 +1180,7 @@
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1156,6 +1208,7 @@
   Opp BF:   Forest (T) | Ignoble Hierarch [0/1] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares
@@ -1172,6 +1225,7 @@
   Opp BF:   Forest (T) | Ignoble Hierarch [0/1] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Ignoble Hierarch
    1: Scryb Ranger
@@ -1202,6 +1256,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_revolt
   Actions:
    0: Savannah
@@ -1221,6 +1276,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_revolt
   Actions:
    0: Wooded Foothills
@@ -1239,6 +1295,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_revolt
   Actions:
    0: Pay 4 life
@@ -1258,6 +1315,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_revolt
   Actions:
    0: Pay 4 life
@@ -1275,6 +1333,7 @@
   Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1303,6 +1362,7 @@
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1319,6 +1379,7 @@
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1333,6 +1394,7 @@
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Play Dryad Arbor
@@ -1351,6 +1413,7 @@
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1368,6 +1431,7 @@
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Dryad Arbor
@@ -1385,6 +1449,7 @@
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1
   Actions:
    0: Return Dryad Arbor to hand
@@ -1406,6 +1471,7 @@
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
@@ -1425,6 +1491,7 @@
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1458,6 +1525,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Horizon Canopy
    1: Scythecat Cub
@@ -1476,6 +1544,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Scythecat Cub
    1: Thalia, Guardian of Thraben
@@ -1493,6 +1562,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pay 4 life
    1: Put on top of library
@@ -1511,6 +1581,7 @@
   Stack: Sylvan Library (ability, self)
   Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Horizon Canopy, Ignoble Hierarch, Savannah, Scryb Ranger, Swords to Plowshares, Windswept Heath
   Actions:
    0: Pay 4 life
    1: Put on top of library
