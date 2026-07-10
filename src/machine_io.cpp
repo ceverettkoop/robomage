@@ -203,14 +203,15 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
     out.push_back(static_cast<float>(ps.energy) / 10.0f);
 }
 
-// Pushes PERM_SLOT_SIZE floats (35 status + chosen-name id + card-id; per-slot
-// offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 35 zeros
-// + the chosen-name empty sentinel + the card-id empty sentinel (both id-family
-// floats, so a 0.0 pad would alias vocab index 0 and defeat empty-slot masking).
+// Pushes PERM_SLOT_SIZE floats (35 status + chosen-name id + returnable-exile id + card-id;
+// per-slot offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 35 zeros
+// + THREE id-family empty sentinels (chosen-name, returnable-exile, card-id; a 0.0 pad would
+// alias vocab index 0 and defeat empty-slot masking).
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     if (p.card_vocab_idx == -1) {
-        out.insert(out.end(), PERM_SLOT_SIZE - 2, 0.0f);
+        out.insert(out.end(), PERM_SLOT_SIZE - 3, 0.0f);
         out.push_back(norm_card_id(-1));  // chosen_name_idx sentinel
+        out.push_back(norm_card_id(-1));  // returnable_exile_idx sentinel
         out.push_back(norm_card_id(-1));  // card_id sentinel
         return;
     }
@@ -235,8 +236,9 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(p.is_phased_out ? 1.0f : 0.0f);
     for (int k = 0; k < N_OBS_KEYWORDS; k++)
         out.push_back(p.keywords[k] ? 1.0f : 0.0f);
-    out.push_back(norm_card_id(p.chosen_name_idx));  // [35] chosen-name id
-    out.push_back(norm_card_id(p.card_vocab_idx));   // [36] card id (LAST)
+    out.push_back(norm_card_id(p.chosen_name_idx));      // [35] chosen-name id
+    out.push_back(norm_card_id(p.returnable_exile_idx)); // [36] returnable-exile id
+    out.push_back(norm_card_id(p.card_vocab_idx));       // [37] card id (LAST)
 }
 
 // Pass-B fill of one battlefield permanent's PermanentState. Runs after the
@@ -250,6 +252,12 @@ static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership v
     // empty or out-of-vocab name, which norm_card_id maps to the empty sentinel.
     ps.chosen_name_idx       = perm.chosen_name.empty()
                                    ? -1 : card_name_to_index(perm.chosen_name);
+    // Most recently exiled card linked to this permanent that still has a live return path (a
+    // Static Prison holding a real card, a Flickerwisp/Phelia EOT blink) — 0/none => sentinel.
+    // Use the guarded vocab-idx helper (an exiled card is not a Permanent; an exiled token can't
+    // persist, but the helper handles the token case regardless).
+    Entity returnable = returnable_exiled_card(e);
+    ps.returnable_exile_idx  = returnable == 0 ? -1 : get_card_vocab_idx(returnable);
     ps.controller_is_self    = (perm.controller == viewer);
     ps.is_tapped             = perm.is_tapped;
     ps.has_summoning_sickness = perm.has_summoning_sickness;
@@ -359,6 +367,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
         gs->self_graveyard[i] = -1;
         gs->opp_graveyard[i]  = -1;
+        gs->self_exile[i]     = -1;
+        gs->opp_exile[i]      = -1;
     }
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) gs->known_top_library_self[i] = -1;
 
@@ -468,11 +478,14 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     StackItem stack_items[MAX_STACK_DISPLAY + 8];
     int stack_item_count = 0;
 
-    // Graveyard cards as (distance_from_top, vocab id), sorted for recency order.
+    // Graveyard/exile cards as (distance_from_top, vocab id), sorted for recency order.
     struct GyItem { size_t dist; int vocab_idx; };
     std::vector<GyItem> self_gy_items, opp_gy_items;
+    std::vector<GyItem> self_exile_items, opp_exile_items;
     self_gy_items.reserve(MAX_GY_SLOTS);
     opp_gy_items.reserve(MAX_GY_SLOTS);
+    self_exile_items.reserve(MAX_GY_SLOTS);
+    opp_exile_items.reserve(MAX_GY_SLOTS);
 
     // Battlefield permanents in pack order (ascending entity ID)
     Entity self_ents[MAX_BATTLEFIELD_SLOTS];
@@ -513,8 +526,14 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 else         opp_gy_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
                 break;
 
-            // Exile is intentionally not collected: it is never serialized to the
-            // ML state (see gamestate.h). Revisit when exile-using cards matter.
+            case Zone::EXILE:
+                // Collected per-owner in recency order, exactly like the graveyard.
+                // All exile is public in this engine, so both sides are serialized.
+                // get_card_vocab_idx guards a missing CardData (a token that ever
+                // sits here resolves via its Token band / TOKEN_SENTINEL, no crash).
+                if (is_self) self_exile_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
+                else         opp_exile_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
+                break;
 
             case Zone::STACK:
                 gs->stack_size++;
@@ -572,6 +591,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     };
     fill_graveyard(gs->self_graveyard, self_gy_items);
     fill_graveyard(gs->opp_graveyard, opp_gy_items);
+
+    // Exile zones in the same RECENCY order (slot 0 = most recent arrival).
+    fill_graveyard(gs->self_exile, self_exile_items);
+    fill_graveyard(gs->opp_exile, opp_exile_items);
 
     // Action history: copy from ring buffer, newest first, with perspective normalization
     gs->action_history_len = cur_game.action_history_count;
@@ -767,8 +790,13 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     for (int i = 0; i < MAX_GY_SLOTS; i++)
         state.push_back(norm_card_id(gs->opp_graveyard[i]));
 
-    // NOTE: exile zones are populated in GameState but not serialized here.
-    // Add them back once cards that use exile are implemented.
+    // Self exile (64 x 1 = 64), recency-ordered (slot 0 = most recent arrival)
+    for (int i = 0; i < MAX_GY_SLOTS; i++)
+        state.push_back(norm_card_id(gs->self_exile[i]));
+
+    // Opp exile (64 x 1 = 64)
+    for (int i = 0; i < MAX_GY_SLOTS; i++)
+        state.push_back(norm_card_id(gs->opp_exile[i]));
 
     // Self hand (10 x 1 = 10)
     for (int i = 0; i < MAX_HAND_SLOTS; i++)
@@ -816,7 +844,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
 
     // Global extras (19 floats): lands played, priority, monarch, city's blessing,
     // revolt, pending extra turns, day/night, mandatory-choice one-hot. See the
-    // [5635-5653] block in machine_io.h.
+    // [5859-5877] block in machine_io.h.
     state.push_back(static_cast<float>(gs->self.lands_played_this_turn) / 10.0f);
     state.push_back(static_cast<float>(gs->opponent.lands_played_this_turn) / 10.0f);
     state.push_back(gs->viewer_has_priority ? 1.0f : 0.0f);

@@ -2524,6 +2524,7 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -2543,6 +2544,7 @@
   Stack: Force of Will (spell, self) -> Mishra's Bauble (opponent, slot 98) -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
   Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -2563,6 +2565,7 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1]
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -2584,6 +2587,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1]
   Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Known top: Volcanic Island, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
@@ -2602,6 +2606,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -2618,6 +2623,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -2641,6 +2647,7 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Ponder (spell, opponent)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -2662,6 +2669,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Ponder (spell, self)
   Self GY: Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Put Flooded Strand on top of library
@@ -2680,6 +2688,7 @@
   Stack: Ponder (spell, opponent)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -2701,6 +2710,7 @@
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Mishra's Bauble
@@ -2720,6 +2730,7 @@
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Brainstorm
@@ -2736,6 +2747,7 @@
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Known top: Force of Will, Brainstorm, Mishra's Bauble, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
@@ -2755,6 +2767,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Known top: Brainstorm, Mishra's Bauble, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
@@ -2775,6 +2788,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Known top: Brainstorm, Mishra's Bauble, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
@@ -2797,6 +2811,7 @@
   Stack: Scalding Tarn (ability, opponent)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -2818,6 +2833,7 @@
   Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Known top: Brainstorm, Mishra's Bauble, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -2840,6 +2856,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -2857,6 +2874,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -2878,6 +2896,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
@@ -2896,6 +2915,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -2915,6 +2935,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -2936,6 +2957,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -2953,6 +2975,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -2970,6 +2993,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -2987,6 +3011,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3009,6 +3034,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3027,6 +3053,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3043,6 +3070,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3062,6 +3090,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3083,6 +3112,7 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3107,6 +3137,7 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Force of Will, Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3126,6 +3157,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3142,6 +3174,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3160,6 +3193,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3178,6 +3212,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3197,6 +3232,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3213,6 +3249,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3229,6 +3266,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3245,6 +3283,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3266,6 +3305,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3284,6 +3324,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Scalding Tarn, Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3300,6 +3341,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3318,6 +3360,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -3339,6 +3382,7 @@
   Stack: Scalding Tarn (ability, opponent)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3360,6 +3404,7 @@
   Stack: Scalding Tarn (ability, self)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3380,6 +3425,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3397,6 +3443,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3418,6 +3465,7 @@
   Opp BF:   Undercity Sewers (T)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
@@ -3436,6 +3484,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3455,6 +3504,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3476,6 +3526,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3493,6 +3544,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3510,6 +3562,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3527,6 +3580,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
@@ -3549,6 +3603,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3567,6 +3622,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3584,6 +3640,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3601,6 +3658,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3620,6 +3678,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3639,6 +3698,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3659,6 +3719,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3676,6 +3737,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3693,6 +3755,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3710,6 +3773,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3732,6 +3796,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3751,6 +3816,7 @@
   Opp BF:   Undercity Sewers
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3768,6 +3834,7 @@
   Opp BF:   Undercity Sewers
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Player A (6 life)
@@ -3790,6 +3857,7 @@
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Lightning Bolt (spell, opponent) -> self (player)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3812,6 +3880,7 @@
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Put Wasteland on top of library
@@ -3830,6 +3899,7 @@
   Stack: Lightning Bolt (spell, opponent) -> self (player)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3850,6 +3920,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Known opp hand: Thundering Falls
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
@@ -3867,6 +3938,7 @@
   Opp BF:   Undercity Sewers
   Self GY: Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3887,6 +3959,7 @@
   Stack: Thundering Falls (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Extras: opp_lands_played=1
   Actions:
@@ -3909,6 +3982,7 @@
   Stack: Thundering Falls (ability, self) [amt=1]
   Self GY: Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -3927,6 +4001,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
   Extras: opp_lands_played=1
   Actions:
@@ -3944,6 +4019,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
   Extras: opp_lands_played=1
   Actions:
@@ -3965,6 +4041,7 @@
   Opp BF:   Undercity Sewers
   Self GY: Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
@@ -3983,6 +4060,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
   Extras: opp_lands_played=1
   Actions:
@@ -4002,6 +4080,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Self exile: Thassa's Oracle
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
   Extras: opp_lands_played=1
   Actions:

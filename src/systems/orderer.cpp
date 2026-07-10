@@ -165,17 +165,20 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
-    // LIBRARY, STACK, and GRAVEYARD are ordered zones where distance_from_top is meaningful.
+    // LIBRARY, STACK, GRAVEYARD, and EXILE are ordered zones where distance_from_top is meaningful.
     Zone::ZoneValue origin = target_zone.location;
-    if (origin == Zone::LIBRARY || origin == Zone::STACK || origin == Zone::GRAVEYARD) {
+    if (origin == Zone::LIBRARY || origin == Zone::STACK || origin == Zone::GRAVEYARD ||
+        origin == Zone::EXILE) {
         size_t departing_pos = target_zone.distance_from_top;
         Zone::Ownership owner = target_zone.owner;
         for (auto &&card : mEntities) {
             if (card == target) continue;
             auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
             if (cmp_zone.location != origin) continue;
-            // Library and graveyard are per-player; stack is shared
-            if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD) && cmp_zone.owner != owner) continue;
+            // Library, graveyard, and exile are per-player; stack is shared
+            if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD || origin == Zone::EXILE) &&
+                cmp_zone.owner != owner)
+                continue;
             if (cmp_zone.distance_from_top > departing_pos) {
                 cmp_zone.distance_from_top--;
             }
@@ -210,8 +213,10 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         if (card == target) continue;
         auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
         if (cmp_zone.location != destination) continue;
-        // Library and graveyard are per-player; only shift cards belonging to the same owner
-        if ((destination == Zone::LIBRARY || destination == Zone::GRAVEYARD) && cmp_zone.owner != target_zone.owner)
+        // Library, graveyard, and exile are per-player; only shift cards belonging to the same owner
+        if ((destination == Zone::LIBRARY || destination == Zone::GRAVEYARD ||
+             destination == Zone::EXILE) &&
+            cmp_zone.owner != target_zone.owner)
             continue;
         if (!on_bottom) {
             // placing on top: shift everything else down one

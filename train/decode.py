@@ -19,8 +19,9 @@ import numpy as np
 
 from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
-                 _GY_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
+                 _GY_START, _EXILE_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
                  _PERM_SLOTS, _PERM_CARD_OFF, _PERM_CHOSEN_NAME_OFF,
+                 _PERM_RETURNABLE_OFF,
                  N_ENTITY_REF_SLOTS,
                  _STACK_SLOT_SIZE, _STACK_SLOTS, _STACK_MODE_SLOTS,
                  _STACK_XAMT_OFF, _STACK_QUAL_START, _STACK_QUALS,
@@ -55,6 +56,9 @@ from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
 STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + x/quals + modes + targets (37)
 GY_SLOT_SIZE = _GY_SLOT_SIZE                       # card-id only
 _OPP_GY_START = _GY_START + MAX_GY_SLOTS * GY_SLOT_SIZE  # opp gy begins after the self slots
+# Exile blocks mirror the graveyard layout (MAX_GY_SLOTS card-id slots per side,
+# recency-ordered); the shared _decode_graveyard decoder handles them too.
+_OPP_EXILE_START = _EXILE_START + MAX_GY_SLOTS * GY_SLOT_SIZE  # opp exile after the self slots
 
 # State-vector context indices (derived from env layout)
 _IDX_SELF_LIB = _LIBRARY_CTX_START                 # self_library_ct / 60
@@ -82,8 +86,9 @@ _OFF_CTRL = 7
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND = 9
 _OFF_LOYALTY = 10                                  # planeswalker loyalty (loyalty/10)
-_OFF_CHOSEN_NAME = _PERM_CHOSEN_NAME_OFF           # chosen-name card-id float (2nd-last in the slot, 35)
-_OFF_CARD_ID = _PERM_CARD_OFF                      # card-id float, always LAST in the slot (36)
+_OFF_CHOSEN_NAME = _PERM_CHOSEN_NAME_OFF           # chosen-name card-id float (3rd-last in the slot, 35)
+_OFF_RETURNABLE = _PERM_RETURNABLE_OFF             # returnable-exile card-id float (2nd-last in the slot, 36)
+_OFF_CARD_ID = _PERM_CARD_OFF                      # card-id float, always LAST in the slot (37)
 
 # Stack-slot cast-qualifier display names, in serialized order (the stack slot's
 # [4-10] flags; see src/machine_io.h). All 0.0 for abilities.
@@ -475,6 +480,11 @@ def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_nam
         naming = onehot_to_card(state, base + _OFF_CHOSEN_NAME)
         if naming is not None:
             p["naming"] = naming
+        # Card this permanent has exiled that still has a return path (Static Prison
+        # holding a real card, Flickerwisp/Phelia EOT blink); sentinel = none.
+        holding = onehot_to_card(state, base + _OFF_RETURNABLE)
+        if holding is not None:
+            p["holding"] = holding
         # Enriched fields (only non-default values are recorded, matching the
         # status-flag style above so fmt_perm stays compact).
         p1p1 = int(round(state[base + _OFF_P1P1_NET] * 10))
@@ -672,6 +682,8 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
         "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
+        "self_exile": _decode_graveyard(state, _EXILE_START),
+        "opp_exile": _decode_graveyard(state, _OPP_EXILE_START),
         "known_top_library": _decode_known_top_library(state),
         "opp_known_hand": _decode_opp_known_hand(state),
         "opp_revealed": _decode_opp_revealed(state),
@@ -1049,6 +1061,10 @@ def format_state_lines(gs):
         lines.append(f"Self GY: {', '.join(gs['self_graveyard'])}")
     if gs["opp_graveyard"]:
         lines.append(f"Opp GY:  {', '.join(gs['opp_graveyard'])}")
+    if gs.get("self_exile"):
+        lines.append(f"Self exile: {', '.join(gs['self_exile'])}")
+    if gs.get("opp_exile"):
+        lines.append(f"Opp exile:  {', '.join(gs['opp_exile'])}")
     # Belief-state blocks (shown only when the viewer actually knows something).
     if gs.get("known_top_library"):
         lines.append(f"Known top: {', '.join(gs['known_top_library'])}")
@@ -1118,6 +1134,8 @@ def fmt_perm(p):
         s += f" [loy {p['loyalty']}]"
     if "naming" in p:
         s += f" [naming: {p['naming']}]"
+    if "holding" in p:
+        s += f" [holding: {p['holding']}]"
     if "counters" in p:
         s += f" [{p['counters']}]"
     elif "p1p1" in p or "other_counters" in p:

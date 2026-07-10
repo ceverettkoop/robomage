@@ -461,6 +461,23 @@ inline std::vector<Entity> battlefield_permanents(
     return out;
 }
 
+// The most recently exiled card linked to `host` (Permanent::exiled_with) that STILL has a live
+// "return it from exile" path scheduled in cur_game.delayed_triggers, or 0 if none. This
+// distinguishes an exile-with-return host (a Static Prison holding a real Murktide) from a
+// permanent exiler with no return (Skyclave Apparition) or one holding a token. Two return
+// shapes exist (see effect_change_zone.cpp / effect_delayed_trigger.cpp):
+//   (A) "exile until host leaves" (Static Prison, Sheltered by Ghosts): a fire_on_leave_battlefield
+//       trigger watching `host`, whose ChangeZone fire ability moves the card EXILE -> its origin,
+//       with the card in the fire ability's restore_remembered_exiled_with.
+//   (B) end-of-turn blink (Flickerwisp / Phelia): a phase-based trigger whose ChangeZone fire
+//       ability moves the card EXILE -> battlefield, with the card in the trigger's
+//       remembered_objects (also mirrored into restore_remembered_exiled_with).
+// Skyclave Apparition / Keen-Eyed Curator populate exiled_with but register NO such trigger, so
+// they return 0. Conservative: any ChangeZone delayed trigger that would move the card OUT of exile
+// (origin EXILE, destination != EXILE) and references that card counts as a return path. Defined in
+// game_queries.cpp (needs cur_game.delayed_triggers).
+Entity returnable_exiled_card(Entity host);
+
 // Unblocked attackers controlled by `ctrl` (CR 509.1h): battlefield creatures that are
 // attacking and were not blocked at declare-blockers. Used to gate and pay Ninjutsu
 // (CR 702.49e) — the offer requires one, and activating returns one to hand.

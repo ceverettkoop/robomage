@@ -41,6 +41,10 @@ typedef struct PermanentState_tag {
     int  chosen_name_idx;        // vocab idx of Permanent::chosen_name (Pithing Needle /
                                  // Disruptor Flute named card, Petrified Hamlet named land);
                                  // -1 = no name chosen
+    int  returnable_exile_idx;   // vocab idx of the most recently exiled card linked to this
+                                 // permanent that STILL has a return path (Static Prison holding a
+                                 // real card, Flickerwisp/Phelia EOT blink); -1 = none (no return,
+                                 // e.g. Skyclave Apparition). See returnable_exiled_card().
     bool controller_is_self;
     bool is_tapped;
     bool is_creature;
@@ -148,8 +152,11 @@ typedef struct GameState_tag {
 
     int  self_graveyard[MAX_GY_SLOTS];   // card_vocab_idx, -1 = empty
     int  opp_graveyard[MAX_GY_SLOTS];
-    int  self_exile[MAX_GY_SLOTS]; //NOT SERIALIZED TO ML FOR NOW -too expensive -TODO Revisit when exile matters 
-    int  opp_exile[MAX_GY_SLOTS];//NOT SERIALIZED TO ML FOR NOW -too expensive -TODO Revisit when exile matters
+    // Exile is collected + serialized in RECENCY order (slot 0 = most recent
+    // arrival, sorted by Zone::distance_from_top). All exile is public in this
+    // engine, so both zones are fully visible. card_vocab_idx, -1 = empty.
+    int  self_exile[MAX_GY_SLOTS];
+    int  opp_exile[MAX_GY_SLOTS];
 
     int  self_hand[MAX_HAND_SLOTS];      // card_vocab_idx, -1 = empty
     // Opponent-hand cards whose identity the viewer knows (revealed in hand by

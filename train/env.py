@@ -34,7 +34,8 @@ State (STATE_SIZE) + 64 action-category floats + 64 action card-ID floats
 + 70 hand cost floats + 336 battlefield ability cost floats = OBS_SIZE total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (CLI) and is never sent to the ML model.
-NOTE: Exile zones are tracked in GameState but not serialized to the observation.
+NOTE: Both exile zones (self + opp, 64 recency-ordered card-id slots each) are
+serialized right after the graveyard blocks.
 See src/machine_io.h for the full state layout.
 
 Reward
@@ -108,7 +109,7 @@ except ImportError:
 # N_CARD_TYPES comes from card_costs (generated from card_vocab.h); assert it
 # agrees with the engine's machine_io.h value so the two generators can't drift.
 assert _ENUM_N_CARD_TYPES == N_CARD_TYPES, (_ENUM_N_CARD_TYPES, N_CARD_TYPES)
-# NOTE: Exile zones are tracked in GameState but not serialized to the observation.
+# NOTE: Both exile zones are serialized right after the graveyard blocks.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
 # Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of
@@ -189,7 +190,7 @@ _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS         # 10 * 7 = 70
 _BF_ABILITY_FEATS = MAX_BATTLEFIELD_SLOTS * _N_COST_FEATS  # 48 * 7 = 336
 # Action metadata in the obs: cats | ids | ctrl | zone_ref | slot_ref (5 blocks
 # of MAX_ACTIONS). pub stays a side-channel (self._action_public), not in the obs.
-OBS_SIZE = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 6476
+OBS_SIZE = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 6700
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -224,11 +225,11 @@ _STACK_SIZE_IDX = _SELF_IS_A_IDX + 1                                # 35: stack 
 _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full header width
 _PERM_SLOTS             = MAX_BATTLEFIELD_SLOTS  # per-player; 96 total (self + opp)
 # 11 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
-# + keyword multi-hot + chosen-name id + card id (LAST) = 37. Keep the derived
-# formula and cross-check it against the engine's PERM_SLOT_SIZE (machine_io.h) so
-# a change to either side is caught here. The two id-family floats sit last:
-# chosen_name_id then card_id.
-_PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 2
+# + keyword multi-hot + chosen-name id + returnable-exile id + card id (LAST) = 38.
+# Keep the derived formula and cross-check it against the engine's PERM_SLOT_SIZE
+# (machine_io.h) so a change to either side is caught here. The three id-family
+# floats sit last: chosen_name_id then returnable_exile_id then card_id.
+_PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 3
 assert _PERM_SLOT_SIZE == PERM_SLOT_SIZE, (_PERM_SLOT_SIZE, PERM_SLOT_SIZE)
 _STACK_SLOTS            = MAX_STACK_DISPLAY
 _STACK_XAMT_OFF         = 3                    # x_or_amount / 10 within a stack slot
@@ -244,6 +245,8 @@ _STACK_TGT_START        = _STACK_MODE_START + _STACK_MODE_SLOTS               # 
 _STACK_SLOT_SIZE        = _STACK_TGT_START + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 _GY_SLOTS_TOTAL         = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent
 _GY_SLOT_SIZE           = 1                    # card id only
+_EXILE_SLOTS_TOTAL      = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent (same layout as GY)
+_EXILE_SLOT_SIZE        = 1                    # card id only
 _HAND_SLOTS_TOTAL       = MAX_HAND_SLOTS
 _HAND_SLOT_SIZE         = 1
 _ACTION_HISTORY_SIZE    = ACTION_HISTORY_SIZE  # entries in the action history ring (src/classes/game.h)
@@ -261,7 +264,8 @@ _SELF_PERM_START     = _GLOBAL_SIZE                                             
 _OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 1812
 _STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 3588
 _GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 4032
-_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 4160
+_EXILE_START         = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 4160
+_HAND_START          = _EXILE_START + _EXILE_SLOTS_TOTAL * _EXILE_SLOT_SIZE          # 4288
 _HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 4170
 _HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 4682
 _MATCH_CTX_START     = _HIST_END                                                     # 4682
@@ -304,11 +308,14 @@ _EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES            
 
 assert _EXTRAS_END == STATE_SIZE, (_EXTRAS_END, STATE_SIZE)
 
-# Offsets of the two id-family floats within a permanent slot (both LAST): the
+# Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
-# card, Petrified Hamlet named land) then the card id.
-_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 2    # 35
-_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 36 (card id is always LAST)
+# card, Petrified Hamlet named land), then the returnable-exile id (the card this
+# permanent has exiled that still has a return path — Static Prison / Phelia), then
+# the card id.
+_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3    # 35
+_PERM_RETURNABLE_OFF = _PERM_SLOT_SIZE - 2     # 36
+_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 37 (card id is always LAST)
 
 # Unified entity-reference slot space (machine_io.h): 0-47 self perm slots,
 # 48-95 opp perm slots, 96-107 stack slots, -1 = none. In the float state
@@ -322,7 +329,7 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # state vector describes the STALE terminal board of the previous game — noise
 # for a sideboarding decision. When is_sideboard_phase (state[_MATCH_CTX_START+3])
 # is set we zero every block except the ones that actually inform sideboarding:
-# graveyards ("how the game went"), action history (last-game tempo + in-phase
+# graveyards + exile ("how the game went"), action history (last-game tempo + in-phase
 # swap context), match/library/turn context (game number => play/draw), the
 # opponent revealed-cards multi-hot (the primary signal), and the pending-decision
 # context (which IN card the OUT query is cutting for). The global-extras block
@@ -333,7 +340,7 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 def _build_sideboard_mask():
     keep = np.zeros(STATE_SIZE, dtype=bool)
     for lo, hi in (
-        (_GY_START, _HAND_START),                   # graveyards (self + opp)
+        (_GY_START, _HAND_START),                   # graveyards + exile (self + opp)
         (_HIST_START, _HIST_END),                   # action history ring
         (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
         (_REVEALED_START, _REVEALED_END),           # opponent revealed multi-hot
@@ -350,11 +357,10 @@ def _build_sideboard_mask():
     # Card-id positions inside masked blocks must decode to "empty", not vocab 0.
     card_id_idx = []
     for s in range(_PERM_SLOTS):                     # self + opp permanent slots
-        # Both id-family floats per slot: chosen-name id and card id.
-        card_id_idx.append(_SELF_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CHOSEN_NAME_OFF)
-        card_id_idx.append(_SELF_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CARD_OFF)
-        card_id_idx.append(_OPP_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CHOSEN_NAME_OFF)
-        card_id_idx.append(_OPP_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CARD_OFF)
+        # All three id-family floats per slot: chosen-name id, returnable-exile id, card id.
+        for off in (_PERM_CHOSEN_NAME_OFF, _PERM_RETURNABLE_OFF, _PERM_CARD_OFF):
+            card_id_idx.append(_SELF_PERM_START + s * _PERM_SLOT_SIZE + off)
+            card_id_idx.append(_OPP_PERM_START + s * _PERM_SLOT_SIZE + off)
     for s in range(_STACK_SLOTS):                    # stack object id + target sub-slot ids
         base = _STACK_START + s * _STACK_SLOT_SIZE
         card_id_idx.append(base + 1)                 # object card id

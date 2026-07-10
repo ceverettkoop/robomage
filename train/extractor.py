@@ -7,7 +7,8 @@ representation that is invariant to card ordering and slot position.
 
 State is always from the PRIORITY PLAYER'S perspective ("self").
 
-NOTE: Exile zones are tracked in GameState but not serialized to the observation.
+NOTE: Both exile zones are serialized right after the graveyard blocks and
+      consumed through the shared entity encoder like the graveyards.
 NOTE: ActionChoice.description is never part of the observation — it is for
       human-readable display only (CLI) and is not passed to the ML model.
 
@@ -39,20 +40,22 @@ Index layout must stay in sync with src/machine_io.h:
                          [present, is_player, controller_is_self, slot_ref, card id])
   obs[4032:4160]      128 graveyard slots × 1 float (card id, recency-ordered)
                          slots 0-63: self; slots 64-127: opponent
-  obs[4160:4170]       10 hand slots    × 1 float  (card id)
-  obs[4170:4682]      128 action history entries × 4 floats (newest first)
+  obs[4160:4288]      128 exile slots × 1 float (card id, recency-ordered)
+                         slots 0-63: self; slots 64-127: opponent
+  obs[4288:4298]       10 hand slots    × 1 float  (card id)
+  obs[4298:4810]      128 action history entries × 4 floats (newest first)
                          per entry: category_norm, card_id_norm, is_self, turn/50
-  obs[4682:4686]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-  obs[4686:4689]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-  obs[4689]            current game turn / 50
-  obs[4690:4695]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
-  obs[4695:5719]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
-  obs[5719:5729]       10 known opponent-hand slots × 1 float (card id)
-  obs[5729:5731]       pending-decision context (source card id + ctrl_is_self)
-  obs[5731:5750]       global extras (self/opp lands played, viewer_has_priority,
+  obs[4810:4814]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+  obs[4814:4817]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+  obs[4817]            current game turn / 50
+  obs[4818:4823]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
+  obs[4823:5847]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
+  obs[5847:5857]       10 known opponent-hand slots × 1 float (card id)
+  obs[5857:5859]       pending-decision context (source card id + ctrl_is_self)
+  obs[5859:5878]       global extras (self/opp lands played, viewer_has_priority,
                          self/opp monarch, city's blessing, revolt, pending extra
                          turns, is_day, is_night, MandatoryChoice one-hot(6))
-  obs[5750:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
+  obs[5878:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
                          (appended by env.py; refs are normalized entity-slot
                          references, (idx+1)/108 with 0.0 = none)
 """
@@ -112,11 +115,13 @@ def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
 
 _PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
 # 11 status (incl. loyalty) + 2 counters + 4 entity refs + is_blocked +
-# is_phased_out + keyword multi-hot + chosen-name id + card id (LAST) = 37
-_PERM_SLOT_SIZE  = 19 + N_OBS_KEYWORDS + 2  # 37
-_PERM_STATUS_FLOATS   = _PERM_SLOT_SIZE - 2  # 35 non-id status/ref/keyword floats
-_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 2  # 35 (chosen-name id, 2nd-last)
-_PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 36 (card id is always LAST)
+# is_phased_out + keyword multi-hot + chosen-name id + returnable-exile id +
+# card id (LAST) = 38
+_PERM_SLOT_SIZE  = 19 + N_OBS_KEYWORDS + 3  # 38
+_PERM_STATUS_FLOATS   = _PERM_SLOT_SIZE - 3  # 35 non-id status/ref/keyword floats
+_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3  # 35 (chosen-name id, 3rd-last)
+_PERM_RETURNABLE_OFF  = _PERM_SLOT_SIZE - 2  # 36 (returnable-exile id, 2nd-last)
+_PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 37 (card id is always LAST)
 
 _STACK_SLOTS      = 12
 _STACK_XAMT_OFF   = 3   # x_or_amount / 10 within a stack slot
@@ -132,6 +137,9 @@ _STACK_SLOT_SIZE  = _STACK_TGT_OFF + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 
 _GY_SLOTS        = 128  # 64 self + 64 opponent
 _GY_SLOT_SIZE    = 1    # card id only
+
+_EXILE_SLOTS     = 128  # 64 self + 64 opponent (same layout as graveyard)
+_EXILE_SLOT_SIZE = 1    # card id only
 
 _HAND_SLOTS      = 10
 _HAND_SLOT_SIZE  = 1    # card id only
@@ -183,7 +191,9 @@ _STACK_START = _PERM_END                                       # 3588
 _STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 4032
 _GY_START    = _STACK_END                                      # 4032
 _GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 4160
-_HAND_START  = _GY_END                                         # 4160
+_EXILE_START = _GY_END                                         # 4160
+_EXILE_END   = _EXILE_START + _EXILE_SLOTS * _EXILE_SLOT_SIZE  # 4288
+_HAND_START  = _EXILE_END                                      # 4288
 _HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 4170
 _HIST_START  = _HAND_END                                       # 4170
 _HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 4682
@@ -228,14 +238,14 @@ class CardGameExtractor(BaseFeaturesExtractor):
 
     Three independent encoders cover the slot formats:
       perm_encoder   (35 status/counter/ref/keyword floats + chosen-name embed +
-                     card_embed → embed_dim): permanents (entity refs enter as raw
-                     normalized floats in v1)
+                     returnable-exile embed + card_embed → embed_dim): permanents
+                     (entity refs enter as raw normalized floats in v1)
       stack_encoder  (32 scalars + card_embed + target-embed mean → embed_dim//2):
                      stack items with x/qualifiers and announced modes/targets
-      entity_encoder (card_embed → embed_dim): graveyard, hand, known top-library
+      entity_encoder (card_embed → embed_dim): graveyard, exile, hand, known top-library
 
     Empty slots (id sentinel) are masked out of the perm / stack / graveyard /
-    hand pooling so they neither dilute the mean nor pin the max.
+    exile / hand pooling so they neither dilute the mean nor pin the max.
 
     Output fed into the policy MLP head:
       global(36) + hist(512 raw) + hist_recent(K × (cat_emb+card_emb+2) embedded) +
@@ -244,8 +254,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
       extras(19 raw: lands played, priority, monarch, ..., MandatoryChoice one-hot) +
       action_extras(action metadata cats|ids|ctrl|zone|refs + cost feats) +
       perm_agg(embed*2: masked mean+max) + stack_agg(embed//2 * 2) +
-      graveyard_agg(embed*2: masked mean+max) + hand_agg(embed*2: masked mean+max) +
-      opp_known_hand_agg(embed*2: masked mean+max)
+      graveyard_agg(embed*2: masked mean+max) + exile_agg(embed*2: masked mean+max) +
+      hand_agg(embed*2: masked mean+max) + opp_known_hand_agg(embed*2: masked mean+max)
     """
 
     def __init__(
@@ -275,6 +285,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim * 2                              # perm masked mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
             + embed_dim * 2                              # graveyard masked-mean + max
+            + embed_dim * 2                              # exile masked-mean + max
             + embed_dim * 2                              # hand masked-mean + max
             + embed_dim * 2                              # known opponent-hand masked-mean + max
         )
@@ -301,7 +312,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # floats (v1). The chosen-name id (Pithing Needle / Disruptor Flute named
         # card) is embedded via the shared card embedding, like the card id.
         self.perm_encoder = nn.Sequential(
-            nn.Linear(_PERM_STATUS_FLOATS + 2 * card_embed_dim, embed_dim),
+            nn.Linear(_PERM_STATUS_FLOATS + 3 * card_embed_dim, embed_dim),
             nn.ReLU(),
             nn.Linear(embed_dim, embed_dim),
             nn.ReLU(),
@@ -399,6 +410,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         perms     = obs[:, _PERM_START:_PERM_END].reshape(-1, _PERM_SLOTS, _PERM_SLOT_SIZE)
         stack     = obs[:, _STACK_START:_STACK_END].reshape(-1, _STACK_SLOTS, _STACK_SLOT_SIZE)
         graveyard = obs[:, _GY_START:_GY_END].reshape(-1, _GY_SLOTS, _GY_SLOT_SIZE)
+        exile     = obs[:, _EXILE_START:_EXILE_END].reshape(-1, _EXILE_SLOTS, _EXILE_SLOT_SIZE)
         hand      = obs[:, _HAND_START:_HAND_END].reshape(-1, _HAND_SLOTS, _HAND_SLOT_SIZE)
         opp_hand  = obs[:, _OPP_KNOWN_HAND_START:_OPP_KNOWN_HAND_END].reshape(
             -1, _OPP_KNOWN_HAND_SLOTS, _OPP_KNOWN_HAND_SLOT_SIZE)
@@ -406,12 +418,14 @@ class CardGameExtractor(BaseFeaturesExtractor):
             -1, _KNOWN_TOP_LIB_SLOTS, _KNOWN_TOP_LIB_SLOT_SIZE)
 
         # Embed card identity per slot, then build each slot's encoder input. The
-        # chosen-name id is embedded through the same shared card embedding as the
-        # card id and appended after the 35 status floats.
+        # chosen-name id and the returnable-exile id are each embedded through the
+        # same shared card embedding as the card id and appended after the 35 status
+        # floats (chosen-name, then returnable-exile, then card id).
         perm_card_emb, perm_present = self._embed_ids(perms[:, :, _PERM_CARD_OFF])
         perm_chosen_emb, _ = self._embed_ids(perms[:, :, _PERM_CHOSEN_NAME_OFF])
+        perm_returnable_emb, _ = self._embed_ids(perms[:, :, _PERM_RETURNABLE_OFF])
         perm_in = torch.cat([perms[:, :, :_PERM_STATUS_FLOATS],
-                             perm_chosen_emb, perm_card_emb], dim=-1)
+                             perm_chosen_emb, perm_returnable_emb, perm_card_emb], dim=-1)
 
         stk_card_emb, stk_present = self._embed_ids(stack[:, :, 1])
         # Announced-target sub-slots: (B, 12, 4, 5) of
@@ -429,6 +443,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
                             stk_tgt_scalars, stk_card_emb, stk_tgt_agg], dim=-1)
 
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
+        ex_emb_in, ex_present = self._embed_ids(exile[:, :, 0])
         hand_emb_in, hand_present = self._embed_ids(hand[:, :, 0])
         opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
         top_lib_emb_in, _ = self._embed_ids(top_lib[:, :, 0])
@@ -437,6 +452,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         perm_emb    = self.perm_encoder(perm_in)       # (B, 96, embed)
         stk_emb     = self.stack_encoder(stk_in)       # (B, 12, embed//2)
         gy_emb      = self.entity_encoder(gy_emb_in)   # (B, 128, embed)
+        ex_emb      = self.entity_encoder(ex_emb_in)   # (B, 128, embed)  — shared weights
         hand_emb    = self.entity_encoder(hand_emb_in) # (B, 10, embed)  — shared weights
         opp_hand_emb = self.entity_encoder(opp_hand_emb_in)  # (B, 10, embed)  — shared weights
         top_lib_emb = self.entity_encoder(top_lib_emb_in)  # (B, 5, embed)  — shared weights
@@ -448,6 +464,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         perm_agg    = _masked_mean_max(perm_emb, perm_present)
         stk_agg     = _masked_mean_max(stk_emb, stk_present)
         gy_agg      = _masked_mean_max(gy_emb,   gy_present)
+        ex_agg      = _masked_mean_max(ex_emb,   ex_present)
         hand_agg    = _masked_mean_max(hand_emb, hand_present)
         opp_hand_agg = _masked_mean_max(opp_hand_emb, opp_hand_present)
         top_lib_agg = top_lib_emb.mean(1)
@@ -455,7 +472,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
                           revealed_agg, pending_feat, extras, action_extras,
-                          perm_agg, stk_agg, gy_agg, hand_agg, opp_hand_agg], dim=-1)
+                          perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg], dim=-1)
         if not self.per_action_head:
             return base
 

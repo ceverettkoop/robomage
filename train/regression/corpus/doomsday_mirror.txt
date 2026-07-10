@@ -212,6 +212,7 @@
   Opp:   20 life | mana: empty | hand count: 4
   Stack: Edge of Autumn (ability, opponent) [amt=1] -> Thoughtseize (spell, opponent) -> self (player)
   Opp GY:  Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -228,6 +229,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Stack: Force of Will (spell, opponent) -> Thoughtseize (self, slot 98) -> Edge of Autumn (ability, self) [amt=1] -> Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -246,6 +248,7 @@
   Stack: Edge of Autumn (ability, self) [amt=1]
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -263,6 +266,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -277,6 +281,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -293,6 +298,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -309,6 +315,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -326,6 +333,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -340,6 +348,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -354,6 +363,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -368,6 +378,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -387,6 +398,7 @@
   Opp:   19 life | mana: empty | hand count: 5
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Actions:
    0: Pass priority
@@ -402,6 +414,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Force of Will, Personal Tutor
   Actions:
    0: Pass priority
@@ -415,6 +428,7 @@
   Opp:   20 life | mana: empty | hand count: 5
   Self GY: Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
@@ -433,6 +447,7 @@
   Self BF:  Polluted Delta
   Self GY: Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -449,6 +464,7 @@
   Self BF:  Polluted Delta
   Self GY: Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -466,6 +482,7 @@
   Stack: Edge of Autumn (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Force of Will, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -483,6 +500,7 @@
   Opp:   20 life | mana: empty | hand count: 5
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -500,6 +518,7 @@
   Stack: Lotus Petal (spell, opponent)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -517,6 +536,7 @@
   Self BF:  Lotus Petal
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -537,6 +557,7 @@
   Stack: Ponder (spell, opponent)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -556,6 +577,7 @@
   Stack: Ponder (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -574,6 +596,7 @@
   Stack: Ponder (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -589,6 +612,7 @@
   Stack: Ponder (spell, self)
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Dark Ritual, Daze, Doomsday, ?, ?
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -607,6 +631,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -621,6 +646,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -637,6 +663,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -653,6 +680,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -670,6 +698,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -684,6 +713,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -698,6 +728,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -712,6 +743,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -731,6 +763,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
@@ -746,6 +779,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
@@ -759,6 +793,7 @@
   Opp:   19 life | mana: empty | hand count: 4
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
@@ -777,6 +812,7 @@
   Self BF:  Island
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
   Actions:
@@ -797,6 +833,7 @@
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
   Actions:
@@ -817,6 +854,7 @@
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
   Actions:
@@ -836,6 +874,7 @@
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
   Actions:
@@ -852,6 +891,7 @@
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Doomsday, Force of Will, Edge of Autumn, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -871,6 +911,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -887,6 +928,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -905,6 +947,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -923,6 +966,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -942,6 +986,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -958,6 +1003,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -974,6 +1020,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -990,6 +1037,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
@@ -1011,6 +1059,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
@@ -1028,6 +1077,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
@@ -1043,6 +1093,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
@@ -1062,6 +1113,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1080,6 +1132,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
@@ -1097,6 +1150,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1115,6 +1169,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
@@ -1134,6 +1189,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1152,6 +1208,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
@@ -1171,6 +1228,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
@@ -1188,6 +1246,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1209,6 +1268,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1227,6 +1287,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
@@ -1244,6 +1305,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1262,6 +1324,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
@@ -1279,6 +1342,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1297,6 +1361,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
@@ -1314,6 +1379,7 @@
   Opp BF:   Island (T)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1332,6 +1398,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1
@@ -1354,6 +1421,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Edge of Autumn, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
@@ -1370,6 +1438,7 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
@@ -1389,6 +1458,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
@@ -1405,6 +1475,7 @@
   Opp BF:   Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
@@ -1422,6 +1493,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
@@ -1441,6 +1513,7 @@
   Opp BF:   Underground Sea
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
@@ -1464,6 +1537,7 @@
   Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -1482,6 +1556,7 @@
   Stack: Misty Rainforest (ability, opponent)
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1504,6 +1579,7 @@
   Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
@@ -1529,6 +1605,7 @@
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1546,6 +1623,7 @@
   Stack: Undercity Sewers (ability, opponent) [amt=1]
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1569,6 +1647,7 @@
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1587,6 +1666,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1603,6 +1683,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1621,6 +1702,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1637,6 +1719,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1657,6 +1740,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1673,6 +1757,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1693,6 +1778,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1711,6 +1797,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1730,6 +1817,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1746,6 +1834,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1764,6 +1853,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1780,6 +1870,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1798,6 +1889,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1814,6 +1906,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1832,6 +1925,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1848,6 +1942,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: opp_lands_played=1, opp_revolt
@@ -1871,6 +1966,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
@@ -1888,6 +1984,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
@@ -1905,6 +2002,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -1921,6 +2019,7 @@
   Opp BF:   Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
@@ -1936,6 +2035,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -1955,6 +2055,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -1978,6 +2079,7 @@
   Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1996,6 +2098,7 @@
   Stack: Verdant Catacombs (ability, opponent)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2016,6 +2119,7 @@
   Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2038,6 +2142,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2055,6 +2160,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2071,6 +2177,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2088,6 +2195,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2106,6 +2214,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2123,6 +2232,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2141,6 +2251,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2157,6 +2268,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2177,6 +2289,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2194,6 +2307,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2210,6 +2324,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2227,6 +2342,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2243,6 +2359,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2260,6 +2377,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2276,6 +2394,7 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2293,6 +2412,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2314,6 +2434,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
@@ -2329,6 +2450,7 @@
   Opp BF:   Undercity Sewers | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -2347,6 +2469,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
@@ -2362,6 +2485,7 @@
   Opp BF:   Undercity Sewers | Island
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -2378,6 +2502,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
@@ -2397,6 +2522,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Player B (18 life)
@@ -2417,6 +2543,7 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
@@ -2433,6 +2560,7 @@
   Stack: Thoughtseize (spell, opponent) -> self (player)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -2454,6 +2582,7 @@
   Stack: Thoughtseize (spell, opponent) -> self (player)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Thoughtseize
@@ -2474,6 +2603,7 @@
   Stack: Daze (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
@@ -2493,6 +2623,7 @@
   Stack: Daze (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Tap Island for (U)
@@ -2511,6 +2642,7 @@
   Stack: Daze (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pay {1} (spell is not countered)
@@ -2529,6 +2661,7 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
@@ -2552,6 +2685,7 @@
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Doomsday, Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2573,6 +2707,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2593,6 +2728,7 @@
   Stack: Lotus Petal (spell, self)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2611,6 +2747,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2627,6 +2764,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2645,6 +2783,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2663,6 +2802,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2682,6 +2822,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2698,6 +2839,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2714,6 +2856,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2730,6 +2873,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2751,6 +2895,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island (T)
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -2767,6 +2912,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2785,6 +2931,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island (T)
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -2801,6 +2948,7 @@
   Opp BF:   Swamp | Underground Sea
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
@@ -2817,6 +2965,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island (T)
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -2839,6 +2988,7 @@
   Stack: Dauthi Voidwalker (spell, opponent)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2857,6 +3007,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2873,6 +3024,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2891,6 +3043,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2909,6 +3062,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2928,6 +3082,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2944,6 +3099,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2960,6 +3116,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2976,6 +3133,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -2997,6 +3155,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3015,6 +3174,7 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3036,6 +3196,7 @@
   Stack: Dark Ritual (spell, self)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3056,6 +3217,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3072,6 +3235,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3088,6 +3253,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3106,6 +3273,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3124,6 +3293,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3143,6 +3314,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3159,6 +3332,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3175,6 +3350,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3191,6 +3368,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Dauthi Voidwalker [3/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3212,6 +3391,8 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
+  Opp exile:  Dark Ritual
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3229,6 +3410,8 @@
   Opp BF:   Swamp | Underground Sea | Dauthi Voidwalker [3/2]
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3247,6 +3430,8 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
+  Opp exile:  Dark Ritual
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3264,6 +3449,8 @@
   Opp BF:   Swamp | Underground Sea | Dauthi Voidwalker [3/2]
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3280,6 +3467,8 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
+  Opp exile:  Dark Ritual
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3300,6 +3489,8 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
+  Opp exile:  Dark Ritual
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -3322,6 +3513,8 @@
   Stack: Dauthi Voidwalker (ability, self) [amt=1]
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
+  Opp exile:  Dark Ritual
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3340,6 +3533,8 @@
   Stack: Dauthi Voidwalker (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Dark Ritual
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3361,6 +3556,8 @@
   Stack: Dauthi Voidwalker (ability, self) [amt=1]
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
+  Opp exile:  Dark Ritual
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3380,6 +3577,7 @@
   Stack: Dark Ritual (spell, opponent)
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3398,6 +3596,7 @@
   Stack: Dark Ritual (spell, self)
   Self GY: Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3418,6 +3617,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3435,6 +3635,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3452,6 +3653,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3469,6 +3671,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3488,6 +3691,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3505,6 +3709,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3524,6 +3729,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3541,6 +3747,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3561,6 +3768,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3578,6 +3786,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3595,6 +3804,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3612,6 +3822,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3629,6 +3840,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3646,6 +3858,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3663,6 +3876,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers (T) | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3680,6 +3894,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Extras: opp_lands_played=1, opp_revolt
@@ -3702,6 +3917,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3718,6 +3934,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3736,6 +3953,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3752,6 +3970,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3768,6 +3987,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3784,6 +4004,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3800,6 +4021,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3816,6 +4038,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3834,6 +4057,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3850,6 +4074,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3868,6 +4093,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3884,6 +4110,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3903,6 +4130,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3919,6 +4147,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3935,6 +4164,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3951,6 +4181,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3967,6 +4198,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -3983,6 +4215,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -3999,6 +4232,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -4015,6 +4249,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -4036,6 +4271,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -4052,6 +4288,7 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Known opp hand: Dark Ritual, Dark Ritual
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
@@ -4070,6 +4307,7 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -4090,6 +4328,7 @@
   Stack: Dark Ritual (spell, self)
   Self GY: Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -4109,6 +4348,7 @@
   Stack: Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4130,6 +4370,7 @@
   Stack: Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Exile Daze
@@ -4148,6 +4389,8 @@
   Stack: Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Dark Ritual
@@ -4167,6 +4410,8 @@
   Stack: Force of Will (spell, self) -> Dark Ritual (opponent, slot 97) -> Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
   Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4186,6 +4431,8 @@
   Stack: Dark Ritual (spell, opponent)
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4204,6 +4451,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4219,6 +4468,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4234,6 +4485,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4251,6 +4504,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4268,6 +4523,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4286,6 +4543,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4301,6 +4560,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4316,6 +4577,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4331,6 +4594,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4351,6 +4616,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4368,6 +4635,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4383,6 +4652,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4403,6 +4674,8 @@
   Stack: Personal Tutor (spell, self)
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4422,6 +4695,8 @@
   Stack: Personal Tutor (spell, self)
   Self GY: Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Fail to find
@@ -4450,6 +4725,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4465,6 +4742,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4482,6 +4761,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4499,6 +4780,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4517,6 +4800,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4532,6 +4817,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4547,6 +4834,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4562,6 +4851,8 @@
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4582,6 +4873,8 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4599,6 +4892,8 @@
   Opp BF:   Swamp | Underground Sea | Island
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4614,6 +4909,8 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island (T)
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
+  Opp exile:  Daze
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
@@ -4632,6 +4929,8 @@
   Opp BF:   Lotus Petal | Undercity Sewers | Island (T)
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Self exile: Personal Tutor
+  Opp exile:  Daze
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
@@ -4654,6 +4953,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: opp_lands_played=1
   Actions:
@@ -4670,6 +4971,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: opp_lands_played=1
   Actions:
@@ -4688,6 +4991,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: opp_lands_played=1
   Actions:
@@ -4706,6 +5011,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: opp_lands_played=1
   Actions:
@@ -4725,6 +5032,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: opp_lands_played=1
   Actions:
@@ -4741,6 +5050,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: opp_lands_played=1
   Actions:
@@ -4757,6 +5068,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: opp_lands_played=1
   Actions:
@@ -4773,6 +5086,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: opp_lands_played=1
   Actions:
@@ -4794,6 +5109,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4811,6 +5128,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4826,6 +5145,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4845,6 +5166,8 @@
   Stack: Lotus Petal (spell, self)
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4862,6 +5185,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -4887,6 +5212,8 @@
   Stack: Doomsday (spell, self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
   Actions:
@@ -4907,6 +5234,8 @@
   Stack: Doomsday (spell, self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
   Actions:
@@ -4979,6 +5308,8 @@
   Stack: Doomsday (spell, self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5051,6 +5382,8 @@
   Stack: Doomsday (spell, self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5122,6 +5455,8 @@
   Stack: Doomsday (spell, self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5192,6 +5527,8 @@
   Stack: Doomsday (spell, self)
   Self GY: Lotus Petal, Lotus Petal, Personal Tutor, Force of Will, Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Daze
+  Opp exile:  Personal Tutor
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5313,6 +5650,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5335,6 +5674,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5356,6 +5697,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5376,6 +5719,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Stack: Doomsday (spell, self)
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5397,6 +5742,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, Street Wraith, Force of Will
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5419,6 +5766,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Street Wraith, Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Street Wraith, Thassa's Oracle, Street Wraith, Force of Will, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5441,6 +5790,8 @@
   Opp BF:   Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Street Wraith, Street Wraith, Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Thassa's Oracle, Street Wraith, Force of Will, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
@@ -5472,6 +5823,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5490,6 +5843,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5509,6 +5864,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5530,6 +5887,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5551,6 +5910,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5573,6 +5934,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5592,6 +5955,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5611,6 +5976,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5630,6 +5997,8 @@
   Opp BF:   Undercity Sewers (T) | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5654,6 +6023,8 @@
   Opp BF:   Undercity Sewers | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5675,6 +6046,8 @@
   Opp BF:   Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
@@ -5691,6 +6064,8 @@
   Opp BF:   Undercity Sewers | Island
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5710,6 +6085,8 @@
   Opp BF:   Lion's Eye Diamond | Swamp | Underground Sea | Island | Cavern of Souls
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
@@ -5732,6 +6109,8 @@
   Stack: Thassa's Oracle (spell, self)
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
@@ -5749,6 +6128,8 @@
   Stack: Thassa's Oracle (spell, opponent)
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5772,6 +6153,8 @@
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
@@ -5789,6 +6172,8 @@
   Stack: Thassa's Oracle (ability, opponent) [amt=1]
   Self GY: Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
+  Self exile: Personal Tutor
+  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
@@ -5812,6 +6197,8 @@
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Dark Ritual, Dark Ritual, Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Underground Sea, Ponder, Edge of Autumn, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Thoughtseize, Thoughtseize, Daze
+  Opp exile:  Personal Tutor
   Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
