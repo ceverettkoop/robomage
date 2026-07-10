@@ -38,6 +38,9 @@ typedef struct PlayerState_tag {
 
 typedef struct PermanentState_tag {
     int  card_vocab_idx;         // -1 = empty slot
+    int  chosen_name_idx;        // vocab idx of Permanent::chosen_name (Pithing Needle /
+                                 // Disruptor Flute named card, Petrified Hamlet named land);
+                                 // -1 = no name chosen
     bool controller_is_self;
     bool is_tapped;
     bool is_creature;

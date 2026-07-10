@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "card_db.h"
+#include "classes/match_state.h"
 #include "components/carddata.h"
 #include "components/player.h"
 #include "components/zone.h"
@@ -96,6 +97,8 @@ static void setup_companion_for(Zone::Ownership owner, const Deck &deck,
         comp = placed.front();
     }
     player.chosen_companion = comp;
+    // CR 702.139f: a chosen companion is revealed at game start, so the opponent knows it.
+    mark_card_revealed(comp, owner);
 }
 
 void setup_companions(const Deck &deck_a, const Deck &deck_b,

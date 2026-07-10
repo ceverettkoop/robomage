@@ -189,7 +189,7 @@ _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS         # 10 * 7 = 70
 _BF_ABILITY_FEATS = MAX_BATTLEFIELD_SLOTS * _N_COST_FEATS  # 48 * 7 = 336
 # Action metadata in the obs: cats | ids | ctrl | zone_ref | slot_ref (5 blocks
 # of MAX_ACTIONS). pub stays a side-channel (self._action_public), not in the obs.
-OBS_SIZE = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 6380
+OBS_SIZE = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 6476
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -224,10 +224,11 @@ _STACK_SIZE_IDX = _SELF_IS_A_IDX + 1                                # 35: stack 
 _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full header width
 _PERM_SLOTS             = MAX_BATTLEFIELD_SLOTS  # per-player; 96 total (self + opp)
 # 11 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
-# + keyword multi-hot + 1 card id (LAST) = 36. Keep the derived formula and
-# cross-check it against the engine's PERM_SLOT_SIZE (machine_io.h) so a change
-# to either side is caught here.
-_PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 1
+# + keyword multi-hot + chosen-name id + card id (LAST) = 37. Keep the derived
+# formula and cross-check it against the engine's PERM_SLOT_SIZE (machine_io.h) so
+# a change to either side is caught here. The two id-family floats sit last:
+# chosen_name_id then card_id.
+_PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 2
 assert _PERM_SLOT_SIZE == PERM_SLOT_SIZE, (_PERM_SLOT_SIZE, PERM_SLOT_SIZE)
 _STACK_SLOTS            = MAX_STACK_DISPLAY
 _STACK_XAMT_OFF         = 3                    # x_or_amount / 10 within a stack slot
@@ -257,34 +258,34 @@ _OPP_KNOWN_HAND_SLOTS   = MAX_HAND_SLOTS       # known opponent-hand card identi
 _OPP_KNOWN_HAND_SLOT_SIZE = 1                  # card id per slot
 
 _SELF_PERM_START     = _GLOBAL_SIZE                                                  # 36
-_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 1764
-_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 3492
-_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 3936
-_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 4064
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 4074
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 4586
-_MATCH_CTX_START     = _HIST_END                                                     # 4586
-_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 4590
-_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 4593
-_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 4594
-_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 4599
-_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 4599
-_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 5623
-_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 5623
-_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 5633
+_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 1812
+_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 3588
+_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 4032
+_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 4160
+_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 4170
+_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 4682
+_MATCH_CTX_START     = _HIST_END                                                     # 4682
+_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 4686
+_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 4689
+_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 4690
+_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 4695
+_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 4695
+_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 5719
+_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 5719
+_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 5729
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
 # sentinel = none) + its controller-is-viewer flag. The source may not be on the
 # stack yet (targets are announced before the spell moves there), so this is the
 # only place the observation shows WHAT is asking for the current choice.
-_PENDING_DECISION_START = _OPP_KNOWN_HAND_END                                        # 5633
+_PENDING_DECISION_START = _OPP_KNOWN_HAND_END                                        # 5729
 _PENDING_DECISION_SIZE  = 2                    # source card id + ctrl_is_self
-_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE           # 5635
-# Global extras (see machine_io.h [5635-5653]): self/opp lands_played/10,
+_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE           # 5731
+# Global extras (see machine_io.h [5731-5749]): self/opp lands_played/10,
 # viewer_has_priority, self/opp is_monarch, self/opp city's blessing, self/opp
 # revolt, self/opp pending extra turns/3, is_day, is_night, then the
 # MandatoryChoice one-hot (NONE at index 0).
-_EXTRAS_START        = _PENDING_DECISION_END                                         # 5635
+_EXTRAS_START        = _PENDING_DECISION_END                                         # 5731
 _EXTRAS_LANDS_SELF   = _EXTRAS_START + 0
 _EXTRAS_LANDS_OPP    = _EXTRAS_START + 1
 _EXTRAS_HAS_PRIORITY = _EXTRAS_START + 2
@@ -298,13 +299,16 @@ _EXTRAS_EXTRA_TURNS_SELF = _EXTRAS_START + 9
 _EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 10
 _EXTRAS_IS_DAY       = _EXTRAS_START + 11
 _EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
-_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13                                         # 5648
-_EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES                 # 5654
+_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13                                         # 5744
+_EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES                 # 5750
 
 assert _EXTRAS_END == STATE_SIZE, (_EXTRAS_END, STATE_SIZE)
 
-# Offset of the card-id float within a permanent slot (always LAST in the slot).
-_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 35
+# Offsets of the two id-family floats within a permanent slot (both LAST): the
+# chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
+# card, Petrified Hamlet named land) then the card id.
+_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 2    # 35
+_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 36 (card id is always LAST)
 
 # Unified entity-reference slot space (machine_io.h): 0-47 self perm slots,
 # 48-95 opp perm slots, 96-107 stack slots, -1 = none. In the float state
@@ -346,7 +350,10 @@ def _build_sideboard_mask():
     # Card-id positions inside masked blocks must decode to "empty", not vocab 0.
     card_id_idx = []
     for s in range(_PERM_SLOTS):                     # self + opp permanent slots
+        # Both id-family floats per slot: chosen-name id and card id.
+        card_id_idx.append(_SELF_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CHOSEN_NAME_OFF)
         card_id_idx.append(_SELF_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CARD_OFF)
+        card_id_idx.append(_OPP_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CHOSEN_NAME_OFF)
         card_id_idx.append(_OPP_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CARD_OFF)
     for s in range(_STACK_SLOTS):                    # stack object id + target sub-slot ids
         base = _STACK_START + s * _STACK_SLOT_SIZE

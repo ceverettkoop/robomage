@@ -23,9 +23,9 @@ MAX_GY_SLOTS = 64  # src/classes/gamestate.h
 MAX_HAND_SLOTS = 10  # src/classes/gamestate.h
 KNOWN_TOP_LIBRARY_SIZE = 5  # src/classes/game.h
 ACTION_HISTORY_SIZE = 128  # src/classes/game.h
-STATE_SIZE = 5654  # src/machine_io.h
+STATE_SIZE = 5750  # src/machine_io.h
 N_CARD_TYPES = 1024  # src/machine_io.h
-PERM_SLOT_SIZE = 36  # src/machine_io.h
+PERM_SLOT_SIZE = 37  # src/machine_io.h
 
 # Name-keyed ActionCategory constants: CAT_<ENUM_NAME> = value, for every
 # entry in the C++ ActionCategory enum (src/classes/action.h).

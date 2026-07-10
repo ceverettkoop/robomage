@@ -18,7 +18,7 @@ vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slo
 
 Index layout must stay in sync with src/machine_io.h:
   obs[0:36]            global context (player stats, step, flags, stack size)
-  obs[36:3492]         96 permanent slots × 36 floats
+  obs[36:3588]         96 permanent slots × 37 floats
                          slots 0-47: self; slots 48-95: opponent
                          0-10  status: power, toughness, tapped, attacking, blocking,
                                sickness, damage, controller_is_self, is_creature,
@@ -30,27 +30,29 @@ Index layout must stay in sync with src/machine_io.h:
                          17    is_blocked
                          18    is_phased_out
                          19-34 keyword multi-hot (N_OBS_KEYWORDS = 16)
-                         35    card id (LAST)
-  obs[3492:3936]       12 stack slots × 37 floats (controller_is_self + card id +
+                         35    chosen-name id (Pithing Needle / Disruptor Flute named
+                               card, Petrified Hamlet named land; sentinel = none)
+                         36    card id (LAST)
+  obs[3588:4032]       12 stack slots × 37 floats (controller_is_self + card id +
                          is_spell + x_or_amount/10 + 7 cast qualifiers +
                          chosen-mode multi-hot(6) + 4 announced-target sub-slots ×
                          [present, is_player, controller_is_self, slot_ref, card id])
-  obs[3936:4064]      128 graveyard slots × 1 float (card id, recency-ordered)
+  obs[4032:4160]      128 graveyard slots × 1 float (card id, recency-ordered)
                          slots 0-63: self; slots 64-127: opponent
-  obs[4064:4074]       10 hand slots    × 1 float  (card id)
-  obs[4074:4586]      128 action history entries × 4 floats (newest first)
+  obs[4160:4170]       10 hand slots    × 1 float  (card id)
+  obs[4170:4682]      128 action history entries × 4 floats (newest first)
                          per entry: category_norm, card_id_norm, is_self, turn/50
-  obs[4586:4590]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-  obs[4590:4593]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-  obs[4593]            current game turn / 50
-  obs[4594:4599]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
-  obs[4599:5623]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
-  obs[5623:5633]       10 known opponent-hand slots × 1 float (card id)
-  obs[5633:5635]       pending-decision context (source card id + ctrl_is_self)
-  obs[5635:5654]       global extras (self/opp lands played, viewer_has_priority,
+  obs[4682:4686]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+  obs[4686:4689]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+  obs[4689]            current game turn / 50
+  obs[4690:4695]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
+  obs[4695:5719]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
+  obs[5719:5729]       10 known opponent-hand slots × 1 float (card id)
+  obs[5729:5731]       pending-decision context (source card id + ctrl_is_self)
+  obs[5731:5750]       global extras (self/opp lands played, viewer_has_priority,
                          self/opp monarch, city's blessing, revolt, pending extra
                          turns, is_day, is_night, MandatoryChoice one-hot(6))
-  obs[5654:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
+  obs[5750:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
                          (appended by env.py; refs are normalized entity-slot
                          references, (idx+1)/108 with 0.0 = none)
 """
@@ -110,9 +112,11 @@ def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
 
 _PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
 # 11 status (incl. loyalty) + 2 counters + 4 entity refs + is_blocked +
-# is_phased_out + keyword multi-hot + 1 card id (LAST) = 36
-_PERM_SLOT_SIZE  = 19 + N_OBS_KEYWORDS + 1  # 36
-_PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 35 (card id is always LAST)
+# is_phased_out + keyword multi-hot + chosen-name id + card id (LAST) = 37
+_PERM_SLOT_SIZE  = 19 + N_OBS_KEYWORDS + 2  # 37
+_PERM_STATUS_FLOATS   = _PERM_SLOT_SIZE - 2  # 35 non-id status/ref/keyword floats
+_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 2  # 35 (chosen-name id, 2nd-last)
+_PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 36 (card id is always LAST)
 
 _STACK_SLOTS      = 12
 _STACK_XAMT_OFF   = 3   # x_or_amount / 10 within a stack slot
@@ -174,38 +178,38 @@ _PER_ACTION_DIM    = 32   # per-action feature width fed to the action scorer
 _HIST_RECENT_K     = 16   # most-recent history entries embedded per-entry
 
 _PERM_START  = _GLOBAL_SIZE                                    # 36
-_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 3492
-_STACK_START = _PERM_END                                       # 3492
-_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 3936
-_GY_START    = _STACK_END                                      # 3936
-_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 4064
-_HAND_START  = _GY_END                                         # 4064
-_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 4074
-_HIST_START  = _HAND_END                                       # 4074
-_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 4586
-# obs[4586:4590] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-# obs[4590:4593] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-_MATCH_CTX_START      = _HIST_END                              # 4586
-_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 4590 (library ctx start)
-_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 4593 (current turn idx)
-_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 4593
-_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 4594
-_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 4599
-_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 4599
-_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 5623
-_OPP_KNOWN_HAND_START = _REVEALED_END                         # 5623
-_OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 5633
+_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 3588
+_STACK_START = _PERM_END                                       # 3588
+_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 4032
+_GY_START    = _STACK_END                                      # 4032
+_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 4160
+_HAND_START  = _GY_END                                         # 4160
+_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 4170
+_HIST_START  = _HAND_END                                       # 4170
+_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 4682
+# obs[4682:4686] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+# obs[4686:4689] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+_MATCH_CTX_START      = _HIST_END                              # 4682
+_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 4686 (library ctx start)
+_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 4689 (current turn idx)
+_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 4689
+_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 4690
+_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 4695
+_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 4695
+_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 5719
+_OPP_KNOWN_HAND_START = _REVEALED_END                         # 5719
+_OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 5729
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (sentinel = none) + its controller-is-viewer flag.
-_PENDING_START        = _OPP_KNOWN_HAND_END                   # 5633
+_PENDING_START        = _OPP_KNOWN_HAND_END                   # 5729
 _PENDING_SIZE         = 2
-_PENDING_END          = _PENDING_START + _PENDING_SIZE        # 5635
-# Global extras (machine_io.h [5635:5654]): self/opp lands played, priority,
+_PENDING_END          = _PENDING_START + _PENDING_SIZE        # 5731
+# Global extras (machine_io.h [5731:5750]): self/opp lands played, priority,
 # monarch, city's blessing, revolt, pending extra turns, day/night flags, plus
 # the MandatoryChoice one-hot. Cheap scalar facts — passed through raw.
-_EXTRAS_START         = _PENDING_END                          # 5635
+_EXTRAS_START         = _PENDING_END                          # 5731
 _EXTRAS_SIZE          = 13 + N_MANDATORY_CHOICES              # 19
-_EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE          # 5654
+_EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE          # 5750
 _STATE_END            = _EXTRAS_END
 # obs[_STATE_END:] = action metadata + cost features appended by env.py
 # Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE).
@@ -223,8 +227,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
     size.
 
     Three independent encoders cover the slot formats:
-      perm_encoder   (35 status/counter/ref/keyword floats + card_embed →
-                     embed_dim): permanents (entity refs enter as raw
+      perm_encoder   (35 status/counter/ref/keyword floats + chosen-name embed +
+                     card_embed → embed_dim): permanents (entity refs enter as raw
                      normalized floats in v1)
       stack_encoder  (32 scalars + card_embed + target-embed mean → embed_dim//2):
                      stack items with x/qualifiers and announced modes/targets
@@ -291,11 +295,13 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # real ids 0..N_CARD_TYPES-1 map to rows 1..N_CARD_TYPES.
         self.card_emb = nn.Embedding(N_CARD_TYPES + 1, card_embed_dim, padding_idx=0)
 
-        # Encoder for permanent slots (35 non-card floats + card embedding).
-        # Status, counters, is_blocked/is_phased_out, and the keyword multi-hot
-        # are scalars; the 4 entity refs enter as raw normalized floats (v1).
+        # Encoder for permanent slots (35 non-id floats + chosen-name embedding +
+        # card embedding). Status, counters, is_blocked/is_phased_out, and the
+        # keyword multi-hot are scalars; the 4 entity refs enter as raw normalized
+        # floats (v1). The chosen-name id (Pithing Needle / Disruptor Flute named
+        # card) is embedded via the shared card embedding, like the card id.
         self.perm_encoder = nn.Sequential(
-            nn.Linear(_PERM_CARD_OFF + card_embed_dim, embed_dim),
+            nn.Linear(_PERM_STATUS_FLOATS + 2 * card_embed_dim, embed_dim),
             nn.ReLU(),
             nn.Linear(embed_dim, embed_dim),
             nn.ReLU(),
@@ -399,9 +405,13 @@ class CardGameExtractor(BaseFeaturesExtractor):
         top_lib   = obs[:, _KNOWN_TOP_LIB_START:_KNOWN_TOP_LIB_END].reshape(
             -1, _KNOWN_TOP_LIB_SLOTS, _KNOWN_TOP_LIB_SLOT_SIZE)
 
-        # Embed card identity per slot, then build each slot's encoder input.
+        # Embed card identity per slot, then build each slot's encoder input. The
+        # chosen-name id is embedded through the same shared card embedding as the
+        # card id and appended after the 35 status floats.
         perm_card_emb, perm_present = self._embed_ids(perms[:, :, _PERM_CARD_OFF])
-        perm_in = torch.cat([perms[:, :, :_PERM_CARD_OFF], perm_card_emb], dim=-1)
+        perm_chosen_emb, _ = self._embed_ids(perms[:, :, _PERM_CHOSEN_NAME_OFF])
+        perm_in = torch.cat([perms[:, :, :_PERM_STATUS_FLOATS],
+                             perm_chosen_emb, perm_card_emb], dim=-1)
 
         stk_card_emb, stk_present = self._embed_ids(stack[:, :, 1])
         # Announced-target sub-slots: (B, 12, 4, 5) of

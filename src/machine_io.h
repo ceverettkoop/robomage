@@ -64,7 +64,7 @@
 // skips them, so the arrays stay zeroed) nor serialized. Add them once cards
 // that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 5654 floats):
+// Fixed-size state vector layout (STATE_SIZE = 5750 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -76,8 +76,8 @@
 //  [34]       1.0 if self is Player A, 0.0 if self is Player B
 //  [35]       Stack size / 10.0
 //
-//  [36-1763]     Self permanents: 48 slots x 36 floats = 1728
-//  [1764-3491]   Opp permanents:  48 slots x 36 floats = 1728
+//  [36-1811]     Self permanents: 48 slots x 37 floats = 1776
+//  [1812-3587]   Opp permanents:  48 slots x 37 floats = 1776
 //                Per slot (offsets within the slot):
 //                  [0]  power / 10
 //                  [1]  toughness / 10
@@ -110,10 +110,15 @@
 //                       (CR 702.26e), so the model can anticipate the phase-in
 //                  [19-34] effective keyword multi-hot x16, OBS_KEYWORDS order
 //                       (post-layer, via permanent_has_keyword)
-//                  [35] card_id (LAST)
-//                Empty slots: 35 zeros + card_id sentinel (-1/N_CARD_TYPES).
+//                  [35] chosen_name_id — normalized vocab id of Permanent::chosen_name,
+//                       the card name chosen on this permanent (Pithing Needle /
+//                       Disruptor Flute named card, Petrified Hamlet named land);
+//                       -1/N_CARD_TYPES sentinel when no name is chosen
+//                  [36] card_id (LAST)
+//                Empty slots: 35 zeros + chosen_name sentinel + card_id sentinel
+//                (both -1/N_CARD_TYPES).
 //
-//  [3492-3935]   Stack: 12 slots x 37 floats = 444 (slot 0 = top of stack)
+//  [3588-4031]   Stack: 12 slots x 37 floats = 444 (slot 0 = top of stack)
 //                Per slot (offsets within the slot):
 //                  [0]  controller_is_self
 //                  [1]  card_id
@@ -140,82 +145,82 @@
 //                         [+4] target_card_id (LAST; -1 sentinel for players)
 //                       Empty sub-slots: 4 zeros + card_id sentinel.
 //
-//  [3936-3999]   Self graveyard: 64 slots x 1 float = 64
-//  [4000-4063]   Opp graveyard:  64 slots x 1 float = 64
+//  [4032-4095]   Self graveyard: 64 slots x 1 float = 64
+//  [4096-4159]   Opp graveyard:  64 slots x 1 float = 64
 //                Per slot: card_id (sentinel = empty). RECENCY order: slot 0 is the
 //                most recent arrival (sorted by Zone::distance_from_top).
 //
-//  [4064-4073]   Self hand: 10 slots x 1 float = 10
+//  [4160-4169]   Self hand: 10 slots x 1 float = 10
 //                Per slot: card_id (sentinel = empty)
 //
-//  [4074-4585]   Action history: 128 entries x 4 floats = 512 (newest first)
+//  [4170-4681]   Action history: 128 entries x 4 floats = 512 (newest first)
 //                Per entry: category / ACTION_CATEGORY_MAX,
 //                           card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
 //                           is_self (1.0 = viewer's action, 0.0 = opponent's),
 //                           turn / 50.0 (the game turn when the action was taken)
 //                Empty entries (beyond action_history_len) are all zeros.
 //
-//  [4586-4589]   Match context (4 floats, all 0.0 in single-game mode):
+//  [4682-4685]   Match context (4 floats, all 0.0 in single-game mode):
 //                game_number / 3.0, self_match_wins / 2.0,
 //                opp_match_wins / 2.0, is_sideboard_phase (0.0 or 1.0)
 //
-//  [4590-4592]   Library & post-board context (3 floats):
+//  [4686-4688]   Library & post-board context (3 floats):
 //                self_library_ct / 60.0, opp_library_ct / 60.0,
 //                is_post_board (1.0 if game 2+ of bo3, else 0.0)
 //
-//  [4593]        Current game turn / 50.0
+//  [4689]        Current game turn / 50.0
 //
-//  [4594-4598]   Known top-5 library cards for the viewer: 5 slots x 1 float = 5
+//  [4690-4694]   Known top-5 library cards for the viewer: 5 slots x 1 float = 5
 //                Per slot: card_id (sentinel = unknown). Index 0 is the top of
 //                the library. Entries are set when a card is placed on top (e.g.
 //                Ponder, Brainstorm, Rearrange) and cleared when shuffled.
 //
-//  [4599-5622]   Opponent revealed-cards multi-hot (N_CARD_TYPES floats, zeros =
+//  [4695-5718]   Opponent revealed-cards multi-hot (N_CARD_TYPES floats, zeros =
 //                none seen yet). Binary "has the opponent-of-viewer ever revealed
 //                card X this match"; accumulated across the games of a bo3 and
 //                persists over the per-game ECS reset. Set whenever an opponent
 //                card enters a public zone (battlefield/stack/graveyard/exile) or
 //                is revealed by a tutor. This is the only vocab-width block.
 //
-//  [5623-5632]   Known opponent-hand cards: 10 slots x 1 float = 10
+//  [5719-5728]   Known opponent-hand cards: 10 slots x 1 float = 10
 //                Per slot: card_id (sentinel = empty/unknown). The specific
 //                identities of opponent-hand cards the viewer has had revealed
 //                (Duress/Thoughtseize/tutor) and that are still in hand. Unlike
 //                the multi-hot above this tracks the exact card and a slot clears
 //                when that card leaves the hand for another zone.
 //
-//  [5633-5634]   Pending decision context: 2 floats.
-//                [5633] card_id of the spell/ability currently making a
+//  [5729-5730]   Pending decision context: 2 floats.
+//                [5729] card_id of the spell/ability currently making a
 //                mid-resolution choice (target select, dig/scry/surveil pick,
 //                search, discard, modal, ...; sentinel = none). Set via
 //                PendingDecisionScope — the source may not be on the stack yet,
 //                since targets are announced before the spell moves there
 //                (CR 601.2b/c), so this is the only place the observation shows
 //                WHAT is asking for the current choice.
-//                [5634] 1.0 if that source's controller is the viewer, else 0.0
+//                [5730] 1.0 if that source's controller is the viewer, else 0.0
 //                (e.g. 0.0 while choosing a card for the opponent's Thoughtseize).
 //
-//  [5635-5653]   Global extras (19 floats):
-//                  [5635] self lands_played_this_turn / 10
-//                  [5636] opp  lands_played_this_turn / 10
-//                  [5637] viewer_has_priority (1.0 = the viewer holds priority)
-//                  [5638] self is_monarch (CR 725)
-//                  [5639] opp  is_monarch
-//                  [5640] self city's blessing (CR 702.131c)
-//                  [5641] opp  city's blessing
-//                  [5642] self revolt (a permanent self controlled left the battlefield this turn)
-//                  [5643] opp  revolt
-//                  [5644] self pending extra turns / 3
-//                  [5645] opp  pending extra turns / 3
-//                  [5646] is_day  (CR 731.1; both 0.0 = neither)
-//                  [5647] is_night
-//                  [5648-5653] MandatoryChoice one-hot x6 (NONE at index 0, then
+//  [5731-5749]   Global extras (19 floats):
+//                  [5731] self lands_played_this_turn / 10
+//                  [5732] opp  lands_played_this_turn / 10
+//                  [5733] viewer_has_priority (1.0 = the viewer holds priority)
+//                  [5734] self is_monarch (CR 725)
+//                  [5735] opp  is_monarch
+//                  [5736] self city's blessing (CR 702.131c)
+//                  [5737] opp  city's blessing
+//                  [5738] self revolt (a permanent self controlled left the battlefield this turn)
+//                  [5739] opp  revolt
+//                  [5740] self pending extra turns / 3
+//                  [5741] opp  pending extra turns / 3
+//                  [5742] is_day  (CR 731.1; both 0.0 = neither)
+//                  [5743] is_night
+//                  [5744-5749] MandatoryChoice one-hot x6 (NONE at index 0, then
 //                       DECLARE_ATTACKERS_CHOICE, DECLARE_BLOCKERS_CHOICE,
 //                       CLEANUP_DISCARD, CHOOSE_ENTITY, ASSIGN_COMBAT_DAMAGE_CHOICE)
 
-static constexpr int STATE_SIZE             = 5654;
+static constexpr int STATE_SIZE             = 5750;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
-static constexpr int PERM_SLOT_SIZE    = 36;   // 11 stat/combat/type + 2 counters + 4 refs + 2 flags + 16 keywords + 1 card-id float
+static constexpr int PERM_SLOT_SIZE    = 37;   // 11 stat/combat/type + 2 counters + 4 refs + 2 flags + 16 keywords + chosen-name id + card-id float
 static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot
 static constexpr int STACK_TGT_SLOTS   = MAX_STACK_TGTS;  // serialized targets per stack slot (truncated)
 static constexpr int STACK_TGT_FIELDS  = 5;    // present + is_player + controller_is_self + slot_ref + card-id

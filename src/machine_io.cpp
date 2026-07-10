@@ -203,13 +203,15 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
     out.push_back(static_cast<float>(ps.energy) / 10.0f);
 }
 
-// Pushes PERM_SLOT_SIZE floats (35 status + 1 card-id; per-slot offsets documented
-// in machine_io.h). Empty slot (card_vocab_idx == -1) = 35 zeros + the
-// empty/unknown id sentinel.
+// Pushes PERM_SLOT_SIZE floats (35 status + chosen-name id + card-id; per-slot
+// offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 35 zeros
+// + the chosen-name empty sentinel + the card-id empty sentinel (both id-family
+// floats, so a 0.0 pad would alias vocab index 0 and defeat empty-slot masking).
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     if (p.card_vocab_idx == -1) {
-        out.insert(out.end(), PERM_SLOT_SIZE - 1, 0.0f);
-        out.push_back(norm_card_id(-1));
+        out.insert(out.end(), PERM_SLOT_SIZE - 2, 0.0f);
+        out.push_back(norm_card_id(-1));  // chosen_name_idx sentinel
+        out.push_back(norm_card_id(-1));  // card_id sentinel
         return;
     }
     out.push_back(static_cast<float>(p.power) / 10.0f);
@@ -233,7 +235,8 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(p.is_phased_out ? 1.0f : 0.0f);
     for (int k = 0; k < N_OBS_KEYWORDS; k++)
         out.push_back(p.keywords[k] ? 1.0f : 0.0f);
-    out.push_back(norm_card_id(p.card_vocab_idx));
+    out.push_back(norm_card_id(p.chosen_name_idx));  // [35] chosen-name id
+    out.push_back(norm_card_id(p.card_vocab_idx));   // [36] card id (LAST)
 }
 
 // Pass-B fill of one battlefield permanent's PermanentState. Runs after the
@@ -242,6 +245,11 @@ static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership v
     auto& perm = global_coordinator.GetComponent<Permanent>(e);
 
     ps.card_vocab_idx        = get_card_vocab_idx(e);
+    // Named card chosen on this permanent (Pithing Needle / Disruptor Flute named
+    // card, Petrified Hamlet named land). card_name_to_index returns -1 for an
+    // empty or out-of-vocab name, which norm_card_id maps to the empty sentinel.
+    ps.chosen_name_idx       = perm.chosen_name.empty()
+                                   ? -1 : card_name_to_index(perm.chosen_name);
     ps.controller_is_self    = (perm.controller == viewer);
     ps.is_tapped             = perm.is_tapped;
     ps.has_summoning_sickness = perm.has_summoning_sickness;
@@ -703,11 +711,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(gs->self_is_player_a ? 1.0f : 0.0f);
     state.push_back(static_cast<float>(gs->stack_size) / 10.0f);
 
-    // Self permanents (48 x 36 = 1728)
+    // Self permanents (48 x 37 = 1776)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->self_permanents[i]);
 
-    // Opp permanents (48 x 36 = 1728)
+    // Opp permanents (48 x 37 = 1776)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
