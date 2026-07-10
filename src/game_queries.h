@@ -435,9 +435,11 @@ inline bool on_battlefield(Entity e) {
 // it (or battlefield_permanents() below) over open-coding the
 // Permanent+Zone+BATTLEFIELD(+phased)(+controller) check, so the phasing rule lives in
 // exactly one place. The only code that should read Permanent::is_phased_out directly
-// is the phasing subsystem itself (the untap-step phase-in/skip in game.cpp) and the
+// is the phasing subsystem itself (the untap-step phase-in/skip in game.cpp), the
 // rare loop that must still process phased-out permanents (e.g. resetting their cached
-// P/T before skipping them when gathering static abilities).
+// P/T before skipping them when gathering static abilities), and the ML serialization
+// (machine_io.cpp's populate_gamestate), which deliberately INCLUDES phased-out
+// permanents in the observation with an is_phased_out flag instead of hiding them.
 inline bool is_battlefield_permanent(Entity e, Zone::Ownership ctrl = Zone::UNKNOWN) {
     if (!global_coordinator.entity_has_component<Permanent>(e)) return false;
     if (!global_coordinator.entity_has_component<Zone>(e)) return false;

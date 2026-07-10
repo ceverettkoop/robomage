@@ -135,6 +135,10 @@ def drive_game(env, obs, controller_a, controller_b, *,
                                    decoded_actions=decoded)
 
         if coverage is not None:
+            # Obs action-metadata block is five MAX_ACTIONS-wide sub-blocks
+            # (cats|ids|ctrl|zone|refs — entity-slot refs appended last, see
+            # decode.action_slot_refs); coverage reads only the first two,
+            # whose offsets are unchanged.
             cats = np.round(obs[STATE_SIZE:STATE_SIZE + d.num_choices]
                             * ACTION_CATEGORY_MAX).astype(int)
             ids = np.rint(obs[STATE_SIZE + MAX_ACTIONS:

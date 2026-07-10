@@ -40,7 +40,7 @@ from env import (
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
     _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE, _CUR_TURN_IDX,
     _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE,
-    _OFF_IS_LAND,
+    _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
     # per-slot card-id decoder
     _slot_card_idx,
     # vocab / targeting constants
@@ -277,11 +277,24 @@ def _is_doomsday_deck(obs: np.ndarray) -> bool:
     return False
 
 
+def _phased(obs: np.ndarray, base: int) -> bool:
+    """True if the permanent slot at `base` is phased out.
+
+    Phased-out permanents ARE serialized (new obs layout) but the rules treat
+    them as nonexistent (CR 702.26e) — and the pre-enrichment engine never
+    emitted them — so EVERY battlefield scan here must skip them. That keeps
+    scripted decisions identical to the pre-change engine (replay-corpus
+    stability), besides being rules-correct."""
+    return obs[base + _OFF_IS_PHASED_OUT] > 0.5
+
+
 def _all_eligible_creatures_attacking(obs: np.ndarray) -> bool:
     """Return True if every untapped, non-sick creature in self's slots (0-47) is attacking."""
     any_eligible = False
     for slot in range(_PERM_A_SLOTS):
         base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base):
+            continue  # phased out — treated as not on the battlefield
         if obs[base + _OFF_IS_CREATURE] < 0.5:
             continue  # not a creature (empty slot, land, or other permanent)
         if obs[base + _OFF_IS_TAPPED] > 0.5 or obs[base + _OFF_HAS_SICKNESS] > 0.5:
@@ -296,6 +309,8 @@ def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
     """Return True if opponent has at least one nonbasic land (opp perm slots 48-95)."""
     for slot in range(_PERM_A_SLOTS):
         base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
+        if _phased(obs, base):
+            continue
         if obs[base + _OFF_IS_LAND] < 0.5:
             continue  # not a land
         idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
@@ -308,7 +323,7 @@ def _opponent_has_creature(obs: np.ndarray) -> bool:
     """Return True if opponent controls at least one creature (opp perm slots 48-95)."""
     for slot in range(_PERM_A_SLOTS):
         base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
-        if obs[base + _OFF_IS_CREATURE] > 0.5:
+        if obs[base + _OFF_IS_CREATURE] > 0.5 and not _phased(obs, base):
             return True
     return False
 
@@ -323,6 +338,8 @@ def _tapped_multi_mana_lands(obs: np.ndarray) -> int:
     count = 0
     for slot in range(_PERM_A_SLOTS):
         base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base):
+            continue
         if obs[base + _OFF_IS_TAPPED] < 0.5:
             continue  # untapped — nothing to untap
         if _slot_card_idx(obs, base + _BF_CARD_OFF) in _MULTI_MANA_LAND_IDS:
@@ -337,6 +354,8 @@ def _controlled_tron_pieces(obs: np.ndarray) -> set[int]:
     found: set[int] = set()
     for slot in range(_PERM_A_SLOTS):
         base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base):
+            continue
         idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
         if idx in _TRON_LAND_IDS:
             found.add(idx)
@@ -444,7 +463,7 @@ def _count_blue_sources(obs: np.ndarray) -> int:
     count = 0
     for slot in range(_PERM_A_SLOTS):
         base = _BF_START + slot * _BF_SLOT_SIZE
-        if obs[base + _OFF_IS_TAPPED] > 0.5:
+        if obs[base + _OFF_IS_TAPPED] > 0.5 or _phased(obs, base):
             continue
         idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
         if idx >= 0 and idx in _BLUE_SOURCE_IDS:
@@ -462,7 +481,7 @@ def _count_untapped_mana_sources(obs: np.ndarray) -> int:
     count = 0
     for slot in range(_PERM_A_SLOTS):
         base = _BF_START + slot * _BF_SLOT_SIZE
-        if obs[base + _OFF_IS_TAPPED] > 0.5:
+        if obs[base + _OFF_IS_TAPPED] > 0.5 or _phased(obs, base):
             continue
         idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
         is_land = obs[base + _OFF_IS_LAND] > 0.5 and idx not in _UNRELIABLE_LAND_IDS
@@ -1137,7 +1156,14 @@ class ScriptedAgent:
         g_cache = {}
         def g():
             if "g" not in g_cache:
-                g_cache["g"] = decode_game_state(obs[:STATE_SIZE])
+                gs = decode_game_state(obs[:STATE_SIZE])
+                # Drop phased-out permanents before any heuristic reads the board:
+                # the rules treat them as nonexistent (CR 702.26e) and the
+                # pre-enrichment engine never serialized them, so filtering here
+                # keeps every dict-based decision replay-stable (see _phased).
+                for key in ("self_battlefield", "opp_battlefield"):
+                    gs[key] = [p for p in gs[key] if not p.get("phased_out")]
+                g_cache["g"] = gs
             return g_cache["g"]
 
         # Smart mulligan

@@ -81,6 +81,7 @@ from env import (ACTION_CATEGORY_MAX, RoboMageEnv,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
                  _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx,
                  _PERM_CARD_OFF, _CUR_TURN_IDX,
+                 _OFF_IS_PHASED_OUT, N_ENTITY_REF_SLOTS,
                  _SELF_BLOCK_START, _OPP_BLOCK_START,
                  _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
@@ -137,24 +138,28 @@ _FEAT = {name: i for i, name in enumerate(_INTERP_FEATURE_NAMES)}
 
 # Permanent slot layout (derived from env.py / machine_io.h). Card identity is a
 # single normalized id float per slot; decode via _slot_card_idx (round(val*N)).
-_PERM_START   = _SELF_PERM_START          # 34 (self slots first, then opponent)
+_PERM_START   = _SELF_PERM_START          # 36 (self slots first, then opponent)
 _PERM_SLOTS   = _ENV_PERM_SLOTS * 2       # 96 = 48 self + 48 opponent
-_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 12 (11 status incl. loyalty + 1 card id)
+_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 36 (status + counters + refs + keywords + card id)
 _SELF_PERM_SLOTS = _ENV_PERM_SLOTS        # 48: slots 0-47 = self, 48-95 = opponent
 # Per-slot offsets: power(0), toughness(1), tapped(2), attacking(3), blocking(4),
 #                   sickness(5), damage(6), controller_is_self(7), is_creature(8),
-#                   is_land(9), loyalty(10), card_id(11 = _PERM_CARD_OFF from env.py)
+#                   is_land(9), loyalty(10), then the enriched fields — counters
+#                   (11-12), attachment/combat refs (13-16), is_blocked(17),
+#                   is_phased_out(18 = _OFF_IS_PHASED_OUT), keyword multi-hot
+#                   (19-34) — and card_id(35 = _PERM_CARD_OFF from env.py, LAST)
 _PERM_LOYALTY_OFF = 10
 _GY_START_OBS    = _GY_START
 _GY_SLOTS        = _GY_SLOTS_TOTAL        # 128
 _GY_SLOT_SZ      = _GY_SLOT_SIZE          # 1
 _GY_SELF_SLOTS   = _GY_SLOTS_TOTAL // 2   # slots 0-63 = self GY, 64-127 = opp GY
 
-# Stack layout: 12 slots x 25 floats. Per slot: controller_is_self(1), card id(1),
-# is_spell(1), chosen-mode multi-hot(6), 4 announced-target sub-slots x 4 floats.
+# Stack layout: 12 slots x 37 floats. Per slot: controller_is_self(1), card id(1),
+# is_spell(1), x_or_amount(1), cast qualifiers(7), chosen-mode multi-hot(6),
+# 4 announced-target sub-slots x 5 floats (present, is_player, ctrl, slot_ref, card id).
 _STACK_START   = _ENV_STACK_START
 _STACK_SLOTS   = _ENV_STACK_SLOTS
-_STACK_SLOT_SZ = _STACK_SLOT_SIZE         # 25
+_STACK_SLOT_SZ = _STACK_SLOT_SIZE         # 37
 
 # Hand layout: 10 slots x 1 float (imported _HAND_START from env.py)
 _HAND_SLOTS = 10
@@ -216,6 +221,11 @@ def _extract_interpretable(obs):
 
         # Check if slot is occupied (card id present)
         if _slot_card_idx(obs, base + _PERM_CARD_OFF) < 0:
+            continue
+        # Phased-out permanents are serialized (so the model can anticipate the
+        # phase-in) but the rules treat them as nonexistent (CR 702.26e) — keep
+        # them out of the board stats so they don't inflate counts/power sums.
+        if obs[base + _OFF_IS_PHASED_OUT] > 0.5:
             continue
 
         is_self = slot < _SELF_PERM_SLOTS
@@ -853,12 +863,17 @@ def _print_whatif_table(branches):
 def _action_desc(obs, i):
     """Human-readable description of legal-action slot i ("CAST (Lightning Bolt)").
     Tokens render as "Token"; a target choice with no card entity is a player.
-    The action's zone_ref is appended when set ("TARGET (Wasteland @opp bf)")."""
+    The action's zone_ref is appended when set ("TARGET (Wasteland @opp bf)"),
+    and its entity-slot ref when set ("TARGET (Wasteland @opp bf @slot48)")."""
     cat = int(round(obs[STATE_SIZE + i] * ACTION_CATEGORY_MAX))
     cat_name = _CAT_NAMES.get(cat, str(cat))
 
     zone = int(round(obs[STATE_SIZE + 3 * MAX_ACTIONS + i] * REF_ZONE_MAX))
     zone_str = f" @{_REF_NAMES.get(zone, zone)}" if zone > 0 else ""
+    # Entity-slot ref (5th metadata block; -1 = none) disambiguates same-named cards.
+    slot = int(round(obs[STATE_SIZE + 4 * MAX_ACTIONS + i] * N_ENTITY_REF_SLOTS)) - 1
+    if slot >= 0:
+        zone_str += f" @slot{slot}"
 
     card_raw = obs[STATE_SIZE + MAX_ACTIONS + i]
     if card_raw < 0:
@@ -1265,11 +1280,13 @@ def _perm_summaries(obs, slot_range):
         damage    = obs[base + 6] * 10.0
         is_creat  = obs[base + 8] > 0.5
         loyalty   = obs[base + _PERM_LOYALTY_OFF] * 10.0
+        phased    = obs[base + _OFF_IS_PHASED_OUT] > 0.5
         flags = []
         if tapped:        flags.append("tapped")
         if attacking:     flags.append("atk")
         if blocking:      flags.append("blk")
         if sickness:      flags.append("sick")
+        if phased:        flags.append("phased")
         if damage > 0.4:  flags.append(f"dmg={damage:.0f}")
         if loyalty > 0.4: flags.append(f"loy={loyalty:.0f}")
         flag_str = f" [{', '.join(flags)}]" if flags else ""

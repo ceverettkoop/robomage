@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a BQUERY line to stdout:
 
-    BQUERY: <num_choices>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl><float32[MAX_ACTIONS] pub><int32[MAX_ACTIONS] zone>
+    BQUERY: <num_choices>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl><float32[MAX_ACTIONS] pub><int32[MAX_ACTIONS] zone><int32[MAX_ACTIONS] refs>
 
 The environment sends back a single integer on stdin.
 
@@ -30,6 +30,7 @@ network maps ids through a learned nn.Embedding. The opponent revealed-cards
 block is the only vocab-width block (N_CARD_TYPES multi-hot).
 State (STATE_SIZE) + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 64 action zone_ref floats
++ 64 action entity-slot-ref floats
 + 70 hand cost floats + 336 battlefield ability cost floats = OBS_SIZE total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (CLI) and is never sent to the ML model.
@@ -64,23 +65,24 @@ except ImportError:
 # of truth) by train/gen_enums.py — import it so this module never drifts from the
 # engine's category normalization (used for both the action block and history).
 try:
-    from _enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX
+    from _enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES
 except ImportError:
-    from train._enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX
+    from train._enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES
 
-STATE_SIZE = 3187  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
+STATE_SIZE = 5654  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 64         # practical upper bound on num_choices per step
 # Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of
-# cats(int32)/ids/ctrl(float32)/pub(float32)/zone(int32)
+# cats(int32)/ids/ctrl(float32)/pub(float32)/zone(int32)/refs(int32)
 _BQUERY_STATE_BYTES = STATE_SIZE * 4
 _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
 _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
 _BQUERY_PUB_BYTES   = MAX_ACTIONS * 4  # float32 — card_is_public per action
 _BQUERY_ZONE_BYTES  = MAX_ACTIONS * 4  # int32 — ActionRefZone per action
+_BQUERY_REFS_BYTES  = MAX_ACTIONS * 4  # int32 — entity-slot ref of the choice's source (-1 = none)
 # Per-action human-readable descriptions, emitted ONLY under --narrative
 # (gated on the engine side too). Fixed [MAX_ACTIONS][MAX_CHOICE_DESC] NUL-padded
 # char block — must match MAX_CHOICE_DESC in src/classes/gamestate.h.
@@ -151,9 +153,9 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-# Action metadata in the obs: cats | ids | ctrl | zone_ref (4 blocks of
-# MAX_ACTIONS). pub stays a side-channel (self._action_public), not in the obs.
-OBS_SIZE = STATE_SIZE + 4 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 3849
+# Action metadata in the obs: cats | ids | ctrl | zone_ref | slot_ref (5 blocks
+# of MAX_ACTIONS). pub stays a side-channel (self._action_public), not in the obs.
+OBS_SIZE = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 6380
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -187,13 +189,21 @@ _SELF_IS_A_IDX  = _IS_ACTIVE_IDX + 1                                # 34: "self"
 _STACK_SIZE_IDX = _SELF_IS_A_IDX + 1                                # 35: stack size / 10
 _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full header width
 _PERM_SLOTS             = 48                   # per-player; 96 total (self + opp)
-_PERM_SLOT_SIZE         = 12                   # 11 status (incl. loyalty) + 1 card id
+# 11 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
+# + keyword multi-hot + 1 card id (LAST) = 36
+_PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 1
 _STACK_SLOTS            = 12
+_STACK_XAMT_OFF         = 3                    # x_or_amount / 10 within a stack slot
+_STACK_QUAL_START       = 4                    # cast qualifiers (is_copy, kicked, flashback, ...)
+_STACK_QUALS            = 7
 _STACK_MODE_SLOTS       = 6                    # chosen-mode multi-hot width per stack slot
+_STACK_MODE_START       = _STACK_QUAL_START + _STACK_QUALS                    # 11
 _STACK_TGT_SLOTS        = 4                    # announced-target sub-slots per stack slot
-_STACK_TGT_FIELDS       = 4                    # present + is_player + ctrl_is_self + card id
-# ctrl + card id + is_spell, then mode multi-hot, then target sub-slots (25 total)
-_STACK_SLOT_SIZE        = 3 + _STACK_MODE_SLOTS + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
+_STACK_TGT_FIELDS       = 5                    # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
+_STACK_TGT_START        = _STACK_MODE_START + _STACK_MODE_SLOTS               # 17
+# ctrl + card id + is_spell, then x_or_amount + qualifiers, then mode multi-hot,
+# then target sub-slots (37 total)
+_STACK_SLOT_SIZE        = _STACK_TGT_START + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 _GY_SLOTS_TOTAL         = 128                  # 64 self + 64 opponent
 _GY_SLOT_SIZE           = 1                    # card id only
 _HAND_SLOTS_TOTAL       = 10
@@ -210,34 +220,60 @@ _OPP_KNOWN_HAND_SLOTS   = 10                   # known opponent-hand card identi
 _OPP_KNOWN_HAND_SLOT_SIZE = 1                  # card id per slot
 
 _SELF_PERM_START     = _GLOBAL_SIZE                                                  # 36
-_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 612
-_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 1188
-_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 1488
-_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 1616
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 1626
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 2138
-_MATCH_CTX_START     = _HIST_END                                                     # 2138
-_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 2142
-_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 2145
-_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 2146
-_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 2151
-_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 2151
-_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 3175
-_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 3175
-_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 3185
+_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 1764
+_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 3492
+_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 3936
+_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 4064
+_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 4074
+_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 4586
+_MATCH_CTX_START     = _HIST_END                                                     # 4586
+_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 4590
+_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 4593
+_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 4594
+_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 4599
+_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 4599
+_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 5623
+_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 5623
+_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 5633
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
 # sentinel = none) + its controller-is-viewer flag. The source may not be on the
 # stack yet (targets are announced before the spell moves there), so this is the
 # only place the observation shows WHAT is asking for the current choice.
-_PENDING_DECISION_START = _OPP_KNOWN_HAND_END                                        # 3185
+_PENDING_DECISION_START = _OPP_KNOWN_HAND_END                                        # 5633
 _PENDING_DECISION_SIZE  = 2                    # source card id + ctrl_is_self
-_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE           # 3187
+_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE           # 5635
+# Global extras (see machine_io.h [5635-5653]): self/opp lands_played/10,
+# viewer_has_priority, self/opp is_monarch, self/opp city's blessing, self/opp
+# revolt, self/opp pending extra turns/3, is_day, is_night, then the
+# MandatoryChoice one-hot (NONE at index 0).
+_EXTRAS_START        = _PENDING_DECISION_END                                         # 5635
+_EXTRAS_LANDS_SELF   = _EXTRAS_START + 0
+_EXTRAS_LANDS_OPP    = _EXTRAS_START + 1
+_EXTRAS_HAS_PRIORITY = _EXTRAS_START + 2
+_EXTRAS_MONARCH_SELF = _EXTRAS_START + 3
+_EXTRAS_MONARCH_OPP  = _EXTRAS_START + 4
+_EXTRAS_BLESSING_SELF = _EXTRAS_START + 5
+_EXTRAS_BLESSING_OPP = _EXTRAS_START + 6
+_EXTRAS_REVOLT_SELF  = _EXTRAS_START + 7
+_EXTRAS_REVOLT_OPP   = _EXTRAS_START + 8
+_EXTRAS_EXTRA_TURNS_SELF = _EXTRAS_START + 9
+_EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 10
+_EXTRAS_IS_DAY       = _EXTRAS_START + 11
+_EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
+_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13                                         # 5648
+_EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES                 # 5654
 
-assert _PENDING_DECISION_END == STATE_SIZE, (_PENDING_DECISION_END, STATE_SIZE)
+assert _EXTRAS_END == STATE_SIZE, (_EXTRAS_END, STATE_SIZE)
 
-# Offset of the card-id float within a permanent slot (after the 11 status floats).
-_PERM_CARD_OFF = 11
+# Offset of the card-id float within a permanent slot (always LAST in the slot).
+_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 35
+
+# Unified entity-reference slot space (machine_io.h): 0-47 self perm slots,
+# 48-95 opp perm slots, 96-107 stack slots, -1 = none. In the float state
+# vector (and the obs action block) a ref is normalized (idx + 1) / 108, so
+# 0.0 is the "none" sentinel; decode with round(v * N_ENTITY_REF_SLOTS) - 1.
+N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 
 
 # ── Sideboard observation mask ───────────────────────────────────────────────
@@ -248,9 +284,11 @@ _PERM_CARD_OFF = 11
 # graveyards ("how the game went"), action history (last-game tempo + in-phase
 # swap context), match/library/turn context (game number => play/draw), the
 # opponent revealed-cards multi-hot (the primary signal), and the pending-decision
-# context (which IN card the OUT query is cutting for). Card-id slots must be
-# filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes to a
-# real vocab index 0 and defeats the extractor's empty-slot masking.
+# context (which IN card the OUT query is cutting for). The global-extras block
+# (lands played, monarch, day/night, MandatoryChoice one-hot, ...) describes the
+# stale ended game, so it stays masked; it holds no card-id slots. Card-id slots
+# must be filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes
+# to a real vocab index 0 and defeats the extractor's empty-slot masking.
 def _build_sideboard_mask():
     keep = np.zeros(STATE_SIZE, dtype=bool)
     for lo, hi in (
@@ -276,7 +314,7 @@ def _build_sideboard_mask():
     for s in range(_STACK_SLOTS):                    # stack object id + target sub-slot ids
         base = _STACK_START + s * _STACK_SLOT_SIZE
         card_id_idx.append(base + 1)                 # object card id
-        tgt0 = base + 3 + _STACK_MODE_SLOTS          # first target sub-slot
+        tgt0 = base + _STACK_TGT_START               # first target sub-slot
         for t in range(_STACK_TGT_SLOTS):
             card_id_idx.append(tgt0 + t * _STACK_TGT_FIELDS + (_STACK_TGT_FIELDS - 1))
     for i in range(_HAND_START, _HAND_START + _HAND_SLOTS_TOTAL):      # self hand
@@ -534,7 +572,9 @@ class RoboMageEnv(gym.Env):
         Read lines from the game process until a BQUERY line appears or the
         process exits (game over).  After the BQUERY header line, reads the
         binary payload: float32[STATE_SIZE], int32[MAX_ACTIONS] cats,
-        float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl.
+        float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl,
+        float32[MAX_ACTIONS] pub, int32[MAX_ACTIONS] zone,
+        int32[MAX_ACTIONS] refs.
         Returns (obs, info).
         """
         reward = 0.0
@@ -617,6 +657,8 @@ class RoboMageEnv(gym.Env):
                     self._read_exactly(_BQUERY_PUB_BYTES), dtype=np.float32).copy()
                 zone_int = np.frombuffer(
                     self._read_exactly(_BQUERY_ZONE_BYTES), dtype=np.int32)
+                refs_int = np.frombuffer(
+                    self._read_exactly(_BQUERY_REFS_BYTES), dtype=np.int32)
 
                 # Per-action "card identity is public" flags (revealed tutors). Kept as a
                 # side-channel — observers (TUI) read it; not part of the ML observation
@@ -680,7 +722,11 @@ class RoboMageEnv(gym.Env):
                 o[_act_end + MAX_ACTIONS:_act_end + 2 * MAX_ACTIONS] = ctrl_arr
                 o[_act_end + 2 * MAX_ACTIONS:_act_end + 3 * MAX_ACTIONS] = (
                     zone_int / REF_ZONE_MAX)
-                _hc_start = _act_end + 3 * MAX_ACTIONS
+                # Entity-slot refs, normalized like the in-state ref fields:
+                # (idx + 1) / 108, so -1 (none) lands exactly on 0.0.
+                o[_act_end + 3 * MAX_ACTIONS:_act_end + 4 * MAX_ACTIONS] = (
+                    (refs_int + 1) / N_ENTITY_REF_SLOTS)
+                _hc_start = _act_end + 4 * MAX_ACTIONS
                 o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
                 _bf_start = _hc_start + _HAND_COST_FEATS
                 o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
@@ -799,8 +845,8 @@ _CARD_COLORED_COSTS = {
 }
 
 # ── Battlefield layout (aliases of the unified state offsets above) ─────────
-_BF_START         = _SELF_PERM_START           # 34
-_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 12
+_BF_START         = _SELF_PERM_START           # 36
+_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 36
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
 _BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot
 # Precomputed indices for gathering the 48 self-permanent card-id floats from the state array
@@ -818,16 +864,31 @@ def _gather_costs(matrix, ids):
     rows = matrix[safe]
     return np.where((ids >= 0)[:, None], rows, 0.0).astype(np.float32)
 # Start of bf_ability_costs block in the full obs vector
-# (4 per-action blocks: cats | ids | ctrl | zone_ref)
-_BF_COST_START    = STATE_SIZE + 4 * MAX_ACTIONS + _HAND_COST_FEATS
-# Status offsets within a permanent slot
+# (5 per-action blocks: cats | ids | ctrl | zone_ref | slot_ref)
+_BF_COST_START    = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS
+# Status offsets within a permanent slot (mirror the per-slot layout in
+# src/machine_io.h; the card id sits LAST, at _PERM_CARD_OFF)
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1
 _OFF_IS_TAPPED    = 2
 _OFF_IS_ATTACKING = 3
+_OFF_IS_BLOCKING  = 4
 _OFF_HAS_SICKNESS = 5
-_OFF_IS_CREATURE  = 8    # new: 1.0 if this slot is a creature
-_OFF_IS_LAND      = 9    # new: 1.0 if this slot is a land
+_OFF_DAMAGE       = 6
+_OFF_CTRL_IS_SELF = 7
+_OFF_IS_CREATURE  = 8    # 1.0 if this slot is a creature
+_OFF_IS_LAND      = 9    # 1.0 if this slot is a land
+_OFF_LOYALTY      = 10   # loyalty / 10 (planeswalkers; 0 otherwise)
+_OFF_P1P1_NET     = 11   # net (+1/+1 minus -1/-1) counters / 10, SIGNED
+_OFF_OTHER_COUNTERS = 12 # total counters of every other kind / 10
+_OFF_ATTACHED_TO  = 13   # norm_ref: what this equipment/aura is attached to
+_OFF_ATTACHED_BY  = 14   # norm_ref: the equipment/aura attached to this
+_OFF_ATTACK_TGT   = 15   # norm_ref: attacked walker's slot (0.0 = the player)
+_OFF_BLOCKING_TGT = 16   # norm_ref: the attacker this blocker blocks
+_OFF_IS_BLOCKED   = 17   # attacker was blocked at declare-blockers (CR 509.1h)
+_OFF_IS_PHASED_OUT = 18  # phased-out permanents ARE serialized, with this set
+_OFF_KEYWORDS_START = 19 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
+                         # _OBS_KEYWORDS order from _enums.py)
 
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
@@ -947,7 +1008,7 @@ def _obs_is_main_phase(obs: np.ndarray) -> bool:
 
 def _self_has_draw_on_stack(obs: np.ndarray) -> bool:
     """Return True if self controls a cycling or draw ability/spell on the stack."""
-    for i in range(12):
+    for i in range(_STACK_SLOTS):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         ctrl_is_self = obs[base]
         idx = _slot_card_idx(obs, base + 1)
@@ -958,7 +1019,7 @@ def _self_has_draw_on_stack(obs: np.ndarray) -> bool:
 
 def _stack_is_empty(obs: np.ndarray) -> bool:
     """Return True if there are no items on the stack."""
-    for i in range(12):
+    for i in range(_STACK_SLOTS):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         if _slot_card_idx(obs, base + 1) >= 0:
             return False

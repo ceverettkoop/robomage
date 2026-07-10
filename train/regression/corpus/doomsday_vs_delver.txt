@@ -103,6 +103,7 @@
   Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Thoughtseize
@@ -119,6 +120,7 @@
   Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Player B (20 life)
    1: Player A (20 life)
@@ -135,6 +137,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -148,6 +151,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  Extras: self_lands_played=1
   Actions:
    0: Sacrifice Underground Sea
   >> A/A: 0 (Sacrifice Underground Sea)
@@ -160,8 +164,9 @@
   Step: First Main
   Self:  20 life | mana: empty | hand(4): Street Wraith, Ponder, Island, Misty Rainforest
   Opp:   20 life | mana: empty | hand count: 7
-  Stack: Edge of Autumn (ability, self) -> Thoughtseize (spell, self) -> opponent (player)
+  Stack: Edge of Autumn (ability, self) [amt=1] -> Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -177,6 +182,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -200,6 +206,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
    1: Mishra's Bauble
@@ -219,6 +226,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -231,6 +239,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -245,6 +254,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -259,6 +269,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -274,6 +285,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -286,6 +298,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -298,6 +311,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -310,6 +324,7 @@
   Opp:   20 life | mana: empty | hand count: 6
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -404,6 +419,7 @@
   Self BF:  Mishra's Bauble | Polluted Delta
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)
@@ -420,6 +436,7 @@
   Self BF:  Mishra's Bauble | Polluted Delta
   Self GY: Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Player A (18 life)
    1: Player B (20 life)
@@ -436,8 +453,9 @@
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Polluted Delta
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble
+  Self GY: Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)
@@ -452,9 +470,10 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 5
-  Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
+  Stack: Polluted Delta (ability, opponent) [amt=1] -> Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Polluted Delta
+  Opp GY:  Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -468,9 +487,10 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
   Opp:   18 life | mana: empty | hand count: 5
-  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Polluted Delta
+  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Island
@@ -490,8 +510,9 @@
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Island
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Brainstorm
@@ -507,8 +528,9 @@
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -522,7 +544,8 @@
   Opp BF:   Island (T)
   Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Polluted Delta
+  Opp GY:  Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -542,8 +565,9 @@
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
    1: Lightning Bolt
@@ -564,8 +588,9 @@
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Lightning Bolt
    1: Daze
@@ -585,7 +610,8 @@
   Opp BF:   Island (T)
   Stack: Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -603,7 +629,8 @@
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -616,7 +643,8 @@
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -631,7 +659,8 @@
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -646,7 +675,8 @@
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -662,7 +692,8 @@
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -675,7 +706,8 @@
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -688,7 +720,8 @@
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -701,7 +734,8 @@
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -719,9 +753,9 @@
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 5
   Opp BF:   Island (T)
-  Stack: Mishra's Bauble (ability, opponent)
+  Stack: Mishra's Bauble (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -737,7 +771,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -752,7 +786,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -765,7 +799,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Play Island
@@ -783,7 +817,8 @@
   Self BF:  Island
   Opp BF:   Island (T)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Ponder
@@ -802,7 +837,8 @@
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -816,8 +852,9 @@
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -831,8 +868,9 @@
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: opp_lands_played=1
   Actions:
    0: Return Island
   >> B/B: 0 (Return Island)
@@ -847,8 +885,9 @@
   Opp:   18 life | mana: empty | hand count: 4
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: opp_lands_played=1, self_revolt
   Actions:
    0: Ponder
   >> B/B: 0 (Ponder)
@@ -862,9 +901,10 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Stack: Daze (spell, opponent) -> Ponder (self) -> Ponder (spell, self)
+  Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -879,9 +919,10 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Stack: Daze (spell, opponent) -> Ponder (self) -> Ponder (spell, self)
+  Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
   >> A/A: 0 (Don't pay (spell is countered))
@@ -894,8 +935,9 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -907,8 +949,9 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -922,8 +965,9 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -937,8 +981,9 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -953,8 +998,9 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -966,8 +1012,9 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -979,8 +1026,9 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -992,8 +1040,9 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1010,8 +1059,8 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1025,8 +1074,8 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 7
   Self BF:  Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1038,8 +1087,8 @@
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn
   Opp:   18 life | mana: empty | hand count: 4
   Opp BF:   Island (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
-  Opp GY:  Thoughtseize, Edge of Autumn, Ponder, Underground Sea
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Island
@@ -1057,8 +1106,9 @@
   Opp:   18 life | mana: empty | hand count: 4
   Self BF:  Island
   Opp BF:   Island (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
-  Opp GY:  Thoughtseize, Edge of Autumn, Ponder, Underground Sea
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Ponder
@@ -1075,8 +1125,9 @@
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1094,8 +1145,9 @@
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
-  Opp GY:  Thoughtseize, Edge of Autumn, Ponder, Underground Sea
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Volcanic Island
    1: Ponder
@@ -1112,8 +1164,9 @@
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
-  Opp GY:  Thoughtseize, Edge of Autumn, Ponder, Underground Sea
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Ponder
    1: Ponder
@@ -1127,8 +1180,9 @@
   Self BF:  Island (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Polluted Delta
-  Opp GY:  Thoughtseize, Edge of Autumn, Ponder, Underground Sea
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1144,8 +1198,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1158,8 +1213,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1174,8 +1230,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1190,8 +1247,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1207,8 +1265,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1221,8 +1280,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1235,8 +1295,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1249,8 +1310,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1268,8 +1330,8 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1284,8 +1346,8 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1299,8 +1361,8 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Ponder, Underground Sea
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Sacrifice Island
   >> A/A: 0 (Sacrifice Island)
@@ -1314,9 +1376,10 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
-  Stack: Edge of Autumn (ability, self)
-  Self GY: Thoughtseize, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Stack: Edge of Autumn (ability, self) [amt=1]
+  Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1331,8 +1394,9 @@
   Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1344,8 +1408,9 @@
   Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Street Wraith, Misty Rainforest
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -1361,8 +1426,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Misty Rainforest
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)
@@ -1379,9 +1445,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
-  Stack: Misty Rainforest (ability, self)
-  Self GY: Thoughtseize, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Stack: Misty Rainforest (ability, self) [amt=1]
+  Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1396,9 +1463,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
-  Stack: Misty Rainforest (ability, self)
-  Self GY: Thoughtseize, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Stack: Misty Rainforest (ability, self) [amt=1]
+  Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Undercity Sewers
@@ -1418,9 +1486,10 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Stack: Undercity Sewers (ability, self)
-  Self GY: Thoughtseize, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1437,9 +1506,10 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Stack: Undercity Sewers (ability, self)
-  Self GY: Thoughtseize, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Personal Tutor on top of library
    1: Put Personal Tutor into graveyard
@@ -1454,8 +1524,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1468,8 +1539,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1484,8 +1556,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1500,8 +1573,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1517,8 +1591,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1531,8 +1606,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1545,8 +1621,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1559,8 +1636,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1578,8 +1656,8 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1594,8 +1672,8 @@
   Opp:   19 life | mana: empty | hand count: 7
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1608,8 +1686,8 @@
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Island
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
-  Opp GY:  Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1630,8 +1708,8 @@
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1649,8 +1727,8 @@
   Self BF:  Island (T)
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
-  Opp GY:  Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Volcanic Island
    1: Mishra's Bauble
@@ -1667,8 +1745,8 @@
   Self BF:  Island (T)
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
-  Opp GY:  Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Mishra's Bauble
    1: Thundering Falls
@@ -1682,8 +1760,8 @@
   Self BF:  Island (T)
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
-  Opp GY:  Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1699,8 +1777,8 @@
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Island (T)
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1718,8 +1796,9 @@
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler
@@ -1738,8 +1817,9 @@
   Self BF:  Undercity Sewers (T)
   Opp BF:   Island (T) | Volcanic Island (T)
   Stack: Dragon's Rage Channeler (spell, opponent)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1754,9 +1834,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1768,9 +1849,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1784,9 +1866,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1800,9 +1883,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1817,9 +1901,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1831,9 +1916,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1845,9 +1931,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1859,9 +1946,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1878,9 +1966,9 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1894,9 +1982,9 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -1908,9 +1996,9 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Cast Thoughtseize
@@ -1925,9 +2013,9 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Thoughtseize, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Player B (19 life)
    1: Player A (17 life)
@@ -1943,10 +2031,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)
@@ -1968,10 +2056,10 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
-  Self GY: Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Ponder, Polluted Delta
+  Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Lightning Bolt
    1: Ponder
@@ -1987,9 +2075,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2001,9 +2089,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2017,9 +2105,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2033,9 +2121,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2050,9 +2138,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2064,9 +2152,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2078,9 +2166,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2092,9 +2180,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2111,9 +2199,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2127,9 +2215,9 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 5
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2140,10 +2228,10 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(5): Mishra's Bauble, Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2162,10 +2250,10 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)
@@ -2180,10 +2268,10 @@
   Self:  14 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Exile Thassa's Oracle
   >> A/A: 0 (Exile Thassa's Oracle)
@@ -2197,10 +2285,10 @@
   Self:  14 life | mana: empty | hand(3): Doomsday, Force of Will, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Mishra's Bauble
   >> A/A: 0 (Mishra's Bauble)
@@ -2214,10 +2302,10 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Stack: Force of Will (spell, self) -> Mishra's Bauble (opponent) -> Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
-  Self GY: Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Stack: Force of Will (spell, self) -> Mishra's Bauble (opponent, slot 98) -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2232,10 +2320,10 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Stack: Dragon's Rage Channeler (ability, opponent)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1]
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2250,11 +2338,11 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(4): Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Stack: Dragon's Rage Channeler (ability, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1]
+  Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Put Volcanic Island on top of library
    1: Put Volcanic Island into graveyard
@@ -2268,9 +2356,9 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   19 life | mana: empty | hand count: 4
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta, Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2281,10 +2369,10 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(4): Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2303,10 +2391,10 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   19 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Ponder (spell, opponent)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta, Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Ponder (spell, opponent)
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2321,11 +2409,11 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Ponder (spell, self)
+  Self GY: Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Put Flooded Strand on top of library
    1: Put Flooded Strand into graveyard
@@ -2339,10 +2427,10 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   19 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Stack: Ponder (spell, opponent)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2357,11 +2445,11 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Mishra's Bauble
    1: Brainstorm
@@ -2375,11 +2463,11 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Brainstorm
    1: Force of Will
@@ -2390,11 +2478,11 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
   Stack: Ponder (spell, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -2408,10 +2496,10 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(4): Force of Will, Scalding Tarn, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2426,10 +2514,11 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island | Scalding Tarn
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island | Scalding Tarn
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)
@@ -2445,10 +2534,11 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
-  Stack: Scalding Tarn (ability, opponent)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
+  Stack: Scalding Tarn (ability, opponent) [amt=1]
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2462,11 +2552,12 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Stack: Scalding Tarn (ability, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Stack: Scalding Tarn (ability, self) [amt=1]
+  Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Mountain
@@ -2483,9 +2574,10 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2497,9 +2589,10 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2514,10 +2607,11 @@
   Step: Declare Atk
   Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls
   Opp:   14 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island (T) | Mountain | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2531,9 +2625,10 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2547,9 +2642,10 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2565,9 +2661,10 @@
   Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2579,9 +2676,10 @@
   Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2593,9 +2691,10 @@
   Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2607,9 +2706,10 @@
   Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2626,9 +2726,9 @@
   Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2642,9 +2742,9 @@
   Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2656,9 +2756,9 @@
   Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Cast Thoughtseize
@@ -2673,9 +2773,9 @@
   Self:  11 life | mana: empty | hand(3): Doomsday, Thoughtseize, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Player B (18 life)
    1: Player A (11 life)
@@ -2691,10 +2791,10 @@
   Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Stack: Thoughtseize (spell, self) -> opponent (player)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2713,10 +2813,10 @@
   Self:  11 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
   Stack: Thoughtseize (spell, self) -> opponent (player)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Force of Will
   >> A/A: 0 (Force of Will)
@@ -2731,9 +2831,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2745,9 +2845,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2761,9 +2861,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2777,9 +2877,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2794,9 +2894,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2808,9 +2908,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2822,9 +2922,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2836,9 +2936,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2855,9 +2955,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2871,9 +2971,9 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2884,10 +2984,10 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls
   Opp:   9 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2901,10 +3001,11 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls
   Opp:   9 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Scalding Tarn
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Scalding Tarn
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)
@@ -2920,10 +3021,11 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
-  Stack: Scalding Tarn (ability, opponent)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
+  Stack: Scalding Tarn (ability, opponent) [amt=1]
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2937,11 +3039,12 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls
   Opp:   9 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Stack: Scalding Tarn (ability, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Stack: Scalding Tarn (ability, self) [amt=1]
+  Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Volcanic Island
@@ -2957,9 +3060,10 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2971,9 +3075,10 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -2988,10 +3093,11 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls
   Opp:   9 life | mana: empty | hand count: 2
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -3005,9 +3111,10 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3021,9 +3128,10 @@
   Self:  9 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3039,9 +3147,10 @@
   Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3053,9 +3162,10 @@
   Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3067,9 +3177,10 @@
   Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3081,9 +3192,10 @@
   Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3100,9 +3212,9 @@
   Self:  6 life | mana: empty | hand(2): Doomsday, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3116,9 +3228,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3131,9 +3243,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3146,9 +3258,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3163,9 +3275,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3180,9 +3292,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3198,9 +3310,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3213,9 +3325,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3228,9 +3340,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3243,9 +3355,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3263,9 +3375,9 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3279,10 +3391,10 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(3): Force of Will, Lightning Bolt, Thundering Falls
   Opp:   6 life | mana: empty | hand count: 3
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt
@@ -3295,10 +3407,10 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(3): Force of Will, Lightning Bolt, Thundering Falls
   Opp:   6 life | mana: empty | hand count: 3
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Player A (6 life)
    1: Player B (17 life)
@@ -3316,10 +3428,10 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island
-  Stack: Dragon's Rage Channeler (ability, opponent) -> Lightning Bolt (spell, opponent) -> self (player)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3335,11 +3447,11 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls
   Opp:   6 life | mana: empty | hand count: 3
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
-  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
+  Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Put Wasteland on top of library
    1: Put Wasteland into graveyard
@@ -3353,10 +3465,10 @@
   Self:  6 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Stack: Lightning Bolt (spell, opponent) -> self (player)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3372,9 +3484,9 @@
   Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 2
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3386,10 +3498,10 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(2): Force of Will, Thundering Falls
   Opp:   3 life | mana: empty | hand count: 3
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -3405,10 +3517,11 @@
   Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 1
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
-  Stack: Thundering Falls (ability, opponent)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Stack: Thundering Falls (ability, opponent) [amt=1]
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3424,11 +3537,12 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(1): Force of Will
   Opp:   3 life | mana: empty | hand count: 3
-  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Opp BF:   Undercity Sewers
-  Stack: Thundering Falls (ability, self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Stack: Thundering Falls (ability, self) [amt=1]
+  Self GY: Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1
   Actions:
    0: Put Cori-Steel Cutter on top of library
    1: Put Cori-Steel Cutter into graveyard
@@ -3442,9 +3556,10 @@
   Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 1
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3457,9 +3572,10 @@
   Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 1
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3475,10 +3591,11 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(1): Force of Will
   Opp:   3 life | mana: empty | hand count: 3
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Opp BF:   Undercity Sewers
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
-  Opp GY:  Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
+  Self GY: Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -3492,9 +3609,10 @@
   Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 1
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
@@ -3509,9 +3627,10 @@
   Self:  3 life | mana: empty | hand(3): Doomsday, Street Wraith, Street Wraith
   Opp:   17 life | mana: empty | hand count: 1
   Self BF:  Undercity Sewers
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
-  Self GY: Force of Will, Thoughtseize, Thoughtseize, Thoughtseize, Personal Tutor, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest
-  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Daze, Ponder, Ponder, Ponder, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,ATK) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Cori-Steel Cutter, Lightning Bolt, Wasteland, Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)

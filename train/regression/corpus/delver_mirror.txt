@@ -82,6 +82,7 @@
   Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Misty Rainforest
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)
@@ -98,8 +99,9 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland
   Opp:   20 life | mana: empty | hand count: 7
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Self GY: Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Island
@@ -120,6 +122,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Island
   Self GY: Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Ponder
@@ -136,6 +139,7 @@
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
   Self GY: Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -154,6 +158,7 @@
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
   Self GY: Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Unholy Heat
    1: Dragon's Rage Channeler
@@ -170,6 +175,7 @@
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
   Self GY: Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
    1: Cori-Steel Cutter
@@ -183,6 +189,7 @@
   Self BF:  Island (T)
   Stack: Ponder (spell, self)
   Self GY: Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -253,6 +260,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Stack: Mishra's Bauble (spell, opponent)
   Self GY: Ponder, Misty Rainforest
+  Extras: self_revolt
   Actions:
    0: Mishra's Bauble
   >> A/A: 0 (Mishra's Bauble)
@@ -267,8 +275,9 @@
   Step: First Main
   Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
-  Stack: Daze (spell, opponent) -> Mishra's Bauble (self) -> Mishra's Bauble (spell, self)
+  Stack: Daze (spell, opponent) -> Mishra's Bauble (self, slot 97) -> Mishra's Bauble (spell, self)
   Opp GY:  Ponder, Misty Rainforest
+  Extras: opp_revolt
   Actions:
    0: Don't pay (spell is countered)
   >> B/B: 0 (Don't pay (spell is countered))
@@ -282,6 +291,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self GY: Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -299,6 +309,7 @@
   Self BF:  Polluted Delta
   Self GY: Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)
@@ -315,9 +326,10 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
-  Stack: Polluted Delta (ability, self)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Stack: Polluted Delta (ability, self) [amt=1]
+  Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Fail to find
    1: Island
@@ -336,8 +348,9 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island
-  Self GY: Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Brainstorm
@@ -354,8 +367,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -375,8 +389,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Delver of Secrets
    1: Dragon's Rage Channeler
@@ -398,8 +413,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
   Stack: Brainstorm (spell, self)
-  Self GY: Mishra's Bauble, Polluted Delta
+  Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -428,7 +444,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island (T)
   Self GY: Daze, Ponder, Misty Rainforest
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Island
@@ -454,7 +470,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Island
-  Self GY: Mishra's Bauble, Brainstorm, Polluted Delta
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
   Actions:
    0: Pass priority
@@ -475,7 +491,7 @@
   Self BF:  Island (T)
   Opp BF:   Island
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Polluted Delta
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
   Actions:
    0: Pass priority
@@ -491,7 +507,7 @@
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
   Self GY: Daze, Ponder, Misty Rainforest
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -506,7 +522,7 @@
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
   Self GY: Daze, Ponder, Misty Rainforest
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
   Actions:
    0: Return Island
   >> A/A: 0 (Return Island)
@@ -522,7 +538,8 @@
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
   Self GY: Daze, Ponder, Misty Rainforest
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Extras: self_revolt
   Actions:
    0: Ponder
   >> A/A: 0 (Ponder)
@@ -536,9 +553,10 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Stack: Daze (spell, opponent) -> Ponder (self) -> Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Polluted Delta
+  Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)
@@ -550,9 +568,10 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island (T)
-  Stack: Daze (spell, opponent) -> Ponder (self) -> Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Polluted Delta
+  Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: opp_revolt
   Actions:
    0: Return Island
   >> B/B: 0 (Return Island)
@@ -565,9 +584,10 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Island, Flooded Strand, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
-  Stack: Daze (spell, opponent) -> Ponder (self) -> Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Polluted Delta
+  Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Extras: self_revolt, opp_revolt
   Actions:
    0: Daze
    1: Ponder
@@ -583,9 +603,10 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Island, Scalding Tarn, Wasteland
   Opp:   19 life | mana: empty | hand count: 6
-  Stack: Daze (spell, opponent) -> Daze (self) -> Daze (spell, self) -> Ponder (opponent) -> Ponder (spell, opponent)
+  Stack: Daze (spell, opponent) -> Daze (self, slot 97) -> Daze (spell, self) -> Ponder (opponent, slot 98) -> Ponder (spell, opponent)
   Self GY: Daze, Ponder, Misty Rainforest
-  Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Extras: self_revolt, opp_revolt
   Actions:
    0: Don't pay (spell is countered)
   >> A/A: 0 (Don't pay (spell is countered))
@@ -601,8 +622,9 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Island, Flooded Strand, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_revolt, opp_revolt
   Actions:
    0: Delver of Secrets
    1: Dragon's Rage Channeler
@@ -617,8 +639,9 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Island, Flooded Strand, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_revolt, opp_revolt
   Actions:
    0: Dragon's Rage Channeler
    1: Murktide Regent
@@ -630,8 +653,9 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Island, Flooded Strand, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
   Stack: Ponder (spell, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Polluted Delta
+  Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_revolt, opp_revolt
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -645,8 +669,9 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(7): Murktide Regent, Dragon's Rage Channeler, Dragon's Rage Channeler, Island, Flooded Strand, Volcanic Island, Scalding Tarn
   Opp:   19 life | mana: empty | hand count: 6
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Play Island
@@ -673,7 +698,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Opp BF:   Island
   Self GY: Daze, Daze, Ponder, Misty Rainforest
-  Opp GY:  Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Actions:
    0: Pass priority
    1: Play Island
@@ -699,7 +724,7 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Island
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Pass priority
@@ -717,8 +742,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island | Flooded Strand
   Opp BF:   Island
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta
+  Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)
@@ -737,9 +763,10 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island
   Opp BF:   Island
-  Stack: Flooded Strand (ability, self)
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Flooded Strand, Polluted Delta
+  Stack: Flooded Strand (ability, self) [amt=1]
+  Self GY: Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Volcanic Island
@@ -758,8 +785,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island | Volcanic Island
   Opp BF:   Island
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Flooded Strand, Polluted Delta
+  Self GY: Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Murktide Regent
@@ -777,8 +805,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island | Volcanic Island
   Opp BF:   Island
-  Self GY: Mishra's Bauble, Brainstorm, Daze, Ponder, Flooded Strand, Polluted Delta
+  Self GY: Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Mishra's Bauble (Delve)
    1: Exile Brainstorm (Delve)
@@ -798,8 +827,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island | Volcanic Island
   Opp BF:   Island
-  Self GY: Brainstorm, Daze, Ponder, Flooded Strand, Polluted Delta
+  Self GY: Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Daze (Delve)
@@ -818,8 +848,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island | Volcanic Island
   Opp BF:   Island
-  Self GY: Daze, Ponder, Flooded Strand, Polluted Delta
+  Self GY: Flooded Strand, Ponder, Daze, Polluted Delta
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Daze (Delve)
    1: Exile Ponder (Delve)
@@ -837,8 +868,9 @@
   Opp:   19 life | mana: empty | hand count: 6
   Self BF:  Island | Volcanic Island
   Opp BF:   Island
-  Self GY: Ponder, Flooded Strand, Polluted Delta
+  Self GY: Flooded Strand, Ponder, Polluted Delta
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Ponder (Delve)
    1: Exile Flooded Strand (Delve)
@@ -857,6 +889,7 @@
   Opp BF:   Island
   Self GY: Flooded Strand, Polluted Delta
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Flooded Strand (Delve)
    1: Exile Polluted Delta (Delve)
@@ -884,7 +917,7 @@
   Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Scalding Tarn, Wasteland
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Island
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (SICK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Actions:
@@ -904,7 +937,7 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Scalding Tarn, Wasteland
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Delver of Secrets [1/1] (SICK) | Island (T)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (SICK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Actions:
@@ -921,9 +954,10 @@
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Wasteland
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Scalding Tarn
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (SICK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
   Self GY: Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)
@@ -941,10 +975,11 @@
   Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Wasteland
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Delver of Secrets [1/1] (SICK) | Island (T)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (SICK) | Island (T) | Volcanic Island (T)
-  Stack: Scalding Tarn (ability, self)
-  Self GY: Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Stack: Scalding Tarn (ability, self) [amt=1]
+  Self GY: Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Mountain
@@ -964,9 +999,10 @@
   Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Wasteland
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Mountain
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler
@@ -992,10 +1028,10 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Volcanic Island, Scalding Tarn
   Opp:   18 life | mana: empty | hand count: 4
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Island | Volcanic Island
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Island | Volcanic Island
   Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T)
   Self GY: Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp GY:  Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1015,10 +1051,10 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Volcanic Island, Scalding Tarn
   Opp:   18 life | mana: empty | hand count: 4
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T)
   Self GY: Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp GY:  Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1032,10 +1068,11 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Scalding Tarn
   Opp:   18 life | mana: empty | hand count: 4
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island
   Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T)
   Self GY: Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp GY:  Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler
@@ -1053,10 +1090,11 @@
   Step: Declare Atk
   Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Scalding Tarn
   Opp:   18 life | mana: empty | hand count: 4
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T)
   Self GY: Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp GY:  Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [6/6]
    1: Confirm attackers
@@ -1071,10 +1109,11 @@
   Step: Declare Atk
   Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Scalding Tarn
   Opp:   18 life | mana: empty | hand count: 4
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] (ATK) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T)
   Self GY: Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp GY:  Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1097,9 +1136,9 @@
   Self:  12 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Wasteland
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island | Mountain
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
   Stack: Delver of Secrets (ability, self)
-  Self GY: Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Self GY: Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Actions:
    0: Pass priority
@@ -1114,9 +1153,9 @@
   Self:  12 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Wasteland
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island | Mountain
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
   Stack: Delver of Secrets (ability, self)
-  Self GY: Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Self GY: Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Actions:
    0: Murktide Regent
@@ -1140,9 +1179,9 @@
   Self:  12 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Wasteland
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island | Mountain (T)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Dragon's Rage Channeler (ability, self) -> Unholy Heat (spell, self) -> Murktide Regent (opponent) -> Delver of Secrets (ability, self)
-  Self GY: Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Murktide Regent (opponent, slot 48) -> Delver of Secrets (ability, self)
+  Self GY: Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Actions:
    0: Put Force of Will on top of library
@@ -1161,9 +1200,9 @@
   Self:  12 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Wasteland
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island | Mountain (T)
-  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
   Stack: Delver of Secrets (ability, self)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Self GY: Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Actions:
    0: Don't reveal
@@ -1179,8 +1218,8 @@
   Self:  12 life | mana: empty | hand(4): Delver of Secrets, Dragon's Rage Channeler, Cori-Steel Cutter, Wasteland
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island | Mountain (T)
-  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Self GY: Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Actions:
    0: Pass priority
@@ -1198,8 +1237,8 @@
   Self:  12 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Wasteland
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain (T)
-  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Self GY: Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
   Actions:
    0: Pass priority
@@ -1214,9 +1253,10 @@
   Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain (T) | Wasteland
-  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Self GY: Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -1230,9 +1270,10 @@
   Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain (T) | Wasteland
-  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Self GY: Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
+  Extras: self_lands_played=1
   Actions:
    0: Volcanic Island
    1: Volcanic Island
@@ -1252,9 +1293,10 @@
   Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain (T)
-  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Polluted Delta, Volcanic Island
+  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Volcanic Island, Polluted Delta
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Delver of Secrets [1/1]
    1: Dragon's Rage Channeler [1/1]
@@ -1271,9 +1313,10 @@
   Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (ATK) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain (T)
-  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Polluted Delta, Volcanic Island
+  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Volcanic Island, Polluted Delta
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Confirm attackers
@@ -1290,9 +1333,10 @@
   Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   18 life | mana: empty | hand count: 3
   Self BF:  Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Mountain (T)
-  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Polluted Delta, Volcanic Island
+  Opp BF:   Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Volcanic Island, Polluted Delta
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1311,10 +1355,11 @@
   Step: Declare Blk
   Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Scalding Tarn
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6, 2dmg] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6, 2dmg] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Island (T) | Mountain (T)
-  Self GY: Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Dragon's Rage Channeler [1/1]
@@ -1338,10 +1383,10 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Cori-Steel Cutter, Scalding Tarn
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Island | Volcanic Island
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Island | Volcanic Island
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Self GY: Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1359,10 +1404,10 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Scalding Tarn
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Self GY: Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1375,10 +1420,11 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(2): Cori-Steel Cutter, Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Scalding Tarn
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T) | Scalding Tarn
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Self GY: Polluted Delta, Volcanic Island
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)
@@ -1395,11 +1441,12 @@
   Step: First Main
   Self:  15 life | mana: empty | hand(2): Cori-Steel Cutter, Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Stack: Scalding Tarn (ability, self)
-  Self GY: Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Stack: Scalding Tarn (ability, self) [amt=1]
+  Self GY: Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Mountain
@@ -1416,10 +1463,11 @@
   Step: First Main
   Self:  15 life | mana: empty | hand(2): Cori-Steel Cutter, Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Self GY: Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Cori-Steel Cutter
@@ -1436,11 +1484,12 @@
   Step: First Main
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
   Stack: Cori-Steel Cutter (spell, self)
-  Self GY: Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler (Surveil)
    1: Dragon's Rage Channeler (Surveil)
@@ -1455,11 +1504,12 @@
   Step: First Main
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Stack: Dragon's Rage Channeler (ability, self) -> Cori-Steel Cutter (spell, self)
-  Self GY: Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
+  Self GY: Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler (Surveil)
    1: Dragon's Rage Channeler (Surveil)
@@ -1476,11 +1526,12 @@
   Step: First Main
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Stack: Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Cori-Steel Cutter (spell, self)
-  Self GY: Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Dragon's Rage Channeler (ability, self) [amt=1] -> Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
+  Self GY: Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Lightning Bolt on top of library
    1: Put Lightning Bolt into graveyard
@@ -1496,11 +1547,12 @@
   Step: First Main
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Stack: Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Cori-Steel Cutter (spell, self)
-  Self GY: Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
+  Self GY: Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Mishra's Bauble on top of library
    1: Put Mishra's Bauble into graveyard
@@ -1516,11 +1568,12 @@
   Step: First Main
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Stack: Dragon's Rage Channeler (ability, self) -> Cori-Steel Cutter (spell, self)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
+  Self GY: Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Scalding Tarn on top of library
    1: Put Scalding Tarn into graveyard
@@ -1535,10 +1588,11 @@
   Step: Declare Atk
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [6/6]
    1: Dragon's Rage Channeler [1/1]
@@ -1555,10 +1609,11 @@
   Step: Declare Atk
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] (ATK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Dragon's Rage Channeler [1/1]
@@ -1575,10 +1630,11 @@
   Step: Declare Atk
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Confirm attackers
@@ -1595,10 +1651,11 @@
   Step: Declare Atk
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   12 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
   Opp BF:   Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self GY: Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1620,9 +1677,10 @@
   Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   15 life | mana: empty | hand count: 1
   Self BF:  Delver of Secrets [1/1] (SICK) | Delver of Secrets [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain (T)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Extras: opp_lands_played=1, opp_revolt, mandatory_choice=Declare Blk
   Actions:
    0: Delver of Secrets [1/1]
    1: Confirm blockers
@@ -1647,9 +1705,9 @@
   Self:  4 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   15 life | mana: empty | hand count: 1
   Self BF:  Delver of Secrets [1/1] | Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island | Mountain
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
   Actions:
    0: Delver of Secrets (PeekAndReveal)
    1: Delver of Secrets (PeekAndReveal)
@@ -1666,10 +1724,10 @@
   Self:  4 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   15 life | mana: empty | hand count: 1
   Self BF:  Delver of Secrets [1/1] | Delver of Secrets [1/1] | Dragon's Rage Channeler [1/1] | Island | Mountain
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
   Stack: Delver of Secrets (ability, self) -> Delver of Secrets (ability, self)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
   Actions:
    0: Don't reveal
    1: Reveal
@@ -1685,11 +1743,11 @@
   Step: Upkeep
   Self:  4 life | mana: empty | hand(2): Dragon's Rage Channeler, Cori-Steel Cutter
   Opp:   15 life | mana: empty | hand count: 1
-  Self BF:  Delver of Secrets [1/1] | Insectile Aberration [3/2] | Dragon's Rage Channeler [1/1] | Island | Mountain
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self BF:  Delver of Secrets [1/1] | Insectile Aberration [3/2] [Flying] | Dragon's Rage Channeler [1/1] | Island | Mountain
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
   Stack: Delver of Secrets (ability, self)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
   Actions:
    0: Don't reveal
    1: Reveal
@@ -1704,10 +1762,10 @@
   Step: First Main
   Self:  4 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will
   Opp:   15 life | mana: empty | hand count: 1
-  Self BF:  Insectile Aberration [3/2] | Insectile Aberration [3/2] | Dragon's Rage Channeler [1/1] | Island | Mountain
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Self BF:  Insectile Aberration [3/2] [Flying] | Insectile Aberration [3/2] [Flying] | Dragon's Rage Channeler [1/1] | Island | Mountain
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler
@@ -1724,10 +1782,11 @@
   Step: Declare Atk
   Self:  4 life | mana: empty | hand(2): Cori-Steel Cutter, Force of Will
   Opp:   15 life | mana: empty | hand count: 1
-  Self BF:  Insectile Aberration [3/2] | Insectile Aberration [3/2] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Self BF:  Insectile Aberration [3/2] [Flying] | Insectile Aberration [3/2] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Insectile Aberration [3/2]
    1: Insectile Aberration [3/2]
@@ -1744,10 +1803,11 @@
   Step: Declare Atk
   Self:  4 life | mana: empty | hand(2): Cori-Steel Cutter, Force of Will
   Opp:   15 life | mana: empty | hand count: 1
-  Self BF:  Insectile Aberration [3/2] (ATK) | Insectile Aberration [3/2] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Self BF:  Insectile Aberration [3/2] [Flying] (ATK) | Insectile Aberration [3/2] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Insectile Aberration [3/2]
    1: Dragon's Rage Channeler [1/1]
@@ -1764,10 +1824,11 @@
   Step: Declare Atk
   Self:  4 life | mana: empty | hand(2): Cori-Steel Cutter, Force of Will
   Opp:   15 life | mana: empty | hand count: 1
-  Self BF:  Insectile Aberration [3/2] (ATK) | Insectile Aberration [3/2] (ATK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Self BF:  Insectile Aberration [3/2] [Flying] (ATK) | Insectile Aberration [3/2] [Flying] (ATK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Confirm attackers
@@ -1784,10 +1845,11 @@
   Step: Declare Atk
   Self:  4 life | mana: empty | hand(2): Cori-Steel Cutter, Force of Will
   Opp:   15 life | mana: empty | hand count: 1
-  Self BF:  Insectile Aberration [3/2] (ATK) | Insectile Aberration [3/2] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
-  Opp GY:  Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
+  Self BF:  Insectile Aberration [3/2] [Flying] (ATK) | Insectile Aberration [3/2] [Flying] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Opp GY:  Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1808,10 +1870,11 @@
   Step: Declare Blk
   Self:  15 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
-  Opp BF:   Insectile Aberration [3/2] (T,ATK) | Insectile Aberration [3/2] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T)
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T,ATK) | Insectile Aberration [3/2] [Flying] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self GY: Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Confirm blockers
@@ -1835,10 +1898,10 @@
   Step: First Main
   Self:  8 life | mana: empty | hand(2): Murktide Regent, Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self GY: Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Pass priority
    1: Cast Murktide Regent
@@ -1853,10 +1916,10 @@
   Step: First Main
   Self:  8 life | mana: empty | hand(2): Murktide Regent, Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self GY: Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Exile 4 cards from graveyard (Delve)
    1: Exile 5 cards from graveyard (Delve)
@@ -1869,10 +1932,10 @@
   Step: First Main
   Self:  8 life | mana: empty | hand(2): Murktide Regent, Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Self GY: Mishra's Bauble, Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self GY: Scalding Tarn, Mishra's Bauble, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Exile Mishra's Bauble (Delve)
    1: Exile Lightning Bolt (Delve)
@@ -1890,10 +1953,10 @@
   Step: First Main
   Self:  8 life | mana: empty | hand(2): Murktide Regent, Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Self GY: Lightning Bolt, Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self GY: Scalding Tarn, Lightning Bolt, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Exile Lightning Bolt (Delve)
    1: Exile Polluted Delta (Delve)
@@ -1910,10 +1973,10 @@
   Step: First Main
   Self:  8 life | mana: empty | hand(2): Murktide Regent, Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Self GY: Polluted Delta, Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self GY: Scalding Tarn, Scalding Tarn, Volcanic Island, Polluted Delta
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Exile Polluted Delta (Delve)
    1: Exile Volcanic Island (Delve)
@@ -1929,10 +1992,10 @@
   Step: First Main
   Self:  8 life | mana: empty | hand(2): Murktide Regent, Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Self GY: Volcanic Island, Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self GY: Scalding Tarn, Scalding Tarn, Volcanic Island
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Exile Volcanic Island (Delve)
    1: Exile Scalding Tarn (Delve)
@@ -1947,10 +2010,10 @@
   Step: First Main
   Self:  8 life | mana: empty | hand(2): Murktide Regent, Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island | Mountain | Volcanic Island
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Self GY: Scalding Tarn, Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Actions:
    0: Exile Scalding Tarn (Delve)
    1: Exile Scalding Tarn (Delve)
@@ -1972,10 +2035,11 @@
   Step: Declare Atk
   Self:  8 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [7/7] [+1/+1:4] | Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self BF:  Murktide Regent [7/7] [+1/+1:4] [Flying] | Murktide Regent [4/4] [+1/+1:1] [Flying] (SICK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Self GY: Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [7/7]
    1: Dragon's Rage Channeler [1/1]
@@ -1993,10 +2057,11 @@
   Step: Declare Atk
   Self:  8 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [7/7] [+1/+1:4] (ATK) | Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self BF:  Murktide Regent [7/7] [+1/+1:4] [Flying] (ATK) | Murktide Regent [4/4] [+1/+1:1] [Flying] (SICK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Self GY: Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Dragon's Rage Channeler [1/1]
@@ -2014,10 +2079,11 @@
   Step: Declare Atk
   Self:  8 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [7/7] [+1/+1:4] (ATK) | Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self BF:  Murktide Regent [7/7] [+1/+1:4] [Flying] (ATK) | Murktide Regent [4/4] [+1/+1:1] [Flying] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Self GY: Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Dragon's Rage Channeler [1/1]
@@ -2035,10 +2101,11 @@
   Step: Declare Atk
   Self:  8 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [7/7] [+1/+1:4] (ATK) | Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self BF:  Murktide Regent [7/7] [+1/+1:4] [Flying] (ATK) | Murktide Regent [4/4] [+1/+1:1] [Flying] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Self GY: Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Confirm attackers
@@ -2056,10 +2123,11 @@
   Step: Declare Atk
   Self:  8 life | mana: empty | hand(1): Cori-Steel Cutter
   Opp:   4 life | mana: empty | hand count: 2
-  Self BF:  Murktide Regent [7/7] [+1/+1:4] (ATK) | Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
-  Opp BF:   Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Self BF:  Murktide Regent [7/7] [+1/+1:4] [Flying] (ATK) | Murktide Regent [4/4] [+1/+1:1] [Flying] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Opp BF:   Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
   Self GY: Scalding Tarn
-  Opp GY:  Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Opp GY:  Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
+  Extras: mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2082,10 +2150,11 @@
   Step: Declare Blk
   Self:  4 life | mana: empty | hand(2): Cori-Steel Cutter, Force of Will
   Opp:   8 life | mana: empty | hand count: 1
-  Self BF:  Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Opp BF:   Murktide Regent [7/7] [+1/+1:4] (T,ATK) | Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Opp BF:   Murktide Regent [7/7] [+1/+1:4] [Flying] (T,ATK) | Murktide Regent [4/4] [+1/+1:1] [Flying] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Scalding Tarn
+  Extras: mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Confirm blockers
@@ -2098,10 +2167,11 @@
   Step: Declare Blk
   Self:  4 life | mana: empty | hand(2): Cori-Steel Cutter, Force of Will
   Opp:   8 life | mana: empty | hand count: 1
-  Self BF:  Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
-  Opp BF:   Murktide Regent [7/7] [+1/+1:4] (T,ATK) | Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Opp BF:   Murktide Regent [7/7] [+1/+1:4] [Flying] (T,ATK) | Murktide Regent [4/4] [+1/+1:1] [Flying] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Scalding Tarn
+  Extras: mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Dragon's Rage Channeler [1/1]
@@ -2123,10 +2193,11 @@
   Step: Declare Blk
   Self:  4 life | mana: empty | hand(2): Cori-Steel Cutter, Force of Will
   Opp:   8 life | mana: empty | hand count: 1
-  Self BF:  Insectile Aberration [3/2] (T) | Insectile Aberration [3/2] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (BLK,SICK) | Island | Mountain (T)
-  Opp BF:   Murktide Regent [7/7] [+1/+1:4] (T,ATK) | Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
-  Self GY: Force of Will, Daze, Daze, Unholy Heat, Ponder, Misty Rainforest, Scalding Tarn, Wasteland
+  Self BF:  Insectile Aberration [3/2] [Flying] (T) | Insectile Aberration [3/2] [Flying] (T) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (BLK->Dragon's Rage Channeler,SICK) | Island | Mountain (T)
+  Opp BF:   Murktide Regent [7/7] [+1/+1:4] [Flying] (T,ATK) | Murktide Regent [4/4] [+1/+1:1] [Flying] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK,BLOCKED) | Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Self GY: Wasteland, Unholy Heat, Force of Will, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Scalding Tarn
+  Extras: mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> A/A: 0 (Confirm blockers)

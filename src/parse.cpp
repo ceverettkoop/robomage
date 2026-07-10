@@ -1037,6 +1037,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
 
 Token parse_token_script(const std::string &script_name) {
     Token tok;
+    tok.script_name = script_name;
     std::string path = RESOURCE_DIR + "/tokenscripts/" + script_name + ".txt";
     std::ifstream stream(path);
     if (!stream.is_open()) {

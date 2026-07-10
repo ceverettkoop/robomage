@@ -18,27 +18,41 @@ vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slo
 
 Index layout must stay in sync with src/machine_io.h:
   obs[0:36]            global context (player stats, step, flags, stack size)
-  obs[36:1188]         96 permanent slots × 12 floats  (11 status + 1 card id)
+  obs[36:3492]         96 permanent slots × 36 floats
                          slots 0-47: self; slots 48-95: opponent
-                         status: power, toughness, tapped, attacking, blocking,
-                                 sickness, damage, controller_is_self, is_creature, is_land, loyalty
-  obs[1188:1488]       12 stack slots   × 25 floats (controller_is_self + card id + is_spell +
+                         0-10  status: power, toughness, tapped, attacking, blocking,
+                               sickness, damage, controller_is_self, is_creature,
+                               is_land, loyalty
+                         11    p1p1_net (signed, /10)
+                         12    other_counters (/10)
+                         13-16 entity refs (normalized (idx+1)/108): attached_to,
+                               attached_by, attack_target, blocking_target
+                         17    is_blocked
+                         18    is_phased_out
+                         19-34 keyword multi-hot (N_OBS_KEYWORDS = 16)
+                         35    card id (LAST)
+  obs[3492:3936]       12 stack slots × 37 floats (controller_is_self + card id +
+                         is_spell + x_or_amount/10 + 7 cast qualifiers +
                          chosen-mode multi-hot(6) + 4 announced-target sub-slots ×
-                         [present, is_player, controller_is_self, card id])
-  obs[1488:1616]      128 graveyard slots × 1 float (card id)
+                         [present, is_player, controller_is_self, slot_ref, card id])
+  obs[3936:4064]      128 graveyard slots × 1 float (card id, recency-ordered)
                          slots 0-63: self; slots 64-127: opponent
-  obs[1616:1626]       10 hand slots    × 1 float  (card id)
-  obs[1626:2138]      128 action history entries × 4 floats (newest first)
+  obs[4064:4074]       10 hand slots    × 1 float  (card id)
+  obs[4074:4586]      128 action history entries × 4 floats (newest first)
                          per entry: category_norm, card_id_norm, is_self, turn/50
-  obs[2138:2142]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-  obs[2142:2145]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-  obs[2145]            current game turn / 50
-  obs[2146:2151]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
-  obs[2151:3175]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
-  obs[3175:3185]       10 known opponent-hand slots × 1 float (card id)
-  obs[3185:3187]       pending-decision context (source card id + ctrl_is_self)
-  obs[3187:]           action metadata (cats|ids|ctrl|zone) + cost features
-                         (appended by env.py)
+  obs[4586:4590]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+  obs[4590:4593]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+  obs[4593]            current game turn / 50
+  obs[4594:4599]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
+  obs[4599:5623]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
+  obs[5623:5633]       10 known opponent-hand slots × 1 float (card id)
+  obs[5633:5635]       pending-decision context (source card id + ctrl_is_self)
+  obs[5635:5654]       global extras (self/opp lands played, viewer_has_priority,
+                         self/opp monarch, city's blessing, revolt, pending extra
+                         turns, is_day, is_night, MandatoryChoice one-hot(6))
+  obs[5654:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
+                         (appended by env.py; refs are normalized entity-slot
+                         references, (idx+1)/108 with 0.0 = none)
 """
 
 from functools import partial
@@ -58,9 +72,9 @@ except ImportError:
 # decode the per-action category-norm floats back to integer category ids for the
 # per-action logit head. Same source of truth env.py uses for the action block.
 try:
-    from _enums import ACTION_CATEGORY_MAX
+    from _enums import ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES
 except ImportError:
-    from train._enums import ACTION_CATEGORY_MAX
+    from train._enums import ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES
 
 
 def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -95,15 +109,21 @@ def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
 # (_GLOBAL_SIZE is derived from env._GLOBAL_SIZE just below, after that import.)
 
 _PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
-_PERM_SLOT_SIZE  = 12   # 11 status floats (incl. loyalty) + 1 card id
-_PERM_CARD_OFF   = 11   # card id follows the 11 status floats
+# 11 status (incl. loyalty) + 2 counters + 4 entity refs + is_blocked +
+# is_phased_out + keyword multi-hot + 1 card id (LAST) = 36
+_PERM_SLOT_SIZE  = 19 + N_OBS_KEYWORDS + 1  # 36
+_PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 35 (card id is always LAST)
 
 _STACK_SLOTS      = 12
+_STACK_XAMT_OFF   = 3   # x_or_amount / 10 within a stack slot
+_STACK_QUALS      = 7   # cast qualifiers (is_copy, kicked, flashback, evoke, ...)
 _STACK_MODE_SLOTS = 6   # chosen-mode multi-hot width per stack slot
+_STACK_MODE_OFF   = _STACK_XAMT_OFF + 1 + _STACK_QUALS      # 11
 _STACK_TGT_SLOTS  = 4   # announced-target sub-slots per stack slot
-_STACK_TGT_FIELDS = 4   # present + is_player + ctrl_is_self + card id
-_STACK_TGT_OFF    = 3 + _STACK_MODE_SLOTS  # target sub-slots follow ctrl/id/is_spell + modes
-# controller_is_self(1) + card id(1) + is_spell(1) + modes + target sub-slots (25)
+_STACK_TGT_FIELDS = 5   # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
+_STACK_TGT_OFF    = _STACK_MODE_OFF + _STACK_MODE_SLOTS     # 17
+# ctrl(1) + card id(1) + is_spell(1) + x_or_amount + qualifiers + modes +
+# target sub-slots (37 total)
 _STACK_SLOT_SIZE  = _STACK_TGT_OFF + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 
 _GY_SLOTS        = 128  # 64 self + 64 opponent
@@ -128,19 +148,21 @@ _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 #   cats[MAX_ACTIONS] (category/ACTION_CATEGORY_MAX) | ids[MAX_ACTIONS] (norm card
 #   id of the action's referenced entity — e.g. a target's card) | ctrl[MAX_ACTIONS]
 #   (controller_is_self) | zone[MAX_ACTIONS] (ActionRefZone/REF_ZONE_MAX — which
-#   zone/side the entity lives in). When per_action_head=True the extractor encodes
-#   each slot (category embed + target-card embed + ctrl + zone embed) into a
-#   per-action feature so the policy can score "target my own permanent" against
-#   that action's OWN features instead of a flat positional Linear. See
-#   PerActionMaskablePolicy.
+#   zone/side the entity lives in) | refs[MAX_ACTIONS] (normalized entity-slot ref
+#   (idx+1)/N_ENTITY_REF_SLOTS: 0-47 self perm, 48-95 opp perm, 96-107 stack,
+#   0.0 = none). When per_action_head=True the extractor encodes each slot
+#   (category embed + target-card embed + ctrl + zone embed + the GATHERED
+#   board/stack embedding of the referenced entity) into a per-action feature so
+#   the policy can score "target THIS specific permanent" against that action's
+#   OWN features instead of a flat positional Linear. See PerActionMaskablePolicy.
 # MAX_ACTIONS and STATE_SIZE come from env.py (single source of truth for the
 # action-block layout the engine emits).
 try:
     from env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
-                     _GLOBAL_SIZE as _ENV_GLOBAL_SIZE)
+                     _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS)
 except ImportError:
     from train.env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
-                           _GLOBAL_SIZE as _ENV_GLOBAL_SIZE)
+                           _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS)
 _GLOBAL_SIZE = _ENV_GLOBAL_SIZE   # header width (single source of truth: env.py)
 try:
     from _enums import REF_ZONE_MAX, N_REF_ZONES
@@ -152,33 +174,39 @@ _PER_ACTION_DIM    = 32   # per-action feature width fed to the action scorer
 _HIST_RECENT_K     = 16   # most-recent history entries embedded per-entry
 
 _PERM_START  = _GLOBAL_SIZE                                    # 36
-_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 1188
-_STACK_START = _PERM_END                                       # 1188
-_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 1488
-_GY_START    = _STACK_END                                      # 1488
-_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 1616
-_HAND_START  = _GY_END                                         # 1616
-_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 1626
-_HIST_START  = _HAND_END                                       # 1626
-_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 2138
-# obs[2138:2142] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-# obs[2142:2145] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-_MATCH_CTX_START      = _HIST_END                              # 2138
-_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 2142 (library ctx start)
-_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 2145 (current turn idx)
-_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 2145
-_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 2146
-_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 2151
-_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 2151
-_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 3175
-_OPP_KNOWN_HAND_START = _REVEALED_END
-_OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
+_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 3492
+_STACK_START = _PERM_END                                       # 3492
+_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 3936
+_GY_START    = _STACK_END                                      # 3936
+_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 4064
+_HAND_START  = _GY_END                                         # 4064
+_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 4074
+_HIST_START  = _HAND_END                                       # 4074
+_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 4586
+# obs[4586:4590] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+# obs[4590:4593] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+_MATCH_CTX_START      = _HIST_END                              # 4586
+_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 4590 (library ctx start)
+_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 4593 (current turn idx)
+_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 4593
+_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 4594
+_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 4599
+_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 4599
+_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 5623
+_OPP_KNOWN_HAND_START = _REVEALED_END                         # 5623
+_OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 5633
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (sentinel = none) + its controller-is-viewer flag.
-_PENDING_START        = _OPP_KNOWN_HAND_END
+_PENDING_START        = _OPP_KNOWN_HAND_END                   # 5633
 _PENDING_SIZE         = 2
-_PENDING_END          = _PENDING_START + _PENDING_SIZE
-_STATE_END            = _PENDING_END
+_PENDING_END          = _PENDING_START + _PENDING_SIZE        # 5635
+# Global extras (machine_io.h [5635:5654]): self/opp lands played, priority,
+# monarch, city's blessing, revolt, pending extra turns, day/night flags, plus
+# the MandatoryChoice one-hot. Cheap scalar facts — passed through raw.
+_EXTRAS_START         = _PENDING_END                          # 5635
+_EXTRAS_SIZE          = 13 + N_MANDATORY_CHOICES              # 19
+_EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE          # 5654
+_STATE_END            = _EXTRAS_END
 # obs[_STATE_END:] = action metadata + cost features appended by env.py
 # Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE).
 assert _STATE_END == _ENV_STATE_SIZE, (_STATE_END, _ENV_STATE_SIZE)
@@ -195,19 +223,22 @@ class CardGameExtractor(BaseFeaturesExtractor):
     size.
 
     Three independent encoders cover the slot formats:
-      perm_encoder   (11 status + card_embed → embed_dim): permanents
-      stack_encoder  (20 scalars + card_embed + target-embed mean → embed_dim//2):
-                     stack items with their announced modes/targets
+      perm_encoder   (35 status/counter/ref/keyword floats + card_embed →
+                     embed_dim): permanents (entity refs enter as raw
+                     normalized floats in v1)
+      stack_encoder  (32 scalars + card_embed + target-embed mean → embed_dim//2):
+                     stack items with x/qualifiers and announced modes/targets
       entity_encoder (card_embed → embed_dim): graveyard, hand, known top-library
 
     Empty slots (id sentinel) are masked out of the perm / stack / graveyard /
     hand pooling so they neither dilute the mean nor pin the max.
 
     Output fed into the policy MLP head:
-      global(34) + hist(512 raw) + hist_recent(K × (cat_emb+card_emb+2) embedded) +
+      global(36) + hist(512 raw) + hist_recent(K × (cat_emb+card_emb+2) embedded) +
       meta_ctx(8) + known_top_lib_agg(embed) + revealed_agg(embed) +
       pending_feat(card_emb+1: what's asking for the current choice) +
-      action_extras(action metadata cats|ids|ctrl|zone + cost feats) +
+      extras(19 raw: lands played, priority, monarch, ..., MandatoryChoice one-hot) +
+      action_extras(action metadata cats|ids|ctrl|zone|refs + cost feats) +
       perm_agg(embed*2: masked mean+max) + stack_agg(embed//2 * 2) +
       graveyard_agg(embed*2: masked mean+max) + hand_agg(embed*2: masked mean+max) +
       opp_known_hand_agg(embed*2: masked mean+max)
@@ -235,7 +266,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim                                  # known-top library mean
             + embed_dim                                  # opponent revealed-cards multi-hot
             + card_embed_dim + 1                         # pending-decision source embed + ctrl flag
-            + (observation_space.shape[0] - _STATE_END)  # action extras
+            + _EXTRAS_SIZE                               # 19 global extras (raw passthrough)
+            + (observation_space.shape[0] - _STATE_END)  # action extras (5 blocks incl. refs + costs)
             + embed_dim * 2                              # perm masked mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
             + embed_dim * 2                              # graveyard masked-mean + max
@@ -259,7 +291,9 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # real ids 0..N_CARD_TYPES-1 map to rows 1..N_CARD_TYPES.
         self.card_emb = nn.Embedding(N_CARD_TYPES + 1, card_embed_dim, padding_idx=0)
 
-        # Encoder for permanent slots (11 status floats + card embedding)
+        # Encoder for permanent slots (35 non-card floats + card embedding).
+        # Status, counters, is_blocked/is_phased_out, and the keyword multi-hot
+        # are scalars; the 4 entity refs enter as raw normalized floats (v1).
         self.perm_encoder = nn.Sequential(
             nn.Linear(_PERM_CARD_OFF + card_embed_dim, embed_dim),
             nn.ReLU(),
@@ -267,11 +301,13 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
-        # Encoder for stack slots: controller_is_self + is_spell, chosen-mode multi-hot,
-        # per-target scalar flags (present/is_player/ctrl_is_self × 4 sub-slots), the
-        # object's card embedding, and the masked mean of its announced targets' card
-        # embeddings.
-        _stack_scalars = 2 + _STACK_MODE_SLOTS + _STACK_TGT_SLOTS * (_STACK_TGT_FIELDS - 1)
+        # Encoder for stack slots: controller_is_self + is_spell, x_or_amount,
+        # cast qualifiers, chosen-mode multi-hot, per-target scalar flags
+        # (present/is_player/ctrl_is_self/slot_ref × 4 sub-slots), the object's
+        # card embedding, and the masked mean of its announced targets' card
+        # embeddings.  2 + 1 + 7 + 6 + 4*4 = 32 scalars.
+        _stack_scalars = (2 + 1 + _STACK_QUALS + _STACK_MODE_SLOTS
+                          + _STACK_TGT_SLOTS * (_STACK_TGT_FIELDS - 1))
         self.stack_encoder = nn.Sequential(
             nn.Linear(_stack_scalars + 2 * card_embed_dim, embed_dim),
             nn.ReLU(),
@@ -300,13 +336,16 @@ class CardGameExtractor(BaseFeaturesExtractor):
         self.action_cat_emb = nn.Embedding(ACTION_CATEGORY_MAX + 1, _ACTION_CAT_EMBED)
 
         # Per-action encoder (opt-in): category embed + referenced-card embed +
-        # controller_is_self + zone_ref embed → a per-action feature. Shares
-        # self.card_emb for the target card identity so a target land's id is
-        # embedded, not a raw float.
+        # controller_is_self + zone_ref embed + the gathered board/stack embedding
+        # of the action's referenced entity (via the refs block) → a per-action
+        # feature. Shares self.card_emb for the target card identity so a target
+        # land's id is embedded, not a raw float.
+        self._embed_dim = embed_dim
         if per_action_head:
             self.zone_emb = nn.Embedding(N_REF_ZONES, _REF_ZONE_EMBED)
             self.action_encoder = nn.Sequential(
-                nn.Linear(_ACTION_CAT_EMBED + card_embed_dim + 1 + _REF_ZONE_EMBED,
+                nn.Linear(_ACTION_CAT_EMBED + card_embed_dim + 1 + _REF_ZONE_EMBED
+                          + embed_dim,
                           embed_dim),
                 nn.ReLU(),
                 nn.Linear(embed_dim, self.per_action_dim),
@@ -330,7 +369,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
         meta_ctx      = obs[:, _HIST_END:_KNOWN_TOP_LIB_START]  # match ctx + library ctx + current turn (8)
         revealed      = obs[:, _REVEALED_START:_REVEALED_END]   # opponent revealed-cards multi-hot
         pending       = obs[:, _PENDING_START:_PENDING_END]     # pending-decision source id + ctrl flag
-        action_extras = obs[:, _STATE_END:]                     # action cats + card IDs + cost features
+        extras        = obs[:, _EXTRAS_START:_EXTRAS_END]       # 19 global extras (raw passthrough)
+        action_extras = obs[:, _STATE_END:]                     # action cats|ids|ctrl|zone|refs + cost features
 
         # Embedded recent history: card ids as raw floats are unlearnable (vocab
         # order is meaningless), so the K most recent entries get their card id
@@ -364,16 +404,19 @@ class CardGameExtractor(BaseFeaturesExtractor):
         perm_in = torch.cat([perms[:, :, :_PERM_CARD_OFF], perm_card_emb], dim=-1)
 
         stk_card_emb, stk_present = self._embed_ids(stack[:, :, 1])
-        # Announced-target sub-slots: (B, 12, 4, 4) of [present, is_player, ctrl, card id].
+        # Announced-target sub-slots: (B, 12, 4, 5) of
+        # [present, is_player, ctrl, slot_ref, card id].
         stk_tgts = stack[:, :, _STACK_TGT_OFF:].reshape(
             -1, _STACK_SLOTS, _STACK_TGT_SLOTS, _STACK_TGT_FIELDS)
-        stk_tgt_emb, _ = self._embed_ids(stk_tgts[:, :, :, 3])       # (B, 12, 4, card_embed)
+        stk_tgt_emb, _ = self._embed_ids(stk_tgts[:, :, :, _STACK_TGT_FIELDS - 1])  # (B, 12, 4, card_embed)
         stk_tgt_mask = stk_tgts[:, :, :, 0:1]                        # present flag
         stk_tgt_agg = (stk_tgt_emb * stk_tgt_mask).sum(2) / stk_tgt_mask.sum(2).clamp(min=1.0)
-        stk_modes = stack[:, :, 3:_STACK_TGT_OFF]                    # chosen-mode multi-hot
-        stk_tgt_scalars = stk_tgts[:, :, :, :3].reshape(-1, _STACK_SLOTS, _STACK_TGT_SLOTS * 3)
-        stk_in = torch.cat([stack[:, :, 0:1], stack[:, :, 2:3], stk_modes, stk_tgt_scalars,
-                            stk_card_emb, stk_tgt_agg], dim=-1)
+        stk_xquals = stack[:, :, _STACK_XAMT_OFF:_STACK_MODE_OFF]    # x_or_amount + 7 qualifiers
+        stk_modes = stack[:, :, _STACK_MODE_OFF:_STACK_TGT_OFF]      # chosen-mode multi-hot
+        stk_tgt_scalars = stk_tgts[:, :, :, :_STACK_TGT_FIELDS - 1].reshape(
+            -1, _STACK_SLOTS, _STACK_TGT_SLOTS * (_STACK_TGT_FIELDS - 1))
+        stk_in = torch.cat([stack[:, :, 0:1], stack[:, :, 2:3], stk_xquals, stk_modes,
+                            stk_tgt_scalars, stk_card_emb, stk_tgt_agg], dim=-1)
 
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
         hand_emb_in, hand_present = self._embed_ids(hand[:, :, 0])
@@ -401,28 +444,47 @@ class CardGameExtractor(BaseFeaturesExtractor):
         revealed_agg = self.revealed_encoder(revealed)  # (B, embed) dense multi-hot encoding
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
-                          revealed_agg, pending_feat, action_extras,
+                          revealed_agg, pending_feat, extras, action_extras,
                           perm_agg, stk_agg, gy_agg, hand_agg, opp_hand_agg], dim=-1)
         if not self.per_action_head:
             return base
 
         # Encode each candidate action from its own (category, referenced-card,
-        # controller, zone_ref) tuple. The action block is the first 4*MAX_ACTIONS
-        # floats of action_extras: cats | ids | ctrl | zone. Appended flat; sliced
-        # back out by the policy's action scorer. Padded slots (beyond num_choices)
-        # are harmless — their logits are masked out by MaskablePPO's action mask
-        # downstream.
+        # controller, zone_ref, referenced-entity embedding) tuple. The action
+        # block is the first 5*MAX_ACTIONS floats of action_extras:
+        # cats | ids | ctrl | zone | refs. Appended flat; sliced back out by the
+        # policy's action scorer. Padded slots (beyond num_choices) are harmless —
+        # their logits are masked out by MaskablePPO's action mask downstream.
         a0 = _STATE_END
         cats = obs[:, a0:a0 + _MAX_ACTIONS]
         act_ids = obs[:, a0 + _MAX_ACTIONS:a0 + 2 * _MAX_ACTIONS]
         ctrl = obs[:, a0 + 2 * _MAX_ACTIONS:a0 + 3 * _MAX_ACTIONS]
         zone = obs[:, a0 + 3 * _MAX_ACTIONS:a0 + 4 * _MAX_ACTIONS]
+        refs = obs[:, a0 + 4 * _MAX_ACTIONS:a0 + 5 * _MAX_ACTIONS]
         cat_idx = torch.round(cats * ACTION_CATEGORY_MAX).long().clamp_(0, ACTION_CATEGORY_MAX)
         cat_e = self.action_cat_emb(cat_idx)                 # (B, A, cat_embed)
         act_id_e, _ = self._embed_ids(act_ids)               # (B, A, card_embed)
         zone_idx = torch.round(zone * REF_ZONE_MAX).long().clamp_(0, REF_ZONE_MAX)
         zone_e = self.zone_emb(zone_idx)                     # (B, A, zone_embed)
-        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1), zone_e], dim=-1)
+
+        # Gather each action's referenced entity's ENCODED embedding via the
+        # unified ref space (0-47 self perm, 48-95 opp perm, 96-107 stack). The
+        # stack embeddings are half-width, so zero-pad them up to embed_dim, then
+        # append a zeros row as the "no reference" sentinel (ref 0.0 → index 108).
+        E = self._embed_dim
+        stk_emb_pad = torch.cat(
+            [stk_emb, stk_emb.new_zeros(stk_emb.shape[0], _STACK_SLOTS,
+                                        E - stk_emb.shape[-1])], dim=-1)
+        ent_table = torch.cat([perm_emb, stk_emb_pad], dim=1)          # (B, 108, E)
+        ent_table = torch.cat(
+            [ent_table, ent_table.new_zeros(ent_table.shape[0], 1, E)], dim=1)  # (B, 109, E)
+        ref_idx = torch.round(refs * N_ENTITY_REF_SLOTS).long() - 1    # -1 = none
+        ref_idx = torch.where(ref_idx < 0, ref_idx.new_full((), N_ENTITY_REF_SLOTS),
+                              ref_idx).clamp_(0, N_ENTITY_REF_SLOTS)   # none → zeros row
+        ref_e = torch.gather(ent_table, 1,
+                             ref_idx.unsqueeze(-1).expand(-1, -1, E))  # (B, A, E)
+
+        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1), zone_e, ref_e], dim=-1)
         pa = self.action_encoder(pa_in)                      # (B, A, per_action_dim)
         return torch.cat([base, pa.reshape(pa.shape[0], -1)], dim=-1)
 

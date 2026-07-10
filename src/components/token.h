@@ -16,6 +16,10 @@
 // They have no CardData. When a token leaves the battlefield it is destroyed entirely.
 struct Token {
     std::string name = "";
+    // Token SCRIPT filename stem (e.g. "w_1_1_cat", "c_a_clue_draw"), set by
+    // parse_token_script. Keys the ML token-identity lookup (token_script_to_index in
+    // card_vocab.h) — display names collide across scripts, script stems do not.
+    std::string script_name = "";
     std::set<Type> types;
     std::vector<Ability> abilities;    // triggered abilities (e.g. Prowess)
     // Continuous static abilities from the token script's S: lines (e.g. the Urza's Saga

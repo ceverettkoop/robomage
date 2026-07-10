@@ -11,8 +11,8 @@ Two coordinate systems appear here:
   * `state` — the first STATE_SIZE floats of an observation (the perspective-
     normalised game state). All zone decoders below operate on `state`.
   * `obs`   — the full observation: `state` followed by the per-action metadata
-    (categories, card ids, controller flags). The `action_*` helpers read that
-    appended block.
+    (categories, card ids, controller flags, zone refs, entity-slot refs). The
+    `action_*` helpers read that appended block.
 """
 
 import numpy as np
@@ -20,7 +20,10 @@ import numpy as np
 from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
                  _GY_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
+                 _PERM_SLOTS, _PERM_CARD_OFF, N_ENTITY_REF_SLOTS,
                  _STACK_SLOT_SIZE, _STACK_SLOTS, _STACK_MODE_SLOTS,
+                 _STACK_XAMT_OFF, _STACK_QUAL_START, _STACK_QUALS,
+                 _STACK_MODE_START, _STACK_TGT_START,
                  _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
                  _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
@@ -29,12 +32,21 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
                  _IS_ACTIVE_IDX, _SELF_IS_A_IDX, _STACK_SIZE_IDX,
+                 _OFF_P1P1_NET, _OFF_OTHER_COUNTERS, _OFF_ATTACHED_TO,
+                 _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
+                 _OFF_IS_BLOCKED, _OFF_IS_PHASED_OUT, _OFF_KEYWORDS_START,
+                 _EXTRAS_LANDS_SELF, _EXTRAS_LANDS_OPP, _EXTRAS_HAS_PRIORITY,
+                 _EXTRAS_MONARCH_SELF, _EXTRAS_MONARCH_OPP,
+                 _EXTRAS_BLESSING_SELF, _EXTRAS_BLESSING_OPP,
+                 _EXTRAS_REVOLT_SELF, _EXTRAS_REVOLT_OPP,
+                 _EXTRAS_EXTRA_TURNS_SELF, _EXTRAS_EXTRA_TURNS_OPP,
+                 _EXTRAS_IS_DAY, _EXTRAS_IS_NIGHT, _EXTRAS_MC_ONEHOT_START,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
                         _CARD_COST_MATRIX, _LAND_VOCAB_IDS)
 
 # ── Engine constants (card identity is a single normalized id float per slot) ──
-STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + modes + targets (25)
+STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + x/quals + modes + targets (37)
 GY_SLOT_SIZE = _GY_SLOT_SIZE                       # card-id only
 _OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE      # opp graveyard begins after 64 self slots
 
@@ -49,7 +61,9 @@ _IDX_SELF_WINS   = _MATCH_CTX_START + 1            # self_match_wins / 2
 _IDX_OPP_WINS    = _MATCH_CTX_START + 2            # opp_match_wins  / 2
 _IDX_SIDEBOARD   = _MATCH_CTX_START + 3            # is_sideboard_phase (0/1)
 
-# Permanent slot field offsets
+# Permanent slot field offsets (src/machine_io.h perm-slot layout; the enriched
+# fields at 11-18, the keyword multi-hot at 19-34 and the card id at 35 are
+# imported from env.py above — _OFF_P1P1_NET .. _OFF_KEYWORDS_START).
 _OFF_POWER = 0
 _OFF_TOUGHNESS = 1
 _OFF_TAPPED = 2
@@ -61,7 +75,12 @@ _OFF_CTRL = 7
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND = 9
 _OFF_LOYALTY = 10                                  # planeswalker loyalty (loyalty/10)
-_OFF_CARD_ID = 11                                  # offset of the card-id float within a permanent slot
+_OFF_CARD_ID = _PERM_CARD_OFF                      # card-id float, always LAST in the slot (35)
+
+# Stack-slot cast-qualifier display names, in serialized order (the stack slot's
+# [4-10] flags; see src/machine_io.h). All 0.0 for abilities.
+_STACK_QUAL_NAMES = ("copy", "kicked", "flashback", "evoke", "escape",
+                     "offspring", "impending")
 
 _NULL_SENTINEL = _ACTION_CARD_ID_NULL              # -1.0 / N_CARD_TYPES
 _TOKEN_IDX = N_CARD_TYPES - 1
@@ -69,10 +88,16 @@ _TOKEN_IDX = N_CARD_TYPES - 1
 # Action-metadata categories that constitute a mandatory attacker/blocker loop.
 MANDATORY_CATS = frozenset({2, 3, 4, 5})
 
+# Categories whose choice references a specific board/stack entity, where an
+# "@slotN" suffix disambiguates same-named cards: select attacker/blocker,
+# activate, target, pay cost.
+_SLOT_REF_CATS = frozenset({2, 4, 6, 8, 22})
+
 # Action-category / step / zone-ref display names are generated from the C++
 # enums by train/gen_enums.py — the single source of truth for both the integer
 # values and these names. Re-run that script after changing the C++ enums.
-from _enums import _CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX  # noqa: E402
+from _enums import (_CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX,  # noqa: E402
+                    _MC_NAMES, _OBS_KEYWORDS)
 
 _MANA_COLORS = ("W", "U", "B", "R", "G", "C")
 
@@ -173,6 +198,42 @@ def onehot_to_index(state, base):
     """Decode the card-id float at `base` to its vocab index, or -1 if empty."""
     idx = _slot_card_idx(state, base)
     return idx if idx >= 0 else -1
+
+
+# ── Entity-slot references ────────────────────────────────────────────────────
+# Unified viewer-relative slot space (src/machine_io.h norm_ref): 0-47 self perm
+# slots, 48-95 opp perm slots, 96-107 stack slots (0 = top), -1 = none. In the
+# float state vector (and the obs action refs block) a ref is normalized
+# (idx + 1) / N_ENTITY_REF_SLOTS, so 0.0 is the "none" sentinel.
+
+def decode_slot_ref(val):
+    """Decode a normalized entity-slot ref float to its slot index (-1 = none)."""
+    return int(round(float(val) * N_ENTITY_REF_SLOTS)) - 1
+
+
+def slot_ref_card_name(state, ref):
+    """Resolve an entity-slot ref to the referenced slot's card name, or None.
+
+    Reads the perm/stack sections of `state`; an out-of-range ref or an empty
+    referenced slot yields None."""
+    if ref < 0:
+        return None
+    if ref < _PERM_SLOTS:                      # self permanent slot
+        base = _SELF_PERM_START + ref * PERM_SLOT_SIZE + _OFF_CARD_ID
+    elif ref < 2 * _PERM_SLOTS:                # opp permanent slot
+        base = _OPP_PERM_START + (ref - _PERM_SLOTS) * PERM_SLOT_SIZE + _OFF_CARD_ID
+    elif ref < N_ENTITY_REF_SLOTS:             # stack slot (card id at offset 1)
+        base = _STACK_START + (ref - 2 * _PERM_SLOTS) * STACK_SLOT_SIZE + 1
+    else:
+        return None
+    return onehot_to_card(state, base)
+
+
+def _ref_desc(state, ref):
+    """Compact display for a slot ref: the referenced card's name when it
+    resolves, else "slot N"."""
+    name = slot_ref_card_name(state, ref)
+    return name if name is not None else f"slot {ref}"
 
 
 # Border colors by MTG color, for TUI card rendering. Black renders as a muted
@@ -391,6 +452,38 @@ def _decode_permanents(state, start, count=48, counters=None, token_names=None):
         loyalty = int(round(state[base + _OFF_LOYALTY] * 10))
         if loyalty != 0:
             p["loyalty"] = loyalty
+        # Enriched fields (only non-default values are recorded, matching the
+        # status-flag style above so fmt_perm stays compact).
+        p1p1 = int(round(state[base + _OFF_P1P1_NET] * 10))
+        if p1p1 != 0:
+            p["p1p1"] = p1p1                      # net +1/+1 counters, signed
+        other_ctrs = int(round(state[base + _OFF_OTHER_COUNTERS] * 10))
+        if other_ctrs != 0:
+            p["other_counters"] = other_ctrs
+        ref = decode_slot_ref(state[base + _OFF_ATTACHED_TO])
+        if ref >= 0:                              # equipment/aura: its host
+            p["attached_to"] = _ref_desc(state, ref)
+            p["attached_to_slot"] = ref
+        ref = decode_slot_ref(state[base + _OFF_ATTACHED_BY])
+        if ref >= 0:                              # host: its equipment/aura
+            p["attached_by"] = _ref_desc(state, ref)
+            p["attached_by_slot"] = ref
+        ref = decode_slot_ref(state[base + _OFF_ATTACK_TGT])
+        if ref >= 0:                              # attacked planeswalker (else: the player)
+            p["attack_target"] = _ref_desc(state, ref)
+            p["attack_target_slot"] = ref
+        ref = decode_slot_ref(state[base + _OFF_BLOCKING_TGT])
+        if ref >= 0:                              # the attacker this blocker blocks
+            p["blocking_target"] = _ref_desc(state, ref)
+            p["blocking_target_slot"] = ref
+        if state[base + _OFF_IS_BLOCKED] > 0.5:
+            p["blocked"] = True                   # attacker was blocked (CR 509.1h)
+        if state[base + _OFF_IS_PHASED_OUT] > 0.5:
+            p["phased_out"] = True
+        kws = [_OBS_KEYWORDS[k] for k in range(len(_OBS_KEYWORDS))
+               if state[base + _OFF_KEYWORDS_START + k] > 0.5]
+        if kws:
+            p["keywords"] = kws
         perms.append(p)
     return perms
 
@@ -416,40 +509,52 @@ def _decode_graveyard(state, start):
 
 
 def _decode_stack(state, labels=SELF_OPP_LABELS):
-    """Decode the stack (12 slots x 25: ctrl + card id + is_spell + chosen-mode
-    multi-hot(6) + 4 announced-target sub-slots of [present, is_player, ctrl, card id])."""
+    """Decode the stack (12 slots x 37: ctrl + card id + is_spell + x_or_amount +
+    cast-qualifier flags(7) + chosen-mode multi-hot(6) + 4 announced-target
+    sub-slots of [present, is_player, ctrl, slot_ref, card id])."""
     entries = []
     for i in range(_STACK_SLOTS):
         base = _STACK_START + i * STACK_SLOT_SIZE
         idx = onehot_to_index(state, base + 1)  # skip controller_is_self float
         if idx < 0:
             continue
-        modes = [m for m in range(_STACK_MODE_SLOTS) if state[base + 3 + m] > 0.5]
+        is_spell = state[base + 2] > 0.5
+        x_amt = int(round(state[base + _STACK_XAMT_OFF] * 10))
+        quals = [_STACK_QUAL_NAMES[q] for q in range(_STACK_QUALS)
+                 if state[base + _STACK_QUAL_START + q] > 0.5]
+        modes = [m for m in range(_STACK_MODE_SLOTS)
+                 if state[base + _STACK_MODE_START + m] > 0.5]
         targets = []
         target_refs = []
         for t in range(_STACK_TGT_SLOTS):
-            tbase = base + 3 + _STACK_MODE_SLOTS + t * _STACK_TGT_FIELDS
+            tbase = base + _STACK_TGT_START + t * _STACK_TGT_FIELDS
             if state[tbase] < 0.5:  # present flag
                 continue
             is_self = state[tbase + 2] > 0.5
             is_player = state[tbase + 1] > 0.5
+            slot = decode_slot_ref(state[tbase + 3])   # -1 for players / non-serialized
             ctrl = labels["self"] if is_self else labels["opponent"]
-            tidx = -1 if is_player else onehot_to_index(state, tbase + 3)
+            tidx = -1 if is_player else onehot_to_index(state, tbase + 4)
             if is_player:
                 targets.append(f"{ctrl} (player)")
             else:
                 tname = card_index_to_name(tidx) if tidx >= 0 else "?"
-                targets.append(f"{tname} ({ctrl})")
+                slot_str = f", slot {slot}" if slot >= 0 else ""
+                targets.append(f"{tname} ({ctrl}{slot_str})")
             # Structured form for UIs that highlight the target on the board.
             # `is_self` is viewer-relative (like the rest of the state vector); a
             # mirrored decode must flip it to the human frame at the call site.
+            # `slot` is the target's entity-slot ref (-1 = none/player), which
+            # disambiguates two same-named permanents.
             target_refs.append({"is_player": is_player, "is_self": is_self,
-                                "card_idx": tidx})
+                                "card_idx": tidx, "slot": slot})
         entries.append({
             "name": card_index_to_name(idx),
             "card_idx": idx,
             "controller": labels["self"] if state[base] > 0.5 else labels["opponent"],
-            "is_spell": state[base + 2] > 0.5,
+            "is_spell": is_spell,
+            "x_or_amount": x_amt,  # spell: X paid at cast; ability: its amount
+            "qualifiers": quals,   # set cast-qualifier names (empty = plain cast)
             "modes": modes,       # chosen modal mode indices (empty = not modal)
             "targets": targets,   # announced targets, human-readable
             "target_refs": target_refs,  # structured targets (see note above)
@@ -498,7 +603,55 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
         "pending_decision": _decode_pending_decision(state),
         "match": _decode_match_context(state),
+        "extras": _decode_extras(state),
     }
+
+
+def _decode_extras(state):
+    """Decode the global-extras block into a dict of NON-DEFAULT values only.
+
+    Keys are present only when the value differs from its default (0 / False /
+    priority held), so an empty dict means "nothing notable" and callers can
+    render it compactly. Boolean keys hold True when set; `has_priority` is the
+    one inverted case — it appears (as False) only when the viewer does NOT
+    hold priority. `mandatory_choice` is the pending MandatoryChoice display
+    name (_MC_NAMES; absent when NONE)."""
+    ex = {}
+    lands = int(round(float(state[_EXTRAS_LANDS_SELF]) * 10))
+    if lands:
+        ex["self_lands_played"] = lands
+    lands = int(round(float(state[_EXTRAS_LANDS_OPP]) * 10))
+    if lands:
+        ex["opp_lands_played"] = lands
+    if state[_EXTRAS_HAS_PRIORITY] < 0.5:
+        ex["has_priority"] = False
+    if state[_EXTRAS_MONARCH_SELF] > 0.5:
+        ex["self_monarch"] = True
+    if state[_EXTRAS_MONARCH_OPP] > 0.5:
+        ex["opp_monarch"] = True
+    if state[_EXTRAS_BLESSING_SELF] > 0.5:
+        ex["self_citys_blessing"] = True
+    if state[_EXTRAS_BLESSING_OPP] > 0.5:
+        ex["opp_citys_blessing"] = True
+    if state[_EXTRAS_REVOLT_SELF] > 0.5:
+        ex["self_revolt"] = True
+    if state[_EXTRAS_REVOLT_OPP] > 0.5:
+        ex["opp_revolt"] = True
+    turns = int(round(float(state[_EXTRAS_EXTRA_TURNS_SELF]) * 3))
+    if turns:
+        ex["self_extra_turns"] = turns
+    turns = int(round(float(state[_EXTRAS_EXTRA_TURNS_OPP]) * 3))
+    if turns:
+        ex["opp_extra_turns"] = turns
+    if state[_EXTRAS_IS_DAY] > 0.5:
+        ex["day"] = True
+    if state[_EXTRAS_IS_NIGHT] > 0.5:
+        ex["night"] = True
+    mc_vec = state[_EXTRAS_MC_ONEHOT_START:_EXTRAS_MC_ONEHOT_START + len(_MC_NAMES)]
+    mc = int(np.argmax(mc_vec))
+    if mc > 0 and mc_vec[mc] > 0.5:               # NONE (index 0) is the default
+        ex["mandatory_choice"] = _MC_NAMES[mc]
+    return ex
 
 
 def _decode_match_context(state):
@@ -558,6 +711,18 @@ def action_zone_refs(obs, num_choices=MAX_ACTIONS):
     return np.round(raw * REF_ZONE_MAX).astype(int)
 
 
+def action_slot_refs(obs, num_choices=MAX_ACTIONS):
+    """Integer entity-slot ref per legal action (-1 = no referenced entity).
+
+    Fifth action-metadata block (cats|ids|ctrl|zone|refs): the slot in the
+    unified entity-reference space (0-47 self perms, 48-95 opp perms, 96-107
+    stack) of the choice's source entity, normalized like the in-state ref
+    fields ((idx + 1) / N_ENTITY_REF_SLOTS, 0.0 = none).
+    """
+    raw = obs[STATE_SIZE + 4 * MAX_ACTIONS: STATE_SIZE + 4 * MAX_ACTIONS + num_choices]
+    return (np.round(raw * N_ENTITY_REF_SLOTS) - 1).astype(int)
+
+
 def _ctrl_str(ctrl_val, labels=SELF_OPP_LABELS):
     """Resolve a viewer-relative controller flag to a label word, or None.
 
@@ -576,14 +741,25 @@ def _ctrl_str(ctrl_val, labels=SELF_OPP_LABELS):
     return labels["own"] if v > 0.5 else labels["opp"]
 
 
-def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
+def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS,
+                    slot_ref=-1):
     """Build a concise human-readable action description.
 
     `ctrl_str` is the already-resolved controller word (see `_ctrl_str`) and is
     used verbatim; `labels` is accepted for signature symmetry with the other
     formatters so a caller can pass one label map everywhere — it does not
     re-map an already-resolved `ctrl_str`.
+
+    `slot_ref` is the action's entity-slot ref (see `action_slot_refs`); when
+    it points at a battlefield/stack slot AND the action is one whose entity a
+    caller may need to disambiguate (target / attacker / blocker / activate /
+    pay-cost), an "@slotN" suffix is appended — two same-named permanents are
+    otherwise indistinguishable in the menu.
     """
+    suffix = (f" @slot{slot_ref}"
+              if slot_ref >= 0 and cat in _SLOT_REF_CATS else "")
+    if suffix:
+        return describe_action(cat, card_name, ctrl_str, labels) + suffix
     owner = f" ({ctrl_str})" if ctrl_str else ""
     name = card_name or ""
     if cat == 0:
@@ -635,18 +811,25 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
 
 
 def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
-                   labels=SELF_OPP_LABELS, descriptions=None, zone_refs=None):
+                   labels=SELF_OPP_LABELS, descriptions=None, zone_refs=None,
+                   slot_refs=None):
     """Decode the per-action arrays into a list of dicts.
 
     Each dict: index, category (int), category_name, card (name or None),
     card_idx (vocab index or -1), controller ('own'|'opp'|None), description,
     card_is_public (bool — card identity publicly known, e.g. a revealed tutor),
-    zone_ref (int ActionRefZone of the referenced entity, 0 = none).
+    zone_ref (int ActionRefZone of the referenced entity, 0 = none),
+    slot_ref (int entity-slot ref of the referenced entity, -1 = none).
 
     `zone_refs` is the per-action ActionRefZone array (decode.action_zone_refs /
     env side-channel); it disambiguates a card that appears in two zones at once
     (e.g. a hand card being discarded vs. a same-named battlefield permanent),
     which card_idx + controller alone cannot tell apart.
+
+    `slot_refs` is the per-action entity-slot ref array (decode.action_slot_refs):
+    which battlefield/stack SLOT the choice's source entity occupies, so two
+    same-named permanents are distinguishable. When given, entity-referencing
+    reconstructed descriptions gain an "@slotN" suffix (see `describe_action`).
 
     `public_flags` is the per-action card_is_public array (env._action_public);
     None means "unknown", treated as not-public. `labels` substitutes the
@@ -665,6 +848,8 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
         card_name = card_index_to_name(card_idx) if card_idx >= 0 else None
         ctrl_str = _ctrl_str(float(ctrl[i]), labels)
         is_public = bool(public_flags[i] > 0.5) if public_flags is not None else False
+        slot_ref = (int(slot_refs[i]) if slot_refs is not None
+                    and i < len(slot_refs) else -1)
         engine_desc = (descriptions[i] if descriptions is not None
                        and i < len(descriptions) and descriptions[i].strip() else None)
         if engine_desc is not None:
@@ -673,7 +858,8 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
             # Mulligan query: index 0 = keep, index 1 = mulligan.
             desc = "Keep hand" if i == 0 else "Mulligan"
         else:
-            desc = describe_action(cat, card_name, ctrl_str, labels)
+            desc = describe_action(cat, card_name, ctrl_str, labels,
+                                   slot_ref=slot_ref)
         actions.append({
             "index": i,
             "category": cat,
@@ -684,6 +870,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
             "description": desc,
             "card_is_public": is_public,
             "zone_ref": int(zone_refs[i]) if zone_refs is not None and i < len(zone_refs) else 0,
+            "slot_ref": slot_ref,
         })
     return actions
 
@@ -700,7 +887,8 @@ def decode_actions_from_obs(obs, num_choices, public_flags=None,
     return decode_actions(action_categories(obs, num_choices),
                           action_card_ids(obs), action_ctrls(obs), num_choices,
                           public_flags, labels, descriptions,
-                          zone_refs=action_zone_refs(obs, num_choices))
+                          zone_refs=action_zone_refs(obs, num_choices),
+                          slot_refs=action_slot_refs(obs, num_choices))
 
 
 # ── Decision-type classification (all read the integer category array) ────────
@@ -741,6 +929,11 @@ def fmt_stack_entry(e):
     """Format a decoded stack-entry dict (from _decode_stack)."""
     kind = "spell" if e["is_spell"] else "ability"
     s = f"{e['name']} ({kind}, {e['controller']})"
+    if e.get("x_or_amount"):
+        s += (f" [X={e['x_or_amount']}]" if e["is_spell"]
+              else f" [amt={e['x_or_amount']}]")
+    if e.get("qualifiers"):
+        s += f" [{','.join(e['qualifiers'])}]"
     if e.get("modes"):
         s += f" [modes {','.join(str(m) for m in e['modes'])}]"
     if e.get("targets"):
@@ -779,6 +972,12 @@ def format_state_lines(gs):
         lines.append(f"Self GY: {', '.join(gs['self_graveyard'])}")
     if gs["opp_graveyard"]:
         lines.append(f"Opp GY:  {', '.join(gs['opp_graveyard'])}")
+    extras = gs.get("extras") or {}
+    if extras:
+        # _decode_extras records only non-default values: a boolean True renders
+        # as its bare key, everything else as key=value.
+        parts = [k if v is True else f"{k}={v}" for k, v in extras.items()]
+        lines.append(f"Extras: {', '.join(parts)}")
     return lines
 
 
@@ -825,15 +1024,36 @@ def fmt_perm(p):
         s += f" [loy {p['loyalty']}]"
     if "counters" in p:
         s += f" [{p['counters']}]"
+    elif "p1p1" in p or "other_counters" in p:
+        # Serialized counter summary (no narrative side-channel available).
+        parts = []
+        if "p1p1" in p:
+            parts.append(f"p1p1 {p['p1p1']:+d}")
+        if "other_counters" in p:
+            parts.append(f"ctrs {p['other_counters']}")
+        s += f" [{', '.join(parts)}]"
+    if "keywords" in p:
+        s += f" [{', '.join(p['keywords'])}]"
+    if "attached_to" in p:
+        s += f" (->{p['attached_to']})"
+    if "attached_by" in p:
+        s += f" (eq:{p['attached_by']})"
     flags = []
     if p.get("tapped"):
         flags.append("T")
     if p.get("attacking"):
-        flags.append("ATK")
+        # Attacking a planeswalker names it; a plain ATK attacks the player.
+        flags.append("ATK" + (f"->{p['attack_target']}"
+                              if "attack_target" in p else ""))
     if p.get("blocking"):
-        flags.append("BLK")
+        flags.append("BLK" + (f"->{p['blocking_target']}"
+                              if "blocking_target" in p else ""))
+    if p.get("blocked"):
+        flags.append("BLOCKED")
     if p.get("summoning_sick"):
         flags.append("SICK")
+    if p.get("phased_out"):
+        flags.append("PHASED")
     if flags:
         s += f" ({','.join(flags)})"
     return s

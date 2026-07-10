@@ -12,6 +12,7 @@ extern "C" {
 // relevant limits, also used in machine_io.h
 #define MAX_BATTLEFIELD_SLOTS 48  // all permanents (creatures + lands + other) per player
 #define MAX_STACK_DISPLAY 12
+#define N_OBS_KEYWORDS 16  // keyword multi-hot width per permanent slot (OBS_KEYWORDS in machine_io.h)
 #define MAX_STACK_MODES 6  // chosen-mode multi-hot width per stack entry
 #define MAX_STACK_TGTS 4   // announced targets serialized per stack entry (truncated)
 #define MAX_GY_SLOTS 64  // per player
@@ -29,6 +30,10 @@ typedef struct PlayerState_tag {
     int mana[6];               // WUBRGC
     int lands_played_this_turn;
     int hand_ct;               // actual hand size
+    bool is_monarch;           // this player is the monarch (CR 725)
+    bool city_blessing;        // this player has the city's blessing (CR 702.131c)
+    bool revolt;               // a permanent this player controlled left the battlefield this turn
+    int  extra_turns_pending;  // extra turns this player has queued (CR 500.7)
 } PlayerState;
 
 typedef struct PermanentState_tag {
@@ -44,6 +49,18 @@ typedef struct PermanentState_tag {
     bool has_summoning_sickness;
     int  damage;
     int  loyalty;                // loyalty counters for planeswalkers (0 for non-planeswalkers)
+    int  p1p1_net;               // net +1/+1 minus -1/-1 counters (signed)
+    int  other_counters;         // total counters of every other kind (excl. P1P1/M1M1/LOYALTY)
+    // Entity-reference slots into the unified viewer-relative slot space (0-47 self
+    // permanents, 48-95 opp permanents, 96-107 stack top-first; -1 = none). See the
+    // entity->slot map in machine_io.cpp and norm_ref in machine_io.h.
+    int  attached_to_ref;        // for equipment/auras: slot of the permanent this is attached to
+    int  attached_by_ref;        // for creatures: slot of the equipment/aura attached to this
+    int  attack_target_ref;      // attacked planeswalker's slot (-1 while attacking a player)
+    int  blocking_target_ref;    // for blockers: slot of the attacker this creature blocks
+    bool is_blocked;             // attacker was blocked at declare-blockers (CR 509.1h)
+    bool is_phased_out;          // phased out (CR 702.26); serialized so the slot stays visible
+    bool keywords[N_OBS_KEYWORDS];  // effective keyword multi-hot (OBS_KEYWORDS order)
     char token_name[PERM_TOKEN_NAME_LEN]; // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
     char counters[PERM_COUNTERS_LEN]; // compact typed-counter summary ("charge:2, +1/+1:3"), empty = none
                                  // (display only — NOT serialized to the ML state vector; emitted as a
@@ -56,6 +73,7 @@ typedef struct StackTarget_tag {
     bool is_player;           // the target is a player (card_vocab_idx = -1 then)
     bool controller_is_self;  // controller of the targeted permanent / the targeted player
                               // himself (owner for a non-permanent card)
+    int  slot_ref;            // target's slot in the unified entity-ref space (-1 = none/player)
     int  card_vocab_idx;      // -1 = player / unknown
 } StackTarget;
 
@@ -63,6 +81,15 @@ typedef struct StackEntry_tag {
     int  card_vocab_idx;  // -1 = unknown/empty
     bool controller_is_self;
     bool is_spell;        // true = card spell on stack; false = triggered/activated ability
+    int  x_or_amount;     // spell: X paid at cast (Spell::x_paid); ability: Ability::amount
+    // Cast qualifiers (public info announced at cast, CR 601.2b/f); all false for abilities.
+    bool is_copy;               // a copy of a spell on the stack (CR 707.10)
+    bool kicked_any;            // any kicker additional cost was paid (CR 702.33d)
+    bool cast_with_flashback;
+    bool cast_with_evoke;
+    bool cast_with_escape;
+    bool cast_with_offspring;
+    bool cast_with_impending;
     bool chosen_modes[MAX_STACK_MODES];  // multi-hot of modal modes announced at cast
                                          // (CR 601.2b); all false when not modal
     StackTarget targets[MAX_STACK_TGTS]; // announced targets in announcement order:
@@ -90,6 +117,8 @@ typedef struct ActionChoice_tag {
     bool          controller_is_self;
     bool          card_is_public;              // card identity is public (revealed) even in a hidden zone
     ActionRefZone zone_ref;
+    int           slot_ref;                    // source entity's slot in the unified entity-ref
+                                               // space (see machine_io.cpp map; -1 = none)
     char          description[MAX_CHOICE_DESC]; //NOT SERIALIZED TO ML
 } ActionChoice;
 
@@ -154,6 +183,11 @@ typedef struct GameState_tag {
     // WHAT is asking for the current choice. card_vocab_idx, -1 = no pending source.
     int  pending_decision_card;
     bool pending_decision_ctrl_is_self;  // pending source's controller == viewer
+
+    // Global extras (serialized at the very end of the state vector)
+    bool is_day;               // game designation is day (CR 731.1)
+    bool is_night;             // game designation is night
+    int  pending_choice_kind;  // MandatoryChoice enum value (NONE = 0)
 } GameState;
 
 #ifdef __cplusplus

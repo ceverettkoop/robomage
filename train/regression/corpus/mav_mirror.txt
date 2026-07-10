@@ -120,6 +120,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Horizon Canopy
   Opp GY:  Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -134,6 +135,7 @@
   Opp:   20 life | mana: empty | hand count: 7
   Self BF:  Horizon Canopy
   Opp GY:  Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -175,6 +177,7 @@
   Self BF:  Savannah
   Opp BF:   Horizon Canopy
   Self GY: Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -188,6 +191,7 @@
   Self BF:  Horizon Canopy
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -203,6 +207,7 @@
   Self BF:  Horizon Canopy
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -222,6 +227,7 @@
   Self BF:  Savannah
   Opp BF:   Horizon Canopy
   Self GY: Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -260,6 +266,7 @@
   Self BF:  Horizon Canopy | Savannah
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)
@@ -280,6 +287,7 @@
   Opp BF:   Savannah
   Self GY: Horizon Canopy
   Opp GY:  Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Endurance (alternate cost)
@@ -294,6 +302,7 @@
   Opp BF:   Savannah
   Self GY: Horizon Canopy
   Opp GY:  Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Exile Green Sun's Zenith
   >> A/A: 0 (Exile Green Sun's Zenith)
@@ -308,10 +317,11 @@
   Step: First Main
   Self:  20 life | mana: empty | hand(5): Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
   Opp:   20 life | mana: empty | hand count: 7
-  Self BF:  Endurance [3/4] (SICK) | Savannah (T)
+  Self BF:  Endurance [3/4] [Reach, Flash] (SICK) | Savannah (T)
   Opp BF:   Savannah
   Self GY: Horizon Canopy
   Opp GY:  Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Endurance (ChangeZoneAll, targeted)
    1: Endurance (evoke: sacrifice)
@@ -324,10 +334,11 @@
   Step: First Main
   Self:  20 life | mana: empty | hand(5): Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath
   Opp:   20 life | mana: empty | hand count: 7
-  Self BF:  Endurance [3/4] (SICK) | Savannah (T)
+  Self BF:  Endurance [3/4] [Reach, Flash] (SICK) | Savannah (T)
   Opp BF:   Savannah
   Self GY: Horizon Canopy
   Opp GY:  Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: No target
    1: Player B (20 life)
@@ -344,10 +355,11 @@
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp:   20 life | mana: empty | hand count: 5
   Self BF:  Savannah
-  Opp BF:   Endurance [3/4] (SICK) | Savannah (T)
+  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Savannah (T)
   Stack: Endurance (ability, opponent) -> Endurance (ability, opponent)
   Self GY: Once Upon a Time
   Opp GY:  Horizon Canopy
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares
@@ -361,10 +373,11 @@
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp:   20 life | mana: empty | hand count: 5
   Self BF:  Savannah
-  Opp BF:   Endurance [3/4] (SICK) | Savannah (T)
+  Opp BF:   Endurance [3/4] [Reach, Flash] (SICK) | Savannah (T)
   Stack: Endurance (ability, opponent) -> Endurance (ability, opponent)
   Self GY: Once Upon a Time
   Opp GY:  Horizon Canopy
+  Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Endurance
   >> B/B: 0 (Endurance)
@@ -396,7 +409,7 @@
   Opp:   23 life | mana: empty | hand count: 5
   Self BF:  Savannah
   Opp BF:   Savannah (T)
-  Self GY: Once Upon a Time, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
   Actions:
    0: Pass priority
@@ -417,8 +430,9 @@
   Opp:   23 life | mana: empty | hand count: 5
   Self BF:  Savannah | Talon Gates of Madara
   Opp BF:   Savannah (T)
-  Self GY: Once Upon a Time, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: No target
   >> B/B: 0 (No target)
@@ -434,8 +448,9 @@
   Opp:   23 life | mana: empty | hand count: 5
   Self BF:  Savannah | Talon Gates of Madara
   Opp BF:   Savannah (T)
-  Self GY: Once Upon a Time, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -450,8 +465,9 @@
   Opp:   23 life | mana: empty | hand count: 5
   Self BF:  Savannah | Talon Gates of Madara
   Opp BF:   Savannah (T)
-  Self GY: Once Upon a Time, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: X = 0
    1: X = 1
@@ -471,8 +487,9 @@
   Self BF:  Savannah (T) | Talon Gates of Madara
   Opp BF:   Savannah (T)
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Once Upon a Time, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -498,7 +515,7 @@
   Self BF:  Savannah
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Once Upon a Time, Swords to Plowshares
+  Opp GY:  Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares
@@ -514,7 +531,7 @@
   Self BF:  Savannah
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Endurance, Horizon Canopy
-  Opp GY:  Once Upon a Time, Swords to Plowshares
+  Opp GY:  Swords to Plowshares, Once Upon a Time
   Actions:
    0: Dryad Arbor
   >> A/A: 0 (Dryad Arbor)
@@ -535,8 +552,9 @@
   Opp:   21 life | mana: empty | hand count: 5
   Self BF:  Savannah (T)
   Opp BF:   Savannah (T) | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Swords to Plowshares
-  Opp GY:  Once Upon a Time, Swords to Plowshares
+  Self GY: Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Once Upon a Time
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -563,8 +581,8 @@
   Opp:   23 life | mana: empty | hand count: 4
   Self BF:  Savannah | Talon Gates of Madara
   Opp BF:   Savannah (T) | Savannah
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -585,8 +603,8 @@
   Opp:   23 life | mana: empty | hand count: 4
   Self BF:  Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
   Opp BF:   Savannah (T) | Savannah
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -603,8 +621,9 @@
   Opp:   23 life | mana: empty | hand count: 4
   Self BF:  Savannah (T) | Sylvan Library | Talon Gates of Madara (T) | Wasteland
   Opp BF:   Savannah (T) | Savannah
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -619,8 +638,9 @@
   Opp:   23 life | mana: empty | hand count: 4
   Self BF:  Savannah (T) | Sylvan Library | Talon Gates of Madara (T) | Wasteland
   Opp BF:   Savannah (T) | Savannah
-  Self GY: Once Upon a Time, Swords to Plowshares
-  Opp GY:  Endurance, Horizon Canopy, Swords to Plowshares
+  Self GY: Swords to Plowshares, Once Upon a Time
+  Opp GY:  Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Savannah
    1: Savannah
@@ -651,8 +671,8 @@
   Opp:   21 life | mana: empty | hand count: 4
   Self BF:  Savannah
   Opp BF:   Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares
-  Opp GY:  Once Upon a Time, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -670,8 +690,9 @@
   Opp:   21 life | mana: empty | hand count: 4
   Self BF:  Savannah | Wasteland
   Opp BF:   Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares
-  Opp GY:  Once Upon a Time, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -688,8 +709,9 @@
   Opp:   21 life | mana: empty | hand count: 4
   Self BF:  Savannah | Wasteland
   Opp BF:   Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares
-  Opp GY:  Once Upon a Time, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: X = 0
    1: X = 1
@@ -707,8 +729,9 @@
   Self BF:  Savannah (T) | Wasteland
   Opp BF:   Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares
-  Opp GY:  Once Upon a Time, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)
@@ -724,8 +747,9 @@
   Self BF:  Savannah (T) | Wasteland
   Opp BF:   Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares
-  Opp GY:  Once Upon a Time, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Savannah
    1: Talon Gates of Madara
@@ -749,8 +773,9 @@
   Self BF:  Savannah (T)
   Opp BF:   Sylvan Library | Talon Gates of Madara (T)
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -783,8 +808,8 @@
   Self BF:  Sylvan Library | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Plains
    1: Green Sun's Zenith
@@ -801,8 +826,8 @@
   Self BF:  Sylvan Library | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Green Sun's Zenith
    1: Swords to Plowshares
@@ -818,8 +843,8 @@
   Self BF:  Sylvan Library | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Pay 4 life
    1: Put on top of library
@@ -836,8 +861,8 @@
   Self BF:  Sylvan Library | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Pay 4 life
    1: Put on top of library
@@ -852,8 +877,8 @@
   Opp:   23 life | mana: empty | hand count: 3
   Self BF:  Sylvan Library | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Pass priority
    1: Play Plains
@@ -870,8 +895,9 @@
   Opp:   23 life | mana: empty | hand count: 3
   Self BF:  Plains | Sylvan Library | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith
@@ -887,8 +913,9 @@
   Opp:   23 life | mana: empty | hand count: 3
   Self BF:  Plains | Sylvan Library | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: X = 0
    1: X = 1
@@ -909,8 +936,9 @@
   Self BF:  Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T)
   Stack: Green Sun's Zenith (spell, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: self_lands_played=1
   Actions:
    0: Fail to find
   >> B/B: 0 (Fail to find)
@@ -934,8 +962,8 @@
   Opp:   13 life | mana: empty | hand count: 5
   Self BF:  Dryad Arbor [1/1] | Savannah
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Cast Scryb Ranger
@@ -951,10 +979,10 @@
   Step: Upkeep
   Self:  23 life | mana: empty | hand(2): Windswept Heath, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -967,10 +995,10 @@
   Step: Draw
   Self:  23 life | mana: empty | hand(3): Ignoble Hierarch, Windswept Heath, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -981,10 +1009,10 @@
   Step: First Main
   Self:  23 life | mana: empty | hand(3): Ignoble Hierarch, Windswept Heath, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -999,10 +1027,11 @@
   Step: First Main
   Self:  23 life | mana: empty | hand(2): Ignoble Hierarch, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] (SICK) | Windswept Heath
+  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Windswept Heath
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1016,10 +1045,11 @@
   Step: First Main
   Self:  23 life | mana: empty | hand(2): Ignoble Hierarch, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] (SICK) | Windswept Heath
+  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Windswept Heath
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Dryad Arbor
    1: Scryb Ranger
@@ -1032,10 +1062,11 @@
   Step: First Main
   Self:  23 life | mana: empty | hand(2): Ignoble Hierarch, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] (SICK) | Windswept Heath
+  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Windswept Heath
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Return Dryad Arbor to hand
    1: Return Savannah to hand
@@ -1049,11 +1080,12 @@
   Step: First Main
   Self:  23 life | mana: empty | hand(3): Dryad Arbor, Ignoble Hierarch, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Savannah (T) | Scryb Ranger [1/1] (SICK) | Windswept Heath
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Windswept Heath
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
   Stack: Scryb Ranger (ability, self) -> Dryad Arbor (self)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Windswept Heath (ChangeZone)
@@ -1070,11 +1102,12 @@
   Step: First Main
   Self:  22 life | mana: empty | hand(3): Dryad Arbor, Ignoble Hierarch, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Self BF:  Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Stack: Windswept Heath (ability, self) -> Scryb Ranger (ability, self) -> Dryad Arbor (self)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Stack: Windswept Heath (ability, self) [amt=1] -> Scryb Ranger (ability, self) -> Dryad Arbor (self)
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
    1: Forest
@@ -1092,10 +1125,11 @@
   Step: First Main
   Self:  22 life | mana: empty | hand(3): Dryad Arbor, Ignoble Hierarch, Windswept Heath
   Opp:   13 life | mana: empty | hand count: 5
-  Self BF:  Forest | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Self BF:  Forest | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Opp BF:   Plains (T) | Sylvan Library | Talon Gates of Madara (T)
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Ignoble Hierarch
@@ -1119,9 +1153,9 @@
   Self:  13 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Wasteland, Windswept Heath
   Opp:   22 life | mana: empty | hand count: 2
   Self BF:  Plains | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest (T) | Ignoble Hierarch [0/1] (SICK) | Savannah (T) | Scryb Ranger [1/1] (SICK)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Opp BF:   Forest (T) | Ignoble Hierarch [0/1] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares
@@ -1135,9 +1169,9 @@
   Self:  13 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Wasteland, Windswept Heath
   Opp:   22 life | mana: empty | hand count: 2
   Self BF:  Plains | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest (T) | Ignoble Hierarch [0/1] (SICK) | Savannah (T) | Scryb Ranger [1/1] (SICK)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Opp BF:   Forest (T) | Ignoble Hierarch [0/1] (SICK) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
+  Self GY: Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Ignoble Hierarch
    1: Scryb Ranger
@@ -1164,10 +1198,11 @@
   Self:  13 life | mana: empty | hand(7): Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Savannah, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 2
   Self BF:  Plains (T) | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: opp_revolt
   Actions:
    0: Savannah
    1: Wooded Foothills
@@ -1182,10 +1217,11 @@
   Self:  13 life | mana: empty | hand(7): Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Savannah, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 2
   Self BF:  Plains (T) | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: opp_revolt
   Actions:
    0: Wooded Foothills
    1: Knight of the Reliquary
@@ -1199,10 +1235,11 @@
   Self:  13 life | mana: empty | hand(7): Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Savannah, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 2
   Self BF:  Plains (T) | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: opp_revolt
   Actions:
    0: Pay 4 life
    1: Put on top of library
@@ -1217,10 +1254,11 @@
   Self:  9 life | mana: empty | hand(7): Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Savannah, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 2
   Self BF:  Plains (T) | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
+  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: opp_revolt
   Actions:
    0: Pay 4 life
    1: Put on top of library
@@ -1234,9 +1272,10 @@
   Self:  5 life | mana: empty | hand(7): Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Savannah, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 2
   Self BF:  Plains (T) | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] (SICK)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Opp BF:   Forest (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK)
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1260,10 +1299,10 @@
   Step: Upkeep
   Self:  22 life | mana: empty | hand(2): Dryad Arbor, Windswept Heath
   Opp:   5 life | mana: empty | hand count: 6
-  Self BF:  Forest | Savannah | Scryb Ranger [1/1]
+  Self BF:  Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1276,10 +1315,10 @@
   Step: Draw
   Self:  22 life | mana: empty | hand(3): Dryad Arbor, Knight of the Reliquary, Windswept Heath
   Opp:   5 life | mana: empty | hand count: 6
-  Self BF:  Forest | Savannah | Scryb Ranger [1/1]
+  Self BF:  Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1290,10 +1329,10 @@
   Step: First Main
   Self:  22 life | mana: empty | hand(3): Dryad Arbor, Knight of the Reliquary, Windswept Heath
   Opp:   5 life | mana: empty | hand count: 6
-  Self BF:  Forest | Savannah | Scryb Ranger [1/1]
+  Self BF:  Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
   Actions:
    0: Pass priority
    1: Play Dryad Arbor
@@ -1308,10 +1347,11 @@
   Step: First Main
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath
   Opp:   5 life | mana: empty | hand count: 6
-  Self BF:  Dryad Arbor [1/1] (SICK) | Forest | Savannah | Scryb Ranger [1/1]
+  Self BF:  Dryad Arbor [1/1] (SICK) | Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scryb Ranger (Untap)
@@ -1324,10 +1364,11 @@
   Step: First Main
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath
   Opp:   5 life | mana: empty | hand count: 6
-  Self BF:  Dryad Arbor [1/1] (SICK) | Forest | Savannah | Scryb Ranger [1/1]
+  Self BF:  Dryad Arbor [1/1] (SICK) | Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Dryad Arbor
    1: Scryb Ranger
@@ -1340,10 +1381,11 @@
   Step: First Main
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath
   Opp:   5 life | mana: empty | hand count: 6
-  Self BF:  Dryad Arbor [1/1] (SICK) | Forest | Savannah | Scryb Ranger [1/1]
+  Self BF:  Dryad Arbor [1/1] (SICK) | Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1
   Actions:
    0: Return Dryad Arbor to hand
    1: Return Forest to hand
@@ -1360,10 +1402,11 @@
   Step: Declare Atk
   Self:  22 life | mana: empty | hand(3): Dryad Arbor, Knight of the Reliquary, Windswept Heath
   Opp:   5 life | mana: empty | hand count: 6
-  Self BF:  Forest | Savannah | Scryb Ranger [1/1]
+  Self BF:  Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash]
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Scryb Ranger [1/1]
    1: Confirm attackers
@@ -1378,10 +1421,11 @@
   Step: Declare Atk
   Self:  22 life | mana: empty | hand(3): Dryad Arbor, Knight of the Reliquary, Windswept Heath
   Opp:   5 life | mana: empty | hand count: 6
-  Self BF:  Forest | Savannah | Scryb Ranger [1/1] (ATK)
+  Self BF:  Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash] (ATK)
   Opp BF:   Plains (T) | Savannah | Sylvan Library | Talon Gates of Madara
-  Self GY: Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
-  Opp GY:  Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
+  Self GY: Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
+  Opp GY:  Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1410,10 +1454,10 @@
   Self:  4 life | mana: empty | hand(9): Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 3
   Self BF:  Plains | Savannah | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest | Savannah | Scryb Ranger [1/1] (T)
+  Opp BF:   Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Horizon Canopy
    1: Scythecat Cub
@@ -1428,10 +1472,10 @@
   Self:  4 life | mana: empty | hand(9): Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 3
   Self BF:  Plains | Savannah | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest | Savannah | Scryb Ranger [1/1] (T)
+  Opp BF:   Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Scythecat Cub
    1: Thalia, Guardian of Thraben
@@ -1445,10 +1489,10 @@
   Self:  4 life | mana: empty | hand(9): Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 3
   Self BF:  Plains | Savannah | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest | Savannah | Scryb Ranger [1/1] (T)
+  Opp BF:   Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Pay 4 life
    1: Put on top of library
@@ -1463,10 +1507,10 @@
   Self:  0 life | mana: empty | hand(9): Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben, Wasteland, Windswept Heath, Wooded Foothills
   Opp:   22 life | mana: empty | hand count: 3
   Self BF:  Plains | Savannah | Sylvan Library | Talon Gates of Madara
-  Opp BF:   Forest | Savannah | Scryb Ranger [1/1] (T)
+  Opp BF:   Forest | Savannah | Scryb Ranger [1/1] [Flying, Flash] (T)
   Stack: Sylvan Library (ability, self)
-  Self GY: Once Upon a Time, Savannah, Swords to Plowshares, Swords to Plowshares, Wasteland
-  Opp GY:  Endurance, Horizon Canopy, Savannah, Swords to Plowshares, Wasteland, Windswept Heath
+  Self GY: Swords to Plowshares, Savannah, Wasteland, Swords to Plowshares, Once Upon a Time
+  Opp GY:  Windswept Heath, Wasteland, Savannah, Swords to Plowshares, Endurance, Horizon Canopy
   Actions:
    0: Pay 4 life
    1: Put on top of library
