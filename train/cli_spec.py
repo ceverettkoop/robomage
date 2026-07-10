@@ -39,6 +39,17 @@ ENT_COEF = 0.012
 # would otherwise never early-stop). See train.py _reassert_hparams.
 TARGET_KL = 0.025
 
+# PPO optimization epochs per update and policy clip range. Canonical values for
+# every training path AND re-asserted on checkpoint resume (MaskablePPO.load
+# restores whatever the checkpoint was saved with — see train.py
+# _reassert_hparams), so resumed generalists follow the current values rather
+# than the ones they were born under. Both are overridable per session with the
+# --n-epochs / --clip-range training flags (the override applies to fresh AND
+# resumed models for that session only; it is not persisted to the checkpoint's
+# future resumes, which fall back to these canonical values).
+N_EPOCHS = 5
+CLIP_RANGE = 0.2
+
 # Learning-rate decay schedule, keyed to a model's ABSOLUTE cumulative
 # num_timesteps (not SB3's per-learn() progress_remaining, which resets every
 # resume). LR falls linearly from LR_PEAK at step 0 to LR_FLOOR at
@@ -90,18 +101,22 @@ def shaping_scale_for_timesteps(num_timesteps: int) -> float:
 # single-opponent train() path and the league path can never drift apart (the
 # stale-ent_coef bug survived one fix precisely because these were duplicated
 # inline at both sites). On checkpoint RESUME, MaskablePPO.load restores
-# whatever the checkpoint was saved with; ent_coef and target_kl are re-asserted
-# afterwards (train.py _reassert_hparams), and the LR is driven every rollout by
-# LRDecayCallback regardless of the saved learning_rate. `learning_rate` here is
-# just the nominal starting value the callback overrides on the first update.
+# whatever the checkpoint was saved with; ent_coef, target_kl, n_epochs,
+# clip_range, gamma, and gae_lambda are re-asserted afterwards (train.py
+# _reassert_hparams), and the LR is driven every rollout by LRDecayCallback
+# regardless of the saved learning_rate. `learning_rate` here is just the
+# nominal starting value the callback overrides on the first update. The
+# --n-epochs / --clip-range CLI flags mutate this dict for the session
+# (train.py _apply_ppo_overrides) so fresh construction and the resume
+# re-assertion both see the override.
 PPO_KWARGS = dict(
     learning_rate=LR_PEAK,
     n_steps=4096,       # steps per env per update
     batch_size=1024,
-    n_epochs=8,
+    n_epochs=N_EPOCHS,
     gamma=0.9975,     # 1/(1-γ) = 400-step horizon; episodes run 100-400 decisions with mostly terminal reward
     gae_lambda=0.97,  # keep γλ high enough that terminal reward reaches back directly in GAE
-    clip_range=0.25,
+    clip_range=CLIP_RANGE,
     ent_coef=ENT_COEF,
     target_kl=TARGET_KL,
 )
@@ -259,6 +274,14 @@ def train_opts():
             help="Feature-extractor embed dim for fresh models (default: %d). "
                  "Ignored when resuming a checkpoint (its embed_dim is restored from "
                  "the saved policy_kwargs)." % EMBED_DIM),
+        Arg("--n-epochs", "int", default=N_EPOCHS,
+            help="PPO optimization epochs per update (default: %d). Applies to "
+                 "fresh models AND overrides whatever a resumed checkpoint was "
+                 "saved with, for this session only." % N_EPOCHS),
+        Arg("--clip-range", "float", default=CLIP_RANGE,
+            help="PPO policy clip range (default: %.2f). Applies to fresh models "
+                 "AND overrides whatever a resumed checkpoint was saved with, for "
+                 "this session only." % CLIP_RANGE),
     ]
 
 

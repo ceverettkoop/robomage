@@ -63,7 +63,7 @@ except ImportError:
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.utils import ConstantSchedule
+from stable_baselines3.common.utils import ConstantSchedule, FloatSchedule
 from stable_baselines3.common.logger import configure as sb3_configure_logger
 
 import numpy as np
@@ -469,6 +469,9 @@ def _reassert_hparams(model, label: str):
       * gamma / gae_lambda — the credit horizon was extended to 400 steps
         (gamma 0.99 -> 0.9975, gae_lambda 0.95 -> 0.97); older checkpoints
         would otherwise keep the short horizon forever.
+      * n_epochs / clip_range — read from PPO_KWARGS so a session's
+        --n-epochs / --clip-range CLI override (see _apply_ppo_overrides)
+        reaches resumed checkpoints too, not just fresh models.
     The learning rate is NOT set here: it is driven every rollout by
     LRDecayCallback (keyed to num_timesteps), which overrides whatever LR the
     checkpoint restored. Each override is logged when the stored value differs."""
@@ -494,7 +497,39 @@ def _reassert_hparams(model, label: str):
               f"{model.gae_lambda} -> {PPO_KWARGS['gae_lambda']}")
         model.gae_lambda = PPO_KWARGS["gae_lambda"]
         model.rollout_buffer.gae_lambda = PPO_KWARGS["gae_lambda"]
+    if model.n_epochs != PPO_KWARGS["n_epochs"]:
+        print(f"[hyperparam] {label}: overriding stale n_epochs "
+              f"{model.n_epochs} -> {PPO_KWARGS['n_epochs']}")
+        model.n_epochs = PPO_KWARGS["n_epochs"]
+    # clip_range is a schedule after _setup_model (FloatSchedule wrapping the
+    # constant), and MaskablePPO.load restores it in that form — so compare its
+    # evaluated value and replace with a fresh FloatSchedule (picklable, same
+    # rationale as ConstantSchedule for the LR).
+    stored_clip = model.clip_range(1.0) if callable(model.clip_range) else model.clip_range
+    if stored_clip != PPO_KWARGS["clip_range"]:
+        print(f"[hyperparam] {label}: overriding stale clip_range "
+              f"{stored_clip} -> {PPO_KWARGS['clip_range']}")
+        model.clip_range = FloatSchedule(PPO_KWARGS["clip_range"])
     return model
+
+
+def _apply_ppo_overrides(args):
+    """Fold the session's --n-epochs / --clip-range CLI values into PPO_KWARGS.
+
+    Called once at dispatch time for every training subcommand, before any
+    model is constructed or loaded. Mutating the (shared) PPO_KWARGS dict means
+    both consumers see the override: fresh MaskablePPO construction (**PPO_KWARGS)
+    and the resume path (_reassert_hparams reads PPO_KWARGS). The override lasts
+    for this session only — nothing is persisted, so future resumes without the
+    flag fall back to the canonical cli_spec values."""
+    if args.n_epochs != PPO_KWARGS["n_epochs"]:
+        print(f"[hyperparam] session override: n_epochs "
+              f"{PPO_KWARGS['n_epochs']} -> {args.n_epochs}")
+    PPO_KWARGS["n_epochs"] = args.n_epochs
+    if args.clip_range != PPO_KWARGS["clip_range"]:
+        print(f"[hyperparam] session override: clip_range "
+              f"{PPO_KWARGS['clip_range']} -> {args.clip_range}")
+    PPO_KWARGS["clip_range"] = args.clip_range
 
 
 class LRDecayCallback(BaseCallback):
@@ -1690,6 +1725,7 @@ if __name__ == "__main__":
         env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
         # These are the training subcommands — nudge toward a release engine build.
         _warn_if_debug_build(args.binary)
+        _apply_ppo_overrides(args)
 
     if args.command == "league":
         league(args.binary, decks=args.decks, total_timesteps=args.total_timesteps,
