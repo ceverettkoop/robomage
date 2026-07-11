@@ -3,8 +3,10 @@
 AZNet reuses the Phase B/PPO feature stack so a trained PPO checkpoint can warm-
 start it:
 
-  trunk  = extractor.CardGameExtractor(obs_space, embed_dim, per_action_head=True)
-           -> the per-entity encoder, returning [base features | per-action tail]
+  trunk  = a CardGameExtractor(obs_space, embed_dim, per_action_head=True) whose
+           encoder submodules are adopted into a TorchScript-scriptable twin
+           (:class:`ScriptTrunk`) — see the DEVIATION note below. It returns
+           [base features | per-action tail], identical to the extractor.
   policy = an MLP body (net_arch [256,256], Tanh) over the FULL trunk features,
            feeding extractor._ActionScorer to score each candidate action from
            its OWN encoded per-action features (mirrors PerActionMaskablePolicy)
@@ -21,13 +23,26 @@ shape (no per-action tail, a flat action_net), so they start fresh.
 ``forward(obs, mask) -> (logits, value)`` masks in-graph and is the future
 TorchScript export surface (Phase D). ``--export-check`` scripts the net and
 compares scripted vs eager outputs to prove that path now.
+
+DEVIATION (reported to the caller): the plan said ``trunk = CardGameExtractor``
+directly, but ``torch.jit.script`` in torch 2.13 rejects that module — its
+``forward`` slices with module-level int globals ("python value of type 'int'
+cannot be used as a value. Perhaps it is a closed over global variable?"), and
+jit eagerly compiles every submodule's forward, so wrapping the extractor makes
+AZNet unscriptable. Since scriptability + a passing ``--export-check`` are hard
+requirements (and the plan asks for a plain, SB3-class-free scriptable module),
+AZNet builds a CardGameExtractor, ADOPTS its encoder submodules (identical names
++ shapes, so warm-start and state_dict stay 1:1 compatible), and drives them
+through :class:`ScriptTrunk`'s scriptable forward with the layout constants
+baked in as ``__constants__``. ``ScriptTrunk`` is guarded against drift from the
+real extractor by :func:`verify_trunk_matches_extractor` (run in --export-check).
 """
 
 from __future__ import annotations
 
 import json
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 import torch
@@ -40,15 +55,18 @@ except ImportError:  # pragma: no cover
     import gym
     from gym import spaces
 
-from extractor import CardGameExtractor, _ActionScorer, _PER_ACTION_DIM
+import extractor as _ex
+from extractor import CardGameExtractor, _ActionScorer
 try:
     from env import OBS_SIZE, MAX_ACTIONS
     from card_costs import N_CARD_TYPES
     from cli_spec import EMBED_DIM, NET_ARCH
+    from _enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS
     from train.card_costs import N_CARD_TYPES
     from train.cli_spec import EMBED_DIM, NET_ARCH
+    from train._enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
 
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "checkpoints", "az")
@@ -57,6 +75,236 @@ _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 def obs_space_from_const() -> gym.Space:
     """The env's observation Box, built from OBS_SIZE without spawning an engine."""
     return spaces.Box(low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32)
+
+
+class ScriptTrunk(nn.Module):
+    """TorchScript-scriptable mirror of ``CardGameExtractor(per_action_head=True)``.
+
+    It ADOPTS the encoder submodules of a real CardGameExtractor (so parameters,
+    names and shapes are identical — warm-start and state_dict are 1:1) and
+    reproduces its ``forward`` with every layout offset baked in as a
+    ``__constants__`` int (module-global ints are not scriptable in torch 2.13).
+    Kept faithful by :func:`verify_trunk_matches_extractor`.
+    """
+
+    __constants__ = [
+        "N_CARD_TYPES", "ACTION_CATEGORY_MAX", "REF_ZONE_MAX",
+        "GLOBAL_SIZE", "HIST_START", "HIST_END", "HIST_ENTRIES",
+        "HIST_ENTRY_SIZE", "HIST_RECENT_K", "KNOWN_TOP_LIB_START",
+        "KNOWN_TOP_LIB_END", "KNOWN_TOP_LIB_SLOTS", "REVEALED_START",
+        "REVEALED_END", "PENDING_START", "PENDING_END", "EXTRAS_START",
+        "EXTRAS_END", "STATE_END", "PERM_START", "PERM_END", "PERM_SLOTS",
+        "PERM_SLOT_SIZE", "PERM_STATUS_FLOATS", "PERM_CHOSEN_NAME_OFF",
+        "PERM_RETURNABLE_OFF", "PERM_CARD_OFF", "STACK_START", "STACK_END",
+        "STACK_SLOTS", "STACK_SLOT_SIZE", "STACK_XAMT_OFF", "STACK_MODE_OFF",
+        "STACK_TGT_OFF", "STACK_TGT_SLOTS", "STACK_TGT_FIELDS", "GY_START",
+        "GY_END", "GY_SLOTS", "EXILE_START", "EXILE_END", "EXILE_SLOTS",
+        "HAND_START", "HAND_END", "HAND_SLOTS", "OPP_KNOWN_HAND_START",
+        "OPP_KNOWN_HAND_END", "OPP_KNOWN_HAND_SLOTS", "MAX_ACTIONS",
+        "N_ENTITY_REF_SLOTS", "EMBED_DIM", "PER_ACTION_DIM",
+        "features_dim", "per_action_offset", "per_action_slots", "per_action_dim",
+    ]
+
+    def __init__(self, fe: CardGameExtractor):
+        super().__init__()
+        assert getattr(fe, "per_action_head", False), \
+            "ScriptTrunk requires a per_action_head=True CardGameExtractor"
+        # Adopt the extractor's encoder submodules (same names -> state_dict 1:1).
+        self.card_emb = fe.card_emb
+        self.perm_encoder = fe.perm_encoder
+        self.stack_encoder = fe.stack_encoder
+        self.entity_encoder = fe.entity_encoder
+        self.revealed_encoder = fe.revealed_encoder
+        self.action_cat_emb = fe.action_cat_emb
+        self.zone_emb = fe.zone_emb
+        self.action_encoder = fe.action_encoder
+
+        # Layout constants (single-sourced from the extractor module, so their
+        # VALUES never drift; only the forward STRUCTURE below is a mirror).
+        self.N_CARD_TYPES = int(N_CARD_TYPES)
+        self.ACTION_CATEGORY_MAX = int(ACTION_CATEGORY_MAX)
+        self.REF_ZONE_MAX = int(REF_ZONE_MAX)
+        self.GLOBAL_SIZE = int(_ex._GLOBAL_SIZE)
+        self.HIST_START = int(_ex._HIST_START)
+        self.HIST_END = int(_ex._HIST_END)
+        self.HIST_ENTRIES = int(_ex._HIST_ENTRIES)
+        self.HIST_ENTRY_SIZE = int(_ex._HIST_ENTRY_SIZE)
+        self.HIST_RECENT_K = int(_ex._HIST_RECENT_K)
+        self.KNOWN_TOP_LIB_START = int(_ex._KNOWN_TOP_LIB_START)
+        self.KNOWN_TOP_LIB_END = int(_ex._KNOWN_TOP_LIB_END)
+        self.KNOWN_TOP_LIB_SLOTS = int(_ex._KNOWN_TOP_LIB_SLOTS)
+        self.REVEALED_START = int(_ex._REVEALED_START)
+        self.REVEALED_END = int(_ex._REVEALED_END)
+        self.PENDING_START = int(_ex._PENDING_START)
+        self.PENDING_END = int(_ex._PENDING_END)
+        self.EXTRAS_START = int(_ex._EXTRAS_START)
+        self.EXTRAS_END = int(_ex._EXTRAS_END)
+        self.STATE_END = int(_ex._STATE_END)
+        self.PERM_START = int(_ex._PERM_START)
+        self.PERM_END = int(_ex._PERM_END)
+        self.PERM_SLOTS = int(_ex._PERM_SLOTS)
+        self.PERM_SLOT_SIZE = int(_ex._PERM_SLOT_SIZE)
+        self.PERM_STATUS_FLOATS = int(_ex._PERM_STATUS_FLOATS)
+        self.PERM_CHOSEN_NAME_OFF = int(_ex._PERM_CHOSEN_NAME_OFF)
+        self.PERM_RETURNABLE_OFF = int(_ex._PERM_RETURNABLE_OFF)
+        self.PERM_CARD_OFF = int(_ex._PERM_CARD_OFF)
+        self.STACK_START = int(_ex._STACK_START)
+        self.STACK_END = int(_ex._STACK_END)
+        self.STACK_SLOTS = int(_ex._STACK_SLOTS)
+        self.STACK_SLOT_SIZE = int(_ex._STACK_SLOT_SIZE)
+        self.STACK_XAMT_OFF = int(_ex._STACK_XAMT_OFF)
+        self.STACK_MODE_OFF = int(_ex._STACK_MODE_OFF)
+        self.STACK_TGT_OFF = int(_ex._STACK_TGT_OFF)
+        self.STACK_TGT_SLOTS = int(_ex._STACK_TGT_SLOTS)
+        self.STACK_TGT_FIELDS = int(_ex._STACK_TGT_FIELDS)
+        self.GY_START = int(_ex._GY_START)
+        self.GY_END = int(_ex._GY_END)
+        self.GY_SLOTS = int(_ex._GY_SLOTS)
+        self.EXILE_START = int(_ex._EXILE_START)
+        self.EXILE_END = int(_ex._EXILE_END)
+        self.EXILE_SLOTS = int(_ex._EXILE_SLOTS)
+        self.HAND_START = int(_ex._HAND_START)
+        self.HAND_END = int(_ex._HAND_END)
+        self.HAND_SLOTS = int(_ex._HAND_SLOTS)
+        self.OPP_KNOWN_HAND_START = int(_ex._OPP_KNOWN_HAND_START)
+        self.OPP_KNOWN_HAND_END = int(_ex._OPP_KNOWN_HAND_END)
+        self.OPP_KNOWN_HAND_SLOTS = int(_ex._OPP_KNOWN_HAND_SLOTS)
+        self.MAX_ACTIONS = int(_ex._MAX_ACTIONS)
+        self.N_ENTITY_REF_SLOTS = int(_ex.N_ENTITY_REF_SLOTS)
+        self.EMBED_DIM = int(fe._embed_dim)
+        self.PER_ACTION_DIM = int(fe.per_action_dim)
+
+        self.features_dim = int(fe.features_dim)
+        self.per_action_offset = int(fe.per_action_offset)
+        self.per_action_slots = int(fe.per_action_slots)
+        self.per_action_dim = int(fe.per_action_dim)
+
+    def _embed_ids(self, id_floats: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        idx = torch.round(id_floats * self.N_CARD_TYPES).long()
+        present = idx >= 0
+        emb = self.card_emb((idx + 1).clamp(0, self.N_CARD_TYPES))
+        return emb, present
+
+    def _mean_max(self, emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
+        m = present.unsqueeze(-1).to(emb.dtype)
+        counts = m.sum(1).clamp(min=1.0)
+        masked_mean = (emb * m).sum(1) / counts
+        # float32 finfo().min (torch.finfo is not TorchScript-scriptable); present
+        # rows are always selected below, so the exact fill value is immaterial.
+        neg_inf = -3.4028234663852886e+38
+        masked_max = emb.masked_fill(m == 0, neg_inf).max(1)[0]
+        has_any = present.any(1, keepdim=True)
+        masked_max = torch.where(has_any, masked_max, torch.zeros_like(masked_max))
+        return torch.cat([masked_mean, masked_max], dim=-1)
+
+    def forward(self, obs: torch.Tensor) -> torch.Tensor:
+        global_ctx = obs[:, :self.GLOBAL_SIZE]
+        hist_ctx = obs[:, self.HIST_START:self.HIST_END]
+        meta_ctx = obs[:, self.HIST_END:self.KNOWN_TOP_LIB_START]
+        revealed = obs[:, self.REVEALED_START:self.REVEALED_END]
+        pending = obs[:, self.PENDING_START:self.PENDING_END]
+        extras = obs[:, self.EXTRAS_START:self.EXTRAS_END]
+        action_extras = obs[:, self.STATE_END:]
+
+        hist_entries = hist_ctx.reshape(-1, self.HIST_ENTRIES, self.HIST_ENTRY_SIZE)
+        recent = hist_entries[:, :self.HIST_RECENT_K]
+        rec_cat_idx = torch.round(recent[:, :, 0] * self.ACTION_CATEGORY_MAX).long(
+        ).clamp(0, self.ACTION_CATEGORY_MAX)
+        rec_cat_e = self.action_cat_emb(rec_cat_idx)
+        rec_card_e, _ = self._embed_ids(recent[:, :, 1])
+        hist_recent = torch.cat([rec_cat_e, rec_card_e, recent[:, :, 2:4]], dim=-1
+                                ).reshape(recent.shape[0], -1)
+
+        pending_emb, _ = self._embed_ids(pending[:, 0])
+        pending_feat = torch.cat([pending_emb, pending[:, 1:2]], dim=-1)
+
+        perms = obs[:, self.PERM_START:self.PERM_END].reshape(
+            -1, self.PERM_SLOTS, self.PERM_SLOT_SIZE)
+        stack = obs[:, self.STACK_START:self.STACK_END].reshape(
+            -1, self.STACK_SLOTS, self.STACK_SLOT_SIZE)
+        graveyard = obs[:, self.GY_START:self.GY_END].reshape(-1, self.GY_SLOTS, 1)
+        exile = obs[:, self.EXILE_START:self.EXILE_END].reshape(-1, self.EXILE_SLOTS, 1)
+        hand = obs[:, self.HAND_START:self.HAND_END].reshape(-1, self.HAND_SLOTS, 1)
+        opp_hand = obs[:, self.OPP_KNOWN_HAND_START:self.OPP_KNOWN_HAND_END].reshape(
+            -1, self.OPP_KNOWN_HAND_SLOTS, 1)
+        top_lib = obs[:, self.KNOWN_TOP_LIB_START:self.KNOWN_TOP_LIB_END].reshape(
+            -1, self.KNOWN_TOP_LIB_SLOTS, 1)
+
+        perm_card_emb, perm_present = self._embed_ids(perms[:, :, self.PERM_CARD_OFF])
+        perm_chosen_emb, _ = self._embed_ids(perms[:, :, self.PERM_CHOSEN_NAME_OFF])
+        perm_returnable_emb, _ = self._embed_ids(perms[:, :, self.PERM_RETURNABLE_OFF])
+        perm_in = torch.cat([perms[:, :, :self.PERM_STATUS_FLOATS],
+                             perm_chosen_emb, perm_returnable_emb, perm_card_emb], dim=-1)
+
+        stk_card_emb, stk_present = self._embed_ids(stack[:, :, 1])
+        stk_tgts = stack[:, :, self.STACK_TGT_OFF:].reshape(
+            -1, self.STACK_SLOTS, self.STACK_TGT_SLOTS, self.STACK_TGT_FIELDS)
+        stk_tgt_emb, _ = self._embed_ids(stk_tgts[:, :, :, self.STACK_TGT_FIELDS - 1])
+        stk_tgt_mask = stk_tgts[:, :, :, 0:1]
+        stk_tgt_agg = (stk_tgt_emb * stk_tgt_mask).sum(2) / stk_tgt_mask.sum(2).clamp(min=1.0)
+        stk_xquals = stack[:, :, self.STACK_XAMT_OFF:self.STACK_MODE_OFF]
+        stk_modes = stack[:, :, self.STACK_MODE_OFF:self.STACK_TGT_OFF]
+        stk_tgt_scalars = stk_tgts[:, :, :, :self.STACK_TGT_FIELDS - 1].reshape(
+            -1, self.STACK_SLOTS, self.STACK_TGT_SLOTS * (self.STACK_TGT_FIELDS - 1))
+        stk_in = torch.cat([stack[:, :, 0:1], stack[:, :, 2:3], stk_xquals, stk_modes,
+                            stk_tgt_scalars, stk_card_emb, stk_tgt_agg], dim=-1)
+
+        gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
+        ex_emb_in, ex_present = self._embed_ids(exile[:, :, 0])
+        hand_emb_in, hand_present = self._embed_ids(hand[:, :, 0])
+        opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
+        top_lib_emb_in, _ = self._embed_ids(top_lib[:, :, 0])
+
+        perm_emb = self.perm_encoder(perm_in)
+        stk_emb = self.stack_encoder(stk_in)
+        gy_emb = self.entity_encoder(gy_emb_in)
+        ex_emb = self.entity_encoder(ex_emb_in)
+        hand_emb = self.entity_encoder(hand_emb_in)
+        opp_hand_emb = self.entity_encoder(opp_hand_emb_in)
+        top_lib_emb = self.entity_encoder(top_lib_emb_in)
+
+        perm_agg = self._mean_max(perm_emb, perm_present)
+        stk_agg = self._mean_max(stk_emb, stk_present)
+        gy_agg = self._mean_max(gy_emb, gy_present)
+        ex_agg = self._mean_max(ex_emb, ex_present)
+        hand_agg = self._mean_max(hand_emb, hand_present)
+        opp_hand_agg = self._mean_max(opp_hand_emb, opp_hand_present)
+        top_lib_agg = top_lib_emb.mean(1)
+        revealed_agg = self.revealed_encoder(revealed)
+
+        base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
+                          revealed_agg, pending_feat, extras, action_extras,
+                          perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg], dim=-1)
+
+        a0 = self.STATE_END
+        cats = obs[:, a0:a0 + self.MAX_ACTIONS]
+        act_ids = obs[:, a0 + self.MAX_ACTIONS:a0 + 2 * self.MAX_ACTIONS]
+        ctrl = obs[:, a0 + 2 * self.MAX_ACTIONS:a0 + 3 * self.MAX_ACTIONS]
+        zone = obs[:, a0 + 3 * self.MAX_ACTIONS:a0 + 4 * self.MAX_ACTIONS]
+        refs = obs[:, a0 + 4 * self.MAX_ACTIONS:a0 + 5 * self.MAX_ACTIONS]
+        cat_idx = torch.round(cats * self.ACTION_CATEGORY_MAX).long().clamp(
+            0, self.ACTION_CATEGORY_MAX)
+        cat_e = self.action_cat_emb(cat_idx)
+        act_id_e, _ = self._embed_ids(act_ids)
+        zone_idx = torch.round(zone * self.REF_ZONE_MAX).long().clamp(0, self.REF_ZONE_MAX)
+        zone_e = self.zone_emb(zone_idx)
+
+        E = self.EMBED_DIM
+        stk_emb_pad = torch.cat(
+            [stk_emb, stk_emb.new_zeros(stk_emb.shape[0], self.STACK_SLOTS,
+                                        E - stk_emb.shape[-1])], dim=-1)
+        ent_table = torch.cat([perm_emb, stk_emb_pad], dim=1)
+        ent_table = torch.cat(
+            [ent_table, ent_table.new_zeros(ent_table.shape[0], 1, E)], dim=1)
+        ref_idx = torch.round(refs * self.N_ENTITY_REF_SLOTS).long() - 1
+        ref_idx = torch.where(ref_idx < 0,
+                              torch.full_like(ref_idx, self.N_ENTITY_REF_SLOTS),
+                              ref_idx).clamp(0, self.N_ENTITY_REF_SLOTS)
+        ref_e = torch.gather(ent_table, 1, ref_idx.unsqueeze(-1).expand(-1, -1, E))
+
+        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1), zone_e, ref_e], dim=-1)
+        pa = self.action_encoder(pa_in)
+        return torch.cat([base, pa.reshape(pa.shape[0], -1)], dim=-1)
 
 
 def _mlp_body(in_dim: int, arch) -> nn.Sequential:
@@ -72,7 +320,7 @@ def _mlp_body(in_dim: int, arch) -> nn.Sequential:
 
 
 class AZNet(nn.Module):
-    """Policy+value net over the shared CardGameExtractor trunk."""
+    """Policy+value net over the shared CardGameExtractor trunk (scriptable twin)."""
 
     def __init__(self, observation_space: Optional[gym.Space] = None,
                  embed_dim: int = EMBED_DIM, net_arch=None):
@@ -83,18 +331,17 @@ class AZNet(nn.Module):
         self.embed_dim = int(embed_dim)
         self.obs_size = int(observation_space.shape[0])
 
-        self.trunk = CardGameExtractor(observation_space, embed_dim=embed_dim,
-                                       per_action_head=True)
-        feat_dim = self.trunk.features_dim               # base + per-action tail
+        # Build a real CardGameExtractor (per the plan), then drive its adopted
+        # submodules through a scriptable forward. See the DEVIATION note above.
+        fe = CardGameExtractor(observation_space, embed_dim=embed_dim,
+                               per_action_head=True)
+        self.trunk = ScriptTrunk(fe)
+        feat_dim = self.trunk.features_dim
         self._pa_offset = int(self.trunk.per_action_offset)
-        self._pa_slots = int(self.trunk.per_action_slots)   # == MAX_ACTIONS
-        self._pa_dim = int(self.trunk.per_action_dim)       # == _PER_ACTION_DIM
+        self._pa_slots = int(self.trunk.per_action_slots)
+        self._pa_dim = int(self.trunk.per_action_dim)
         latent_dim = arch[-1]
 
-        # Mirror PerActionMaskablePolicy: policy/value bodies consume the FULL
-        # trunk features (including the per-action tail, as SB3's mlp_extractor
-        # does), then the scorer combines the policy latent with each action's
-        # per-action feature.
         self.policy_body = _mlp_body(feat_dim, arch)
         self.value_body = _mlp_body(feat_dim, arch)
         self.action_scorer = _ActionScorer(latent_dim, self._pa_dim)
@@ -103,18 +350,16 @@ class AZNet(nn.Module):
     def forward(self, obs: torch.Tensor, mask: torch.Tensor):
         """(obs[B,OBS], mask[B,MAX_ACTIONS] bool) -> (masked logits, value[B]).
 
-        Masking is in-graph (illegal actions -> -inf) so the exported module is
-        self-contained. TorchScript export surface — keep it script-friendly."""
+        Masking is in-graph (illegal actions -> -inf). TorchScript export surface."""
         features = self.trunk(obs)
-        base_end = self._pa_offset
-        pa = features[:, base_end:].reshape(features.shape[0], self._pa_slots,
-                                            self._pa_dim)
+        pa = features[:, self._pa_offset:].reshape(
+            features.shape[0], self._pa_slots, self._pa_dim)
         latent_pi = self.policy_body(features)
         latent_vf = self.value_body(features)
-        logits = self.action_scorer(latent_pi, pa)          # (B, MAX_ACTIONS)
-        neg = torch.finfo(logits.dtype).min
+        logits = self.action_scorer(latent_pi, pa)
+        neg = -3.4028234663852886e+38   # float32 finfo().min (jit-safe literal)
         logits = torch.where(mask, logits, torch.full_like(logits, neg))
-        value = torch.tanh(self.value_head(latent_vf)).squeeze(-1)   # (B,)
+        value = torch.tanh(self.value_head(latent_vf)).squeeze(-1)
         return logits, value
 
     # ------------------------------------------------------------------
@@ -239,7 +484,7 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
     net = AZNet(obs_space_from_const(), embed_dim=embed_dim)
     net_sd = net.state_dict()
 
-    transferred: list[str] = []
+    transferred: list = []
     # 1) Trunk (features_extractor.* -> trunk.*). Shared by both flavors.
     for k, v in sd.items():
         if not k.startswith("features_extractor."):
@@ -249,9 +494,8 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
             net_sd[tk] = v.clone()
             transferred.append(tk)
 
-    notes: list[str] = []
+    notes: list = []
     if flavor == "per_action":
-        # 2) policy/value bodies + scorer + value head map 1:1.
         pa_map = {
             "mlp_extractor.policy_net.": "policy_body.",
             "mlp_extractor.value_net.": "value_body.",
@@ -264,8 +508,6 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
                     if tk in net_sd and net_sd[tk].shape == v.shape:
                         net_sd[tk] = v.clone()
                         transferred.append(tk)
-        # PPO value_net is Linear(latent,1) with NO tanh; AZNet wraps it in
-        # tanh, so the copied weights now feed a tanh — a reasonable warm start.
         for k, v in sd.items():
             if k.startswith("value_net."):
                 tk = "value_head." + k[len("value_net."):]
@@ -279,17 +521,15 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
 
     net.load_state_dict(net_sd)
 
-    fresh = [k for k in net_sd if k not in set(transferred)]
+    tset = set(transferred)
+    fresh = [k for k in net_sd if k not in tset]
     print(f"[from_ppo] flavor={flavor} embed_dim={embed_dim}: "
           f"transferred {len(transferred)} tensors, {len(fresh)} fresh.")
     for n in notes:
         print(f"[from_ppo]   note: {n}")
-    # Summarize the fresh top-level module groups so the caller sees what wasn't
-    # warm-started (per-action encoder on stock, both heads on stock, etc.).
-    fresh_groups = sorted({k.split(".")[0] + ("." + k.split(".")[1]
-                          if k.startswith("trunk.") else "") for k in fresh})
+    fresh_top = sorted({k.split(".")[0] for k in fresh})
     if fresh:
-        print(f"[from_ppo]   fresh groups: {', '.join(fresh_groups)}")
+        print(f"[from_ppo]   fresh modules: {', '.join(fresh_top)}")
     net.eval()
     return net
 
@@ -326,17 +566,42 @@ class AZEvaluator:
 
 
 # ----------------------------------------------------------------------
-# --export-check CLI (proves the TorchScript export path)
+# Consistency guard + --export-check CLI
 # ----------------------------------------------------------------------
+
+def verify_trunk_matches_extractor(embed_dim: int = 32, seed: int = 0,
+                                   tol: float = 1e-5) -> float:
+    """Assert ScriptTrunk reproduces CardGameExtractor(per_action_head=True) bit-
+    for-bit on random input (guards the mirrored forward against drift). Returns
+    the max abs diff."""
+    torch.manual_seed(seed)
+    space = obs_space_from_const()
+    fe = CardGameExtractor(space, embed_dim=embed_dim, per_action_head=True).eval()
+    trunk = ScriptTrunk(fe).eval()          # adopts fe's submodules (same weights)
+    obs = torch.randn(4, OBS_SIZE)
+    with torch.no_grad():
+        ref = fe(obs)
+        got = trunk(obs)
+    d = float((ref - got).abs().max())
+    if d > tol:
+        raise RuntimeError(f"ScriptTrunk drifted from CardGameExtractor: "
+                           f"max|Δ|={d:.2e} > {tol:.0e}")
+    return d
+
 
 def _export_check(embed_dim: int = EMBED_DIM, seed: int = 0,
                   tol: float = 1e-4) -> int:
+    # 1) mirror faithfulness
+    d = verify_trunk_matches_extractor(embed_dim=min(embed_dim, 32), seed=seed)
+    print(f"trunk-vs-extractor: max|Δ|={d:.2e} -> PASS")
+
+    # 2) scripted vs eager AZNet
     torch.manual_seed(seed)
     net = AZNet(obs_space_from_const(), embed_dim=embed_dim).eval()
     obs = torch.randn(3, OBS_SIZE)
     mask = torch.zeros(3, MAX_ACTIONS, dtype=torch.bool)
     for i in range(3):
-        mask[i, : (i + 2)] = True   # varying legal counts, all rows non-empty
+        mask[i, : (i + 2)] = True
     with torch.no_grad():
         eager_logits, eager_value = net(obs, mask)
     try:
@@ -346,7 +611,6 @@ def _export_check(embed_dim: int = EMBED_DIM, seed: int = 0,
         return 1
     with torch.no_grad():
         s_logits, s_value = scripted(obs, mask)
-    # Compare only the LEGAL logits (masked slots are -inf in both; inf-inf=nan).
     dl = 0.0
     for i in range(3):
         n = int(mask[i].sum())
