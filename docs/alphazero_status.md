@@ -77,10 +77,17 @@ too weak for strength conclusions).
 
 ## What is IN FLIGHT (not yet committed)
 
-- **Phase B strength eval**: `mcts:delver?sims=48&worlds=3` vs the same
-  checkpoint raw, 6 games per seat + a scripted:easy reference, was running
-  when this doc was written. Whatever it shows on this box is a plumbing
-  result, not a strength result — the checkpoint is undertrained.
+- **Phase B strength eval (in-container plumbing run — COMPLETE)**:
+  `mcts:delver?sims=48&worlds=3` vs the same checkpoint raw, 6 games per seat,
+  seeds 100/200: **6W-6L-0D (50%)**, plus 0-4 vs `scripted:easy`. The pipeline
+  itself was exercised hard and cleanly — 635 searched root decisions, 321
+  raw-policy fallbacks at unsafe roots, ~30k sims / ~74k sim_steps, zero
+  protocol errors, crashes, or draws. **No strength conclusion is possible
+  here**: the checkpoint is a 60k-step throwaway (loses to `scripted:easy`
+  outright), so its value head gives search near-noise guidance, and the
+  sims=48/worlds=3 budget is a smoke-test setting. The real ≥55%/~200-game
+  gate (sims 128, worlds 4, a properly trained checkpoint) is the
+  real-hardware step 2 below.
 - **Phase C (AlphaZero training loop)**: being implemented (az_net.py partially
   written at time of writing). Deliverables per plan: `train/az_net.py`
   (`AZNet` plain torch module: CardGameExtractor(per_action_head) trunk +
