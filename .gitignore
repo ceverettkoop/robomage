@@ -36,3 +36,6 @@ draw_*.txt
 
 # Game recordings (.rmrec) — recording subsystem removed; never commit these
 train/recordings/
+
+# AlphaZero self-play shards (Phase C artifacts) — regenerate, never commit
+train/az_data/
