@@ -7,6 +7,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <execinfo.h>
+#include <memory>
+#include <type_traits>
 #include <typeinfo>
 #include "entity.h"
 // credit https://austinmorlan.com/posts/entity_component_system/
@@ -14,6 +16,10 @@ class IComponentArray {
     public:
         virtual ~IComponentArray() = default;
         virtual void EntityDestroyed(Entity entity) = 0;
+        // Deep-copy this array into a fresh IComponentArray for a game snapshot, and
+        // restore a previously-cloned array's contents back into this one (see snapshot.h).
+        virtual std::shared_ptr<IComponentArray> SnapshotClone() const = 0;
+        virtual void RestoreFrom(const IComponentArray &src) = 0;
 };
 template <typename T>
 class ComponentArray : public IComponentArray {
@@ -67,7 +73,36 @@ class ComponentArray : public IComponentArray {
             }
         }
 
+        std::shared_ptr<IComponentArray> SnapshotClone() const override {
+            auto clone = std::make_shared<ComponentArray<T>>();
+            clone->mEntityToIndex = mEntityToIndex;  // flat POD maps: plain copy
+            clone->mIndexToEntity = mIndexToEntity;
+            clone->mSize = mSize;
+            // Copy ONLY the live dense slots [0, mSize). Slots >= mSize hold stale,
+            // heap-heavy leftovers from RemoveData's swap-with-last and are never
+            // read, so copying all MAX_ENTITIES would dominate the snapshot cost for
+            // nothing. memcpy is wrong here — components own strings/vectors/maps —
+            // so this is an element-wise copy-assign.
+            for (size_t i = 0; i < mSize; ++i) clone->mComponentArray[i] = mComponentArray[i];
+            return clone;
+        }
+        void RestoreFrom(const IComponentArray &src) override {
+            const auto &s = static_cast<const ComponentArray<T> &>(src);
+            mEntityToIndex = s.mEntityToIndex;
+            mIndexToEntity = s.mIndexToEntity;
+            mSize = s.mSize;
+            // Restore only the live slots. Restoring fewer live slots than this array
+            // previously held is sound: slots beyond the restored mSize are never read
+            // (mEntityToIndex is fully restored, and InsertData reassigns a slot before
+            // any read), so leftover stale contents there are harmless.
+            for (size_t i = 0; i < mSize; ++i) mComponentArray[i] = s.mComponentArray[i];
+        }
+
     private:
+        // A future non-copyable component member would make snapshot copies silently
+        // wrong; fail the build loudly instead.
+        static_assert(std::is_copy_assignable_v<T>,
+                      "ComponentArray<T> snapshot/restore requires copy-assignable T");
         std::array<T, MAX_ENTITIES> mComponentArray{};
         // entity id -> dense index (NO_INDEX = absent); dense index -> entity id.
         std::array<uint32_t, MAX_ENTITIES> mEntityToIndex{};

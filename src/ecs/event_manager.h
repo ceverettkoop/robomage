@@ -32,6 +32,10 @@ class EventManager {
             result.swap(mPendingEvents);
             return result;
         }
+        // Snapshot/restore only the in-flight pending events (see snapshot.h);
+        // listeners are per-game constants wired at init and must NOT be touched.
+        std::vector<Event> snapshot_pending() const { return mPendingEvents; }
+        void restore_pending(const std::vector<Event> &events) { mPendingEvents = events; }
     private:
         std::unordered_map<EventId, std::list<std::function<void(Event &)>>> listeners;
         std::vector<Event> mPendingEvents;
