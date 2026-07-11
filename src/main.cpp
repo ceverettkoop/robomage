@@ -27,6 +27,8 @@
 #include "ecs/coordinator.h"
 #include "input_logger.h"
 #include "machine_io.h"
+#include "search_server.h"
+#include "snapshot.h"
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
@@ -122,6 +124,9 @@ static EcsSystems init_ecs() {
 // Returns winner: Zone::PLAYER_A (1) or Zone::PLAYER_B (2)
 static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                             bool player_a_goes_first, unsigned int seed) {
+    // A snapshot from a previous game of the match must never be restorable
+    // into this game's fresh ECS.
+    snapshot_release_all();
     cur_game = Game(seed);
     cur_game.generate_players(deck_a, deck_b);
     // Apply starting-life overrides (test harness --life-a/--life-b) before any play.
@@ -188,7 +193,11 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
     cur_game.player_a_has_priority = player_a_goes_first;
 
     size_t prev_turn = (size_t)-1;
-    while (cur_game.ended != true) {
+    while (!cur_game.ended || search_intercept_game_end()) {
+        // A RESTORE that arrived mid-decision unwound to here; apply it before
+        // anything reads game state, so this iteration re-derives (and re-emits)
+        // the restored decision.
+        search_apply_pending_restore();
         if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
             cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
             prev_turn = cur_game.turn;
@@ -204,12 +213,18 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
             continue;
         }
         sys.state_manager->state_based_effects(cur_game, sys.orderer);
-        if (cur_game.ended) break;
+        if (cur_game.ended) {
+            if (!search_intercept_game_end()) break;
+            continue;
+        }
         if (cur_game.advance_step(sys.stack_manager, sys.orderer)) {
             continue;
         } else {
             sys.state_manager->state_based_effects(cur_game, sys.orderer);
-            if (cur_game.ended) break;
+            if (cur_game.ended) {
+                if (!search_intercept_game_end()) break;
+                continue;
+            }
         }
 
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
@@ -226,7 +241,12 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
             populate_gamestate(&gs, viewer);
             print_game_state(&gs);
         }
+        // The priority decision is loop-safe: the whole state lives in cur_game +
+        // ECS here, and re-entering the loop top on that data re-derives this
+        // same decision (the snapshot round-trip CI test proves it byte-for-byte).
+        search_set_loop_safe(true);
         int choice = InputLogger::instance().get_input(legal_actions);
+        search_set_loop_safe(false);
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
     return cur_game.winner;
@@ -552,6 +572,11 @@ int main(int argc, char const *argv[]) {
             i++;
         } else if (std::string(argv[i]) == "--machine") {
             machine_mode = true;
+        } else if (std::string(argv[i]) == "--search-server") {
+            // MCTS search protocol (SNAPSHOT/RESTORE/DETERMINIZE/RELEASE); a
+            // machine-mode extension, so it implies --machine.
+            search_server_mode = true;
+            machine_mode = true;
         } else if (std::string(argv[i]) == "--player" && i + 1 < argc) {
             has_human_player = true;
             std::string p = argv[i + 1];
@@ -620,6 +645,13 @@ int main(int argc, char const *argv[]) {
             cli_print_help(argv[0], VERSION_NUMBER);
             return 0;
         }
+    }
+
+    // Search commands would interleave into (or replay out of sync with) the
+    // deterministic decision record, and the cooperative unwind cannot route
+    // through a human prompt.
+    if (search_server_mode && (replay_mode || log_decisions_flag || has_human_player)) {
+        fatal_error("--search-server is incompatible with --replay, --log-decisions, and --player");
     }
 
     game_loop();

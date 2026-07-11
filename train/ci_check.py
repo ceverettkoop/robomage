@@ -24,6 +24,11 @@ fails, so one invocation reports every finding):
           card-id / entity-ref floats decode in range, recency-packed zones have
           no holes, one-hots are one-hot, etc. Catches a silent serialize_state
           layout/encoding regression.
+  snapshot The --search-server snapshot/restore/determinize protocol behaves:
+          round-trip byte identity, RNG isolation, determinize efficacy, the
+          SIM_RESULT terminal intercept, and determinize invariants
+          (train/test_snapshot.py). Catches a regression in the in-process
+          MCTS search primitives.
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
           matches — catches unintended narrative/behavior drift.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
@@ -70,7 +75,7 @@ LEAGUE = ["bug", "bw_dnt", "car_doomsday", "gw_maverick", "tron", "ur_delver",
           "wrb_energy"]
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "obsinv", "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "obsinv", "snapshot", "replay", "smoke", "fuzz"]
 
 # Transcript scan (stdout narrative + captured engine stderr). Two severities:
 #   ERROR  — genuine failures that fail the gate: the engine's own ERROR:
@@ -213,6 +218,22 @@ def tier_obsinv(rep):
                             f"{r.stdout}{r.stderr}")
 
 
+def tier_snapshot(rep):
+    """The --search-server snapshot/restore/determinize protocol regression.
+
+    Drives the raw machine protocol over a subprocess and asserts the search
+    primitives' guarantees (round-trip byte identity, RNG isolation, determinize
+    efficacy/invariants, terminal intercept — see train/test_snapshot.py). A gate
+    on the in-process MCTS search subsystem."""
+    r = subprocess.run([sys.executable, "train/test_snapshot.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("snapshot", "search-server protocol violation "
+                             f"(test_snapshot.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
+
+
 def tier_replay(rep):
     """Run the byte-identical replay-diff corpus check."""
     r = subprocess.run([sys.executable, "train/regression/replay_diff.py", "check"],
@@ -341,11 +362,11 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "obsinv"} & set(tiers)
+    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "snapshot"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "obsinv"} & set(tiers):
+    if {"smoke", "fuzz", "vocab", "obsinv", "snapshot"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
             print(f"no card scripts under {cards_dir} — run "
@@ -361,6 +382,8 @@ def main(argv=None):
             tier_vocab(rep)
         elif t == "obsinv":
             tier_obsinv(rep)
+        elif t == "snapshot":
+            tier_snapshot(rep)
         elif t == "replay":
             tier_replay(rep)
         elif t == "smoke":

@@ -1,6 +1,8 @@
 #include "input_logger.h"
 
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 #include "card_vocab.h"
@@ -12,6 +14,7 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "machine_io.h"
+#include "search_server.h"
 
 extern std::string RESOURCE_DIR;
 extern Coordinator global_coordinator;
@@ -291,6 +294,14 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
     }
 
     if (machine_mode && !human_has_priority) {
+        // Cooperative unwind (search server): a RESTORE command arrived at an
+        // earlier decision. Hand back the first choice at every decision --
+        // emitting no query, consuming no stdin, committing nothing -- until
+        // control returns to the main loop, which applies the pending restore
+        // and overwrites everything these auto-choices mutate.
+        if (search_restore_pending()) {
+            return search_unwind_choice();
+        }
         extern bool sideboard_phase;
         extern Zone::Ownership sideboard_phase_player;
         GameState gs;
@@ -299,14 +310,40 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         // sideboarding. Use the sideboard player as the viewer so state index
         // [34] (self_is_player_a) correctly identifies the sideboarding side.
         Zone::Ownership viewer = sideboard_phase ? sideboard_phase_player : Zone::UNKNOWN;
-        populate_gamestate(&gs, viewer);
-        populate_query(&q, actions);
-        cli_emit_machine_query(&q, &gs);
 
         int choice = -1;
-        if (scanf("%d", &choice) != 1) choice = -1;
-        int c;
-        while ((c = getchar()) != '\n' && c != EOF);
+        while (true) {
+            populate_gamestate(&gs, viewer);
+            populate_query(&q, actions);
+            // Loop-safety marker for the search driver: SNAPSHOT/DETERMINIZE are
+            // legal only at decisions the main loop can re-derive from restored
+            // data. Plain pre-BQUERY text line; stock drivers ignore it.
+            if (search_server_mode) {
+                printf("SEARCHINFO safe=%d\n", search_loop_safe() ? 1 : 0);
+            }
+            cli_emit_machine_query(&q, &gs);
+
+            char line[128];
+            if (!fgets(line, sizeof(line), stdin)) break;  // EOF: legacy confirm fallback
+            if (!strchr(line, '\n')) {
+                int c;
+                while ((c = getchar()) != '\n' && c != EOF);
+            }
+            char *end = nullptr;
+            long parsed = strtol(line, &end, 10);
+            if (end != line) {
+                choice = static_cast<int>(parsed);
+                break;
+            }
+            if (search_server_mode && search_handle_command(line)) {
+                // RESTORE begins the cooperative unwind at this very decision:
+                // hand back the first choice uncommitted; the main loop applies
+                // the restore and re-emits the restored decision's query.
+                if (search_restore_pending()) return search_unwind_choice();
+                continue;  // SNAPSHOT/DETERMINIZE/RELEASE handled: re-emit the query
+            }
+            break;  // unparseable input: legacy confirm fallback (choice stays -1)
+        }
 
         // Remap -1 (confirm sentinel from Python env) to last slot
         if (choice == -1 && !actions.empty()) {
