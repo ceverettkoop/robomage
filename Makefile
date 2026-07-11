@@ -55,6 +55,10 @@ C_SRCS := $(wildcard $(SRCDIR)/*.c)
 C_SRCS += $(wildcard $(SRCDIR)/*/*.c)
 CXX_SRCS := $(wildcard $(SRCDIR)/*.cpp)
 CXX_SRCS += $(wildcard $(SRCDIR)/*/*.cpp)
+# The actor (bin/az_actor) is a SEPARATE binary that links libtorch and needs
+# exceptions on. Keep its TUs out of the engine build entirely so plain `make`,
+# `make check`, and bin/robomage never see torch or an exceptions-enabled TU.
+CXX_SRCS := $(filter-out $(SRCDIR)/actor/%,$(CXX_SRCS))
 _C_OBJ := $(patsubst $(SRCDIR)/%.c,%.o,$(C_SRCS))
 _CXX_OBJ += $(patsubst $(SRCDIR)/%.cpp,%.o,$(CXX_SRCS))
 C_OBJ = $(patsubst %,$(ODIR)/%,$(_C_OBJ))
@@ -114,7 +118,43 @@ regen: all
 	$(PYTHON) train/gen_card_costs.py
 	$(PYTHON) train/regression/replay_diff.py record
 
-.PHONY: all pygen check regen clean
+# ── bin/az_actor — in-process AlphaZero actor (Phase D), NOT in the default build ──
+# Links all engine objects EXCEPT obj/main.o (the actor provides its own main),
+# plus the src/actor/* TUs (compiled with exceptions ON) and libtorch. Auto-detect
+# libtorch from the project venv; override with `make actor LIBTORCH_DIR=/path`.
+LIBTORCH_DIR ?= $(shell ls -d train/.venv/lib/python3*/site-packages/torch 2>/dev/null | head -1)
+
+# Fail early (with a clear message) only when actually asked to build the actor.
+ifneq (,$(filter actor,$(MAKECMDGOALS)))
+ifeq ($(strip $(LIBTORCH_DIR)),)
+$(error LIBTORCH_DIR is empty: could not find train/.venv/.../site-packages/torch. \
+Install torch into the venv, or pass LIBTORCH_DIR=/path/to/torch)
+endif
+endif
+
+ACTOR_SRCS := $(wildcard $(SRCDIR)/actor/*.cpp)
+ACTOR_OBJ := $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(ACTOR_SRCS))
+ENGINE_OBJ_NO_MAIN := $(filter-out $(ODIR)/main.o,$(C_OBJ) $(CXX_OBJ))
+
+# torch headers are noisy under -Wconversion etc.; -isystem silences them. ABI is
+# 1 in this venv (matches the engine's default), so no -D_GLIBCXX_USE_CXX11_ABI.
+TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/include/torch/csrc/api/include
+# Same base flags as the engine MINUS -fno-exceptions (torch throws), PLUS torch
+# includes and -I$(SRCDIR) (actor TUs use non-relative engine includes).
+ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
+ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
+
+$(ODIR)/actor/%.o: $(SRCDIR)/actor/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(ACTOR_IFLAGS) $(ACTOR_CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/az_actor $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) \
+		$(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
+		-L$(LIBTORCH_DIR)/lib -ltorch -ltorch_cpu -lc10 -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
+
+.PHONY: all pygen check regen clean actor
 
 # Remove everything under the object tree (the compile rules mkdir -p subdirs
 # back on demand), not per-level globs that silently miss deeper nesting, plus

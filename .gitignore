@@ -40,3 +40,6 @@ train/recordings/
 
 # AlphaZero self-play shards (Phase C artifacts) — regenerate, never commit
 train/az_data/
+
+# In-process AlphaZero actor binary (Phase D) — built by `make actor`
+bin/az_actor
