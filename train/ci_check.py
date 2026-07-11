@@ -169,7 +169,8 @@ def tier_pygen(rep):
     fetches the whole vocab, so every cost is reproducible here and in CI. The
     working tree is restored afterward so a stale result is reported, not left
     half-regenerated (the developer runs `make pygen` to actually update them)."""
-    gen_files = ["train/_enums.py", "train/card_costs.py"]
+    gen_files = ["train/_enums.py", "train/card_costs.py",
+                 "src/gen/card_costs_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)

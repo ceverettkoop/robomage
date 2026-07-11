@@ -28,8 +28,9 @@ BINNAME=robomage
 # Python used to regenerate the train/ codegen files. Prefer the project venv;
 # fall back to python3 (both generators use only the stdlib).
 PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
-# Auto-generated Python files kept in sync with the C++ sources at build time.
-PYGEN := train/_enums.py train/card_costs.py
+# Auto-generated files kept in sync with the C++ sources at build time
+# (train/ codegen plus the C++ mirror header src/gen/card_costs_gen.h).
+PYGEN := train/_enums.py train/card_costs.py src/gen/card_costs_gen.h
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -80,7 +81,11 @@ pygen: $(PYGEN)
 train/_enums.py: src/classes/action.h src/classes/game.h src/classes/gamestate.h src/machine_io.h train/gen_enums.py
 	$(PYTHON) train/gen_enums.py
 
-train/card_costs.py: src/card_vocab.h src/machine_io.h train/gen_card_costs.py
+# One generator run emits BOTH the Python matrices and the C++ mirror header, so
+# they are grouped targets (`&:`, GNU Make 4.3+): the recipe runs once and is
+# guaranteed to have produced every listed target — parallel-safe, and never
+# invoked twice under `make -j`.
+train/card_costs.py src/gen/card_costs_gen.h &: src/card_vocab.h src/machine_io.h train/gen_card_costs.py
 	$(PYTHON) train/gen_card_costs.py
 
 program:$(C_OBJ) $(CXX_OBJ)
