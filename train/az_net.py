@@ -401,15 +401,20 @@ def az_checkpoint_path(deck: str, steps: Optional[int] = None,
 
 
 def resolve_az_checkpoint(spec: str,
-                          checkpoint_dir: str = _AZ_CKPT_DIR) -> Optional[str]:
+                          checkpoint_dir: str = _AZ_CKPT_DIR,
+                          prefer: str = "final") -> Optional[str]:
     """Resolve an AZ checkpoint shorthand/path. Priority: exact path; then
     ``{deck}__azfinal.pt``; then the newest ``{deck}__azv*.pt``. Returns None if
-    nothing matches (so callers can fall back to a PPO warm-start)."""
+    nothing matches (so callers can fall back to a PPO warm-start).
+
+    ``prefer="snapshot"`` flips the final/snapshot order — the trainer uses it to
+    continue the CANDIDATE line (newest snapshot) while ``__azfinal`` stays the
+    gate-promoted incumbent that self-play and opponent specs default to."""
     if spec and os.path.exists(spec):
         return spec
     final = az_checkpoint_path(spec, None, checkpoint_dir)
-    if os.path.exists(final):
-        return final
+    if not os.path.exists(final):
+        final = None
     import glob as _glob
     sub = os.path.join(checkpoint_dir, os.path.dirname(spec))
     stem = os.path.basename(spec)
@@ -421,9 +426,8 @@ def resolve_az_checkpoint(spec: str,
         except (IndexError, ValueError):
             return -1
     snaps = [p for p in snaps if _steps(p) >= 0]
-    if snaps:
-        return max(snaps, key=_steps)
-    return None
+    snap = max(snaps, key=_steps) if snaps else None
+    return (snap or final) if prefer == "snapshot" else (final or snap)
 
 
 def load_az(path: str, map_location="cpu") -> "AZNet":

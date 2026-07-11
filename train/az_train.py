@@ -2,11 +2,12 @@
 
 - ``train_az`` : load the last M self-play shards for a deck, optimize AZNet with
   Adam (constant lr, weight_decay 1e-4) on the AZ loss
-  ``CE(pi, masked_log_softmax(logits)) + c_v * MSE(value, z)``, snapshot
-  ``{deck}__azv{steps}.pt`` and ``{deck}__azfinal.pt``.
-- ``az_eval`` : candidate-vs-incumbent gating via ``run_match`` with ``mcts``/``az``
-  controllers at low sims; promote the candidate to ``{deck}__azfinal.pt`` at a
-  win-rate threshold.
+  ``CE(pi, masked_log_softmax(logits)) + c_v * MSE(value, z)``, snapshot the
+  CANDIDATE to ``{deck}__azv{steps}.pt``. ``{deck}__azfinal.pt`` (the incumbent)
+  is written ONLY by the ``az_eval`` promotion gate — training never touches it.
+- ``az_eval`` : candidate-vs-incumbent gating via ``run_match`` with ``az``
+  controllers at low sims, seats alternating (half the games each way); promote
+  the candidate to ``{deck}__azfinal.pt`` at a win-rate threshold.
 - ``az_cycle`` : one sequential generate -> train -> eval iteration.
 
 Exposed to ``train.py`` as the ``az-train`` / ``az-eval`` / ``az`` subcommands.
@@ -68,7 +69,10 @@ def _init_net(deck: str, from_ppo: Optional[str], fresh: bool):
     from opponents import resolve_checkpoint
 
     if not fresh:
-        az = resolve_az_checkpoint(deck)
+        # Continue the CANDIDATE line: newest __azv snapshot first, __azfinal
+        # (the gate-promoted incumbent) only as a fallback. This keeps training
+        # cumulative across cycles even while the gate rejects candidates.
+        az = resolve_az_checkpoint(deck, prefer="snapshot")
         if az:
             net = load_az(az)
             steps = _read_steps(az)
@@ -157,7 +161,7 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
             last_loss = fl
             if b == 0 or (b + 1) % log_every == 0 or b == batches - 1:
                 line = (f"[az-train] batch {b+1}/{batches} loss={fl:.4f} "
-                        f"(pi={float(loss_pi):.4f} v={float(loss_v):.4f})")
+                        f"(pi={loss_pi.item():.4f} v={loss_v.item():.4f})")
                 print(line)
                 logf.write(line + "\n"); logf.flush()
             if snapshot_every and (b + 1) % snapshot_every == 0:
@@ -166,13 +170,13 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
 
     steps = prior_steps + batches * bs
     net.eval()
+    # Candidate snapshot only — __azfinal (the incumbent) advances exclusively
+    # through the az_eval promotion gate.
     snap = net.save(az_checkpoint_path(deck, steps, ckpt_dir), steps)
-    final = net.save(az_checkpoint_path(deck, None, ckpt_dir), steps)
-    print(f"[az-train] saved snapshot {snap}")
-    print(f"[az-train] saved final    {final}")
+    print(f"[az-train] saved candidate snapshot {snap}")
     print(f"[az-train] loss {first_loss:.4f} -> {last_loss:.4f} over {batches} batches")
     return {"samples": n, "first_loss": first_loss, "last_loss": last_loss,
-            "snapshot": snap, "final": final, "steps": steps}
+            "snapshot": snap, "steps": steps}
 
 
 # ----------------------------------------------------------------------
@@ -184,29 +188,39 @@ def az_eval(deck: str, candidate: str, incumbent: Optional[str] = None, *,
             promote_threshold: float = 0.55, promote: bool = False,
             ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1) -> dict:
     """Play ``candidate`` vs ``incumbent`` (mirror deck) with MCTS+AZ controllers
-    at low sims. Returns the tally; promotes candidate -> ``{deck}__azfinal.pt``
+    at low sims, seats alternating (half the games each way, since ``run_match``
+    itself never swaps seats and seat A is on the play in bo1). Returns the
+    candidate-perspective tally; promotes candidate -> ``{deck}__azfinal.pt``
     when ``promote`` and win-rate >= threshold."""
     from runner import run_match
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
-    cand_path = resolve_az_checkpoint(candidate) or candidate
+    cand_path = resolve_az_checkpoint(candidate, prefer="snapshot") or candidate
     if incumbent is None:
         incumbent = az_checkpoint_path(deck, None, ckpt_dir)
-    inc_path = resolve_az_checkpoint(incumbent) or incumbent
+    inc_path = incumbent if os.path.exists(incumbent) else \
+        (resolve_az_checkpoint(incumbent) or incumbent)
 
     knobs = f"?sims={sims}&worlds={worlds}&c={c_puct}"
-    agent_a = f"az:{cand_path}{knobs}"
+    cand_spec = f"az:{cand_path}{knobs}"
     have_inc = os.path.exists(inc_path)
-    agent_b = f"az:{inc_path}{knobs}" if have_inc else "scripted"
-    print(f"[az-eval] {games} games (bo1): candidate={cand_path} vs "
+    opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
+    print(f"[az-eval] {games} games (bo1, seats alternating): candidate={cand_path} vs "
           f"{'incumbent ' + inc_path if have_inc else 'scripted (no incumbent yet)'} "
           f"@ sims={sims} worlds={worlds}")
 
-    result = run_match(agent_a, agent_b, deck_a=deck, deck_b=deck, games=games,
-                       bo3=False, seed=seed, transcript="quiet")
-    wr = result.win_rate
-    print(f"[az-eval] candidate {result.wins}W-{result.losses}L-{result.draws}D "
-          f"(win_rate={wr:.3f})")
+    half = games // 2
+    w = l = d = 0
+    if games - half:  # candidate in seat A
+        r = run_match(cand_spec, opp_spec, deck_a=deck, deck_b=deck,
+                      games=games - half, bo3=False, seed=seed, transcript="quiet")
+        w += r.wins; l += r.losses; d += r.draws
+    if half:          # candidate in seat B (flip the tally back to candidate view)
+        r = run_match(opp_spec, cand_spec, deck_a=deck, deck_b=deck,
+                      games=half, bo3=False, seed=seed + games, transcript="quiet")
+        w += r.losses; l += r.wins; d += r.draws
+    wr = w / max(1, w + l + d)
+    print(f"[az-eval] candidate {w}W-{l}L-{d}D (win_rate={wr:.3f})")
 
     promoted = False
     if promote and wr >= promote_threshold:
@@ -220,7 +234,7 @@ def az_eval(deck: str, candidate: str, incumbent: Optional[str] = None, *,
         print(f"[az-eval] PROMOTED candidate -> {final} (>= {promote_threshold:.2f})")
     elif promote:
         print(f"[az-eval] not promoted (win_rate {wr:.3f} < {promote_threshold:.2f})")
-    return {"wins": result.wins, "losses": result.losses, "draws": result.draws,
+    return {"wins": w, "losses": l, "draws": d,
             "win_rate": wr, "promoted": promoted}
 
 
