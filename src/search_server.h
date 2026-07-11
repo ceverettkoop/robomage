@@ -1,6 +1,8 @@
 #ifndef SEARCH_SERVER_H
 #define SEARCH_SERVER_H
 
+#include <functional>
+
 // --search-server: machine-protocol extension for MCTS tree search.
 //
 // With the flag on, the machine-mode decision read accepts text commands in
@@ -46,6 +48,27 @@ bool search_loop_safe();
 bool search_restore_pending();
 int search_unwind_choice();
 void search_apply_pending_restore();
+
+// Latch a restore for the main loop to apply (the in-process equivalent of the
+// stdio RESTORE command): validates the slot is live, then arms the pending
+// restore so search_restore_pending()/search_apply_pending_restore() unwind and
+// roll the game back at the top of the loop. Reuses the exact path the stdio
+// RESTORE handler uses. Provided for the Phase D in-process game-end hook.
+void search_request_restore(int slot);
+
+// Game-end intercept hook for the Phase D in-process actor. When set (and a
+// snapshot slot is live), search_intercept_game_end() delegates a simulated
+// line's game-over to this hook instead of the stdio SIM_RESULT/stdin branch:
+// the hook is passed cur_game.winner (0=none/draw, 1=A, 2=B), records the
+// simulated result, latches a restore via search_request_restore(), and returns
+// true to keep the loop running (the pending restore unwinds at the loop top) or
+// false to let the game end. It is set by the future C++ actor binary (which
+// links the engine objects minus main.o); nothing in bin/robomage sets it, so
+// unset is the default and the stdio search-server behavior is byte-identical.
+// With the hook set, search_server_mode stays false, so no SEARCHINFO/SIM_RESULT
+// lines are printed.
+void search_set_game_end_hook(std::function<bool(int winner)> hook);
+void search_clear_game_end_hook();
 
 // Handle one non-integer machine-protocol line. Returns true if it was a
 // recognized command (RESTORE leaves the restore pending for the main loop;

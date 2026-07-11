@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <functional>
 #include <random>
 #include <string>
 #include <vector>
@@ -27,6 +28,8 @@ static int parse_slot_arg(const char *line, const char *cmd);
 static bool g_loop_safe = false;
 static int g_pending_restore_slot = -1;
 static int g_unwind_count = 0;
+// Unset by default; only the Phase D in-process actor installs it (see header).
+static std::function<bool(int)> g_game_end_hook;
 // A runaway unwind (a menu family that never terminates under repeated
 // first-choice selection) would silently auto-play forever; cap it loudly.
 static const int UNWIND_CAP = 10000;
@@ -35,6 +38,16 @@ void search_set_loop_safe(bool safe) { g_loop_safe = safe; }
 bool search_loop_safe() { return g_loop_safe; }
 
 bool search_restore_pending() { return g_pending_restore_slot >= 0; }
+
+void search_request_restore(int slot) {
+    if (slot < 0 || slot >= N_SNAPSHOT_SLOTS || !snapshot_slot_live(slot)) {
+        fatal_error("search-server: RESTORE from empty snapshot slot " + std::to_string(slot));
+    }
+    g_pending_restore_slot = slot;
+}
+
+void search_set_game_end_hook(std::function<bool(int)> hook) { g_game_end_hook = std::move(hook); }
+void search_clear_game_end_hook() { g_game_end_hook = nullptr; }
 
 int search_unwind_choice() {
     if (++g_unwind_count > UNWIND_CAP) {
@@ -135,6 +148,17 @@ bool search_intercept_game_end() {
     if (search_restore_pending()) {
         search_apply_pending_restore();
         return true;
+    }
+    // In-process actor hook (Phase D): a simulated line reached game over. When
+    // the hook is installed and a snapshot is live to roll back to, hand the
+    // verdict to it instead of the stdio SIM_RESULT/stdin protocol below. The
+    // hook records the result and latches a restore via search_request_restore();
+    // returning true keeps the loop running so the pending restore unwinds at the
+    // loop top (exactly as a stdio RESTORE would). With no snapshot live, don't
+    // call it — fall through to the existing behavior. Unset in bin/robomage, so
+    // the stdio branch stays reachable and byte-identical.
+    if (g_game_end_hook && any_slot_live()) {
+        return g_game_end_hook(cur_game.winner);
     }
     if (!search_server_mode || !any_slot_live()) return false;
 

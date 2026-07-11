@@ -2,6 +2,7 @@
 #define INPUT_LOGGER_H
 
 #include <fstream>
+#include <functional>
 #include <string>
 #include <vector>
 #include "classes/action.h"
@@ -56,6 +57,20 @@ class InputLogger {
 
     int get_input(const std::vector<LegalAction>& actions);
 
+    // In-process decision hook (Phase D in-process actor). When set, the machine-mode
+    // decision read (machine_mode && !human_has_priority) delegates the choice to this
+    // provider instead of populating a GameState/Query and blocking on stdin — no query
+    // is emitted and stdin/stdout are never touched. The provider receives the same
+    // `actions` vector and returns an action index (with the same -1 → last-slot confirm
+    // remap the stdio path uses); the choice still flows through commit_choice so the
+    // action-history observation block stays correct. The provider is set by the future
+    // C++ actor binary (which links the engine objects minus main.o); nothing in
+    // bin/robomage ever sets it, so unset is the default and the stdio path is unchanged.
+    // The cooperative-unwind short-circuit (search_restore_pending) runs BEFORE this hook,
+    // so search RESTORE semantics are unaffected.
+    void set_input_provider(std::function<int(const std::vector<LegalAction>&)> provider);
+    void clear_input_provider();
+
    private:
     InputLogger() = default;
     // Write the RMLOG v2 header (seed, flags, embedded decklists) to the open log file.
@@ -78,6 +93,8 @@ class InputLogger {
     Deck replay_deck_b;
     std::vector<std::string> replay_flags;
     int auto_pass_until_turn = -1;
+    // Unset by default (see set_input_provider); only the Phase D in-process actor sets it.
+    std::function<int(const std::vector<LegalAction>&)> input_provider;
 };
 
 // Ask `chooser` an optional yes/no question with a single decline (index 0) and accept

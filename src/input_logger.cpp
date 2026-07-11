@@ -126,6 +126,12 @@ InputLogger &InputLogger::instance() {
     return logger;
 }
 
+void InputLogger::set_input_provider(std::function<int(const std::vector<LegalAction> &)> provider) {
+    input_provider = std::move(provider);
+}
+
+void InputLogger::clear_input_provider() { input_provider = nullptr; }
+
 void InputLogger::write_header(unsigned int seed, const DecisionLogHeader &header) {
     log_file << "RMLOG v2\n";
     log_file << "SEED " << seed << "\n";
@@ -301,6 +307,22 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         // and overwrites everything these auto-choices mutate.
         if (search_restore_pending()) {
             return search_unwind_choice();
+        }
+        // In-process actor hook (Phase D): when a provider is installed, take the
+        // choice directly from it — no query is emitted and stdin/stdout are not
+        // touched. Runs AFTER the cooperative-unwind short-circuit above and BEFORE
+        // the GameState/Query population + stdio loop. Falls through to the same
+        // commit_choice the stdio path uses so record_action stays correct. Unset in
+        // bin/robomage, so this is a no-op there. The provider can consult
+        // search_loop_safe() for restore-safety without any extra plumbing.
+        if (input_provider) {
+            int choice = input_provider(actions);
+            // Same -1 (confirm sentinel) → last-slot remap the stdio path applies.
+            if (choice == -1 && !actions.empty()) {
+                choice = static_cast<int>(actions.size()) - 1;
+            }
+            commit_choice(actions, choice);
+            return choice;
         }
         extern bool sideboard_phase;
         extern Zone::Ownership sideboard_phase_player;
