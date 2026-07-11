@@ -132,19 +132,44 @@ Phase C has NOT yet been shown to *learn* (that needs real-hardware cycles at
 real sims/games budgets) — the container verification is functional, not a
 strength result.
 
+## Phase B strength gate — PASSED (2026-07-11, real hardware)
+
+Run on a 32-core Linux box, `make BUILD=RELEASE` (full `make check` pass first,
+0 errors/warnings; snapshot perf probe 1.06 ms/pair). Checkpoint:
+`train/checkpoints/league/bw_dnt__final.zip` (the league PPO generalist trained
+2026-07-11; gitignored, lives on this machine only). Command:
+
+```
+train/.venv/bin/python train/eval_search_gate.py \
+    --checkpoint league/bw_dnt --deck league/bw_dnt \
+    --games 192 --sims 128 --worlds 4 --workers 31 --batch-size 8
+```
+
+(`--batch-size 8` only splits the 192 games into 24 batches so all 31 workers
+are used; seeds stay disjoint per batch, seats split evenly. Default seed 1.)
+
+- **GATE (mcts vs raw, same ckpt): 128W 64L 0D of 192 — winrate 66.7% → PASS
+  (bar 55%)**, at the DEFAULT knobs `sims=128 worlds=4 c=1.5 vscale=1.0` —
+  no `--vscale`/`--c`/`--sims` sweep was needed.
+- Seat split: 62W-34L (64.6%) with MCTS in seat A, 66W-30L (68.8%) in seat B.
+- **Safe-fraction 57.8%** for bw_dnt (12,594 searched roots / 9,193 fallbacks;
+  1.61M sims, 6.07M sim steps). Zero draws, zero protocol errors.
+- **scripted:hard references** (absolute anchor, same deck mirror):
+  raw checkpoint 7W-25L (**21.9%**); mcts 6W-10L (**37.5%**) — search also
+  lifts play vs the external opponent, but the bw_dnt PPO checkpoint itself
+  is still well below scripted:hard.
+- Throughput: ~13-14 min per 8-game batch per worker (~1.7 min/game at
+  sims=128/worlds=4, 1 torch thread); the whole 192-game gate + reference
+  batches finished in ~16 min wall on 31 workers.
+
+Earlier in-container plumbing runs (4-core cloud box, debug build), kept for
+history: throwaway 60k-step checkpoint 6W-6L over 12 games at sims=48/worlds=3;
+`league/ur_delver__final.zip` (branch `delver_checkpoint_temp`) first 24-game
+batch at sims=128/worlds=4 was 11W-13L (45.8%), 63% safe fraction — stopped at
+n=24 (statistically meaningless; box too slow for 200 games).
+
 ## What is IN FLIGHT / handed off
 
-- **Phase B strength gate — hand-off to real hardware** (see next section).
-  In-container runs so far:
-  - Throwaway 60k-step checkpoint (plumbing only): 6W-6L over 12 games at
-    sims=48/worlds=3; 0-4 vs scripted:easy; zero protocol errors or draws.
-  - **Real checkpoint** (`league/ur_delver__final.zip`, from branch
-    `delver_checkpoint_temp`): first 24-game batch at sims=128/worlds=4 —
-    **11W-13L (45.8%)**, 987 searched roots / 576 fallbacks (**63% safe
-    fraction** for this deck), 126k sims, no draws, ~2.4 min/game on the
-    loaded 4-core debug build. Stopped there by user request (statistically
-    meaningless at n=24; the box is too slow for 200 games) — the full gate
-    runs on real hardware with `train/eval_search_gate.py` (committed).
 - **Phase D (C++ libtorch actor)**: not started; outline below.
 
 ## What to run on real hardware
@@ -163,7 +188,10 @@ CI perf probe expects release-build timing). Gate everything with `make check`.
    `train.py --deck <deck> --opponent <deck>` (consider
    `ROBOMAGE_PER_ACTION_HEAD=1` — content-based priors search better than the
    positional head, and it's what AZNet mirrors).
-2. **The Phase B gate** — one command, committed on the branch:
+2. **The Phase B gate** — DONE 2026-07-11 (see "Phase B strength gate —
+   PASSED" above; run with `league/bw_dnt` instead of ur_delver). Kept as a
+   recipe for gating other decks/checkpoints — one command, committed on the
+   branch:
    ```
    train/.venv/bin/python train/eval_search_gate.py \
        --checkpoint league/ur_delver --deck league/ur_delver \
