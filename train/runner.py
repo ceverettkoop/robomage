@@ -229,15 +229,33 @@ def run_games(controller_a, controller_b, *,
         if set_names is not None:
             set_names(deck_a, deck_b)
 
+    # A search controller (MCTS) needs the engine's --search-server protocol
+    # and a handle on the env to issue snapshot/restore/determinize commands.
+    # Advertised by attribute (like wants_decoded) so plain controllers need no
+    # stub; the env class swap is transparent to everything else here.
+    needs_search_env = any(getattr(c, "wants_search_env", False)
+                           for c in (controller_a, controller_b))
+    if needs_search_env:
+        from search_env import SearchNarrativeEnv
+        env_cls = SearchNarrativeEnv
+    else:
+        env_cls = NarrativeEnv
+
     for i in range(n_games):
-        env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
-                           bo3=bo3, battlefield_a=battlefield_a,
-                           battlefield_b=battlefield_b,
-                           graveyard_a=graveyard_a, graveyard_b=graveyard_b,
-                           exile_a=exile_a, exile_b=exile_b,
-                           sideboard_a=sideboard_a, sideboard_b=sideboard_b,
-                           life_a=life_a, life_b=life_b,
-                           no_shuffle=no_shuffle, log_decisions=log_decisions)
+        env = env_cls(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
+                      bo3=bo3, battlefield_a=battlefield_a,
+                      battlefield_b=battlefield_b,
+                      graveyard_a=graveyard_a, graveyard_b=graveyard_b,
+                      exile_a=exile_a, exile_b=exile_b,
+                      sideboard_a=sideboard_a, sideboard_b=sideboard_b,
+                      life_a=life_a, life_b=life_b,
+                      no_shuffle=no_shuffle, log_decisions=log_decisions)
+        # Hand search controllers the live env (per game — a fresh env/process
+        # is created for each one). Duck-typed like new_game below.
+        for ctrl in (controller_a, controller_b):
+            bind_env = getattr(ctrl, "bind_env", None)
+            if bind_env is not None:
+                bind_env(env)
         obs, _ = env.reset(seed=(seed + i) if seed is not None else None)
         # Seed Python's global RNG with the SAME per-game seed passed to the engine.
         # The scripted agent breaks ties on ambiguous OTHER_CHOICE prompts with

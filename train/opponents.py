@@ -191,6 +191,64 @@ class ModelController:
         return int(action)
 
 
+class SearchController:
+    """MCTS-at-inference controller: PUCT search over the engine's snapshot
+    protocol, with priors/values from a pluggable evaluator (a PPO checkpoint's
+    policy/value heads, or the torch-free uniform evaluator).
+
+    Requires a search-capable env: advertises ``wants_search_env`` so
+    ``runner.run_games`` constructs a :class:`search_env.SearchNarrativeEnv`
+    and hands it over via ``bind_env`` (duck-typed, like ``set_deck_names``).
+    Decisions where the engine reports ``safe=0`` (mid-resolution prompts,
+    mulligans — no snapshot possible) fall back to the evaluator's raw policy;
+    the searched/fallback split is tallied in ``stats``.
+    """
+
+    wants_search_env = True
+
+    def __init__(self, evaluator, *, sims: int = 128, worlds: int = 4,
+                 c_puct: float = 1.5, temperature: float = 0.0,
+                 label: str = "mcts", rng_seed: int = 0):
+        from mcts import run_search  # noqa: F401 — fail fast if unavailable
+        self._evaluator = evaluator
+        self._sims = sims
+        self._worlds = worlds
+        self._c_puct = c_puct
+        self._temperature = temperature
+        self.label = label
+        self._rng = np.random.default_rng(rng_seed)
+        self._env = None
+        self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0}
+
+    def bind_env(self, env) -> None:
+        self._env = env
+
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        from mcts import run_search
+
+        env = self._env
+        searchable = (
+            env is not None
+            and getattr(env, "last_search_safe", None)
+            and num_choices > 1
+        )
+        if not searchable:
+            self.stats["fallback"] += 1
+            priors, _ = self._evaluator.evaluate(obs, num_choices)
+            return int(np.argmax(priors))
+        result = run_search(
+            env, self._evaluator,
+            sims=self._sims, worlds=self._worlds, c_puct=self._c_puct,
+            rng=self._rng)
+        self.stats["searched"] += 1
+        self.stats["sims"] += result.sims_run
+        self.stats["sim_steps"] += result.sim_steps
+        if self._temperature <= 1e-6:
+            return result.best_action()
+        pi = result.policy_target(self._temperature)
+        return int(self._rng.choice(len(pi), p=pi))
+
+
 class ActionListController:
     """Plays a fixed sequence of action indices (test harness ``--actions``).
 
@@ -417,6 +475,10 @@ def make_controller(spec, *,
       - "play:<spec,spec,...>" → PlayController (semantic action script,
         same grammar as the test harness ``--play``);
       - "actions:<i,i,...>" → ActionListController (positional indices);
+      - "mcts:<ckpt-or-deck>[?sims=128&worlds=4&c=1.5&temp=0&vscale=1]" →
+        SearchController running PUCT search with that checkpoint's
+        policy/value heads as priors/leaf values ("mcts:uniform" for the
+        torch-free uniform evaluator — plumbing tests, weak play);
       - anything else → a model checkpoint path or deck shorthand, resolved
         via ``checkpoint_resolver`` (default: :func:`resolve_checkpoint`) and
         loaded as a ModelController.
@@ -436,9 +498,50 @@ def make_controller(spec, *,
     if low.startswith("actions:"):
         return ActionListController(
             [int(a) for a in s[len("actions:"):].split(",") if a.strip()])
+    if low.startswith("mcts:"):
+        return _make_search_controller(s[len("mcts:"):],
+                                       checkpoint_resolver=checkpoint_resolver)
     resolver = checkpoint_resolver or resolve_checkpoint
     path = resolver(s)
     return ModelController(_load_model(path), label=s, deterministic=deterministic)
+
+
+def _make_search_controller(spec: str, *,
+                            checkpoint_resolver=None) -> "SearchController":
+    """Build a SearchController from the part after "mcts:".
+
+    Grammar: ``<base>[?k=v&k=v...]`` where <base> is "uniform" or a checkpoint
+    path / deck shorthand, and the knobs are sims, worlds, c (c_puct),
+    temp (root temperature), vscale (PPO value tanh scale), seed (search RNG).
+    """
+    from mcts import PPOEvaluator, UniformEvaluator
+
+    base, _, query = spec.partition("?")
+    params: dict[str, str] = {}
+    if query:
+        for part in query.split("&"):
+            if not part.strip():
+                continue
+            k, _, v = part.partition("=")
+            params[k.strip().lower()] = v.strip()
+    sims = int(params.get("sims", 128))
+    worlds = int(params.get("worlds", 4))
+    c_puct = float(params.get("c", 1.5))
+    temperature = float(params.get("temp", 0.0))
+    v_scale = float(params.get("vscale", 1.0))
+    rng_seed = int(params.get("seed", 0))
+
+    base = base.strip()
+    if base.lower() == "uniform":
+        evaluator = UniformEvaluator()
+        label = f"mcts:uniform({sims}x{worlds})"
+    else:
+        resolver = checkpoint_resolver or resolve_checkpoint
+        model = _load_model(resolver(base))
+        evaluator = PPOEvaluator(model, v_scale=v_scale)
+        label = f"mcts:{base}({sims}x{worlds})"
+    return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
+                            temperature=temperature, label=label, rng_seed=rng_seed)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:

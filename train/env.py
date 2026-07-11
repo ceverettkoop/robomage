@@ -525,6 +525,11 @@ class RoboMageEnv(gym.Env):
         self._num_choices = 1
         self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
         self._action_public = np.zeros(MAX_ACTIONS, dtype=np.float32)  # card_is_public per action
+        self._action_cats = np.zeros(MAX_ACTIONS, dtype=np.int32)  # raw ActionCategory per action
+        # Under --search-server the engine precedes each query with a
+        # "SEARCHINFO safe=<0|1>" marker (whether SNAPSHOT/DETERMINIZE are legal
+        # at this decision); None when the flag is off / no query seen yet.
+        self.last_search_safe = None
         self._action_descriptions = None  # list[str] per action under --narrative, else None
         self._perm_counters = None        # (self[48], opp[48]) counter summaries under --narrative, else None
         self._perm_token_names = None     # (self[48], opp[48]) token names under --narrative, else None
@@ -585,6 +590,7 @@ class RoboMageEnv(gym.Env):
             cmd += ["--log-viewer", self._log_viewer]
         if self._log_decisions:
             cmd += ["--log-decisions"]
+        cmd += self._extra_engine_flags()
         self._proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
@@ -635,6 +641,11 @@ class RoboMageEnv(gym.Env):
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _extra_engine_flags(self) -> list:
+        """Additional engine CLI flags; subclass hook (SearchRoboMageEnv adds
+        --search-server) so reset() stays the single command builder."""
+        return []
 
     def _send(self, action: int):
         self._proc.stdin.write(f"{action}\n".encode())
@@ -723,121 +734,20 @@ class RoboMageEnv(gym.Env):
                     shaping_b += SHAPING_MULLIGAN_PENALTY
                 continue
 
+            # Search-server marker preceding each query under --search-server
+            # ("SEARCHINFO safe=<0|1>"); absent otherwise. Captured so a search
+            # driver knows whether SNAPSHOT/DETERMINIZE are legal right now.
+            if line.startswith(b"SEARCHINFO"):
+                self.last_search_safe = line.endswith(b"safe=1")
+                continue
+
             if line.startswith(b"BQUERY: "):
-                # Header: "BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>".
-                # The two trailing sizes are a runtime layout handshake — assert
-                # them against our imported constants so a C++ layout change
-                # without regenerated Python constants fails loudly here instead
-                # of silently misframing the binary payload below.
-                fields = line[8:].split()
-                if len(fields) != 3:
-                    raise RuntimeError(
-                        "malformed BQUERY header "
-                        f"{line!r}: expected 'BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>' "
-                        "(3 fields) — engine and Python driver are out of sync; "
-                        "regenerate train/_enums.py via `make regen`")
-                n = int(fields[0])
-                eng_state_size = int(fields[1])
-                eng_max_actions = int(fields[2])
-                if eng_state_size != STATE_SIZE or eng_max_actions != MAX_ACTIONS:
-                    raise RuntimeError(
-                        "BQUERY layout mismatch — "
-                        f"engine STATE_SIZE={eng_state_size} != python STATE_SIZE={STATE_SIZE}; "
-                        f"engine MAX_ACTIONS={eng_max_actions} != python MAX_ACTIONS={MAX_ACTIONS} — "
-                        "regenerate train/_enums.py via `make regen`")
-                self._num_choices = min(n, MAX_ACTIONS)
-
-                # Binary reads: state floats, then padded action metadata
-                state_arr = np.frombuffer(
-                    self._read_exactly(_BQUERY_STATE_BYTES), dtype=np.float32).copy()
-                cats_int = np.frombuffer(
-                    self._read_exactly(_BQUERY_CATS_BYTES), dtype=np.int32)
-                id_arr = np.frombuffer(
-                    self._read_exactly(_BQUERY_IDS_BYTES), dtype=np.float32).copy()
-                ctrl_arr = np.frombuffer(
-                    self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
-                pub_arr = np.frombuffer(
-                    self._read_exactly(_BQUERY_PUB_BYTES), dtype=np.float32).copy()
-                zone_int = np.frombuffer(
-                    self._read_exactly(_BQUERY_ZONE_BYTES), dtype=np.int32)
-                refs_int = np.frombuffer(
-                    self._read_exactly(_BQUERY_REFS_BYTES), dtype=np.int32)
-
-                # Per-action "card identity is public" flags (revealed tutors). Kept as a
-                # side-channel — observers (TUI) read it; not part of the ML observation
-                # vector yet, so OBS_SIZE and trained checkpoints are unaffected.
-                self._action_public = pub_arr
-
-                # Under --narrative the engine appends a fixed char block of
-                # per-action descriptions (the exact CLI labels). Read and
-                # decode it so observers can show "Target Player B", "Pay 4 life",
-                # etc. — things the numeric metadata can't express. Off the
-                # training path (narrative=False), so OBS is unaffected.
-                if self._narrative:
-                    self._action_descriptions = _decode_char_block(
-                        self._read_exactly(_BQUERY_DESC_BYTES),
-                        MAX_ACTIONS, MAX_CHOICE_DESC)
-                    # Per-permanent counter summaries (side-channel, like the
-                    # descriptions): (self_slots, opp_slots), aligned with the
-                    # state vector's permanent blocks.
-                    ctrs = _decode_char_block(
-                        self._read_exactly(_BQUERY_PERM_CTRS_BYTES),
-                        2 * N_PERM_SLOTS, PERM_COUNTERS_LEN)
-                    self._perm_counters = (ctrs[:N_PERM_SLOTS], ctrs[N_PERM_SLOTS:])
-                    # Per-permanent token names (side-channel, like the counters):
-                    # (self_slots, opp_slots), slot-aligned with the permanent blocks.
-                    # Non-empty only for token permanents.
-                    toks = _decode_char_block(
-                        self._read_exactly(_BQUERY_PERM_TOKS_BYTES),
-                        2 * N_PERM_SLOTS, PERM_TOKEN_NAME_LEN)
-                    self._perm_token_names = (toks[:N_PERM_SLOTS], toks[N_PERM_SLOTS:])
-                else:
-                    self._action_descriptions = None
-                    self._perm_counters = None
-                    self._perm_token_names = None
-
-                # The -1 confirm convention applies to mandatory attacker/blocker queries.
-                self._pending_confirm = any(
-                    c in MANDATORY_CATS for c in cats_int[:self._num_choices])
-
-                # Sideboard decisions observe the stale terminal board of the
-                # previous game — mask it down to the sideboard-relevant blocks
-                # (see _build_sideboard_mask). Applied before the cost gathers so
-                # derived hand/bf cost features zero out consistently.
-                if state_arr[_MATCH_CTX_START + 3] > 0.5:
-                    np.copyto(state_arr, _SB_MASK_FILL, where=~_SB_MASK_KEEP)
-
-                # Hand cast costs: gather cost rows by hand-slot card id
-                hand_ids = np.rint(
-                    state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS] * N_CARD_TYPES).astype(np.intp)
-                hand_costs = _gather_costs(_CARD_COST_MATRIX, hand_ids)
-
-                # Battlefield activated ability costs (48 self permanent slots)
-                bf_ids = np.rint(state_arr[_BF_ID_IDX] * N_CARD_TYPES).astype(np.intp)
-                bf_ability_costs = _gather_costs(_CARD_ABILITY_COST_MATRIX, bf_ids)
-
-                # Write sections into preallocated obs buffer (avoids concatenate allocation)
-                o = self._obs
-                o[:STATE_SIZE] = state_arr
-                _act_end = STATE_SIZE + MAX_ACTIONS
-                o[STATE_SIZE:_act_end] = cats_int / ACTION_CATEGORY_MAX
-                o[_act_end:_act_end + MAX_ACTIONS] = id_arr
-                o[_act_end + MAX_ACTIONS:_act_end + 2 * MAX_ACTIONS] = ctrl_arr
-                o[_act_end + 2 * MAX_ACTIONS:_act_end + 3 * MAX_ACTIONS] = (
-                    zone_int / REF_ZONE_MAX)
-                # Entity-slot refs, normalized like the in-state ref fields:
-                # (idx + 1) / 108, so -1 (none) lands exactly on 0.0.
-                o[_act_end + 3 * MAX_ACTIONS:_act_end + 4 * MAX_ACTIONS] = (
-                    (refs_int + 1) / N_ENTITY_REF_SLOTS)
-                _hc_start = _act_end + 4 * MAX_ACTIONS
-                o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
-                _bf_start = _hc_start + _HAND_COST_FEATS
-                o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
+                self._parse_bquery_payload(line)
 
                 # Auto-sideboard: if enabled, automatically pick "done" (action 0)
                 # for all sideboard queries so the model never sees them.
                 if self._auto_sideboard and any(
-                    c == _CAT_SB_DONE for c in cats_int[:self._num_choices]
+                    c == _CAT_SB_DONE for c in self._action_cats[:self._num_choices]
                 ):
                     self._send(0)
                     continue
@@ -858,6 +768,125 @@ class RoboMageEnv(gym.Env):
         # self._obs is a reused preallocated buffer mutated in place each step;
         # callers that retain the array across steps must .copy() it themselves.
         return self._obs, info
+
+    def _parse_bquery_payload(self, line: bytes) -> None:
+        """Parse one BQUERY header line + binary payload into the per-decision
+        state: fills self._obs in place and sets _num_choices, _action_cats,
+        _action_public, _pending_confirm, and the narrative side-channels.
+        Shared by the training reader (_read_until_query) and the search-server
+        simulation reader (SearchRoboMageEnv), which must decode identical
+        observations for tree-leaf evaluation.
+        """
+        # Header: "BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>".
+        # The two trailing sizes are a runtime layout handshake — assert
+        # them against our imported constants so a C++ layout change
+        # without regenerated Python constants fails loudly here instead
+        # of silently misframing the binary payload below.
+        fields = line[8:].split()
+        if len(fields) != 3:
+            raise RuntimeError(
+                "malformed BQUERY header "
+                f"{line!r}: expected 'BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>' "
+                "(3 fields) — engine and Python driver are out of sync; "
+                "regenerate train/_enums.py via `make regen`")
+        n = int(fields[0])
+        eng_state_size = int(fields[1])
+        eng_max_actions = int(fields[2])
+        if eng_state_size != STATE_SIZE or eng_max_actions != MAX_ACTIONS:
+            raise RuntimeError(
+                "BQUERY layout mismatch — "
+                f"engine STATE_SIZE={eng_state_size} != python STATE_SIZE={STATE_SIZE}; "
+                f"engine MAX_ACTIONS={eng_max_actions} != python MAX_ACTIONS={MAX_ACTIONS} — "
+                "regenerate train/_enums.py via `make regen`")
+        self._num_choices = min(n, MAX_ACTIONS)
+
+        # Binary reads: state floats, then padded action metadata
+        state_arr = np.frombuffer(
+            self._read_exactly(_BQUERY_STATE_BYTES), dtype=np.float32).copy()
+        cats_int = np.frombuffer(
+            self._read_exactly(_BQUERY_CATS_BYTES), dtype=np.int32)
+        id_arr = np.frombuffer(
+            self._read_exactly(_BQUERY_IDS_BYTES), dtype=np.float32).copy()
+        ctrl_arr = np.frombuffer(
+            self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
+        pub_arr = np.frombuffer(
+            self._read_exactly(_BQUERY_PUB_BYTES), dtype=np.float32).copy()
+        zone_int = np.frombuffer(
+            self._read_exactly(_BQUERY_ZONE_BYTES), dtype=np.int32)
+        refs_int = np.frombuffer(
+            self._read_exactly(_BQUERY_REFS_BYTES), dtype=np.int32)
+
+        # Per-action "card identity is public" flags (revealed tutors). Kept as a
+        # side-channel — observers (TUI) read it; not part of the ML observation
+        # vector yet, so OBS_SIZE and trained checkpoints are unaffected.
+        self._action_public = pub_arr
+        self._action_cats = cats_int
+
+        # Under --narrative the engine appends a fixed char block of
+        # per-action descriptions (the exact CLI labels). Read and
+        # decode it so observers can show "Target Player B", "Pay 4 life",
+        # etc. — things the numeric metadata can't express. Off the
+        # training path (narrative=False), so OBS is unaffected.
+        if self._narrative:
+            self._action_descriptions = _decode_char_block(
+                self._read_exactly(_BQUERY_DESC_BYTES),
+                MAX_ACTIONS, MAX_CHOICE_DESC)
+            # Per-permanent counter summaries (side-channel, like the
+            # descriptions): (self_slots, opp_slots), aligned with the
+            # state vector's permanent blocks.
+            ctrs = _decode_char_block(
+                self._read_exactly(_BQUERY_PERM_CTRS_BYTES),
+                2 * N_PERM_SLOTS, PERM_COUNTERS_LEN)
+            self._perm_counters = (ctrs[:N_PERM_SLOTS], ctrs[N_PERM_SLOTS:])
+            # Per-permanent token names (side-channel, like the counters):
+            # (self_slots, opp_slots), slot-aligned with the permanent blocks.
+            # Non-empty only for token permanents.
+            toks = _decode_char_block(
+                self._read_exactly(_BQUERY_PERM_TOKS_BYTES),
+                2 * N_PERM_SLOTS, PERM_TOKEN_NAME_LEN)
+            self._perm_token_names = (toks[:N_PERM_SLOTS], toks[N_PERM_SLOTS:])
+        else:
+            self._action_descriptions = None
+            self._perm_counters = None
+            self._perm_token_names = None
+
+        # The -1 confirm convention applies to mandatory attacker/blocker queries.
+        self._pending_confirm = any(
+            c in MANDATORY_CATS for c in cats_int[:self._num_choices])
+
+        # Sideboard decisions observe the stale terminal board of the
+        # previous game — mask it down to the sideboard-relevant blocks
+        # (see _build_sideboard_mask). Applied before the cost gathers so
+        # derived hand/bf cost features zero out consistently.
+        if state_arr[_MATCH_CTX_START + 3] > 0.5:
+            np.copyto(state_arr, _SB_MASK_FILL, where=~_SB_MASK_KEEP)
+
+        # Hand cast costs: gather cost rows by hand-slot card id
+        hand_ids = np.rint(
+            state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS] * N_CARD_TYPES).astype(np.intp)
+        hand_costs = _gather_costs(_CARD_COST_MATRIX, hand_ids)
+
+        # Battlefield activated ability costs (48 self permanent slots)
+        bf_ids = np.rint(state_arr[_BF_ID_IDX] * N_CARD_TYPES).astype(np.intp)
+        bf_ability_costs = _gather_costs(_CARD_ABILITY_COST_MATRIX, bf_ids)
+
+        # Write sections into preallocated obs buffer (avoids concatenate allocation)
+        o = self._obs
+        o[:STATE_SIZE] = state_arr
+        _act_end = STATE_SIZE + MAX_ACTIONS
+        o[STATE_SIZE:_act_end] = cats_int / ACTION_CATEGORY_MAX
+        o[_act_end:_act_end + MAX_ACTIONS] = id_arr
+        o[_act_end + MAX_ACTIONS:_act_end + 2 * MAX_ACTIONS] = ctrl_arr
+        o[_act_end + 2 * MAX_ACTIONS:_act_end + 3 * MAX_ACTIONS] = (
+            zone_int / REF_ZONE_MAX)
+        # Entity-slot refs, normalized like the in-state ref fields:
+        # (idx + 1) / 108, so -1 (none) lands exactly on 0.0.
+        o[_act_end + 3 * MAX_ACTIONS:_act_end + 4 * MAX_ACTIONS] = (
+            (refs_int + 1) / N_ENTITY_REF_SLOTS)
+        _hc_start = _act_end + 4 * MAX_ACTIONS
+        o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
+        _bf_start = _hc_start + _HAND_COST_FEATS
+        o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
 
     def _print_narrative_line(self, line: str):
         print(line, file=sys.stderr)
