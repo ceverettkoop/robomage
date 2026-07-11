@@ -90,9 +90,10 @@ class R:
 class Engine:
     """A raw --search-server subprocess with the stdio command protocol."""
 
-    def __init__(self, seed):
+    def __init__(self, seed, extra=()):
         self.p = subprocess.Popen(
-            [BINARY, "--machine", "--search-server", "--seed", str(seed)],
+            [BINARY, "--machine", "--search-server", "--seed", str(seed),
+             *extra],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL, cwd=BIN_DIR, bufsize=-1)
         self.last_winner = None
@@ -537,6 +538,151 @@ def test_determinize_invariants():
     return "hand/step/battlefield/life/counts invariant under DETERMINIZE; RESTORE exact"
 
 
+def _write_sb_decks():
+    """Stacked bo3 decks for the sideboard-determinize test: identical 60-Swamp
+    mains, and a MARKER basic in each sideboard that exists nowhere else (A:
+    Plains, B: Mountain). With auto-0 sideboarding (action 0 = done, no swaps)
+    the real decks never contain a marker, so a marker card being drawn in a
+    simulated world proves the opponent's sideboard entered the exchange pool."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    paths = []
+    for name, marker in (("sb_det_a", "Plains"), ("sb_det_b", "Mountain")):
+        p = os.path.join(d, f"{name}.dk")
+        with open(p, "w") as f:
+            f.write(f"60 Swamp\nSIDEBOARD:\n15 {marker}\n")
+        paths.append(p)
+    return paths
+
+
+_SB_MARKERS = (b"Plains", b"Mountain")
+
+
+def _notes_marker_hits(r):
+    return sum(1 for n in (r.notes or []) for m in _SB_MARKERS if m in n)
+
+
+def _advance_to_safe(eng, cur, min_idx, ctx, cap=600):
+    """Auto-0 until a safe (safe=1) query at decision index >= min_idx."""
+    idx = 0
+    while idx < cap:
+        if cur.kind != "q":
+            raise ProtocolError(f"{ctx}: expected queries while advancing, got "
+                                f"{cur.kind} at index {idx}")
+        if idx >= min_idx and cur.safe:
+            return cur
+        cur = eng.play(0)
+        idx += 1
+    raise ProtocolError(f"{ctx}: no safe decision within {cap} decisions")
+
+
+def _determinize_descend_hits(eng, snap_pl, snap_nc, seeds, depth, ctx):
+    """For each world seed: RESTORE (assert exact), DETERMINIZE, auto-0 descend
+    `depth` decisions counting marker-card sightings in the narrative. Returns
+    total hits. Leaves the engine mid-descent; caller must RESTORE."""
+    hits = 0
+    for ds in seeds:
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, f"{ctx} RESTORE (seed {ds})")
+        r = eng.determinize(ds)
+        for _ in range(depth):
+            r = eng.play(0)
+            hits += _notes_marker_hits(r)
+            if r.kind != "q":
+                break
+    return hits
+
+
+def test_sideboard_determinize():
+    """Post-board hidden-sideboard semantics of DETERMINIZE, over a real bo3:
+
+    - game 1 (pre-board): the opponent's sideboard is NOT in the exchange pool —
+      marker cards that exist only in sideboards never appear in any sampled
+      world's narrative;
+    - game 2 (post-board): the opponent's sideboard IS exchangeable with their
+      unknown hand/library — sampled worlds draw marker cards even though the
+      actual (no-swap) deck contains none;
+    - the real line never shows a marker in either game (sim-only mixing), and
+      DETERMINIZE leaves both players' hand/library counts unchanged post-board.
+    """
+    deck_paths = _write_sb_decks()
+    eng = Engine(11, extra=["--bo3", "--deck-a", "temp/sb_det_a",
+                            "--deck-b", "temp/sb_det_b", "--narrative"])
+    try:
+        cur = eng.read()
+        # ── game 1: pre-board — sideboard must stay out of the pool ──────────
+        cur = _advance_to_safe(eng, cur, 15, "g1 anchor")
+        snap_pl, snap_nc = cur.payload, cur.nc
+        eng.snapshot(0)
+        g1_hits = _determinize_descend_hits(eng, snap_pl, snap_nc,
+                                            seeds=(1, 2, 3, 4), depth=120,
+                                            ctx="g1")
+        if g1_hits:
+            raise ProtocolError(
+                f"pre-board DETERMINIZE leaked {g1_hits} sideboard marker "
+                "sighting(s) into game-1 worlds — game 1 must model the known "
+                "60, not the 75")
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, "g1 final RESTORE")
+        rel = eng.release()
+        _assert_same_query(rel, snap_pl, snap_nc, "g1 post-RELEASE re-emit")
+        cur = rel
+
+        # ── play out game 1 for real; markers must never appear on the real
+        # line (auto-0 sideboarding makes no swaps in either direction) ──────
+        real_hits = 0
+        saw_g1_result = False
+        for _ in range(6000):
+            cur = eng.play(0)
+            real_hits += _notes_marker_hits(cur)
+            if cur.kind != "q":
+                raise ProtocolError(f"bo3 continuation ended unexpectedly "
+                                    f"({cur.kind}) before game 2")
+            if cur.note_has(b"GAME_RESULT:"):
+                saw_g1_result = True
+                break
+        if not saw_g1_result:
+            raise ProtocolError("game 1 did not finish within 6000 decisions")
+
+        # ── game 2: post-board — opponent sideboard joins the pool ──────────
+        cur = _advance_to_safe(eng, cur, 1, "g2 anchor")
+        snap_pl, snap_nc = cur.payload, cur.nc
+        eng.snapshot(0)
+        # Count invariance on one world before the sighting sweep.
+        dq = eng.determinize(1)
+        s0, s1 = _state(snap_pl), _state(dq.payload)
+        for name, off in (("self hand count", _SELF_BLOCK_START + _PB_HAND_CT),
+                          ("opp hand count", _OPP_BLOCK_START + _PB_HAND_CT),
+                          ("self library count", _LIBRARY_CTX_START),
+                          ("opp library count", _LIBRARY_CTX_START + 1)):
+            if s0[off] != s1[off]:
+                raise ProtocolError(f"post-board DETERMINIZE changed {name} "
+                                    f"({s0[off]} -> {s1[off]})")
+        g2_hits = _determinize_descend_hits(eng, snap_pl, snap_nc,
+                                            seeds=range(1, 9), depth=120,
+                                            ctx="g2")
+        if g2_hits == 0:
+            raise ProtocolError(
+                "post-board DETERMINIZE never surfaced a sideboard marker "
+                "across 8 worlds x 120 decisions — the opponent's sideboard "
+                "does not appear to join the exchange pool in game 2")
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, "g2 final RESTORE")
+        if real_hits:
+            raise ProtocolError(f"{real_hits} marker sighting(s) on the REAL "
+                                "line — sideboard mixing must be sim-only")
+        return (f"g1 worlds clean (0 marker hits), g2 worlds mixed "
+                f"({g2_hits} hits over 8 worlds), real line clean, counts "
+                "invariant")
+    finally:
+        eng.kill()
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_perf():
     """Time SNAPSHOT+RESTORE pairs at one decision. Reported for CI logs; WARNs
     (does not fail) above a lenient debug-build threshold — the sub-ms bar is a
@@ -577,6 +723,7 @@ TESTS = [
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),
     ("determinize_invariants", test_determinize_invariants),
+    ("sideboard_determinize", test_sideboard_determinize),
     ("perf", test_perf),
 ]
 

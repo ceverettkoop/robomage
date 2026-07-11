@@ -273,8 +273,12 @@ on real hardware:
   reports the searched/fallback ratio — check it per deck.
 - DETERMINIZE pins both players' known-top-library prefixes and known
   (revealed) opponent hand cards; the opponent's unknown hand + unpinned
-  library form one exchange pool. Mild accepted approximations are documented
-  in `src/search_server.cpp`.
+  library form one exchange pool. **Post-board (bo3 game 2+) the opponent's
+  SIDEBOARD cards join that pool** (their sideboard swaps are hidden — P only
+  knows the 75, so sampled worlds re-deal which cards are in the deck; a
+  declared companion is public and stays pinned; game 1 models the known
+  pre-board 60). Covered by the `sideboard_determinize` CI test. Mild accepted
+  approximations are documented in `src/search_server.cpp`.
 - Snapshot slots are wiped at each game start (`snapshot_release_all` in
   `play_single_game`) — no cross-game reuse; bo3 sideboard decisions are unsafe
   roots (searchable later if wanted).

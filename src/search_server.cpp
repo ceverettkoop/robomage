@@ -7,13 +7,16 @@
 #include <vector>
 
 #include "classes/game.h"
+#include "components/player.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "mana_system.h"
 #include "snapshot.h"
 #include "stable_rng.h"
 
 extern Game cur_game;
 extern Coordinator global_coordinator;
+extern int match_game_number;  // -1 = single game, 0-2 = bo3 game index (main.cpp)
 
 bool search_server_mode = false;
 
@@ -186,6 +189,23 @@ void determinize_hidden_state(unsigned int world_seed) {
     std::vector<Entity> opp_pool;          // opp unknown hand cards, then unpinned library cards
     std::vector<size_t> opp_lib_positions; // vacated opp library positions
     size_t opp_hand_slots = 0;
+    size_t opp_lib_slots = 0;
+
+    // Post-board games of a bo3 (game index 1+, matching machine_io's
+    // is_post_board): the opponent's sideboard SWAPS are hidden information, so
+    // P only knows the combined 75 — which 60 are in the deck is unknowable.
+    // Model that by adding the opponent's SIDEBOARD cards to the exchange pool:
+    // every sampled world re-deals which cards are in hand/library and which
+    // sat out in the sideboard. Game 1 (and single games) keep the sideboard
+    // out of the pool — the pre-board 60 is exactly the known decklist. A
+    // declared companion is public (CR 702.139 reveal) and stays pinned.
+    bool opp_sideboard_hidden = match_game_number > 0;
+    Entity opp_companion = 0;
+    if (opp_sideboard_hidden) {
+        Entity opp_pe = get_player_entity(opp);
+        if (global_coordinator.entity_has_component<Player>(opp_pe))
+            opp_companion = global_coordinator.GetComponent<Player>(opp_pe).chosen_companion;
+    }
 
     Entity max_e = global_coordinator.GetMaxIssuedEntity();
     for (Entity e = 0; e < max_e; e++) {
@@ -202,12 +222,16 @@ void determinize_hidden_state(unsigned int world_seed) {
             } else {
                 opp_pool.push_back(e);
                 opp_lib_positions.push_back(z.distance_from_top);
+                opp_lib_slots++;
             }
         } else if (z.location == Zone::HAND && z.owner == opp && !z.identity_known) {
             // Revealed hand cards (Duress, revealed tutor targets) stay put;
             // only the genuinely unknown ones join the exchange pool.
             opp_pool.push_back(e);
             opp_hand_slots++;
+        } else if (opp_sideboard_hidden && z.location == Zone::SIDEBOARD &&
+                   z.owner == opp && e != opp_companion) {
+            opp_pool.push_back(e);
         }
     }
 
@@ -218,21 +242,27 @@ void determinize_hidden_state(unsigned int world_seed) {
         global_coordinator.GetComponent<Zone>(own_pool[i]).distance_from_top = own_positions[i];
     }
 
-    // Opponent's unknown cards: hand and library are exchangeable from P's
-    // perspective, so shuffle the combined pool and deal it back -- the first
-    // opp_hand_slots entries become the hand, the rest fill the vacated
-    // library positions. Direct Zone writes, no orderer add_to_zone: this is a
+    // Opponent's unknown cards: hand, library and (post-board) sideboard are
+    // exchangeable from P's perspective, so shuffle the combined pool and deal
+    // it back -- the first opp_hand_slots entries become the hand, the next
+    // opp_lib_slots fill the vacated library positions, and any remainder (the
+    // sideboard cards' slots) returns to the sideboard. Zone sizes are
+    // preserved exactly. Direct Zone writes, no orderer add_to_zone: this is a
     // belief-state resample, not a game event, and must fire no triggers.
     stable_shuffle(opp_pool, world_gen);
     size_t li = 0;
+    size_t sb = 0;
     for (size_t i = 0; i < opp_pool.size(); i++) {
         auto &z = global_coordinator.GetComponent<Zone>(opp_pool[i]);
         if (i < opp_hand_slots) {
             z.location = Zone::HAND;
             z.distance_from_top = 0;  // not meaningful in hand
-        } else {
+        } else if (li < opp_lib_slots) {
             z.location = Zone::LIBRARY;
             z.distance_from_top = opp_lib_positions[li++];
+        } else {
+            z.location = Zone::SIDEBOARD;
+            z.distance_from_top = sb++;  // stable, arbitrary sideboard order
         }
         z.identity_known = false;
     }
