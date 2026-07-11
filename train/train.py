@@ -1779,3 +1779,15 @@ if __name__ == "__main__":
         else:
             baseline(args.binary, _resolve_model(args.model), args.games or 100,
                      deck=args.deck, seed=args.seed)
+    elif args.command == "az-selfplay":
+        import az_selfplay
+        az_selfplay.run(args)
+    elif args.command == "az-train":
+        import az_train
+        az_train.run_train(args)
+    elif args.command == "az-eval":
+        import az_train
+        az_train.run_eval(args)
+    elif args.command == "az":
+        import az_train
+        az_train.run_cycle(args)

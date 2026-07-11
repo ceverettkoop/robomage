@@ -479,6 +479,10 @@ def make_controller(spec, *,
         SearchController running PUCT search with that checkpoint's
         policy/value heads as priors/leaf values ("mcts:uniform" for the
         torch-free uniform evaluator — plumbing tests, weak play);
+      - "az:<az-ckpt-or-deck>[?sims=&worlds=&c=&temp=&seed=]" → SearchController
+        driven by an AZNet (AZ .pt / deck shorthand, else a PPO warm-start);
+      - "azraw:<az-ckpt-or-deck>" → AZRawController (AZNet policy argmax, no
+        search — cheap gating);
       - anything else → a model checkpoint path or deck shorthand, resolved
         via ``checkpoint_resolver`` (default: :func:`resolve_checkpoint`) and
         loaded as a ModelController.
@@ -501,6 +505,10 @@ def make_controller(spec, *,
     if low.startswith("mcts:"):
         return _make_search_controller(s[len("mcts:"):],
                                        checkpoint_resolver=checkpoint_resolver)
+    if low.startswith("az:"):
+        return _make_az_controller(s[len("az:"):], search=True)
+    if low.startswith("azraw:"):
+        return _make_az_controller(s[len("azraw:"):], search=False)
     resolver = checkpoint_resolver or resolve_checkpoint
     path = resolver(s)
     return ModelController(_load_model(path), label=s, deterministic=deterministic)
@@ -542,6 +550,61 @@ def _make_search_controller(spec: str, *,
         label = f"mcts:{base}({sims}x{worlds})"
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                             temperature=temperature, label=label, rng_seed=rng_seed)
+
+
+class AZRawController:
+    """Raw AZNet policy seat (argmax over softmaxed masked logits, NO search).
+
+    The cheap gating counterpart to a search controller — used by ``azraw:`` to
+    compare policies without paying for MCTS."""
+
+    def __init__(self, evaluator, label: str = "azraw"):
+        self._evaluator = evaluator
+        self.label = label
+
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        priors, _ = self._evaluator.evaluate(obs, num_choices)
+        return int(np.argmax(priors))
+
+
+def _load_az_evaluator(base: str):
+    """Load an AZNet (AZ .pt / deck shorthand, else PPO warm-start) -> AZEvaluator.
+    Lazy import so opponents.py stays torch-free until a model seat is built."""
+    from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
+    az = resolve_az_checkpoint(base)
+    if az:
+        return AZEvaluator(load_az(az)), az
+    if base.endswith(".zip") or resolve_checkpoint(base) != base:
+        # A PPO checkpoint / deck shorthand — warm-start an AZNet from it.
+        return AZEvaluator(from_ppo(resolve_checkpoint(base))), base
+    return AZEvaluator(load_az(base)), base   # let load_az raise a clear error
+
+
+def _make_az_controller(spec: str, *, search: bool):
+    """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
+
+    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=]`` where <base> is an AZ
+    checkpoint path / deck shorthand (falls back to a PPO warm-start)."""
+    base, _, query = spec.partition("?")
+    params: dict = {}
+    if query:
+        for part in query.split("&"):
+            if not part.strip():
+                continue
+            k, _, v = part.partition("=")
+            params[k.strip().lower()] = v.strip()
+    evaluator, resolved = _load_az_evaluator(base.strip())
+    if not search:
+        return AZRawController(evaluator, label=f"azraw:{base.strip()}")
+    sims = int(params.get("sims", 128))
+    worlds = int(params.get("worlds", 4))
+    c_puct = float(params.get("c", 1.5))
+    temperature = float(params.get("temp", 0.0))
+    rng_seed = int(params.get("seed", 0))
+    return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
+                            temperature=temperature,
+                            label=f"az:{base.strip()}({sims}x{worlds})",
+                            rng_seed=rng_seed)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:
