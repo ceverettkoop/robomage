@@ -37,7 +37,7 @@ ENT_COEF = 0.012
 # valuable as a generalist matures. Canonical value for every training path AND
 # re-asserted on checkpoint resume (older checkpoints saved with target_kl=None
 # would otherwise never early-stop). See train.py _reassert_hparams.
-TARGET_KL = 0.025
+TARGET_KL = 0.02
 
 # PPO optimization epochs per update and policy clip range. Canonical values for
 # every training path AND re-asserted on checkpoint resume (MaskablePPO.load
@@ -50,30 +50,24 @@ TARGET_KL = 0.025
 N_EPOCHS = 5
 CLIP_RANGE = 0.2
 
-# Learning-rate decay schedule, keyed to a model's ABSOLUTE cumulative
-# num_timesteps (not SB3's per-learn() progress_remaining, which resets every
-# resume). LR falls linearly from LR_PEAK at step 0 to LR_FLOOR at
-# LR_DECAY_STEPS, then stays flat at LR_FLOOR. Because it is anchored to the
-# checkpoint's own step count, a resumed generalist that already trained N steps
-# picks the schedule up at position N — so decay survives the many short resume
-# sessions a per-deck generalist accumulates over. Applied by train.py's
-# LRDecayCallback on every training path. See lr_for_timesteps().
-LR_PEAK = 3e-4
-LR_FLOOR = 5e-5
-LR_DECAY_STEPS = 10_000_000
+# Learning rate: held CONSTANT at LR_CONST across all training, regardless of a
+# model's cumulative num_timesteps. (Previously a linear decay from LR_PEAK to
+# LR_FLOOR over LR_DECAY_STEPS; now flat so the LR never anneals with step
+# count.) Still applied by train.py's LRDecayCallback on every training path,
+# which keeps the LR pinned to this value on every rollout — overriding whatever
+# learning_rate a resumed checkpoint was saved with. See lr_for_timesteps().
+LR_CONST = 1e-4
+# Back-compat aliases for callers/imports that referenced the old decay knobs.
+LR_PEAK = LR_CONST
 
 
 def lr_for_timesteps(num_timesteps: int) -> float:
-    """Linear LR decay from LR_PEAK to LR_FLOOR over [0, LR_DECAY_STEPS] cumulative
-    timesteps, clamped flat at LR_FLOOR beyond LR_DECAY_STEPS.
+    """Constant learning rate LR_CONST, independent of num_timesteps.
 
-    Keyed to the model's absolute num_timesteps so the schedule is continuous
-    across checkpoint resumes (a generalist resumed at N steps continues the same
-    global decay curve rather than restarting it)."""
-    if num_timesteps >= LR_DECAY_STEPS:
-        return LR_FLOOR
-    frac = max(0, num_timesteps) / LR_DECAY_STEPS  # 0.0 at step 0 → 1.0 at floor
-    return LR_PEAK + (LR_FLOOR - LR_PEAK) * frac
+    Kept as a function (rather than a bare constant) so LRDecayCallback and every
+    other caller keep the same interface; the num_timesteps argument is now
+    ignored since the LR no longer decays."""
+    return LR_CONST
 
 
 # Shaping-reward anneal, keyed to ABSOLUTE cumulative num_timesteps like the LR
