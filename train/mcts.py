@@ -23,7 +23,7 @@ heads), Phase C (AZNet), and torch-free testing (UniformEvaluator).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional, Protocol
+from typing import Optional, Protocol, Sequence
 
 import numpy as np
 
@@ -141,12 +141,21 @@ def run_search(
     root_noise_alpha: float = 1.0,
     rng: Optional[np.random.Generator] = None,
     snapshot_slot: int = 0,
+    world_seeds: Optional[Sequence[int]] = None,
 ) -> SearchResult:
     """Search the env's current decision. The env must be parked at a real,
     loop-safe decision (env.last_search_safe). On return the env is back at
     that same decision with all snapshots released, ready for the chosen real
-    step()."""
+    step().
+
+    ``world_seeds`` (optional): when given, the per-world determinize seeds are
+    consumed from it in order instead of drawn from ``rng`` — used for
+    reproducible cross-implementation parity (the C++ actor derives the same
+    seeds by a shared formula). Default ``None`` keeps the original rng draw."""
     rng = rng if rng is not None else np.random.default_rng()
+    if world_seeds is not None and len(world_seeds) < worlds:
+        raise ValueError(
+            f"world_seeds needs >= {worlds} entries, got {len(world_seeds)}")
 
     root_obs = env._obs.copy()
     root_n = env._num_choices
@@ -161,8 +170,9 @@ def run_search(
     sim_steps = 0
     sims_per_world = max(1, sims // max(1, worlds))
 
-    for _ in range(worlds):
-        world_seed = int(rng.integers(1, 2**31 - 1))
+    for w in range(worlds):
+        world_seed = (int(world_seeds[w]) if world_seeds is not None
+                      else int(rng.integers(1, 2**31 - 1)))
         priors = root_priors
         if root_noise_eps > 0.0:
             noise = rng.dirichlet([root_noise_alpha] * root_n)
