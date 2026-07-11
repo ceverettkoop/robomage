@@ -389,6 +389,34 @@ def _meta_path(path: str) -> str:
     return base + ".meta.json"
 
 
+def torchscript_export_path(ckpt_path: str) -> str:
+    """Map a state_dict checkpoint path to its TorchScript sibling.
+
+    ``foo__azfinal.pt`` -> ``foo__azfinal.ts.pt`` (the distinct ``.ts.pt`` suffix
+    keeps the serialized module from colliding with the state_dict ``.pt`` that
+    :func:`resolve_az_checkpoint` loads). Used by the C++ actor pipeline."""
+    base, _ = os.path.splitext(ckpt_path)
+    return base + ".ts.pt"
+
+
+def save_torchscript(net: "AZNet", path: str, steps: Optional[int] = None) -> str:
+    """Script ``net`` and persist the serialized TorchScript module to ``path``.
+
+    ``path`` must end with ``.ts.pt`` (the distinct suffix that keeps the artifact
+    from colliding with state_dict ``.pt`` files). Also writes ``<path>.meta.json``
+    with the same :meth:`AZNet.meta` handshake dict so a C++ loader can verify
+    OBS_SIZE / MAX_ACTIONS / N_CARD_TYPES before running the module."""
+    assert path.endswith(".ts.pt"), \
+        f"TorchScript export path must end with .ts.pt, got {path!r}"
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    net.eval()
+    scripted = torch.jit.script(net)
+    scripted.save(path)
+    with open(_meta_path(path), "w") as f:
+        json.dump(net.meta(steps or 0), f, indent=2)
+    return path
+
+
 def az_checkpoint_path(deck: str, steps: Optional[int] = None,
                        checkpoint_dir: str = _AZ_CKPT_DIR) -> str:
     """``{dir}/{deck}__azfinal.pt`` (steps None) or ``{deck}__azv{steps}.pt``.
@@ -623,7 +651,32 @@ def _export_check(embed_dim: int = EMBED_DIM, seed: int = 0,
     ok = dl <= tol and dv <= tol
     print(f"export-check: max|Δlogits|={dl:.2e} max|Δvalue|={dv:.2e} "
           f"tol={tol:.0e} -> {'PASS' if ok else 'FAIL'}")
-    return 0 if ok else 1
+    if not ok:
+        return 1
+
+    # 3) persisted TorchScript round-trips: save -> torch.jit.load -> re-run.
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        ts_path = os.path.join(td, "aznet_export_check.ts.pt")
+        save_torchscript(net, ts_path)
+        reloaded = torch.jit.load(ts_path)
+        reloaded.eval()
+        with torch.no_grad():
+            r_logits, r_value = reloaded(obs, mask)
+        rdl = 0.0
+        for i in range(3):
+            n = int(mask[i].sum())
+            rdl = max(rdl, float((eager_logits[i, :n] - r_logits[i, :n]).abs().max()))
+        rdv = float((eager_value - r_value).abs().max())
+        with open(_meta_path(ts_path)) as f:
+            rt_meta = json.load(f)
+        meta_ok = all(int(rt_meta[k]) == int(v) for k, v in
+                      (("OBS_SIZE", OBS_SIZE), ("MAX_ACTIONS", MAX_ACTIONS),
+                       ("N_CARD_TYPES", N_CARD_TYPES)))
+    reload_ok = rdl == 0.0 and rdv == 0.0 and meta_ok
+    print(f"export-reload: max|Δlogits|={rdl:.2e} max|Δvalue|={rdv:.2e} "
+          f"meta_ok={meta_ok} -> {'PASS' if reload_ok else 'FAIL'}")
+    return 0 if reload_ok else 1
 
 
 if __name__ == "__main__":
@@ -633,11 +686,21 @@ if __name__ == "__main__":
                     help="Script the net and compare scripted vs eager outputs")
     ap.add_argument("--from-ppo", default=None,
                     help="Warm-start from a PPO checkpoint and report transfer")
+    ap.add_argument("--export", default=None,
+                    help="Export an AZ checkpoint (path or deck shorthand) to its "
+                         "sibling .ts.pt TorchScript module + meta")
     ap.add_argument("--embed-dim", type=int, default=EMBED_DIM)
     args = ap.parse_args()
     rc = 0
     if args.from_ppo:
         from_ppo(args.from_ppo)
-    if args.export_check or not args.from_ppo:
+    if args.export:
+        ckpt = resolve_az_checkpoint(args.export)
+        if ckpt is None:
+            raise SystemExit(f"no AZ checkpoint found for {args.export!r}")
+        net = load_az(ckpt)
+        out = save_torchscript(net, torchscript_export_path(ckpt))
+        print(out)
+    if args.export_check or (not args.from_ppo and not args.export):
         rc = _export_check(embed_dim=args.embed_dim)
     raise SystemExit(rc)

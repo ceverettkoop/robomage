@@ -17,6 +17,7 @@ train/logs/**
 checkpoints/*.zip
 replays/*.txt
 train/checkpoints/*
+*.ts.pt
 .cache/*
 bin/resources/tokenscripts/*.txt
 resources/logs/*
