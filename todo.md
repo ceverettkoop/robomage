@@ -92,6 +92,32 @@ without this, or it will self-destruct on resolution.
   (reported as DRAW) on comma-named cards. Workaround: pass comma-free names (name_to_uid strips
   punctuation, so the same card loads). The underlying assert is unfixed.
 
+## AlphaZero / search — unsafe-root coverage
+
+The search safe window covers exactly ONE call site: the main-loop priority decision
+(`game_driver.cpp` `search_set_loop_safe(true)` around the loop-top `get_input`). Every other
+prompt is an unsafe root: search cannot START there (SNAPSHOT/DETERMINIZE fatal-error), the
+SearchController falls back to raw policy argmax, and AZ self-play stores NO training sample —
+the policy head never gets visit-distribution targets at those decisions (~9% of decisions at
+the measured ~91% safe fraction). Unsafe decisions ARE still traversed as interior tree nodes
+inside simulations; only rooting is blocked.
+
+- **Extend the safe window to mandatory choices — the high-value fix.** Declare attackers,
+  declare blockers, cleanup discard, and trigger-ordering prompts run at the LOOP TOP
+  (`is_mandatory_choice_pending` → `proc_mandatory_choice`, before the safe window) — unlike
+  nested prompts they are re-derived each loop iteration from cur_game + ECS, so a restore
+  landing at the loop top plausibly re-derives the same prompt. If so, marking them loop-safe
+  puts COMBAT DECLARATIONS under MCTS and into the AZ training data (today the net's combat
+  policy is shaped only by PPO warm-start + value backup, never by search CE targets). Must be
+  proven by the snapshot round-trip CI test before trusting it (check
+  `process_turn_based_actions` idempotence on the restored path).
+- Nested mid-resolution prompts (targets/modes at cast, mana payment, search/dig/scry picks,
+  discard/sacrifice, unless-costs, etc.) are architecturally unsafe — they live halfway down a
+  live C++ call stack that a game-state snapshot cannot rebuild. Making those searchable means
+  either resolution-state serialization or moving the choices to the loop top (cf. the deferred
+  modal-at-cast refactor); not worth it piecemeal.
+- Mulligans and bo3 sideboarding are also unsafe roots; low training value, fine as fallbacks.
+
 ## ML / observation
 
 - ML can only pay for spells AFTER choosing them — precludes some rare optimal lines (e.g. floating
