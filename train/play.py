@@ -133,17 +133,16 @@ if __name__ == "__main__":
         # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
         model_path = "scripted"
     elif model_path is None:
-        # Checkpoints are per-deck (deck-pilot naming): one model pilots one deck
-        # against any opponent, so the model the human faces is keyed on
-        # --model-deck only, not the matchup. The shared resolver prefers
-        # '{model_deck}__final.zip', then the newest '{model_deck}__v{steps}.zip'.
-        from opponents import resolve_checkpoint
-        model_path = resolve_checkpoint(args.model_deck)
+        # There is ONE generalist model ('gen'); it pilots whatever --model-deck
+        # names. The default opponent is that single generalist, resolved to
+        # 'gen__final.zip' (else the newest 'gen__v{steps}.zip').
+        from opponents import resolve_checkpoint, GEN_STEM
+        model_path = resolve_checkpoint(GEN_STEM)
         if not _os.path.exists(model_path):
-            parser.error(f"No checkpoint found for deck '{args.model_deck}' "
-                         f"(looked for {args.model_deck}__final.zip and "
-                         f"{args.model_deck}__v*.zip under train/checkpoints/). "
-                         f"Train a model piloting {args.model_deck} first, "
+            parser.error(f"No generalist checkpoint found "
+                         f"(looked for {GEN_STEM}__final.zip and {GEN_STEM}__v*.zip "
+                         f"under train/checkpoints/). Train the generalist first "
+                         f"(train --deck {args.model_deck} --opponent <opp>), "
                          f"or use --model to specify a path, or --scripted for a rule-based opponent (TUI).")
 
     if args.tui:

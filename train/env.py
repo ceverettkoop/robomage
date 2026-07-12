@@ -1629,20 +1629,21 @@ class SelfPlayEnv(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def _reload_opponent(self):
-        """Sample a frozen checkpoint trained to pilot the opponent's deck.
+        """Sample a frozen generalist snapshot to pilot the opponent's deck.
 
-        The frozen opponent plays ``opp_deck``, so we look for a model saved to
-        pilot it: the v2 deck-pilot snapshots ``{opp_deck}__v*.zip`` /
-        ``{opp_deck}__final.zip``.  If no compatible checkpoint exists, fall back
-        to the scripted agent and warn (once)."""
-        from opponents import deck_snapshots
+        There is ONE generalist model, so the frozen opponent is any of its
+        snapshots (``gen__v*.zip`` / ``gen__final.zip``); the deck it pilots
+        (``opp_deck``) is set by this env, not by the checkpoint's filename. If no
+        generalist snapshot exists yet, fall back to the scripted agent and warn
+        (once)."""
+        from opponents import gen_snapshots
         deck = self._opp_deck or self._model_deck
-        files = deck_snapshots(deck, self._checkpoint_dir)
+        files = gen_snapshots(self._checkpoint_dir)
         if not files:
             if not self._scripted_fallback_warned:
-                print(f"[self-play] WARNING: no '{deck}__v*.zip' / '{deck}__final.zip' "
-                      f"checkpoint in {self._checkpoint_dir}; opponent falling back to "
-                      f"the scripted agent.")
+                print(f"[self-play] WARNING: no generalist snapshot "
+                      f"('gen__v*.zip' / 'gen__final.zip') in {self._checkpoint_dir}; "
+                      f"opponent (deck {deck}) falling back to the scripted agent.")
                 self._scripted_fallback_warned = True
             self._opponent = None
             return

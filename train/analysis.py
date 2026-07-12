@@ -333,30 +333,6 @@ def _extract_interpretable(obs):
     return f
 
 
-def _infer_deck(model_path):
-    """Infer the deck a checkpoint pilots from its filename.
-
-    Checkpoints are per-deck (the deck-pilot convention): one model plays one
-    deck against any opponent, saved as ``{deck}__final.zip`` or
-    ``{deck}__v{steps}.zip`` — the deck is the part before the ``__``. A
-    checkpoint therefore encodes only its OWN deck, never its opponent, so this
-    returns the model's deck; the opponent deck must be supplied (``--deck-b``)
-    or, when the opponent is itself a model, inferred from that model's own
-    filename. A legacy matchup name (``{deck}_{opp}_final.zip``) still yields the
-    leading deck token.
-    """
-    basename = os.path.splitext(os.path.basename(model_path))[0]
-    # Deck-pilot: '{deck}__final' / '{deck}__v{steps}' — split on the '__'.
-    if "__" in basename:
-        deck = basename.split("__", 1)[0]
-        return deck or None
-    # Legacy matchup '{deck}_{opp}_{suffix}' or '{deck}_final' → leading token.
-    parts = basename.split("_")
-    if parts and parts[0]:
-        return parts[0]
-    return None
-
-
 _CHECKPOINTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
 _SNAPSHOT_VER_RE = re.compile(r"__v(\d+)\.zip$")
 
@@ -553,37 +529,26 @@ def _load_model_and_env(args):
 
     model_path = _resolve_any_path(args.model)
 
-    # Deck resolution. Checkpoints are per-deck (deck-pilot naming), so a model
-    # filename encodes only the deck it pilots — never its opponent. We infer the
-    # model's own deck (deck_a) from its filename; the opponent deck (deck_b)
-    # must be given via --deck-b, or, when the opponent is itself a model, is
-    # taken from that model's own filename. A scripted opponent has no filename,
-    # so it defaults to a mirror match unless --deck-b is supplied.
+    # Deck resolution. A checkpoint no longer encodes a deck — there is one
+    # generalist that pilots whatever deck it is told to. So the model's deck
+    # (deck_a) is REQUIRED via --deck-a. The opponent deck (deck_b) is required
+    # too, except a scripted opponent defaults to a mirror match (deck_b = deck_a).
     deck_a = getattr(args, "deck_a", None)
     deck_b = getattr(args, "deck_b", None)
     if not deck_a:
-        inferred = _infer_deck(model_path)
-        if inferred:
-            deck_a = inferred
-            print(f"Inferred model deck (the deck it pilots) from filename: {deck_a}")
-        else:
-            print("Could not infer model deck from filename; use --deck-a", file=sys.stderr)
-            sys.exit(1)
+        print("Model deck is required — a checkpoint no longer encodes a deck; "
+              "the generalist pilots whatever you name. Pass --deck-a.",
+              file=sys.stderr)
+        sys.exit(1)
     if not deck_b:
         if args.opponent == "scripted":
-            deck_b = deck_a  # opponent deck isn't encoded anywhere; mirror by default
+            deck_b = deck_a  # no opponent deck given; mirror by default
             print(f"No --deck-b given for scripted opponent; defaulting to a mirror "
                   f"match (opponent plays {deck_b}). Pass --deck-b for a different matchup.")
         else:
-            opp_path = _resolve_any_path(args.opponent)
-            inferred = _infer_deck(opp_path)
-            if inferred:
-                deck_b = inferred
-                print(f"Inferred opponent deck from the opponent model's filename: {deck_b}")
-            else:
-                print("Could not infer opponent deck from the opponent model's filename; "
-                      "use --deck-b", file=sys.stderr)
-                sys.exit(1)
+            print("Opponent deck is required for a model opponent — a checkpoint no "
+                  "longer encodes a deck. Pass --deck-b.", file=sys.stderr)
+            sys.exit(1)
 
     # Write the resolved decks back so downstream consumers (e.g. the report
     # title) see the actual decks even when they were inferred, not just given.
@@ -4018,8 +3983,10 @@ def cmd_interactive(args):
 
 
 def _build_search_evaluator(spec):
-    """(evaluator, inferred_deck) for the search-compare tool.
+    """(evaluator, None) for the search-compare tool.
 
+    The second element is always ``None`` — a checkpoint no longer encodes a deck
+    (one generalist), so the deck is supplied explicitly via --deck-a/--deck-b.
     An AZ spec -> AZEvaluator (falling back to a PPO warm-start); a PPO spec ->
     PPOEvaluator; ``uniform`` / ``mcts:uniform`` -> the torch-free UniformEvaluator."""
     from mcts import PPOEvaluator, UniformEvaluator
@@ -4030,13 +3997,13 @@ def _build_search_evaluator(spec):
         from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
         az = resolve_az_checkpoint(base)
         if az is not None:
-            return AZEvaluator(load_az(az)), _infer_deck(az)
+            return AZEvaluator(load_az(az)), None
         ppo = _resolve_model_path(base)
         print(f"No AZ checkpoint for {base!r}; warm-starting an AZNet from PPO {ppo}")
-        return AZEvaluator(from_ppo(ppo)), _infer_deck(ppo)
+        return AZEvaluator(from_ppo(ppo)), None
     from opponents import _load_model
     path = _resolve_model_path(base)
-    return PPOEvaluator(_load_model(path)), _infer_deck(path)
+    return PPOEvaluator(_load_model(path)), None
 
 
 def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed):
@@ -4157,17 +4124,16 @@ def cmd_search_compare(args):
     import runner
     from opponents import make_controller
 
-    evaluator, model_deck = _build_search_evaluator(args.model)
-    deck_a = getattr(args, "deck_a", None) or model_deck
+    evaluator, _ = _build_search_evaluator(args.model)
+    deck_a = getattr(args, "deck_a", None)
     if not deck_a:
-        print("Could not infer the model's deck; pass --deck-a", file=sys.stderr)
+        print("Model deck is required — a checkpoint no longer encodes a deck; "
+              "pass --deck-a", file=sys.stderr)
         sys.exit(1)
     deck_b = getattr(args, "deck_b", None)
     if not deck_b:
-        if args.opponent == "scripted":
-            deck_b = deck_a
-        else:
-            deck_b = _infer_deck(_resolve_any_path(args.opponent)) or deck_a
+        # A model opponent no longer encodes a deck either; mirror by default.
+        deck_b = deck_a
     args.deck_a, args.deck_b = deck_a, deck_b
 
     ctrl_model = _make_search_compare_controller(

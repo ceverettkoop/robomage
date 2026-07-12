@@ -26,7 +26,6 @@ import argparse
 import datetime
 import json
 import os
-import re
 import sys
 from collections import deque
 
@@ -298,7 +297,10 @@ class PFSPCallback(BaseCallback):
 
 
 class SnapshotCallback(BaseCallback):
-    """Saves a frozen ``{deck}__v{steps}.zip`` snapshot every ``snapshot_every`` steps.
+    """Saves a frozen ``gen__v{steps}.zip`` snapshot every ``snapshot_every`` steps.
+
+    ``deck`` is the stem to save under — always the generalist stem ``gen`` now
+    (there is one model); it is kept as a parameter for the print/gate messages.
 
     Optional SIMPLE-style promotion gate: when ``promote_margin != 0`` a snapshot is
     only kept if the learner's *recent-window* win-rate (from ``pfsp_callback``) is
@@ -338,8 +340,8 @@ class SnapshotCallback(BaseCallback):
         if self.num_timesteps < self._next_at:
             return True
         self._next_at += self._every
-        from opponents import deck_snapshots
-        first = len(deck_snapshots(self._deck, self._dir)) == 0
+        from opponents import gen_snapshots
+        first = len(gen_snapshots(self._dir)) == 0
         if self._margin != 0 and not first and self._pfsp is not None:
             wr, n = self._pfsp.recent_winrate()
             # Too few decisive games in the window to judge current strength: don't
@@ -460,6 +462,11 @@ class ReplayLogCallback(BaseCallback):
 CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
 _CHECKPOINT_ABS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
+
+# The single generalist model stem (see opponents.GEN_STEM). ALL PPO training now
+# accumulates onto this one model regardless of which deck a session pilots; the
+# deck is only what the model plays this session, never encoded in the filename.
+from opponents import GEN_STEM
 
 
 def _reassert_hparams(model, label: str):
@@ -687,14 +694,15 @@ def _read_league_state(checkpoint_dir: str, tag: str = "") -> dict | None:
 def _deck_trained_steps(deck: str, checkpoint_dir: str) -> int:
     """Cumulative trained steps of a deck's generalist, from its snapshot filenames.
 
-    The newest ``{deck}__v{steps}.zip`` version number is the model's absolute
-    ``num_timesteps`` at save; ``__final`` carries no count, so this slightly
-    undercounts (by at most one snapshot interval). 0 when the deck has no
-    versioned snapshots (fresh deck). Used only to seed the adaptive-rotation
-    catch-up need for decks the sidecar has no stats for yet."""
-    from opponents import deck_snapshots, _SNAPSHOT_RE
+    The newest ``gen__v{steps}.zip`` version number is the model's absolute
+    ``num_timesteps`` at save; ``gen__final`` carries no count, so this slightly
+    undercounts (by at most one snapshot interval). 0 when there are no versioned
+    snapshots yet. There is one generalist now, so this is the same value for every
+    deck (``deck`` is accepted for signature stability); the adaptive-rotation
+    step-need it feeds therefore collapses to ~0, leaving win-rate the live signal."""
+    from opponents import gen_snapshots, _SNAPSHOT_RE
     best = 0
-    for path in deck_snapshots(deck, checkpoint_dir):
+    for path in gen_snapshots(checkpoint_dir):
         m = _SNAPSHOT_RE.match(os.path.basename(path))
         if m:
             best = max(best, int(m.group("steps")))
@@ -732,12 +740,12 @@ def _rotation_target(learner: str, roster: list[str], deck_stats: dict,
 
 
 def _resolve_model(path: str) -> str:
-    """Resolve a model shorthand to a full checkpoint path.
+    """Resolve a model spec to a full checkpoint path.
 
     Thin alias for :func:`opponents.resolve_checkpoint` (the shared resolver —
-    full path, deck-pilot shorthand like 'delver' or 'league/ur_delver', legacy
-    matchup name, bare basename with '.zip' appended) pinned to this module's
-    checkpoint dir.
+    ``None``, an explicit path, or the reserved generalist stem ``'gen'``) pinned
+    to this module's checkpoint dir. A former per-deck shorthand raises a clear
+    generalist-contract error there.
     """
     from opponents import resolve_checkpoint
     return resolve_checkpoint(path, _CHECKPOINT_ABS)
@@ -872,15 +880,16 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
           n_envs_override: int | None = None, no_shaping: bool = False,
           opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0,
           embed_dim: int = EMBED_DIM, fresh: bool = False, **env_kwargs):
-    """Train the per-deck generalist model that pilots ``model_deck``.
+    """Train the ONE generalist model, piloting ``model_deck`` this session.
 
-    Models are **per-deck generalists**, not matchup-specific: one model plays
-    ``model_deck`` against any opponent, saved as ``{model_deck}__final.zip`` with
-    periodic ``{model_deck}__v{steps}.zip`` snapshots (the deck-pilot naming the
-    league and self-play pools sample from). Training against a single opponent
-    in a session just continues that one generalist, so unless ``--load`` or
-    ``fresh`` is given the deck's existing ``__final`` (or newest snapshot) is
-    auto-resumed and this session's steps accumulate onto it.
+    There is a single generalist that plays ANY deck: it is saved as
+    ``gen__final.zip`` with periodic ``gen__v{steps}.zip`` snapshots (the naming
+    the league and self-play pools sample from), regardless of which deck a
+    session pilots. ``model_deck`` is only what the model plays this session, never
+    encoded in the filename. So every session — whatever deck/opponent — continues
+    the one generalist: unless ``--load`` or ``fresh`` is given, the existing
+    ``gen__final`` (or newest ``gen__v*`` snapshot) is auto-resumed and this
+    session's steps accumulate onto it.
 
     Two opponent modes (mutually exclusive):
       * default (``self_play=False``) — every env trains against the rule-based
@@ -924,14 +933,14 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             net_arch=list(NET_ARCH),
         )
 
-        # Per-deck generalist: auto-resume this deck's own latest checkpoint so a
-        # single-opponent session accumulates onto the one model (unless --load
-        # gave an explicit path or --fresh forced a scratch start).
+        # One generalist: auto-resume the ONE model (gen__final / newest gen__v*)
+        # so every session — whatever deck it pilots — accumulates onto it (unless
+        # --load gave an explicit path or --fresh forced a scratch start).
         if not load_path and not fresh:
-            auto = _resolve_model(model_deck)
-            if auto != model_deck and os.path.exists(auto):
+            auto = _resolve_model(GEN_STEM)
+            if auto and os.path.exists(auto):
                 load_path = auto
-                print(f"Auto-resuming deck generalist: {auto} "
+                print(f"Auto-resuming the generalist: {auto} "
                       f"(use --fresh to start from scratch)")
 
         if load_path:
@@ -953,11 +962,11 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         if no_shaping:
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
-        # Periodic deck-pilot snapshots ('{deck}__v{steps}.zip') feed the shared
-        # self-play / league pools; the '{deck}__final.zip' is saved at the end.
+        # Periodic generalist snapshots ('gen__v{steps}.zip') feed the shared
+        # self-play / league pools; 'gen__final.zip' is saved at the end.
         callbacks = [
             LRDecayCallback(),
-            SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
+            SnapshotCallback(checkpoint_dir, GEN_STEM, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -972,8 +981,9 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
               f"(logs/{run_name})")
         model.learn(total_timesteps=total_timesteps, callback=callbacks,
                     reset_num_timesteps=load_path is None)
-        model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
-        print(f"Saved final model as {model_deck}__final.")
+        model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
+        print(f"Saved the generalist as {GEN_STEM}__final "
+              f"(this session piloted {model_deck}).")
     finally:
         vec_env.close()
 
@@ -1010,19 +1020,21 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             features_extractor_kwargs=dict(embed_dim=embed_dim),
             net_arch=list(NET_ARCH),
         )
-        from opponents import latest_snapshot
+        from opponents import gen_final_path, latest_gen_snapshot
         resume = None
         if not fresh:
-            resume = os.path.join(checkpoint_dir, f"{learner_deck}__final.zip")
+            resume = gen_final_path(checkpoint_dir)
             if not os.path.exists(resume):
-                resume = latest_snapshot(learner_deck, checkpoint_dir)
+                resume = latest_gen_snapshot(checkpoint_dir)
         resuming = bool(resume and os.path.exists(resume))
         if resuming:
-            print(f"[league] resuming {learner_deck} from {os.path.basename(resume)}")
+            print(f"[league] rotation piloting {learner_deck}: resuming the "
+                  f"generalist from {os.path.basename(resume)}")
             model = _reassert_hparams(MaskablePPO.load(resume, env=vec_env),
                                       learner_deck)
         else:
-            print(f"[league] starting {learner_deck} from scratch (embed_dim={embed_dim})")
+            print(f"[league] starting the generalist from scratch "
+                  f"(first rotation piloting {learner_deck}, embed_dim={embed_dim})")
             policy_cls, policy_kwargs = _policy_config(policy_kwargs)
             model = MaskablePPO(
                 policy_cls, vec_env, policy_kwargs=policy_kwargs,
@@ -1043,7 +1055,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         callbacks = [
             LRDecayCallback(),
             pfsp_cb,
-            SnapshotCallback(checkpoint_dir, learner_deck, snapshot_every,
+            SnapshotCallback(checkpoint_dir, GEN_STEM, snapshot_every,
                              promote_margin=promote_margin, pfsp_callback=pfsp_cb,
                              on_snapshot=snap_hook),
         ]
@@ -1053,8 +1065,8 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         _configure_run_logger(model, learner_deck)
         model.learn(total_timesteps=chunk_steps, callback=callbacks,
                     reset_num_timesteps=not resuming)
-        model.save(os.path.join(checkpoint_dir, f"{learner_deck}__final"))
-        print(f"[league] saved {learner_deck}__final")
+        model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
+        print(f"[league] saved {GEN_STEM}__final (rotation piloted {learner_deck})")
         # PPO collects whole rollouts, so the chunk overshoots chunk_steps; return
         # the actual new steps so the driver's global budget stays accurate, plus
         # the learner's end-of-rotation win-rate and absolute step count for the
@@ -1181,6 +1193,11 @@ def league(binary_path: str, decks: str | None = None,
         raise ValueError(
             f"No decks found for league (looked in {_LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
+    # 'gen' is reserved for the one generalist checkpoint stem — a roster deck
+    # named 'gen' would collide with its snapshots. Refuse it loudly.
+    from opponents import assert_not_reserved_deck
+    for _deck in roster:
+        assert_not_reserved_deck(_deck)
 
     # Distributed sharding: this driver TRAINS only its slice of the roster, but
     # the opponent pool (and adaptive-rotation leader comparison) still spans the
@@ -1339,20 +1356,25 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     _ensure_deck_ckpt_subdir(checkpoint_dir, model_deck)
     os.makedirs(LOG_DIR, exist_ok=True)
 
+    # Both seats are the one generalist ('gen'); the decks are the explicit args.
     if not load_path:
-        candidate = _resolve_model(model_deck)
-        if candidate != model_deck and os.path.exists(candidate):
+        candidate = _resolve_model(GEN_STEM)
+        if candidate and os.path.exists(candidate):
             load_path = candidate
     if not load_path:
-        raise FileNotFoundError(f"No training model found piloting {model_deck} "
-                                f"({model_deck}__final.zip or {model_deck}__v*.zip)")
+        raise FileNotFoundError(
+            f"No generalist checkpoint found ({GEN_STEM}__final.zip or "
+            f"{GEN_STEM}__v*.zip). Train one first (train --deck {model_deck} "
+            f"--opponent {opp_deck}).")
 
-    opp_model_path = _resolve_model(opp_deck)
-    if opp_model_path == opp_deck or not os.path.exists(opp_model_path):
-        raise FileNotFoundError(f"No opponent model found piloting {opp_deck} "
-                                f"({opp_deck}__final.zip or {opp_deck}__v*.zip)")
+    opp_model_path = _resolve_model(GEN_STEM)
+    if not opp_model_path or not os.path.exists(opp_model_path):
+        raise FileNotFoundError(
+            f"No generalist checkpoint found to freeze as the opponent "
+            f"({GEN_STEM}__final.zip or {GEN_STEM}__v*.zip).")
 
-    print(f"Training {model_deck} generalist against fixed {opp_deck} generalist")
+    print(f"Training the generalist (piloting {model_deck}) against a frozen "
+          f"copy of itself (piloting {opp_deck})")
     print(f"  training model: {load_path}")
     print(f"  opponent model: {opp_model_path}")
 
@@ -1372,7 +1394,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             LRDecayCallback(),
-            SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
+            SnapshotCallback(checkpoint_dir, GEN_STEM, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -1387,8 +1409,9 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
               f"(logs/{run_name})")
         model.learn(total_timesteps=total_timesteps, callback=callbacks,
                     reset_num_timesteps=False)
-        model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
-        print(f"Saved final model as {model_deck}__final.")
+        model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
+        print(f"Saved the generalist as {GEN_STEM}__final "
+              f"(this session piloted {model_deck}).")
     finally:
         vec_env.close()
 
@@ -1409,12 +1432,13 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    # Verify both decks have a generalist checkpoint to alternate between.
-    for d in (deck_a, deck_b):
-        resolved = _resolve_model(d)
-        if resolved == d or not os.path.exists(resolved):
-            raise FileNotFoundError(f"Missing model piloting {d} "
-                                    f"({d}__final.zip or {d}__v*.zip)")
+    # One generalist pilots both decks in turn; verify it exists to alternate on.
+    resolved = _resolve_model(GEN_STEM)
+    if not resolved or not os.path.exists(resolved):
+        raise FileNotFoundError(
+            f"No generalist checkpoint found to alternate ({GEN_STEM}__final.zip "
+            f"or {GEN_STEM}__v*.zip). Train one first "
+            f"(train --deck {deck_a} --opponent {deck_b}).")
 
     steps_done = 0
     round_num = 0
@@ -1444,41 +1468,29 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     print(f"\nAlternate training complete: {total_timesteps:,} total timesteps over {round_num} rounds.")
 
 
-def _deck_from_checkpoint(model_path: str) -> str | None:
-    """Infer the deck a checkpoint pilots from its deck-pilot filename.
-
-    Works on the v2 naming ('{deck}__final.zip' / '{deck}__v{steps}.zip'); a
-    checkpoint under a checkpoints/ subfolder keeps that subfolder as the deck
-    namespace ('checkpoints/league/bug__final.zip' → 'league/bug'). None when
-    the filename doesn't parse as deck-pilot naming.
-    """
-    rel = os.path.relpath(os.path.abspath(model_path), _CHECKPOINT_ABS)
-    if rel.startswith(".."):  # outside checkpoints/ — use the bare filename
-        rel = os.path.basename(model_path)
-    m = re.match(r"^(?P<deck>.+?)__(final|v\d+)\.zip$", rel)
-    return m.group("deck") if m else None
-
-
 def baseline(binary_path: str, model_path: str, n_games: int = 100,
              deck: str | None = None, opp_deck: str | None = None,
              seed: int | None = None, quiet: bool = False):
-    """Evaluate a model's win rate vs the scripted HARD agent.
+    """Evaluate the generalist's win rate vs the scripted HARD agent.
 
-    The model pilots ``deck`` (inferred from the checkpoint's deck-pilot
-    filename when not given) and faces scripted:hard piloting ``opp_deck``
-    (defaults to ``deck`` — a mirror match). Seats alternate each game (model
-    is Player A in even games) so neither side gets a systematic on-the-play
-    edge. ``seed`` makes the run reproducible (game ``i`` uses ``seed + i``;
-    None = random per game). Returns ``(wins, losses, draws)`` from the model's
-    perspective.
+    The model pilots ``deck`` (REQUIRED — a checkpoint no longer encodes a deck;
+    the one generalist pilots whatever deck you name) and faces scripted:hard
+    piloting ``opp_deck`` (defaults to ``deck`` — a mirror match). Seats alternate
+    each game (model is Player A in even games) so neither side gets a systematic
+    on-the-play edge. ``seed`` makes the run reproducible (game ``i`` uses
+    ``seed + i``; None = random per game). Returns ``(wins, losses, draws)`` from
+    the model's perspective.
     """
     import runner
     from opponents import ModelController, ScriptedController
     from scripted_agent import make_agent
 
+    if not deck:
+        raise ValueError(
+            "baseline: --deck is required — a checkpoint no longer encodes the "
+            "deck it pilots. Pass the deck the generalist should play "
+            "(e.g. baseline gen --deck league/ur_delver).")
     model = MaskablePPO.load(model_path)
-    if deck is None:
-        deck = _deck_from_checkpoint(model_path)
     if opp_deck is None:
         opp_deck = deck
     ctrl_model = ModelController(model, label="Model", deterministic=True)
@@ -1528,58 +1540,47 @@ def _league_roster() -> list[str]:
 
 def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
                  log_path: str | None = None):
-    """Round-robin every league deck's model vs scripted:hard on every league deck.
+    """Sweep the one generalist over every league deck (mirror vs scripted:hard).
 
-    For each league deck (decks/league/*.dk) that has a ``{deck}__final.zip``
-    checkpoint, the model plays ``n_games`` (default 50) against scripted:hard
-    piloting *each* league deck — including its own (the mirror). So an
-    N-deck roster runs N×N matchups of ``n_games`` each (e.g. 7 decks → 49
-    matchups → 2450 games at the default 50). A per-matchup win-rate grid plus a
-    timestamped summary are appended to ``log_path`` (default
-    checkpoints/baseline_report.log) as well as printed to stdout.
+    There is a single generalist checkpoint (``gen__final.zip``); this runs it
+    piloting *each* league deck (decks/league/*.dk) against scripted:hard on the
+    same deck — a per-deck mirror — for ``n_games`` each (default 50). So an
+    N-deck roster runs N matchups. A per-deck win-rate summary is appended to
+    ``log_path`` (default checkpoints/baseline_report.log) and printed to stdout.
     """
     roster = _league_roster()
     if not roster:
         print(f"No league decks found under {_LEAGUE_DECKS_DIR}")
         return
 
-    # Resolve each roster deck to its final checkpoint; skip decks without one.
-    learners = []  # (deck, checkpoint_path)
-    for deck in roster:
-        try:
-            ckpt = _resolve_model(deck)
-        except Exception:
-            ckpt = None
-        if ckpt and os.path.exists(ckpt):
-            learners.append((deck, ckpt))
-        else:
-            print(f"[baseline] skipping {deck}: no __final checkpoint found", flush=True)
-    if not learners:
-        print(f"No league __final checkpoints found under {_CHECKPOINT_ABS}")
+    # One generalist checkpoint pilots every deck.
+    ckpt = _resolve_model(GEN_STEM)
+    if not ckpt or not os.path.exists(ckpt):
+        print(f"No generalist checkpoint ({GEN_STEM}__final.zip / {GEN_STEM}__v*.zip) "
+              f"found under {_CHECKPOINT_ABS}. Train one first.")
         return
 
     if log_path is None:
         log_path = os.path.join(_CHECKPOINT_ABS, "baseline_report.log")
 
     stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    header = (f"=== league baseline round-robin vs scripted:hard — {stamp} — "
-              f"{n_games} games/matchup, seed={seed} ===")
+    header = (f"=== generalist ({os.path.basename(ckpt)}) baseline sweep vs "
+              f"scripted:hard (per-deck mirror) — {stamp} — "
+              f"{n_games} games/deck, seed={seed} ===")
     lines = [header]
     print(header, flush=True)
 
-    for deck, ckpt in learners:
-        row_cells = []
-        print(f"\n--- {deck} model vs scripted:hard on each league deck ---", flush=True)
-        for opp in roster:
-            print(f"\n  {deck} (model) vs {opp} (scripted:hard):", flush=True)
-            w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
-                               opp_deck=opp, seed=seed)
-            total = w + l + d
-            pct = 100 * w / total if total else 0
-            row_cells.append(f"vs {opp}={w}W/{l}L/{d}D({pct:.0f}%)")
-            lines.append(f"{deck:<22} vs {opp:<22} "
-                         f"{w}W/{l}L/{d}D  {pct:.1f}% win rate")
-        lines.append(f"  [{deck}] " + "  ".join(row_cells))
+    row_cells = []
+    for deck in roster:
+        print(f"\n  gen (model) piloting {deck} vs {deck} (scripted:hard):", flush=True)
+        w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
+                           opp_deck=deck, seed=seed)
+        total = w + l + d
+        pct = 100 * w / total if total else 0
+        row_cells.append(f"{deck}={w}W/{l}L/{d}D({pct:.0f}%)")
+        lines.append(f"gen piloting {deck:<22} vs scripted:hard "
+                     f"{w}W/{l}L/{d}D  {pct:.1f}% win rate")
+    lines.append("  [gen] " + "  ".join(row_cells))
 
     summary = "\n".join(lines)
     with open(log_path, "a") as f:
@@ -1698,6 +1699,10 @@ def _run_sweep(args, parser):
     if not roster:
         parser.error("No opponent decks available for the pool (need at least "
                      "one other deck in bin/resources/decks/, or pass --opponents).")
+    # 'gen' is the reserved generalist stem — no deck may be named it.
+    from opponents import assert_not_reserved_deck
+    for _deck in [args.deck, *roster]:
+        assert_not_reserved_deck(_deck)
 
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
@@ -1804,10 +1809,18 @@ if __name__ == "__main__":
             baseline_all(args.binary, n_games=args.games or 50, seed=args.seed,
                          log_path=args.log)
         elif args.model is None:
-            parser.error("baseline: give a model checkpoint, or --all to sweep "
-                         "every league deck")
+            parser.error("baseline: give a model checkpoint (e.g. 'gen'), or --all "
+                         "to sweep the generalist over every league deck")
+        elif not args.deck:
+            parser.error("baseline: --deck is required — a checkpoint no longer "
+                         "encodes the deck it pilots. Pass the deck the generalist "
+                         "should play (e.g. baseline gen --deck league/ur_delver).")
         else:
-            baseline(args.binary, _resolve_model(args.model), args.games or 100,
+            try:
+                model_path = _resolve_model(args.model)
+            except ValueError as exc:
+                parser.error(str(exc))
+            baseline(args.binary, model_path, args.games or 100,
                      deck=args.deck, seed=args.seed)
     elif args.command == "az-selfplay":
         import az_selfplay
