@@ -340,15 +340,15 @@ _SNAPSHOT_VER_RE = re.compile(r"__v(\d+)\.zip$")
 def _resolve_model_path(path):
     """Resolve a model argument to a checkpoint path.
 
-    Accepts an explicit path, the literal ``scripted``, or a deck-pilot
-    shorthand (``delver`` → ``checkpoints/delver__final.zip``, else the newest
-    ``checkpoints/delver__v{steps}.zip`` snapshot). Falls back to legacy
-    ``checkpoints/<name>.zip`` / ``checkpoints/<name>_final.zip`` for older
-    matchup checkpoints. Mirrors train.py's ``_resolve_model``.
+    Accepts an explicit path, the literal ``scripted``, or the generalist stem
+    ``gen`` (→ ``checkpoints/gen__final.zip``, else the newest
+    ``checkpoints/gen__v{steps}.zip`` snapshot). The deck a model pilots is
+    supplied separately via ``--deck-a``/``--deck-b``, never inferred here.
+    Mirrors train.py's ``_resolve_model``.
     """
     if path == "scripted" or os.path.exists(path):
         return path
-    # Deck-pilot shorthand → '{deck}__final.zip' or newest '{deck}__v*.zip'.
+    # 'gen' → 'gen__final.zip' or newest 'gen__v*.zip'.
     final = os.path.join(_CHECKPOINTS_DIR, f"{path}__final.zip")
     if os.path.exists(final):
         return final

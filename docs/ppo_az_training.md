@@ -13,7 +13,7 @@ itself.
 | Sample cost | ~0.25 ms/decision rollouts | sims × (restore + replay + net eval) per decision — orders of magnitude more, even with the Phase D C++ actor |
 | Learning signal | own sampled actions weighted by advantage (high variance, no lookahead) | search-vetted visit distributions + real outcomes (dense, low variance per decision) |
 | Strength ceiling | what a one-shot policy can express | adds everything lookahead can verify |
-| Checkpoints | `checkpoints/{deck}__final.zip` | `checkpoints/az/{deck}__azfinal.pt` (gate-promoted incumbent) |
+| Checkpoints | `checkpoints/gen__final.zip` (one generalist) | `checkpoints/az/gen__azfinal.pt` (one generalist, gate-promoted incumbent) |
 
 **Intended pattern: PPO to competence, AZ to mastery.** Spending search-priced
 samples to teach a random net that lands are good is waste — PPO learns the

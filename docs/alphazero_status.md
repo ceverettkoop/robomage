@@ -4,6 +4,20 @@ Branch: `claude/alphazero-mcts-plan-dwcubj`. This documents what has landed, how
 drive it, and exactly what to run on real hardware. The full design plan (four
 phases, decisions, risks) is summarized at the bottom.
 
+> **Update (generalist collapse, 2026-07).** AZ has since collapsed to **one
+> generalist net** (`checkpoints/az/gen__azfinal.pt` + `gen__azv{steps}.pt`), the
+> counterpart of the single PPO `gen__final.zip`. The deck the net pilots is now an
+> explicit observation input (self live-library + opponent static-decklist blocks,
+> `STATE_SIZE 6196` / `OBS_SIZE 6922`), not a per-checkpoint identity — so self-play
+> is **mirrors + cross-deck** (a focus deck vs a mirror with `--mirror-frac`,
+> default 0.25, else a uniform roster opponent), shards pool into **`az_data/gen/`**,
+> and the promotion gate is an **aggregate win-rate over a sample of roster
+> matchups** (per-matchup breakdown printed). Controller specs are `az:gen` /
+> `azraw:gen` / `mcts:gen` (a bare deck shorthand is rejected; the deck travels as a
+> separate explicit parameter). The per-deck `{deck}__az*` naming, mirror-only
+> self-play, and `az_data/{deck}/` sharding described below are historical; commit
+> hashes / run logs are kept as records.
+
 ## What is DONE and pushed
 
 ### Phase A — engine snapshot/rollback + search protocol (commits `c6c0a33`, `4937a0e`)
@@ -84,8 +98,8 @@ All Phase C deliverables are on the branch (landed across the WIP commits
   module (no SB3 classes): shared `CardGameExtractor(per_action_head=True)`
   feature stack + `_ActionScorer` per-action policy head + tanh value head,
   with in-graph masking. TorchScript-scriptable; `--export-check` compares
-  scripted vs eager. Checkpoints `train/checkpoints/az/{deck}__azfinal.pt`
-  (the gate-promoted incumbent) / `{deck}__azv{steps}.pt` (candidate
+  scripted vs eager. Checkpoints `train/checkpoints/az/gen__azfinal.pt`
+  (the one generalist, gate-promoted incumbent) / `gen__azv{steps}.pt` (candidate
   snapshots) + JSON layout-handshake meta; `from_ppo` warm-start handles both
   the per-action and stock MlpPolicy flavors (shape-checked, transfer
   reported). One necessary deviation from the plan's literal wording:
@@ -95,22 +109,24 @@ All Phase C deliverables are on the branch (landed across the WIP commits
   `__constants__`) with identical parameter names/shapes; drift is guarded by
   `verify_trunk_matches_extractor` (bit-identical assert, run in
   `--export-check`).
-- **`train/az_selfplay.py`** — multiprocess mirror self-play: per searched
-  (loop-safe, >1 choice) decision stores `(obs copy, visit-count pi, legal
-  mask, mover seat)`; root Dirichlet (eps .25 / alpha 1.0), tau=1 for the
+- **`train/az_selfplay.py`** — multiprocess self-play, mirrors + cross-deck (a
+  focus deck vs a mirror with `--mirror-frac`, else a uniform roster opponent):
+  per searched (loop-safe, >1 choice) decision stores `(obs copy, visit-count pi,
+  legal mask, mover seat)`; root Dirichlet (eps .25 / alpha 1.0), tau=1 for the
   first 20 moves then argmax; z backfilled ±1 per-mover (0 on draws); unsafe
-  roots fall back to the net's argmax and are NOT stored. Shards
-  `train/az_data/{deck}/shard_*.npz` (obs/pi/z/mask) — the exact format the
-  Phase D C++ writer must reproduce.
+  roots fall back to the net's argmax and are NOT stored. Shards pool into
+  `train/az_data/gen/shard_*.npz` (obs/pi/z/mask) — the exact format the
+  Phase D C++ writer reproduces.
 - **`train/az_train.py`** — Adam (wd 1e-4) on
-  `CE(pi, masked_log_softmax) + c_v*MSE(v,z)` over a last-M-shards window;
-  saves CANDIDATE snapshots only. **`__azfinal` advances exclusively through
-  the `az-eval` promotion gate** (candidate vs incumbent, seats alternating —
-  half the games each way — promote at >= 0.55; vs `scripted` when no
-  incumbent exists yet). The trainer resumes the candidate line (newest
-  `__azv`, `resolve_az_checkpoint(prefer="snapshot")`); self-play and the
-  `az:` opponent spec default to the incumbent.
-- **Integration** — `az:<ckpt-or-deck>?sims=&worlds=&c=&temp=&seed=` and
+  `CE(pi, masked_log_softmax) + c_v*MSE(v,z)` over a last-M-shards window from the
+  pooled `az_data/gen/` dir; saves CANDIDATE snapshots only. **`gen__azfinal`
+  advances exclusively through the `az-eval` promotion gate** (candidate vs
+  incumbent over a SAMPLE of roster matchups — mirror + cross-deck — seats
+  alternating, promote on aggregate win-rate >= 0.55 with a per-matchup breakdown;
+  vs `scripted` when no incumbent exists yet). The trainer resumes the candidate
+  line (newest `gen__azv`, `resolve_az_checkpoint(prefer="snapshot")`); self-play
+  and the `az:` opponent spec default to the incumbent.
+- **Integration** — `az:<gen-or-ckpt>?sims=&worlds=&c=&temp=&seed=` and
   `azraw:` controller specs in `make_controller`; `train.py` subcommands
   `az-selfplay` / `az-train` / `az-eval` / `az` (one full
   generate→train→gate cycle).
@@ -221,11 +237,12 @@ CI perf probe expects release-build timing). Gate everything with `make check`.
    (prior-heavier 0.8–1.0), then `--sims` 64→256 / `--worlds` 2→8. Check the
    printed **safe-fraction** per deck (ur_delver measured 63%): a low value
    caps attainable lift because unsafe roots fall back to the raw policy.
-3. **Phase C**: `train.py az --deck <deck>` cycles (selfplay → train → gate)
-   on a mirror, sims 100-200, worlds 3-5; watch the `az-eval` promotion rate
-   and the losses in `checkpoints/az/{deck}_az_train.log`. First cycle
-   warm-starts from the deck's PPO checkpoint automatically; `__azfinal` only
-   moves when a candidate clears the gate.
+3. **Phase C**: `train.py az --deck <deck>` cycles (selfplay → train → gate),
+   mirrors + cross-deck (`--mirror-frac`), sims 100-200, worlds 3-5; watch the
+   `az-eval` promotion rate and the losses in `checkpoints/az/gen_az_train.log`.
+   First cycle warm-starts from the generalist PPO checkpoint (`gen__final.zip`)
+   automatically; `gen__azfinal` only moves when a candidate clears the aggregate
+   gate.
 4. **Throughput expectation**: search cost ≈ sims × (restore ~0.3-1 ms +
    path-replay ~0.24 ms/decision + net eval). The container measured ~24
    ms/sim (debug build, contended 4-core CPU) → ~2.4 min/game at
@@ -297,9 +314,9 @@ opt-in target and its CI tier self-skips when the binary isn't built.
   `N_CARD_TYPES` handshake meta before running.
 - **Self-play + uncompressed-npz shards** (`src/actor/npz_writer.{h,cpp}`) —
   `bin/az_actor --selfplay` plays games, stores `(obs, pi, z, mask)` per searched
-  root, and writes `train/az_data/{deck}/shard_*.npz` in the **exact** Phase C
-  format — the Python trainer's `load_window` cannot tell a C++ shard from a
-  Python one.
+  root, and writes shards into the pooled `train/az_data/gen/shard_*.npz` in the
+  **exact** Phase C format — the Python trainer's `load_window` cannot tell a C++
+  shard from a Python one.
 - **Opt-in `ci_check` actor tier** — `train/ci_check.py --tier actor` runs
   `test_actor_parity.py` (obs bit-parity), `test_mcts_parity.py` (visit-count
   parity), and `test_actor_shards.py` (trainer ingest). It is **not** in the
@@ -344,7 +361,7 @@ opt-in target and its CI tier self-skips when the binary isn't built.
 # Build the actor (auto-detects venv libtorch; default make/make check untouched).
 make actor
 # Export a net for the actor (once per checkpoint) and gate the actor path.
-train/.venv/bin/python train/az_net.py --export <deck>       # writes {deck}__azfinal.ts.pt
+train/.venv/bin/python train/az_net.py --export gen         # writes gen__azfinal.ts.pt
 train/.venv/bin/python train/ci_check.py --tier actor        # obs/MCTS/shard parity
 # Self-play with the AUTO backend (uses bin/az_actor iff built):
 train/.venv/bin/python train/train.py az-selfplay --deck <deck> --games 50 --sims 128 --worlds 4
@@ -361,8 +378,9 @@ The model-analysis tools (`train/analysis.py` + its shared CLI in
 changes; no surgery on the analysis internals.
 
 **AZ checkpoints as the model argument.** `analysis.py report` / `interactive`
-accept an `az:<deck-or-.pt>` spec (or a bare `.pt` path, or a deck shorthand that
-resolves to an AZ checkpoint via `resolve_az_checkpoint`). A thin adapter
+accept an `az:gen` spec (or a bare `.pt` path) resolved to the generalist AZ
+checkpoint via `resolve_az_checkpoint`; the deck it pilots is supplied separately
+via `--deck-a`/`--deck-b`. A thin adapter
 (`_AZModelAdapter`) wraps the `AZNet` and exposes exactly the three surfaces the
 analysis code touches — `policy.predict_values`, `policy.get_distribution`, and
 `model.predict` (for `ModelController`) — so the **entire existing battery**

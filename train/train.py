@@ -15,11 +15,11 @@ Usage:
     # Override binary path:
     python train.py --binary ../bin/robomage
 
-    # Models are per-deck generalists ({deck}__final.zip / {deck}__v{steps}.zip):
-    # a training session auto-resumes and continues the deck's one model, so
-    # training vs a single opponent just generalizes it further.
-    python train.py --deck delver --opponent mav    # continue delver's generalist
-    python train.py --deck delver --opponent mav --fresh    # start it over
+    # There is ONE generalist model (gen__final.zip / gen__v{steps}.zip) that
+    # pilots any deck: every training session auto-resumes and continues that one
+    # model, so training on any deck vs any opponent just generalizes it further.
+    python train.py --deck delver --opponent mav    # continue the generalist on delver
+    python train.py --deck delver --opponent mav --fresh    # start the generalist over
 """
 
 import argparse
@@ -639,7 +639,7 @@ def _configure_run_logger(model, deck: str) -> str:
 
     SB3 couples the log-dir suffix to reset_num_timesteps: on a resume it reuses
     the last '{name}_{n}' folder ("continue the same curve"), which collides every
-    same-date session — the common case for auto-resuming per-deck generalists.
+    same-date session — the common case for auto-resuming the generalist.
     We need num_timesteps to keep counting (reset stays False) while the log dir
     stays fresh, so we compute the next '{deck}_{date}_{n}' ourselves and install
     the logger directly; set_logger marks it custom, so _setup_learn skips SB3's
@@ -894,9 +894,9 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     Two opponent modes (mutually exclusive):
       * default (``self_play=False``) — every env trains against the rule-based
         scripted agent (``ModelVsScriptedEnv``), piloting ``opp_deck``.
-      * ``self_play=True`` — every env trains against a frozen deck-pilot snapshot
-        of ``opp_deck`` (``SelfPlayEnv`` samples ``{opp_deck}__v*.zip`` /
-        ``{opp_deck}__final.zip``); if none exists yet, that env's opponent falls
+      * ``self_play=True`` — every env trains against a frozen generalist snapshot
+        piloting ``opp_deck`` (``SelfPlayEnv`` samples ``gen__v*.zip`` /
+        ``gen__final.zip``); if none exists yet, that env's opponent falls
         back to the scripted agent.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
@@ -995,12 +995,14 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
                   softmax_eta: float, snapshot_every: int, promote_margin: float,
                   embed_dim: int, no_shaping: bool, fresh: bool = False,
                   on_progress=None, **env_kwargs):
-    """Train one learner deck for ``chunk_steps`` against the shared league pool.
+    """Train the one generalist on ``deck`` for ``chunk_steps`` against the shared
+    league pool.
 
-    Resumes the learner's own latest checkpoint (``{deck}__final`` or newest
-    ``{deck}__v*``) so its cumulative step count — and therefore snapshot version
-    numbering — keeps growing across rotations; starts from scratch only the very
-    first time a deck is trained, or whenever ``fresh`` is set.
+    Resumes the generalist's latest checkpoint (``gen__final`` or newest
+    ``gen__v*``) so its cumulative step count — and therefore snapshot version
+    numbering — keeps growing across rotations and across decks; starts from
+    scratch only the very first time the generalist is trained, or whenever
+    ``fresh`` is set.
 
     ``on_progress(steps_this_chunk)`` (optional) is called after every snapshot save
     with the number of new steps trained so far in this chunk, so the driver can
@@ -1341,11 +1343,12 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                       tally: bool = False,
                       n_envs_override: int | None = None,
                       no_shaping: bool = False, **env_kwargs):
-    """Train ``model_deck``'s generalist against ``opp_deck``'s fixed generalist.
+    """Train the generalist (piloting ``model_deck``) against a frozen copy of
+    itself (piloting ``opp_deck``).
 
-    Both sides are per-deck generalists: resumes ``{model_deck}__final.zip`` (or
-    ``load_path``) as the training model and freezes ``{opp_deck}__final.zip``
-    (or its newest snapshot) as the opponent for every game.
+    Both seats are the one generalist: resumes ``gen__final.zip`` (or
+    ``load_path``) as the training model and freezes ``gen__final.zip`` (or its
+    newest snapshot) as the opponent for every game.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
     to the underlying ``RoboMageEnv`` via the env factory helpers.

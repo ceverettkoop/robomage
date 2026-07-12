@@ -1,13 +1,15 @@
 """AlphaZero trainer + gating for RoboMage (Phase C).
 
-- ``train_az`` : load the last M self-play shards for a deck, optimize AZNet with
-  Adam (constant lr, weight_decay 1e-4) on the AZ loss
-  ``CE(pi, masked_log_softmax(logits)) + c_v * MSE(value, z)``, snapshot the
-  CANDIDATE to ``{deck}__azv{steps}.pt``. ``{deck}__azfinal.pt`` (the incumbent)
-  is written ONLY by the ``az_eval`` promotion gate — training never touches it.
+- ``train_az`` : load the last M self-play shards from the pooled ``az_data/gen``
+  window, optimize the one generalist AZNet with Adam (constant lr, weight_decay
+  1e-4) on the AZ loss ``CE(pi, masked_log_softmax(logits)) + c_v * MSE(value,
+  z)``, snapshot the CANDIDATE to ``gen__azv{steps}.pt``. ``gen__azfinal.pt`` (the
+  incumbent) is written ONLY by the ``az_eval`` promotion gate — training never
+  touches it.
 - ``az_eval`` : candidate-vs-incumbent gating via ``run_match`` with ``az``
-  controllers at low sims, seats alternating (half the games each way); promote
-  the candidate to ``{deck}__azfinal.pt`` at a win-rate threshold.
+  controllers at low sims over a SAMPLE of roster matchups (mirror + cross-deck),
+  seats alternating (half the games each way); promote the candidate to
+  ``gen__azfinal.pt`` on aggregate win-rate, printing a per-matchup breakdown.
 - ``az_cycle`` : one sequential generate -> train -> eval iteration.
 
 Exposed to ``train.py`` as the ``az-train`` / ``az-eval`` / ``az`` subcommands.

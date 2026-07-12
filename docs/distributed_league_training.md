@@ -6,6 +6,13 @@ synced by Syncthing over Tailscale. You drive the whole thing from a **web UI** 
 start one agent per machine, open the page on any of them, configure the league,
 choose how to split the roster across machines, and hit Start.
 
+All machines train the **one generalist model** (`gen__final.zip` +
+`gen__v{steps}.zip` snapshots; there is no longer a separate `{deck}__final.zip`
+per deck) — a machine's deck slice only decides which decks *its* learner pilots
+this rotation, not which checkpoint it writes. Keep each machine on a disjoint
+deck slice (per the last note below) so their snapshot streams don't collide as
+Syncthing replicates the shared `gen` checkpoints.
+
 ## Setup (once)
 
 1. **Tailscale** running on every machine.

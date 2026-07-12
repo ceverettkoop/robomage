@@ -1,5 +1,14 @@
 # Plan: embed_dim bump + PFSP/softmax sampler + multi-matchup league training
 
+> **Superseded by the generalist collapse (2026-07).** This plan's "one model per
+> deck" (`{deck}__final.zip`) goal has since been collapsed further to **one
+> generalist model** (`gen__final.zip`) that pilots *any* deck — the deck is now an
+> explicit observation input (self live library + opponent static decklist blocks),
+> not a per-checkpoint identity. The PFSP/softmax sampler, scripted anchor, and
+> promotion-on-margin machinery below still describe the live league; only the
+> checkpoint naming (`{deck}__*` → `gen__*`) and the "per-deck learner" framing are
+> historical. This document is kept for its design rationale, not as current naming.
+
 Goal: move from **per-matchup specialist** models (`{model}_{opp}_final.zip`, one
 network per A-vs-B pairing) to **one model per deck** that pilots that deck well
 against the *entire field*, trained with a self-managing league: a shared pool of
