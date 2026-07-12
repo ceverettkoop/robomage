@@ -311,6 +311,21 @@ def opponent_pool_opts():
     ]
 
 
+def _actor_mode():
+    """The --actor | --no-actor self-play backend pair (az-selfplay / az).
+
+    Default (neither) is AUTO: use the C++ ``bin/az_actor`` iff it is built, else
+    the pure-Python multiprocess backend."""
+    return MutexGroup([
+        Arg("--actor", "flag",
+            help="Force the C++ az_actor self-play backend (error if bin/az_actor "
+                 "is not built). Default AUTO: use it iff it is built."),
+        Arg("--no-actor", "flag",
+            help="Force the pure-Python self-play backend, skipping the actor even "
+                 "if bin/az_actor is built."),
+    ])
+
+
 def sim_args():
     """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
     return [
@@ -538,6 +553,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Sample from visit counts for the first N real decisions, then argmax"),
         Arg("--out", "str", default=None, help="Output dir (default az_data/{deck})"),
         Arg("--seed", "int", default=1, help="Base RNG seed"),
+        _actor_mode(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
@@ -581,6 +597,39 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--eval-worlds", "int", default=2),
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--seed", "int", default=1),
+        _actor_mode(),
+    ]),
+    Sub("az-league",
+        "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
+        "decks/league/ roster", items=[
+        Arg("--resume", "flag",
+            help="Resume an interrupted az-league run from its saved progress "
+                 "(checkpoints/_az_league_progress.json, rewritten after each deck "
+                 "cycle). Restores the roster, budgets, and all knobs from the "
+                 "sidecar — other flags are ignored when set."),
+        Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated deck roster to rotate over (default: every deck in "
+                 "decks/league/, referenced 'league/<stem>'). Roster ORDER is the "
+                 "rotation order. In the TUI, pick multiple with space."),
+        Arg("--rotations", "int", default=1, help="Full passes over the roster"),
+        Arg("--cycles-per-deck", "int", default=1,
+            help="az cycles to run per deck per rotation"),
+        Arg("--games", "int", default=50, help="Self-play games per cycle"),
+        Arg("--sims", "int", default=64, help="Self-play PUCT sims"),
+        Arg("--worlds", "int", default=4),
+        Arg("--workers", "int", default=None,
+            help="Self-play worker processes (default max(1, cpu-2))"),
+        Arg("--batches", "int", default=500),
+        Arg("--batch-size", "int", default=256),
+        Arg("--lr", "float", default=1e-3),
+        Arg("--window", "int", default=50),
+        Arg("--eval-games", "int", default=20),
+        Arg("--eval-sims", "int", default=32),
+        Arg("--eval-worlds", "int", default=2),
+        Arg("--promote-threshold", "float", default=0.55),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed (slot i uses seed+i)"),
+        _actor_mode(),
     ]),
 ])
 

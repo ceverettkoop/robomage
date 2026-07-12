@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import glob
+import json
 import os
 import shutil
 import time
@@ -32,6 +33,9 @@ except ImportError:  # pragma: no cover
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "checkpoints", "az")
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
+_DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          "bin", "resources", "decks")
+_LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 
 # ----------------------------------------------------------------------
@@ -251,15 +255,19 @@ def az_cycle(deck: str, *, games: int = 50, sims: int = 64, worlds: int = 4,
              workers: Optional[int] = None, batches: int = 500,
              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
              eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
-             promote_threshold: float = 0.55, seed: int = 1) -> dict:
+             promote_threshold: float = 0.55, seed: int = 1,
+             use_actor: Optional[bool] = None) -> dict:
     """Sequential single-process cycle: self-play -> train a candidate -> gate it
-    against the current incumbent (promote on success)."""
+    against the current incumbent (promote on success).
+
+    ``use_actor`` chooses the self-play backend (None=AUTO: the C++ actor iff
+    built, else Python; see :func:`az_selfplay.generate`)."""
     import az_selfplay
     from az_net import az_checkpoint_path
 
     print("=== az cycle: self-play ===")
     gen = az_selfplay.generate(deck, games=games, sims=sims, worlds=worlds,
-                               workers=workers, seed=seed)
+                               workers=workers, seed=seed, use_actor=use_actor)
     print("=== az cycle: train ===")
     tr = train_az(deck, batches=batches, batch_size=batch_size, lr=lr,
                   window=window, seed=seed)
@@ -271,8 +279,191 @@ def az_cycle(deck: str, *, games: int = 50, sims: int = 64, worlds: int = 4,
 
 
 # ----------------------------------------------------------------------
+# AZ league: rotate az cycles over the decks/league/ roster
+# ----------------------------------------------------------------------
+#
+# Mirrors the PPO league driver's rotation + resume ERGONOMICS (a roster taken
+# from decks/league/, a JSON progress sidecar rewritten after each unit of work,
+# and a `--resume` that restores the full run config and continues from the next
+# incomplete slot) WITHOUT reusing its PPO-specific PFSP pool machinery. Each
+# slot runs one self-contained `az_cycle` (self-play -> train -> gate) for one
+# deck with the actor backend (AUTO), so resume granularity is one deck cycle —
+# the az cycle is atomic enough that this needs no finer checkpointing.
+
+AZ_LEAGUE_STATE_VERSION = 1
+
+
+def _az_league_state_path(ckpt_dir: str) -> str:
+    return os.path.join(ckpt_dir, "_az_league_progress.json")
+
+
+def _write_az_league_state(ckpt_dir: str, state: dict) -> None:
+    """Atomically persist the az-league driver's progress to its JSON sidecar."""
+    path = _az_league_state_path(ckpt_dir)
+    tmp = path + ".tmp"
+    try:
+        with open(tmp, "w") as fh:
+            json.dump(state, fh, indent=2)
+        os.replace(tmp, path)
+    except OSError as exc:
+        print(f"[az-league] WARNING: could not write progress file {path}: {exc}")
+
+
+def _read_az_league_state(ckpt_dir: str) -> Optional[dict]:
+    path = _az_league_state_path(ckpt_dir)
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path) as fh:
+            return json.load(fh)
+    except (OSError, ValueError) as exc:
+        print(f"[az-league] WARNING: could not read progress file {path}: {exc}")
+        return None
+
+
+def _default_az_league_roster() -> list:
+    """Every deck in decks/league/, referenced 'league/<stem>' (rotation order)."""
+    if not os.path.isdir(_LEAGUE_DECKS_DIR):
+        return []
+    return sorted("league/" + os.path.splitext(p)[0]
+                  for p in os.listdir(_LEAGUE_DECKS_DIR) if p.endswith(".dk"))
+
+
+def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
+              games: int = 50, sims: int = 64, worlds: int = 4,
+              workers: Optional[int] = None, batches: int = 500,
+              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
+              eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
+              promote_threshold: float = 0.55, seed: int = 1,
+              use_actor: Optional[bool] = None, resume: bool = False,
+              ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
+    """Rotate ``az_cycle`` over the league roster.
+
+    The unit of work is one deck cycle; the flat slot list is
+    ``[(rotation, deck, cycle) for rotation, deck, cycle in ...]`` and the sidecar
+    persists the index of the NEXT slot to run. ``resume=True`` restores the
+    roster, budgets, and every knob from the sidecar and continues from that slot
+    (all other flags are ignored on resume, mirroring ``league --resume``)."""
+    os.makedirs(ckpt_dir, exist_ok=True)
+
+    slot_index = 0
+    results: list = []
+    if resume:
+        state = _read_az_league_state(ckpt_dir)
+        if state is None:
+            raise FileNotFoundError(
+                f"--resume: no az-league progress file at "
+                f"{_az_league_state_path(ckpt_dir)}. Start an az-league run first "
+                f"(it writes the file as it trains), then resume it.")
+        roster = list(state["roster"])
+        rotations = int(state["rotations"])
+        cycles_per_deck = int(state["cycles_per_deck"])
+        p = state.get("params", {})
+        games = int(p.get("games", games))
+        sims = int(p.get("sims", sims))
+        worlds = int(p.get("worlds", worlds))
+        workers = p.get("workers", workers)
+        batches = int(p.get("batches", batches))
+        batch_size = int(p.get("batch_size", batch_size))
+        lr = float(p.get("lr", lr))
+        window = int(p.get("window", window))
+        eval_games = int(p.get("eval_games", eval_games))
+        eval_sims = int(p.get("eval_sims", eval_sims))
+        eval_worlds = int(p.get("eval_worlds", eval_worlds))
+        promote_threshold = float(p.get("promote_threshold", promote_threshold))
+        seed = int(p.get("seed", seed))
+        use_actor = p.get("use_actor", use_actor)
+        slot_index = int(state.get("slot_index", 0))
+        results = list(state.get("results", []))
+        print(f"[az-league] resuming from {_az_league_state_path(ckpt_dir)}: "
+              f"next slot {slot_index}")
+    elif decks:
+        roster = ([d.strip() for d in decks.split(",") if d.strip()]
+                  if isinstance(decks, str) else [str(d).strip() for d in decks if str(d).strip()])
+    else:
+        roster = _default_az_league_roster()
+    if not roster:
+        raise ValueError(
+            f"No decks found for az-league (looked in {_LEAGUE_DECKS_DIR}). "
+            f"Add deck files there, or pass --decks explicitly.")
+
+    slots = [(r, di, c) for r in range(rotations)
+             for di in range(len(roster)) for c in range(cycles_per_deck)]
+    total = len(slots)
+
+    base_state = {
+        "version": AZ_LEAGUE_STATE_VERSION,
+        "roster": roster,
+        "rotations": rotations,
+        "cycles_per_deck": cycles_per_deck,
+        "params": {
+            "games": games, "sims": sims, "worlds": worlds, "workers": workers,
+            "batches": batches, "batch_size": batch_size, "lr": lr,
+            "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
+            "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
+            "seed": seed, "use_actor": use_actor,
+        },
+    }
+
+    print(f"AZ league roster: {', '.join(roster)}")
+    print(f"  rotations={rotations}  cycles_per_deck={cycles_per_deck}  "
+          f"slots={total}  (starting at slot {slot_index})")
+    print(f"  games={games} sims={sims} worlds={worlds}  "
+          f"batches={batches} window={window}  "
+          f"eval_games={eval_games} promote>={promote_threshold}")
+
+    def save_progress(next_slot: int):
+        _write_az_league_state(ckpt_dir, {
+            **base_state, "slot_index": int(next_slot), "results": results,
+            "updated": time.strftime("%Y-%m-%d %H:%M:%S")})
+
+    # Record the starting position so an interruption before the first cycle still
+    # leaves a resumable sidecar.
+    save_progress(slot_index)
+    if slot_index >= total:
+        print("[az-league] saved progress is already complete — nothing to resume.")
+        return {"roster": roster, "slots": total, "results": results}
+
+    for si in range(slot_index, total):
+        r, di, c = slots[si]
+        deck = roster[di]
+        slot_seed = seed + si
+        print(f"\n{'='*60}")
+        print(f"[az-league slot {si + 1}/{total}] rotation {r + 1}/{rotations}  "
+              f"deck={deck}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})")
+        print(f"{'='*60}")
+        res = az_cycle(deck, games=games, sims=sims, worlds=worlds, workers=workers,
+                       batches=batches, batch_size=batch_size, lr=lr, window=window,
+                       eval_games=eval_games, eval_sims=eval_sims,
+                       eval_worlds=eval_worlds, promote_threshold=promote_threshold,
+                       seed=slot_seed, use_actor=use_actor)
+        gen, tr, ev = res["generate"], res["train"], res["eval"]
+        print(f"[az-league] slot {si + 1}/{total} deck={deck}: "
+              f"samples={gen['samples']} shards={len(gen['shards'])}  "
+              f"train_loss {tr['first_loss']:.3f}->{tr['last_loss']:.3f}  "
+              f"gate {ev['wins']}W-{ev['losses']}L-{ev['draws']}D "
+              f"wr={ev['win_rate']:.3f} "
+              f"{'PROMOTED' if ev['promoted'] else 'kept-incumbent'}")
+        results.append({"slot": si, "deck": deck, "rotation": r, "cycle": c,
+                        "samples": gen["samples"], "shards": len(gen["shards"]),
+                        "gate_win_rate": ev["win_rate"], "promoted": ev["promoted"]})
+        save_progress(si + 1)
+
+    print(f"\n[az-league] complete: {total} slots over {rotations} rotations.")
+    return {"roster": roster, "slots": total, "results": results}
+
+
+# ----------------------------------------------------------------------
 # train.py dispatch entries
 # ----------------------------------------------------------------------
+
+def _resolve_use_actor(args) -> Optional[bool]:
+    """--actor -> True, --no-actor -> False, neither -> None (AUTO)."""
+    if getattr(args, "actor", False):
+        return True
+    if getattr(args, "no_actor", False):
+        return False
+    return None
 
 def run_train(args) -> None:
     train_az(args.deck, batches=args.batches, batch_size=args.batch_size,
@@ -295,7 +486,20 @@ def run_cycle(args) -> None:
              lr=args.lr, window=args.window, eval_games=args.eval_games,
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
              promote_threshold=args.promote_threshold,
-             seed=args.seed if args.seed is not None else 1)
+             seed=args.seed if args.seed is not None else 1,
+             use_actor=_resolve_use_actor(args))
+
+
+def run_league(args) -> None:
+    az_league(decks=args.decks, rotations=args.rotations,
+              cycles_per_deck=args.cycles_per_deck,
+              games=args.games, sims=args.sims, worlds=args.worlds,
+              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
+              lr=args.lr, window=args.window, eval_games=args.eval_games,
+              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
+              promote_threshold=args.promote_threshold,
+              seed=args.seed if args.seed is not None else 1,
+              use_actor=_resolve_use_actor(args), resume=args.resume)
 
 
 if __name__ == "__main__":
@@ -342,7 +546,41 @@ if __name__ == "__main__":
     c.add_argument("--eval-worlds", type=int, default=2)
     c.add_argument("--promote-threshold", type=float, default=0.55)
     c.add_argument("--seed", type=int, default=1)
+    cg = c.add_mutually_exclusive_group()
+    cg.add_argument("--actor", action="store_true",
+                    help="Force the C++ az_actor self-play backend")
+    cg.add_argument("--no-actor", action="store_true",
+                    help="Force the pure-Python self-play backend")
     c.set_defaults(func=run_cycle)
+
+    lg = sub.add_parser("league",
+                        help="Rotate az cycles over the decks/league/ roster")
+    lg.add_argument("--resume", action="store_true",
+                    help="Resume from checkpoints/_az_league_progress.json "
+                         "(other flags ignored)")
+    lg.add_argument("--decks", default=None,
+                    help="Comma-separated roster (default: every decks/league/*.dk)")
+    lg.add_argument("--rotations", type=int, default=1)
+    lg.add_argument("--cycles-per-deck", type=int, default=1)
+    lg.add_argument("--games", type=int, default=50)
+    lg.add_argument("--sims", type=int, default=64)
+    lg.add_argument("--worlds", type=int, default=4)
+    lg.add_argument("--workers", type=int, default=None)
+    lg.add_argument("--batches", type=int, default=500)
+    lg.add_argument("--batch-size", type=int, default=256)
+    lg.add_argument("--lr", type=float, default=1e-3)
+    lg.add_argument("--window", type=int, default=50)
+    lg.add_argument("--eval-games", type=int, default=20)
+    lg.add_argument("--eval-sims", type=int, default=32)
+    lg.add_argument("--eval-worlds", type=int, default=2)
+    lg.add_argument("--promote-threshold", type=float, default=0.55)
+    lg.add_argument("--seed", type=int, default=1)
+    lgg = lg.add_mutually_exclusive_group()
+    lgg.add_argument("--actor", action="store_true",
+                     help="Force the C++ az_actor self-play backend")
+    lgg.add_argument("--no-actor", action="store_true",
+                     help="Force the pure-Python self-play backend")
+    lg.set_defaults(func=run_league)
 
     args = ap.parse_args()
     args.func(args)

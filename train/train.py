@@ -1791,3 +1791,6 @@ if __name__ == "__main__":
     elif args.command == "az":
         import az_train
         az_train.run_cycle(args)
+    elif args.command == "az-league":
+        import az_train
+        az_train.run_league(args)

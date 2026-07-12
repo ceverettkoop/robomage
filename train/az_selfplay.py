@@ -24,10 +24,13 @@ import numpy as np
 
 try:
     from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX
+    from cli_spec import BIN_DIR
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX
+    from train.cli_spec import BIN_DIR
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
+_ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
 
 # Defaults (AlphaZero-style)
 DEFAULT_ROOT_NOISE_EPS = 0.25
@@ -219,22 +222,58 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
              temp_moves: int = DEFAULT_TEMP_MOVES,
              root_noise_eps: float = DEFAULT_ROOT_NOISE_EPS,
              root_noise_alpha: float = DEFAULT_ROOT_NOISE_ALPHA,
-             out_dir: Optional[str] = None, seed: int = 1) -> dict:
-    """Generate ``games`` self-play games of ``deck`` (mirror) across worker
-    processes and write shards. Returns a summary dict."""
-    import multiprocessing as mp
+             out_dir: Optional[str] = None, seed: int = 1,
+             use_actor: Optional[bool] = None) -> dict:
+    """Generate ``games`` self-play games of ``deck`` (mirror) and write shards.
 
+    ``use_actor`` picks the generation backend:
+      * ``None`` (AUTO, default) — use the C++ ``bin/az_actor`` iff it is built,
+        else the pure-Python multiprocess path;
+      * ``True`` — force the actor (loud error if ``bin/az_actor`` is missing);
+      * ``False`` — force the Python path.
+    Both backends write the SAME trainer-compatible ``shard_*.npz`` files into
+    ``out_dir`` and return the same summary dict shape."""
     if workers is None:
         workers = max(1, (os.cpu_count() or 2) - 2)
     workers = max(1, min(workers, games))
     out_dir = out_dir or os.path.join(_AZ_DATA_DIR, deck)
     os.makedirs(out_dir, exist_ok=True)
 
+    have_actor = os.path.exists(_ACTOR_BIN)
+    if use_actor is None:
+        use_actor = have_actor
+        chosen = "AUTO"
+    else:
+        chosen = "forced"
+    if use_actor and not have_actor:
+        raise FileNotFoundError(
+            f"--actor requested but the actor binary is not built at {_ACTOR_BIN} "
+            f"(build it with `make actor`, or pass --no-actor)")
+
     source = resolve_source(deck, checkpoint)
     print(f"[az-selfplay] deck={deck} games={games} sims={sims} worlds={worlds} "
           f"workers={workers}")
     print(f"[az-selfplay] net source: mode={source['mode']} path={source['path']}")
     print(f"[az-selfplay] out_dir={out_dir}")
+    print(f"[az-selfplay] backend={'ACTOR' if use_actor else 'PYTHON'} ({chosen}); "
+          f"az_actor {'present' if have_actor else 'absent'}")
+
+    common = dict(source=source, games=games, sims=sims, worlds=worlds,
+                  workers=workers, temp_moves=temp_moves,
+                  root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
+                  out_dir=out_dir, seed=seed)
+    if use_actor:
+        return _generate_actor(deck, actor_bin=_ACTOR_BIN, **common)
+    return _generate_python(deck, **common)
+
+
+# ----------------------------------------------------------------------
+# Python multiprocess backend
+# ----------------------------------------------------------------------
+
+def _generate_python(deck, *, source, games, sims, worlds, workers, temp_moves,
+                     root_noise_eps, root_noise_alpha, out_dir, seed) -> dict:
+    import multiprocessing as mp
 
     # Split games across workers.
     per = [games // workers] * workers
@@ -264,7 +303,7 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
     for r in results:
         for k in agg:
             agg[k] += r["stats"][k]
-    print(f"[az-selfplay] done: {total_samples} samples, {len(all_shards)} shards")
+    print(f"[az-selfplay] done: {total_samples} samples, {len(all_shards)} shards (PYTHON)")
     print(f"[az-selfplay] decisions searched={agg['searched']} "
           f"fallback={agg['fallback']}; results A={agg['wins_a']} "
           f"B={agg['wins_b']} draws={agg['draws']}")
@@ -272,12 +311,151 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
             "out_dir": out_dir, "source": source}
 
 
+# ----------------------------------------------------------------------
+# C++ actor backend (bin/az_actor --selfplay)
+# ----------------------------------------------------------------------
+
+def _ensure_actor_torchscript(source: dict):
+    """Return (ts_path, tmpdir) — a TorchScript ``.ts.pt`` the actor can load.
+
+    * mode 'az'  : export/refresh the ``.ts.pt`` sibling of the state_dict ``.pt``
+      (re-export when missing or older than the ``.pt`` — mtime check). No tmpdir.
+    * mode 'ppo' : materialize the AZNet warm-started from the PPO ``.zip`` and
+      serialize it to a throwaway temp ``.ts.pt`` (tmpdir returned for cleanup).
+    * mode 'random' : same, but from a fresh random AZNet."""
+    from az_net import (load_az, from_ppo, AZNet, save_torchscript,
+                        torchscript_export_path)
+    mode, path = source["mode"], source["path"]
+    if mode == "az":
+        ts = torchscript_export_path(path)
+        stale = (not os.path.exists(ts)) or \
+            (os.path.getmtime(ts) < os.path.getmtime(path))
+        if stale:
+            print(f"[az-selfplay] exporting TorchScript sibling {ts}")
+            save_torchscript(load_az(path), ts)
+        else:
+            print(f"[az-selfplay] using existing TorchScript {ts}")
+        return ts, None
+    import tempfile
+    net = from_ppo(path) if mode == "ppo" else AZNet().eval()
+    tmpdir = tempfile.mkdtemp(prefix="az_actor_ts_")
+    ts = os.path.join(tmpdir, "model.ts.pt")
+    save_torchscript(net, ts)
+    print(f"[az-selfplay] exported temp TorchScript {ts} (mode={mode})")
+    return ts, tmpdir
+
+
+def _parse_actor_output(stdout: str):
+    """Aggregate one actor worker's stdout: (total_samples, wins_a, wins_b, draws)."""
+    samples = wins_a = wins_b = draws = 0
+    for line in stdout.splitlines():
+        if line.startswith("SELFPLAY: total_samples="):
+            for tok in line.split():
+                if tok.startswith("total_samples="):
+                    samples = int(tok.split("=", 1)[1])
+        elif line.startswith("SELFPLAY: game "):
+            if line.endswith("winner=A"):
+                wins_a += 1
+            elif line.endswith("winner=B"):
+                wins_b += 1
+            elif line.endswith("winner=DRAW"):
+                draws += 1
+    return samples, wins_a, wins_b, draws
+
+
+def _generate_actor(deck, *, source, games, sims, worlds, workers, temp_moves,
+                    root_noise_eps, root_noise_alpha, out_dir, seed,
+                    actor_bin) -> dict:
+    import glob
+    import shutil
+    import subprocess
+
+    ts_path, tmpdir = _ensure_actor_torchscript(source)
+    out_dir = os.path.abspath(out_dir)
+
+    # Split games across workers with DISJOINT seed ranges: worker i runs games
+    # seeded (seed + i*100000 + g), mirroring the Python path's per-worker
+    # schedule so the two backends explore the same seed space.
+    per = [games // workers] * workers
+    for i in range(games % workers):
+        per[i] += 1
+
+    pre = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
+    total_samples = 0
+    agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
+    procs = []
+    try:
+        for wi in range(workers):
+            if per[wi] == 0:
+                continue
+            base = seed + wi * 100000
+            cmd = [actor_bin, "--selfplay", "--deck", deck,
+                   "--seed", str(base), "--games", str(per[wi]),
+                   "--sims", str(sims), "--worlds", str(worlds),
+                   "--model", ts_path, "--out-dir", out_dir,
+                   "--noise-eps", str(root_noise_eps),
+                   "--noise-alpha", str(root_noise_alpha),
+                   "--temp-moves", str(temp_moves),
+                   "--rng-seed", str(seed + 100003 * (wi + 1))]
+            # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
+            p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            procs.append((wi, per[wi], p))
+
+        failed = []
+        for wi, ng, p in procs:
+            out, err = p.communicate()
+            if p.returncode != 0:
+                failed.append((wi, p.returncode, err))
+                continue
+            s, wa, wb, dr = _parse_actor_output(out)
+            total_samples += s
+            agg["wins_a"] += wa
+            agg["wins_b"] += wb
+            agg["draws"] += dr
+            print(f"[az-selfplay] worker {wi}: games={ng} samples={s} "
+                  f"A={wa} B={wb} draws={dr}")
+        if failed:
+            for wi, rc, err in failed:
+                tail = "\n".join(err.strip().splitlines()[-10:])
+                print(f"[az-selfplay] worker {wi} FAILED (exit {rc}):\n{tail}")
+            raise RuntimeError(
+                f"az_actor self-play: {len(failed)} of {len(procs)} worker(s) failed")
+    finally:
+        if tmpdir:
+            shutil.rmtree(tmpdir, ignore_errors=True)
+
+    post = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
+    all_shards = sorted(post - pre)
+    print(f"[az-selfplay] done: {total_samples} samples, {len(all_shards)} shards (ACTOR)")
+    # The actor does search internally but does not emit searched/fallback tallies,
+    # so those stay 0 for the actor backend (informational only; the trainer reads
+    # shards from disk, not this dict).
+    print(f"[az-selfplay] results A={agg['wins_a']} B={agg['wins_b']} "
+          f"draws={agg['draws']}")
+    return {"samples": total_samples, "shards": all_shards, "stats": agg,
+            "out_dir": out_dir, "source": source}
+
+
+# ----------------------------------------------------------------------
+# CLI
+# ----------------------------------------------------------------------
+
+def _resolve_use_actor(args) -> Optional[bool]:
+    """--actor -> True, --no-actor -> False, neither -> None (AUTO)."""
+    if getattr(args, "actor", False):
+        return True
+    if getattr(args, "no_actor", False):
+        return False
+    return None
+
+
 def run(args) -> None:
     """train.py dispatch entry."""
     generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
              workers=args.workers, checkpoint=args.checkpoint,
              temp_moves=args.temp_moves, seed=args.seed if args.seed is not None else 1,
-             out_dir=args.out)
+             out_dir=args.out, use_actor=_resolve_use_actor(args))
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -294,6 +472,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--temp-moves", type=int, default=DEFAULT_TEMP_MOVES)
     ap.add_argument("--out", default=None, help="Output dir (default az_data/{deck})")
     ap.add_argument("--seed", type=int, default=1)
+    g = ap.add_mutually_exclusive_group()
+    g.add_argument("--actor", action="store_true",
+                   help="Force the C++ az_actor self-play backend (error if not built)")
+    g.add_argument("--no-actor", action="store_true",
+                   help="Force the pure-Python backend (skip the actor even if built)")
     return ap
 
 
