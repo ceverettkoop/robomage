@@ -656,6 +656,20 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
             Arg("--n-samples", "int", default=200, help="SHAP sample count (default: 200)"),
             Arg("--n-background", "int", default=50, help="SHAP background size (default: 50)"),
         ]),
+    Sub("search",
+        "Search-vs-raw comparison: per searched decision, net priors vs MCTS "
+        "visit distribution and net value vs search root value (AZ or PPO ckpt)",
+        items=[
+            *sim_args(),
+            Arg("--n-games", "int", default=4,
+                help="Games to drive with the MCTS controller (default: 4)"),
+            Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
+            Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
+            Arg("--c", "float", default=1.5, help="PUCT exploration constant c_puct (default: 1.5)"),
+            Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
+            Arg("--top", "int", default=8,
+                help="Biggest prior-vs-visit disagreement decisions to decode (default: 8)"),
+        ]),
 ])
 
 # tui_analysis.py — the analysis REPL as a full-screen Textual app: game list,

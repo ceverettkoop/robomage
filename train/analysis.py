@@ -391,6 +391,157 @@ def _resolve_model_path(path):
     return path  # let the loader raise a meaningful error
 
 
+# ── AlphaZero (AZNet) checkpoint support ──────────────────────────────────────
+#
+# analysis.py only ever touches a model through three surfaces: the value head
+# (``policy.predict_values``), the masked action distribution
+# (``policy.get_distribution``), and ``model.predict`` (via ModelController).
+# An AZNet natively provides all three — a tanh outcome value and a masked-softmax
+# policy — so the entire existing battery (cardvalue, targeting, calibration,
+# turning, clusters, swings, regret, entropy, consistency, SHAP surrogate, whatif,
+# run) transfers to an AZ checkpoint by wrapping it in a thin adapter that mimics
+# that subset of the sb3 policy API. No analysis fundamentally needs PPO-only
+# internals, so none has to be skipped; the one caveat is that the AZ value is a
+# bounded game-outcome estimate in [-1, 1] (tanh), not the PPO shaped-return
+# critic, so absolute V(s) magnitudes are not directly comparable across the two.
+
+
+def _is_az_model_spec(spec):
+    """True if ``spec`` names an AZNet checkpoint rather than a PPO ``.zip``.
+
+    Recognizes an explicit ``az:``/``azraw:`` prefix, a bare ``.pt`` path, or a
+    deck shorthand that (a) does NOT resolve to a PPO checkpoint and (b) DOES
+    resolve to an AZ checkpoint under checkpoints/az/. The PPO-first ordering
+    keeps normal checkpoints on the unchanged path (and avoids importing az_net
+    for them)."""
+    if not isinstance(spec, str):
+        return False
+    s = spec.strip()
+    low = s.lower()
+    if low.startswith("az:") or low.startswith("azraw:"):
+        return True
+    if s.endswith(".pt"):
+        return True
+    if _resolve_model_path(s) != s:  # a PPO checkpoint resolved — not AZ
+        return False
+    try:
+        from az_net import resolve_az_checkpoint
+    except Exception:
+        return False
+    return resolve_az_checkpoint(s) is not None
+
+
+def _az_spec_base(spec):
+    """Strip an ``az:``/``azraw:`` prefix from a model spec (else return it)."""
+    s = spec.strip()
+    for pfx in ("az:", "azraw:"):
+        if s.lower().startswith(pfx):
+            return s[len(pfx):].strip()
+    return s
+
+
+def _resolve_any_path(spec):
+    """Resolve a model spec to a checkpoint path, AZ-aware (for deck inference /
+    display). AZ specs resolve via resolve_az_checkpoint (falling back to the PPO
+    checkpoint used for a warm-start); everything else via _resolve_model_path."""
+    if _is_az_model_spec(spec):
+        from az_net import resolve_az_checkpoint
+        base = _az_spec_base(spec)
+        return resolve_az_checkpoint(base) or _resolve_model_path(base)
+    return _resolve_model_path(spec)
+
+
+class _AZDistribution:
+    """Stand-in for an sb3 action distribution: exposes ``.probs`` like
+    MaskableCategorical so ``_get_policy_probs`` reads it unchanged."""
+
+    def __init__(self, probs):
+        self.probs = probs
+
+
+class _AZDistributionWrap:
+    """Mirror of ``get_distribution``'s return: a ``.distribution`` with ``.probs``."""
+
+    def __init__(self, probs):
+        self.distribution = _AZDistribution(probs)
+
+
+class _AZPolicyAdapter:
+    """Adapts an AZNet to the sb3 ``policy`` subset analysis.py calls, both taking
+    a torch batch tensor: ``predict_values(obs_t)`` and
+    ``get_distribution(obs_t, action_masks=)``."""
+
+    def __init__(self, net):
+        import torch
+        self._torch = torch
+        self._net = net.eval()
+
+    def predict_values(self, obs_t):
+        torch = self._torch
+        b = obs_t.shape[0]
+        mask = torch.ones(b, MAX_ACTIONS, dtype=torch.bool)
+        with torch.no_grad():
+            _, value = self._net(obs_t, mask)
+        return value.reshape(-1, 1)  # so .item() works for a batch of 1
+
+    def get_distribution(self, obs_t, action_masks=None):
+        torch = self._torch
+        b = obs_t.shape[0]
+        if action_masks is None:
+            mask = torch.ones(b, MAX_ACTIONS, dtype=torch.bool)
+        else:
+            mask = torch.as_tensor(np.asarray(action_masks, dtype=bool))
+            if mask.ndim == 1:
+                mask = mask.unsqueeze(0)
+        with torch.no_grad():
+            logits, _ = self._net(obs_t, mask)
+            probs = torch.softmax(logits, dim=-1)
+        return _AZDistributionWrap(probs)
+
+
+class _AZModelAdapter:
+    """Drop-in for a MaskablePPO model across analysis.py: a ``.policy`` with
+    predict_values/get_distribution and a ``.predict`` for ModelController.
+
+    The value is the AZ tanh outcome estimate in [-1, 1] (a bounded game-result
+    prediction), NOT the PPO shaped-return critic."""
+
+    is_az = True
+
+    def __init__(self, net):
+        self._net = net
+        self.policy = _AZPolicyAdapter(net)
+
+    def predict(self, obs, action_masks=None, deterministic=True):
+        import torch
+        obs_t = torch.as_tensor(np.asarray(obs, dtype=np.float32)).unsqueeze(0)
+        if action_masks is None:
+            mask = torch.ones(1, MAX_ACTIONS, dtype=torch.bool)
+        else:
+            mask = torch.as_tensor(np.asarray(action_masks, dtype=bool)).unsqueeze(0)
+        with torch.no_grad():
+            logits, _ = self._net(obs_t, mask)
+            action = int(torch.argmax(logits[0]).item())
+        return action, None
+
+
+def _load_az_analysis_model(spec):
+    """Load an AZNet for analysis from a model spec. Returns (adapter, path).
+
+    Resolves an AZ checkpoint (az:/azraw: prefix, ``.pt`` path, or deck shorthand)
+    via resolve_az_checkpoint; when only a PPO checkpoint exists it warm-starts an
+    AZNet from it (``from_ppo``) so an ``az:`` spec still yields an AZNet-shaped
+    model."""
+    from az_net import load_az, from_ppo, resolve_az_checkpoint
+    base = _az_spec_base(spec)
+    az = resolve_az_checkpoint(base)
+    if az is not None:
+        return _AZModelAdapter(load_az(az)), az
+    ppo_path = _resolve_model_path(base)
+    print(f"No AZ checkpoint for {base!r}; warm-starting an AZNet from PPO {ppo_path}")
+    return _AZModelAdapter(from_ppo(ppo_path)), ppo_path
+
+
 def _load_model_and_env(args):
     """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
     try:
@@ -400,7 +551,7 @@ def _load_model_and_env(args):
 
     binary = getattr(args, "binary", BINARY)
 
-    model_path = _resolve_model_path(args.model)
+    model_path = _resolve_any_path(args.model)
 
     # Deck resolution. Checkpoints are per-deck (deck-pilot naming), so a model
     # filename encodes only the deck it pilots — never its opponent. We infer the
@@ -424,7 +575,7 @@ def _load_model_and_env(args):
             print(f"No --deck-b given for scripted opponent; defaulting to a mirror "
                   f"match (opponent plays {deck_b}). Pass --deck-b for a different matchup.")
         else:
-            opp_path = _resolve_model_path(args.opponent)
+            opp_path = _resolve_any_path(args.opponent)
             inferred = _infer_deck(opp_path)
             if inferred:
                 deck_b = inferred
@@ -438,10 +589,16 @@ def _load_model_and_env(args):
     # title) see the actual decks even when they were inferred, not just given.
     args.deck_a, args.deck_b = deck_a, deck_b
 
-    model = MaskablePPO.load(model_path)
+    if _is_az_model_spec(args.model):
+        model, _ = _load_az_analysis_model(args.model)
+    else:
+        model = MaskablePPO.load(model_path)
     opp_model = None
     if args.opponent != "scripted":
-        opp_model = MaskablePPO.load(_resolve_model_path(args.opponent))
+        if _is_az_model_spec(args.opponent):
+            opp_model, _ = _load_az_analysis_model(args.opponent)
+        else:
+            opp_model = MaskablePPO.load(_resolve_model_path(args.opponent))
 
     env = RoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
                       bo3=getattr(args, "bo3", False))
@@ -3747,6 +3904,11 @@ def cmd_report(args):
     import html as _html
 
     model, env, opp_model = _load_model_and_env(args)
+    if getattr(model, "is_az", False):
+        print("[report] AZ checkpoint: V(s) is the AZNet tanh outcome estimate in "
+              "[-1, 1] (a bounded game-result prediction, not the PPO shaped-return "
+              "critic). All battery analyses apply; only absolute value magnitudes "
+              "differ in scale from PPO reports.")
     print(f"\nCollecting {args.n_games} game traces...")
     games = _collect_game_traces(model, env, opp_model, args.n_games)
     env.close()
@@ -3844,6 +4006,184 @@ def cmd_interactive(args):
         env.close()
 
 
+# ── Search vs raw comparison (AZ / PPO evaluator + MCTS) ──────────────────────
+#
+# Per searched (loop-safe) root, compare what the NET alone says (softmax priors,
+# leaf value) against what SEARCH concludes (MCTS visit distribution, root value):
+#   * how far the visit distribution moved off the prior (mean KL(priors||visits)),
+#   * how often search's top move disagrees with the net's greedy move,
+#   * how well the net's leaf value tracks the search's root value (MAE + corr).
+# Search is where an AZ/PPO checkpoint's play differs from its raw policy, so this
+# is the natural search-aware analysis view.
+
+
+def _build_search_evaluator(spec):
+    """(evaluator, inferred_deck) for the search-compare tool.
+
+    An AZ spec -> AZEvaluator (falling back to a PPO warm-start); a PPO spec ->
+    PPOEvaluator; ``uniform`` / ``mcts:uniform`` -> the torch-free UniformEvaluator."""
+    from mcts import PPOEvaluator, UniformEvaluator
+    base = _az_spec_base(spec)
+    if base.lower() in ("uniform", "mcts:uniform"):
+        return UniformEvaluator(), None
+    if _is_az_model_spec(spec):
+        from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
+        az = resolve_az_checkpoint(base)
+        if az is not None:
+            return AZEvaluator(load_az(az)), _infer_deck(az)
+        ppo = _resolve_model_path(base)
+        print(f"No AZ checkpoint for {base!r}; warm-starting an AZNet from PPO {ppo}")
+        return AZEvaluator(from_ppo(ppo)), _infer_deck(ppo)
+    from opponents import _load_model
+    path = _resolve_model_path(base)
+    return PPOEvaluator(_load_model(path)), _infer_deck(path)
+
+
+def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed):
+    """A SearchController that also RECORDS (priors, visit_dist, net_value,
+    root_value, obs) for every searched root, for the search-vs-raw report."""
+    from opponents import SearchController
+
+    class _SearchCompareController(SearchController):
+        def __init__(self):
+            super().__init__(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
+                             temperature=0.0, label="search-compare", rng_seed=rng_seed)
+            self.records = []
+
+        def choose(self, obs, num_choices, action_masks=None, decoded_actions=None):
+            from mcts import run_search
+            env = self._env
+            searchable = (env is not None
+                          and getattr(env, "last_search_safe", None)
+                          and num_choices > 1)
+            priors, net_value = self._evaluator.evaluate(obs, num_choices)
+            if not searchable:
+                self.stats["fallback"] += 1
+                return int(np.argmax(priors))
+            result = run_search(env, self._evaluator, sims=self._sims,
+                                worlds=self._worlds, c_puct=self._c_puct, rng=self._rng)
+            self.stats["searched"] += 1
+            self.stats["sims"] += result.sims_run
+            self.stats["sim_steps"] += result.sim_steps
+            visits = result.visits.astype(np.float64)
+            tot = visits.sum()
+            visit_dist = (visits / tot if tot > 0
+                          else np.full(num_choices, 1.0 / num_choices))
+            self.records.append({
+                "obs": np.asarray(obs, dtype=np.float32).copy(),
+                "num_choices": int(num_choices),
+                "priors": np.asarray(priors, dtype=np.float64).copy(),
+                "visit_dist": visit_dist,
+                "net_value": float(net_value),
+                "root_value": float(result.root_value),
+            })
+            return result.best_action()
+
+    return _SearchCompareController()
+
+
+def _kl(p, q):
+    """KL(p || q) over a menu, smoothing q off zero so an unvisited action
+    doesn't blow up (p is a softmax prior, strictly positive)."""
+    p = np.asarray(p, dtype=np.float64)
+    q = np.maximum(np.asarray(q, dtype=np.float64), 1e-12)
+    q = q / q.sum()
+    nz = p > 0
+    return float(np.sum(p[nz] * np.log(p[nz] / q[nz])))
+
+
+def _report_search_compare(ctrl, args):
+    """Print the search-vs-raw summary from a recording controller's records."""
+    recs = ctrl.records
+    st = ctrl.stats
+    total = st["searched"] + st["fallback"]
+    print("\n" + "=" * 68)
+    print("Search vs raw-net comparison")
+    print("=" * 68)
+    print(f"  Decisions: {st['searched']} searched, {st['fallback']} fallback "
+          f"(safe fraction {st['searched'] / max(1, total):.1%}); "
+          f"{st['sims']} sims, {st['sim_steps']} sim steps.")
+    if not recs:
+        print("  No searched roots recorded (all decisions fell back to the raw "
+              "policy — try a deck/opponent with more loop-safe priority windows).")
+        return
+
+    kls = np.array([_kl(r["priors"], r["visit_dist"]) for r in recs])
+    agree = np.array([int(np.argmax(r["priors"]) == np.argmax(r["visit_dist"]))
+                      for r in recs])
+    net_v = np.array([r["net_value"] for r in recs])
+    root_v = np.array([r["root_value"] for r in recs])
+    vmae = float(np.mean(np.abs(net_v - root_v)))
+    if len(recs) > 1 and net_v.std() > 1e-9 and root_v.std() > 1e-9:
+        vcorr = float(np.corrcoef(net_v, root_v)[0, 1])
+        vcorr_s = f"{vcorr:+.3f}"
+    else:
+        vcorr_s = "n/a"
+
+    print(f"  Roots analyzed: {len(recs)}")
+    print(f"  mean KL(priors || visits): {kls.mean():.4f}  "
+          f"(median {np.median(kls):.4f}, max {kls.max():.4f})")
+    print(f"  argmax agreement (net greedy == search pick): {agree.mean():.1%}")
+    print(f"  value net-vs-search:  MAE {vmae:.4f}   corr {vcorr_s}")
+
+    top_n = max(0, int(getattr(args, "top", 8)))
+    if top_n:
+        order = np.argsort(-kls)[:top_n]
+        print(f"\n  Top {len(order)} biggest prior-vs-visit disagreements:")
+        for rank, i in enumerate(order):
+            r = recs[i]
+            obs = r["obs"]
+            feat = _extract_interpretable(obs)
+            step = _step_name_from_feat(feat)
+            turn_no = 1 + int(round(feat[_FEAT["turn"]]))
+            pa = int(np.argmax(r["priors"]))
+            va = int(np.argmax(r["visit_dist"]))
+            print(f"   [{rank}] T{turn_no} {step:<12} "
+                  f"Life {feat[_FEAT['self_life']]:.0f}/{feat[_FEAT['opp_life']]:.0f}"
+                  f"  KL={kls[i]:.3f}  Vnet={r['net_value']:+.3f} "
+                  f"Vsearch={r['root_value']:+.3f}")
+            print(f"        net greedy : {_action_desc(obs, pa)}  "
+                  f"(P={r['priors'][pa]:.2f}, visits={r['visit_dist'][pa]:.2f})")
+            if va != pa:
+                print(f"        search pick: {_action_desc(obs, va)}  "
+                      f"(P={r['priors'][va]:.2f}, visits={r['visit_dist'][va]:.2f})")
+            else:
+                print(f"        search pick: (same action, visit mass shifted)")
+
+
+def cmd_search_compare(args):
+    """Drive N games with an MCTS controller and report, per searched decision,
+    net priors vs MCTS visits and net value vs search root value."""
+    import runner
+    from opponents import make_controller
+
+    evaluator, model_deck = _build_search_evaluator(args.model)
+    deck_a = getattr(args, "deck_a", None) or model_deck
+    if not deck_a:
+        print("Could not infer the model's deck; pass --deck-a", file=sys.stderr)
+        sys.exit(1)
+    deck_b = getattr(args, "deck_b", None)
+    if not deck_b:
+        if args.opponent == "scripted":
+            deck_b = deck_a
+        else:
+            deck_b = _infer_deck(_resolve_any_path(args.opponent)) or deck_a
+    args.deck_a, args.deck_b = deck_a, deck_b
+
+    ctrl_model = _make_search_compare_controller(
+        evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
+        rng_seed=args.seed)
+    ctrl_opp = make_controller(args.opponent)
+
+    print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c}) "
+          f"vs {args.opponent} [{deck_b}] over {args.n_games} game(s)...")
+    runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
+                     binary_path=args.binary, deck_a=deck_a, deck_b=deck_b,
+                     n_games=args.n_games, bo3=getattr(args, "bo3", False),
+                     seed=args.seed, transcript="quiet")
+    _report_search_compare(ctrl_model, args)
+
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
@@ -3861,6 +4201,7 @@ def main():
     {
         "report": cmd_report,
         "interactive": cmd_interactive,
+        "search": cmd_search_compare,
     }[args.command](args)
 
 

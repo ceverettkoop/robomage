@@ -170,7 +170,23 @@ n=24 (statistically meaningless; box too slow for 200 games).
 
 ## What is IN FLIGHT / handed off
 
-- **Phase D (C++ libtorch actor)**: not started; outline below.
+- **Phase D (C++ libtorch actor)**: DONE and verified (see "Phase D — DONE"
+  below). The actor, its self-play + shard writer, the opt-in `actor` CI tier,
+  the throughput bench, and the `--actor`/AUTO backend wiring in
+  `az-selfplay`/`az`/`az-league` all landed on the branch.
+- **Analysis-tool integration (M10)**: DONE — `analysis.py` accepts AZ checkpoint
+  specs and gained a `search` (search-vs-raw) subcommand; see
+  "Analysis-tool integration" below.
+- **Still open (real-hardware, not code):**
+  - Phase C **learning at scale** — the container/32-core runs proved the loop is
+    functional and that search beats the raw policy (Phase B gate), but no run has
+    yet demonstrated the AZ loop *improving* a checkpoint across many
+    generate→train→gate cycles at real sims/games budgets. The Phase D actor now
+    removes the stdio + Python self-play bottleneck that made this expensive.
+  - **Multi-process actor fleets** — one game per process (the engine has global
+    state), so throughput scales by running N `bin/az_actor` processes; a fleet
+    launcher / shard-dir coordinator across machines is not written.
+  - M10 future-work items in "Analysis-tool integration".
 
 ## What to run on real hardware
 
@@ -234,36 +250,200 @@ CI perf probe expects release-build timing). Gate everything with `make check`.
 > docs/alphazero_status.md, commit, and push to the same branch. Do not
 > start Phase D.
 
-## Phase D outline (C++ libtorch self-play actor) — NOT STARTED
+## Phase D — DONE (2026-07-11/12): C++ libtorch self-play actor
 
-Design pinned by the approved plan; build only after Phase C shows learning
-on real hardware:
+The in-process AlphaZero actor is built and verified. It runs full games and
+determinized MCTS entirely inside one process — no stdio BQUERY round-trip, no
+Python search loop — and writes the exact Phase C shard format the trainer
+consumes. Default `make` / `make check` are untouched: the actor is a separate,
+opt-in target and its CI tier self-skips when the binary isn't built.
 
-- **Build**: optional `make LIBTORCH=1 actor` target linking the existing
-  engine objects + new `src/actor/az_actor_main.cpp`. `LIBTORCH_DIR` make
-  variable; when absent the target is skipped and default `make`/`make check`
-  are untouched (libtorch is ~1-2 GB, stays optional). Actor TUs are compiled
-  **with** exceptions (libtorch requires them); engine objects stay
-  `-fno-exceptions`; all torch calls wrapped catch-at-boundary.
+**What was built:**
+
+- **`src/game_driver.{h,cpp}` refactor** — the globals, ECS setup (`init_ecs`),
+  and per-game loop (`play_single_game` / `run_sideboard_phase`) were lifted out
+  of `main.cpp` so a second binary can link every engine object **except**
+  `obj/main.o` and still drive games in-process. `main.cpp` now just calls into
+  it; engine behavior is unchanged.
+- **Default-null engine hooks** — two hooks let the actor intercept the engine
+  loop without a protocol, both no-ops when unset (so `main.cpp` / stdio machine
+  mode are byte-identical when they're absent):
+  `InputLogger::set_input_provider(std::function<int(const std::vector<LegalAction>&)>)`
+  (machine-mode decision dispatch takes the provider instead of reading stdin
+  when one is installed), and `search_set_game_end_hook` /
+  `search_clear_game_end_hook` (a simulated line's game-over is handed to the hook
+  — which records the result and latches a RESTORE — instead of the stdio
+  `SIM_RESULT`/stdin branch).
+- **`bin/az_actor` via `make actor`** — links the engine objects (minus
+  `main.o`) + `src/actor/*.cpp` + libtorch. `LIBTORCH_DIR` **auto-detects** the
+  venv's torch (`train/.venv/.../site-packages/torch`); override with
+  `make actor LIBTORCH_DIR=/path`. Actor TUs compile **with** exceptions
+  (libtorch needs them) while engine objects stay `-fno-exceptions`; the target
+  errors early with a clear message if torch can't be found, and is never part of
+  the default build (libtorch is ~1-2 GB).
+- **Bit-exact obs builder** (`src/actor/obs_builder.{h,cpp}`) — reconstructs the
+  machine-mode observation vector in C++, proven bit-identical to the engine's
+  own serializer.
+- **MCTS state machine** (`src/actor/az_mcts.{h,cpp}`) — in-process determinized
+  PUCT reusing the Phase A `snapshot` API directly (snapshot/restore/determinize
+  + direct action stepping), with **exact parity to `mcts.py`** (same world
+  seeding, same per-mover backup, same selection). **Batched leaf evaluation +
+  virtual loss**: leaves are collected and evaluated in one TorchScript forward
+  (the net-side throughput win), with virtual loss keeping parallel descents
+  diverse.
+- **TorchScript net** — the model stays defined once in `az_net.py`; the actor
+  loads the `.ts.pt` export (`forward(obs, mask) -> (logits, value)`, masking
+  in-graph) via `torch::jit::load` and checks the `OBS_SIZE`/`MAX_ACTIONS`/
+  `N_CARD_TYPES` handshake meta before running.
+- **Self-play + uncompressed-npz shards** (`src/actor/npz_writer.{h,cpp}`) —
+  `bin/az_actor --selfplay` plays games, stores `(obs, pi, z, mask)` per searched
+  root, and writes `train/az_data/{deck}/shard_*.npz` in the **exact** Phase C
+  format — the Python trainer's `load_window` cannot tell a C++ shard from a
+  Python one.
+- **Opt-in `ci_check` actor tier** — `train/ci_check.py --tier actor` runs
+  `test_actor_parity.py` (obs bit-parity), `test_mcts_parity.py` (visit-count
+  parity), and `test_actor_shards.py` (trainer ingest). It is **not** in the
+  default `make check` run and self-skips with a message when `bin/az_actor`
+  isn't built or torch is unavailable.
+- **Backend AUTO wiring** — `az-selfplay` / `az` / `az-league` take
+  `--actor` / `--no-actor`; the default (neither) is **AUTO**: use `bin/az_actor`
+  iff it is built, else the pure-Python multiprocess backend. `az-league`
+  rotates `az` cycles over the `decks/league/` roster and resumes from
+  `checkpoints/_az_league_progress.json`.
+- **Throughput bench** — `train/bench_actor.py` times the C++ actor
+  (`bin/az_actor --selfplay`) against the single-worker Python `az_selfplay` on
+  the **same** deterministic net (torch seed 0, exported to `.ts.pt`), same deck,
+  same sims/worlds, both single-thread (`set_num_threads(1)`).
+
+**Verification chain (all green on this branch):**
+
+1. **Obs bit-parity** — `test_actor_parity.py`: the C++ obs builder reproduces
+   the engine's observation vector **bit-exact over 226 decisions**
+   (`league/ur_delver`, seed 1, `OBS_SIZE=6700`).
+2. **MCTS visit parity** — `test_mcts_parity.py`: C++ vs `mcts.py` visit counts
+   **exact over 271 searched roots** (4336 total root visits; sims=16 worlds=2
+   c=1.5, batch=1). Batched search (batch=16) is a separate line — it agrees on
+   argmax at 11/12 comparable roots before the two RNG streams diverge, as
+   expected once batching reorders leaf evaluation.
+3. **Shards trainer-interchangeable** — `test_actor_shards.py`: a C++
+   `--selfplay` run's shard has the exact schema, sample count matches the
+   per-game tallies, and the Python trainer's `load_window` ingests it.
+4. **`make check` green throughout** — the C++ refactor + hooks kept every
+   default tier passing (`make check BUILD=RELEASE`: 0 errors/0 warnings,
+   snapshot + obsinv tiers included).
+5. **Bench** — the C++ actor is ~**1.2-1.5× faster per game single-thread** than
+   the Python reference. The honest read: at real sims/worlds **both legs are
+   dominated by the identical TorchScript forward passes**, so the actor's win is
+   the engine/search overhead it removes (stdio framing, Python tree bookkeeping),
+   not a network speedup — the large multiplier comes from **running many actor
+   processes**, not from a single process being an order of magnitude faster.
+
+**How to run everything:**
+
+```bash
+# Build the actor (auto-detects venv libtorch; default make/make check untouched).
+make actor
+# Export a net for the actor (once per checkpoint) and gate the actor path.
+train/.venv/bin/python train/az_net.py --export <deck>       # writes {deck}__azfinal.ts.pt
+train/.venv/bin/python train/ci_check.py --tier actor        # obs/MCTS/shard parity
+# Self-play with the AUTO backend (uses bin/az_actor iff built):
+train/.venv/bin/python train/train.py az-selfplay --deck <deck> --games 50 --sims 128 --worlds 4
+# Full AZ league (rotate self-play -> train -> gate over decks/league/):
+train/.venv/bin/python train/train.py az-league                 # --resume to continue
+# Throughput bench (C++ actor vs single-worker Python):
+train/.venv/bin/python train/bench_actor.py --games 2 --sims 128 --worlds 4
+```
+
+## Analysis-tool integration (M10)
+
+The model-analysis tools (`train/analysis.py` + its shared CLI in
+`train/cli_spec.py`) now understand AZ checkpoints and search play. Two additive
+changes; no surgery on the analysis internals.
+
+**AZ checkpoints as the model argument.** `analysis.py report` / `interactive`
+accept an `az:<deck-or-.pt>` spec (or a bare `.pt` path, or a deck shorthand that
+resolves to an AZ checkpoint via `resolve_az_checkpoint`). A thin adapter
+(`_AZModelAdapter`) wraps the `AZNet` and exposes exactly the three surfaces the
+analysis code touches — `policy.predict_values`, `policy.get_distribution`, and
+`model.predict` (for `ModelController`) — so the **entire existing battery**
+runs unchanged on an AZ checkpoint: card importance, targeting, value
+calibration, turning points, trajectory archetypes, value swings, policy regret,
+policy entropy, decision consistency, the SHAP surrogate, and the interactive
+`whatif` / `run` counterfactuals.
+
+*What transfers, and why:* analysis only ever reads two model outputs — the
+state value V(s) and the masked action distribution — and an `AZNet` natively
+provides both (a tanh value head and a masked-softmax policy). SHAP fits a
+surrogate regressor on the collected traces, so it needs no PPO internals either.
+**No analysis fundamentally requires PPO-only machinery, so none had to be
+disabled** — instead the report prints a one-line banner noting the one real
+difference: the AZ V(s) is a **bounded game-outcome estimate in [-1, 1]** (tanh),
+not the PPO shaped-return critic, so absolute value magnitudes aren't directly
+comparable across the two kinds of report (the shapes/rankings/calibration all
+still hold). If a future AZ checkpoint truly couldn't supply one of those
+outputs the adapter degrades rather than crashing.
+
+**`analysis.py search` — search-vs-raw comparison.** A new subcommand drives N
+games with an MCTS controller (AZ **or** PPO evaluator) and, per searched
+(loop-safe) root, records the net's priors + leaf value against MCTS's visit
+distribution + root value, then reports:
+
+- **mean KL(priors ‖ visits)** (median + max) — how far search moved off the
+  prior;
+- **argmax agreement** — how often the net's greedy move equals search's pick;
+- **value MAE + correlation** — how well the net's leaf value tracks the search
+  root value;
+- the **biggest-disagreement** roots, decoded (turn/step/life, the net-greedy
+  action vs the search pick with their prior/visit mass and both values).
+
+It reuses the Phase B/C `SearchController` + `run_search` and the existing decode
+helpers; output is a terminal summary (headless-safe, matching the tool's
+conventions). Example:
+
+```bash
+train/.venv/bin/python train/analysis.py search az:league/ur_delver \
+    --deck-a league/ur_delver --deck-b league/ur_delver \
+    --n-games 4 --sims 64 --worlds 4 --top 8
+```
+
+Both are surfaced in the TUI for free: the `search` subcommand is declared in
+`cli_spec.ANALYSIS_TOOL`, which `tui.py` renders generically, so it appears as a
+capture-mode form with no extra UI code. (`tui_analysis.py` — the full-screen
+board-state browser — was left alone: its per-decision replay pager is a
+different surface from a batch comparison report, so wiring `search` into it
+would be real UI work, deliberately out of M10 scope.)
+
+*Future work (documented, not built):* (a) the search-compare tool fixes the
+model to seat A each game — alternating seats would remove any first-player skew
+in the aggregate stats; (b) it drives real games rather than replaying a fixed
+trace, so two evaluators aren't compared on the *same* states — a "compare two
+checkpoints' priors/values on one recorded game" mode would need the analysis
+collector to store per-decision masks (a small trace-schema addition); (c)
+optional charts (KL histogram, value scatter) via `viz.py` were skipped since the
+terminal summary suffices.
+
+## Original Phase D outline (for reference)
+
+Design pinned by the approved plan; **implemented** as recorded above. Kept here
+as the design intent it was built against:
+
+- **Build**: optional `make actor` target linking the existing engine objects +
+  `src/actor/az_actor_main.cpp`. `LIBTORCH_DIR` make variable; when absent the
+  target is skipped and default `make`/`make check` are untouched. Actor TUs
+  compiled **with** exceptions; engine objects stay `-fno-exceptions`.
 - **Model**: TorchScript export from `az_net.py` (`forward(obs, mask) ->
-  (logits, value)`, masking in-graph — already implemented and export-checked)
-  loaded via `torch::jit::load`. The network stays defined once, in Python.
-- **Search**: in-process MCTS reusing the Phase A `snapshot.h` API directly
-  (no stdio) — `snapshot_save/restore`, `determinize_hidden_state`, direct
-  action stepping. Virtual loss + batched leaf evaluation (collect 8-32
-  leaves per forward call — the main net-side throughput win). One game per
-  process (the engine has global state); parallelism = N actor processes.
+  (logits, value)`, masking in-graph) loaded via `torch::jit::load`. The network
+  stays defined once, in Python.
+- **Search**: in-process MCTS reusing the Phase A `snapshot.h` API directly (no
+  stdio). Virtual loss + batched leaf evaluation (collect 8-32 leaves per forward
+  call). One game per process; parallelism = N actor processes.
 - **Output**: shard writer emitting the exact Phase C `.npz` format
-  (obs/pi/z/mask) into `train/az_data/{deck}/` — the Python trainer must not
-  be able to tell C++ shards from Python ones. (If .npz writing from C++ is
-  awkward, a raw `.bin` + tiny Python converter is acceptable; byte-identical
-  training inputs is the invariant.)
-- **Verification**: (a) export unit test scripted==eager (exists:
-  `az_net.py --export-check`); (b) actor-generated shards train identically
-  to Python-generated shards (same loss trajectory on a fixed seed);
-  (c) throughput benchmark vs the Phase C Python generator (expected
-  10-100× more games/hour/core from removing stdio + Python overhead and
-  batching leaf evals).
+  (obs/pi/z/mask) into `train/az_data/{deck}/` — byte-identical training inputs
+  is the invariant.
+- **Verification**: (a) export unit test scripted==eager (`az_net.py
+  --export-check`); (b) actor-generated shards train identically to
+  Python-generated shards; (c) throughput benchmark vs the Phase C Python
+  generator.
 
 ## Notes, quirks, known limitations
 
