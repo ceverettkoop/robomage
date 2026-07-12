@@ -208,9 +208,13 @@ class Arg:
 
 @dataclass
 class MutexGroup:
-    """A mutually-exclusive group of flags (rendered as one Select in the TUI)."""
+    """A mutually-exclusive group of flags (rendered as one Select in the TUI).
+
+    ``label`` is the short TUI row name; ``help`` shows in the field-help pane."""
     args: list
     required: bool = False
+    label: str = "opp-mode"
+    help: str = "Mutually exclusive — (neither) accepts the default"
 
 
 @dataclass
@@ -289,7 +293,8 @@ def _opponent_mode():
         Arg("--scripted", "flag",
             help="Train against the rule-based scripted agent (the default; "
                  "mutually exclusive with --self-play)"),
-    ])
+    ], label="opp-mode",
+       help="Opponent mode — mutually exclusive (default: neither = scripted)")
 
 
 def opponent_pool_opts():
@@ -323,7 +328,9 @@ def _actor_mode():
         Arg("--no-actor", "flag",
             help="Force the pure-Python self-play backend, skipping the actor even "
                  "if bin/az_actor is built."),
-    ])
+    ], label="actor",
+       help="Self-play backend — (neither) = AUTO: the C++ az_actor iff it is "
+            "built, else the pure-Python backend")
 
 
 def sim_args():

@@ -15,6 +15,7 @@ exits.
 
 import glob
 import os
+import random
 import shlex
 import shutil
 import subprocess
@@ -268,8 +269,8 @@ class LauncherApp(App):
                 opts = [(a.name, a.name) for a in item.args]
                 sel = Select(opts, allow_blank=True, prompt="(neither)", compact=True)
                 self._fields.append({"kind": "mutex", "group": item, "widget": sel})
-                self._help_by_widget[sel] = "Opponent mode — mutually exclusive (default: neither)"
-                rows.append(self._row("opp-mode", sel, required=False))
+                self._help_by_widget[sel] = item.help
+                rows.append(self._row(item.label, sel, required=False))
             else:
                 rows.append(self._build_arg(item))
                 # A roster multipick gets a live rotation-order readout row below it.
@@ -355,6 +356,13 @@ class LauncherApp(App):
         through to the Arg's own default."""
         if getattr(self._sub, "name", None) == "league" and a.name in _LEAGUE_TUI_DEFAULTS:
             return _LEAGUE_TUI_DEFAULTS[a.name]
+        # az* forms: pre-fill --seed with a fresh random value per form load, so
+        # repeated TUI launches don't silently replay the fixed cli_spec seed
+        # (identical self-play games before any training has happened). CLI
+        # defaults are untouched, and the value is visible in the field and the
+        # composed-command preview, so every run stays reproducible.
+        if a.name == "--seed" and str(getattr(self._sub, "name", "")).startswith("az"):
+            return random.randint(1, 999_999)
         return a.default
 
     def _build_arg(self, a):
