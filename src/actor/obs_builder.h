@@ -22,6 +22,18 @@
 // and src/gen/card_costs_gen.h::N_COST_FEATS.
 constexpr int ACTOR_N_COST_FEATS = 7;
 
+// State-vector header (machine_io.h floats [0-35]): self player block (10) |
+// opp player block (10) | step one-hot (13) | is_active | self_is_a | stack_size.
+// Derived here, mirroring train/env.py's _IS_ACTIVE_IDX/_SELF_IS_A_IDX chain, so
+// a header layout change moves every C++ consumer together instead of leaving a
+// stale bare literal behind.
+constexpr int ACTOR_PLAYER_BLOCK_SIZE = 10;
+constexpr int ACTOR_STEP_ONEHOT_SIZE = 13;
+constexpr int ACTOR_IS_ACTIVE_IDX = 2 * ACTOR_PLAYER_BLOCK_SIZE + ACTOR_STEP_ONEHOT_SIZE;
+constexpr int ACTOR_SELF_IS_A_IDX = ACTOR_IS_ACTIVE_IDX + 1;
+constexpr int ACTOR_STATE_HEADER_SIZE = ACTOR_SELF_IS_A_IDX + 2;  // + stack_size
+static_assert(ACTOR_SELF_IS_A_IDX == 34, "self_is_a documented at float 34 (machine_io.h)");
+
 // obs = state | cats | ids | ctrl | zone | refs | hand_costs | bf_ability_costs.
 // Must equal train/env.py::OBS_SIZE (6700). Derived from the engine layout
 // constants so a layout change is caught by the static_assert, never a literal.

@@ -13,13 +13,13 @@
 #include "az_evaluator.h"
 #include "components/zone.h"  // Zone::PLAYER_A / PLAYER_B
 #include "error.h"
-#include "obs_builder.h"      // build_obs, ACTOR_OBS_SIZE
+#include "obs_builder.h"      // build_obs, ACTOR_OBS_SIZE, ACTOR_SELF_IS_A_IDX
 #include "search_server.h"    // search_loop_safe, search_request_restore, determinize_hidden_state
 #include "snapshot.h"         // snapshot_save, snapshot_release_all
 
-// Observation index [34] = "self is Player A" (machine_io.h layout; mirrors
-// train/env.py::_SELF_IS_A_IDX). Determines which seat moves at a node.
-static constexpr int SELF_IS_A_IDX = 34;
+// Observation float "self is Player A" (mirrors train/env.py::_SELF_IS_A_IDX).
+// Determines which seat moves at a node.
+static constexpr int SELF_IS_A_IDX = ACTOR_SELF_IS_A_IDX;
 
 // The single snapshot slot the search reserves (matches mcts.py's snapshot_slot=0).
 static constexpr int SEARCH_SLOT = 0;
@@ -345,7 +345,7 @@ struct AZMcts::Impl {
         return a;
     }
 
-    int advance_after_restore(const float* /*o*/, int /*nc*/) {
+    int advance_after_restore() {
         // We are back at the restored true root. The just-finished sim was
         // (cur_world, cur_sim); advance to the next sim / world / finalize.
         cur_sim += 1;
@@ -424,6 +424,10 @@ struct AZMcts::Impl {
     }
 
     int on_decision(const std::vector<LegalAction>& actions) {
+        // AWAITING_ROOT only advances sim/world bookkeeping and never reads the
+        // observation, so skip the full obs rebuild there — it fires once per
+        // simulation, right after the cooperative restore.
+        if (phase == AWAITING_ROOT) return advance_after_restore();
         ActorObs ob = build_obs(actions);
         const float* o = ob.obs.data();
         int nc = ob.num_choices;
@@ -433,7 +437,7 @@ struct AZMcts::Impl {
             case DESCENDING:
                 return descend_step(o, nc);
             case AWAITING_ROOT:
-                return advance_after_restore(o, nc);
+                break;  // handled above
         }
         fatal_error("az_mcts: unreachable phase");
         return 0;

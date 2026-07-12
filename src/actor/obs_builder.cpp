@@ -13,8 +13,7 @@
 // literal), mirroring the derivation chain in train/env.py so the two stay
 // locked together. The static_asserts pin the derived absolute indices against
 // the values documented in src/machine_io.h.
-static constexpr int HEADER_SIZE = 2 * 10 + 13 + 3;  // self(10)+opp(10)+step(13)+flags(3)
-static constexpr int SELF_PERM_START = HEADER_SIZE;
+static constexpr int SELF_PERM_START = ACTOR_STATE_HEADER_SIZE;
 static constexpr int OPP_PERM_START = SELF_PERM_START + MAX_BATTLEFIELD_SLOTS * PERM_SLOT_SIZE;
 static constexpr int STACK_START = OPP_PERM_START + MAX_BATTLEFIELD_SLOTS * PERM_SLOT_SIZE;
 static constexpr int GY_START = STACK_START + MAX_STACK_DISPLAY * STACK_SLOT_SIZE;
