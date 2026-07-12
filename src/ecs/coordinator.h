@@ -2,6 +2,9 @@
 #define COORDINATOR_H
 
 #include <memory>
+#include <set>
+#include <unordered_map>
+#include <vector>
 #include "component.h"
 #include "component_manager.h"
 #include "entity_manager.h"
@@ -9,6 +12,15 @@
 #include "system_manager.h"
 
 // credit https://austinmorlan.com/posts/entity_component_system/
+
+// Deep-copied snapshot of the whole ECS (the four managers' state), taken/restored
+// as a unit for in-process game snapshots. See snapshot.h; not used on any hot path.
+struct EcsSnapshot {
+    std::vector<std::shared_ptr<IComponentArray>> component_arrays;
+    EntityManager::EntityManagerState entity_state;
+    std::unordered_map<const char *, std::set<Entity>> system_entities;
+    std::vector<Event> pending_events;
+};
 
 class Coordinator {
     public:
@@ -89,7 +101,24 @@ class Coordinator {
         void SendEvent(Event &event) { mEventManager->SendEvent(event); }
         void SendEvent(EventId eventId) { mEventManager->SendEvent(eventId); }
         std::vector<Event> drain_pending_events() { return mEventManager->drain_pending_events(); }
-        
+
+        // Snapshot/restore the whole ECS as a unit (see snapshot.h). Member functions
+        // because the four managers are private unique_ptrs; each delegates to the
+        // manager's own snapshot/restore. Restore writes back into the existing
+        // managers (no re-registration), so component type ids stay valid.
+        void snapshot_to(EcsSnapshot &out) const {
+            out.component_arrays = mComponentManager->SnapshotArrays();
+            out.entity_state = mEntityManager->snapshot_state();
+            out.system_entities = mSystemManager->snapshot_systems();
+            out.pending_events = mEventManager->snapshot_pending();
+        }
+        void restore_from(const EcsSnapshot &in) {
+            mComponentManager->RestoreArrays(in.component_arrays);
+            mEntityManager->restore_state(in.entity_state);
+            mSystemManager->restore_systems(in.system_entities);
+            mEventManager->restore_pending(in.pending_events);
+        }
+
     private:
         std::unique_ptr<ComponentManager> mComponentManager;
         std::unique_ptr<EntityManager> mEntityManager;

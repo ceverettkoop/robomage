@@ -54,6 +54,23 @@ class EntityManager {
             assert(entity < MAX_ENTITIES && "Entity out of range.");
             return mSignatures[entity];
         }
+        // Snapshot/restore of the whole entity allocator for in-process game
+        // snapshots (see snapshot.h). std::queue and std::array both copy by value.
+        struct EntityManagerState {
+            std::queue<Entity> availableEntities;
+            std::array<Signature, MAX_ENTITIES> signatures;
+            uint32_t livingEntityCount;
+            Entity maxIssuedEntity;
+        };
+        EntityManagerState snapshot_state() const {
+            return {mAvailableEntities, mSignatures, mLivingEntityCount, mMaxIssuedEntity};
+        }
+        void restore_state(const EntityManagerState &s) {
+            mAvailableEntities = s.availableEntities;
+            mSignatures = s.signatures;
+            mLivingEntityCount = s.livingEntityCount;
+            mMaxIssuedEntity = s.maxIssuedEntity;
+        }
     private:
         // Queue of unused entity IDs
         std::queue<Entity> mAvailableEntities{};

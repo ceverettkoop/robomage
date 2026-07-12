@@ -78,6 +78,7 @@ try:
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
         KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -94,6 +95,7 @@ except ImportError:
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
         KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -310,7 +312,20 @@ _EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
 _EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13
 _EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
 
-assert _EXTRAS_END == STATE_SIZE, (_EXTRAS_END, STATE_SIZE)
+# ── Deck-identity tail blocks (mirror machine_io.h [5974-6195]) ──────────────
+# Each slot is (card_id, count): card id via norm_card_id (empty = -1 sentinel),
+# count normalized /4.0. Slots packed ascending by vocab id, no holes.
+#   SELF_LIVE_LIBRARY : the viewer's LIBRARY zone tallied live (viewer-only).
+#   OPP_DECK_MAIN / OPP_DECK_SIDE : the opponent's STATIC decklist (post-board).
+_DECKLIST_SLOT_SIZE     = 2                       # card id + count per slot
+_SELF_LIVE_LIB_START    = _EXTRAS_END
+_SELF_LIVE_LIB_END      = _SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_MAIN_START    = _SELF_LIVE_LIB_END
+_OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_SIDE_START    = _OPP_DECK_MAIN_END
+_OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
+
+assert _OPP_DECK_SIDE_END == STATE_SIZE, (_OPP_DECK_SIDE_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
@@ -349,6 +364,11 @@ def _build_sideboard_mask():
         (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
         (_REVEALED_START, _REVEALED_END),           # opponent revealed multi-hot
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
+        # The opponent's STATIC decklist is exactly what informs sideboarding, so
+        # both opp-deck blocks stay visible. The SELF_LIVE_LIBRARY block is NOT
+        # kept (the library zone is stale during the sideboard phase); its card-id
+        # positions are sentinel-filled below, its counts masked to 0.0.
+        (_OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END),
     ):
         keep[lo:hi] = True
     # The "self is Player A" flag MUST survive the mask: it is the seat-routing
@@ -377,6 +397,9 @@ def _build_sideboard_mask():
         card_id_idx.append(i)
     for i in range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END):        # known opp hand
         card_id_idx.append(i)
+    for s in range(DECKLIST_MAIN_SLOTS):                               # self live library
+        # card id is the first float of each (card_id, count) slot; count masks to 0.0
+        card_id_idx.append(_SELF_LIVE_LIB_START + s * _DECKLIST_SLOT_SIZE)
     for i in card_id_idx:
         if not keep[i]:
             fill[i] = _ACTION_CARD_ID_NULL
@@ -525,6 +548,11 @@ class RoboMageEnv(gym.Env):
         self._num_choices = 1
         self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
         self._action_public = np.zeros(MAX_ACTIONS, dtype=np.float32)  # card_is_public per action
+        self._action_cats = np.zeros(MAX_ACTIONS, dtype=np.int32)  # raw ActionCategory per action
+        # Under --search-server the engine precedes each query with a
+        # "SEARCHINFO safe=<0|1>" marker (whether SNAPSHOT/DETERMINIZE are legal
+        # at this decision); None when the flag is off / no query seen yet.
+        self.last_search_safe = None
         self._action_descriptions = None  # list[str] per action under --narrative, else None
         self._perm_counters = None        # (self[48], opp[48]) counter summaries under --narrative, else None
         self._perm_token_names = None     # (self[48], opp[48]) token names under --narrative, else None
@@ -585,6 +613,7 @@ class RoboMageEnv(gym.Env):
             cmd += ["--log-viewer", self._log_viewer]
         if self._log_decisions:
             cmd += ["--log-decisions"]
+        cmd += self._extra_engine_flags()
         self._proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
@@ -635,6 +664,11 @@ class RoboMageEnv(gym.Env):
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _extra_engine_flags(self) -> list:
+        """Additional engine CLI flags; subclass hook (SearchRoboMageEnv adds
+        --search-server) so reset() stays the single command builder."""
+        return []
 
     def _send(self, action: int):
         self._proc.stdin.write(f"{action}\n".encode())
@@ -723,121 +757,20 @@ class RoboMageEnv(gym.Env):
                     shaping_b += SHAPING_MULLIGAN_PENALTY
                 continue
 
+            # Search-server marker preceding each query under --search-server
+            # ("SEARCHINFO safe=<0|1>"); absent otherwise. Captured so a search
+            # driver knows whether SNAPSHOT/DETERMINIZE are legal right now.
+            if line.startswith(b"SEARCHINFO"):
+                self.last_search_safe = line.endswith(b"safe=1")
+                continue
+
             if line.startswith(b"BQUERY: "):
-                # Header: "BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>".
-                # The two trailing sizes are a runtime layout handshake — assert
-                # them against our imported constants so a C++ layout change
-                # without regenerated Python constants fails loudly here instead
-                # of silently misframing the binary payload below.
-                fields = line[8:].split()
-                if len(fields) != 3:
-                    raise RuntimeError(
-                        "malformed BQUERY header "
-                        f"{line!r}: expected 'BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>' "
-                        "(3 fields) — engine and Python driver are out of sync; "
-                        "regenerate train/_enums.py via `make regen`")
-                n = int(fields[0])
-                eng_state_size = int(fields[1])
-                eng_max_actions = int(fields[2])
-                if eng_state_size != STATE_SIZE or eng_max_actions != MAX_ACTIONS:
-                    raise RuntimeError(
-                        "BQUERY layout mismatch — "
-                        f"engine STATE_SIZE={eng_state_size} != python STATE_SIZE={STATE_SIZE}; "
-                        f"engine MAX_ACTIONS={eng_max_actions} != python MAX_ACTIONS={MAX_ACTIONS} — "
-                        "regenerate train/_enums.py via `make regen`")
-                self._num_choices = min(n, MAX_ACTIONS)
-
-                # Binary reads: state floats, then padded action metadata
-                state_arr = np.frombuffer(
-                    self._read_exactly(_BQUERY_STATE_BYTES), dtype=np.float32).copy()
-                cats_int = np.frombuffer(
-                    self._read_exactly(_BQUERY_CATS_BYTES), dtype=np.int32)
-                id_arr = np.frombuffer(
-                    self._read_exactly(_BQUERY_IDS_BYTES), dtype=np.float32).copy()
-                ctrl_arr = np.frombuffer(
-                    self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
-                pub_arr = np.frombuffer(
-                    self._read_exactly(_BQUERY_PUB_BYTES), dtype=np.float32).copy()
-                zone_int = np.frombuffer(
-                    self._read_exactly(_BQUERY_ZONE_BYTES), dtype=np.int32)
-                refs_int = np.frombuffer(
-                    self._read_exactly(_BQUERY_REFS_BYTES), dtype=np.int32)
-
-                # Per-action "card identity is public" flags (revealed tutors). Kept as a
-                # side-channel — observers (TUI) read it; not part of the ML observation
-                # vector yet, so OBS_SIZE and trained checkpoints are unaffected.
-                self._action_public = pub_arr
-
-                # Under --narrative the engine appends a fixed char block of
-                # per-action descriptions (the exact CLI labels). Read and
-                # decode it so observers can show "Target Player B", "Pay 4 life",
-                # etc. — things the numeric metadata can't express. Off the
-                # training path (narrative=False), so OBS is unaffected.
-                if self._narrative:
-                    self._action_descriptions = _decode_char_block(
-                        self._read_exactly(_BQUERY_DESC_BYTES),
-                        MAX_ACTIONS, MAX_CHOICE_DESC)
-                    # Per-permanent counter summaries (side-channel, like the
-                    # descriptions): (self_slots, opp_slots), aligned with the
-                    # state vector's permanent blocks.
-                    ctrs = _decode_char_block(
-                        self._read_exactly(_BQUERY_PERM_CTRS_BYTES),
-                        2 * N_PERM_SLOTS, PERM_COUNTERS_LEN)
-                    self._perm_counters = (ctrs[:N_PERM_SLOTS], ctrs[N_PERM_SLOTS:])
-                    # Per-permanent token names (side-channel, like the counters):
-                    # (self_slots, opp_slots), slot-aligned with the permanent blocks.
-                    # Non-empty only for token permanents.
-                    toks = _decode_char_block(
-                        self._read_exactly(_BQUERY_PERM_TOKS_BYTES),
-                        2 * N_PERM_SLOTS, PERM_TOKEN_NAME_LEN)
-                    self._perm_token_names = (toks[:N_PERM_SLOTS], toks[N_PERM_SLOTS:])
-                else:
-                    self._action_descriptions = None
-                    self._perm_counters = None
-                    self._perm_token_names = None
-
-                # The -1 confirm convention applies to mandatory attacker/blocker queries.
-                self._pending_confirm = any(
-                    c in MANDATORY_CATS for c in cats_int[:self._num_choices])
-
-                # Sideboard decisions observe the stale terminal board of the
-                # previous game — mask it down to the sideboard-relevant blocks
-                # (see _build_sideboard_mask). Applied before the cost gathers so
-                # derived hand/bf cost features zero out consistently.
-                if state_arr[_MATCH_CTX_START + 3] > 0.5:
-                    np.copyto(state_arr, _SB_MASK_FILL, where=~_SB_MASK_KEEP)
-
-                # Hand cast costs: gather cost rows by hand-slot card id
-                hand_ids = np.rint(
-                    state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS] * N_CARD_TYPES).astype(np.intp)
-                hand_costs = _gather_costs(_CARD_COST_MATRIX, hand_ids)
-
-                # Battlefield activated ability costs (48 self permanent slots)
-                bf_ids = np.rint(state_arr[_BF_ID_IDX] * N_CARD_TYPES).astype(np.intp)
-                bf_ability_costs = _gather_costs(_CARD_ABILITY_COST_MATRIX, bf_ids)
-
-                # Write sections into preallocated obs buffer (avoids concatenate allocation)
-                o = self._obs
-                o[:STATE_SIZE] = state_arr
-                _act_end = STATE_SIZE + MAX_ACTIONS
-                o[STATE_SIZE:_act_end] = cats_int / ACTION_CATEGORY_MAX
-                o[_act_end:_act_end + MAX_ACTIONS] = id_arr
-                o[_act_end + MAX_ACTIONS:_act_end + 2 * MAX_ACTIONS] = ctrl_arr
-                o[_act_end + 2 * MAX_ACTIONS:_act_end + 3 * MAX_ACTIONS] = (
-                    zone_int / REF_ZONE_MAX)
-                # Entity-slot refs, normalized like the in-state ref fields:
-                # (idx + 1) / 108, so -1 (none) lands exactly on 0.0.
-                o[_act_end + 3 * MAX_ACTIONS:_act_end + 4 * MAX_ACTIONS] = (
-                    (refs_int + 1) / N_ENTITY_REF_SLOTS)
-                _hc_start = _act_end + 4 * MAX_ACTIONS
-                o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
-                _bf_start = _hc_start + _HAND_COST_FEATS
-                o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
+                self._parse_bquery_payload(line)
 
                 # Auto-sideboard: if enabled, automatically pick "done" (action 0)
                 # for all sideboard queries so the model never sees them.
                 if self._auto_sideboard and any(
-                    c == _CAT_SB_DONE for c in cats_int[:self._num_choices]
+                    c == _CAT_SB_DONE for c in self._action_cats[:self._num_choices]
                 ):
                     self._send(0)
                     continue
@@ -858,6 +791,125 @@ class RoboMageEnv(gym.Env):
         # self._obs is a reused preallocated buffer mutated in place each step;
         # callers that retain the array across steps must .copy() it themselves.
         return self._obs, info
+
+    def _parse_bquery_payload(self, line: bytes) -> None:
+        """Parse one BQUERY header line + binary payload into the per-decision
+        state: fills self._obs in place and sets _num_choices, _action_cats,
+        _action_public, _pending_confirm, and the narrative side-channels.
+        Shared by the training reader (_read_until_query) and the search-server
+        simulation reader (SearchRoboMageEnv), which must decode identical
+        observations for tree-leaf evaluation.
+        """
+        # Header: "BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>".
+        # The two trailing sizes are a runtime layout handshake — assert
+        # them against our imported constants so a C++ layout change
+        # without regenerated Python constants fails loudly here instead
+        # of silently misframing the binary payload below.
+        fields = line[8:].split()
+        if len(fields) != 3:
+            raise RuntimeError(
+                "malformed BQUERY header "
+                f"{line!r}: expected 'BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>' "
+                "(3 fields) — engine and Python driver are out of sync; "
+                "regenerate train/_enums.py via `make regen`")
+        n = int(fields[0])
+        eng_state_size = int(fields[1])
+        eng_max_actions = int(fields[2])
+        if eng_state_size != STATE_SIZE or eng_max_actions != MAX_ACTIONS:
+            raise RuntimeError(
+                "BQUERY layout mismatch — "
+                f"engine STATE_SIZE={eng_state_size} != python STATE_SIZE={STATE_SIZE}; "
+                f"engine MAX_ACTIONS={eng_max_actions} != python MAX_ACTIONS={MAX_ACTIONS} — "
+                "regenerate train/_enums.py via `make regen`")
+        self._num_choices = min(n, MAX_ACTIONS)
+
+        # Binary reads: state floats, then padded action metadata
+        state_arr = np.frombuffer(
+            self._read_exactly(_BQUERY_STATE_BYTES), dtype=np.float32).copy()
+        cats_int = np.frombuffer(
+            self._read_exactly(_BQUERY_CATS_BYTES), dtype=np.int32)
+        id_arr = np.frombuffer(
+            self._read_exactly(_BQUERY_IDS_BYTES), dtype=np.float32).copy()
+        ctrl_arr = np.frombuffer(
+            self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
+        pub_arr = np.frombuffer(
+            self._read_exactly(_BQUERY_PUB_BYTES), dtype=np.float32).copy()
+        zone_int = np.frombuffer(
+            self._read_exactly(_BQUERY_ZONE_BYTES), dtype=np.int32)
+        refs_int = np.frombuffer(
+            self._read_exactly(_BQUERY_REFS_BYTES), dtype=np.int32)
+
+        # Per-action "card identity is public" flags (revealed tutors). Kept as a
+        # side-channel — observers (TUI) read it; not part of the ML observation
+        # vector yet, so OBS_SIZE and trained checkpoints are unaffected.
+        self._action_public = pub_arr
+        self._action_cats = cats_int
+
+        # Under --narrative the engine appends a fixed char block of
+        # per-action descriptions (the exact CLI labels). Read and
+        # decode it so observers can show "Target Player B", "Pay 4 life",
+        # etc. — things the numeric metadata can't express. Off the
+        # training path (narrative=False), so OBS is unaffected.
+        if self._narrative:
+            self._action_descriptions = _decode_char_block(
+                self._read_exactly(_BQUERY_DESC_BYTES),
+                MAX_ACTIONS, MAX_CHOICE_DESC)
+            # Per-permanent counter summaries (side-channel, like the
+            # descriptions): (self_slots, opp_slots), aligned with the
+            # state vector's permanent blocks.
+            ctrs = _decode_char_block(
+                self._read_exactly(_BQUERY_PERM_CTRS_BYTES),
+                2 * N_PERM_SLOTS, PERM_COUNTERS_LEN)
+            self._perm_counters = (ctrs[:N_PERM_SLOTS], ctrs[N_PERM_SLOTS:])
+            # Per-permanent token names (side-channel, like the counters):
+            # (self_slots, opp_slots), slot-aligned with the permanent blocks.
+            # Non-empty only for token permanents.
+            toks = _decode_char_block(
+                self._read_exactly(_BQUERY_PERM_TOKS_BYTES),
+                2 * N_PERM_SLOTS, PERM_TOKEN_NAME_LEN)
+            self._perm_token_names = (toks[:N_PERM_SLOTS], toks[N_PERM_SLOTS:])
+        else:
+            self._action_descriptions = None
+            self._perm_counters = None
+            self._perm_token_names = None
+
+        # The -1 confirm convention applies to mandatory attacker/blocker queries.
+        self._pending_confirm = any(
+            c in MANDATORY_CATS for c in cats_int[:self._num_choices])
+
+        # Sideboard decisions observe the stale terminal board of the
+        # previous game — mask it down to the sideboard-relevant blocks
+        # (see _build_sideboard_mask). Applied before the cost gathers so
+        # derived hand/bf cost features zero out consistently.
+        if state_arr[_MATCH_CTX_START + 3] > 0.5:
+            np.copyto(state_arr, _SB_MASK_FILL, where=~_SB_MASK_KEEP)
+
+        # Hand cast costs: gather cost rows by hand-slot card id
+        hand_ids = np.rint(
+            state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS] * N_CARD_TYPES).astype(np.intp)
+        hand_costs = _gather_costs(_CARD_COST_MATRIX, hand_ids)
+
+        # Battlefield activated ability costs (48 self permanent slots)
+        bf_ids = np.rint(state_arr[_BF_ID_IDX] * N_CARD_TYPES).astype(np.intp)
+        bf_ability_costs = _gather_costs(_CARD_ABILITY_COST_MATRIX, bf_ids)
+
+        # Write sections into preallocated obs buffer (avoids concatenate allocation)
+        o = self._obs
+        o[:STATE_SIZE] = state_arr
+        _act_end = STATE_SIZE + MAX_ACTIONS
+        o[STATE_SIZE:_act_end] = cats_int / ACTION_CATEGORY_MAX
+        o[_act_end:_act_end + MAX_ACTIONS] = id_arr
+        o[_act_end + MAX_ACTIONS:_act_end + 2 * MAX_ACTIONS] = ctrl_arr
+        o[_act_end + 2 * MAX_ACTIONS:_act_end + 3 * MAX_ACTIONS] = (
+            zone_int / REF_ZONE_MAX)
+        # Entity-slot refs, normalized like the in-state ref fields:
+        # (idx + 1) / 108, so -1 (none) lands exactly on 0.0.
+        o[_act_end + 3 * MAX_ACTIONS:_act_end + 4 * MAX_ACTIONS] = (
+            (refs_int + 1) / N_ENTITY_REF_SLOTS)
+        _hc_start = _act_end + 4 * MAX_ACTIONS
+        o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
+        _bf_start = _hc_start + _HAND_COST_FEATS
+        o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
 
     def _print_narrative_line(self, line: str):
         print(line, file=sys.stderr)
@@ -1163,15 +1215,31 @@ class ModelVsScriptedEnv(gym.Env):
         # deck assignment below so the right opp_deck reaches the game process. A
         # plain OpponentPool keeps the fixed opp_deck and only picks a controller;
         # a LeaguePool also chooses which deck the opponent pilots this episode.
+        episode_self_deck = None  # deck the LEARNER pilots this episode (league mixed mode)
         if self._opp_pool is not None:
             if hasattr(self._opp_pool, "sample_episode"):
-                self._opp_deck, self._opp_label, self._opp_controller = \
-                    self._opp_pool.sample_episode()
+                sample = self._opp_pool.sample_episode()
+                # LeaguePool returns a 4-tuple (self_deck, opp_deck, label, ctrl):
+                # in mixed mode self_deck varies per episode; in fixed mode it is
+                # the pool's fixed learner deck. Accept a legacy 3-tuple too.
+                if len(sample) == 4:
+                    episode_self_deck, self._opp_deck, self._opp_label, self._opp_controller = sample
+                else:
+                    self._opp_deck, self._opp_label, self._opp_controller = sample
             else:
                 self._opp_label, self._opp_controller = self._opp_pool.sample()
-        if self._model_deck is not None:
-            self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
-            self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
+        # The learner's deck this episode: the pool's per-episode pick when it
+        # supplies one (league mixed mode), else the fixed model_deck.
+        self_deck = episode_self_deck if episode_self_deck is not None else self._model_deck
+        if self_deck is not None:
+            self._env._deck_a = self_deck if self._training_is_a else self._opp_deck
+            self._env._deck_b = self._opp_deck if self._training_is_a else self_deck
+        elif episode_self_deck is None and self._model_deck is None \
+                and self._opp_pool is not None and hasattr(self._opp_pool, "sample_episode"):
+            # A league pool must always supply a self deck; never run deckless.
+            raise RuntimeError(
+                "ModelVsScriptedEnv: league pool provided no self deck this episode "
+                "and no fixed model_deck is set — refusing to run with default decks.")
         # Push this episode's per-seat deck names to a scripted opponent so its
         # doomsday/tron identification uses the same name rule as the shaping
         # opt-outs above (duck-typed: model/index controllers have no use for it).
@@ -1182,17 +1250,23 @@ class ModelVsScriptedEnv(gym.Env):
         self._last_obs = None
         self._decision_idx = 0
         self._episode_shaping = 0.0
-        self._is_doomsday = _deck_named(self._model_deck, "doomsday")
+        # Deck-specific shaping keys off the deck the learner ACTUALLY pilots this
+        # episode (self_deck), so the doomsday/tron opt-outs work in league mixed
+        # mode where the self deck varies per episode (not just the fixed model_deck).
+        self._episode_self_deck = self_deck
+        self._is_doomsday = _deck_named(self_deck, "doomsday")
         # Potential-based shaping opt-outs, keyed on the deck name: doomsday
         # (combo gameplan) and tron (hoards its hand and plays few creatures by
         # design, so the potentials would penalize its actual game plan).
-        self._skip_potentials = self._is_doomsday or _deck_named(self._model_deck, "tron")
+        self._skip_potentials = self._is_doomsday or _deck_named(self_deck, "tron")
         self._dd_placed_doomsday = False  # set when agent picks Doomsday in a TOP_LIBRARY choice
         self._dd_fired = set()  # tracks which DD shaping rewards have fired this game
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
             "opp_type": self._opp_label,
+            # Deck the learner piloted this episode (league win-rate-WITH tracking).
+            "self_deck": self_deck or "unknown",
         }
         obs, info = self._env.reset(seed=seed, options=options)
         obs, _reward, terminated, truncated, info, _shaping = self._skip_opponent_turns(
@@ -1433,11 +1507,10 @@ class SelfPlayEnv(gym.Env):
     receive a perspective-normalised view without any mirroring.
 
     The training model always pilots ``model_deck`` and the frozen opponent always
-    pilots ``opp_deck``.  Because models are per-deck generalists, the opponent's
-    checkpoint is sampled from that deck's pilots ``{opp_deck}__v*.zip`` /
-    ``{opp_deck}__final.zip`` — a generalist actually trained to play that deck
-    (for a mirror match this is simply this run's own past selves).  The
-    checkpoint is resampled every ``RELOAD_EVERY``
+    pilots ``opp_deck``.  Because there is one generalist that pilots any deck, the
+    opponent's checkpoint is sampled from the shared generalist snapshots
+    ``gen__v*.zip`` / ``gen__final.zip`` (for a mirror match this is simply this
+    run's own past selves).  The checkpoint is resampled every ``RELOAD_EVERY``
     episodes so it tracks the improving policy.  If no compatible checkpoint
     exists yet, the opponent falls back to the scripted agent (with a warning).
     """
@@ -1492,6 +1565,7 @@ class SelfPlayEnv(gym.Env):
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
             "opp_type": opp_name,
+            "self_deck": self._model_deck or "unknown",  # fixed self deck here
         }
         obs, info = self._env.reset(seed=seed, options=options)
 
@@ -1577,20 +1651,21 @@ class SelfPlayEnv(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def _reload_opponent(self):
-        """Sample a frozen checkpoint trained to pilot the opponent's deck.
+        """Sample a frozen generalist snapshot to pilot the opponent's deck.
 
-        The frozen opponent plays ``opp_deck``, so we look for a model saved to
-        pilot it: the v2 deck-pilot snapshots ``{opp_deck}__v*.zip`` /
-        ``{opp_deck}__final.zip``.  If no compatible checkpoint exists, fall back
-        to the scripted agent and warn (once)."""
-        from opponents import deck_snapshots
+        There is ONE generalist model, so the frozen opponent is any of its
+        snapshots (``gen__v*.zip`` / ``gen__final.zip``); the deck it pilots
+        (``opp_deck``) is set by this env, not by the checkpoint's filename. If no
+        generalist snapshot exists yet, fall back to the scripted agent and warn
+        (once)."""
+        from opponents import gen_snapshots
         deck = self._opp_deck or self._model_deck
-        files = deck_snapshots(deck, self._checkpoint_dir)
+        files = gen_snapshots(self._checkpoint_dir)
         if not files:
             if not self._scripted_fallback_warned:
-                print(f"[self-play] WARNING: no '{deck}__v*.zip' / '{deck}__final.zip' "
-                      f"checkpoint in {self._checkpoint_dir}; opponent falling back to "
-                      f"the scripted agent.")
+                print(f"[self-play] WARNING: no generalist snapshot "
+                      f"('gen__v*.zip' / 'gen__final.zip') in {self._checkpoint_dir}; "
+                      f"opponent (deck {deck}) falling back to the scripted agent.")
                 self._scripted_fallback_warned = True
             self._opponent = None
             return
@@ -1654,6 +1729,7 @@ class FixedModelEnv(gym.Env):
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
             "opp_type": self._opp_model_path,
+            "self_deck": self._model_deck or "unknown",  # fixed self deck here
         }
         obs, info = self._env.reset(seed=seed, options=options)
 

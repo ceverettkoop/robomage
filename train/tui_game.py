@@ -98,9 +98,11 @@ def _opp_event_text(action, opp_label):
 
 # ── Engine wrapper ────────────────────────────────────────────────────────────
 
-class TuiEnv(NarrativeEnv):
-    """NarrativeEnv that also suppresses the library-search option dumps (the TUI
-    shows those choices via the action list instead)."""
+class TuiEnvMixin:
+    """Suppresses the library-search option dumps (the TUI shows those choices
+    via the action list instead). A mixin so the same filtering layers over
+    either env base: NarrativeEnv normally, SearchNarrativeEnv when the
+    opponent is a search (MCTS) controller."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -115,6 +117,10 @@ class TuiEnv(NarrativeEnv):
                 return
             self._in_search_block = False
         self.lines.append(line)
+
+
+class TuiEnv(TuiEnvMixin, NarrativeEnv):
+    pass
 
 
 # ── Color-identity border helpers ─────────────────────────────────────────────
@@ -1086,8 +1092,23 @@ def run(binary_path, model_path, human_player=None,
     # game log only reveals what the human would actually know (their own draws,
     # tutored/top-of-library cards) — not the opponent's hidden information.
     human_seat = "B" if opp_is_a else "A"
-    env = TuiEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
-                 log_viewer=human_seat, bo3=bo3)
+    # A search (MCTS) opponent needs the engine's --search-server protocol and
+    # a handle on the live env — mirror runner.run_games' duck-typed env swap.
+    # Without this a SearchController would run but silently never search
+    # (last_search_safe missing -> permanent raw-policy fallback).
+    env_cls = TuiEnv
+    if getattr(ctrl, "wants_search_env", False):
+        from search_env import SearchNarrativeEnv
+
+        class TuiSearchEnv(TuiEnvMixin, SearchNarrativeEnv):
+            pass
+
+        env_cls = TuiSearchEnv
+    env = env_cls(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
+                  log_viewer=human_seat, bo3=bo3)
+    bind_env = getattr(ctrl, "bind_env", None)
+    if bind_env is not None:
+        bind_env(env)
 
     def opp_act(obs, num):
         return int(ctrl.choose(obs, num, action_masks=env.action_masks()))

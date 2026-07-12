@@ -22,6 +22,7 @@
 #include "input_logger.h"
 #include "mana_system.h"
 #include "parse.h"
+#include "search_server.h"
 #include "systems/orderer.h"
 #include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
@@ -847,7 +848,13 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             confirm.category = ActionCategory::CONFIRM_ATTACKERS;
             atk_actions.push_back(confirm);
         }
+        // Loop-safe: partial declarations live entirely in Creature components,
+        // so a restored snapshot re-derives this same menu. The attack-target
+        // sub-prompt below is NOT safe -- the chosen attacker is only committed
+        // after the target is picked.
+        search_set_loop_safe(true);
         int creature_choice = InputLogger::instance().get_input(atk_actions);
+        search_set_loop_safe(false);
 
         if (creature_choice == static_cast<int>(atk_actions.size()) - 1) break;
 
@@ -1111,7 +1118,11 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             confirm.category = ActionCategory::CONFIRM_BLOCKERS;
             blk_actions.push_back(confirm);
         }
+        // Loop-safe like the attacker selection: committed blocks live in
+        // Creature components; the block-target sub-prompt below is not safe.
+        search_set_loop_safe(true);
         int blocker_choice = InputLogger::instance().get_input(blk_actions);
+        search_set_loop_safe(false);
 
         if (blocker_choice == static_cast<int>(blk_actions.size()) - 1) {
             // 509.1b / 702.111b: a creature with menace can't be blocked except by two or
@@ -2465,7 +2476,11 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
             // discard.
             bool prev_priority = game.player_a_has_priority;
             game.player_a_has_priority = (active_player == Zone::PLAYER_A);
+            // Loop-safe: one discard per proc_mandatory_choice call, menu derived
+            // from the hand alone.
+            search_set_loop_safe(true);
             int choice = InputLogger::instance().get_input(discard_actions);
+            search_set_loop_safe(false);
             game.player_a_has_priority = prev_priority;
             Entity card = discard_actions[static_cast<size_t>(choice)].source_entity;
             auto &cd = global_coordinator.GetComponent<CardData>(card);

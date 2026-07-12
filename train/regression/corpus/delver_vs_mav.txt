@@ -2163,13 +2163,33 @@
   Targeting choice 0
   Player B sacrifices Wasteland
   Player B's Wasteland ability targeting Volcanic Island is on the stack
+
+--- Decision 103 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland | lib 36
+  Opp:   5 life | mana: empty | hand count: 2 | lib 46
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
+  Opp BF:   Karakas | Savannah | Talon Gates of Madara
+  Stack: Wasteland (ability, opponent) -> Volcanic Island (self, slot 3)
+  Self GY: Lightning Bolt, Unholy Heat, Volcanic Island, Wooded Foothills, Lightning Bolt, Lightning Bolt, Brainstorm, Lightning Bolt, Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Wasteland, Wasteland, Endurance, Once Upon a Time, Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp exile:  Knight of the Reliquary
+  Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Tap Volcanic Island for (U)
+   2: Tap Volcanic Island for (R)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
   Resolving ability (category: Destroy)
   Volcanic Island is destroyed
   Dragon's Rage Channeler must attack and is declared as an attacker.
   --- Declare Attackers (Player A) ---
     [attacking] Dragon's Rage Channeler [3/3] -> Player B
 
---- Decision 103 ---
+--- Decision 104 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland | lib 36
@@ -2197,7 +2217,7 @@
   PA: Scalding Tarn, Wasteland
   PB: Windswept Heath, Wooded Foothills, Wooded Foothills
 
---- Decision 104 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  2 life | mana: empty | hand(3): Windswept Heath, Wooded Foothills, Wooded Foothills | lib 45
@@ -2217,7 +2237,7 @@
 --- Narrative ---
   Player B played Windswept Heath
 
---- Decision 105 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  2 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills | lib 45
@@ -2240,7 +2260,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 106 ---
+--- Decision 107 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  1 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills | lib 45
@@ -2275,7 +2295,7 @@
   PA: Delver of Secrets, Scalding Tarn, Wasteland
   PB: Wooded Foothills, Wooded Foothills
 
---- Decision 107 ---
+--- Decision 108 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  17 life | mana: empty | hand(3): Delver of Secrets, Scalding Tarn, Wasteland | lib 35
@@ -2297,7 +2317,7 @@
   Player A casts Delver of Secrets
   Delver of Secrets enters the battlefield
 
---- Decision 108 ---
+--- Decision 109 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  17 life | mana: empty | hand(2): Scalding Tarn, Wasteland | lib 35
@@ -2316,7 +2336,7 @@
 --- Narrative ---
   Player A played Scalding Tarn
 
---- Decision 109 ---
+--- Decision 110 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  17 life | mana: empty | hand(1): Wasteland | lib 35
@@ -2339,7 +2359,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 110 ---
+--- Decision 111 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  16 life | mana: empty | hand(1): Wasteland | lib 35
@@ -2366,7 +2386,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Dragon's Rage Channeler [3/3] -> Player B
 
---- Decision 111 ---
+--- Decision 112 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  16 life | mana: empty | hand(1): Wasteland | lib 34

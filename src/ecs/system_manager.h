@@ -5,6 +5,7 @@
 #include "entity.h"
 #include <cassert>
 #include <memory>
+#include <set>
 #include <unordered_map>
 // credit https://austinmorlan.com/posts/entity_component_system/
 class SystemManager
@@ -49,6 +50,25 @@ public:
 			{
 				system->mEntities.erase(entity);
 			}
+		}
+	}
+	// Snapshot/restore each registered system's entity set for in-process game
+	// snapshots (see snapshot.h). Keyed by the same const char* type-name pointer
+	// the map uses (stable per process); the per-system sets are independent, so
+	// iteration order is irrelevant. Only the sets are copied — the system objects
+	// themselves stay in place.
+	std::unordered_map<const char*, std::set<Entity>> snapshot_systems() const
+	{
+		std::unordered_map<const char*, std::set<Entity>> out;
+		for (auto const& pair : mSystems) out[pair.first] = pair.second->mEntities;
+		return out;
+	}
+	void restore_systems(const std::unordered_map<const char*, std::set<Entity>>& snap)
+	{
+		for (auto const& pair : mSystems)
+		{
+			auto it = snap.find(pair.first);
+			if (it != snap.end()) pair.second->mEntities = it->second;
 		}
 	}
 private:

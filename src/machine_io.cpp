@@ -5,11 +5,13 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <map>
 #include <unordered_map>
 #include <vector>
 
 #include "card_vocab.h"
 #include "error.h"
+#include "classes/deck_state.h"
 #include "classes/game.h"
 #include "classes/match_state.h"
 #include "components/ability.h"
@@ -40,6 +42,9 @@ static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership
 static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer);
 static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership viewer);
 static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer);
+static void fill_decklist_block(int* ids, int* counts, int n_slots,
+                                const std::vector<DecklistEntry>& entries,
+                                const char* block_name);
 
 // ── Entity → reference-slot map ───────────────────────────────────────────────
 // Maps every serialized entity to its slot in the unified viewer-relative
@@ -354,6 +359,24 @@ static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer) {
     }
 }
 
+// Fill a deck-identity block (id + count slot arrays) from a sorted (ascending by
+// vocab id) DecklistEntry list. Packs into the leading slots with no holes; the
+// caller has pre-marked every slot empty (id = -1, count = 0). Fatal on overflow
+// (loud, never a silent truncation) — deck_state_set already guards the static
+// lists, but the live-library caller passes a freshly-built list, so re-guard here.
+static void fill_decklist_block(int* ids, int* counts, int n_slots,
+                                const std::vector<DecklistEntry>& entries,
+                                const char* block_name) {
+    if (static_cast<int>(entries.size()) > n_slots)
+        fatal_error("serialize_state: " + std::string(block_name) + " has " +
+                    std::to_string(entries.size()) + " distinct card names, exceeds " +
+                    std::to_string(n_slots) + " serialized slots");
+    for (size_t i = 0; i < entries.size(); i++) {
+        ids[i]    = entries[i].vocab_idx;
+        counts[i] = entries[i].count;
+    }
+}
+
 // ── populate_gamestate ────────────────────────────────────────────────────────
 
 void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
@@ -372,6 +395,17 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->opp_exile[i]      = -1;
     }
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) gs->known_top_library_self[i] = -1;
+    // Deck-identity tail blocks: id = -1 (empty sentinel), count 0.
+    for (int i = 0; i < DECKLIST_MAIN_SLOTS; i++) {
+        gs->self_live_library_id[i] = -1;
+        gs->self_live_library_ct[i] = 0;
+        gs->opp_deck_main_id[i]     = -1;
+        gs->opp_deck_main_ct[i]     = 0;
+    }
+    for (int i = 0; i < DECKLIST_SIDE_SLOTS; i++) {
+        gs->opp_deck_side_id[i] = -1;
+        gs->opp_deck_side_ct[i] = 0;
+    }
 
     Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     if (viewer == Zone::UNKNOWN) viewer = priority_owner;
@@ -488,6 +522,13 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     self_exile_items.reserve(MAX_GY_SLOTS);
     opp_exile_items.reserve(MAX_GY_SLOTS);
 
+    // Viewer's LIVE library contents tallied by vocab id (std::map keeps it sorted
+    // ascending — the required packed slot order). Viewer-only; the opponent's live
+    // library is hidden. A negative/sentinel id can't occur (every library card is a
+    // vocab-registered deck card, already validated by deck_state_set) but is skipped
+    // defensively so a stray one never lands in a slot.
+    std::map<int, int> self_live_lib;
+
     // Battlefield permanents in pack order (ascending entity ID)
     Entity self_ents[MAX_BATTLEFIELD_SLOTS];
     Entity opp_ents[MAX_BATTLEFIELD_SLOTS];
@@ -518,8 +559,13 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 break;
 
             case Zone::LIBRARY:
-                if (is_self) gs->self_library_ct++;
-                else         gs->opp_library_ct++;
+                if (is_self) {
+                    gs->self_library_ct++;
+                    int lid = get_card_vocab_idx(e);
+                    if (lid >= 0 && lid != TOKEN_SENTINEL) self_live_lib[lid]++;
+                } else {
+                    gs->opp_library_ct++;
+                }
                 break;
 
             case Zone::GRAVEYARD:
@@ -622,6 +668,22 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             gs->action_history[base + 3] = 0.0f;
         }
     }
+
+    // ── Deck-identity tail blocks ─────────────────────────────────────────────
+    // Self LIVE library (packed ascending by vocab id from the std::map tally).
+    {
+        std::vector<DecklistEntry> live;
+        live.reserve(self_live_lib.size());
+        for (const auto& kv : self_live_lib) live.push_back({kv.first, kv.second});
+        fill_decklist_block(gs->self_live_library_id, gs->self_live_library_ct,
+                            DECKLIST_MAIN_SLOTS, live, "self live library");
+    }
+    // Opponent-of-viewer STATIC decklist (maindeck + sideboard) from deck_state.
+    Zone::Ownership opp_owner = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    fill_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct,
+                        DECKLIST_MAIN_SLOTS, deck_state_main(opp_owner), "opp maindeck");
+    fill_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct,
+                        DECKLIST_SIDE_SLOTS, deck_state_side(opp_owner), "opp sideboard");
 }
 
 // ── populate_query ────────────────────────────────────────────────────────────
@@ -862,6 +924,22 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // MandatoryChoice one-hot x6, NONE at index 0 (see the enum in classes/game.h)
     for (int i = 0; i < 6; i++)
         state.push_back(gs->pending_choice_kind == i ? 1.0f : 0.0f);
+
+    // ── Deck-identity tail blocks (see machine_io.h [5974-6195]) ───────────────
+    // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count
+    // normalized /4.0. Slots are packed ascending by vocab id with no holes.
+    auto push_decklist_block = [&](const int* ids, const int* counts, int n_slots) {
+        for (int i = 0; i < n_slots; i++) {
+            state.push_back(norm_card_id(ids[i]));
+            state.push_back(static_cast<float>(counts[i]) / 4.0f);
+        }
+    };
+    // Self LIVE library (48 x 2 = 96)
+    push_decklist_block(gs->self_live_library_id, gs->self_live_library_ct, DECKLIST_MAIN_SLOTS);
+    // Opponent STATIC maindeck (48 x 2 = 96)
+    push_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct, DECKLIST_MAIN_SLOTS);
+    // Opponent STATIC sideboard (15 x 2 = 30)
+    push_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct, DECKLIST_SIDE_SLOTS);
 
     // Loud, NDEBUG-surviving length check: cli_output fwrites STATE_SIZE floats from this
     // buffer, so an under-fill would silently OOB-read under BUILD=RELEASE (where assert() is

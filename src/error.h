@@ -6,7 +6,11 @@
 
 void warning(std::string err);
 void non_fatal_error(std::string err);
-void fatal_error(std::string err);
+// Prints "FATAL: <err>" and exit(1)s — it never returns. Marked [[noreturn]] so
+// every guard that calls it (e.g. the deck-identity distinct-name caps in
+// deck_state.cpp / machine_io.cpp) is provably terminal and can never fall
+// through to the code below it.
+[[noreturn]] void fatal_error(std::string err);
 
 #ifndef NDEBUG
 void dump_entity(Entity e);

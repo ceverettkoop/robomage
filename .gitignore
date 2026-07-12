@@ -17,6 +17,7 @@ train/logs/**
 checkpoints/*.zip
 replays/*.txt
 train/checkpoints/*
+*.ts.pt
 .cache/*
 bin/resources/tokenscripts/*.txt
 resources/logs/*
@@ -36,3 +37,9 @@ draw_*.txt
 
 # Game recordings (.rmrec) — recording subsystem removed; never commit these
 train/recordings/
+
+# AlphaZero self-play shards (Phase C artifacts) — regenerate, never commit
+train/az_data/
+
+# In-process AlphaZero actor binary (Phase D) — built by `make actor`
+bin/az_actor

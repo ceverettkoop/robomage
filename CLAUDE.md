@@ -112,7 +112,8 @@ instead of `$PIPESTATUS`.
  `runner.run_match(agent_a, agent_b, deck_a=…, deck_b=…, games=, bo3=True, seed=1,
  transcript="compact|verbose|narrative|quiet", out=…)` — agent specs are scripted tiers
  ("scripted"/"hard", "easy", "random", "explore"), "human", "auto", "play:<specs>",
- "actions:<ints>", or a checkpoint path / deck shorthand ("league/bug"). All game-running
+ "actions:<ints>", the generalist model ("gen", "az:gen", …), or an explicit checkpoint
+ path. All game-running
  tools (harness, observe, baseline, play.py, fuzz, ci_check, analysis, bench) sit on the
  same `runner.drive_game` loop — do not hand-roll new decision loops; see
  [`docs/game_running.md`](docs/game_running.md).
@@ -515,26 +516,28 @@ Python venv: `train/.venv/` — activate with `source train/.venv/bin/activate` 
 
 Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO` with action masking).
 
-### Checkpoint naming: per-deck generalists
+### Checkpoint naming: the one generalist (`gen`)
 
-Models are **per-deck generalists**, not matchup-specific: one model pilots one
-deck against *any* opponent. A deck's model is stored under the deck-pilot
-naming `{deck}__final.zip` (the current generalist) plus periodic
-`{deck}__v{steps}.zip` snapshots (note the **double** underscore — it
-distinguishes these from legacy `{a}_{b}_*.zip` matchup files). The self-play
-and league pools, the `random-model` opponent-pool token, `play`, and
-`analysis` all resolve opponents/models by **deck** (`{deck}__final.zip`, else
-the newest `{deck}__v*.zip`), and a bare deck stem (`delver`) works as a
-shorthand everywhere a checkpoint is expected.
+There is **one generalist model** that pilots *any* deck against *any* opponent —
+not per-deck, not matchup-specific. It is stored under the fixed stem `gen`:
+`checkpoints/gen__final.zip` (the current generalist) plus periodic
+`gen__v{steps}.zip` snapshots (note the **double** underscore). The model
+filename encodes **no deck** — so the deck a model pilots (and the opponent's
+deck) must always travel as a **separate explicit parameter**. The self-play and
+league pools, the `random-model` opponent-pool token, `play`, and `analysis` all
+resolve the model as `gen` (`gen__final.zip`, else the newest `gen__v*.zip`) and
+take the deck(s) separately. A bare *deck* stem (`delver`) is **no longer**
+accepted as a checkpoint/model spec — the only model specs are `gen`, an explicit
+`.zip`/`.pt` path, or the `az:gen`/`azraw:gen`/`mcts:gen` search wrappers. `gen`
+is a reserved stem: a roster/league deck may not be named `gen`.
 
-Training against a single opponent in a session **continues that one
-generalist** rather than forging a matchup-specific model: every training
-subcommand auto-resumes the deck's existing `{deck}__final.zip` (or newest
-snapshot) and accumulates the session's steps onto it. Pass `--fresh` to start a
-deck's generalist over from scratch, or `--load <path>` to resume a specific
-checkpoint. A filename therefore encodes only the deck a model pilots, never its
-opponent — so the opponent deck must always be given explicitly (e.g. analysis's
-`--deck-b`).
+Every training session **continues that one generalist**: each training
+subcommand auto-resumes the existing `gen__final.zip` (or newest snapshot) and
+accumulates the session's steps onto it, regardless of which deck/opponent this
+session trains on. Pass `--fresh` to start the generalist over from scratch, or
+`--load <path>` to resume a specific checkpoint. Because the filename carries no
+deck, the deck must always be given explicitly (e.g. `baseline --deck`,
+analysis's `--deck-a`/`--deck-b`).
 
 ### Training commands (run from repo root)
 
@@ -544,22 +547,22 @@ works without typing `train`.
 
 ```bash
 # Training (the 'train' subcommand is implied when omitted)
-train/.venv/bin/python train/train.py --deck delver --opponent mav                 # continue delver's generalist vs mav
-train/.venv/bin/python train/train.py --deck delver --opponent burn                # same delver__final.zip, now also vs burn
-train/.venv/bin/python train/train.py --deck delver --opponent mav --fresh         # start delver__final.zip from scratch
-train/.venv/bin/python train/train.py train --deck delver --opponent mav --load checkpoints/delver__v500000.zip  # resume a specific snapshot
-train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play vs delver's frozen snapshots
+train/.venv/bin/python train/train.py --deck delver --opponent mav                 # continue the generalist on delver vs mav
+train/.venv/bin/python train/train.py --deck delver --opponent burn                # same gen__final.zip, now also on delver vs burn
+train/.venv/bin/python train/train.py --deck delver --opponent mav --fresh         # start gen__final.zip from scratch
+train/.venv/bin/python train/train.py train --deck delver --opponent mav --load checkpoints/gen__v500000.zip  # resume a specific snapshot
+train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play vs the generalist's frozen snapshots
 
 # Evaluation / inspection
-# baseline: model vs scripted HARD, mirror decks (deck inferred from the checkpoint's
-# deck-pilot filename; override with --deck), seats alternate per game, --seed reproducible.
-train/.venv/bin/python train/train.py baseline delver                                 # win rate vs scripted:hard (deck shorthand → delver__final.zip)
-train/.venv/bin/python train/train.py baseline --all --games 100                      # sweep every {deck}__final.zip on its own deck; appends checkpoints/baseline_report.log (--log to override)
+# baseline: model vs scripted HARD, mirror decks. --deck is REQUIRED (the model
+# encodes no deck); seats alternate per game, --seed reproducible.
+train/.venv/bin/python train/train.py baseline gen --deck delver                      # win rate vs scripted:hard piloting delver
+train/.venv/bin/python train/train.py baseline --all --games 100                      # sweep the generalist (gen__final.zip) on every roster deck; appends checkpoints/baseline_report.log (--log to override)
 # observe: one command for any {scripted|model} vs {scripted|model} matchup
 # (replaced the old diag/watch commands). --games N for a multi-game pass + summary,
 # --verbose for the full per-decision transcript, --seed for reproducibility.
 # observe runs bo3 MATCHES BY DEFAULT; --bo1 for single games.
-train/.venv/bin/python train/train.py observe --player-a delver --player-b scripted --deck delver --opponent mav  # watch one match (per-side controller + deck)
+train/.venv/bin/python train/train.py observe --player-a gen --player-b scripted --deck delver --opponent mav  # watch one match (per-side controller + deck)
 train/.venv/bin/python train/train.py observe --deck delver --opponent mav                          # scripted vs scripted, one bo3 match (compact)
 train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10               # verify env: 10 matches + W/L/D summary
 train/.venv/bin/python train/train.py observe --deck delver --opponent mav --verbose                # full transcript (state + action menu + narrative)
@@ -580,9 +583,9 @@ global steps done, current rotation, and every hyperparameter) to
 saved and at each rotation boundary. If the session is interrupted, restart it with just
 `train.py league --resume` (in the TUI, tick the league form's **--resume** checkbox) — the
 sidecar restores the full run configuration and the loop continues from where it left off,
-re-entering a partially-trained learner for only the remainder of its rotation. All other
-flags are ignored when `--resume` is set; per-deck model weights resume from their own
-`{deck}__final.zip` / newest `{deck}__v*.zip` as usual.
+re-entering a partially-trained rotation for only its remainder. All other
+flags are ignored when `--resume` is set; the one generalist's weights resume from
+`gen__final.zip` / newest `gen__v*.zip` as usual.
 
 **League opponent sampling (`LeaguePool`, `train/opponents.py`).** Each episode the pool
 makes two coupled choices — which opponent *deck* and which *controller* pilots it — from
@@ -597,22 +600,23 @@ the bulk of games to the hard matchups rather than drowning them in ~50% mirror 
 self-tuning: as win-rates shift, PFSP reallocates automatically. To bias even harder toward
 losing matchups, lower `--self-play-frac` (e.g. 0.1) or raise `--pfsp-p`.
 
-**Active-pool composition (bounded but fair).** The pool is capped to
+**Active-pool composition (bounded but fair).** Pool entries are `(opponent_deck,
+gen_snapshot)` pairs — the one generalist piloting each roster deck. The pool is capped to
 `max(1, floor(opponent_ckpt_ratio * n_envs))` unique checkpoints (sharded across env
 processes) to bound memory, but it is **not** a raw recency slice — that starved decks early
-in the roster order. Instead it keeps, per deck, a **guaranteed** anchor (`{deck}__final`,
-or the newest snapshot if no `__final` yet) that is never evicted, plus **discretionary**
-`__v*` intermediates filled newest-first round-robin across decks. So every roster deck is
-always represented as an opponent — even a perennial-loser deck stays in the pool via its
-`__final`.
+in the roster order. Instead it keeps, per deck, a **guaranteed** anchor (`gen__final` piloting
+that deck, or the newest `gen` snapshot if no `__final` yet) that is never evicted, plus
+**discretionary** `gen__v*` intermediates filled newest-first round-robin across decks. So every
+roster deck is always represented as an opponent — even a perennial-loser deck stays in the pool
+via the generalist's `__final` piloting it.
 
 **Snapshot promotion gate (`--promote-margin`, default 0.05).** The periodic
-`{deck}__v{steps}.zip` snapshots are only saved when the learner's *recent-window* win-rate
+`gen__v{steps}.zip` snapshots are only saved when the learner's *recent-window* win-rate
 clears `0.5 + margin` (first snapshot per deck exempt; `0` disables the gate; a negative
 margin gates below 50%). This keeps the pool from filling with near-duplicate weak
-intermediates. It gates **only** `__v*` snapshots — `{deck}__final` is always saved
+intermediates. It gates **only** `gen__v*` snapshots — `gen__final` is always saved
 unconditionally at rotation end (and always kept in the pool per the composition rule above),
-so raising the margin never removes a deck from the field; it only thins its version history.
+so raising the margin never removes a deck from the field; it only thins the version history.
 
 ### Best-of-three mode
 
@@ -686,7 +690,7 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 - `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
 - `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
-- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates games for a matchup, and inspects play (card importance, SHAP, value swings, regret, entropy, calibration, an interactive REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a GUI window) with terminal sparkline/bar fallbacks. Checkpoints are **per-deck** (deck-pilot naming `{deck}__final.zip` / `{deck}__v{steps}.zip`): a model encodes only the deck it pilots, not its opponent, so the model arg accepts a deck shorthand (`delver`) and the model's own deck is inferred from the filename — but the **opponent deck must be given with `--deck-b`** (a model opponent's deck is inferred from *its* filename; a scripted opponent defaults to a mirror match). (The older offline `.rmrec` recording subsystem and `train.py --record` were removed.)
+- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates games for a matchup, and inspects play (card importance, SHAP, value swings, regret, entropy, calibration, an interactive REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a GUI window) with terminal sparkline/bar fallbacks. The model is the one generalist (`gen`, an explicit `.zip`/`.pt` path, or `az:gen`/`azraw:gen`) and encodes **no deck**, so both the model's deck and the opponent's deck must be given explicitly with `--deck-a`/`--deck-b` for any model seat (a scripted opponent defaults to a mirror of `--deck-a`). (The older offline `.rmrec` recording subsystem and `train.py --record` were removed.)
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
 - `train/play.py` — interactive human-vs-model play
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`

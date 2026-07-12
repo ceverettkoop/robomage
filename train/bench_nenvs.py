@@ -30,10 +30,10 @@ Usage (run from the repo root):
     train/.venv/bin/python train/bench_nenvs.py --mode scripted --deck burn --opponent mav
 
 Notes:
-  * ``--mode self-play`` (default) benchmarks the model-vs-model path and needs an
-    opponent checkpoint (``{opponent}__final.zip`` / newest ``{opponent}__v*.zip``)
-    to exist — otherwise SelfPlayEnv silently falls back to the scripted agent and
-    the numbers understate real self-play cost. The tool warns when that happens.
+  * ``--mode self-play`` (default) benchmarks the model-vs-model path and needs a
+    generalist checkpoint (``gen__final.zip`` / newest ``gen__v*.zip``) to exist —
+    otherwise SelfPlayEnv silently falls back to the scripted agent and the numbers
+    understate real self-play cost. The tool warns when that happens.
   * ``--mode scripted`` benchmarks the cheaper scripted-opponent path (sized around
     the ``N_ENVS = 32`` default) and needs no checkpoints.
 """

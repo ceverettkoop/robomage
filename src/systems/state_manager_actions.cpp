@@ -39,6 +39,26 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
                                         Zone::Ownership priority_player,
                                         std::shared_ptr<Orderer> orderer, bool stack_empty);
 static std::string loyalty_cost_label(const Ability &ab);
+static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> orderer);
+
+// Chosen targets of every stack object that would destroy or exile a battlefield
+// permanent (category "Destroy", or "ChangeZone" battlefield->exile). Player-entity
+// targets may be included; callers only membership-test against permanent entities.
+static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> tgts;
+    for (Entity e : orderer->get_stack()) {
+        if (!global_coordinator.entity_has_component<Ability>(e)) continue;
+        auto &ab = global_coordinator.GetComponent<Ability>(e);
+        bool exiles_permanent =
+            ab.category == "ChangeZone" && ab.destination == Zone::EXILE &&
+            (ab.origin == Zone::BATTLEFIELD ||
+             std::find(ab.origins.begin(), ab.origins.end(), Zone::BATTLEFIELD) != ab.origins.end());
+        if (ab.category != "Destroy" && !exiles_permanent) continue;
+        if (ab.target != 0) tgts.push_back(ab.target);
+        tgts.insert(tgts.end(), ab.targets.begin(), ab.targets.end());
+    }
+    return tgts;
+}
 
 // A planeswalker loyalty ability's cost as an MTG-notation suffix (" [+1]",
 // " [0]", " [-3]", " [-X]"); empty for a non-loyalty ability. Shown in the
@@ -1133,17 +1153,19 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
     // CLI mode lists every collected mana ability so a human can float mana manually,
     // whether or not it contributes to a castable spell.
-    // TODO(float-when-targeted): in machine mode, also offer a source's MANA_* actions
-    // when that source is a chosen target of a Destroy/ChangeZone on the stack (scan
-    // orderer->get_stack() entities' Ability target/targets), so an agent can float the
-    // mana in response to removal (e.g. Wasteland) before the source leaves the
-    // battlefield. Expose-only: no scripted-agent rule; categories/encodings unchanged.
     bool machine = InputLogger::instance().is_machine_schedule();
+    std::vector<Entity> removal_tgts;
+    if (machine && !legal_mana_abilities.empty()) removal_tgts = stack_removal_targets(orderer);
     for (auto &ma : legal_mana_abilities) {
         // In machine mode, normal mana sources stay hidden and are auto-paid during cost
-        // payment. Instant-speed sources (e.g. LED) can only be activated at priority to
-        // float mana, so the ML agent must be offered those explicitly.
-        if (machine && !ma.ability.instant_speed) continue;
+        // payment, with two exceptions offered at priority so the agent can float mana:
+        // instant-speed sources (e.g. LED, only activatable here), and any source that is
+        // a chosen target of a Destroy/exile effect on the stack (float in response to
+        // removal, e.g. Wasteland, before the source leaves the battlefield).
+        if (machine && !ma.ability.instant_speed &&
+            std::find(removal_tgts.begin(), removal_tgts.end(), ma.source_entity) ==
+                removal_tgts.end())
+            continue;
         actions.push_back(ma);
     }
     return actions;

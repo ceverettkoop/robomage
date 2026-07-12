@@ -45,8 +45,10 @@ from env import (
     _PENDING_DECISION_START, _HIST_START, _ACTION_HISTORY_SIZE,
     _ACTION_HISTORY_ENTRY, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
     _EXTRAS_MC_ONEHOT_START, _SELF_BLOCK_START, _OPP_BLOCK_START,
-    _PB_LIFE, _PB_HAND_CT, _LIBRARY_CTX_START, _REVEALED_START)
-from _enums import N_MANDATORY_CHOICES
+    _PB_LIFE, _PB_HAND_CT, _LIBRARY_CTX_START, _REVEALED_START,
+    _SELF_LIVE_LIB_START, _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
+    _DECKLIST_SLOT_SIZE)
+from _enums import N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS
 from opponents import make_controller
 
 # Card-id decode: sentinel (empty/unknown) -> -1; a real id -> [0, N_CARD_TYPES).
@@ -116,6 +118,29 @@ def _card_id_slots():
     yield "pending_decision", 0, _PENDING_DECISION_START
     for e in range(_ACTION_HISTORY_SIZE):
         yield "history.card_id", e, _HIST_START + e * _ACTION_HISTORY_ENTRY + 1
+    # Deck-identity tail blocks: card id is the first float of each (card_id, count) slot.
+    for name, start, n in _DECKLIST_BLOCKS:
+        for s in range(n):
+            yield name, s, start + s * _DECKLIST_SLOT_SIZE
+
+
+# The three deck-identity blocks: (name, start offset, slot count).
+_DECKLIST_BLOCKS = (
+    ("self_live_lib", _SELF_LIVE_LIB_START, DECKLIST_MAIN_SLOTS),
+    ("opp_deck_main", _OPP_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
+    ("opp_deck_side", _OPP_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
+)
+
+
+def _decode_decklist_block(state, start, n_slots):
+    """Return [(vocab_id, count_int)] for every slot (id=-1 => empty)."""
+    out = []
+    for s in range(n_slots):
+        base = start + s * _DECKLIST_SLOT_SIZE
+        cid = _decode_card_id(state[base])
+        cnt = int(round(float(state[base + 1]) * 4.0))
+        out.append((cid, cnt))
+    return out
 
 
 def _ref_slots():
@@ -142,7 +167,8 @@ def _zone_block_offsets(start):
 
 # ── The invariant checks (all read `state` = obs[:STATE_SIZE]) ─────────────────
 
-def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame):
+def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
+                   deck_block_by_seat):
     """Assert every observation invariant for one decision. Raises on violation."""
     state = obs[:STATE_SIZE]
     seat = "A" if priority_is_a else "B"
@@ -250,6 +276,62 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
                       f"opponent (seat {opp_seat}) declared a companion (vocab {comp_idx}) "
                       "but its revealed bit is not set")
 
+    # (9) Deck-identity blocks: packed ascending by vocab id (no holes), counts in
+    # range, self-live-library counts sum to self_library_ct, opp static blocks
+    # constant per viewer seat.
+    self_lib_sum = 0
+    for name, start, n in _DECKLIST_BLOCKS:
+        entries = _decode_decklist_block(state, start, n)
+        seen_empty = False
+        prev_id = -1
+        for i, (cid, cnt) in enumerate(entries):
+            empty = (cid == _CARD_ID_SENTINEL)
+            if empty:
+                # Empty slot: count must be ~0.
+                if cnt != 0:
+                    _fail(decision_idx, seat, name, i, cnt,
+                          f"empty slot carries a non-zero count {cnt}")
+                seen_empty = True
+                continue
+            if seen_empty:
+                _fail(decision_idx, seat, name, i, cid,
+                      "non-empty slot after an empty one (block must be packed)")
+            if not (0 <= cid < N_CARD_TYPES):
+                _fail(decision_idx, seat, name, i, cid,
+                      f"card id {cid} out of range [0,{N_CARD_TYPES})")
+            if cid <= prev_id:
+                _fail(decision_idx, seat, name, i, cid,
+                      f"card id {cid} not strictly greater than previous {prev_id} "
+                      "(block must be ascending by vocab id)")
+            prev_id = cid
+            # A non-empty slot must carry >= 1 copy. The upper bound is a generous
+            # deck-size cap (basics in a big-mana / 80-card Yorion list legitimately
+            # far exceed the /4 normalizer's ~1.0 for a 4-of, so no tight bound holds).
+            if not (1 <= cnt <= 100):
+                _fail(decision_idx, seat, name, i, cnt,
+                      f"count {cnt} out of range [1,100] on a non-empty slot")
+            if name == "self_live_lib":
+                self_lib_sum += cnt
+
+    # (9c) self-live-library counts sum to the viewer's library card count.
+    lib_ct = int(round(float(state[_LIBRARY_CTX_START]) * 60.0))
+    if self_lib_sum != lib_ct:
+        _fail(decision_idx, seat, "self_live_lib.sum", "-", self_lib_sum,
+              f"library counts sum to {self_lib_sum} but self_library_ct is {lib_ct}")
+
+    # (9d) opp static maindeck+sideboard blocks are constant across a game per seat.
+    opp_block = (
+        tuple(state[_OPP_DECK_MAIN_START:_OPP_DECK_MAIN_START
+                    + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE]),
+        tuple(state[_OPP_DECK_SIDE_START:_OPP_DECK_SIDE_START
+                    + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE]),
+    )
+    prev = deck_block_by_seat.get(seat)
+    if prev is not None and prev != opp_block:
+        _fail(decision_idx, seat, "opp_deck.constancy", "-", "changed",
+              "opponent static decklist block changed across decisions of the same seat")
+    deck_block_by_seat[seat] = opp_block
+
 
 # ── Game driving ──────────────────────────────────────────────────────────────
 
@@ -283,13 +365,14 @@ def run_matchup(deck_a, deck_b, seed, companion_by_seat=None, max_decisions=None
     ctrl_a, ctrl_b = _make_scripted_pair(deck_a, deck_b)
 
     checked = [0]
+    deck_block_by_seat = {}
 
     def on_query(d):
         cats = np.round(d.obs[STATE_SIZE:STATE_SIZE + d.num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
         is_pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
         check_decision(d.index, d.obs, d.priority_is_a, companion_by_seat,
-                       is_pregame)
+                       is_pregame, deck_block_by_seat)
         checked[0] += 1
 
     try:

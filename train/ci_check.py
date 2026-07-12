@@ -24,6 +24,11 @@ fails, so one invocation reports every finding):
           card-id / entity-ref floats decode in range, recency-packed zones have
           no holes, one-hots are one-hot, etc. Catches a silent serialize_state
           layout/encoding regression.
+  snapshot The --search-server snapshot/restore/determinize protocol behaves:
+          round-trip byte identity, RNG isolation, determinize efficacy, the
+          SIM_RESULT terminal intercept, and determinize invariants
+          (train/test_snapshot.py). Catches a regression in the in-process
+          MCTS search primitives.
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
           matches — catches unintended narrative/behavior drift.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
@@ -31,6 +36,13 @@ fails, so one invocation reports every finding):
   fuzz    Short random coverage fuzz (the 'explore' agent) over the league
           mirrors. Fixed seeds on PR (a red run is the diff's fault); the nightly
           workflow rotates the seed and widens to every matchup.
+
+Opt-in tiers (valid for --tier, NOT part of the default run):
+
+  actor   Phase-D AZ actor gate: obs bit-parity (test_actor_parity.py), MCTS
+          visit-count parity (test_mcts_parity.py), and self-play shard schema /
+          trainer ingest (test_actor_shards.py). Self-skips with a message when
+          bin/az_actor is not built or torch is unavailable.
 
 Draw classification (per repo policy — draws are not acceptable, but the two
 causes differ in severity):
@@ -70,7 +82,13 @@ LEAGUE = ["bug", "bw_dnt", "car_doomsday", "gw_maverick", "tron", "ur_delver",
           "wrb_energy"]
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "obsinv", "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "obsinv", "snapshot", "replay", "smoke", "fuzz"]
+
+# Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
+# the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
+# self-skips cleanly when either is absent (so it never breaks a stock build).
+OPT_IN_TIERS = ["actor"]
+KNOWN_TIERS = ALL_TIERS + OPT_IN_TIERS
 
 # Transcript scan (stdout narrative + captured engine stderr). Two severities:
 #   ERROR  — genuine failures that fail the gate: the engine's own ERROR:
@@ -164,7 +182,8 @@ def tier_pygen(rep):
     fetches the whole vocab, so every cost is reproducible here and in CI. The
     working tree is restored afterward so a stale result is reported, not left
     half-regenerated (the developer runs `make pygen` to actually update them)."""
-    gen_files = ["train/_enums.py", "train/card_costs.py"]
+    gen_files = ["train/_enums.py", "train/card_costs.py",
+                 "src/gen/card_costs_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
@@ -211,6 +230,22 @@ def tier_obsinv(rep):
         rep.error("obsinv", "observation invariant violation "
                             f"(test_obs_invariants.py exit {r.returncode}):\n"
                             f"{r.stdout}{r.stderr}")
+
+
+def tier_snapshot(rep):
+    """The --search-server snapshot/restore/determinize protocol regression.
+
+    Drives the raw machine protocol over a subprocess and asserts the search
+    primitives' guarantees (round-trip byte identity, RNG isolation, determinize
+    efficacy/invariants, terminal intercept — see train/test_snapshot.py). A gate
+    on the in-process MCTS search subsystem."""
+    r = subprocess.run([sys.executable, "train/test_snapshot.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("snapshot", "search-server protocol violation "
+                             f"(test_snapshot.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
 
 
 def tier_replay(rep):
@@ -309,12 +344,43 @@ def tier_fuzz(rep, args, out_dir):
     _run_matchups(rep, "fuzz", pairs, args.mode, args.fuzz_games, args.seed, out_dir)
 
 
+def tier_actor(rep):
+    """Phase-D AZ actor gate (opt-in). Self-skips when bin/az_actor is missing or
+    torch is unavailable; otherwise runs the actor/MCTS/shard parity tests as
+    subprocesses and reports each PASS/FAIL through the Report."""
+    actor_bin = os.path.join(_REPO_ROOT, "bin", "az_actor")
+    if not os.path.exists(actor_bin):
+        print(f"  [skip] actor: {actor_bin} not built "
+              "(build with `make actor`)", flush=True)
+        return
+    try:
+        import torch  # noqa: F401
+    except Exception as e:
+        print(f"  [skip] actor: torch not importable ({e})", flush=True)
+        return
+
+    tests = ["train/test_actor_parity.py",   # M5: obs bit-parity
+             "train/test_mcts_parity.py",    # M6: MCTS visit-count parity
+             "train/test_actor_shards.py"]   # M7: shard schema / trainer ingest
+    for t in tests:
+        r = subprocess.run([sys.executable, t], cwd=_REPO_ROOT,
+                           capture_output=True, text=True)
+        print(r.stdout, end="", flush=True)
+        name = os.path.basename(t)
+        if r.returncode != 0:
+            rep.error("actor", f"{name} failed (exit {r.returncode}):\n"
+                               f"{r.stdout}{r.stderr}")
+        else:
+            print(f"  {name}: PASS", flush=True)
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--tier", default=",".join(ALL_TIERS),
-                   help="comma list of tiers to run (default: all): "
-                        + ",".join(ALL_TIERS))
+                   help="comma list of tiers to run (default: all default tiers): "
+                        + ",".join(ALL_TIERS) + "; opt-in: "
+                        + ",".join(OPT_IN_TIERS))
     p.add_argument("--smoke-games", type=int, default=2,
                    help="games per matchup in the smoke tier (default 2)")
     p.add_argument("--fuzz-games", type=int, default=8,
@@ -331,9 +397,9 @@ def main(argv=None):
     args = p.parse_args(argv)
 
     tiers = [t.strip() for t in args.tier.split(",") if t.strip()]
-    unknown = [t for t in tiers if t not in ALL_TIERS]
+    unknown = [t for t in tiers if t not in KNOWN_TIERS]
     if unknown:
-        print(f"unknown tier(s): {', '.join(unknown)}; valid: {', '.join(ALL_TIERS)}",
+        print(f"unknown tier(s): {', '.join(unknown)}; valid: {', '.join(KNOWN_TIERS)}",
               file=sys.stderr)
         return 2
 
@@ -341,11 +407,11 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "obsinv"} & set(tiers)
+    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "snapshot"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "obsinv"} & set(tiers):
+    if {"smoke", "fuzz", "vocab", "obsinv", "snapshot"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
             print(f"no card scripts under {cards_dir} — run "
@@ -361,12 +427,16 @@ def main(argv=None):
             tier_vocab(rep)
         elif t == "obsinv":
             tier_obsinv(rep)
+        elif t == "snapshot":
+            tier_snapshot(rep)
         elif t == "replay":
             tier_replay(rep)
         elif t == "smoke":
             tier_smoke(rep, args, out_dir)
         elif t == "fuzz":
             tier_fuzz(rep, args, out_dir)
+        elif t == "actor":
+            tier_actor(rep)
 
     print("\n" + "=" * 60, flush=True)
     print(f"ci_check: {len(rep.errors)} error(s), {len(rep.warnings)} warning(s)",

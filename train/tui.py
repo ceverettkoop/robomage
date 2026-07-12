@@ -15,6 +15,7 @@ exits.
 
 import glob
 import os
+import random
 import shlex
 import shutil
 import subprocess
@@ -107,41 +108,64 @@ def _scan_league_decks():
 
 
 def _scan_checkpoints():
-    # checkpoints/-relative paths ('delver__final.zip', 'league/ur_delver__final.zip')
-    # — checkpoints of subfolder decks live in the mirrored subfolder, so scan
-    # recursively. They are expanded to a repo-relative path at argv time so the
-    # value loads whether the script reads it directly (play) or resolves it.
+    # checkpoints/-relative paths ('gen__final.zip', 'gen__v{steps}.zip', plus any
+    # explicit zip) — scan recursively so a nested layout still turns up. They are
+    # expanded to a repo-relative path at argv time so the value loads whether the
+    # script reads it directly (play) or resolves it.
     out = [os.path.relpath(p, _CKPT_DIR).replace(os.sep, "/")
            for p in glob.glob(os.path.join(_CKPT_DIR, "**", "*.zip"), recursive=True)]
     return sorted(out, key=_grouped_sort_key)
 
 
-def _checkpoints_for_deck(deck):
-    """Checkpoints piloting ``deck``, as checkpoints/-relative paths.
+def _scan_az_checkpoints():
+    # checkpoints/-relative AZ nets ('az/gen__azfinal.pt', 'az/gen__azv{steps}.pt'),
+    # skipping the .ts.pt TorchScript exports (actor runtime artifacts, not loadable nets).
+    out = [os.path.relpath(p, _CKPT_DIR).replace(os.sep, "/")
+           for p in glob.glob(os.path.join(_CKPT_DIR, "az", "**", "*.pt"),
+                              recursive=True)
+           if not p.endswith(".ts.pt")]
+    return sorted(out, key=_grouped_sort_key)
 
-    Models are per-deck generalists named '{deck}__final.zip' /
-    '{deck}__v{steps}.zip'. A subfolder deck ('league/ur_delver') looks in the
-    mirrored checkpoints subfolder first ('league/ur_delver__*.zip' — where
-    training saves them), then falls back to a flat top-level '{stem}__*.zip'
-    so pre-subfolder checkpoints keep working."""
-    ckpts = _scan_checkpoints()
-    out = [c for c in ckpts if c.startswith(f"{deck}__")]
-    stem = deck.rsplit("/", 1)[-1]
-    if stem != deck:
-        out += [c for c in ckpts if "/" not in c and c.startswith(f"{stem}__")]
-    return out
+
+def _scan_agents():
+    """Controller specs for fields consumed by opponents.make_controller.
+
+    The model is the ONE generalist (`gen`), so the AZ entries are the fixed
+    'az:gen' (MCTS at play time), 'azraw:gen' (raw policy), and 'mcts:gen'
+    (PPO-priored search) specs — the prefix IS the raw-vs-search lever, and
+    they resolve through resolve_az_checkpoint/resolve_checkpoint to the
+    generalist's best net as training advances. Explicit scanned AZ checkpoint
+    paths are offered too, plus every PPO zip (bare, as before)."""
+    az = [f"{pfx}gen" for pfx in ("az:", "azraw:", "mcts:")]
+    return _scan_checkpoints() + az + _scan_az_checkpoints()
+
+
+def _generalist_checkpoints():
+    """PPO checkpoints the --load field can resume, as checkpoints/-relative
+    paths.
+
+    There is one generalist model (`gen`), so this is every gen snapshot
+    ('gen__v{steps}.zip'), 'gen__final.zip', and any explicit .zip present —
+    i.e. all scanned zips. The choice is deck-independent (the deck the model
+    pilots travels as a separate explicit --deck parameter)."""
+    return _scan_checkpoints()
 
 
 def _expand_checkpoint(val):
     """A bare checkpoint filename → repo-relative path that every script can load."""
-    if val in _scan_checkpoints():
+    if val in _scan_checkpoints() or val in _scan_az_checkpoints():
         return os.path.join("train", "checkpoints", val)
-    return val   # already a path, a shorthand, or 'scripted' — leave it alone
+    return val   # a path, a shorthand, an az:/azraw: spec, or 'scripted'
 
 
 # Suggestion source tagged on each Arg in cli_spec (arg.suggest) → scanner.
+# 'checkpoint' stays PPO-zips-only (fields that MaskablePPO.load directly:
+# --load resume, --from-ppo, baseline); 'agent' adds the az:/azraw:/mcts: gen
+# entries for fields that go through make_controller; 'az_checkpoint' is bare AZ
+# .pt paths.
 _SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
-             "checkpoint": _scan_checkpoints}
+             "checkpoint": _scan_checkpoints, "agent": _scan_agents,
+             "az_checkpoint": _scan_az_checkpoints}
 
 # TUI-only default overrides for the league form (the common "train the whole
 # roster" run): these seed the widgets differently from the CLI Arg defaults but
@@ -232,8 +256,8 @@ class LauncherApp(App):
                 opts = [(a.name, a.name) for a in item.args]
                 sel = Select(opts, allow_blank=True, prompt="(neither)", compact=True)
                 self._fields.append({"kind": "mutex", "group": item, "widget": sel})
-                self._help_by_widget[sel] = "Opponent mode — mutually exclusive (default: neither)"
-                rows.append(self._row("opp-mode", sel, required=False))
+                self._help_by_widget[sel] = item.help
+                rows.append(self._row(item.label, sel, required=False))
             else:
                 rows.append(self._build_arg(item))
                 # A roster multipick gets a live rotation-order readout row below it.
@@ -257,52 +281,17 @@ class LauncherApp(App):
 
     def _options_for(self, a):
         """Dropdown options for a suggest-tagged arg (decks/checkpoints)."""
-        # --load resumes a specific checkpoint of the selected deck's generalist,
-        # so it offers that deck's own pilots (see _deck_checkpoints).
+        # --load resumes a specific checkpoint of the one generalist model, so it
+        # offers every gen snapshot / gen__final / explicit zip (deck-independent;
+        # the piloted deck travels as a separate --deck parameter).
         if a.name == "--load" and a.suggest == "checkpoint":
-            return self._deck_checkpoints()
+            return _generalist_checkpoints()
         opts = list(_suggestions_for(a))
         # Fields that also accept the rule-based agent get a 'scripted' option.
-        if a.suggest == "checkpoint" and (a.default == "scripted" or a.name == "--opponent"):
+        if a.suggest in ("checkpoint", "agent") and (
+                a.default == "scripted" or a.name == "--opponent"):
             opts = ["scripted"] + opts
         return opts
-
-    def _field_value(self, name):
-        """Current string value of a field by arg name, or None if blank/absent."""
-        f = next((f for f in self._fields
-                  if f.get("arg") is not None and f["arg"].name == name), None)
-        if f is None:
-            return None
-        v = f["widget"].value
-        return v if isinstance(v, str) and v else None
-
-    def _deck_checkpoints(self):
-        """Checkpoints piloting the currently selected deck.
-
-        Models are per-deck generalists named '{deck}__final.zip' /
-        '{deck}__v{steps}.zip', so the --load dropdown offers the chosen deck's
-        own pilots (the opponent is irrelevant). Empty until a deck is chosen.
-        Subfolder decks look in the mirrored checkpoints subfolder first, with
-        a flat-layout fallback (see _checkpoints_for_deck)."""
-        deck = self._field_value("--deck")
-        if not deck:
-            return []
-        return _checkpoints_for_deck(deck)
-
-    def _refresh_load_options(self):
-        """Re-filter the --load dropdown after a deck/opponent change."""
-        field = next((f for f in self._fields
-                      if f.get("arg") is not None and f["arg"].name == "--load"), None)
-        if field is None:
-            return
-        sel = field["widget"]
-        opts = self._deck_checkpoints()
-        keep = sel.value if (isinstance(sel.value, str) and sel.value in opts) else None
-        sel.set_options([(v, v) for v in opts])
-        if keep is not None:
-            sel.value = keep
-        else:
-            sel.clear()
 
     def _arg_for_widget(self, widget):
         for f in self._fields:
@@ -318,6 +307,13 @@ class LauncherApp(App):
         through to the Arg's own default."""
         if getattr(self._sub, "name", None) == "league" and a.name in _LEAGUE_TUI_DEFAULTS:
             return _LEAGUE_TUI_DEFAULTS[a.name]
+        # az* forms: pre-fill --seed with a fresh random value per form load, so
+        # repeated TUI launches don't silently replay the fixed cli_spec seed
+        # (identical self-play games before any training has happened). CLI
+        # defaults are untouched, and the value is visible in the field and the
+        # composed-command preview, so every run stays reproducible.
+        if a.name == "--seed" and str(getattr(self._sub, "name", "")).startswith("az"):
+            return random.randint(1, 999_999)
         return a.default
 
     def _build_arg(self, a):
@@ -463,9 +459,6 @@ class LauncherApp(App):
         self.refresh_bindings()
 
     def on_select_changed(self, event: Select.Changed):
-        arg = self._arg_for_widget(event.select)
-        if arg is not None and arg.name in ("--deck", "--opponent"):
-            self._refresh_load_options()
         self.update_preview()
 
     def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged):
@@ -544,7 +537,7 @@ class LauncherApp(App):
                 a = f["arg"]
                 v = f["widget"].value
                 if isinstance(v, str) and v:
-                    if a.suggest == "checkpoint":
+                    if a.suggest in ("checkpoint", "agent", "az_checkpoint"):
                         v = _expand_checkpoint(v)
                     if a.is_positional:
                         argv.append(v)

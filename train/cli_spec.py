@@ -114,7 +114,7 @@ PPO_KWARGS = dict(
     ent_coef=ENT_COEF,
     target_kl=TARGET_KL,
 )
-NET_ARCH = [256, 256]  # policy/value MLP head sizes (after the feature extractor)
+NET_ARCH = [512, 512]  # policy/value MLP head sizes (after the feature extractor)
 
 # League (PFSP) defaults.
 # self-play is a small floor, not the bulk of games: the PFSP-weighted historical
@@ -208,9 +208,13 @@ class Arg:
 
 @dataclass
 class MutexGroup:
-    """A mutually-exclusive group of flags (rendered as one Select in the TUI)."""
+    """A mutually-exclusive group of flags (rendered as one Select in the TUI).
+
+    ``label`` is the short TUI row name; ``help`` shows in the field-help pane."""
     args: list
     required: bool = False
+    label: str = "opp-mode"
+    help: str = "Mutually exclusive — (neither) accepts the default"
 
 
 @dataclass
@@ -255,8 +259,8 @@ def train_opts():
             help="Total training timesteps"),
         Arg("--tally", "flag", help="Print A/B win tally after each rollout"),
         Arg("--fresh", "flag",
-            help="Start the deck's generalist from scratch instead of auto-resuming "
-                 "its existing {deck}__final.zip / newest {deck}__v*.zip (overwrites it)"),
+            help="Start the generalist from scratch instead of auto-resuming "
+                 "the existing gen__final.zip / newest gen__v*.zip (overwrites it)"),
         Arg("--n-envs", "int", default=None,
             help="Number of parallel environments (default: %d, self-play: %d)"
                  % (N_ENVS, N_ENVS_SELF_PLAY)),
@@ -268,6 +272,13 @@ def train_opts():
             help="Feature-extractor embed dim for fresh models (default: %d). "
                  "Ignored when resuming a checkpoint (its embed_dim is restored from "
                  "the saved policy_kwargs)." % EMBED_DIM),
+        Arg("--stock-head", "flag",
+            help="Build fresh models with the legacy stock MlpPolicy positional "
+                 "head instead of the default per-action logit head "
+                 "(PerActionMaskablePolicy). The flavors are not "
+                 "checkpoint-compatible; resuming always keeps the checkpoint's "
+                 "own head, so this only affects fresh (--fresh / first-time) "
+                 "models."),
         Arg("--n-epochs", "int", default=N_EPOCHS,
             help="PPO optimization epochs per update (default: %d). Applies to "
                  "fresh models AND overrides whatever a resumed checkpoint was "
@@ -283,13 +294,14 @@ def _opponent_mode():
     """The --self-play | --scripted mutually-exclusive pair (train/sweep)."""
     return MutexGroup([
         Arg("--self-play", "flag",
-            help="Train against a frozen deck-pilot snapshot of the opponent deck "
-                 "({opp}__v*.zip / {opp}__final.zip; falls back to the scripted "
-                 "agent if none exists yet)"),
+            help="Train against a frozen snapshot of the generalist piloting the "
+                 "opponent deck (gen__v*.zip / gen__final.zip; falls back to the "
+                 "scripted agent if none exists yet)"),
         Arg("--scripted", "flag",
             help="Train against the rule-based scripted agent (the default; "
                  "mutually exclusive with --self-play)"),
-    ])
+    ], label="opp-mode",
+       help="Opponent mode — mutually exclusive (default: neither = scripted)")
 
 
 def opponent_pool_opts():
@@ -298,9 +310,8 @@ def opponent_pool_opts():
         Arg("--opponent-pool", "str", default=None,
             help="Comma-separated mix of opponent controllers to randomize per "
                  "episode, e.g. 'scripted:easy,scripted:hard=2,mav'. "
-                 "The token 'random-model' expands to a random generalist piloting "
-                 "the opponent's deck (its deck-pilot snapshots {opp_deck}__v*.zip "
-                 "/ {opp_deck}__final.zip). Each item may "
+                 "The token 'random-model' expands to a random generalist snapshot "
+                 "(gen__v*.zip / gen__final.zip) piloting the opponent's deck. Each item may "
                  "carry an optional '=<weight>'. Overrides the plain scripted "
                  "opponent (ignored with --self-play). In a sweep the same pool "
                  "is applied to every matchup, resolving 'random-model' per matchup."),
@@ -311,21 +322,40 @@ def opponent_pool_opts():
     ]
 
 
+def _actor_mode():
+    """The --actor | --no-actor self-play backend pair (az-selfplay / az).
+
+    Default (neither) is AUTO: use the C++ ``bin/az_actor`` iff it is built, else
+    the pure-Python multiprocess backend."""
+    return MutexGroup([
+        Arg("--actor", "flag",
+            help="Force the C++ az_actor self-play backend (error if bin/az_actor "
+                 "is not built). Default AUTO: use it iff it is built."),
+        Arg("--no-actor", "flag",
+            help="Force the pure-Python self-play backend, skipping the actor even "
+                 "if bin/az_actor is built."),
+    ], label="actor",
+       help="Self-play backend — (neither) = AUTO: the C++ az_actor iff it is "
+            "built, else the pure-Python backend")
+
+
 def sim_args():
     """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
     return [
-        Arg("model", "str", required=True, help="Path to model .zip", suggest="checkpoint"),
-        Arg("--opponent", "str", default="scripted", suggest="checkpoint",
-            help="Opponent controller: a model .zip path/shorthand, or 'scripted' "
-                 "for the rule-based agent piloting the opponent deck (the default)"),
+        Arg("model", "str", required=True, suggest="agent",
+            help="Model to analyze: 'gen', a .zip path, or az:gen/azraw:gen "
+                 "for the generalist AlphaZero net"),
+        Arg("--opponent", "str", default="scripted", suggest="agent",
+            help="Opponent controller: 'gen', a model .zip path, az:gen/azraw:gen, "
+                 "or 'scripted' for the rule-based agent piloting the opponent deck "
+                 "(the default)"),
         Arg("--deck-a", "str", default=None, suggest="deck",
-            help="Model's deck (.dk stem) — the deck it pilots. Inferred from the "
-                 "model's deck-pilot filename ({deck}__final.zip) if omitted."),
+            help="Model's deck (.dk stem) — the deck it pilots. REQUIRED for a "
+                 "model seat: the one generalist encodes no deck in its filename."),
         Arg("--deck-b", "str", default=None, suggest="deck",
-            help="Opponent's deck (.dk stem). Per-deck checkpoints don't encode "
-                 "their opponent, so supply this explicitly; for a model opponent "
-                 "it is inferred from that model's own filename, and a scripted "
-                 "opponent defaults to a mirror match (--deck-a)."),
+            help="Opponent's deck (.dk stem). REQUIRED for a model opponent (the "
+                 "generalist encodes no deck); a scripted opponent defaults to a "
+                 "mirror match (--deck-a)."),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
         Arg("--bo3", "flag",
             help="Run best-of-three matches (decks must include SIDEBOARD entries)"),
@@ -339,17 +369,18 @@ def sim_args():
 # ── Tool definitions ──────────────────────────────────────────────────────────
 
 TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
-    Sub("train", "Train a deck's generalist model (default command)", items=[
+    Sub("train", "Train the one generalist model (default command)", items=[
         Arg("--deck", "str", default="delver", suggest="deck",
-            help="Deck the generalist plays (.dk stem, default: delver). Saved as "
-                 "{deck}__final.zip; sessions against any opponent accumulate onto it."),
+            help="Deck the generalist plays this session (.dk stem, default: "
+                 "delver). Always saved to the single gen__final.zip; sessions on "
+                 "any deck/opponent accumulate onto that one generalist."),
         Arg("--opponent", "str", required=True, suggest="deck",
             help="Opponent deck this session trains against (.dk stem). The model "
-                 "stays a generalist — training vs one opponent continues the same "
-                 "{deck}__final.zip rather than forging a matchup-specific model."),
+                 "stays one generalist — training continues the same gen__final.zip "
+                 "rather than forging a per-deck or matchup-specific model."),
         Arg("--load", "str", default=None, suggest="checkpoint",
-            help="Resume from a specific checkpoint .zip (or shorthand), overriding "
-                 "the default auto-resume of the deck's own generalist"),
+            help="Resume from a specific checkpoint .zip ('gen' or a path), "
+                 "overriding the default auto-resume of gen__final.zip"),
         _opponent_mode(),
         *opponent_pool_opts(),
         *train_opts(),
@@ -382,16 +413,23 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--softmax-eta", "float", default=LEAGUE_SOFTMAX_ETA,
             help="Softmax quality learning rate eta (default %.3f)." % LEAGUE_SOFTMAX_ETA),
         Arg("--snapshot-every", "int", default=LEAGUE_SNAPSHOT_EVERY,
-            help="Save a frozen {deck}__v{steps}.zip snapshot every N steps "
+            help="Save a frozen gen__v{steps}.zip snapshot every N steps "
                  "(default %d)." % LEAGUE_SNAPSHOT_EVERY),
         Arg("--promote-margin", "float", default=LEAGUE_PROMOTE_MARGIN,
             help="Only keep a snapshot when the learner's recent-window win-rate "
                  ">= 0.5 + margin (negative gates below 0.5, e.g. -0.1 -> 0.40; the "
                  "first snapshot of each deck is exempt so self-play can bootstrap; "
                  "0 disables the gate; default %.2f)." % LEAGUE_PROMOTE_MARGIN),
+        Arg("--fixed-self-deck", "flag",
+            help="Restore the classic one-deck-per-rotation mode: the learner's OWN "
+                 "deck is fixed for a whole rotation (adaptive-boost rotations, "
+                 "focus-deck stats). Default (off) is mixed mode, where the learner's "
+                 "self deck also cycles per episode across the rotation's deck set, so "
+                 "one rollout trains every deck as pilot."),
         Arg("--rotate-every", "int", default=LEAGUE_ROTATE_EVERY,
             help="Steps to train one learner deck before rotating to the next "
-                 "(default %d)." % LEAGUE_ROTATE_EVERY),
+                 "in fixed-self-deck mode; in mixed mode, the fixed chunk length "
+                 "between snapshot/sidecar boundaries (default %d)." % LEAGUE_ROTATE_EVERY),
         Arg("--adaptive-boost", "float", default=LEAGUE_ADAPTIVE_BOOST,
             # argparse %-expands help at display time, so a literal percent sign
             # must stay doubled ('%%') in the final string — hence the f-string
@@ -424,10 +462,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *train_opts(),
         *common_args(),
     ]),
-    Sub("sweep", "PFSP sweep: train one deck's generalist vs a pool of the other decks", items=[
+    Sub("sweep", "PFSP sweep: train the generalist on one deck vs a pool of the other decks", items=[
         Arg("--deck", "str", required=True, suggest="deck",
-            help="Deck to train (.dk stem). Saved as {deck}__final.zip; this session "
-                 "accumulates onto it, same as 'train'."),
+            help="Deck to train on (.dk stem). Always saved to gen__final.zip; this "
+                 "session accumulates onto the one generalist, same as 'train'."),
         Arg("--opponents", "str", default=None, suggest="deck", multi=True,
             help="Comma-separated pool of opponent decks to sample from via PFSP "
                  "(default: every other deck in bin/resources/decks/). Like league's "
@@ -448,7 +486,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--softmax-eta", "float", default=LEAGUE_SOFTMAX_ETA,
             help="Softmax quality learning rate eta (default %.3f)." % LEAGUE_SOFTMAX_ETA),
         Arg("--snapshot-every", "int", default=LEAGUE_SNAPSHOT_EVERY,
-            help="Save a frozen {deck}__v{steps}.zip snapshot every N steps "
+            help="Save a frozen gen__v{steps}.zip snapshot every N steps "
                  "(default %d)." % LEAGUE_SNAPSHOT_EVERY),
         Arg("--promote-margin", "float", default=LEAGUE_PROMOTE_MARGIN,
             help="Only keep a snapshot when --deck's recent-window win-rate "
@@ -465,7 +503,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck the model plays (.dk stem)"),
         Arg("--opponent", "str", required=True, suggest="deck", help="Opponent deck (.dk stem)"),
         Arg("--load", "str", default=None, suggest="checkpoint",
-            help="Resume from checkpoint .zip (or shorthand)"),
+            help="Resume from checkpoint .zip ('gen' or a path)"),
         *train_opts(),
         *common_args(),
     ]),
@@ -480,10 +518,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     Sub("observe",
         "Observe game(s) between any pair of {scripted | model} controllers "
         "(replaces the old watch/diag/observe commands)", items=[
-        Arg("--player-a", "str", default="scripted", suggest="checkpoint",
-            help="Player A controller: 'scripted' (or 'scripted:*') or a model .zip path/shorthand (default: scripted)"),
-        Arg("--player-b", "str", default="scripted", suggest="checkpoint",
-            help="Player B controller: 'scripted' (or 'scripted:*') or a model .zip path/shorthand (default: scripted)"),
+        Arg("--player-a", "str", default="scripted", suggest="agent",
+            help="Player A controller: 'scripted' (or 'scripted:*'), 'gen', a model "
+                 ".zip path, or az:gen/azraw:gen/mcts:gen (default: scripted)"),
+        Arg("--player-b", "str", default="scripted", suggest="agent",
+            help="Player B controller: 'scripted' (or 'scripted:*'), 'gen', a model "
+                 ".zip path, or az:gen/azraw:gen/mcts:gen (default: scripted)"),
         Arg("--play-a", "str", default=None,
             help="Drive Player A by semantic action specs instead of --player-a, e.g. "
                  "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" (see action_spec.py grammar)"),
@@ -504,23 +544,128 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("baseline", "Evaluate model win rate vs the scripted HARD agent (mirror match)", items=[
         Arg("model", "str", required=False, suggest="checkpoint",
-            help="Model .zip path or shorthand (omit with --all)"),
+            help="Model to evaluate: 'gen' or a .zip path (omit with --all)"),
         Arg("--games", "int", default=None,
             help="Games per matchup (default: 100 for a single model, 50 per opponent "
                  "with --all)"),
         Arg("--all", "flag",
-            help="Round-robin every league deck's {deck}__final.zip vs scripted:hard on "
-                 "every league deck (including the mirror): an N-deck roster runs N×N "
-                 "matchups of --games each, and the per-matchup win rates are appended "
-                 "to the report log"),
+            help="Round-robin the generalist (gen__final.zip) on every league deck vs "
+                 "scripted:hard on every league deck (including the mirror): an N-deck "
+                 "roster runs N×N matchups of --games each, and the per-matchup win "
+                 "rates are appended to the report log"),
         Arg("--log", "str", default=None,
             help="Report file for --all (default: checkpoints/baseline_report.log, appended)"),
         Arg("--deck", "str", default=None, suggest="deck",
-            help="Deck the model pilots (default: inferred from the checkpoint's "
-                 "deck-pilot filename). The scripted opponent mirrors it."),
+            help="Deck the model pilots — REQUIRED (the generalist encodes no deck). "
+                 "The scripted opponent mirrors it."),
         Arg("--seed", "int", default=None,
             help="RNG seed for reproducible runs (game N uses seed+N; default: random)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
+    ]),
+    # ── AlphaZero (Phase C) ───────────────────────────────────────────────────
+    Sub("az-selfplay",
+        "Generate AlphaZero self-play data (focus deck vs mirror + roster, bo1)", items=[
+        Arg("--deck", "str", default="delver", suggest="deck",
+            help="Focus deck (.dk stem); its opponent is a mirror with "
+                 "P=--mirror-frac, else a uniform league-roster draw"),
+        Arg("--games", "int", default=50, help="Games to generate"),
+        Arg("--sims", "int", default=128, help="PUCT simulations per decision"),
+        Arg("--worlds", "int", default=4, help="Determinized worlds per search"),
+        Arg("--workers", "int", default=None,
+            help="Worker processes (default max(1, cpu-2))"),
+        Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
+            help="AZ (.pt) / PPO (.zip) ckpt or 'gen' (default: generalist AZ "
+                 "ckpt, else gen PPO warm-start, else random init)"),
+        Arg("--temp-moves", "int", default=20,
+            help="Sample from visit counts for the first N real decisions, then argmax"),
+        Arg("--mirror-frac", "float", default=0.25,
+            help="P(opponent deck == focus deck) per game (default 0.25); else a "
+                 "uniform league-roster draw"),
+        Arg("--out", "str", default=None, help="Output dir (default az_data/gen)"),
+        Arg("--seed", "int", default=1, help="Base RNG seed"),
+        _actor_mode(),
+    ]),
+    Sub("az-train", "Train an AZNet on self-play shards", items=[
+        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
+        Arg("--batches", "int", default=1000, help="Optimizer updates"),
+        Arg("--batch-size", "int", default=256),
+        Arg("--lr", "float", default=1e-3),
+        Arg("--c-v", "float", default=1.0, help="Value-loss weight"),
+        Arg("--window", "int", default=50, help="Number of most-recent shards to train on"),
+        Arg("--from-ppo", "str", default=None, suggest="checkpoint",
+            help="Warm-start from a PPO checkpoint instead of resuming AZ"),
+        Arg("--fresh", "flag", help="Start from random init"),
+        Arg("--snapshot-every", "int", default=0,
+            help="Also save an intermediate gen__azv{steps}.pt every N batches (0=off)"),
+        Arg("--seed", "int", default=0),
+    ]),
+    Sub("az-eval", "Gate a candidate AZNet vs the incumbent (MCTS, low sims)", items=[
+        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
+        Arg("--candidate", "str", required=True, suggest="az_checkpoint",
+            help="Candidate AZ .pt ('gen' or a path)"),
+        Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
+            help="Incumbent AZ .pt (default: gen__azfinal.pt; scripted if none yet)"),
+        Arg("--games", "int", default=20),
+        Arg("--sims", "int", default=32),
+        Arg("--worlds", "int", default=2),
+        Arg("--promote-threshold", "float", default=0.55),
+        Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
+        Arg("--seed", "int", default=1),
+    ]),
+    Sub("az", "One AlphaZero cycle: self-play -> train -> eval/gate", items=[
+        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
+        Arg("--games", "int", default=50, help="Self-play games this cycle"),
+        Arg("--sims", "int", default=64, help="Self-play PUCT sims"),
+        Arg("--worlds", "int", default=4),
+        Arg("--workers", "int", default=None),
+        Arg("--batches", "int", default=500),
+        Arg("--batch-size", "int", default=256),
+        Arg("--lr", "float", default=1e-3),
+        Arg("--window", "int", default=50),
+        Arg("--eval-games", "int", default=20),
+        Arg("--eval-sims", "int", default=32),
+        Arg("--eval-worlds", "int", default=2),
+        Arg("--promote-threshold", "float", default=0.55),
+        Arg("--seed", "int", default=1),
+        Arg("--mirror-frac", "float", default=0.25,
+            help="P(opponent deck == focus deck) per self-play game (default 0.25); "
+                 "else a uniform league-roster draw"),
+        _actor_mode(),
+    ]),
+    Sub("az-league",
+        "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
+        "decks/league/ roster", items=[
+        Arg("--resume", "flag",
+            help="Resume an interrupted az-league run from its saved progress "
+                 "(checkpoints/_az_league_progress.json, rewritten after each deck "
+                 "cycle). Restores the roster, budgets, and all knobs from the "
+                 "sidecar — other flags are ignored when set."),
+        Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated deck roster to rotate over (default: every deck in "
+                 "decks/league/, referenced 'league/<stem>'). Roster ORDER is the "
+                 "rotation order. In the TUI, pick multiple with space."),
+        Arg("--rotations", "int", default=1, help="Full passes over the roster"),
+        Arg("--cycles-per-deck", "int", default=1,
+            help="az cycles to run per deck per rotation"),
+        Arg("--games", "int", default=50, help="Self-play games per cycle"),
+        Arg("--sims", "int", default=64, help="Self-play PUCT sims"),
+        Arg("--worlds", "int", default=4),
+        Arg("--workers", "int", default=None,
+            help="Self-play worker processes (default max(1, cpu-2))"),
+        Arg("--batches", "int", default=500),
+        Arg("--batch-size", "int", default=256),
+        Arg("--lr", "float", default=1e-3),
+        Arg("--window", "int", default=50),
+        Arg("--eval-games", "int", default=20),
+        Arg("--eval-sims", "int", default=32),
+        Arg("--eval-worlds", "int", default=2),
+        Arg("--promote-threshold", "float", default=0.55),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed (slot i uses seed+i)"),
+        Arg("--mirror-frac", "float", default=0.25,
+            help="P(opponent deck == focus deck) per self-play game (default 0.25); "
+                 "else a uniform league-roster draw"),
+        _actor_mode(),
     ]),
 ])
 
@@ -547,6 +692,20 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
             Arg("--n-samples", "int", default=200, help="SHAP sample count (default: 200)"),
             Arg("--n-background", "int", default=50, help="SHAP background size (default: 50)"),
         ]),
+    Sub("search",
+        "Search-vs-raw comparison: per searched decision, net priors vs MCTS "
+        "visit distribution and net value vs search root value (AZ or PPO ckpt)",
+        items=[
+            *sim_args(),
+            Arg("--n-games", "int", default=4,
+                help="Games to drive with the MCTS controller (default: 4)"),
+            Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
+            Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
+            Arg("--c", "float", default=1.5, help="PUCT exploration constant c_puct (default: 1.5)"),
+            Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
+            Arg("--top", "int", default=8,
+                help="Biggest prior-vs-visit disagreement decisions to decode (default: 8)"),
+        ]),
 ])
 
 # tui_analysis.py — the analysis REPL as a full-screen Textual app: game list,
@@ -570,12 +729,20 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
         Arg("--human-deck", "str", required=True, suggest="deck",
             help="Deck the human plays (stem of .dk file)"),
         Arg("--model-deck", "str", required=True, suggest="deck",
-            help="Deck the model plays (stem of .dk file). Per-deck checkpoints "
-                 "are keyed on this alone: auto-loads checkpoints/<model-deck>__final.zip "
-                 "(else the newest <model-deck>__v*.zip, else a legacy matchup file)."),
-        Arg("--model", "str", default=None, suggest="checkpoint",
-            help="Override: explicit path to trained model .zip "
-                 "(default: checkpoints/<model-deck>__final.zip)"),
+            help="Deck the model plays (stem of .dk file). The default opponent is "
+                 "the one generalist (gen__final.zip, else the newest gen__v*.zip) "
+                 "piloting this deck."),
+        Arg("--model", "str", default=None, suggest="agent",
+            help="Override: explicit path to trained model .zip, or any "
+                 "opponents.make_controller spec — az:gen (MCTS+AZNet), "
+                 "azraw:gen (raw AZ policy), mcts:gen, scripted:<tier> "
+                 "(default: the generalist gen__final.zip)"),
+        Arg("--sims", "int", default=None,
+            help="Search opponent only (az:/mcts: --model): MCTS simulations "
+                 "per decision; overrides any sims= already in the spec (TUI only)"),
+        Arg("--worlds", "int", default=None,
+            help="Search opponent only: determinized worlds per decision "
+                 "(sims are split across worlds); overrides the spec's worlds= (TUI only)"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),

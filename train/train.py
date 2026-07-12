@@ -15,18 +15,17 @@ Usage:
     # Override binary path:
     python train.py --binary ../bin/robomage
 
-    # Models are per-deck generalists ({deck}__final.zip / {deck}__v{steps}.zip):
-    # a training session auto-resumes and continues the deck's one model, so
-    # training vs a single opponent just generalizes it further.
-    python train.py --deck delver --opponent mav    # continue delver's generalist
-    python train.py --deck delver --opponent mav --fresh    # start it over
+    # There is ONE generalist model (gen__final.zip / gen__v{steps}.zip) that
+    # pilots any deck: every training session auto-resumes and continues that one
+    # model, so training on any deck vs any opponent just generalizes it further.
+    python train.py --deck delver --opponent mav    # continue the generalist on delver
+    python train.py --deck delver --opponent mav --fresh    # start the generalist over
 """
 
 import argparse
 import datetime
 import json
 import os
-import re
 import sys
 from collections import deque
 
@@ -68,13 +67,17 @@ from stable_baselines3.common.logger import configure as sb3_configure_logger
 
 import numpy as np
 
-# ── Per-action logit head (prototype, opt-in) ────────────────────────────────
-# Set ROBOMAGE_PER_ACTION_HEAD=1 to train with PerActionMaskablePolicy, which
-# scores each candidate action from its own encoded features (category + target
-# card embedding + controller_is_self) instead of a flat positional Linear. This
-# changes the network shape, so such runs are NOT checkpoint-compatible with
-# stock MlpPolicy models — start them --fresh.
-USE_PER_ACTION_HEAD = os.environ.get("ROBOMAGE_PER_ACTION_HEAD", "0").lower() \
+# ── Per-action logit head (the default) ──────────────────────────────────────
+# Fresh models train with PerActionMaskablePolicy, which scores each candidate
+# action from its own encoded features (category + target card embedding +
+# controller_is_self + zone + referenced-entity embedding) instead of a flat
+# positional Linear — and is the flavor AZNet's from_ppo warm-start transfers
+# 1:1. Opt out with --stock-head (any training subcommand) or
+# ROBOMAGE_PER_ACTION_HEAD=0 to build the legacy stock MlpPolicy head.
+# The two flavors are NOT checkpoint-compatible: resuming a checkpoint always
+# keeps the flavor it was saved with (a mismatch with the session's flavor
+# prints a warning suggesting --fresh).
+USE_PER_ACTION_HEAD = os.environ.get("ROBOMAGE_PER_ACTION_HEAD", "1").lower() \
     not in ("0", "", "false", "no")
 
 
@@ -82,8 +85,9 @@ def _policy_config(policy_kwargs):
     """Resolve (policy, policy_kwargs) for MaskablePPO construction.
 
     Swaps in the per-action-logit head (and flips the extractor into
-    per_action_head mode) when ROBOMAGE_PER_ACTION_HEAD is set; otherwise returns
-    the stock "MlpPolicy" untouched.
+    per_action_head mode) unless the session opted out via --stock-head /
+    ROBOMAGE_PER_ACTION_HEAD=0, in which case the stock "MlpPolicy" is returned
+    untouched.
     """
     if not (USE_PER_ACTION_HEAD and USE_MASKABLE):
         return "MlpPolicy", policy_kwargs
@@ -99,7 +103,8 @@ class WinTallyCallback(BaseCallback):
 
     def __init__(self):
         super().__init__()
-        self._matchups: dict[str, list[int]] = {}  # deck -> [wins, losses]
+        self._matchups: dict[str, list[int]] = {}  # opp deck -> [wins, losses]
+        self._by_self: dict[str, list[int]] = {}   # self deck -> [wins, losses]
 
     def _on_step(self) -> bool:
         for info in self.locals["infos"]:
@@ -108,13 +113,13 @@ class WinTallyCallback(BaseCallback):
             outcome = _episode_outcome(info)
             if outcome == 0:
                 continue
+            win = 0 if outcome > 0 else 1
             deck = info.get("opp_deck", "unknown")
-            if deck not in self._matchups:
-                self._matchups[deck] = [0, 0]
-            if outcome > 0:
-                self._matchups[deck][0] += 1
-            else:
-                self._matchups[deck][1] += 1
+            self._matchups.setdefault(deck, [0, 0])[win] += 1
+            meta = info.get("game_meta") or {}
+            self_deck = meta.get("self_deck")
+            if self_deck:
+                self._by_self.setdefault(self_deck, [0, 0])[win] += 1
         return True
 
     def _on_rollout_end(self) -> None:
@@ -128,9 +133,15 @@ class WinTallyCallback(BaseCallback):
             print(f"[tally] vs {deck}: {w}W {l}L ({pct:.1f}%)")
             total_w += w
             total_l += l
+        for deck in sorted(self._by_self):
+            w, l = self._by_self[deck]
+            total = w + l
+            pct = 100.0 * w / total if total else 0.0
+            print(f"[tally] with {deck}: {w}W {l}L ({pct:.1f}%)")
         grand = total_w + total_l
         print(f"[tally] overall: {total_w}W {total_l}L ({100.0 * total_w / grand:.1f}%)")
         self._matchups.clear()
+        self._by_self.clear()
 
 
 def _episode_outcome(info: dict) -> int:
@@ -184,7 +195,7 @@ class PFSPCallback(BaseCallback):
     """
 
     def __init__(self, vec_env, mode: str = "pfsp", p: float = 2.0, eta: float = 0.01,
-                 recent_window: int = 200):
+                 recent_window: int = 200, min_matchup_samples: int = 8):
         super().__init__()
         self._vec_env = vec_env
         self._mode = mode
@@ -192,6 +203,16 @@ class PFSPCallback(BaseCallback):
         self._eta = eta
         self._stats: dict[tuple, list[int]] = {}  # (opp_deck, label) -> [wins, losses]
         self._q: dict[tuple, float] = {}          # (opp_deck, label) -> quality (softmax)
+        # Matchup-keyed stats (self_deck, opp_deck, label) -> [wins, losses], used
+        # (once a matchup has enough decisive games) to broadcast a matchup-aware
+        # weight alongside the aggregate one. Only meaningful in league mixed mode
+        # (fixed mode has a single self deck), but harmless otherwise.
+        self._matchup_stats: dict[tuple, list[int]] = {}
+        self._min_matchup_samples = max(1, min_matchup_samples)
+        # Per-self-deck W/L and a recent-outcome window (win-rate WITH each deck).
+        self._by_self: dict[str, list[int]] = {}
+        self._recent_by_self: dict[str, deque] = {}
+        self._recent_window = max(1, recent_window)
         # Sliding window of the most recent decisive episode outcomes (1.0 win /
         # 0.0 loss), used by the snapshot promotion gate so it reflects *current*
         # strength rather than the cumulative-since-chunk-start average.
@@ -205,14 +226,28 @@ class PFSPCallback(BaseCallback):
             if outcome == 0:
                 continue
             meta = info.get("game_meta") or {}
-            key = (meta.get("opp_deck", "unknown"), meta.get("opp_type", "scripted"))
+            opp_deck = meta.get("opp_deck", "unknown")
+            label = meta.get("opp_type", "scripted")
+            # Fall back to the fixed learner deck's marker when absent so fixed
+            # mode (which always sets self_deck) and any legacy env behave sanely.
+            self_deck = meta.get("self_deck", "unknown")
+            key = (opp_deck, label)
             wl = self._stats.setdefault(key, [0, 0])
             if key not in self._q:
                 # New entry: init quality to the current max so it gets sampled.
                 self._q[key] = max(self._q.values()) if self._q else 0.0
-            self._recent.append(1.0 if outcome > 0 else 0.0)
-            if outcome > 0:
+            won = outcome > 0
+            self._recent.append(1.0 if won else 0.0)
+            # Matchup + per-self-deck bookkeeping.
+            mwl = self._matchup_stats.setdefault((self_deck, opp_deck, label), [0, 0])
+            swl = self._by_self.setdefault(self_deck, [0, 0])
+            srw = self._recent_by_self.setdefault(
+                self_deck, deque(maxlen=self._recent_window))
+            srw.append(1.0 if won else 0.0)
+            if won:
                 wl[0] += 1
+                mwl[0] += 1
+                swl[0] += 1
                 if self._mode == "softmax":
                     keys = list(self._q)
                     probs = _softmax(np.array([self._q[k] for k in keys], dtype=float))
@@ -220,6 +255,8 @@ class PFSPCallback(BaseCallback):
                     self._q[key] -= self._eta / (len(keys) * max(p_i, 1e-8))
             else:
                 wl[1] += 1
+                mwl[1] += 1
+                swl[1] += 1
         return True
 
     def _weight_for(self, key) -> float:
@@ -229,6 +266,29 @@ class PFSPCallback(BaseCallback):
         total = w + l
         winrate = w / total if total else 0.0
         return float((1.0 - winrate) ** self._p)
+
+    def _weight_for_matchup(self, mkey) -> float:
+        """Matchup weight from its own decisive win-rate.
+
+        Always the PFSP form ``(1 - winrate)^p`` on the matchup's stats (even in
+        softmax mode, whose quality machinery is tracked per opponent-aggregate
+        only) so the pool has a matchup-specific signal to prefer the learner's
+        worst (self_deck, opp_deck) pairings."""
+        w, l = self._matchup_stats.get(mkey, (0, 0))
+        total = w + l
+        winrate = w / total if total else 0.0
+        return float((1.0 - winrate) ** self._p)
+
+    def winrate_by_self(self) -> dict:
+        """Recent-window win-rate per self deck ({deck: winrate|None}).
+
+        The league driver uses this to record per-self-deck progress in the
+        sidecar in mixed mode. ``None`` for a deck with no decisive games yet."""
+        out: dict = {}
+        for deck, dq in self._recent_by_self.items():
+            n = len(dq)
+            out[deck] = (sum(dq) / n) if n else None
+        return out
 
     def overall_winrate(self) -> float:
         """Aggregate learner win-rate across all opponents seen so far (lifetime)."""
@@ -248,7 +308,14 @@ class PFSPCallback(BaseCallback):
     def _on_rollout_end(self) -> None:
         if not self._stats:
             return
+        # Aggregate (opp_deck, label) weights PLUS matchup-keyed (self_deck,
+        # opp_deck, label) overrides for matchups with enough decisive games. Both
+        # live in one dict; LeaguePool._entry_weights tries the 3-tuple matchup key
+        # first and falls back to the 2-tuple aggregate (see set_weights).
         weights = {key: self._weight_for(key) for key in self._stats}
+        for mkey, (w, l) in self._matchup_stats.items():
+            if w + l >= self._min_matchup_samples:
+                weights[mkey] = self._weight_for_matchup(mkey)
         # Broadcast to every env's LeaguePool (no-op for non-league envs).
         try:
             self._vec_env.env_method("update_opponent_weights", weights)
@@ -277,6 +344,13 @@ class PFSPCallback(BaseCallback):
             total = w + l
             pct = 100.0 * w / total if total else 0.0
             print(f"[pfsp] deck total vs {deck:<10}: {w}W {l}L ({pct:.1f}%)")
+        # Win-rate WITH each self deck (the deck the learner piloted). In fixed mode
+        # there is a single self deck; in league mixed mode all rotation decks appear.
+        for sd in sorted(self._by_self):
+            w, l = self._by_self[sd]
+            total = w + l
+            pct = 100.0 * w / total if total else 0.0
+            print(f"[pfsp] with {sd:<12}: {w}W {l}L ({pct:.1f}%)")
         rwr, rn = self.recent_winrate()
         print(f"[pfsp] overall win-rate: {100.0 * self.overall_winrate():.1f}%  "
               f"recent (n={rn}): {100.0 * rwr:.1f}%")
@@ -288,12 +362,37 @@ class PFSPCallback(BaseCallback):
         for deck, rates in model_rates_by_deck.items():
             self.logger.record(f"pfsp_model/winrate_vs_{_deck_tag(deck)}",
                                sum(rates) / len(rates))
+        # Per-self-deck win rates (win-rate WITH each pilot deck), cumulative.
+        for sd, (w, l) in self._by_self.items():
+            total = w + l
+            if total:
+                self.logger.record(f"pfsp/winrate_with_{_deck_tag(sd)}", w / total)
+        # Recent-window per-self-deck win rates: the cumulative curves above barely
+        # move late in a run and lag real changes, so also log the sliding-window
+        # rate (already computed by winrate_by_self via the _recent_by_self deques).
+        # These are the responsive per-deck learning curves to watch.
+        recent_by_self = self.winrate_by_self()
+        present = [wr for wr in recent_by_self.values() if wr is not None]
+        for sd, wr in recent_by_self.items():
+            if wr is not None:
+                self.logger.record(f"pfsp/winrate_with_{_deck_tag(sd)}_recent", wr)
+        # Deck-balanced aggregate: average the per-deck recent rates with FIXED equal
+        # weight per deck (not the empirical episode mix). This removes the between-deck
+        # composition variance — the divergent per-deck winrates that make the raw
+        # rollout metrics jitter even when every deck is improving — leaving a single
+        # clean trend line for overall progress.
+        if present:
+            self.logger.record("pfsp/winrate_deck_balanced_recent",
+                               sum(present) / len(present))
         self.logger.record("pfsp/winrate_overall", self.overall_winrate())
         self.logger.record("pfsp/winrate_recent", rwr)
 
 
 class SnapshotCallback(BaseCallback):
-    """Saves a frozen ``{deck}__v{steps}.zip`` snapshot every ``snapshot_every`` steps.
+    """Saves a frozen ``gen__v{steps}.zip`` snapshot every ``snapshot_every`` steps.
+
+    ``deck`` is the stem to save under — always the generalist stem ``gen`` now
+    (there is one model); it is kept as a parameter for the print/gate messages.
 
     Optional SIMPLE-style promotion gate: when ``promote_margin != 0`` a snapshot is
     only kept if the learner's *recent-window* win-rate (from ``pfsp_callback``) is
@@ -333,8 +432,8 @@ class SnapshotCallback(BaseCallback):
         if self.num_timesteps < self._next_at:
             return True
         self._next_at += self._every
-        from opponents import deck_snapshots
-        first = len(deck_snapshots(self._deck, self._dir)) == 0
+        from opponents import gen_snapshots
+        first = len(gen_snapshots(self._dir)) == 0
         if self._margin != 0 and not first and self._pfsp is not None:
             wr, n = self._pfsp.recent_winrate()
             # Too few decisive games in the window to judge current strength: don't
@@ -456,6 +555,11 @@ CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
 _CHECKPOINT_ABS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
 
+# The single generalist model stem (see opponents.GEN_STEM). ALL PPO training now
+# accumulates onto this one model regardless of which deck a session pilots; the
+# deck is only what the model plays this session, never encoded in the filename.
+from opponents import GEN_STEM
+
 
 def _reassert_hparams(model, label: str):
     """Re-assert canonical hyperparameters on a resumed checkpoint.
@@ -510,7 +614,26 @@ def _reassert_hparams(model, label: str):
         print(f"[hyperparam] {label}: overriding stale clip_range "
               f"{stored_clip} -> {PPO_KWARGS['clip_range']}")
         model.clip_range = FloatSchedule(PPO_KWARGS["clip_range"])
+    _warn_head_flavor(model, label)
     return model
+
+
+def _warn_head_flavor(model, label: str):
+    """Warn when a resumed checkpoint's policy-head flavor differs from the
+    session's configured flavor. Unlike the hyperparameters above, the head
+    CANNOT be overridden on resume (the two flavors have different network
+    shapes), so the checkpoint's flavor always wins — the warning just makes
+    the silent divergence visible and points at --fresh."""
+    session_pa = USE_PER_ACTION_HEAD and USE_MASKABLE
+    ckpt_pa = isinstance(model.policy, PerActionMaskablePolicy)
+    if ckpt_pa == session_pa:
+        return
+    got = "per-action" if ckpt_pa else "stock MlpPolicy"
+    want = "per-action" if session_pa else "stock MlpPolicy"
+    print(f"[head] {label}: WARNING — resumed checkpoint has the {got} head but "
+          f"this session is configured for the {want} head; continuing with the "
+          f"checkpoint's {got} head (the flavors are not checkpoint-compatible). "
+          f"Use --fresh to retrain this deck with the {want} head.")
 
 
 def _apply_ppo_overrides(args):
@@ -608,7 +731,7 @@ def _configure_run_logger(model, deck: str) -> str:
 
     SB3 couples the log-dir suffix to reset_num_timesteps: on a resume it reuses
     the last '{name}_{n}' folder ("continue the same curve"), which collides every
-    same-date session — the common case for auto-resuming per-deck generalists.
+    same-date session — the common case for auto-resuming the generalist.
     We need num_timesteps to keep counting (reset stays False) while the log dir
     stays fresh, so we compute the next '{deck}_{date}_{n}' ourselves and install
     the logger directly; set_logger marks it custom, so _setup_learn skips SB3's
@@ -625,7 +748,10 @@ def _configure_run_logger(model, deck: str) -> str:
 # are done) lives outside any single model checkpoint, so we persist it to a small
 # JSON sidecar that is rewritten every time a snapshot is saved (and at each rotation
 # boundary). A crashed/interrupted `league` run then resumes from `league --resume`.
-LEAGUE_STATE_VERSION = 1
+# v2 added the mixed-self-deck mode (per-episode self-deck cycling) and its
+# `fixed_self_deck` param. A v1 sidecar was written by the old one-deck-per-rotation
+# mode, so it resumes as fixed_self_deck=True.
+LEAGUE_STATE_VERSION = 2
 
 
 def _league_state_path(checkpoint_dir: str, tag: str = "") -> str:
@@ -663,14 +789,15 @@ def _read_league_state(checkpoint_dir: str, tag: str = "") -> dict | None:
 def _deck_trained_steps(deck: str, checkpoint_dir: str) -> int:
     """Cumulative trained steps of a deck's generalist, from its snapshot filenames.
 
-    The newest ``{deck}__v{steps}.zip`` version number is the model's absolute
-    ``num_timesteps`` at save; ``__final`` carries no count, so this slightly
-    undercounts (by at most one snapshot interval). 0 when the deck has no
-    versioned snapshots (fresh deck). Used only to seed the adaptive-rotation
-    catch-up need for decks the sidecar has no stats for yet."""
-    from opponents import deck_snapshots, _SNAPSHOT_RE
+    The newest ``gen__v{steps}.zip`` version number is the model's absolute
+    ``num_timesteps`` at save; ``gen__final`` carries no count, so this slightly
+    undercounts (by at most one snapshot interval). 0 when there are no versioned
+    snapshots yet. There is one generalist now, so this is the same value for every
+    deck (``deck`` is accepted for signature stability); the adaptive-rotation
+    step-need it feeds therefore collapses to ~0, leaving win-rate the live signal."""
+    from opponents import gen_snapshots, _SNAPSHOT_RE
     best = 0
-    for path in deck_snapshots(deck, checkpoint_dir):
+    for path in gen_snapshots(checkpoint_dir):
         m = _SNAPSHOT_RE.match(os.path.basename(path))
         if m:
             best = max(best, int(m.group("steps")))
@@ -708,12 +835,12 @@ def _rotation_target(learner: str, roster: list[str], deck_stats: dict,
 
 
 def _resolve_model(path: str) -> str:
-    """Resolve a model shorthand to a full checkpoint path.
+    """Resolve a model spec to a full checkpoint path.
 
     Thin alias for :func:`opponents.resolve_checkpoint` (the shared resolver —
-    full path, deck-pilot shorthand like 'delver' or 'league/ur_delver', legacy
-    matchup name, bare basename with '.zip' appended) pinned to this module's
-    checkpoint dir.
+    ``None``, an explicit path, or the reserved generalist stem ``'gen'``) pinned
+    to this module's checkpoint dir. A former per-deck shorthand raises a clear
+    generalist-contract error there.
     """
     from opponents import resolve_checkpoint
     return resolve_checkpoint(path, _CHECKPOINT_ABS)
@@ -823,7 +950,8 @@ def make_self_play_env(checkpoint_dir: str, rank: int,
 
 def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_dir: str,
                     n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
-                    scripted_anchor_frac: float, **env_kwargs):
+                    scripted_anchor_frac: float, self_decks: list[str] | None = None,
+                    **env_kwargs):
     def _init():
         _limit_worker_threads()
         from opponents import LeaguePool
@@ -831,9 +959,13 @@ def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_
             learner_deck, roster, checkpoint_dir,
             self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
             rng=np.random.default_rng(2000 + rank),
-            n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio)
-        # opp_deck is None: the LeaguePool picks the opponent's deck per episode.
-        env = ModelVsScriptedEnv(model_deck=learner_deck, opp_deck=None,
+            n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio,
+            self_decks=self_decks)
+        # Mixed mode: model_deck is None and the pool supplies the learner's deck
+        # per episode. Fixed mode: the learner always pilots learner_deck.
+        # opp_deck is None either way: the LeaguePool picks the opponent's deck.
+        model_deck = None if self_decks is not None else learner_deck
+        env = ModelVsScriptedEnv(model_deck=model_deck, opp_deck=None,
                                  opponent=pool, **env_kwargs)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
@@ -848,22 +980,23 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
           n_envs_override: int | None = None, no_shaping: bool = False,
           opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0,
           embed_dim: int = EMBED_DIM, fresh: bool = False, **env_kwargs):
-    """Train the per-deck generalist model that pilots ``model_deck``.
+    """Train the ONE generalist model, piloting ``model_deck`` this session.
 
-    Models are **per-deck generalists**, not matchup-specific: one model plays
-    ``model_deck`` against any opponent, saved as ``{model_deck}__final.zip`` with
-    periodic ``{model_deck}__v{steps}.zip`` snapshots (the deck-pilot naming the
-    league and self-play pools sample from). Training against a single opponent
-    in a session just continues that one generalist, so unless ``--load`` or
-    ``fresh`` is given the deck's existing ``__final`` (or newest snapshot) is
-    auto-resumed and this session's steps accumulate onto it.
+    There is a single generalist that plays ANY deck: it is saved as
+    ``gen__final.zip`` with periodic ``gen__v{steps}.zip`` snapshots (the naming
+    the league and self-play pools sample from), regardless of which deck a
+    session pilots. ``model_deck`` is only what the model plays this session, never
+    encoded in the filename. So every session — whatever deck/opponent — continues
+    the one generalist: unless ``--load`` or ``fresh`` is given, the existing
+    ``gen__final`` (or newest ``gen__v*`` snapshot) is auto-resumed and this
+    session's steps accumulate onto it.
 
     Two opponent modes (mutually exclusive):
       * default (``self_play=False``) — every env trains against the rule-based
         scripted agent (``ModelVsScriptedEnv``), piloting ``opp_deck``.
-      * ``self_play=True`` — every env trains against a frozen deck-pilot snapshot
-        of ``opp_deck`` (``SelfPlayEnv`` samples ``{opp_deck}__v*.zip`` /
-        ``{opp_deck}__final.zip``); if none exists yet, that env's opponent falls
+      * ``self_play=True`` — every env trains against a frozen generalist snapshot
+        piloting ``opp_deck`` (``SelfPlayEnv`` samples ``gen__v*.zip`` /
+        ``gen__final.zip``); if none exists yet, that env's opponent falls
         back to the scripted agent.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
@@ -900,14 +1033,14 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             net_arch=list(NET_ARCH),
         )
 
-        # Per-deck generalist: auto-resume this deck's own latest checkpoint so a
-        # single-opponent session accumulates onto the one model (unless --load
-        # gave an explicit path or --fresh forced a scratch start).
+        # One generalist: auto-resume the ONE model (gen__final / newest gen__v*)
+        # so every session — whatever deck it pilots — accumulates onto it (unless
+        # --load gave an explicit path or --fresh forced a scratch start).
         if not load_path and not fresh:
-            auto = _resolve_model(model_deck)
-            if auto != model_deck and os.path.exists(auto):
+            auto = _resolve_model(GEN_STEM)
+            if auto and os.path.exists(auto):
                 load_path = auto
-                print(f"Auto-resuming deck generalist: {auto} "
+                print(f"Auto-resuming the generalist: {auto} "
                       f"(use --fresh to start from scratch)")
 
         if load_path:
@@ -929,11 +1062,11 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         if no_shaping:
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
-        # Periodic deck-pilot snapshots ('{deck}__v{steps}.zip') feed the shared
-        # self-play / league pools; the '{deck}__final.zip' is saved at the end.
+        # Periodic generalist snapshots ('gen__v{steps}.zip') feed the shared
+        # self-play / league pools; 'gen__final.zip' is saved at the end.
         callbacks = [
             LRDecayCallback(),
-            SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
+            SnapshotCallback(checkpoint_dir, GEN_STEM, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -948,8 +1081,9 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
               f"(logs/{run_name})")
         model.learn(total_timesteps=total_timesteps, callback=callbacks,
                     reset_num_timesteps=load_path is None)
-        model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
-        print(f"Saved final model as {model_deck}__final.")
+        model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
+        print(f"Saved the generalist as {GEN_STEM}__final "
+              f"(this session piloted {model_deck}).")
     finally:
         vec_env.close()
 
@@ -960,13 +1094,15 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
                   scripted_anchor_frac: float, pfsp_mode: str, pfsp_p: float,
                   softmax_eta: float, snapshot_every: int, promote_margin: float,
                   embed_dim: int, no_shaping: bool, fresh: bool = False,
-                  on_progress=None, **env_kwargs):
-    """Train one learner deck for ``chunk_steps`` against the shared league pool.
+                  on_progress=None, self_decks: list[str] | None = None, **env_kwargs):
+    """Train the one generalist on ``deck`` for ``chunk_steps`` against the shared
+    league pool.
 
-    Resumes the learner's own latest checkpoint (``{deck}__final`` or newest
-    ``{deck}__v*``) so its cumulative step count — and therefore snapshot version
-    numbering — keeps growing across rotations; starts from scratch only the very
-    first time a deck is trained, or whenever ``fresh`` is set.
+    Resumes the generalist's latest checkpoint (``gen__final`` or newest
+    ``gen__v*``) so its cumulative step count — and therefore snapshot version
+    numbering — keeps growing across rotations and across decks; starts from
+    scratch only the very first time the generalist is trained, or whenever
+    ``fresh`` is set.
 
     ``on_progress(steps_this_chunk)`` (optional) is called after every snapshot save
     with the number of new steps trained so far in this chunk, so the driver can
@@ -978,7 +1114,8 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
     _ensure_deck_ckpt_subdir(checkpoint_dir, learner_deck)
     vec_env = SubprocVecEnv([
         make_league_env(i, learner_deck, roster, checkpoint_dir, n_envs,
-                        opp_ckpt_ratio, self_play_frac, scripted_anchor_frac, **env_kwargs)
+                        opp_ckpt_ratio, self_play_frac, scripted_anchor_frac,
+                        self_decks=self_decks, **env_kwargs)
         for i in range(n_envs)])
     try:
         policy_kwargs = dict(
@@ -986,19 +1123,21 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             features_extractor_kwargs=dict(embed_dim=embed_dim),
             net_arch=list(NET_ARCH),
         )
-        from opponents import latest_snapshot
+        from opponents import gen_final_path, latest_gen_snapshot
         resume = None
         if not fresh:
-            resume = os.path.join(checkpoint_dir, f"{learner_deck}__final.zip")
+            resume = gen_final_path(checkpoint_dir)
             if not os.path.exists(resume):
-                resume = latest_snapshot(learner_deck, checkpoint_dir)
+                resume = latest_gen_snapshot(checkpoint_dir)
         resuming = bool(resume and os.path.exists(resume))
         if resuming:
-            print(f"[league] resuming {learner_deck} from {os.path.basename(resume)}")
+            print(f"[league] rotation piloting {learner_deck}: resuming the "
+                  f"generalist from {os.path.basename(resume)}")
             model = _reassert_hparams(MaskablePPO.load(resume, env=vec_env),
                                       learner_deck)
         else:
-            print(f"[league] starting {learner_deck} from scratch (embed_dim={embed_dim})")
+            print(f"[league] starting the generalist from scratch "
+                  f"(first rotation piloting {learner_deck}, embed_dim={embed_dim})")
             policy_cls, policy_kwargs = _policy_config(policy_kwargs)
             model = MaskablePPO(
                 policy_cls, vec_env, policy_kwargs=policy_kwargs,
@@ -1019,7 +1158,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         callbacks = [
             LRDecayCallback(),
             pfsp_cb,
-            SnapshotCallback(checkpoint_dir, learner_deck, snapshot_every,
+            SnapshotCallback(checkpoint_dir, GEN_STEM, snapshot_every,
                              promote_margin=promote_margin, pfsp_callback=pfsp_cb,
                              on_snapshot=snap_hook),
         ]
@@ -1029,8 +1168,8 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         _configure_run_logger(model, learner_deck)
         model.learn(total_timesteps=chunk_steps, callback=callbacks,
                     reset_num_timesteps=not resuming)
-        model.save(os.path.join(checkpoint_dir, f"{learner_deck}__final"))
-        print(f"[league] saved {learner_deck}__final")
+        model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
+        print(f"[league] saved {GEN_STEM}__final (rotation piloted {learner_deck})")
         # PPO collects whole rollouts, so the chunk overshoots chunk_steps; return
         # the actual new steps so the driver's global budget stays accurate, plus
         # the learner's end-of-rotation win-rate and absolute step count for the
@@ -1042,7 +1181,9 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             wr = None  # no decisive game finished this chunk
         elif n < 50:
             wr = pfsp_cb.overall_winrate()
-        return model.num_timesteps - start_steps, wr, model.num_timesteps
+        # Per-self-deck recent win-rates for the driver's mixed-mode deck_stats.
+        return (model.num_timesteps - start_steps, wr, model.num_timesteps,
+                pfsp_cb.winrate_by_self())
     finally:
         vec_env.close()
 
@@ -1060,7 +1201,8 @@ def league(binary_path: str, decks: str | None = None,
            opp_ckpt_ratio: float = 1.0, no_shaping: bool = False,
            adaptive_boost: float = LEAGUE_ADAPTIVE_BOOST,
            shard: str | None = None, train_decks_spec: str | None = None,
-           tally: bool = False, resume: bool = False, **env_kwargs):
+           tally: bool = False, resume: bool = False,
+           fixed_self_deck: bool = False, **env_kwargs):
     """PFSP league driver: rotating single learner over a shared snapshot pool.
 
     One learner deck at a time trains for ``rotate_every`` steps against a frozen
@@ -1136,6 +1278,12 @@ def league(binary_path: str, decks: str | None = None,
         no_shaping = bool(p.get("no_shaping", no_shaping))
         adaptive_boost = float(p.get("adaptive_boost", adaptive_boost))
         train_decks_spec = p.get("train_decks", train_decks_spec)
+        # A pre-v2 sidecar was written by the old one-deck-per-rotation mode, which
+        # is exactly fixed_self_deck=True; v2+ stores the flag explicitly.
+        if int(state.get("version", 1)) < 2:
+            fixed_self_deck = True
+        else:
+            fixed_self_deck = bool(p.get("fixed_self_deck", fixed_self_deck))
         env_kwargs.setdefault("bo3", bool(p.get("bo3", env_kwargs.get("bo3", False))))
         env_kwargs.setdefault("auto_sideboard",
                               bool(p.get("auto_sideboard", env_kwargs.get("auto_sideboard", False))))
@@ -1157,6 +1305,11 @@ def league(binary_path: str, decks: str | None = None,
         raise ValueError(
             f"No decks found for league (looked in {_LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
+    # 'gen' is reserved for the one generalist checkpoint stem — a roster deck
+    # named 'gen' would collide with its snapshots. Refuse it loudly.
+    from opponents import assert_not_reserved_deck
+    for _deck in roster:
+        assert_not_reserved_deck(_deck)
 
     # Distributed sharding: this driver TRAINS only its slice of the roster, but
     # the opponent pool (and adaptive-rotation leader comparison) still spans the
@@ -1188,6 +1341,9 @@ def league(binary_path: str, decks: str | None = None,
     if train_decks != roster:
         label = f"shard {shard}" if shard else "this driver"
         print(f"  {label}: training only {', '.join(train_decks)}")
+    mode_label = ("fixed-self-deck (one deck per rotation)" if fixed_self_deck
+                  else "mixed-self-deck (per-episode deck cycling)")
+    print(f"  mode: {mode_label}")
     print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  "
           f"adaptive_boost={adaptive_boost}  n_envs={n_envs}")
     print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}")
@@ -1215,6 +1371,7 @@ def league(binary_path: str, decks: str | None = None,
             "no_shaping": no_shaping,
             "adaptive_boost": adaptive_boost,
             "train_decks": train_decks_spec,
+            "fixed_self_deck": fixed_self_deck,
             "bo3": bool(env_kwargs.get("bo3", False)),
             "auto_sideboard": bool(env_kwargs.get("auto_sideboard", False)),
         },
@@ -1247,15 +1404,28 @@ def league(binary_path: str, decks: str | None = None,
     save_progress(steps_done, rotation, chunk_start)
 
     while steps_done < total_timesteps:
-        # Rotate over this shard's slice; the pool below still spans `roster`.
-        learner = train_decks[rotation % len(train_decks)]
+        # Fixed mode: rotate a single learner deck over this shard's slice, sized by
+        # the deck's catch-up need. Mixed (default) mode: the learner's self deck
+        # cycles per episode over the whole slice inside the chunk, so a "rotation"
+        # is just a fixed-length chunk with no per-deck selection and no adaptive
+        # boost; the pool below still spans `roster` for opponents in both modes.
+        if fixed_self_deck:
+            learner = train_decks[rotation % len(train_decks)]
+            self_decks_arg = None
+        else:
+            learner = "mixed"
+            self_decks_arg = list(train_decks)
         done_in_rotation = steps_done - chunk_start
         if done_in_rotation == 0 or rotation_target is None:
-            # Fresh rotation (or a pre-adaptive sidecar resumed mid-rotation):
-            # size this rotation by the learner's catch-up need.
-            rotation_target = _rotation_target(
-                learner, roster, deck_stats, checkpoint_dir, rotate_every,
-                adaptive_boost)
+            if fixed_self_deck:
+                # Fresh rotation (or a pre-adaptive sidecar resumed mid-rotation):
+                # size this rotation by the learner's catch-up need.
+                rotation_target = _rotation_target(
+                    learner, roster, deck_stats, checkpoint_dir, rotate_every,
+                    adaptive_boost)
+            else:
+                # Mixed mode: no focus deck, so no adaptive boost — plain chunks.
+                rotation_target = rotate_every
         chunk = min(rotation_target - done_in_rotation, total_timesteps - steps_done)
         if chunk <= 0:
             # Rotation already satisfied (only reachable via an odd resume) — advance.
@@ -1274,17 +1444,23 @@ def league(binary_path: str, decks: str | None = None,
         # global step count, keeping `rotation`/`chunk_start` fixed so a resume
         # re-enters this same learner for the remainder of its rotation.
         rotation_start_done = chunk_start
-        ran, learner_wr, learner_steps = _league_chunk(
+        ran, learner_wr, learner_steps, per_self_wr = _league_chunk(
             binary_path, learner, roster, checkpoint_dir, chunk,
             n_envs=n_envs, opp_ckpt_ratio=opp_ckpt_ratio,
             self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
             pfsp_mode=pfsp_mode, pfsp_p=pfsp_p, softmax_eta=softmax_eta,
             snapshot_every=snapshot_every, promote_margin=promote_margin,
-            embed_dim=embed_dim, no_shaping=no_shaping,
+            embed_dim=embed_dim, no_shaping=no_shaping, self_decks=self_decks_arg,
             on_progress=lambda chunk_steps: save_progress(
                 steps_done + chunk_steps, rotation, rotation_start_done),
             **env_kwargs)
-        deck_stats[learner] = {"winrate": learner_wr, "steps": int(learner_steps)}
+        if fixed_self_deck:
+            deck_stats[learner] = {"winrate": learner_wr, "steps": int(learner_steps)}
+        else:
+            # Record per-self-deck progress so the sidecar tracks every deck's
+            # win-rate even though the driver doesn't select a focus deck.
+            for sd, wr in per_self_wr.items():
+                deck_stats[sd] = {"winrate": wr, "steps": int(learner_steps)}
         steps_done += ran if ran else chunk
         rotation += 1
         chunk_start = steps_done
@@ -1300,11 +1476,12 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                       tally: bool = False,
                       n_envs_override: int | None = None,
                       no_shaping: bool = False, **env_kwargs):
-    """Train ``model_deck``'s generalist against ``opp_deck``'s fixed generalist.
+    """Train the generalist (piloting ``model_deck``) against a frozen copy of
+    itself (piloting ``opp_deck``).
 
-    Both sides are per-deck generalists: resumes ``{model_deck}__final.zip`` (or
-    ``load_path``) as the training model and freezes ``{opp_deck}__final.zip``
-    (or its newest snapshot) as the opponent for every game.
+    Both seats are the one generalist: resumes ``gen__final.zip`` (or
+    ``load_path``) as the training model and freezes ``gen__final.zip`` (or its
+    newest snapshot) as the opponent for every game.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
     to the underlying ``RoboMageEnv`` via the env factory helpers.
@@ -1315,20 +1492,25 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     _ensure_deck_ckpt_subdir(checkpoint_dir, model_deck)
     os.makedirs(LOG_DIR, exist_ok=True)
 
+    # Both seats are the one generalist ('gen'); the decks are the explicit args.
     if not load_path:
-        candidate = _resolve_model(model_deck)
-        if candidate != model_deck and os.path.exists(candidate):
+        candidate = _resolve_model(GEN_STEM)
+        if candidate and os.path.exists(candidate):
             load_path = candidate
     if not load_path:
-        raise FileNotFoundError(f"No training model found piloting {model_deck} "
-                                f"({model_deck}__final.zip or {model_deck}__v*.zip)")
+        raise FileNotFoundError(
+            f"No generalist checkpoint found ({GEN_STEM}__final.zip or "
+            f"{GEN_STEM}__v*.zip). Train one first (train --deck {model_deck} "
+            f"--opponent {opp_deck}).")
 
-    opp_model_path = _resolve_model(opp_deck)
-    if opp_model_path == opp_deck or not os.path.exists(opp_model_path):
-        raise FileNotFoundError(f"No opponent model found piloting {opp_deck} "
-                                f"({opp_deck}__final.zip or {opp_deck}__v*.zip)")
+    opp_model_path = _resolve_model(GEN_STEM)
+    if not opp_model_path or not os.path.exists(opp_model_path):
+        raise FileNotFoundError(
+            f"No generalist checkpoint found to freeze as the opponent "
+            f"({GEN_STEM}__final.zip or {GEN_STEM}__v*.zip).")
 
-    print(f"Training {model_deck} generalist against fixed {opp_deck} generalist")
+    print(f"Training the generalist (piloting {model_deck}) against a frozen "
+          f"copy of itself (piloting {opp_deck})")
     print(f"  training model: {load_path}")
     print(f"  opponent model: {opp_model_path}")
 
@@ -1348,7 +1530,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             LRDecayCallback(),
-            SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
+            SnapshotCallback(checkpoint_dir, GEN_STEM, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -1363,8 +1545,9 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
               f"(logs/{run_name})")
         model.learn(total_timesteps=total_timesteps, callback=callbacks,
                     reset_num_timesteps=False)
-        model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
-        print(f"Saved final model as {model_deck}__final.")
+        model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
+        print(f"Saved the generalist as {GEN_STEM}__final "
+              f"(this session piloted {model_deck}).")
     finally:
         vec_env.close()
 
@@ -1385,12 +1568,13 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    # Verify both decks have a generalist checkpoint to alternate between.
-    for d in (deck_a, deck_b):
-        resolved = _resolve_model(d)
-        if resolved == d or not os.path.exists(resolved):
-            raise FileNotFoundError(f"Missing model piloting {d} "
-                                    f"({d}__final.zip or {d}__v*.zip)")
+    # One generalist pilots both decks in turn; verify it exists to alternate on.
+    resolved = _resolve_model(GEN_STEM)
+    if not resolved or not os.path.exists(resolved):
+        raise FileNotFoundError(
+            f"No generalist checkpoint found to alternate ({GEN_STEM}__final.zip "
+            f"or {GEN_STEM}__v*.zip). Train one first "
+            f"(train --deck {deck_a} --opponent {deck_b}).")
 
     steps_done = 0
     round_num = 0
@@ -1420,41 +1604,29 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     print(f"\nAlternate training complete: {total_timesteps:,} total timesteps over {round_num} rounds.")
 
 
-def _deck_from_checkpoint(model_path: str) -> str | None:
-    """Infer the deck a checkpoint pilots from its deck-pilot filename.
-
-    Works on the v2 naming ('{deck}__final.zip' / '{deck}__v{steps}.zip'); a
-    checkpoint under a checkpoints/ subfolder keeps that subfolder as the deck
-    namespace ('checkpoints/league/bug__final.zip' → 'league/bug'). None when
-    the filename doesn't parse as deck-pilot naming.
-    """
-    rel = os.path.relpath(os.path.abspath(model_path), _CHECKPOINT_ABS)
-    if rel.startswith(".."):  # outside checkpoints/ — use the bare filename
-        rel = os.path.basename(model_path)
-    m = re.match(r"^(?P<deck>.+?)__(final|v\d+)\.zip$", rel)
-    return m.group("deck") if m else None
-
-
 def baseline(binary_path: str, model_path: str, n_games: int = 100,
              deck: str | None = None, opp_deck: str | None = None,
              seed: int | None = None, quiet: bool = False):
-    """Evaluate a model's win rate vs the scripted HARD agent.
+    """Evaluate the generalist's win rate vs the scripted HARD agent.
 
-    The model pilots ``deck`` (inferred from the checkpoint's deck-pilot
-    filename when not given) and faces scripted:hard piloting ``opp_deck``
-    (defaults to ``deck`` — a mirror match). Seats alternate each game (model
-    is Player A in even games) so neither side gets a systematic on-the-play
-    edge. ``seed`` makes the run reproducible (game ``i`` uses ``seed + i``;
-    None = random per game). Returns ``(wins, losses, draws)`` from the model's
-    perspective.
+    The model pilots ``deck`` (REQUIRED — a checkpoint no longer encodes a deck;
+    the one generalist pilots whatever deck you name) and faces scripted:hard
+    piloting ``opp_deck`` (defaults to ``deck`` — a mirror match). Seats alternate
+    each game (model is Player A in even games) so neither side gets a systematic
+    on-the-play edge. ``seed`` makes the run reproducible (game ``i`` uses
+    ``seed + i``; None = random per game). Returns ``(wins, losses, draws)`` from
+    the model's perspective.
     """
     import runner
     from opponents import ModelController, ScriptedController
     from scripted_agent import make_agent
 
+    if not deck:
+        raise ValueError(
+            "baseline: --deck is required — a checkpoint no longer encodes the "
+            "deck it pilots. Pass the deck the generalist should play "
+            "(e.g. baseline gen --deck league/ur_delver).")
     model = MaskablePPO.load(model_path)
-    if deck is None:
-        deck = _deck_from_checkpoint(model_path)
     if opp_deck is None:
         opp_deck = deck
     ctrl_model = ModelController(model, label="Model", deterministic=True)
@@ -1504,58 +1676,47 @@ def _league_roster() -> list[str]:
 
 def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
                  log_path: str | None = None):
-    """Round-robin every league deck's model vs scripted:hard on every league deck.
+    """Sweep the one generalist over every league deck (mirror vs scripted:hard).
 
-    For each league deck (decks/league/*.dk) that has a ``{deck}__final.zip``
-    checkpoint, the model plays ``n_games`` (default 50) against scripted:hard
-    piloting *each* league deck — including its own (the mirror). So an
-    N-deck roster runs N×N matchups of ``n_games`` each (e.g. 7 decks → 49
-    matchups → 2450 games at the default 50). A per-matchup win-rate grid plus a
-    timestamped summary are appended to ``log_path`` (default
-    checkpoints/baseline_report.log) as well as printed to stdout.
+    There is a single generalist checkpoint (``gen__final.zip``); this runs it
+    piloting *each* league deck (decks/league/*.dk) against scripted:hard on the
+    same deck — a per-deck mirror — for ``n_games`` each (default 50). So an
+    N-deck roster runs N matchups. A per-deck win-rate summary is appended to
+    ``log_path`` (default checkpoints/baseline_report.log) and printed to stdout.
     """
     roster = _league_roster()
     if not roster:
         print(f"No league decks found under {_LEAGUE_DECKS_DIR}")
         return
 
-    # Resolve each roster deck to its final checkpoint; skip decks without one.
-    learners = []  # (deck, checkpoint_path)
-    for deck in roster:
-        try:
-            ckpt = _resolve_model(deck)
-        except Exception:
-            ckpt = None
-        if ckpt and os.path.exists(ckpt):
-            learners.append((deck, ckpt))
-        else:
-            print(f"[baseline] skipping {deck}: no __final checkpoint found", flush=True)
-    if not learners:
-        print(f"No league __final checkpoints found under {_CHECKPOINT_ABS}")
+    # One generalist checkpoint pilots every deck.
+    ckpt = _resolve_model(GEN_STEM)
+    if not ckpt or not os.path.exists(ckpt):
+        print(f"No generalist checkpoint ({GEN_STEM}__final.zip / {GEN_STEM}__v*.zip) "
+              f"found under {_CHECKPOINT_ABS}. Train one first.")
         return
 
     if log_path is None:
         log_path = os.path.join(_CHECKPOINT_ABS, "baseline_report.log")
 
     stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    header = (f"=== league baseline round-robin vs scripted:hard — {stamp} — "
-              f"{n_games} games/matchup, seed={seed} ===")
+    header = (f"=== generalist ({os.path.basename(ckpt)}) baseline sweep vs "
+              f"scripted:hard (per-deck mirror) — {stamp} — "
+              f"{n_games} games/deck, seed={seed} ===")
     lines = [header]
     print(header, flush=True)
 
-    for deck, ckpt in learners:
-        row_cells = []
-        print(f"\n--- {deck} model vs scripted:hard on each league deck ---", flush=True)
-        for opp in roster:
-            print(f"\n  {deck} (model) vs {opp} (scripted:hard):", flush=True)
-            w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
-                               opp_deck=opp, seed=seed)
-            total = w + l + d
-            pct = 100 * w / total if total else 0
-            row_cells.append(f"vs {opp}={w}W/{l}L/{d}D({pct:.0f}%)")
-            lines.append(f"{deck:<22} vs {opp:<22} "
-                         f"{w}W/{l}L/{d}D  {pct:.1f}% win rate")
-        lines.append(f"  [{deck}] " + "  ".join(row_cells))
+    row_cells = []
+    for deck in roster:
+        print(f"\n  gen (model) piloting {deck} vs {deck} (scripted:hard):", flush=True)
+        w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
+                           opp_deck=deck, seed=seed)
+        total = w + l + d
+        pct = 100 * w / total if total else 0
+        row_cells.append(f"{deck}={w}W/{l}L/{d}D({pct:.0f}%)")
+        lines.append(f"gen piloting {deck:<22} vs scripted:hard "
+                     f"{w}W/{l}L/{d}D  {pct:.1f}% win rate")
+    lines.append("  [gen] " + "  ".join(row_cells))
 
     summary = "\n".join(lines)
     with open(log_path, "a") as f:
@@ -1674,6 +1835,10 @@ def _run_sweep(args, parser):
     if not roster:
         parser.error("No opponent decks available for the pool (need at least "
                      "one other deck in bin/resources/decks/, or pass --opponents).")
+    # 'gen' is the reserved generalist stem — no deck may be named it.
+    from opponents import assert_not_reserved_deck
+    for _deck in [args.deck, *roster]:
+        assert_not_reserved_deck(_deck)
 
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
@@ -1726,6 +1891,12 @@ if __name__ == "__main__":
         # These are the training subcommands — nudge toward a release engine build.
         _warn_if_debug_build(args.binary)
         _apply_ppo_overrides(args)
+        # --stock-head opts this session out of the default per-action logit
+        # head (fresh models only; a resumed checkpoint keeps its own flavor).
+        if getattr(args, "stock_head", False):
+            USE_PER_ACTION_HEAD = False
+            print("[head] --stock-head: fresh models this session use the "
+                  "stock MlpPolicy positional head")
 
     if args.command == "league":
         league(args.binary, decks=args.decks, total_timesteps=args.total_timesteps,
@@ -1737,7 +1908,8 @@ if __name__ == "__main__":
                opp_ckpt_ratio=args.opponent_ckpt_ratio, no_shaping=args.no_shaping,
                adaptive_boost=args.adaptive_boost, shard=args.shard,
                train_decks_spec=args.train_decks,
-               tally=args.tally, resume=args.resume, **env_kwargs)
+               tally=args.tally, resume=args.resume,
+               fixed_self_deck=args.fixed_self_deck, **env_kwargs)
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
@@ -1774,8 +1946,31 @@ if __name__ == "__main__":
             baseline_all(args.binary, n_games=args.games or 50, seed=args.seed,
                          log_path=args.log)
         elif args.model is None:
-            parser.error("baseline: give a model checkpoint, or --all to sweep "
-                         "every league deck")
+            parser.error("baseline: give a model checkpoint (e.g. 'gen'), or --all "
+                         "to sweep the generalist over every league deck")
+        elif not args.deck:
+            parser.error("baseline: --deck is required — a checkpoint no longer "
+                         "encodes the deck it pilots. Pass the deck the generalist "
+                         "should play (e.g. baseline gen --deck league/ur_delver).")
         else:
-            baseline(args.binary, _resolve_model(args.model), args.games or 100,
+            try:
+                model_path = _resolve_model(args.model)
+            except ValueError as exc:
+                parser.error(str(exc))
+            baseline(args.binary, model_path, args.games or 100,
                      deck=args.deck, seed=args.seed)
+    elif args.command == "az-selfplay":
+        import az_selfplay
+        az_selfplay.run(args)
+    elif args.command == "az-train":
+        import az_train
+        az_train.run_train(args)
+    elif args.command == "az-eval":
+        import az_train
+        az_train.run_eval(args)
+    elif args.command == "az":
+        import az_train
+        az_train.run_cycle(args)
+    elif args.command == "az-league":
+        import az_train
+        az_train.run_league(args)

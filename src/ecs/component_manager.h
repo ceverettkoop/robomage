@@ -3,6 +3,7 @@
 #include <array>
 #include <cassert>
 #include <memory>
+#include <vector>
 #include "component.h"
 #include "component_array.h"
 #include "entity.h"
@@ -59,6 +60,24 @@ class ComponentManager {
         void EntityDestroyed(Entity entity) {
             for (auto const &component : mComponentArrays) {
                 if (component) component->EntityDestroyed(entity);
+            }
+        }
+        // Snapshot/restore for in-process game snapshots (see snapshot.h). The
+        // type-id maps are process-constants after registration, so only the array
+        // CONTENTS are copied; restore writes back INTO the existing arrays via
+        // RestoreFrom (keeping array identity, never swapping pointers) so no code
+        // that holds a raw array pointer is invalidated. Slot i lines up with the
+        // stable component type id used everywhere else.
+        std::vector<std::shared_ptr<IComponentArray>> SnapshotArrays() const {
+            std::vector<std::shared_ptr<IComponentArray>> out;
+            out.reserve(mComponentArrays.size());
+            for (auto const &arr : mComponentArrays)
+                out.push_back(arr ? arr->SnapshotClone() : nullptr);
+            return out;
+        }
+        void RestoreArrays(const std::vector<std::shared_ptr<IComponentArray>> &snap) {
+            for (size_t i = 0; i < mComponentArrays.size() && i < snap.size(); ++i) {
+                if (mComponentArrays[i] && snap[i]) mComponentArrays[i]->RestoreFrom(*snap[i]);
             }
         }
     private:

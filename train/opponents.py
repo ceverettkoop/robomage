@@ -27,49 +27,68 @@ _SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard",
                                 "heuristic", "explore", "fuzz",
                                 "explore:patient", "patient"})
 
-# Checkpoint format version. v2 is the deck-pilot naming ('{deck}__v{steps}.zip' /
-# '{deck}__final.zip') used since the embed_dim bump; the double underscore is the
-# format marker that separates these from the legacy '{a}_{b}_*.zip' matchup files.
-# Bumping embed_dim already invalidates old nets, so this is a clean break with no
-# back-compat shim — files that don't parse as v2 are simply skipped (see
-# ``deck_snapshots``), so they never get loaded with a mismatched network.
-CHECKPOINT_FORMAT_VERSION = 2
+# The single generalist checkpoint stem. There is now ONE PPO model that pilots
+# ANY deck; the deck it plays is always a separate explicit parameter (never
+# inferred from the filename). Its checkpoints are 'gen__final.zip' plus periodic
+# 'gen__v{steps}.zip' snapshots. 'gen' is reserved — a roster/league deck may not
+# be named 'gen' (see ``assert_not_reserved_deck``).
+GEN_STEM = "gen"
+
+# Checkpoint format version. v3 is the single-generalist naming ('gen__final.zip' /
+# 'gen__v{steps}.zip'); the double underscore is the format marker that separates
+# these from the legacy '{a}_{b}_*.zip' matchup files. Bumping the observation
+# layout / net capacity already invalidates old nets, so this is a clean break
+# with no back-compat shim — files that don't parse as gen snapshots are simply
+# skipped (see ``gen_snapshots``).
+CHECKPOINT_FORMAT_VERSION = 3
 
 _SNAPSHOT_RE = re.compile(r"^(?P<deck>.+)__v(?P<steps>\d+)\.zip$")
 
 
-def deck_snapshots(deck: Optional[str], checkpoint_dir: Optional[str]) -> list[str]:
-    """All frozen snapshots that pilot ``deck`` (v2 naming).
+def assert_not_reserved_deck(deck: Optional[str]) -> None:
+    """Refuse a roster/league deck literally named ``gen`` (the reserved model stem).
 
-    Matches ``{deck}__v{steps}.zip`` plus ``{deck}__final.zip``. Returns absolute
-    paths sorted by training step (the ``__final`` snapshot, if present, last).
-    Files that don't parse as v2 deck-pilot snapshots are skipped, so legacy
-    matchup checkpoints never leak into a league pool. Empty when the deck/dir is
-    unknown or nothing matches.
+    A deck called 'gen' would collide with the generalist checkpoint stem, so its
+    snapshots ('gen__v*.zip') would be indistinguishable from the model's own.
+    Fail loudly rather than silently corrupt the pool."""
+    if deck and os.path.basename(deck).strip().lower() == GEN_STEM:
+        raise ValueError(
+            f"deck name {deck!r} collides with the reserved generalist model stem "
+            f"'{GEN_STEM}'. Rename the deck — 'gen' is reserved for the one "
+            f"generalist checkpoint (gen__final.zip / gen__v*.zip).")
+
+
+def gen_snapshots(checkpoint_dir: Optional[str]) -> list[str]:
+    """All frozen snapshots of the one generalist ('gen__v{steps}.zip' + 'gen__final.zip').
+
+    Returns absolute paths sorted by training step (the ``gen__final`` snapshot, if
+    present, last). Files that don't parse as gen snapshots are skipped. Empty when
+    the dir is unknown or nothing matches.
     """
-    if not (deck and checkpoint_dir):
+    if not checkpoint_dir:
         return []
-    # A deck name may be a path relative to decks/ (e.g. league-folder decks are
-    # 'league/<stem>'); the glob is already scoped to that subdir, so compare the
-    # parsed snapshot's deck against the name's basename rather than the full path.
-    deck_stem = os.path.basename(deck)
     versioned: list[tuple[int, str]] = []
-    for path in _glob.glob(os.path.join(checkpoint_dir, f"{deck}__v*.zip")):
+    for path in _glob.glob(os.path.join(checkpoint_dir, f"{GEN_STEM}__v*.zip")):
         m = _SNAPSHOT_RE.match(os.path.basename(path))
-        if m and m.group("deck") == deck_stem:
+        if m and m.group("deck") == GEN_STEM:
             versioned.append((int(m.group("steps")), path))
     versioned.sort()
     out = [p for _, p in versioned]
-    final = os.path.join(checkpoint_dir, f"{deck}__final.zip")
+    final = gen_final_path(checkpoint_dir)
     if os.path.exists(final):
         out.append(final)
     return out
 
 
-def latest_snapshot(deck: Optional[str], checkpoint_dir: Optional[str]) -> Optional[str]:
-    """Newest snapshot piloting ``deck`` (highest version, or ``__final``); None if none."""
-    snaps = deck_snapshots(deck, checkpoint_dir)
+def latest_gen_snapshot(checkpoint_dir: Optional[str]) -> Optional[str]:
+    """Newest generalist snapshot (highest version, or ``gen__final``); None if none."""
+    snaps = gen_snapshots(checkpoint_dir)
     return snaps[-1] if snaps else None
+
+
+def gen_final_path(checkpoint_dir: str) -> str:
+    """Path to the generalist's ``gen__final.zip`` (whether or not it exists yet)."""
+    return os.path.join(checkpoint_dir, f"{GEN_STEM}__final.zip")
 
 
 _DEFAULT_CHECKPOINT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -78,44 +97,42 @@ _DEFAULT_CHECKPOINT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)
 
 def resolve_checkpoint(path: Optional[str],
                        checkpoint_dir: str = _DEFAULT_CHECKPOINT_DIR) -> Optional[str]:
-    """Resolve a model shorthand to a full checkpoint path (the shared resolver).
+    """Resolve a model spec to a full checkpoint path (the shared resolver).
 
-    Accepts (in priority order):
-      - Full path (returned as-is if it exists)
-      - Deck-pilot shorthand like 'delver' → checkpoints/delver__final.zip, else the
-        newest checkpoints/delver__v*.zip snapshot (v2 league naming). A subfolder
-        deck like 'league/ur_delver' looks in the mirrored checkpoints subfolder
-        first, then falls back to a flat top-level basename.
-      - Legacy matchup name like 'delver_mav' → checkpoints/{name}_final.zip
-      - Bare basename with '.zip' appended
+    There is ONE generalist model, so this accepts only:
+      - ``None`` → ``None``
+      - a full path (returned as-is if it exists)
+      - the reserved stem ``'gen'`` → the newest ``gen`` snapshot
+        (``gen__final.zip``, else the newest ``gen__v*.zip``; the ``gen__final``
+        path is returned even if it does not exist yet so callers can test it)
+      - an explicit ``<name>.zip`` / ``<name>_final.zip`` sitting in the checkpoint dir
 
-    Returns the input unchanged when nothing matches — downstream loading
-    reports the error with the original spec.
+    A bare token that is none of the above used to be a per-deck shorthand
+    (``delver`` → ``delver__final.zip``). That naming is gone: the model is the
+    single generalist ``'gen'`` and the deck it pilots is a SEPARATE explicit
+    parameter. Such a token raises a clear error rather than resolving.
     """
     if path is None:
         return None
     if os.path.exists(path):
         return path
-    stems = [path]
-    if os.path.basename(path) != path:
-        stems.append(os.path.basename(path))
-    for stem in stems:
-        deck_final = os.path.join(checkpoint_dir, f"{stem}__final.zip")
-        if os.path.exists(deck_final):
-            return deck_final
-        snap = latest_snapshot(stem, checkpoint_dir)
-        if snap:
-            return snap
-    for candidate in (os.path.join(checkpoint_dir, f"{path}_final.zip"),
-                      os.path.join(checkpoint_dir, f"{path}.zip")):
+    if path.strip().lower() == GEN_STEM:
+        return latest_gen_snapshot(checkpoint_dir) or gen_final_path(checkpoint_dir)
+    for candidate in (os.path.join(checkpoint_dir, f"{path}.zip"),
+                      os.path.join(checkpoint_dir, f"{path}_final.zip")):
         if os.path.exists(candidate):
             return candidate
-    return path
+    raise ValueError(
+        f"cannot resolve model spec {path!r}. Models are now ONE generalist with "
+        f"stem '{GEN_STEM}' — pass '{GEN_STEM}' (or an explicit .zip path) as the "
+        f"model, and give the deck it pilots as a SEPARATE parameter (baseline's "
+        f"--deck, observe's --deck/--opponent, analysis's --deck-a/--deck-b, "
+        f"play's --model-deck).")
 
-# Pool token standing for a random checkpoint compatible with the current
-# matchup — a generalist trained to pilot the opponent's deck. OpponentPool
-# expands it into the opponent deck's pilots ('{opp_deck}__v*.zip' /
-# '{opp_deck}__final.zip'), the same deck-pilot snapshots SelfPlayEnv samples.
+# Pool token standing for a random generalist snapshot (the opponent deck it
+# pilots is chosen independently by the pool/episode, no longer by the model's
+# filename). OpponentPool expands it into the generalist snapshots ('gen__v*.zip'
+# / 'gen__final.zip'), the same set SelfPlayEnv samples.
 MATCHUP_MODEL_TOKEN = "random-model"
 
 
@@ -127,16 +144,15 @@ def is_scripted_spec(spec: str) -> bool:
 
 def matchup_checkpoints(model_deck: Optional[str], opp_deck: Optional[str],
                         checkpoint_dir: Optional[str]) -> list[str]:
-    """Generalist checkpoints that pilot the opponent's deck.
+    """Generalist snapshots usable as an opponent for the current matchup.
 
-    Models are per-deck generalists, so any pilot of ``opp_deck`` is a valid
-    opponent — the deck-pilot snapshots ``{opp_deck}__v*.zip`` /
-    ``{opp_deck}__final.zip`` (same set SelfPlayEnv._reload_opponent samples).
-    ``model_deck`` is unused (kept for signature compatibility). Returns absolute
-    paths sorted by training step; empty when the deck/dir is unknown or nothing
-    matches.
+    The one generalist pilots any deck, so ANY of its snapshots is a valid
+    opponent — the deck it pilots (``opp_deck``) is set by the pool/env, not by
+    the checkpoint. ``model_deck``/``opp_deck`` are unused (kept for signature
+    compatibility). Returns absolute paths sorted by training step; empty when the
+    dir is unknown or nothing matches.
     """
-    return deck_snapshots(opp_deck, checkpoint_dir)
+    return gen_snapshots(checkpoint_dir)
 
 
 class Controller(Protocol):
@@ -189,6 +205,64 @@ class ModelController:
         action, _ = self._model.predict(obs, action_masks=action_masks,
                                         deterministic=self._deterministic)
         return int(action)
+
+
+class SearchController:
+    """MCTS-at-inference controller: PUCT search over the engine's snapshot
+    protocol, with priors/values from a pluggable evaluator (a PPO checkpoint's
+    policy/value heads, or the torch-free uniform evaluator).
+
+    Requires a search-capable env: advertises ``wants_search_env`` so
+    ``runner.run_games`` constructs a :class:`search_env.SearchNarrativeEnv`
+    and hands it over via ``bind_env`` (duck-typed, like ``set_deck_names``).
+    Decisions where the engine reports ``safe=0`` (mid-resolution prompts,
+    mulligans — no snapshot possible) fall back to the evaluator's raw policy;
+    the searched/fallback split is tallied in ``stats``.
+    """
+
+    wants_search_env = True
+
+    def __init__(self, evaluator, *, sims: int = 128, worlds: int = 4,
+                 c_puct: float = 1.5, temperature: float = 0.0,
+                 label: str = "mcts", rng_seed: int = 0):
+        from mcts import run_search  # noqa: F401 — fail fast if unavailable
+        self._evaluator = evaluator
+        self._sims = sims
+        self._worlds = worlds
+        self._c_puct = c_puct
+        self._temperature = temperature
+        self.label = label
+        self._rng = np.random.default_rng(rng_seed)
+        self._env = None
+        self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0}
+
+    def bind_env(self, env) -> None:
+        self._env = env
+
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        from mcts import run_search
+
+        env = self._env
+        searchable = (
+            env is not None
+            and getattr(env, "last_search_safe", None)
+            and num_choices > 1
+        )
+        if not searchable:
+            self.stats["fallback"] += 1
+            priors, _ = self._evaluator.evaluate(obs, num_choices)
+            return int(np.argmax(priors))
+        result = run_search(
+            env, self._evaluator,
+            sims=self._sims, worlds=self._worlds, c_puct=self._c_puct,
+            rng=self._rng)
+        self.stats["searched"] += 1
+        self.stats["sims"] += result.sims_run
+        self.stats["sim_steps"] += result.sim_steps
+        if self._temperature <= 1e-6:
+            return result.best_action()
+        pi = result.policy_target(self._temperature)
+        return int(self._rng.choice(len(pi), p=pi))
 
 
 class ActionListController:
@@ -417,9 +491,23 @@ def make_controller(spec, *,
       - "play:<spec,spec,...>" → PlayController (semantic action script,
         same grammar as the test harness ``--play``);
       - "actions:<i,i,...>" → ActionListController (positional indices);
-      - anything else → a model checkpoint path or deck shorthand, resolved
-        via ``checkpoint_resolver`` (default: :func:`resolve_checkpoint`) and
-        loaded as a ModelController.
+      - "mcts:<gen-or-path>[?sims=128&worlds=4&c=1.5&temp=0&vscale=1]" →
+        SearchController running PUCT search with that checkpoint's
+        policy/value heads as priors/leaf values ("mcts:uniform" for the
+        torch-free uniform evaluator — plumbing tests, weak play; "mcts:gen"
+        or an explicit .zip for a real net — the deck it pilots is a separate
+        parameter);
+      - "az:<gen-or-path>[?sims=&worlds=&c=&temp=&seed=]" → SearchController
+        driven by an AZNet ("az:gen" → the generalist AZ net, else a warm-start
+        from the gen PPO net; an explicit .pt/.zip path also works);
+      - "azraw:<gen-or-path>" → AZRawController (AZNet policy argmax, no
+        search — cheap gating);
+      - "gen" → the single generalist checkpoint, or any explicit model .zip
+        path, resolved via ``checkpoint_resolver`` (default:
+        :func:`resolve_checkpoint`) and loaded as a ModelController. A bare
+        former per-deck shorthand (e.g. "delver") is no longer accepted: the
+        model is the one generalist "gen" and the deck it pilots travels as a
+        separate parameter, so such a spec raises a clear error.
     """
     if not isinstance(spec, str):
         return spec
@@ -436,9 +524,133 @@ def make_controller(spec, *,
     if low.startswith("actions:"):
         return ActionListController(
             [int(a) for a in s[len("actions:"):].split(",") if a.strip()])
+    if low.startswith("mcts:"):
+        return _make_search_controller(s[len("mcts:"):],
+                                       checkpoint_resolver=checkpoint_resolver)
+    if low.startswith("az:"):
+        return _make_az_controller(s[len("az:"):], search=True)
+    if low.startswith("azraw:"):
+        return _make_az_controller(s[len("azraw:"):], search=False)
     resolver = checkpoint_resolver or resolve_checkpoint
     path = resolver(s)
     return ModelController(_load_model(path), label=s, deterministic=deterministic)
+
+
+def _parse_spec_query(spec: str) -> tuple:
+    """Split a ``<base>[?k=v&k=v...]`` controller spec into (base, params).
+
+    Shared by the mcts:/az: builders so the query grammar lives in one place."""
+    base, _, query = spec.partition("?")
+    params: dict[str, str] = {}
+    if query:
+        for part in query.split("&"):
+            if not part.strip():
+                continue
+            k, _, v = part.partition("=")
+            params[k.strip().lower()] = v.strip()
+    return base.strip(), params
+
+
+def _spec_knob(params: dict, key: str, default, conv, spec: str):
+    """Fetch+convert one query knob, failing LOUDLY on a bad/empty value.
+
+    Without this, a malformed spec like "az:delver?worlds=" reaches int("")
+    and dies with a bare ValueError traceback instead of naming the spec."""
+    raw = params.get(key)
+    if raw is None:
+        return default
+    try:
+        return conv(raw)
+    except ValueError:
+        raise ValueError(
+            f"bad controller spec {spec!r}: knob '{key}' needs a "
+            f"{conv.__name__} value, got {raw!r}") from None
+
+
+def _make_search_controller(spec: str, *,
+                            checkpoint_resolver=None) -> "SearchController":
+    """Build a SearchController from the part after "mcts:".
+
+    Grammar: ``<base>[?k=v&k=v...]`` where <base> is "uniform" or a checkpoint
+    path / deck shorthand, and the knobs are sims, worlds, c (c_puct),
+    temp (root temperature), vscale (PPO value tanh scale), seed (search RNG).
+    """
+    from mcts import PPOEvaluator, UniformEvaluator
+
+    base, params = _parse_spec_query(spec)
+    sims = _spec_knob(params, "sims", 128, int, spec)
+    worlds = _spec_knob(params, "worlds", 4, int, spec)
+    c_puct = _spec_knob(params, "c", 1.5, float, spec)
+    temperature = _spec_knob(params, "temp", 0.0, float, spec)
+    v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
+    rng_seed = _spec_knob(params, "seed", 0, int, spec)
+
+    if base.lower() == "uniform":
+        evaluator = UniformEvaluator()
+        label = f"mcts:uniform({sims}x{worlds})"
+    else:
+        resolver = checkpoint_resolver or resolve_checkpoint
+        model = _load_model(resolver(base))
+        evaluator = PPOEvaluator(model, v_scale=v_scale)
+        label = f"mcts:{base}({sims}x{worlds})"
+    return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
+                            temperature=temperature, label=label, rng_seed=rng_seed)
+
+
+class AZRawController:
+    """Raw AZNet policy seat (argmax over softmaxed masked logits, NO search).
+
+    The cheap gating counterpart to a search controller — used by ``azraw:`` to
+    compare policies without paying for MCTS."""
+
+    def __init__(self, evaluator, label: str = "azraw"):
+        self._evaluator = evaluator
+        self.label = label
+
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        priors, _ = self._evaluator.evaluate(obs, num_choices)
+        return int(np.argmax(priors))
+
+
+def _load_az_evaluator(base: str):
+    """Load an AZNet -> AZEvaluator for the generalist contract. Accepts:
+      - ``'gen'`` → the generalist AZ checkpoint (``gen__azfinal.pt`` / newest
+        ``gen__azv*.pt``), else a warm-start from the ``gen`` PPO checkpoint;
+      - an explicit ``.pt`` AZ path (loaded directly), or an explicit ``.zip``
+        PPO path (warm-started).
+    A bare per-deck shorthand (``az:delver``) is rejected with a clear error via
+    ``resolve_checkpoint`` — the model is the ONE generalist and the deck it
+    pilots travels as a separate parameter.
+    Lazy import so opponents.py stays torch-free until a model seat is built."""
+    from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
+    az = resolve_az_checkpoint(base)
+    if az:
+        return AZEvaluator(load_az(az)), az
+    if base.endswith(".pt"):
+        return AZEvaluator(load_az(base)), base   # explicit AZ path; load_az raises if missing
+    # Otherwise a PPO spec to warm-start from: 'gen' or an explicit .zip.
+    # resolve_checkpoint raises a clear error on a bare (non-'gen') deck shorthand.
+    return AZEvaluator(from_ppo(resolve_checkpoint(base))), base
+
+
+def _make_az_controller(spec: str, *, search: bool):
+    """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
+
+    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=]`` where <base> is an AZ
+    checkpoint path / deck shorthand (falls back to a PPO warm-start)."""
+    base, params = _parse_spec_query(spec)
+    evaluator, resolved = _load_az_evaluator(base)
+    if not search:
+        return AZRawController(evaluator, label=f"azraw:{base}")
+    sims = _spec_knob(params, "sims", 128, int, spec)
+    worlds = _spec_knob(params, "worlds", 4, int, spec)
+    c_puct = _spec_knob(params, "c", 1.5, float, spec)
+    temperature = _spec_knob(params, "temp", 0.0, float, spec)
+    rng_seed = _spec_knob(params, "seed", 0, int, spec)
+    return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
+                            temperature=temperature,
+                            label=f"az:{base}({sims}x{worlds})",
+                            rng_seed=rng_seed)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:
@@ -527,7 +739,7 @@ class OpponentPool:
                 if not files:
                     if not cls._matchup_warned:
                         print(f"[opponent-pool] WARNING: '{MATCHUP_MODEL_TOKEN}' matched no "
-                              f"generalist piloting {opp_deck} ({opp_deck}__*.zip) in "
+                              f"generalist snapshot ({GEN_STEM}__*.zip) in "
                               f"{checkpoint_dir}; ignoring it.")
                         cls._matchup_warned = True
                     continue
@@ -563,15 +775,21 @@ class LeaguePool:
     *deck* and which *controller* pilots it — from a pool spanning:
 
       1. a scripted anchor piloting a sampled roster deck (collapse guard),
-      2. frozen snapshots of every deck's model (cross-deck + mirror self-play),
-      3. the latest snapshot of the learner's own deck (the OpenAI-Five 'play the
-         latest self' slot, chosen with probability ``self_play_frac``).
+      2. frozen generalist snapshots (``gen__v*`` / ``gen__final``), each paired
+         with a roster deck to pilot (cross-deck league + mirror self-play). There
+         is ONE model now, so a pool entry is an explicit ``(gen_snapshot, deck)``
+         pair — the same snapshot represents many opponent decks.
+      3. the newest generalist snapshot piloting the learner's own current deck
+         (the OpenAI-Five 'play the latest self' slot, chosen with probability
+         ``self_play_frac``).
 
-    Memory is bounded exactly like :class:`OpponentPool`: historical snapshot
-    checkpoints are capped at ``max(1, floor(max_checkpoint_ratio * n_envs))`` unique
+    Memory is bounded exactly like :class:`OpponentPool`: the pool is capped at
+    ``max(1, floor(max_checkpoint_ratio * n_envs))`` unique generalist snapshot
     files and sharded across processes by ``env_index``; scripted agents are free so
     every process keeps the full anchor set, and the latest-self snapshot is always
-    resident (one model).
+    resident (one model). Because the guaranteed per-deck anchors all reuse the one
+    newest snapshot file, keeping every roster deck represented as an opponent is
+    essentially free.
 
     Quality weighting for the historical-snapshot branch is supplied externally by
     the PFSPCallback via :meth:`set_weights` (a global win-rate estimate broadcast to
@@ -589,7 +807,8 @@ class LeaguePool:
                  rng: Optional[np.random.Generator] = None,
                  n_envs: int = 1, env_index: int = 0,
                  max_checkpoint_ratio: float = 1.0,
-                 deterministic: bool = False, scripted_spec: str = "scripted"):
+                 deterministic: bool = False, scripted_spec: str = "scripted",
+                 self_decks: Optional[Sequence[str]] = None):
         self._learner = learner_deck
         self._roster = list(roster) or [learner_deck]
         self._dir = checkpoint_dir
@@ -601,8 +820,19 @@ class LeaguePool:
         self._ratio = max_checkpoint_ratio
         self._deterministic = deterministic
         self._scripted_spec = scripted_spec
+        # Mixed-self-deck mode: when ``self_decks`` is given the learner's OWN deck
+        # also varies per episode, cycled (per-pool shuffled round-robin, reshuffled
+        # each full pass so every deck is piloted equally often within a rollout).
+        # ``None`` keeps the classic fixed-self-deck behavior (the learner always
+        # pilots ``learner_deck``; the driver rotates the deck between chunks).
+        self._self_decks = list(self_decks) if self_decks else None
+        self._mixed = self._self_decks is not None
+        self._self_cycle: list[str] = []
+        self._self_cycle_idx = 0
         self._cache: dict[str, Controller] = {}    # path -> ModelController
-        self._weights: dict = {}                   # (opp_deck, label) -> float
+        # (opp_deck, label) aggregate weights AND, in mixed mode, (self_deck,
+        # opp_deck, label) matchup weights layered on top — see _entry_weights.
+        self._weights: dict = {}
         self._snap_entries: list[tuple[str, str]] = []  # [(path, deck)] this process holds
         self._latest_self: Optional[str] = None    # learner's newest snapshot
         self._total_snaps = 0                      # total snapshots across roster (auto-ramp)
@@ -612,51 +842,39 @@ class LeaguePool:
 
     # ── snapshot discovery / sharding ────────────────────────────────────────
     def refresh(self):
-        """Rescan the checkpoint dir for snapshots, re-shard, and re-find latest-self.
+        """Rescan the checkpoint dir for gen snapshots, re-shard, and re-find latest-self.
 
-        The active pool is bounded to ``max_unique`` files (per-process memory) but
-        composed for league *fairness* rather than by a raw recency slice over the
-        roster-ordered snapshot list — that slice kept whichever decks happened to
-        be last in the roster and silently evicted the ones listed first once the
-        pool overflowed. Instead it is built in two tiers:
+        There is ONE model now, so pool entries are ``(gen_snapshot, deck)`` pairs:
+        a generalist snapshot paired with a roster deck for it to pilot. Bounded to
+        ``max_unique`` unique snapshot FILES (per-process memory) and built in two
+        tiers for league *fairness*:
 
-          * Tier 1 (guaranteed) — every roster deck's ``__final`` (or its newest
-            snapshot when no ``__final`` exists yet). This keeps a low-win-rate
-            deck present as an opponent no matter how many snapshots the stronger
-            decks have accumulated; ``max_unique`` is raised if needed so no deck's
-            anchor is ever dropped.
-          * Tier 2 (discretionary) — the remaining ``__v*`` snapshots, filled
-            newest-first round-robin across decks so one prolific deck can't crowd
-            the others out. These intermediates are already quality-gated at *save*
-            time by the promote-margin (SnapshotCallback), so re-enabling that gate
-            thins this tier without ever dropping a deck's guaranteed ``__final``.
+          * Tier 1 (guaranteed) — every roster deck paired with the newest
+            generalist snapshot (== ``gen__final`` when present). All these entries
+            reuse the one newest file, so keeping every roster deck represented as
+            an opponent costs a single resident model.
+          * Tier 2 (discretionary) — the remaining older ``gen__v*`` snapshots,
+            newest-first, each assigned a roster deck round-robin so historical
+            snapshots face varied decks. Capped so the pool holds at most
+            ``max_unique`` unique snapshot files.
         """
-        per_deck: list[tuple[str, list[str]]] = []   # (deck, [oldest..newest, __final last])
-        for deck in self._roster:
-            snaps = deck_snapshots(deck, self._dir)
-            if snaps:
-                per_deck.append((deck, snaps))
-        self._total_snaps = sum(len(s) for _, s in per_deck)
-        self._latest_self = latest_snapshot(self._learner, self._dir)
+        snaps = gen_snapshots(self._dir)             # oldest..newest, gen__final last
+        self._total_snaps = len(snaps)
+        # The newest generalist snapshot pilots the learner in the latest-self slot.
+        self._latest_self = snaps[-1] if snaps else None
+        newest = snaps[-1] if snaps else None
 
-        # Tier 1: newest-per-deck anchor (== __final when present). Never evicted,
-        # so grow the cap to fit every deck's anchor if the ratio would undercut it.
-        guaranteed = [(snaps[-1], deck) for deck, snaps in per_deck]
-        max_unique = max(len(guaranteed), max(1, int(math.floor(self._ratio * self._n_envs))))
+        # Tier 1: every roster deck paired with the newest snapshot (one shared file).
+        guaranteed = [(newest, deck) for deck in self._roster] if newest else []
 
-        # Tier 2: remaining __v* intermediates, newest-first, round-robin by deck.
-        queues = [list(reversed(snaps[:-1])) for _, snaps in per_deck]  # newest -> oldest
-        decks = [deck for deck, _ in per_deck]
-        discretionary: list[tuple[str, str]] = []
-        remaining = max_unique - len(guaranteed)
-        while remaining > 0 and any(queues):
-            for qi, q in enumerate(queues):
-                if not q:
-                    continue
-                discretionary.append((q.pop(0), decks[qi]))
-                remaining -= 1
-                if remaining == 0:
-                    break
+        # Tier 2: older snapshots newest-first, each assigned a roster deck. Bound
+        # the pool to max_unique unique FILES; the newest file (Tier 1) is one, so
+        # the rest of the budget goes to older files.
+        max_unique = max(1, int(math.floor(self._ratio * self._n_envs)))
+        older = list(reversed(snaps[:-1])) if len(snaps) > 1 else []  # newest -> oldest
+        older = older[:max(0, max_unique - 1)]
+        roster = self._roster
+        discretionary = [(snap, roster[i % len(roster)]) for i, snap in enumerate(older)]
 
         # Shard the pooled set across processes (each env keeps ~max_unique/n_envs).
         active = guaranteed + discretionary
@@ -667,9 +885,30 @@ class LeaguePool:
         if self._episode % self.REFRESH_EVERY == 0:
             self.refresh()
 
+    def _next_self_deck(self) -> str:
+        """Deck the learner pilots this episode.
+
+        Fixed mode: always ``learner_deck``. Mixed mode: the next deck from a
+        per-pool shuffled cycle over ``self_decks``, reshuffled at each full pass
+        (deterministic given the pool's rng, so a seeded run replays identically)."""
+        if not self._mixed:
+            return self._learner
+        if self._self_cycle_idx >= len(self._self_cycle):
+            self._self_cycle = list(self._self_decks)
+            self._rng.shuffle(self._self_cycle)
+            self._self_cycle_idx = 0
+        deck = self._self_cycle[self._self_cycle_idx]
+        self._self_cycle_idx += 1
+        return deck
+
     # ── weights pushed from the PFSPCallback ─────────────────────────────────
     def set_weights(self, weights):
-        """Replace the historical-snapshot weighting (keyed by (opp_deck, label))."""
+        """Replace the historical-snapshot weighting.
+
+        Keys are ``(opp_deck, label)`` aggregate weights and, in mixed mode, also
+        ``(self_deck, opp_deck, label)`` matchup weights layered on top (the
+        callback broadcasts a matchup key only once it has enough decisive samples).
+        ``_entry_weights`` prefers the matchup key and falls back to the aggregate."""
         if weights:
             self._weights = dict(weights)
 
@@ -702,34 +941,50 @@ class LeaguePool:
         return self._self_play_frac * min(1.0, self._total_snaps / float(target))
 
     # ── per-episode sampling ─────────────────────────────────────────────────
-    def sample_episode(self) -> tuple[str, str, Controller]:
-        """Return (opp_deck, label, controller) for this episode."""
+    def sample_episode(self) -> tuple[str, str, str, Controller]:
+        """Return ``(self_deck, opp_deck, label, controller)`` for this episode.
+
+        ``self_deck`` is the deck the LEARNER pilots this episode — the fixed
+        ``learner_deck`` in classic mode, or the next deck from the shuffled cycle
+        in mixed mode. It is returned as a 4-tuple in BOTH modes so the env wrapper
+        has one call shape."""
         self._maybe_refresh()
-        # 1. latest-self slot (fast learning vs the current frontier).
+        self_deck = self._next_self_deck()
+        # 1. latest-self slot (fast learning vs the current frontier) — a true
+        #    mirror: the newest snapshot piloting THIS episode's self deck.
         if (self._latest_self is not None
                 and self._rng.random() < self._effective_self_play_frac()):
-            return (self._learner, os.path.basename(self._latest_self),
+            return (self_deck, self_deck, os.path.basename(self._latest_self),
                     self._model_for(self._latest_self))
         # 2. scripted anchor — a fixed floor carved out of the historical share so
         #    the collapse guard never vanishes (also the cold-start fallback when
         #    this process holds no snapshots).
         if (not self._snap_entries) or self._rng.random() < self._anchor_frac:
             deck = self._roster[int(self._rng.integers(len(self._roster)))]
-            return deck, self._scripted_spec, self._scripted()
+            return self_deck, deck, self._scripted_spec, self._scripted()
         # 3. weighted historical snapshot (cross-deck league + mirror self-play).
-        weights = self._entry_weights()
+        weights = self._entry_weights(self_deck)
         idx = int(self._rng.choice(len(self._snap_entries), p=weights))
         path, deck = self._snap_entries[idx]
-        return deck, os.path.basename(path), self._model_for(path)
+        return self_deck, deck, os.path.basename(path), self._model_for(path)
 
-    def _entry_weights(self) -> np.ndarray:
+    def _entry_weights(self, self_deck: str) -> np.ndarray:
         """Normalised PFSP/softmax weights for this process's snapshot entries.
 
-        Unseen entries default to the current max weight so fresh snapshots get
-        tried (OpenAI-Five 'init new snapshot quality to the max' rule)."""
+        Weighting is matchup-aware: for each ``(path, opp_deck)`` entry we prefer
+        the matchup-keyed weight ``(self_deck, opp_deck, label)`` when the callback
+        has broadcast one (enough decisive games), else the opponent-aggregate
+        weight ``(opp_deck, label)``, else the current max weight so unseen entries
+        still get tried (OpenAI-Five 'init new snapshot quality to the max' rule).
+        In fixed mode the weights dict has no matchup keys, so this collapses to
+        the old aggregate-only behavior."""
         default = max(self._weights.values()) if self._weights else 1.0
-        w = np.array([
-            self._weights.get((deck, os.path.basename(path)), default)
-            for path, deck in self._snap_entries], dtype=float)
-        w = np.clip(w, 1e-8, None)
+        w = []
+        for path, deck in self._snap_entries:
+            label = os.path.basename(path)
+            val = self._weights.get((self_deck, deck, label))
+            if val is None:
+                val = self._weights.get((deck, label), default)
+            w.append(val)
+        w = np.clip(np.array(w, dtype=float), 1e-8, None)
         return w / w.sum()

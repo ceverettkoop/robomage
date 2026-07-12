@@ -1,0 +1,749 @@
+#!/usr/bin/env python3
+"""Snapshot / search-server regression: drive the `--search-server` machine
+protocol over a raw subprocess and assert the search primitives are correct.
+
+The `--search-server` flag turns the machine-mode decision read into a small
+stdio command protocol for in-process MCTS: SNAPSHOT / RESTORE deep-copy and
+roll back the whole game state, DETERMINIZE reshuffles the hidden zones from a
+world-local RNG (never the real game's stream), and a game that ends while a
+snapshot is live is intercepted as SIM_RESULT instead of exiting. This test
+exercises each primitive and asserts the guarantees the search actor relies on:
+
+  1. round-trip identity — SNAPSHOT then a divergent line then RESTORE returns
+     byte-for-byte to the snapshot decision, and the resumed real line stays
+     byte-identical to a control run played without any snapshotting (same
+     outcome).
+  2. RNG isolation — interleaving RESTORE+DETERMINIZE excursions does not
+     perturb the real game: the resumed line still matches the control run.
+  3. determinize efficacy + reproducibility — same seed reshuffles identically
+     (equal BQUERY stream), different seeds diverge.
+  4. terminal intercept — a simulated line that ends yields SIM_RESULT (not a
+     process exit); RESTORE recovers the pre-terminal decision byte-identically;
+     RELEASE + auto-play then finishes the REAL game with a clean exit + winner.
+  5. determinize invariants — the priority player's own hand, the step, both
+     players' life/hand/library counts, and the battlefield are unchanged by a
+     DETERMINIZE (only hidden library order / opponent hidden cards move), and
+     RESTORE undoes it byte-for-byte.
+  6. perf — cost of a SNAPSHOT+RESTORE pair on the current build (reported;
+     warns, does not fail, above a debug-build threshold).
+
+Torch-free: spawns bin/robomage directly (like train/test_obs_invariants.py) and
+imports every layout constant from ``env`` / ``_enums`` (zero magic numbers), so
+a state-layout change reroutes the decode automatically.
+
+Wired into ``train/ci_check.py`` as the ``snapshot`` tier (so ``make check`` runs
+it); also runnable standalone::
+
+    train/.venv/bin/python train/test_snapshot.py
+"""
+import hashlib
+import os
+import subprocess
+import sys
+import time
+
+import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from _enums import STATE_SIZE, MAX_ACTIONS
+from env import (
+    N_CARD_TYPES, MAX_HAND_SLOTS,
+    _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
+    _LIBRARY_CTX_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
+    _SELF_PERM_START, _STACK_START)
+from cli_spec import BINARY, BIN_DIR
+
+# The binary payload framing after every BQUERY header, WITHOUT --narrative:
+# STATE_SIZE float32 state, then six MAX_ACTIONS-wide metadata arrays
+# (cats int32, ids f32, ctrl f32, pub f32, zone int32, refs int32). This is the
+# exact size input_logger.cpp emits; a short/over read desyncs the whole stream.
+PAYLOAD_BYTES = STATE_SIZE * 4 + 6 * MAX_ACTIONS * 4
+
+
+class ProtocolError(AssertionError):
+    """The engine's search protocol violated an invariant this test asserts."""
+
+
+class R:
+    """One outcome of reading the engine's stdout: a decision query, a simulated
+    terminal (SIM_RESULT), or real process exit (EOF)."""
+
+    __slots__ = ("kind", "nc", "safe", "payload", "notes", "result",
+                 "returncode", "winner")
+
+    def __init__(self, kind, nc=None, safe=None, payload=None, notes=None,
+                 result=None, returncode=None, winner=None):
+        self.kind = kind          # "q" | "sim" | "eof"
+        self.nc = nc              # query: number of legal choices
+        self.safe = safe          # query: SEARCHINFO safe flag (bool)
+        self.payload = payload    # query: raw PAYLOAD_BYTES
+        self.notes = notes or []  # intervening text lines (SNAPSHOT_OK, ...)
+        self.result = result      # sim: "A" | "B" | "DRAW"
+        self.returncode = returncode  # eof: process return code
+        self.winner = winner      # last "Player X wins" narrative line seen
+
+    def note_has(self, tok):
+        return any(tok in n for n in self.notes)
+
+
+class Engine:
+    """A raw --search-server subprocess with the stdio command protocol."""
+
+    def __init__(self, seed, extra=()):
+        self.p = subprocess.Popen(
+            [BINARY, "--machine", "--search-server", "--seed", str(seed),
+             *extra],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL, cwd=BIN_DIR, bufsize=-1)
+        self.last_winner = None
+
+    def _read_exact(self, n):
+        buf = bytearray()
+        while len(buf) < n:
+            chunk = self.p.stdout.read(n - len(buf))
+            if not chunk:
+                raise EOFError("engine closed mid binary payload")
+            buf.extend(chunk)
+        return bytes(buf)
+
+    def read(self):
+        """Read stdout to the next decision query / SIM_RESULT / process exit.
+
+        The "Player X wins" line is NOT a terminal marker here: state-based
+        effects print it before search_intercept_game_end runs, so it appears in
+        simulated ends too. The authoritative signals are SIM_RESULT (simulated)
+        and EOF (real). We only stash the winner line for reporting.
+        """
+        notes = []
+        safe = None
+        while True:
+            line = self.p.stdout.readline()
+            if not line:
+                return R("eof", notes=notes, returncode=self.p.wait(),
+                         winner=self.last_winner)
+            s = line.rstrip(b"\n")
+            if s.startswith(b"SEARCHINFO"):
+                safe = int(s.split(b"safe=")[1]) == 1
+                notes.append(s)
+            elif s.startswith(b"SIM_RESULT:"):
+                return R("sim", notes=notes, winner=self.last_winner,
+                         result=s.split(b":", 1)[1].strip().decode())
+            elif s.startswith(b"BQUERY: "):
+                f = s[8:].split()
+                if len(f) != 3:
+                    raise ProtocolError(f"malformed BQUERY header: {s!r}")
+                nc, ss, ma = int(f[0]), int(f[1]), int(f[2])
+                # Layout handshake: the trailing sizes must match the Python
+                # constants, else the payload below would be misframed.
+                if ss != STATE_SIZE or ma != MAX_ACTIONS:
+                    raise ProtocolError(
+                        f"BQUERY layout mismatch: engine STATE_SIZE={ss} "
+                        f"MAX_ACTIONS={ma} vs python {STATE_SIZE}/{MAX_ACTIONS}")
+                payload = self._read_exact(PAYLOAD_BYTES)
+                return R("q", nc=nc, safe=safe, payload=payload, notes=notes,
+                         winner=self.last_winner)
+            else:
+                if b"wins" in s:
+                    self.last_winner = s.decode(errors="replace")
+                notes.append(s)
+
+    def _send(self, text):
+        self.p.stdin.write(f"{text}\n".encode())
+        self.p.stdin.flush()
+
+    def play(self, action):
+        self._send(action)
+        return self.read()
+
+    def snapshot(self, slot=0):
+        self._send(f"SNAPSHOT {slot}")
+        r = self.read()
+        if not r.note_has(b"SNAPSHOT_OK"):
+            raise ProtocolError(f"SNAPSHOT {slot} produced no SNAPSHOT_OK ack")
+        return r
+
+    def restore(self, slot=0):
+        # No ack line: the engine unwinds and re-emits the restored decision.
+        self._send(f"RESTORE {slot}")
+        return self.read()
+
+    def determinize(self, seed):
+        self._send(f"DETERMINIZE {seed}")
+        r = self.read()
+        if not r.note_has(b"DETERMINIZE_OK"):
+            raise ProtocolError(f"DETERMINIZE {seed} produced no DETERMINIZE_OK ack")
+        return r
+
+    def release(self):
+        self._send("RELEASE")
+        return self.read()
+
+    def kill(self):
+        try:
+            self.p.kill()
+        except Exception:
+            pass
+
+
+# ── decode / diff helpers ─────────────────────────────────────────────────────
+
+def _state(payload):
+    """First STATE_SIZE floats of a query payload."""
+    return np.frombuffer(payload[:STATE_SIZE * 4], dtype=np.float32)
+
+
+def _first_diff(a, b):
+    """(byte_offset, human location) of the first differing byte, or None."""
+    if a == b:
+        return None
+    n = min(len(a), len(b))
+    for i in range(n):
+        if a[i] != b[i]:
+            if i < STATE_SIZE * 4:
+                loc = f"state float #{i // 4}"
+            else:
+                loc = f"action-metadata byte {i}"
+            return (i, loc)
+    return (n, f"length differs ({len(a)} vs {len(b)})")
+
+
+def _assert_same_query(got, want_payload, want_nc, ctx):
+    """Assert a query re-emitted after SNAPSHOT/RESTORE is byte-identical."""
+    if got.kind != "q":
+        raise ProtocolError(f"{ctx}: expected a re-emitted query, got {got.kind}")
+    if got.nc != want_nc:
+        raise ProtocolError(f"{ctx}: num_choices {got.nc} != snapshot {want_nc}")
+    d = _first_diff(got.payload, want_payload)
+    if d is not None:
+        raise ProtocolError(f"{ctx}: payload differs at byte {d[0]} ({d[1]})")
+
+
+# ── control-line recording ────────────────────────────────────────────────────
+
+def record_line(seed, policy, cap=4000):
+    """Play one full game with `policy(idx, nc) -> action` and no snapshotting;
+    return (records, outcome). records[i] = (nc, payload, safe). outcome is a
+    dict {kind, returncode, winner} at real EOF (games never draw here)."""
+    eng = Engine(seed)
+    records = []
+    r = eng.read()
+    idx = 0
+    while r.kind == "q" and idx < cap:
+        records.append((r.nc, r.payload, r.safe))
+        r = eng.play(policy(idx, r.nc))
+        idx += 1
+    outcome = {"kind": r.kind, "returncode": r.returncode, "winner": r.winner}
+    eng.kill()
+    return records, outcome
+
+
+def _mod_policy(idx, nc):
+    return idx % nc
+
+
+def _auto0(idx, nc):
+    return 0
+
+
+def _diverge(i, nc):
+    return (i * 7 + 3) % nc
+
+
+# ── tests ─────────────────────────────────────────────────────────────────────
+
+def test_round_trip():
+    """SNAPSHOT / divergent line / RESTORE returns byte-identically, and the
+    resumed control line stays byte-identical to a no-snapshot control run with
+    the same outcome. Snapshots are taken at decisions 10/30/60 (deferred to the
+    next safe decision if one is unsafe). Also asserts the safe marker wiring:
+    safe=0 during the pregame mulligans, safe=1 later."""
+    seed = 5
+    control, outcome = record_line(seed, _mod_policy)
+    n = len(control)
+
+    safes = [s for (_, _, s) in control]
+    if not (False in safes[:4]):
+        raise ProtocolError("expected an unsafe (safe=0) pregame decision in the "
+                            f"first few decisions; got safe flags {safes[:4]}")
+    if not (True in safes):
+        raise ProtocolError("expected at least one safe=1 decision")
+
+    eng = Engine(seed)
+    cur = eng.read()
+    pending = [10, 30, 60]
+    excursions = 0
+    for idx in range(n):
+        # Continuous alignment: every real-line decision must match the control.
+        _assert_same_query(cur, control[idx][1], control[idx][0],
+                           f"round-trip alignment at decision {idx}")
+        if pending and idx >= pending[0] and cur.safe:
+            pending.pop(0)
+            snap_nc, snap_pl = cur.nc, cur.payload
+            q = eng.snapshot(0)
+            _assert_same_query(q, snap_pl, snap_nc,
+                              f"post-SNAPSHOT re-emit at decision {idx}")
+            # An 8-decision divergent line; stop early if it ends the game.
+            dq = q
+            for i in range(8):
+                dq = eng.play(_diverge(i, dq.nc))
+                if dq.kind != "q":
+                    break
+            rq = eng.restore(0)
+            _assert_same_query(rq, snap_pl, snap_nc,
+                              f"post-RESTORE re-emit at decision {idx}")
+            # Commit the real move: drop the snapshot so the game's true end
+            # later exits cleanly (EOF) rather than being intercepted as
+            # SIM_RESULT. RELEASE at a live decision re-emits the same query.
+            rel = eng.release()
+            _assert_same_query(rel, snap_pl, snap_nc,
+                              f"post-RELEASE re-emit at decision {idx}")
+            cur = rel
+            excursions += 1
+        cur = eng.play(_mod_policy(idx, cur.nc))
+    if cur.kind != "eof":
+        eng.kill()
+        raise ProtocolError(f"resumed line did not end at EOF (got {cur.kind}) — "
+                            "alignment drifted vs control")
+    if cur.returncode != 0:
+        eng.kill()
+        raise ProtocolError(f"resumed game exited with code {cur.returncode}")
+    if cur.winner != outcome["winner"]:
+        eng.kill()
+        raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} vs "
+                            f"resumed {cur.winner!r}")
+    eng.kill()
+    if excursions != 3:
+        raise ProtocolError(f"expected 3 snapshot excursions, ran {excursions}")
+    return f"{n} decisions, 3 excursions, outcome={outcome['winner']!r}"
+
+
+def test_rng_isolation():
+    """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
+    untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
+    RESTORE, the resumed auto-0 line is byte-identical to a clean control run."""
+    seed = 5
+    control, outcome = record_line(seed, _auto0)
+    n = len(control)
+    anchor = 15  # a safe mid-game decision (all decisions after mulligans are safe)
+
+    eng = Engine(seed)
+    cur = eng.read()
+    for idx in range(anchor):
+        _assert_same_query(cur, control[idx][1], control[idx][0],
+                           f"pre-anchor alignment at decision {idx}")
+        cur = eng.play(_auto0(idx, cur.nc))
+    if not cur.safe:
+        eng.kill()
+        raise ProtocolError(f"anchor decision {anchor} is not safe")
+    snap_nc, snap_pl = cur.nc, cur.payload
+    q = eng.snapshot(0)
+    _assert_same_query(q, snap_pl, snap_nc, "RNG-iso post-SNAPSHOT re-emit")
+    for k in range(1, 7):
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, f"RNG-iso RESTORE (cycle {k})")
+        dq = eng.determinize(k)
+        # Throwaway descent; stop at a simulated terminal.
+        for _ in range(10):
+            dq = eng.play(0)
+            if dq.kind != "q":
+                break
+    cur = eng.restore(0)
+    _assert_same_query(cur, snap_pl, snap_nc, "RNG-iso final RESTORE")
+    # Commit: drop the snapshot so the resumed real line ends at a clean EOF.
+    cur = eng.release()
+    _assert_same_query(cur, snap_pl, snap_nc, "RNG-iso post-RELEASE re-emit")
+    for idx in range(anchor, n):
+        _assert_same_query(cur, control[idx][1], control[idx][0],
+                           f"post-excursion alignment at decision {idx}")
+        cur = eng.play(_auto0(idx, cur.nc))
+    if cur.kind != "eof" or cur.returncode != 0:
+        eng.kill()
+        raise ProtocolError(f"resumed line ended abnormally: {cur.kind} "
+                            f"rc={cur.returncode}")
+    if cur.winner != outcome["winner"]:
+        eng.kill()
+        raise ProtocolError(f"outcome mismatch after excursions: {outcome['winner']!r} "
+                            f"vs {cur.winner!r}")
+    eng.kill()
+    return f"{n} decisions, 6 determinize cycles, outcome preserved"
+
+
+def _descend_hash(eng, first_q, count):
+    """Auto-0 for up to `count` decisions from first_q, hashing each BQUERY
+    payload; a simulated terminal contributes a terminal token and stops the
+    descent early. Returns the hex digest."""
+    h = hashlib.sha256()
+    h.update(first_q.payload)
+    for _ in range(count - 1):
+        r = eng.play(0)
+        if r.kind != "q":
+            if r.kind == "sim":
+                h.update(b"SIM:" + r.result.encode())
+            break
+        h.update(r.payload)
+    return h.hexdigest()
+
+
+def test_determinize_efficacy():
+    """Same seed reshuffles identically (equal descent hash); a different seed
+    diverges. SIM_RESULT during a descent is handled (terminal token + stop),
+    then RESTORE returns for the next cycle."""
+    seed = 5
+    anchor = 15
+    eng = Engine(seed)
+    cur = eng.read()
+    for idx in range(anchor):
+        cur = eng.play(0)
+    if not cur.safe:
+        eng.kill()
+        raise ProtocolError("determinize anchor not safe")
+    snap_pl, snap_nc = cur.payload, cur.nc
+    eng.snapshot(0)
+
+    def cycle(dseed):
+        r = eng.restore(0)
+        _assert_same_query(r, snap_pl, snap_nc, f"efficacy RESTORE (seed {dseed})")
+        dq = eng.determinize(dseed)
+        return _descend_hash(eng, dq, 60)
+
+    h1a = cycle(1)
+    h1b = cycle(1)
+    if h1a != h1b:
+        eng.kill()
+        raise ProtocolError("DETERMINIZE 1 not reproducible: two identical-seed "
+                            f"descents hashed differently ({h1a[:12]} vs {h1b[:12]})")
+    alt = None
+    for dseed in (2, 3):
+        h = cycle(dseed)
+        if h != h1a:
+            alt = (dseed, h)
+            break
+    if alt is None:
+        eng.kill()
+        raise ProtocolError("DETERMINIZE with seeds 2 and 3 both hashed identically "
+                            "to seed 1 — reshuffle appears to have no effect")
+    eng.kill()
+    return f"seed1 reproducible ({h1a[:12]}), seed{alt[0]} diverged ({alt[1][:12]})"
+
+
+def test_terminal_intercept():
+    """A simulated line that ends yields SIM_RESULT (not process exit); RESTORE
+    recovers the pre-terminal decision byte-identically; RELEASE at that live
+    decision re-emits the query; auto-0 then finishes the REAL game with a clean
+    exit and a real winner line."""
+    seed = 5
+    anchor = 15
+    eng = Engine(seed)
+    cur = eng.read()
+    for idx in range(anchor):
+        cur = eng.play(0)
+    if not cur.safe:
+        eng.kill()
+        raise ProtocolError("terminal-intercept anchor not safe")
+    snap_pl, snap_nc = cur.payload, cur.nc
+    eng.snapshot(0)
+
+    r = cur
+    sim = None
+    for _ in range(5000):
+        r = eng.play(0)
+        if r.kind == "sim":
+            sim = r
+            break
+        if r.kind == "eof":
+            break
+    if sim is None:
+        eng.kill()
+        raise ProtocolError(f"no SIM_RESULT within 5000 decisions (got {r.kind}) — "
+                            "a live snapshot should intercept game end")
+    if sim.result not in ("A", "B", "DRAW"):
+        eng.kill()
+        raise ProtocolError(f"unexpected SIM_RESULT payload {sim.result!r}")
+    rq = eng.restore(0)
+    _assert_same_query(rq, snap_pl, snap_nc, "terminal-intercept post-RESTORE re-emit")
+    rel = eng.release()
+    if rel.kind != "q":
+        eng.kill()
+        raise ProtocolError(f"RELEASE at a live decision should re-emit the query, "
+                            f"got {rel.kind}")
+    _assert_same_query(rel, snap_pl, snap_nc, "terminal-intercept post-RELEASE re-emit")
+    # Snapshots dropped: the game now really ends.
+    fin = rel
+    for _ in range(5000):
+        fin = eng.play(0)
+        if fin.kind != "q":
+            break
+    if fin.kind != "eof":
+        eng.kill()
+        raise ProtocolError(f"real game did not exit after RELEASE (got {fin.kind})")
+    if fin.returncode != 0:
+        eng.kill()
+        raise ProtocolError(f"real game exited with code {fin.returncode}")
+    if not fin.winner or b"wins" not in fin.winner.encode():
+        eng.kill()
+        raise ProtocolError(f"no real winner line printed (last: {fin.winner!r})")
+    eng.kill()
+    return f"SIM_RESULT={sim.result}, real winner={fin.winner!r}, clean exit"
+
+
+def test_determinize_invariants():
+    """DETERMINIZE preserves everything visible to the priority player except
+    hidden library order: its own hand, the step, both players' life/hand/library
+    counts, and the whole battlefield are byte/-value unchanged; RESTORE then
+    reverts byte-for-byte."""
+    seed = 7
+    anchor = 15
+    eng = Engine(seed)
+    cur = eng.read()
+    for idx in range(anchor):
+        cur = eng.play(0)
+    if not cur.safe:
+        eng.kill()
+        raise ProtocolError("invariants anchor not safe")
+    snap_pl, snap_nc = cur.payload, cur.nc
+    eng.snapshot(0)
+    dq = eng.determinize(9)
+    if dq.kind != "q":
+        eng.kill()
+        raise ProtocolError("DETERMINIZE did not re-emit a query")
+
+    s0, s1 = _state(snap_pl), _state(dq.payload)
+
+    def slice_(name, sl):
+        if not np.array_equal(s0[sl], s1[sl]):
+            raise ProtocolError(f"DETERMINIZE changed {name} (should be invariant "
+                                "to the priority player)")
+
+    try:
+        slice_("own hand", slice(_HAND_START, _HAND_START + MAX_HAND_SLOTS))
+        slice_("step one-hot",
+               slice(_STEP_ONEHOT_START, _STEP_ONEHOT_START + _STEP_ONEHOT_SIZE))
+        slice_("battlefield", slice(_SELF_PERM_START, _STACK_START))
+        for name, off in (("self life", _SELF_BLOCK_START + _PB_LIFE),
+                          ("opp life", _OPP_BLOCK_START + _PB_LIFE),
+                          ("self hand count", _SELF_BLOCK_START + _PB_HAND_CT),
+                          ("opp hand count", _OPP_BLOCK_START + _PB_HAND_CT),
+                          ("self library count", _LIBRARY_CTX_START),
+                          ("opp library count", _LIBRARY_CTX_START + 1)):
+            if s0[off] != s1[off]:
+                raise ProtocolError(f"DETERMINIZE changed {name} "
+                                    f"({s0[off]} -> {s1[off]})")
+    except ProtocolError:
+        eng.kill()
+        raise
+    rq = eng.restore(0)
+    _assert_same_query(rq, snap_pl, snap_nc, "invariants post-RESTORE re-emit")
+    eng.kill()
+    return "hand/step/battlefield/life/counts invariant under DETERMINIZE; RESTORE exact"
+
+
+def _write_sb_decks():
+    """Stacked bo3 decks for the sideboard-determinize test: identical 60-Swamp
+    mains, and a MARKER basic in each sideboard that exists nowhere else (A:
+    Plains, B: Mountain). With auto-0 sideboarding (action 0 = done, no swaps)
+    the real decks never contain a marker, so a marker card being drawn in a
+    simulated world proves the opponent's sideboard entered the exchange pool."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    paths = []
+    for name, marker in (("sb_det_a", "Plains"), ("sb_det_b", "Mountain")):
+        p = os.path.join(d, f"{name}.dk")
+        with open(p, "w") as f:
+            f.write(f"60 Swamp\nSIDEBOARD:\n15 {marker}\n")
+        paths.append(p)
+    return paths
+
+
+_SB_MARKERS = (b"Plains", b"Mountain")
+
+
+def _notes_marker_hits(r):
+    return sum(1 for n in (r.notes or []) for m in _SB_MARKERS if m in n)
+
+
+def _advance_to_safe(eng, cur, min_idx, ctx, cap=600):
+    """Auto-0 until a safe (safe=1) query at decision index >= min_idx."""
+    idx = 0
+    while idx < cap:
+        if cur.kind != "q":
+            raise ProtocolError(f"{ctx}: expected queries while advancing, got "
+                                f"{cur.kind} at index {idx}")
+        if idx >= min_idx and cur.safe:
+            return cur
+        cur = eng.play(0)
+        idx += 1
+    raise ProtocolError(f"{ctx}: no safe decision within {cap} decisions")
+
+
+def _determinize_descend_hits(eng, snap_pl, snap_nc, seeds, depth, ctx):
+    """For each world seed: RESTORE (assert exact), DETERMINIZE, auto-0 descend
+    `depth` decisions counting marker-card sightings in the narrative. Returns
+    total hits. Leaves the engine mid-descent; caller must RESTORE."""
+    hits = 0
+    for ds in seeds:
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, f"{ctx} RESTORE (seed {ds})")
+        r = eng.determinize(ds)
+        for _ in range(depth):
+            r = eng.play(0)
+            hits += _notes_marker_hits(r)
+            if r.kind != "q":
+                break
+    return hits
+
+
+def test_sideboard_determinize():
+    """Post-board hidden-sideboard semantics of DETERMINIZE, over a real bo3:
+
+    - game 1 (pre-board): the opponent's sideboard is NOT in the exchange pool —
+      marker cards that exist only in sideboards never appear in any sampled
+      world's narrative;
+    - game 2 (post-board): the opponent's sideboard IS exchangeable with their
+      unknown hand/library — sampled worlds draw marker cards even though the
+      actual (no-swap) deck contains none;
+    - the real line never shows a marker in either game (sim-only mixing), and
+      DETERMINIZE leaves both players' hand/library counts unchanged post-board.
+    """
+    deck_paths = _write_sb_decks()
+    eng = Engine(11, extra=["--bo3", "--deck-a", "temp/sb_det_a",
+                            "--deck-b", "temp/sb_det_b", "--narrative"])
+    try:
+        cur = eng.read()
+        # ── game 1: pre-board — sideboard must stay out of the pool ──────────
+        cur = _advance_to_safe(eng, cur, 15, "g1 anchor")
+        snap_pl, snap_nc = cur.payload, cur.nc
+        eng.snapshot(0)
+        g1_hits = _determinize_descend_hits(eng, snap_pl, snap_nc,
+                                            seeds=(1, 2, 3, 4), depth=120,
+                                            ctx="g1")
+        if g1_hits:
+            raise ProtocolError(
+                f"pre-board DETERMINIZE leaked {g1_hits} sideboard marker "
+                "sighting(s) into game-1 worlds — game 1 must model the known "
+                "60, not the 75")
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, "g1 final RESTORE")
+        rel = eng.release()
+        _assert_same_query(rel, snap_pl, snap_nc, "g1 post-RELEASE re-emit")
+        cur = rel
+
+        # ── play out game 1 for real; markers must never appear on the real
+        # line (auto-0 sideboarding makes no swaps in either direction) ──────
+        real_hits = 0
+        saw_g1_result = False
+        for _ in range(6000):
+            cur = eng.play(0)
+            real_hits += _notes_marker_hits(cur)
+            if cur.kind != "q":
+                raise ProtocolError(f"bo3 continuation ended unexpectedly "
+                                    f"({cur.kind}) before game 2")
+            if cur.note_has(b"GAME_RESULT:"):
+                saw_g1_result = True
+                break
+        if not saw_g1_result:
+            raise ProtocolError("game 1 did not finish within 6000 decisions")
+
+        # ── game 2: post-board — opponent sideboard joins the pool ──────────
+        cur = _advance_to_safe(eng, cur, 1, "g2 anchor")
+        snap_pl, snap_nc = cur.payload, cur.nc
+        eng.snapshot(0)
+        # Count invariance on one world before the sighting sweep.
+        dq = eng.determinize(1)
+        s0, s1 = _state(snap_pl), _state(dq.payload)
+        for name, off in (("self hand count", _SELF_BLOCK_START + _PB_HAND_CT),
+                          ("opp hand count", _OPP_BLOCK_START + _PB_HAND_CT),
+                          ("self library count", _LIBRARY_CTX_START),
+                          ("opp library count", _LIBRARY_CTX_START + 1)):
+            if s0[off] != s1[off]:
+                raise ProtocolError(f"post-board DETERMINIZE changed {name} "
+                                    f"({s0[off]} -> {s1[off]})")
+        g2_hits = _determinize_descend_hits(eng, snap_pl, snap_nc,
+                                            seeds=range(1, 9), depth=120,
+                                            ctx="g2")
+        if g2_hits == 0:
+            raise ProtocolError(
+                "post-board DETERMINIZE never surfaced a sideboard marker "
+                "across 8 worlds x 120 decisions — the opponent's sideboard "
+                "does not appear to join the exchange pool in game 2")
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, "g2 final RESTORE")
+        if real_hits:
+            raise ProtocolError(f"{real_hits} marker sighting(s) on the REAL "
+                                "line — sideboard mixing must be sim-only")
+        return (f"g1 worlds clean (0 marker hits), g2 worlds mixed "
+                f"({g2_hits} hits over 8 worlds), real line clean, counts "
+                "invariant")
+    finally:
+        eng.kill()
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_perf():
+    """Time SNAPSHOT+RESTORE pairs at one decision. Reported for CI logs; WARNs
+    (does not fail) above a lenient debug-build threshold — the sub-ms bar is a
+    release-build concern."""
+    seed = 5
+    anchor = 15
+    pairs = 300
+    warn_ms = 5.0
+    eng = Engine(seed)
+    cur = eng.read()
+    for idx in range(anchor):
+        cur = eng.play(0)
+    if not cur.safe:
+        eng.kill()
+        raise ProtocolError("perf anchor not safe")
+    snap_pl, snap_nc = cur.payload, cur.nc
+    eng.snapshot(0)
+    t0 = time.perf_counter()
+    for _ in range(pairs):
+        q = eng.snapshot(0)
+        r = eng.restore(0)
+    dt = time.perf_counter() - t0
+    # Correctness is still asserted on the last pair.
+    _assert_same_query(q, snap_pl, snap_nc, "perf SNAPSHOT re-emit")
+    _assert_same_query(r, snap_pl, snap_nc, "perf RESTORE re-emit")
+    eng.kill()
+    per = dt / pairs * 1000.0
+    warn = per > warn_ms
+    detail = f"{per:.3f} ms/pair over {pairs} pairs (incl. stdio round-trip)"
+    if warn:
+        detail += f"  [WARN > {warn_ms} ms — expected on a debug build]"
+    return detail
+
+
+TESTS = [
+    ("round_trip", test_round_trip),
+    ("rng_isolation", test_rng_isolation),
+    ("determinize_efficacy", test_determinize_efficacy),
+    ("terminal_intercept", test_terminal_intercept),
+    ("determinize_invariants", test_determinize_invariants),
+    ("sideboard_determinize", test_sideboard_determinize),
+    ("perf", test_perf),
+]
+
+
+def main():
+    if not os.path.exists(BINARY):
+        print(f"binary not found at {BINARY} — run `make` first", file=sys.stderr)
+        return 2
+    failures = 0
+    for name, fn in TESTS:
+        try:
+            detail = fn()
+            print(f"ok    {name}: {detail}", flush=True)
+        except (ProtocolError, EOFError, AssertionError) as e:
+            failures += 1
+            print(f"FAIL  {name}: {e}", flush=True)
+    print(f"\nsnapshot search-server: {len(TESTS) - failures}/{len(TESTS)} tests "
+          f"passed", flush=True)
+    return 1 if failures else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

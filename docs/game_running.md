@@ -51,10 +51,11 @@ harness, the TUI, and `play.py` — accepts:
   `--play` grammar, `action_spec.py`)
 - `"actions:<i,i,...>"` — positional action-index list
 - `"auto"` — always action 0 (pass / first choice)
-- a checkpoint path or deck shorthand (`"league/bug"` →
-  `checkpoints/league/bug__final.zip`, else newest `__v*`), resolved by
+- the generalist model spec `"gen"` (→ `checkpoints/gen__final.zip`, else newest
+  `gen__v*`) or an explicit checkpoint path, resolved by
   `opponents.resolve_checkpoint` — the single resolver shared by train.py,
-  play.py and the TUI
+  play.py and the TUI (a bare deck shorthand is rejected: the deck travels
+  separately as an explicit parameter)
 - a prebuilt `Controller` instance (passed through)
 
 The human-in-a-Textual-TUI seat is the exception: the TUI (`tui_game.py`,
@@ -107,10 +108,10 @@ benchmarks; there is no other decision loop in the tree.
 - **`train.py observe`** — per-seat agent specs (`--player-a/-b`,
   `--play-a/-b`), any matchup. **Defaults to bo3**; pass `--bo1` for single
   games.
-- **`train.py baseline <ckpt>`** — model vs scripted **HARD**, mirror decks
-  (deck inferred from the checkpoint's deck-pilot filename), seats alternate
-  per game, `--seed` reproducible. `--all` sweeps every `{deck}__final.zip`
-  under `checkpoints/` (recursive) and appends per-checkpoint win rates to
+- **`train.py baseline gen --deck <deck>`** — model vs scripted **HARD**, mirror
+  decks. `--deck` is REQUIRED (the generalist encodes no deck), seats alternate
+  per game, `--seed` reproducible. `--all` sweeps the generalist
+  (`gen__final.zip`) on every roster deck and appends per-matchup win rates to
   `checkpoints/baseline_report.log` (override with `--log`).
 - **`play.py`** — human vs model. Text mode = runner + `HumanController`
   (semantic input, `--seed`); `--tui` = Textual board.
