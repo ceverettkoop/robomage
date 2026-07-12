@@ -37,6 +37,11 @@ DEFAULT_ROOT_NOISE_EPS = 0.25
 DEFAULT_ROOT_NOISE_ALPHA = 1.0
 DEFAULT_TEMP_MOVES = 20        # sample-from-visits for the first N real decisions, then argmax
 FLUSH_SAMPLES = 4096           # write a shard once this many samples accumulate
+HEARTBEAT_MOVES = 25           # Python backend: mid-game progress line every N decisions
+
+
+def _fmt_secs(s: float) -> str:
+    return f"{s / 60:.1f}m" if s >= 90 else f"{s:.0f}s"
 
 
 # ----------------------------------------------------------------------
@@ -80,9 +85,14 @@ def _build_net(source: dict):
 # ----------------------------------------------------------------------
 
 def _play_game(env, evaluator, rng, *, sims, worlds, temp_moves,
-               root_noise_eps, root_noise_alpha, seed):
+               root_noise_eps, root_noise_alpha, seed, on_progress=None):
     """Play one mirror game; return (samples, winner) where samples is a list of
-    dicts {obs, pi, mask, mover_is_a} and winner is 'A'/'B'/None (draw)."""
+    dicts {obs, pi, mask, mover_is_a} and winner is 'A'/'B'/None (draw).
+
+    ``on_progress(move, searched, fallback)``, when given, fires every
+    HEARTBEAT_MOVES decisions. Observation-only: it must not (and cannot)
+    perturb the game or ``rng``, so play stays byte-identical with or without
+    it (the actor trains-identically gate replays this exact function)."""
     from mcts import run_search
 
     obs, _ = env.reset(seed=seed)
@@ -121,6 +131,8 @@ def _play_game(env, evaluator, rng, *, sims, worlds, temp_moves,
 
         obs, reward, terminated, truncated, _ = env.step(action)
         move += 1
+        if on_progress is not None and move % HEARTBEAT_MOVES == 0:
+            on_progress(move, searched, fallback)
         if terminated or truncated:
             done = True
             if terminated:
@@ -181,10 +193,18 @@ def _worker(deck, source, n_games, sims, worlds, temp_moves, root_noise_eps,
     try:
         for g in range(n_games):
             seed = base_seed + worker_idx * 100000 + g
+
+            def beat(move, searched_ct, fallback_ct, _g=g):
+                result_q.put({"kind": "beat", "worker": worker_idx,
+                              "game": _g + 1, "n_games": n_games, "move": move,
+                              "searched": searched_ct, "fallback": fallback_ct})
+
+            t0 = time.time()
             samples, winner, searched, fallback = _play_game(
                 env, evaluator, rng, sims=sims, worlds=worlds,
                 temp_moves=temp_moves, root_noise_eps=root_noise_eps,
-                root_noise_alpha=root_noise_alpha, seed=seed)
+                root_noise_alpha=root_noise_alpha, seed=seed,
+                on_progress=beat)
             obs, pi, z, mask = _backfill_and_pack(samples, winner)
             buf.append((obs, pi, z, mask))
             total_samples += len(samples)
@@ -193,15 +213,23 @@ def _worker(deck, source, n_games, sims, worlds, temp_moves, root_noise_eps,
             stats["wins_a"] += int(winner == "A")
             stats["wins_b"] += int(winner == "B")
             stats["draws"] += int(winner is None)
+            result_q.put({"kind": "game", "worker": worker_idx, "game": g + 1,
+                          "n_games": n_games, "winner": winner or "DRAW",
+                          "samples": len(samples), "searched": searched,
+                          "fallback": fallback, "secs": time.time() - t0})
             if sum(len(b[2]) for b in buf) >= FLUSH_SAMPLES:
                 shards.append(_write_shard(out_dir, _concat(buf), shard_n))
+                result_q.put({"kind": "shard", "worker": worker_idx,
+                              "path": shards[-1]})
                 shard_n += 1
                 buf = []
         if buf:
             shards.append(_write_shard(out_dir, _concat(buf), shard_n))
+            result_q.put({"kind": "shard", "worker": worker_idx,
+                          "path": shards[-1]})
     finally:
         env.close()
-    result_q.put({"worker": worker_idx, "samples": total_samples,
+    result_q.put({"kind": "done", "worker": worker_idx, "samples": total_samples,
                   "shards": shards, "stats": stats})
 
 
@@ -293,7 +321,46 @@ def _generate_python(deck, *, source, games, sims, worlds, workers, temp_moves,
         p.start()
         procs.append(p)
 
-    results = [result_q.get() for _ in procs]
+    # Live progress: workers stream beat/game/shard events onto the queue and
+    # finish with a 'done' record each. Consume until every worker reported.
+    import queue as _queue
+    t_start = time.time()
+    results = []
+    games_done = 0
+    samples_so_far = 0
+    tally = {"A": 0, "B": 0, "DRAW": 0}
+    while len(results) < len(procs):
+        try:
+            msg = result_q.get(timeout=60)
+        except _queue.Empty:
+            dead = [p.exitcode for p in procs if not p.is_alive()]
+            if len(dead) > len(results):
+                raise RuntimeError(
+                    f"az-selfplay: {len(dead) - len(results)} worker(s) died "
+                    f"without reporting (exit codes {dead}) — see stderr above")
+            continue
+        kind = msg.get("kind")
+        if kind == "beat":
+            print(f"[az-selfplay] w{msg['worker']} g{msg['game']}/{msg['n_games']}: "
+                  f"move {msg['move']}, searched {msg['searched']}, "
+                  f"fallback {msg['fallback']}", flush=True)
+        elif kind == "game":
+            games_done += 1
+            samples_so_far += msg["samples"]
+            tally[msg["winner"]] += 1
+            elapsed = time.time() - t_start
+            eta = elapsed / games_done * (games - games_done)
+            print(f"[az-selfplay] w{msg['worker']} g{msg['game']}/{msg['n_games']}: "
+                  f"winner={msg['winner']} samples={msg['samples']} "
+                  f"searched={msg['searched']} fallback={msg['fallback']} "
+                  f"in {_fmt_secs(msg['secs'])} | total {games_done}/{games} games, "
+                  f"{samples_so_far} samples, A {tally['A']} B {tally['B']} "
+                  f"D {tally['DRAW']}, elapsed {_fmt_secs(elapsed)}, "
+                  f"eta {_fmt_secs(eta)}", flush=True)
+        elif kind == "shard":
+            print(f"[az-selfplay] w{msg['worker']} wrote {msg['path']}", flush=True)
+        else:  # 'done' (also tolerates legacy kind-less records)
+            results.append(msg)
     for p in procs:
         p.join()
 
@@ -391,6 +458,7 @@ def _generate_actor(deck, *, source, games, sims, worlds, workers, temp_moves,
     import glob
     import shutil
     import subprocess
+    import threading
 
     ts_path, tmpdir = _ensure_actor_torchscript(source)
     out_dir = os.path.abspath(out_dir)
@@ -406,6 +474,29 @@ def _generate_actor(deck, *, source, games, sims, worlds, workers, temp_moves,
     total_samples = 0
     agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
     procs = []
+
+    # Live progress: a reader thread per worker echoes each actor SELFPLAY:
+    # game line as it lands (with a running cross-worker total + ETA) while
+    # accumulating the full stdout/stderr for the final parse. Without this,
+    # nothing prints until every worker exits.
+    t_start = time.time()
+    prog_lock = threading.Lock()
+    prog = {"done": 0}
+
+    def _pump(wi, stream, sink, is_stdout):
+        for line in stream:
+            sink.append(line)
+            if is_stdout and line.startswith("SELFPLAY: game "):
+                with prog_lock:
+                    prog["done"] += 1
+                    done = prog["done"]
+                    elapsed = time.time() - t_start
+                    eta = elapsed / done * (games - done)
+                print(f"[az-selfplay] w{wi} {line.strip()} | total {done}/{games} "
+                      f"games, elapsed {_fmt_secs(elapsed)}, eta {_fmt_secs(eta)}",
+                      flush=True)
+        stream.close()
+
     try:
         for wi in range(workers):
             if per[wi] == 0:
@@ -417,17 +508,28 @@ def _generate_actor(deck, *, source, games, sims, worlds, workers, temp_moves,
                 noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
                 temp_moves=temp_moves, rng_seed=seed + 100003 * (wi + 1))
             # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
-            p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True,
+            p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            procs.append((wi, per[wi], p))
+            out_lines, err_lines = [], []
+            threads = [
+                threading.Thread(target=_pump, args=(wi, p.stdout, out_lines, True),
+                                 daemon=True),
+                threading.Thread(target=_pump, args=(wi, p.stderr, err_lines, False),
+                                 daemon=True),
+            ]
+            for t in threads:
+                t.start()
+            procs.append((wi, per[wi], p, threads, out_lines, err_lines))
 
         failed = []
-        for wi, ng, p in procs:
-            out, err = p.communicate()
+        for wi, ng, p, threads, out_lines, err_lines in procs:
+            p.wait()
+            for t in threads:
+                t.join()
             if p.returncode != 0:
-                failed.append((wi, p.returncode, err))
+                failed.append((wi, p.returncode, "".join(err_lines)))
                 continue
-            s, wa, wb, dr = _parse_actor_output(out)
+            s, wa, wb, dr = _parse_actor_output("".join(out_lines))
             total_samples += s
             agg["wins_a"] += wa
             agg["wins_b"] += wb
