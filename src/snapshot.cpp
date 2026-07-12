@@ -59,7 +59,10 @@ bool snapshot_restore(int slot) {
     if (!s.live) return false;
     cur_game = s.game;
     global_coordinator.restore_from(s.ecs);
-    card_db = s.card_db_copy;
+    // card_db is add-only during play (load_card only inserts), so a size match
+    // means nothing was loaded since the save and the maps are identical — skip
+    // the copy rather than reallocating every string key once per sim restore.
+    if (card_db.size() != s.card_db_copy.size()) card_db = s.card_db_copy;
     for (int i = 0; i < REVEALED_SIZE; ++i) {
         g_revealed_by_a[i] = s.revealed_a[i];
         g_revealed_by_b[i] = s.revealed_b[i];

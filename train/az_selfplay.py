@@ -363,6 +363,28 @@ def _parse_actor_output(stdout: str):
     return samples, wins_a, wins_b, draws
 
 
+def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
+                       out_dir, noise_eps=DEFAULT_ROOT_NOISE_EPS,
+                       noise_alpha=DEFAULT_ROOT_NOISE_ALPHA,
+                       temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None) -> list:
+    """Build a ``bin/az_actor --selfplay`` argv.
+
+    The single source of the actor CLI contract on the Python side — used by
+    _generate_actor and bench_actor so the production and benchmark invocations
+    can never drift apart (and both always pin the noise/temperature knobs
+    instead of leaning on the actor's compiled-in defaults)."""
+    cmd = [actor_bin, "--selfplay", "--deck", deck,
+           "--seed", str(seed), "--games", str(games),
+           "--sims", str(sims), "--worlds", str(worlds),
+           "--model", model, "--out-dir", out_dir,
+           "--noise-eps", str(noise_eps),
+           "--noise-alpha", str(noise_alpha),
+           "--temp-moves", str(temp_moves)]
+    if rng_seed is not None:
+        cmd += ["--rng-seed", str(rng_seed)]
+    return cmd
+
+
 def _generate_actor(deck, *, source, games, sims, worlds, workers, temp_moves,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
                     actor_bin) -> dict:
@@ -389,14 +411,11 @@ def _generate_actor(deck, *, source, games, sims, worlds, workers, temp_moves,
             if per[wi] == 0:
                 continue
             base = seed + wi * 100000
-            cmd = [actor_bin, "--selfplay", "--deck", deck,
-                   "--seed", str(base), "--games", str(per[wi]),
-                   "--sims", str(sims), "--worlds", str(worlds),
-                   "--model", ts_path, "--out-dir", out_dir,
-                   "--noise-eps", str(root_noise_eps),
-                   "--noise-alpha", str(root_noise_alpha),
-                   "--temp-moves", str(temp_moves),
-                   "--rng-seed", str(seed + 100003 * (wi + 1))]
+            cmd = actor_selfplay_cmd(
+                actor_bin, deck=deck, seed=base, games=per[wi],
+                sims=sims, worlds=worlds, model=ts_path, out_dir=out_dir,
+                noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
+                temp_moves=temp_moves, rng_seed=seed + 100003 * (wi + 1))
             # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
             p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True,
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)

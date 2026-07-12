@@ -45,9 +45,12 @@ _TOTAL = re.compile(r"^SELFPLAY: total_samples=(\d+) shards=(\d+)$")
 
 
 def _cpp_leg(ts_path, out_dir, args):
-    cmd = [ACTOR_BIN, "--selfplay", "--deck", args.deck, "--seed", str(args.seed),
-           "--games", str(args.games), "--sims", str(args.sims),
-           "--worlds", str(args.worlds), "--model", ts_path, "--out-dir", out_dir]
+    # Shared argv builder (az_selfplay.actor_selfplay_cmd) pins the same
+    # noise/temperature knobs _python_leg passes to _play_game, so the two legs
+    # measure the identical workload by construction.
+    cmd = az_selfplay.actor_selfplay_cmd(
+        ACTOR_BIN, deck=args.deck, seed=args.seed, games=args.games,
+        sims=args.sims, worlds=args.worlds, model=ts_path, out_dir=out_dir)
     env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
     t0 = time.perf_counter()
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,

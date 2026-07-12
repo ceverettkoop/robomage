@@ -514,6 +514,37 @@ def make_controller(spec, *,
     return ModelController(_load_model(path), label=s, deterministic=deterministic)
 
 
+def _parse_spec_query(spec: str) -> tuple:
+    """Split a ``<base>[?k=v&k=v...]`` controller spec into (base, params).
+
+    Shared by the mcts:/az: builders so the query grammar lives in one place."""
+    base, _, query = spec.partition("?")
+    params: dict[str, str] = {}
+    if query:
+        for part in query.split("&"):
+            if not part.strip():
+                continue
+            k, _, v = part.partition("=")
+            params[k.strip().lower()] = v.strip()
+    return base.strip(), params
+
+
+def _spec_knob(params: dict, key: str, default, conv, spec: str):
+    """Fetch+convert one query knob, failing LOUDLY on a bad/empty value.
+
+    Without this, a malformed spec like "az:delver?worlds=" reaches int("")
+    and dies with a bare ValueError traceback instead of naming the spec."""
+    raw = params.get(key)
+    if raw is None:
+        return default
+    try:
+        return conv(raw)
+    except ValueError:
+        raise ValueError(
+            f"bad controller spec {spec!r}: knob '{key}' needs a "
+            f"{conv.__name__} value, got {raw!r}") from None
+
+
 def _make_search_controller(spec: str, *,
                             checkpoint_resolver=None) -> "SearchController":
     """Build a SearchController from the part after "mcts:".
@@ -524,22 +555,14 @@ def _make_search_controller(spec: str, *,
     """
     from mcts import PPOEvaluator, UniformEvaluator
 
-    base, _, query = spec.partition("?")
-    params: dict[str, str] = {}
-    if query:
-        for part in query.split("&"):
-            if not part.strip():
-                continue
-            k, _, v = part.partition("=")
-            params[k.strip().lower()] = v.strip()
-    sims = int(params.get("sims", 128))
-    worlds = int(params.get("worlds", 4))
-    c_puct = float(params.get("c", 1.5))
-    temperature = float(params.get("temp", 0.0))
-    v_scale = float(params.get("vscale", 1.0))
-    rng_seed = int(params.get("seed", 0))
+    base, params = _parse_spec_query(spec)
+    sims = _spec_knob(params, "sims", 128, int, spec)
+    worlds = _spec_knob(params, "worlds", 4, int, spec)
+    c_puct = _spec_knob(params, "c", 1.5, float, spec)
+    temperature = _spec_knob(params, "temp", 0.0, float, spec)
+    v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
+    rng_seed = _spec_knob(params, "seed", 0, int, spec)
 
-    base = base.strip()
     if base.lower() == "uniform":
         evaluator = UniformEvaluator()
         label = f"mcts:uniform({sims}x{worlds})"
@@ -585,25 +608,18 @@ def _make_az_controller(spec: str, *, search: bool):
 
     Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=]`` where <base> is an AZ
     checkpoint path / deck shorthand (falls back to a PPO warm-start)."""
-    base, _, query = spec.partition("?")
-    params: dict = {}
-    if query:
-        for part in query.split("&"):
-            if not part.strip():
-                continue
-            k, _, v = part.partition("=")
-            params[k.strip().lower()] = v.strip()
-    evaluator, resolved = _load_az_evaluator(base.strip())
+    base, params = _parse_spec_query(spec)
+    evaluator, resolved = _load_az_evaluator(base)
     if not search:
-        return AZRawController(evaluator, label=f"azraw:{base.strip()}")
-    sims = int(params.get("sims", 128))
-    worlds = int(params.get("worlds", 4))
-    c_puct = float(params.get("c", 1.5))
-    temperature = float(params.get("temp", 0.0))
-    rng_seed = int(params.get("seed", 0))
+        return AZRawController(evaluator, label=f"azraw:{base}")
+    sims = _spec_knob(params, "sims", 128, int, spec)
+    worlds = _spec_knob(params, "worlds", 4, int, spec)
+    c_puct = _spec_knob(params, "c", 1.5, float, spec)
+    temperature = _spec_knob(params, "temp", 0.0, float, spec)
+    rng_seed = _spec_knob(params, "seed", 0, int, spec)
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                             temperature=temperature,
-                            label=f"az:{base.strip()}({sims}x{worlds})",
+                            label=f"az:{base}({sims}x{worlds})",
                             rng_seed=rng_seed)
 
 

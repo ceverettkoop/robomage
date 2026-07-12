@@ -171,6 +171,15 @@ void NpzWriter::add_member(const std::string& name, const char* descr,
     put_u16(lh, 0);  // extra len
     lh.insert(lh.end(), filename.begin(), filename.end());
 
+    // All zip size/offset fields are 32-bit (no Zip64 support): a member or
+    // cumulative archive offset past 4 GiB would truncate silently and corrupt
+    // the shard, so fail loudly instead. Unreachable at current shard sizes
+    // (~110 MB); trips only after a large FLUSH_SAMPLES / obs-width change.
+    if (uncompressed > UINT32_MAX ||
+        static_cast<uint64_t>(offset_) + lh.size() + uncompressed > UINT32_MAX)
+        fatal_error("npz_writer: member or archive exceeds 4 GiB (no Zip64 "
+                    "support): " + filename);
+
     Member m;
     m.filename = filename;
     m.crc = crc;
