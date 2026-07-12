@@ -807,7 +807,8 @@ class LeaguePool:
                  rng: Optional[np.random.Generator] = None,
                  n_envs: int = 1, env_index: int = 0,
                  max_checkpoint_ratio: float = 1.0,
-                 deterministic: bool = False, scripted_spec: str = "scripted"):
+                 deterministic: bool = False, scripted_spec: str = "scripted",
+                 self_decks: Optional[Sequence[str]] = None):
         self._learner = learner_deck
         self._roster = list(roster) or [learner_deck]
         self._dir = checkpoint_dir
@@ -819,8 +820,19 @@ class LeaguePool:
         self._ratio = max_checkpoint_ratio
         self._deterministic = deterministic
         self._scripted_spec = scripted_spec
+        # Mixed-self-deck mode: when ``self_decks`` is given the learner's OWN deck
+        # also varies per episode, cycled (per-pool shuffled round-robin, reshuffled
+        # each full pass so every deck is piloted equally often within a rollout).
+        # ``None`` keeps the classic fixed-self-deck behavior (the learner always
+        # pilots ``learner_deck``; the driver rotates the deck between chunks).
+        self._self_decks = list(self_decks) if self_decks else None
+        self._mixed = self._self_decks is not None
+        self._self_cycle: list[str] = []
+        self._self_cycle_idx = 0
         self._cache: dict[str, Controller] = {}    # path -> ModelController
-        self._weights: dict = {}                   # (opp_deck, label) -> float
+        # (opp_deck, label) aggregate weights AND, in mixed mode, (self_deck,
+        # opp_deck, label) matchup weights layered on top — see _entry_weights.
+        self._weights: dict = {}
         self._snap_entries: list[tuple[str, str]] = []  # [(path, deck)] this process holds
         self._latest_self: Optional[str] = None    # learner's newest snapshot
         self._total_snaps = 0                      # total snapshots across roster (auto-ramp)
@@ -873,9 +885,30 @@ class LeaguePool:
         if self._episode % self.REFRESH_EVERY == 0:
             self.refresh()
 
+    def _next_self_deck(self) -> str:
+        """Deck the learner pilots this episode.
+
+        Fixed mode: always ``learner_deck``. Mixed mode: the next deck from a
+        per-pool shuffled cycle over ``self_decks``, reshuffled at each full pass
+        (deterministic given the pool's rng, so a seeded run replays identically)."""
+        if not self._mixed:
+            return self._learner
+        if self._self_cycle_idx >= len(self._self_cycle):
+            self._self_cycle = list(self._self_decks)
+            self._rng.shuffle(self._self_cycle)
+            self._self_cycle_idx = 0
+        deck = self._self_cycle[self._self_cycle_idx]
+        self._self_cycle_idx += 1
+        return deck
+
     # ── weights pushed from the PFSPCallback ─────────────────────────────────
     def set_weights(self, weights):
-        """Replace the historical-snapshot weighting (keyed by (opp_deck, label))."""
+        """Replace the historical-snapshot weighting.
+
+        Keys are ``(opp_deck, label)`` aggregate weights and, in mixed mode, also
+        ``(self_deck, opp_deck, label)`` matchup weights layered on top (the
+        callback broadcasts a matchup key only once it has enough decisive samples).
+        ``_entry_weights`` prefers the matchup key and falls back to the aggregate."""
         if weights:
             self._weights = dict(weights)
 
@@ -908,34 +941,50 @@ class LeaguePool:
         return self._self_play_frac * min(1.0, self._total_snaps / float(target))
 
     # ── per-episode sampling ─────────────────────────────────────────────────
-    def sample_episode(self) -> tuple[str, str, Controller]:
-        """Return (opp_deck, label, controller) for this episode."""
+    def sample_episode(self) -> tuple[str, str, str, Controller]:
+        """Return ``(self_deck, opp_deck, label, controller)`` for this episode.
+
+        ``self_deck`` is the deck the LEARNER pilots this episode — the fixed
+        ``learner_deck`` in classic mode, or the next deck from the shuffled cycle
+        in mixed mode. It is returned as a 4-tuple in BOTH modes so the env wrapper
+        has one call shape."""
         self._maybe_refresh()
-        # 1. latest-self slot (fast learning vs the current frontier).
+        self_deck = self._next_self_deck()
+        # 1. latest-self slot (fast learning vs the current frontier) — a true
+        #    mirror: the newest snapshot piloting THIS episode's self deck.
         if (self._latest_self is not None
                 and self._rng.random() < self._effective_self_play_frac()):
-            return (self._learner, os.path.basename(self._latest_self),
+            return (self_deck, self_deck, os.path.basename(self._latest_self),
                     self._model_for(self._latest_self))
         # 2. scripted anchor — a fixed floor carved out of the historical share so
         #    the collapse guard never vanishes (also the cold-start fallback when
         #    this process holds no snapshots).
         if (not self._snap_entries) or self._rng.random() < self._anchor_frac:
             deck = self._roster[int(self._rng.integers(len(self._roster)))]
-            return deck, self._scripted_spec, self._scripted()
+            return self_deck, deck, self._scripted_spec, self._scripted()
         # 3. weighted historical snapshot (cross-deck league + mirror self-play).
-        weights = self._entry_weights()
+        weights = self._entry_weights(self_deck)
         idx = int(self._rng.choice(len(self._snap_entries), p=weights))
         path, deck = self._snap_entries[idx]
-        return deck, os.path.basename(path), self._model_for(path)
+        return self_deck, deck, os.path.basename(path), self._model_for(path)
 
-    def _entry_weights(self) -> np.ndarray:
+    def _entry_weights(self, self_deck: str) -> np.ndarray:
         """Normalised PFSP/softmax weights for this process's snapshot entries.
 
-        Unseen entries default to the current max weight so fresh snapshots get
-        tried (OpenAI-Five 'init new snapshot quality to the max' rule)."""
+        Weighting is matchup-aware: for each ``(path, opp_deck)`` entry we prefer
+        the matchup-keyed weight ``(self_deck, opp_deck, label)`` when the callback
+        has broadcast one (enough decisive games), else the opponent-aggregate
+        weight ``(opp_deck, label)``, else the current max weight so unseen entries
+        still get tried (OpenAI-Five 'init new snapshot quality to the max' rule).
+        In fixed mode the weights dict has no matchup keys, so this collapses to
+        the old aggregate-only behavior."""
         default = max(self._weights.values()) if self._weights else 1.0
-        w = np.array([
-            self._weights.get((deck, os.path.basename(path)), default)
-            for path, deck in self._snap_entries], dtype=float)
-        w = np.clip(w, 1e-8, None)
+        w = []
+        for path, deck in self._snap_entries:
+            label = os.path.basename(path)
+            val = self._weights.get((self_deck, deck, label))
+            if val is None:
+                val = self._weights.get((deck, label), default)
+            w.append(val)
+        w = np.clip(np.array(w, dtype=float), 1e-8, None)
         return w / w.sum()

@@ -103,7 +103,8 @@ class WinTallyCallback(BaseCallback):
 
     def __init__(self):
         super().__init__()
-        self._matchups: dict[str, list[int]] = {}  # deck -> [wins, losses]
+        self._matchups: dict[str, list[int]] = {}  # opp deck -> [wins, losses]
+        self._by_self: dict[str, list[int]] = {}   # self deck -> [wins, losses]
 
     def _on_step(self) -> bool:
         for info in self.locals["infos"]:
@@ -112,13 +113,13 @@ class WinTallyCallback(BaseCallback):
             outcome = _episode_outcome(info)
             if outcome == 0:
                 continue
+            win = 0 if outcome > 0 else 1
             deck = info.get("opp_deck", "unknown")
-            if deck not in self._matchups:
-                self._matchups[deck] = [0, 0]
-            if outcome > 0:
-                self._matchups[deck][0] += 1
-            else:
-                self._matchups[deck][1] += 1
+            self._matchups.setdefault(deck, [0, 0])[win] += 1
+            meta = info.get("game_meta") or {}
+            self_deck = meta.get("self_deck")
+            if self_deck:
+                self._by_self.setdefault(self_deck, [0, 0])[win] += 1
         return True
 
     def _on_rollout_end(self) -> None:
@@ -132,9 +133,15 @@ class WinTallyCallback(BaseCallback):
             print(f"[tally] vs {deck}: {w}W {l}L ({pct:.1f}%)")
             total_w += w
             total_l += l
+        for deck in sorted(self._by_self):
+            w, l = self._by_self[deck]
+            total = w + l
+            pct = 100.0 * w / total if total else 0.0
+            print(f"[tally] with {deck}: {w}W {l}L ({pct:.1f}%)")
         grand = total_w + total_l
         print(f"[tally] overall: {total_w}W {total_l}L ({100.0 * total_w / grand:.1f}%)")
         self._matchups.clear()
+        self._by_self.clear()
 
 
 def _episode_outcome(info: dict) -> int:
@@ -188,7 +195,7 @@ class PFSPCallback(BaseCallback):
     """
 
     def __init__(self, vec_env, mode: str = "pfsp", p: float = 2.0, eta: float = 0.01,
-                 recent_window: int = 200):
+                 recent_window: int = 200, min_matchup_samples: int = 8):
         super().__init__()
         self._vec_env = vec_env
         self._mode = mode
@@ -196,6 +203,16 @@ class PFSPCallback(BaseCallback):
         self._eta = eta
         self._stats: dict[tuple, list[int]] = {}  # (opp_deck, label) -> [wins, losses]
         self._q: dict[tuple, float] = {}          # (opp_deck, label) -> quality (softmax)
+        # Matchup-keyed stats (self_deck, opp_deck, label) -> [wins, losses], used
+        # (once a matchup has enough decisive games) to broadcast a matchup-aware
+        # weight alongside the aggregate one. Only meaningful in league mixed mode
+        # (fixed mode has a single self deck), but harmless otherwise.
+        self._matchup_stats: dict[tuple, list[int]] = {}
+        self._min_matchup_samples = max(1, min_matchup_samples)
+        # Per-self-deck W/L and a recent-outcome window (win-rate WITH each deck).
+        self._by_self: dict[str, list[int]] = {}
+        self._recent_by_self: dict[str, deque] = {}
+        self._recent_window = max(1, recent_window)
         # Sliding window of the most recent decisive episode outcomes (1.0 win /
         # 0.0 loss), used by the snapshot promotion gate so it reflects *current*
         # strength rather than the cumulative-since-chunk-start average.
@@ -209,14 +226,28 @@ class PFSPCallback(BaseCallback):
             if outcome == 0:
                 continue
             meta = info.get("game_meta") or {}
-            key = (meta.get("opp_deck", "unknown"), meta.get("opp_type", "scripted"))
+            opp_deck = meta.get("opp_deck", "unknown")
+            label = meta.get("opp_type", "scripted")
+            # Fall back to the fixed learner deck's marker when absent so fixed
+            # mode (which always sets self_deck) and any legacy env behave sanely.
+            self_deck = meta.get("self_deck", "unknown")
+            key = (opp_deck, label)
             wl = self._stats.setdefault(key, [0, 0])
             if key not in self._q:
                 # New entry: init quality to the current max so it gets sampled.
                 self._q[key] = max(self._q.values()) if self._q else 0.0
-            self._recent.append(1.0 if outcome > 0 else 0.0)
-            if outcome > 0:
+            won = outcome > 0
+            self._recent.append(1.0 if won else 0.0)
+            # Matchup + per-self-deck bookkeeping.
+            mwl = self._matchup_stats.setdefault((self_deck, opp_deck, label), [0, 0])
+            swl = self._by_self.setdefault(self_deck, [0, 0])
+            srw = self._recent_by_self.setdefault(
+                self_deck, deque(maxlen=self._recent_window))
+            srw.append(1.0 if won else 0.0)
+            if won:
                 wl[0] += 1
+                mwl[0] += 1
+                swl[0] += 1
                 if self._mode == "softmax":
                     keys = list(self._q)
                     probs = _softmax(np.array([self._q[k] for k in keys], dtype=float))
@@ -224,6 +255,8 @@ class PFSPCallback(BaseCallback):
                     self._q[key] -= self._eta / (len(keys) * max(p_i, 1e-8))
             else:
                 wl[1] += 1
+                mwl[1] += 1
+                swl[1] += 1
         return True
 
     def _weight_for(self, key) -> float:
@@ -233,6 +266,29 @@ class PFSPCallback(BaseCallback):
         total = w + l
         winrate = w / total if total else 0.0
         return float((1.0 - winrate) ** self._p)
+
+    def _weight_for_matchup(self, mkey) -> float:
+        """Matchup weight from its own decisive win-rate.
+
+        Always the PFSP form ``(1 - winrate)^p`` on the matchup's stats (even in
+        softmax mode, whose quality machinery is tracked per opponent-aggregate
+        only) so the pool has a matchup-specific signal to prefer the learner's
+        worst (self_deck, opp_deck) pairings."""
+        w, l = self._matchup_stats.get(mkey, (0, 0))
+        total = w + l
+        winrate = w / total if total else 0.0
+        return float((1.0 - winrate) ** self._p)
+
+    def winrate_by_self(self) -> dict:
+        """Recent-window win-rate per self deck ({deck: winrate|None}).
+
+        The league driver uses this to record per-self-deck progress in the
+        sidecar in mixed mode. ``None`` for a deck with no decisive games yet."""
+        out: dict = {}
+        for deck, dq in self._recent_by_self.items():
+            n = len(dq)
+            out[deck] = (sum(dq) / n) if n else None
+        return out
 
     def overall_winrate(self) -> float:
         """Aggregate learner win-rate across all opponents seen so far (lifetime)."""
@@ -252,7 +308,14 @@ class PFSPCallback(BaseCallback):
     def _on_rollout_end(self) -> None:
         if not self._stats:
             return
+        # Aggregate (opp_deck, label) weights PLUS matchup-keyed (self_deck,
+        # opp_deck, label) overrides for matchups with enough decisive games. Both
+        # live in one dict; LeaguePool._entry_weights tries the 3-tuple matchup key
+        # first and falls back to the 2-tuple aggregate (see set_weights).
         weights = {key: self._weight_for(key) for key in self._stats}
+        for mkey, (w, l) in self._matchup_stats.items():
+            if w + l >= self._min_matchup_samples:
+                weights[mkey] = self._weight_for_matchup(mkey)
         # Broadcast to every env's LeaguePool (no-op for non-league envs).
         try:
             self._vec_env.env_method("update_opponent_weights", weights)
@@ -281,6 +344,13 @@ class PFSPCallback(BaseCallback):
             total = w + l
             pct = 100.0 * w / total if total else 0.0
             print(f"[pfsp] deck total vs {deck:<10}: {w}W {l}L ({pct:.1f}%)")
+        # Win-rate WITH each self deck (the deck the learner piloted). In fixed mode
+        # there is a single self deck; in league mixed mode all rotation decks appear.
+        for sd in sorted(self._by_self):
+            w, l = self._by_self[sd]
+            total = w + l
+            pct = 100.0 * w / total if total else 0.0
+            print(f"[pfsp] with {sd:<12}: {w}W {l}L ({pct:.1f}%)")
         rwr, rn = self.recent_winrate()
         print(f"[pfsp] overall win-rate: {100.0 * self.overall_winrate():.1f}%  "
               f"recent (n={rn}): {100.0 * rwr:.1f}%")
@@ -292,6 +362,11 @@ class PFSPCallback(BaseCallback):
         for deck, rates in model_rates_by_deck.items():
             self.logger.record(f"pfsp_model/winrate_vs_{_deck_tag(deck)}",
                                sum(rates) / len(rates))
+        # Per-self-deck win rates (win-rate WITH each pilot deck), cumulative.
+        for sd, (w, l) in self._by_self.items():
+            total = w + l
+            if total:
+                self.logger.record(f"pfsp/winrate_with_{_deck_tag(sd)}", w / total)
         self.logger.record("pfsp/winrate_overall", self.overall_winrate())
         self.logger.record("pfsp/winrate_recent", rwr)
 
@@ -656,7 +731,10 @@ def _configure_run_logger(model, deck: str) -> str:
 # are done) lives outside any single model checkpoint, so we persist it to a small
 # JSON sidecar that is rewritten every time a snapshot is saved (and at each rotation
 # boundary). A crashed/interrupted `league` run then resumes from `league --resume`.
-LEAGUE_STATE_VERSION = 1
+# v2 added the mixed-self-deck mode (per-episode self-deck cycling) and its
+# `fixed_self_deck` param. A v1 sidecar was written by the old one-deck-per-rotation
+# mode, so it resumes as fixed_self_deck=True.
+LEAGUE_STATE_VERSION = 2
 
 
 def _league_state_path(checkpoint_dir: str, tag: str = "") -> str:
@@ -855,7 +933,8 @@ def make_self_play_env(checkpoint_dir: str, rank: int,
 
 def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_dir: str,
                     n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
-                    scripted_anchor_frac: float, **env_kwargs):
+                    scripted_anchor_frac: float, self_decks: list[str] | None = None,
+                    **env_kwargs):
     def _init():
         _limit_worker_threads()
         from opponents import LeaguePool
@@ -863,9 +942,13 @@ def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_
             learner_deck, roster, checkpoint_dir,
             self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
             rng=np.random.default_rng(2000 + rank),
-            n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio)
-        # opp_deck is None: the LeaguePool picks the opponent's deck per episode.
-        env = ModelVsScriptedEnv(model_deck=learner_deck, opp_deck=None,
+            n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio,
+            self_decks=self_decks)
+        # Mixed mode: model_deck is None and the pool supplies the learner's deck
+        # per episode. Fixed mode: the learner always pilots learner_deck.
+        # opp_deck is None either way: the LeaguePool picks the opponent's deck.
+        model_deck = None if self_decks is not None else learner_deck
+        env = ModelVsScriptedEnv(model_deck=model_deck, opp_deck=None,
                                  opponent=pool, **env_kwargs)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
@@ -994,7 +1077,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
                   scripted_anchor_frac: float, pfsp_mode: str, pfsp_p: float,
                   softmax_eta: float, snapshot_every: int, promote_margin: float,
                   embed_dim: int, no_shaping: bool, fresh: bool = False,
-                  on_progress=None, **env_kwargs):
+                  on_progress=None, self_decks: list[str] | None = None, **env_kwargs):
     """Train the one generalist on ``deck`` for ``chunk_steps`` against the shared
     league pool.
 
@@ -1014,7 +1097,8 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
     _ensure_deck_ckpt_subdir(checkpoint_dir, learner_deck)
     vec_env = SubprocVecEnv([
         make_league_env(i, learner_deck, roster, checkpoint_dir, n_envs,
-                        opp_ckpt_ratio, self_play_frac, scripted_anchor_frac, **env_kwargs)
+                        opp_ckpt_ratio, self_play_frac, scripted_anchor_frac,
+                        self_decks=self_decks, **env_kwargs)
         for i in range(n_envs)])
     try:
         policy_kwargs = dict(
@@ -1080,7 +1164,9 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             wr = None  # no decisive game finished this chunk
         elif n < 50:
             wr = pfsp_cb.overall_winrate()
-        return model.num_timesteps - start_steps, wr, model.num_timesteps
+        # Per-self-deck recent win-rates for the driver's mixed-mode deck_stats.
+        return (model.num_timesteps - start_steps, wr, model.num_timesteps,
+                pfsp_cb.winrate_by_self())
     finally:
         vec_env.close()
 
@@ -1098,7 +1184,8 @@ def league(binary_path: str, decks: str | None = None,
            opp_ckpt_ratio: float = 1.0, no_shaping: bool = False,
            adaptive_boost: float = LEAGUE_ADAPTIVE_BOOST,
            shard: str | None = None, train_decks_spec: str | None = None,
-           tally: bool = False, resume: bool = False, **env_kwargs):
+           tally: bool = False, resume: bool = False,
+           fixed_self_deck: bool = False, **env_kwargs):
     """PFSP league driver: rotating single learner over a shared snapshot pool.
 
     One learner deck at a time trains for ``rotate_every`` steps against a frozen
@@ -1174,6 +1261,12 @@ def league(binary_path: str, decks: str | None = None,
         no_shaping = bool(p.get("no_shaping", no_shaping))
         adaptive_boost = float(p.get("adaptive_boost", adaptive_boost))
         train_decks_spec = p.get("train_decks", train_decks_spec)
+        # A pre-v2 sidecar was written by the old one-deck-per-rotation mode, which
+        # is exactly fixed_self_deck=True; v2+ stores the flag explicitly.
+        if int(state.get("version", 1)) < 2:
+            fixed_self_deck = True
+        else:
+            fixed_self_deck = bool(p.get("fixed_self_deck", fixed_self_deck))
         env_kwargs.setdefault("bo3", bool(p.get("bo3", env_kwargs.get("bo3", False))))
         env_kwargs.setdefault("auto_sideboard",
                               bool(p.get("auto_sideboard", env_kwargs.get("auto_sideboard", False))))
@@ -1231,6 +1324,9 @@ def league(binary_path: str, decks: str | None = None,
     if train_decks != roster:
         label = f"shard {shard}" if shard else "this driver"
         print(f"  {label}: training only {', '.join(train_decks)}")
+    mode_label = ("fixed-self-deck (one deck per rotation)" if fixed_self_deck
+                  else "mixed-self-deck (per-episode deck cycling)")
+    print(f"  mode: {mode_label}")
     print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  "
           f"adaptive_boost={adaptive_boost}  n_envs={n_envs}")
     print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}")
@@ -1258,6 +1354,7 @@ def league(binary_path: str, decks: str | None = None,
             "no_shaping": no_shaping,
             "adaptive_boost": adaptive_boost,
             "train_decks": train_decks_spec,
+            "fixed_self_deck": fixed_self_deck,
             "bo3": bool(env_kwargs.get("bo3", False)),
             "auto_sideboard": bool(env_kwargs.get("auto_sideboard", False)),
         },
@@ -1290,15 +1387,28 @@ def league(binary_path: str, decks: str | None = None,
     save_progress(steps_done, rotation, chunk_start)
 
     while steps_done < total_timesteps:
-        # Rotate over this shard's slice; the pool below still spans `roster`.
-        learner = train_decks[rotation % len(train_decks)]
+        # Fixed mode: rotate a single learner deck over this shard's slice, sized by
+        # the deck's catch-up need. Mixed (default) mode: the learner's self deck
+        # cycles per episode over the whole slice inside the chunk, so a "rotation"
+        # is just a fixed-length chunk with no per-deck selection and no adaptive
+        # boost; the pool below still spans `roster` for opponents in both modes.
+        if fixed_self_deck:
+            learner = train_decks[rotation % len(train_decks)]
+            self_decks_arg = None
+        else:
+            learner = "mixed"
+            self_decks_arg = list(train_decks)
         done_in_rotation = steps_done - chunk_start
         if done_in_rotation == 0 or rotation_target is None:
-            # Fresh rotation (or a pre-adaptive sidecar resumed mid-rotation):
-            # size this rotation by the learner's catch-up need.
-            rotation_target = _rotation_target(
-                learner, roster, deck_stats, checkpoint_dir, rotate_every,
-                adaptive_boost)
+            if fixed_self_deck:
+                # Fresh rotation (or a pre-adaptive sidecar resumed mid-rotation):
+                # size this rotation by the learner's catch-up need.
+                rotation_target = _rotation_target(
+                    learner, roster, deck_stats, checkpoint_dir, rotate_every,
+                    adaptive_boost)
+            else:
+                # Mixed mode: no focus deck, so no adaptive boost — plain chunks.
+                rotation_target = rotate_every
         chunk = min(rotation_target - done_in_rotation, total_timesteps - steps_done)
         if chunk <= 0:
             # Rotation already satisfied (only reachable via an odd resume) — advance.
@@ -1317,17 +1427,23 @@ def league(binary_path: str, decks: str | None = None,
         # global step count, keeping `rotation`/`chunk_start` fixed so a resume
         # re-enters this same learner for the remainder of its rotation.
         rotation_start_done = chunk_start
-        ran, learner_wr, learner_steps = _league_chunk(
+        ran, learner_wr, learner_steps, per_self_wr = _league_chunk(
             binary_path, learner, roster, checkpoint_dir, chunk,
             n_envs=n_envs, opp_ckpt_ratio=opp_ckpt_ratio,
             self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
             pfsp_mode=pfsp_mode, pfsp_p=pfsp_p, softmax_eta=softmax_eta,
             snapshot_every=snapshot_every, promote_margin=promote_margin,
-            embed_dim=embed_dim, no_shaping=no_shaping,
+            embed_dim=embed_dim, no_shaping=no_shaping, self_decks=self_decks_arg,
             on_progress=lambda chunk_steps: save_progress(
                 steps_done + chunk_steps, rotation, rotation_start_done),
             **env_kwargs)
-        deck_stats[learner] = {"winrate": learner_wr, "steps": int(learner_steps)}
+        if fixed_self_deck:
+            deck_stats[learner] = {"winrate": learner_wr, "steps": int(learner_steps)}
+        else:
+            # Record per-self-deck progress so the sidecar tracks every deck's
+            # win-rate even though the driver doesn't select a focus deck.
+            for sd, wr in per_self_wr.items():
+                deck_stats[sd] = {"winrate": wr, "steps": int(learner_steps)}
         steps_done += ran if ran else chunk
         rotation += 1
         chunk_start = steps_done
@@ -1775,7 +1891,8 @@ if __name__ == "__main__":
                opp_ckpt_ratio=args.opponent_ckpt_ratio, no_shaping=args.no_shaping,
                adaptive_boost=args.adaptive_boost, shard=args.shard,
                train_decks_spec=args.train_decks,
-               tally=args.tally, resume=args.resume, **env_kwargs)
+               tally=args.tally, resume=args.resume,
+               fixed_self_deck=args.fixed_self_deck, **env_kwargs)
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,

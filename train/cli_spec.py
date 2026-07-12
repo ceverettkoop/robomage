@@ -420,9 +420,16 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  ">= 0.5 + margin (negative gates below 0.5, e.g. -0.1 -> 0.40; the "
                  "first snapshot of each deck is exempt so self-play can bootstrap; "
                  "0 disables the gate; default %.2f)." % LEAGUE_PROMOTE_MARGIN),
+        Arg("--fixed-self-deck", "flag",
+            help="Restore the classic one-deck-per-rotation mode: the learner's OWN "
+                 "deck is fixed for a whole rotation (adaptive-boost rotations, "
+                 "focus-deck stats). Default (off) is mixed mode, where the learner's "
+                 "self deck also cycles per episode across the rotation's deck set, so "
+                 "one rollout trains every deck as pilot."),
         Arg("--rotate-every", "int", default=LEAGUE_ROTATE_EVERY,
             help="Steps to train one learner deck before rotating to the next "
-                 "(default %d)." % LEAGUE_ROTATE_EVERY),
+                 "in fixed-self-deck mode; in mixed mode, the fixed chunk length "
+                 "between snapshot/sidecar boundaries (default %d)." % LEAGUE_ROTATE_EVERY),
         Arg("--adaptive-boost", "float", default=LEAGUE_ADAPTIVE_BOOST,
             # argparse %-expands help at display time, so a literal percent sign
             # must stay doubled ('%%') in the final string — hence the f-string

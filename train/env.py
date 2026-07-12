@@ -1215,15 +1215,31 @@ class ModelVsScriptedEnv(gym.Env):
         # deck assignment below so the right opp_deck reaches the game process. A
         # plain OpponentPool keeps the fixed opp_deck and only picks a controller;
         # a LeaguePool also chooses which deck the opponent pilots this episode.
+        episode_self_deck = None  # deck the LEARNER pilots this episode (league mixed mode)
         if self._opp_pool is not None:
             if hasattr(self._opp_pool, "sample_episode"):
-                self._opp_deck, self._opp_label, self._opp_controller = \
-                    self._opp_pool.sample_episode()
+                sample = self._opp_pool.sample_episode()
+                # LeaguePool returns a 4-tuple (self_deck, opp_deck, label, ctrl):
+                # in mixed mode self_deck varies per episode; in fixed mode it is
+                # the pool's fixed learner deck. Accept a legacy 3-tuple too.
+                if len(sample) == 4:
+                    episode_self_deck, self._opp_deck, self._opp_label, self._opp_controller = sample
+                else:
+                    self._opp_deck, self._opp_label, self._opp_controller = sample
             else:
                 self._opp_label, self._opp_controller = self._opp_pool.sample()
-        if self._model_deck is not None:
-            self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
-            self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
+        # The learner's deck this episode: the pool's per-episode pick when it
+        # supplies one (league mixed mode), else the fixed model_deck.
+        self_deck = episode_self_deck if episode_self_deck is not None else self._model_deck
+        if self_deck is not None:
+            self._env._deck_a = self_deck if self._training_is_a else self._opp_deck
+            self._env._deck_b = self._opp_deck if self._training_is_a else self_deck
+        elif episode_self_deck is None and self._model_deck is None \
+                and self._opp_pool is not None and hasattr(self._opp_pool, "sample_episode"):
+            # A league pool must always supply a self deck; never run deckless.
+            raise RuntimeError(
+                "ModelVsScriptedEnv: league pool provided no self deck this episode "
+                "and no fixed model_deck is set — refusing to run with default decks.")
         # Push this episode's per-seat deck names to a scripted opponent so its
         # doomsday/tron identification uses the same name rule as the shaping
         # opt-outs above (duck-typed: model/index controllers have no use for it).
@@ -1234,17 +1250,23 @@ class ModelVsScriptedEnv(gym.Env):
         self._last_obs = None
         self._decision_idx = 0
         self._episode_shaping = 0.0
-        self._is_doomsday = _deck_named(self._model_deck, "doomsday")
+        # Deck-specific shaping keys off the deck the learner ACTUALLY pilots this
+        # episode (self_deck), so the doomsday/tron opt-outs work in league mixed
+        # mode where the self deck varies per episode (not just the fixed model_deck).
+        self._episode_self_deck = self_deck
+        self._is_doomsday = _deck_named(self_deck, "doomsday")
         # Potential-based shaping opt-outs, keyed on the deck name: doomsday
         # (combo gameplan) and tron (hoards its hand and plays few creatures by
         # design, so the potentials would penalize its actual game plan).
-        self._skip_potentials = self._is_doomsday or _deck_named(self._model_deck, "tron")
+        self._skip_potentials = self._is_doomsday or _deck_named(self_deck, "tron")
         self._dd_placed_doomsday = False  # set when agent picks Doomsday in a TOP_LIBRARY choice
         self._dd_fired = set()  # tracks which DD shaping rewards have fired this game
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
             "opp_type": self._opp_label,
+            # Deck the learner piloted this episode (league win-rate-WITH tracking).
+            "self_deck": self_deck or "unknown",
         }
         obs, info = self._env.reset(seed=seed, options=options)
         obs, _reward, terminated, truncated, info, _shaping = self._skip_opponent_turns(
@@ -1543,6 +1565,7 @@ class SelfPlayEnv(gym.Env):
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
             "opp_type": opp_name,
+            "self_deck": self._model_deck or "unknown",  # fixed self deck here
         }
         obs, info = self._env.reset(seed=seed, options=options)
 
@@ -1706,6 +1729,7 @@ class FixedModelEnv(gym.Env):
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
             "opp_type": self._opp_model_path,
+            "self_deck": self._model_deck or "unknown",  # fixed self deck here
         }
         obs, info = self._env.reset(seed=seed, options=options)
 
