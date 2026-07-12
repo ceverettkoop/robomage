@@ -697,8 +697,16 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "are keyed on this alone: auto-loads checkpoints/<model-deck>__final.zip "
                  "(else the newest <model-deck>__v*.zip, else a legacy matchup file)."),
         Arg("--model", "str", default=None, suggest="checkpoint",
-            help="Override: explicit path to trained model .zip "
+            help="Override: explicit path to trained model .zip, or any "
+                 "opponents.make_controller spec — az:<deck> (MCTS+AZNet), "
+                 "azraw:<deck> (raw AZ policy), mcts:<ckpt>, scripted:<tier> "
                  "(default: checkpoints/<model-deck>__final.zip)"),
+        Arg("--sims", "int", default=None,
+            help="Search opponent only (az:/mcts: --model): MCTS simulations "
+                 "per decision; overrides any sims= already in the spec (TUI only)"),
+        Arg("--worlds", "int", default=None,
+            help="Search opponent only: determinized worlds per decision "
+                 "(sims are split across worlds); overrides the spec's worlds= (TUI only)"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),

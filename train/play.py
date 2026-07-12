@@ -112,6 +112,23 @@ if __name__ == "__main__":
         parser.error("--scripted is only supported with --tui")
 
     model_path = args.model
+    is_ctrl_spec = bool(model_path) and model_path.lower().startswith(
+        ("az:", "azraw:", "mcts:", "scripted"))
+    is_search_spec = bool(model_path) and model_path.lower().startswith(
+        ("az:", "mcts:"))
+    if is_ctrl_spec and not args.tui:
+        parser.error("controller specs (az:/azraw:/mcts:/scripted) need the TUI "
+                     "board — text mode loads a PPO .zip directly")
+    if args.sims is not None or args.worlds is not None:
+        if not is_search_spec:
+            parser.error("--sims/--worlds only apply to a search opponent "
+                         "(--model az:<ckpt> or mcts:<ckpt>)")
+        # Append the knobs to the spec's query; appended-last wins over any
+        # sims=/worlds= already present (later keys overwrite in the parser).
+        knobs = [f"sims={args.sims}"] if args.sims is not None else []
+        if args.worlds is not None:
+            knobs.append(f"worlds={args.worlds}")
+        model_path += ("&" if "?" in model_path else "?") + "&".join(knobs)
     if args.scripted:
         # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
         model_path = "scripted"
