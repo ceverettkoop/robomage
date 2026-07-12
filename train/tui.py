@@ -116,6 +116,38 @@ def _scan_checkpoints():
     return sorted(out, key=_grouped_sort_key)
 
 
+def _scan_az_checkpoints():
+    # checkpoints/-relative AZ nets ('az/league/ur_delver__azfinal.pt'), skipping
+    # the .ts.pt TorchScript exports (actor runtime artifacts, not loadable nets).
+    out = [os.path.relpath(p, _CKPT_DIR).replace(os.sep, "/")
+           for p in glob.glob(os.path.join(_CKPT_DIR, "az", "**", "*.pt"),
+                              recursive=True)
+           if not p.endswith(".ts.pt")]
+    return sorted(out, key=_grouped_sort_key)
+
+
+def _az_deck_stems():
+    """Decks that have any AZ checkpoint ('league/ur_delver'), from the
+    '{deck}__azfinal.pt' / '{deck}__azv{steps}.pt' naming."""
+    stems = set()
+    for c in _scan_az_checkpoints():
+        rel = c[3:] if c.startswith("az/") else c   # drop the 'az/' dir prefix
+        if "__az" in rel:
+            stems.add(rel.rsplit("__az", 1)[0])
+    return sorted(stems, key=_grouped_sort_key)
+
+
+def _scan_agents():
+    """Controller specs for fields consumed by opponents.make_controller: every
+    PPO zip (bare, as before) plus each AZ-trained deck as an explicit
+    'az:<deck>' (MCTS at play time) and 'azraw:<deck>' (raw policy) entry — the
+    prefix IS the raw-vs-search lever. The deck shorthand resolves through
+    resolve_az_checkpoint (incumbent __azfinal, else newest snapshot), so the
+    entry keeps pointing at the deck's best net as training advances."""
+    az = [f"{pfx}{d}" for d in _az_deck_stems() for pfx in ("az:", "azraw:")]
+    return _scan_checkpoints() + az
+
+
 def _checkpoints_for_deck(deck):
     """Checkpoints piloting ``deck``, as checkpoints/-relative paths.
 
@@ -134,14 +166,18 @@ def _checkpoints_for_deck(deck):
 
 def _expand_checkpoint(val):
     """A bare checkpoint filename → repo-relative path that every script can load."""
-    if val in _scan_checkpoints():
+    if val in _scan_checkpoints() or val in _scan_az_checkpoints():
         return os.path.join("train", "checkpoints", val)
-    return val   # already a path, a shorthand, or 'scripted' — leave it alone
+    return val   # a path, a shorthand, an az:/azraw: spec, or 'scripted'
 
 
 # Suggestion source tagged on each Arg in cli_spec (arg.suggest) → scanner.
+# 'checkpoint' stays PPO-zips-only (fields that MaskablePPO.load directly:
+# --load resume, --from-ppo, baseline); 'agent' adds az:/azraw: entries for
+# fields that go through make_controller; 'az_checkpoint' is bare AZ .pt paths.
 _SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
-             "checkpoint": _scan_checkpoints}
+             "checkpoint": _scan_checkpoints, "agent": _scan_agents,
+             "az_checkpoint": _scan_az_checkpoints}
 
 # TUI-only default overrides for the league form (the common "train the whole
 # roster" run): these seed the widgets differently from the CLI Arg defaults but
@@ -263,7 +299,8 @@ class LauncherApp(App):
             return self._deck_checkpoints()
         opts = list(_suggestions_for(a))
         # Fields that also accept the rule-based agent get a 'scripted' option.
-        if a.suggest == "checkpoint" and (a.default == "scripted" or a.name == "--opponent"):
+        if a.suggest in ("checkpoint", "agent") and (
+                a.default == "scripted" or a.name == "--opponent"):
             opts = ["scripted"] + opts
         return opts
 
@@ -544,7 +581,7 @@ class LauncherApp(App):
                 a = f["arg"]
                 v = f["widget"].value
                 if isinstance(v, str) and v:
-                    if a.suggest == "checkpoint":
+                    if a.suggest in ("checkpoint", "agent", "az_checkpoint"):
                         v = _expand_checkpoint(v)
                     if a.is_positional:
                         argv.append(v)

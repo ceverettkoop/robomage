@@ -329,10 +329,13 @@ def _actor_mode():
 def sim_args():
     """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
     return [
-        Arg("model", "str", required=True, help="Path to model .zip", suggest="checkpoint"),
-        Arg("--opponent", "str", default="scripted", suggest="checkpoint",
-            help="Opponent controller: a model .zip path/shorthand, or 'scripted' "
-                 "for the rule-based agent piloting the opponent deck (the default)"),
+        Arg("model", "str", required=True, suggest="agent",
+            help="Model to analyze: a .zip path/shorthand, or az:/azraw:<deck> "
+                 "for an AlphaZero net"),
+        Arg("--opponent", "str", default="scripted", suggest="agent",
+            help="Opponent controller: a model .zip path/shorthand, az:/azraw:<deck>, "
+                 "or 'scripted' for the rule-based agent piloting the opponent deck "
+                 "(the default)"),
         Arg("--deck-a", "str", default=None, suggest="deck",
             help="Model's deck (.dk stem) — the deck it pilots. Inferred from the "
                  "model's deck-pilot filename ({deck}__final.zip) if omitted."),
@@ -495,10 +498,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     Sub("observe",
         "Observe game(s) between any pair of {scripted | model} controllers "
         "(replaces the old watch/diag/observe commands)", items=[
-        Arg("--player-a", "str", default="scripted", suggest="checkpoint",
-            help="Player A controller: 'scripted' (or 'scripted:*') or a model .zip path/shorthand (default: scripted)"),
-        Arg("--player-b", "str", default="scripted", suggest="checkpoint",
-            help="Player B controller: 'scripted' (or 'scripted:*') or a model .zip path/shorthand (default: scripted)"),
+        Arg("--player-a", "str", default="scripted", suggest="agent",
+            help="Player A controller: 'scripted' (or 'scripted:*'), a model .zip "
+                 "path/shorthand, or az:/azraw:<deck> (default: scripted)"),
+        Arg("--player-b", "str", default="scripted", suggest="agent",
+            help="Player B controller: 'scripted' (or 'scripted:*'), a model .zip "
+                 "path/shorthand, or az:/azraw:<deck> (default: scripted)"),
         Arg("--play-a", "str", default=None,
             help="Drive Player A by semantic action specs instead of --player-a, e.g. "
                  "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" (see action_spec.py grammar)"),
@@ -546,7 +551,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--worlds", "int", default=4, help="Determinized worlds per search"),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
-        Arg("--checkpoint", "str", default=None, suggest="checkpoint",
+        Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
             help="AZ (.pt) or PPO (.zip) ckpt / deck shorthand (default: deck's AZ "
                  "ckpt, else PPO warm-start, else random init)"),
         Arg("--temp-moves", "int", default=20,
@@ -571,9 +576,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("az-eval", "Gate a candidate AZNet vs the incumbent (MCTS, low sims)", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
-        Arg("--candidate", "str", required=True, suggest="checkpoint",
+        Arg("--candidate", "str", required=True, suggest="az_checkpoint",
             help="Candidate AZ .pt / deck shorthand"),
-        Arg("--incumbent", "str", default=None, suggest="checkpoint",
+        Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
             help="Incumbent AZ .pt (default: {deck}__azfinal.pt; scripted if none yet)"),
         Arg("--games", "int", default=20),
         Arg("--sims", "int", default=32),
@@ -696,7 +701,7 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help="Deck the model plays (stem of .dk file). Per-deck checkpoints "
                  "are keyed on this alone: auto-loads checkpoints/<model-deck>__final.zip "
                  "(else the newest <model-deck>__v*.zip, else a legacy matchup file)."),
-        Arg("--model", "str", default=None, suggest="checkpoint",
+        Arg("--model", "str", default=None, suggest="agent",
             help="Override: explicit path to trained model .zip, or any "
                  "opponents.make_controller spec — az:<deck> (MCTS+AZNet), "
                  "azraw:<deck> (raw AZ policy), mcts:<ckpt>, scripted:<tier> "
