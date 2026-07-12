@@ -557,20 +557,25 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
     ]),
     # ── AlphaZero (Phase C) ───────────────────────────────────────────────────
-    Sub("az-selfplay", "Generate AlphaZero self-play data for a deck (mirror, bo1)", items=[
+    Sub("az-selfplay",
+        "Generate AlphaZero self-play data (focus deck vs mirror + roster, bo1)", items=[
         Arg("--deck", "str", default="delver", suggest="deck",
-            help="Deck (.dk stem) — mirror self-play"),
+            help="Focus deck (.dk stem); its opponent is a mirror with "
+                 "P=--mirror-frac, else a uniform league-roster draw"),
         Arg("--games", "int", default=50, help="Games to generate"),
         Arg("--sims", "int", default=128, help="PUCT simulations per decision"),
         Arg("--worlds", "int", default=4, help="Determinized worlds per search"),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
         Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
-            help="AZ (.pt) or PPO (.zip) ckpt / deck shorthand (default: deck's AZ "
-                 "ckpt, else PPO warm-start, else random init)"),
+            help="AZ (.pt) / PPO (.zip) ckpt or 'gen' (default: generalist AZ "
+                 "ckpt, else gen PPO warm-start, else random init)"),
         Arg("--temp-moves", "int", default=20,
             help="Sample from visit counts for the first N real decisions, then argmax"),
-        Arg("--out", "str", default=None, help="Output dir (default az_data/{deck})"),
+        Arg("--mirror-frac", "float", default=0.25,
+            help="P(opponent deck == focus deck) per game (default 0.25); else a "
+                 "uniform league-roster draw"),
+        Arg("--out", "str", default=None, help="Output dir (default az_data/gen)"),
         Arg("--seed", "int", default=1, help="Base RNG seed"),
         _actor_mode(),
     ]),
@@ -616,6 +621,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--eval-worlds", "int", default=2),
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--seed", "int", default=1),
+        Arg("--mirror-frac", "float", default=0.25,
+            help="P(opponent deck == focus deck) per self-play game (default 0.25); "
+                 "else a uniform league-roster draw"),
         _actor_mode(),
     ]),
     Sub("az-league",
@@ -648,6 +656,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--seed", "int", default=1,
             help="Base RNG seed (slot i uses seed+i)"),
+        Arg("--mirror-frac", "float", default=0.25,
+            help="P(opponent deck == focus deck) per self-play game (default 0.25); "
+                 "else a uniform league-roster draw"),
         _actor_mode(),
     ]),
 ])

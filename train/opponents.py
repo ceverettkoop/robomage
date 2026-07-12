@@ -491,13 +491,16 @@ def make_controller(spec, *,
       - "play:<spec,spec,...>" → PlayController (semantic action script,
         same grammar as the test harness ``--play``);
       - "actions:<i,i,...>" → ActionListController (positional indices);
-      - "mcts:<ckpt-or-deck>[?sims=128&worlds=4&c=1.5&temp=0&vscale=1]" →
+      - "mcts:<gen-or-path>[?sims=128&worlds=4&c=1.5&temp=0&vscale=1]" →
         SearchController running PUCT search with that checkpoint's
         policy/value heads as priors/leaf values ("mcts:uniform" for the
-        torch-free uniform evaluator — plumbing tests, weak play);
-      - "az:<az-ckpt-or-deck>[?sims=&worlds=&c=&temp=&seed=]" → SearchController
-        driven by an AZNet (AZ .pt / deck shorthand, else a PPO warm-start);
-      - "azraw:<az-ckpt-or-deck>" → AZRawController (AZNet policy argmax, no
+        torch-free uniform evaluator — plumbing tests, weak play; "mcts:gen"
+        or an explicit .zip for a real net — the deck it pilots is a separate
+        parameter);
+      - "az:<gen-or-path>[?sims=&worlds=&c=&temp=&seed=]" → SearchController
+        driven by an AZNet ("az:gen" → the generalist AZ net, else a warm-start
+        from the gen PPO net; an explicit .pt/.zip path also works);
+      - "azraw:<gen-or-path>" → AZRawController (AZNet policy argmax, no
         search — cheap gating);
       - "gen" → the single generalist checkpoint, or any explicit model .zip
         path, resolved via ``checkpoint_resolver`` (default:
@@ -610,16 +613,24 @@ class AZRawController:
 
 
 def _load_az_evaluator(base: str):
-    """Load an AZNet (AZ .pt / deck shorthand, else PPO warm-start) -> AZEvaluator.
+    """Load an AZNet -> AZEvaluator for the generalist contract. Accepts:
+      - ``'gen'`` → the generalist AZ checkpoint (``gen__azfinal.pt`` / newest
+        ``gen__azv*.pt``), else a warm-start from the ``gen`` PPO checkpoint;
+      - an explicit ``.pt`` AZ path (loaded directly), or an explicit ``.zip``
+        PPO path (warm-started).
+    A bare per-deck shorthand (``az:delver``) is rejected with a clear error via
+    ``resolve_checkpoint`` — the model is the ONE generalist and the deck it
+    pilots travels as a separate parameter.
     Lazy import so opponents.py stays torch-free until a model seat is built."""
     from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
     az = resolve_az_checkpoint(base)
     if az:
         return AZEvaluator(load_az(az)), az
-    if base.endswith(".zip") or resolve_checkpoint(base) != base:
-        # A PPO checkpoint / deck shorthand — warm-start an AZNet from it.
-        return AZEvaluator(from_ppo(resolve_checkpoint(base))), base
-    return AZEvaluator(load_az(base)), base   # let load_az raise a clear error
+    if base.endswith(".pt"):
+        return AZEvaluator(load_az(base)), base   # explicit AZ path; load_az raises if missing
+    # Otherwise a PPO spec to warm-start from: 'gen' or an explicit .zip.
+    # resolve_checkpoint raises a clear error on a bare (non-'gen') deck shorthand.
+    return AZEvaluator(from_ppo(resolve_checkpoint(base))), base
 
 
 def _make_az_controller(spec: str, *, search: bool):

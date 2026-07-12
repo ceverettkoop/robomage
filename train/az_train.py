@@ -27,8 +27,10 @@ import numpy as np
 
 try:
     from env import OBS_SIZE, MAX_ACTIONS
+    from opponents import GEN_STEM, assert_not_reserved_deck
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS
+    from train.opponents import GEN_STEM, assert_not_reserved_deck
 
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "checkpoints", "az")
@@ -37,19 +39,27 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
                           "bin", "resources", "decks")
 _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
+# P(opponent deck == focus deck) per self-play game (mirror vs cross-deck roster).
+DEFAULT_MIRROR_FRAC = 0.25
+
 
 # ----------------------------------------------------------------------
 # Shard loading
 # ----------------------------------------------------------------------
 
 def load_window(deck: str, window: int, data_dir: Optional[str] = None):
-    """Load the last ``window`` shards (by mtime) for ``deck`` into flat arrays."""
-    data_dir = data_dir or os.path.join(_AZ_DATA_DIR, deck)
+    """Load the last ``window`` shards (by mtime) into flat arrays.
+
+    Shards pool into ``az_data/gen/`` — self-play across every focus deck feeds
+    the ONE generalist net — so ``deck`` is used only for the error message; the
+    default ``data_dir`` is the shared gen pool. Pass ``data_dir`` to override
+    (tests point it at a temp dir)."""
+    data_dir = data_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     shards = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
                     key=os.path.getmtime)
     if not shards:
         raise FileNotFoundError(
-            f"no self-play shards in {data_dir} — run az-selfplay for '{deck}' first")
+            f"no self-play shards in {data_dir} — run az-selfplay first")
     shards = shards[-window:]
     obs, pi, z, mask = [], [], [], []
     for s in shards:
@@ -66,17 +76,20 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None):
 # Net init / resume
 # ----------------------------------------------------------------------
 
-def _init_net(deck: str, from_ppo: Optional[str], fresh: bool):
-    """Return (net, prior_steps, provenance-string)."""
+def _init_net(from_ppo: Optional[str], fresh: bool):
+    """Return (net, prior_steps, provenance-string) for the ONE generalist AZ net.
+
+    Every slot/cycle trains THE gen net, so init resolves the gen checkpoints, not
+    a per-deck file."""
     from az_net import (AZNet, load_az, from_ppo as warm_from_ppo,
-                        resolve_az_checkpoint, az_checkpoint_path)
+                        resolve_az_checkpoint)
     from opponents import resolve_checkpoint
 
     if not fresh:
-        # Continue the CANDIDATE line: newest __azv snapshot first, __azfinal
+        # Continue the CANDIDATE line: newest gen__azv snapshot first, gen__azfinal
         # (the gate-promoted incumbent) only as a fallback. This keeps training
         # cumulative across cycles even while the gate rejects candidates.
-        az = resolve_az_checkpoint(deck, prefer="snapshot")
+        az = resolve_az_checkpoint(GEN_STEM, prefer="snapshot")
         if az:
             net = load_az(az)
             steps = _read_steps(az)
@@ -85,10 +98,10 @@ def _init_net(deck: str, from_ppo: Optional[str], fresh: bool):
         path = resolve_checkpoint(from_ppo)
         return warm_from_ppo(path), 0, f"warm-started from PPO {path}"
     if not fresh:
-        # No AZ checkpoint yet: default to warm-starting the deck's PPO generalist.
-        ppo = resolve_checkpoint(deck)
+        # No AZ checkpoint yet: default to warm-starting the gen PPO generalist.
+        ppo = resolve_checkpoint(GEN_STEM)
         if ppo and os.path.exists(ppo):
-            return warm_from_ppo(ppo), 0, f"warm-started from deck PPO {ppo}"
+            return warm_from_ppo(ppo), 0, f"warm-started from gen PPO {ppo}"
     return AZNet().eval(), 0, "fresh random init"
 
 
@@ -121,10 +134,10 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
 
     obs, pi, z, mask, n_shards = load_window(deck, window, data_dir)
     n = obs.shape[0]
-    print(f"[az-train] deck={deck}: {n} samples from {n_shards} shards; "
+    print(f"[az-train] gen (focus={deck}): {n} samples from {n_shards} shards; "
           f"batches={batches} batch_size={batch_size} lr={lr} c_v={c_v}")
 
-    net, prior_steps, prov = _init_net(deck, from_ppo, fresh)
+    net, prior_steps, prov = _init_net(from_ppo, fresh)
     print(f"[az-train] net: {prov}")
     net.train()
     opt = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=weight_decay)
@@ -134,7 +147,7 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
     z_t = torch.as_tensor(z)
     mask_t = torch.as_tensor(mask)
 
-    log_path = os.path.join(ckpt_dir, f"{os.path.basename(deck)}_az_train.log")
+    log_path = os.path.join(ckpt_dir, f"{GEN_STEM}_az_train.log")
     os.makedirs(ckpt_dir, exist_ok=True)
     first_loss = None
     last_loss = None
@@ -170,13 +183,13 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
                 logf.write(line + "\n"); logf.flush()
             if snapshot_every and (b + 1) % snapshot_every == 0:
                 steps = prior_steps + (b + 1) * bs
-                net.save(az_checkpoint_path(deck, steps, ckpt_dir), steps)
+                net.save(az_checkpoint_path(steps, ckpt_dir), steps)
 
     steps = prior_steps + batches * bs
     net.eval()
-    # Candidate snapshot only — __azfinal (the incumbent) advances exclusively
+    # Candidate snapshot only — gen__azfinal (the incumbent) advances exclusively
     # through the az_eval promotion gate.
-    snap = net.save(az_checkpoint_path(deck, steps, ckpt_dir), steps)
+    snap = net.save(az_checkpoint_path(steps, ckpt_dir), steps)
     print(f"[az-train] saved candidate snapshot {snap}")
     print(f"[az-train] loss {first_loss:.4f} -> {last_loss:.4f} over {batches} batches")
     return {"samples": n, "first_loss": first_loss, "last_loss": last_loss,
@@ -187,21 +200,38 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
 # Gating (candidate vs incumbent)
 # ----------------------------------------------------------------------
 
+def _gate_matchups(focus: str, roster, cross: int, seed: int) -> list:
+    """The matchup SAMPLE the gate plays: the focus mirror plus up to ``cross``
+    cross matchups (focus vs a distinct roster deck), seeded/reproducible. Each
+    entry is a (deck_x, deck_y) pair; the candidate always pilots deck_x and the
+    incumbent deck_y, with seats alternating within the pair."""
+    matchups = [(focus, focus)]
+    pool = [d for d in (roster or []) if d != focus]
+    if pool and cross > 0:
+        rng = np.random.default_rng(seed)
+        k = min(cross, len(pool))
+        idx = rng.choice(len(pool), size=int(k), replace=False)
+        matchups += [(focus, pool[int(i)]) for i in idx]
+    return matchups
+
+
 def az_eval(deck: str, candidate: str, incumbent: Optional[str] = None, *,
             games: int = 20, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
             promote_threshold: float = 0.55, promote: bool = False,
+            roster: Optional[list] = None, cross_matchups: int = 2,
             ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1) -> dict:
-    """Play ``candidate`` vs ``incumbent`` (mirror deck) with MCTS+AZ controllers
-    at low sims, seats alternating (half the games each way, since ``run_match``
-    itself never swaps seats and seat A is on the play in bo1). Returns the
-    candidate-perspective tally; promotes candidate -> ``{deck}__azfinal.pt``
-    when ``promote`` and win-rate >= threshold."""
+    """AGGREGATE gate: play ``candidate`` vs ``incumbent`` over a SAMPLE of
+    matchups (the focus-deck mirror plus cross matchups drawn from ``roster``),
+    both nets piloting the SAME matchup in a given game, seats alternating. Promote
+    the candidate to ``gen__azfinal.pt`` when ``promote`` and the AGGREGATE win-rate
+    across all matchups >= ``promote_threshold``. Prints a per-matchup W-L-D
+    breakdown. The no-incumbent-yet fallback (vs scripted) is preserved."""
     from runner import run_match
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
     cand_path = resolve_az_checkpoint(candidate, prefer="snapshot") or candidate
     if incumbent is None:
-        incumbent = az_checkpoint_path(deck, None, ckpt_dir)
+        incumbent = az_checkpoint_path(None, ckpt_dir)
     inc_path = incumbent if os.path.exists(incumbent) else \
         (resolve_az_checkpoint(incumbent) or incumbent)
 
@@ -209,26 +239,39 @@ def az_eval(deck: str, candidate: str, incumbent: Optional[str] = None, *,
     cand_spec = f"az:{cand_path}{knobs}"
     have_inc = os.path.exists(inc_path)
     opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
-    print(f"[az-eval] {games} games (bo1, seats alternating): candidate={cand_path} vs "
+
+    matchups = _gate_matchups(deck, roster, cross_matchups, seed)
+    per = max(2, games // len(matchups))   # games per matchup (>=2 so seats alternate)
+    print(f"[az-eval] {len(matchups)} matchup(s) x {per} games (bo1, seats "
+          f"alternating): candidate={cand_path} vs "
           f"{'incumbent ' + inc_path if have_inc else 'scripted (no incumbent yet)'} "
           f"@ sims={sims} worlds={worlds}")
 
-    half = games // 2
     w = l = d = 0
-    if games - half:  # candidate in seat A
-        r = run_match(cand_spec, opp_spec, deck_a=deck, deck_b=deck,
-                      games=games - half, bo3=False, seed=seed, transcript="quiet")
-        w += r.wins; l += r.losses; d += r.draws
-    if half:          # candidate in seat B (flip the tally back to candidate view)
-        r = run_match(opp_spec, cand_spec, deck_a=deck, deck_b=deck,
-                      games=half, bo3=False, seed=seed + games, transcript="quiet")
-        w += r.losses; l += r.wins; d += r.draws
+    breakdown = []
+    for mi, (dx, dy) in enumerate(matchups):
+        half = per // 2
+        mw = ml = md = 0
+        mseed = seed + mi * 100003
+        if per - half:  # candidate (piloting dx) in seat A
+            r = run_match(cand_spec, opp_spec, deck_a=dx, deck_b=dy,
+                          games=per - half, bo3=False, seed=mseed, transcript="quiet")
+            mw += r.wins; ml += r.losses; md += r.draws
+        if half:        # candidate (piloting dx) in seat B — flip tally to cand view
+            r = run_match(opp_spec, cand_spec, deck_a=dy, deck_b=dx,
+                          games=half, bo3=False, seed=mseed + per, transcript="quiet")
+            mw += r.losses; ml += r.wins; md += r.draws
+        w += mw; l += ml; d += md
+        tag = f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
+        breakdown.append((tag, mw, ml, md))
+        print(f"[az-eval]   {tag}: {mw}W-{ml}L-{md}D")
+
     wr = w / max(1, w + l + d)
-    print(f"[az-eval] candidate {w}W-{l}L-{d}D (win_rate={wr:.3f})")
+    print(f"[az-eval] AGGREGATE candidate {w}W-{l}L-{d}D (win_rate={wr:.3f})")
 
     promoted = False
     if promote and wr >= promote_threshold:
-        final = az_checkpoint_path(deck, None, ckpt_dir)
+        final = az_checkpoint_path(None, ckpt_dir)
         for src, dst in ((cand_path, final),
                          (_meta_of(cand_path), _meta_of(final))):
             if os.path.exists(src):
@@ -238,8 +281,8 @@ def az_eval(deck: str, candidate: str, incumbent: Optional[str] = None, *,
         print(f"[az-eval] PROMOTED candidate -> {final} (>= {promote_threshold:.2f})")
     elif promote:
         print(f"[az-eval] not promoted (win_rate {wr:.3f} < {promote_threshold:.2f})")
-    return {"wins": w, "losses": l, "draws": d,
-            "win_rate": wr, "promoted": promoted}
+    return {"wins": w, "losses": l, "draws": d, "win_rate": wr,
+            "promoted": promoted, "breakdown": breakdown}
 
 
 def _meta_of(path: str) -> str:
@@ -256,25 +299,31 @@ def az_cycle(deck: str, *, games: int = 50, sims: int = 64, worlds: int = 4,
              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
              eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
              promote_threshold: float = 0.55, seed: int = 1,
-             use_actor: Optional[bool] = None) -> dict:
-    """Sequential single-process cycle: self-play -> train a candidate -> gate it
-    against the current incumbent (promote on success).
+             use_actor: Optional[bool] = None,
+             mirror_frac: float = DEFAULT_MIRROR_FRAC,
+             roster: Optional[list] = None) -> dict:
+    """Sequential single-process cycle for FOCUS deck ``deck``: cross-deck self-play
+    (mirror + roster, ``mirror_frac``) -> train the ONE gen candidate -> gate it
+    against the current incumbent over a matchup sample (promote on aggregate WR).
 
     ``use_actor`` chooses the self-play backend (None=AUTO: the C++ actor iff
     built, else Python; see :func:`az_selfplay.generate`)."""
     import az_selfplay
-    from az_net import az_checkpoint_path
 
-    print("=== az cycle: self-play ===")
+    if roster is None:
+        roster = _default_az_league_roster()
+
+    print("=== az cycle: self-play (cross-deck) ===")
     gen = az_selfplay.generate(deck, games=games, sims=sims, worlds=worlds,
-                               workers=workers, seed=seed, use_actor=use_actor)
-    print("=== az cycle: train ===")
+                               workers=workers, seed=seed, use_actor=use_actor,
+                               roster=roster, mirror_frac=mirror_frac)
+    print("=== az cycle: train (gen net) ===")
     tr = train_az(deck, batches=batches, batch_size=batch_size, lr=lr,
                   window=window, seed=seed)
-    print("=== az cycle: eval/gate ===")
+    print("=== az cycle: eval/gate (aggregate) ===")
     ev = az_eval(deck, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
                  worlds=eval_worlds, promote_threshold=promote_threshold,
-                 promote=True, seed=seed)
+                 promote=True, seed=seed, roster=roster)
     return {"generate": gen, "train": tr, "eval": ev}
 
 
@@ -335,6 +384,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               batch_size: int = 256, lr: float = 1e-3, window: int = 50,
               eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
               promote_threshold: float = 0.55, seed: int = 1,
+              mirror_frac: float = DEFAULT_MIRROR_FRAC,
               use_actor: Optional[bool] = None, resume: bool = False,
               ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
@@ -372,6 +422,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         eval_worlds = int(p.get("eval_worlds", eval_worlds))
         promote_threshold = float(p.get("promote_threshold", promote_threshold))
         seed = int(p.get("seed", seed))
+        mirror_frac = float(p.get("mirror_frac", mirror_frac))
         use_actor = p.get("use_actor", use_actor)
         slot_index = int(state.get("slot_index", 0))
         results = list(state.get("results", []))
@@ -386,6 +437,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         raise ValueError(
             f"No decks found for az-league (looked in {_LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
+    # 'gen' is the reserved generalist stem — a roster deck may not collide with it.
+    for _d in roster:
+        assert_not_reserved_deck(_d)
 
     slots = [(r, di, c) for r in range(rotations)
              for di in range(len(roster)) for c in range(cycles_per_deck)]
@@ -401,14 +455,14 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "batches": batches, "batch_size": batch_size, "lr": lr,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
-            "seed": seed, "use_actor": use_actor,
+            "seed": seed, "mirror_frac": mirror_frac, "use_actor": use_actor,
         },
     }
 
     print(f"AZ league roster: {', '.join(roster)}")
     print(f"  rotations={rotations}  cycles_per_deck={cycles_per_deck}  "
           f"slots={total}  (starting at slot {slot_index})")
-    print(f"  games={games} sims={sims} worlds={worlds}  "
+    print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
           f"batches={batches} window={window}  "
           f"eval_games={eval_games} promote>={promote_threshold}")
 
@@ -436,7 +490,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        batches=batches, batch_size=batch_size, lr=lr, window=window,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
-                       seed=slot_seed, use_actor=use_actor)
+                       seed=slot_seed, use_actor=use_actor,
+                       mirror_frac=mirror_frac, roster=roster)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         print(f"[az-league] slot {si + 1}/{total} deck={deck}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
@@ -487,6 +542,7 @@ def run_cycle(args) -> None:
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
              promote_threshold=args.promote_threshold,
              seed=args.seed if args.seed is not None else 1,
+             mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              use_actor=_resolve_use_actor(args))
 
 
@@ -499,6 +555,7 @@ def run_league(args) -> None:
               eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
               promote_threshold=args.promote_threshold,
               seed=args.seed if args.seed is not None else 1,
+              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
               use_actor=_resolve_use_actor(args), resume=args.resume)
 
 
@@ -546,6 +603,9 @@ if __name__ == "__main__":
     c.add_argument("--eval-worlds", type=int, default=2)
     c.add_argument("--promote-threshold", type=float, default=0.55)
     c.add_argument("--seed", type=int, default=1)
+    c.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
+                   help="P(opponent deck == focus deck) per self-play game "
+                        "(else uniform league-roster draw)")
     cg = c.add_mutually_exclusive_group()
     cg.add_argument("--actor", action="store_true",
                     help="Force the C++ az_actor self-play backend")
@@ -575,6 +635,9 @@ if __name__ == "__main__":
     lg.add_argument("--eval-worlds", type=int, default=2)
     lg.add_argument("--promote-threshold", type=float, default=0.55)
     lg.add_argument("--seed", type=int, default=1)
+    lg.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
+                    help="P(opponent deck == focus deck) per self-play game "
+                         "(else uniform league-roster draw)")
     lgg = lg.add_mutually_exclusive_group()
     lgg.add_argument("--actor", action="store_true",
                      help="Force the C++ az_actor self-play backend")

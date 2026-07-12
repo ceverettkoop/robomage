@@ -25,17 +25,23 @@ import numpy as np
 try:
     from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX
     from cli_spec import BIN_DIR
+    from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX
     from train.cli_spec import BIN_DIR
+    from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
 _ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+_DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          "bin", "resources", "decks")
+_LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 # Defaults (AlphaZero-style)
 DEFAULT_ROOT_NOISE_EPS = 0.25
 DEFAULT_ROOT_NOISE_ALPHA = 1.0
 DEFAULT_TEMP_MOVES = 20        # sample-from-visits for the first N real decisions, then argmax
+DEFAULT_MIRROR_FRAC = 0.25     # P(opponent deck == focus deck) per self-play game
 FLUSH_SAMPLES = 4096           # write a shard once this many samples accumulate
 HEARTBEAT_MOVES = 25           # Python backend: mid-game progress line every N decisions
 
@@ -45,12 +51,59 @@ def _fmt_secs(s: float) -> str:
 
 
 # ----------------------------------------------------------------------
+# Matchup schedule (mirrors + cross-deck, seeded/reproducible)
+# ----------------------------------------------------------------------
+
+def league_roster() -> list:
+    """Every deck in decks/league/, referenced 'league/<stem>' (sorted)."""
+    if not os.path.isdir(_LEAGUE_DECKS_DIR):
+        return []
+    return sorted("league/" + os.path.splitext(p)[0]
+                  for p in os.listdir(_LEAGUE_DECKS_DIR) if p.endswith(".dk"))
+
+
+def build_matchup_schedule(focus: str, roster, games: int, mirror_frac: float,
+                           seed: int) -> list:
+    """Deterministic per-game (deck_a, deck_b) schedule for one generation run.
+
+    Each game the opponent deck is the FOCUS deck itself (mirror) with probability
+    ``mirror_frac``, else a uniform draw from the league ``roster``; the focus
+    deck's seat (A vs B) is randomized per game so seat-A bias doesn't accumulate.
+    The one generalist net values every state, so cross-deck negamax backup in
+    MCTS is sound. Seeded RNG → the schedule replays identically for a given seed."""
+    rng = np.random.default_rng(seed)
+    pool = list(roster or [])
+    sched = []
+    for _ in range(games):
+        if not pool or rng.random() < mirror_frac:
+            opp = focus
+        else:
+            opp = pool[int(rng.integers(len(pool)))]
+        focus_is_a = rng.random() < 0.5
+        sched.append((focus, opp) if focus_is_a else (opp, focus))
+    return sched
+
+
+def _schedule_summary(schedule: list) -> str:
+    from collections import Counter
+    c = Counter(schedule)
+    parts = [f"{a}|{b}:{n}" for (a, b), n in sorted(c.items())]
+    return ", ".join(parts)
+
+
+# ----------------------------------------------------------------------
 # Checkpoint resolution (parent decides once; workers load their own copy)
 # ----------------------------------------------------------------------
 
 def resolve_source(deck: str, checkpoint: Optional[str]) -> dict:
-    """Pick the net source: explicit AZ/PPO path, else the deck's AZ checkpoint,
-    else a PPO warm-start of the deck's PPO checkpoint, else random init.
+    """Pick the net source for the ONE generalist AZ net: an explicit AZ/PPO
+    checkpoint, else the generalist AZ checkpoint (``gen__azfinal`` / newest
+    ``gen__azv*``), else a warm-start from the generalist PPO checkpoint
+    (``gen__final``), else random init.
+
+    ``deck`` (the FOCUS deck) is not used for net resolution — the net is the
+    single generalist, and the deck it pilots travels through the matchup
+    schedule, not the checkpoint name.
 
     Returns a spec dict {mode: 'az'|'ppo'|'random', path: str|None} — picklable so
     each worker reconstructs its own net (torch objects don't cross processes)."""
@@ -62,10 +115,10 @@ def resolve_source(deck: str, checkpoint: Optional[str]) -> dict:
             az = resolve_az_checkpoint(checkpoint) or checkpoint
             return {"mode": "az", "path": az}
         return {"mode": "ppo", "path": resolve_checkpoint(checkpoint)}
-    az = resolve_az_checkpoint(deck)
+    az = resolve_az_checkpoint(GEN_STEM)
     if az:
         return {"mode": "az", "path": az}
-    ppo = resolve_checkpoint(deck)
+    ppo = resolve_checkpoint(GEN_STEM)
     if ppo and os.path.exists(ppo):
         return {"mode": "ppo", "path": ppo}
     return {"mode": "random", "path": None}
@@ -173,8 +226,11 @@ def _write_shard(out_dir, arrays, n_idx):
 # Worker
 # ----------------------------------------------------------------------
 
-def _worker(deck, source, n_games, sims, worlds, temp_moves, root_noise_eps,
+def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q):
+    """Play this worker's slice of the matchup schedule. ``matchups`` is a list of
+    per-game (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
+    swapped per game before its reset respawns the engine."""
     import torch
     torch.set_num_threads(1)   # avoid oversubscription across worker processes
     from search_env import SearchRoboMageEnv
@@ -184,7 +240,9 @@ def _worker(deck, source, n_games, sims, worlds, temp_moves, root_noise_eps,
     evaluator = AZEvaluator(net)
     rng = np.random.default_rng(base_seed + 100003 * (worker_idx + 1))
 
-    env = SearchRoboMageEnv(deck_a=deck, deck_b=deck)
+    n_games = len(matchups)
+    da0, db0 = matchups[0] if matchups else (None, None)
+    env = SearchRoboMageEnv(deck_a=da0, deck_b=db0)
     total_samples = 0
     shards = []
     buf = []
@@ -193,6 +251,9 @@ def _worker(deck, source, n_games, sims, worlds, temp_moves, root_noise_eps,
     try:
         for g in range(n_games):
             seed = base_seed + worker_idx * 100000 + g
+            # Swap decks for this game; reset() (inside _play_game) respawns the
+            # engine reading the current _deck_a/_deck_b.
+            env._deck_a, env._deck_b = matchups[g]
 
             def beat(move, searched_ct, fallback_ct, _g=g):
                 result_q.put({"kind": "beat", "worker": worker_idx,
@@ -251,8 +312,16 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
              root_noise_eps: float = DEFAULT_ROOT_NOISE_EPS,
              root_noise_alpha: float = DEFAULT_ROOT_NOISE_ALPHA,
              out_dir: Optional[str] = None, seed: int = 1,
-             use_actor: Optional[bool] = None) -> dict:
-    """Generate ``games`` self-play games of ``deck`` (mirror) and write shards.
+             use_actor: Optional[bool] = None,
+             roster: Optional[list] = None,
+             mirror_frac: float = DEFAULT_MIRROR_FRAC) -> dict:
+    """Generate ``games`` self-play games with FOCUS deck ``deck`` and write shards.
+
+    Each game the opponent deck is the focus deck (mirror) with probability
+    ``mirror_frac``, else a uniform draw from ``roster`` (default: every
+    ``decks/league/*.dk``); the seeded schedule alternates the focus deck's seat.
+    Shards pool into ``out_dir`` (default ``az_data/gen/`` — filenames are globally
+    unique, so cross-deck runs share one pool feeding the single generalist net).
 
     ``use_actor`` picks the generation backend:
       * ``None`` (AUTO, default) — use the C++ ``bin/az_actor`` iff it is built,
@@ -264,8 +333,10 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
     if workers is None:
         workers = max(1, (os.cpu_count() or 2) - 2)
     workers = max(1, min(workers, games))
-    out_dir = out_dir or os.path.join(_AZ_DATA_DIR, deck)
+    out_dir = out_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     os.makedirs(out_dir, exist_ok=True)
+    if roster is None:
+        roster = league_roster()
 
     have_actor = os.path.exists(_ACTOR_BIN)
     if use_actor is None:
@@ -278,15 +349,17 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
             f"--actor requested but the actor binary is not built at {_ACTOR_BIN} "
             f"(build it with `make actor`, or pass --no-actor)")
 
+    schedule = build_matchup_schedule(deck, roster, games, mirror_frac, seed)
     source = resolve_source(deck, checkpoint)
-    print(f"[az-selfplay] deck={deck} games={games} sims={sims} worlds={worlds} "
-          f"workers={workers}")
+    print(f"[az-selfplay] focus={deck} games={games} sims={sims} worlds={worlds} "
+          f"workers={workers} mirror_frac={mirror_frac}")
     print(f"[az-selfplay] net source: mode={source['mode']} path={source['path']}")
     print(f"[az-selfplay] out_dir={out_dir}")
+    print(f"[az-selfplay] matchups: {_schedule_summary(schedule)}")
     print(f"[az-selfplay] backend={'ACTOR' if use_actor else 'PYTHON'} ({chosen}); "
           f"az_actor {'present' if have_actor else 'absent'}")
 
-    common = dict(source=source, games=games, sims=sims, worlds=worlds,
+    common = dict(source=source, schedule=schedule, sims=sims, worlds=worlds,
                   workers=workers, temp_moves=temp_moves,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed)
@@ -299,14 +372,20 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
 # Python multiprocess backend
 # ----------------------------------------------------------------------
 
-def _generate_python(deck, *, source, games, sims, worlds, workers, temp_moves,
+def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                      root_noise_eps, root_noise_alpha, out_dir, seed) -> dict:
     import multiprocessing as mp
 
-    # Split games across workers.
+    games = len(schedule)
+    # Split the matchup schedule across workers (contiguous slices).
     per = [games // workers] * workers
     for i in range(games % workers):
         per[i] += 1
+    slices = []
+    off = 0
+    for n in per:
+        slices.append(schedule[off:off + n])
+        off += n
 
     ctx = mp.get_context("spawn")
     result_q = ctx.Queue()
@@ -315,7 +394,7 @@ def _generate_python(deck, *, source, games, sims, worlds, workers, temp_moves,
         if per[wi] == 0:
             continue
         p = ctx.Process(target=_worker,
-                        args=(deck, source, per[wi], sims, worlds, temp_moves,
+                        args=(slices[wi], source, sims, worlds, temp_moves,
                               root_noise_eps, root_noise_alpha, out_dir, seed,
                               wi, result_q))
         p.start()
@@ -431,7 +510,7 @@ def _parse_actor_output(stdout: str):
 
 
 def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
-                       out_dir, noise_eps=DEFAULT_ROOT_NOISE_EPS,
+                       out_dir, deck_b=None, noise_eps=DEFAULT_ROOT_NOISE_EPS,
                        noise_alpha=DEFAULT_ROOT_NOISE_ALPHA,
                        temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
@@ -439,7 +518,10 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     The single source of the actor CLI contract on the Python side — used by
     _generate_actor and bench_actor so the production and benchmark invocations
     can never drift apart (and both always pin the noise/temperature knobs
-    instead of leaning on the actor's compiled-in defaults)."""
+    instead of leaning on the actor's compiled-in defaults).
+
+    ``deck`` is Player A's deck; ``deck_b`` is Player B's (None -> mirror = deck),
+    so one actor process runs one (deck_a, deck_b) matchup batch."""
     cmd = [actor_bin, "--selfplay", "--deck", deck,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds),
@@ -447,43 +529,44 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--noise-eps", str(noise_eps),
            "--noise-alpha", str(noise_alpha),
            "--temp-moves", str(temp_moves)]
+    if deck_b is not None and deck_b != deck:
+        cmd += ["--deck-b", deck_b]
     if rng_seed is not None:
         cmd += ["--rng-seed", str(rng_seed)]
     return cmd
 
 
-def _generate_actor(deck, *, source, games, sims, worlds, workers, temp_moves,
+def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
                     actor_bin) -> dict:
     import glob
     import shutil
     import subprocess
     import threading
+    from collections import Counter
 
     ts_path, tmpdir = _ensure_actor_torchscript(source)
     out_dir = os.path.abspath(out_dir)
+    games = len(schedule)
 
-    # Split games across workers with DISJOINT seed ranges: worker i runs games
-    # seeded (seed + i*100000 + g), mirroring the Python path's per-worker
-    # schedule so the two backends explore the same seed space.
-    per = [games // workers] * workers
-    for i in range(games % workers):
-        per[i] += 1
+    # Group the schedule into per-(deck_a, deck_b) actor invocations so each actor
+    # process runs one matchup batch (mirror or cross-deck) with a DISJOINT seed
+    # range. Groups are run with bounded concurrency (<= workers at a time).
+    groups = [((da, db), n) for (da, db), n in sorted(Counter(schedule).items())]
+    total_groups = len(groups)
 
     pre = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
     total_samples = 0
     agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
-    procs = []
 
-    # Live progress: a reader thread per worker echoes each actor SELFPLAY:
-    # game line as it lands (with a running cross-worker total + ETA) while
-    # accumulating the full stdout/stderr for the final parse. Without this,
-    # nothing prints until every worker exits.
+    # Live progress: a reader thread per group echoes each actor SELFPLAY: game
+    # line as it lands (with a running cross-group total + ETA) while accumulating
+    # the full stdout/stderr for the final parse.
     t_start = time.time()
     prog_lock = threading.Lock()
     prog = {"done": 0}
 
-    def _pump(wi, stream, sink, is_stdout):
+    def _pump(gi, stream, sink, is_stdout):
         for line in stream:
             sink.append(line)
             if is_stdout and line.startswith("SELFPLAY: game "):
@@ -492,56 +575,65 @@ def _generate_actor(deck, *, source, games, sims, worlds, workers, temp_moves,
                     done = prog["done"]
                     elapsed = time.time() - t_start
                     eta = elapsed / done * (games - done)
-                print(f"[az-selfplay] w{wi} {line.strip()} | total {done}/{games} "
+                print(f"[az-selfplay] g{gi} {line.strip()} | total {done}/{games} "
                       f"games, elapsed {_fmt_secs(elapsed)}, eta {_fmt_secs(eta)}",
                       flush=True)
         stream.close()
 
-    try:
-        for wi in range(workers):
-            if per[wi] == 0:
-                continue
-            base = seed + wi * 100000
-            cmd = actor_selfplay_cmd(
-                actor_bin, deck=deck, seed=base, games=per[wi],
-                sims=sims, worlds=worlds, model=ts_path, out_dir=out_dir,
-                noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
-                temp_moves=temp_moves, rng_seed=seed + 100003 * (wi + 1))
-            # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
-            p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out_lines, err_lines = [], []
-            threads = [
-                threading.Thread(target=_pump, args=(wi, p.stdout, out_lines, True),
-                                 daemon=True),
-                threading.Thread(target=_pump, args=(wi, p.stderr, err_lines, False),
-                                 daemon=True),
-            ]
-            for t in threads:
-                t.start()
-            procs.append((wi, per[wi], p, threads, out_lines, err_lines))
+    def _launch(gi):
+        (da, db), n = groups[gi]
+        base = seed + gi * 100000
+        cmd = actor_selfplay_cmd(
+            actor_bin, deck=da, deck_b=db, seed=base, games=n,
+            sims=sims, worlds=worlds, model=ts_path, out_dir=out_dir,
+            noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
+            temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1))
+        # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
+        p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out_lines, err_lines = [], []
+        threads = [
+            threading.Thread(target=_pump, args=(gi, p.stdout, out_lines, True),
+                             daemon=True),
+            threading.Thread(target=_pump, args=(gi, p.stderr, err_lines, False),
+                             daemon=True),
+        ]
+        for t in threads:
+            t.start()
+        return {"gi": gi, "da": da, "db": db, "n": n, "p": p,
+                "threads": threads, "out": out_lines, "err": err_lines}
 
-        failed = []
-        for wi, ng, p, threads, out_lines, err_lines in procs:
-            p.wait()
-            for t in threads:
-                t.join()
-            if p.returncode != 0:
-                failed.append((wi, p.returncode, "".join(err_lines)))
-                continue
-            s, wa, wb, dr = _parse_actor_output("".join(out_lines))
-            total_samples += s
-            agg["wins_a"] += wa
-            agg["wins_b"] += wb
-            agg["draws"] += dr
-            print(f"[az-selfplay] worker {wi}: games={ng} samples={s} "
-                  f"A={wa} B={wb} draws={dr}")
+    failed = []
+
+    def _reap(rec):
+        nonlocal total_samples
+        rec["p"].wait()
+        for t in rec["threads"]:
+            t.join()
+        if rec["p"].returncode != 0:
+            failed.append((rec["gi"], rec["p"].returncode, "".join(rec["err"])))
+            return
+        s, wa, wb, dr = _parse_actor_output("".join(rec["out"]))
+        total_samples += s
+        agg["wins_a"] += wa
+        agg["wins_b"] += wb
+        agg["draws"] += dr
+        print(f"[az-selfplay] matchup {rec['da']}|{rec['db']}: games={rec['n']} "
+              f"samples={s} A={wa} B={wb} draws={dr}")
+
+    cap = max(1, workers)
+    try:
+        for start in range(0, total_groups, cap):
+            batch = [_launch(gi) for gi in range(start, min(start + cap, total_groups))]
+            for rec in batch:
+                _reap(rec)
         if failed:
-            for wi, rc, err in failed:
+            for gi, rc, err in failed:
                 tail = "\n".join(err.strip().splitlines()[-10:])
-                print(f"[az-selfplay] worker {wi} FAILED (exit {rc}):\n{tail}")
+                print(f"[az-selfplay] matchup group {gi} FAILED (exit {rc}):\n{tail}")
             raise RuntimeError(
-                f"az_actor self-play: {len(failed)} of {len(procs)} worker(s) failed")
+                f"az_actor self-play: {len(failed)} of {total_groups} matchup "
+                f"group(s) failed")
     finally:
         if tmpdir:
             shutil.rmtree(tmpdir, ignore_errors=True)
@@ -576,22 +668,29 @@ def run(args) -> None:
     generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
              workers=args.workers, checkpoint=args.checkpoint,
              temp_moves=args.temp_moves, seed=args.seed if args.seed is not None else 1,
-             out_dir=args.out, use_actor=_resolve_use_actor(args))
+             out_dir=args.out, use_actor=_resolve_use_actor(args),
+             mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC))
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description="AlphaZero self-play data generation")
-    ap.add_argument("--deck", default="delver", help="Deck (.dk stem) — mirror match")
+    ap.add_argument("--deck", default="delver",
+                    help="Focus deck (.dk stem) — its opponent is a mirror with "
+                         "P=--mirror-frac, else a uniform league-roster draw")
     ap.add_argument("--games", type=int, default=10)
     ap.add_argument("--sims", type=int, default=128)
     ap.add_argument("--worlds", type=int, default=4)
     ap.add_argument("--workers", type=int, default=None,
                     help="Worker processes (default max(1, cpu-2))")
     ap.add_argument("--checkpoint", default=None,
-                    help="AZ (.pt) or PPO (.zip) checkpoint / deck shorthand "
-                         "(default: deck's AZ ckpt, else PPO warm-start, else random)")
+                    help="AZ (.pt) / PPO (.zip) checkpoint or 'gen' "
+                         "(default: generalist AZ ckpt, else gen PPO warm-start, "
+                         "else random)")
     ap.add_argument("--temp-moves", type=int, default=DEFAULT_TEMP_MOVES)
-    ap.add_argument("--out", default=None, help="Output dir (default az_data/{deck})")
+    ap.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
+                    help="P(opponent deck == focus deck) per game (default %.2f); "
+                         "else a uniform league-roster draw" % DEFAULT_MIRROR_FRAC)
+    ap.add_argument("--out", default=None, help="Output dir (default az_data/gen)")
     ap.add_argument("--seed", type=int, default=1)
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--actor", action="store_true",

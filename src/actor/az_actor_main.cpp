@@ -36,6 +36,7 @@ namespace {
 
 struct ActorConfig {
     std::string deck = "delver";
+    std::string deck_b;  // empty -> mirror (= deck)
     std::string model;
     std::string dump_obs;
     std::string dump_visits;
@@ -65,7 +66,7 @@ constexpr size_t FLUSH_SAMPLES = 4096;
 
 void print_usage(const char* prog) {
     std::fprintf(stderr,
-                 "usage: %s --deck <name> [--seed N] [--games N] "
+                 "usage: %s --deck <name> [--deck-b <name>] [--seed N] [--games N] "
                  "[--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
                  "       [--search [--sims N] [--worlds N] [--c F] [--batch K] "
                  "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n"
@@ -90,6 +91,8 @@ int main(int argc, char const* argv[]) {
         std::string a = argv[i];
         if (a == "--deck") {
             cfg.deck = need_arg(argc, argv, i, "--deck");
+        } else if (a == "--deck-b") {
+            cfg.deck_b = need_arg(argc, argv, i, "--deck-b");
         } else if (a == "--seed") {
             cfg.seed = static_cast<unsigned int>(std::stoul(need_arg(argc, argv, i, "--seed")));
         } else if (a == "--games") {
@@ -165,8 +168,12 @@ int main(int argc, char const* argv[]) {
     // enable_log=false: no decision log (millions of decisions).
     machine_mode = true;
     narrative_mode = false;
+    // deck_b defaults to deck (mirror); a distinct --deck-b drives a cross-deck
+    // self-play matchup (the generalist net values every state, so cross-deck
+    // negamax backup in MCTS is sound).
+    const std::string deck_b_name_eff = cfg.deck_b.empty() ? cfg.deck : cfg.deck_b;
     deck_a_name = cfg.deck;
-    deck_b_name = cfg.deck;
+    deck_b_name = deck_b_name_eff;
     InputLogger::instance().init_machine(cfg.seed, RESOURCE_DIR, false, DecisionLogHeader{});
 
     AZEvaluator evaluator;
@@ -234,8 +241,9 @@ int main(int argc, char const* argv[]) {
             return evaluator.argmax_action(ob.obs.data(), ob.num_choices);
         });
 
-    // Mirror match: both seats play the same deck.
-    Deck deck(RESOURCE_DIR + "/decks/" + cfg.deck + ".dk");
+    // Player A plays --deck; Player B plays --deck-b (defaults to --deck: mirror).
+    Deck deck_a(RESOURCE_DIR + "/decks/" + cfg.deck + ".dk");
+    Deck deck_b(RESOURCE_DIR + "/decks/" + deck_b_name_eff + ".dk");
 
     for (int g = 0; g < cfg.games; g++) {
         unsigned int seed_g = cfg.seed + static_cast<unsigned int>(g);
@@ -245,7 +253,7 @@ int main(int argc, char const* argv[]) {
         match_reset_revealed();
         EcsSystems sys = init_ecs();
         if (cfg.selfplay) mcts->begin_game();  // reset per-game move counter + samples
-        int winner = play_single_game(sys, deck, deck, true, seed_g);
+        int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
         std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
                     winner == Zone::PLAYER_A ? "A" : "B");
         std::fflush(stdout);

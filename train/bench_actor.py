@@ -49,7 +49,8 @@ def _cpp_leg(ts_path, out_dir, args):
     # noise/temperature knobs _python_leg passes to _play_game, so the two legs
     # measure the identical workload by construction.
     cmd = az_selfplay.actor_selfplay_cmd(
-        ACTOR_BIN, deck=args.deck, seed=args.seed, games=args.games,
+        ACTOR_BIN, deck=args.deck, deck_b=getattr(args, "deck_b", None),
+        seed=args.seed, games=args.games,
         sims=args.sims, worlds=args.worlds, model=ts_path, out_dir=out_dir)
     env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
     t0 = time.perf_counter()
@@ -74,7 +75,8 @@ def _python_leg(ckpt, out_dir, args):
     evaluator = AZEvaluator(net)
     rng = np.random.default_rng(args.seed + 100003)
     from search_env import SearchRoboMageEnv
-    env = SearchRoboMageEnv(deck_a=args.deck, deck_b=args.deck)
+    deck_b = getattr(args, "deck_b", None) or args.deck
+    env = SearchRoboMageEnv(deck_a=args.deck, deck_b=deck_b)
     decisions = 0
     t0 = time.perf_counter()
     try:
@@ -107,6 +109,8 @@ def main():
     ap.add_argument("--sims", type=int, default=128)
     ap.add_argument("--worlds", type=int, default=4)
     ap.add_argument("--deck", default="league/ur_delver")
+    ap.add_argument("--deck-b", default=None,
+                    help="Player B deck (default: mirror = --deck)")
     ap.add_argument("--seed", type=int, default=1)
     args = ap.parse_args()
 

@@ -456,36 +456,51 @@ def save_torchscript(net: "AZNet", path: str, steps: Optional[int] = None) -> st
     return path
 
 
-def az_checkpoint_path(deck: str, steps: Optional[int] = None,
-                       checkpoint_dir: str = _AZ_CKPT_DIR) -> str:
-    """``{dir}/{deck}__azfinal.pt`` (steps None) or ``{deck}__azv{steps}.pt``.
+# The single generalist AZ checkpoint stem — mirrors opponents.GEN_STEM for PPO.
+# There is now ONE AZ net that pilots ANY deck; the deck it plays travels as a
+# separate explicit parameter, never inferred from the filename. Its checkpoints
+# are 'gen__azfinal.pt' (the gate-promoted incumbent) plus periodic
+# 'gen__azv{steps}.pt' candidate snapshots (+ '.ts.pt' / '.meta.json' siblings).
+AZ_GEN_STEM = "gen"
 
-    A subfolder deck ('league/ur_delver') keeps its subfolder under the az dir."""
-    sub = os.path.join(checkpoint_dir, os.path.dirname(deck))
-    stem = os.path.basename(deck)
-    name = f"{stem}__azfinal.pt" if steps is None else f"{stem}__azv{int(steps)}.pt"
-    return os.path.join(sub, name)
+
+def az_checkpoint_path(steps: Optional[int] = None,
+                       checkpoint_dir: str = _AZ_CKPT_DIR) -> str:
+    """``{dir}/gen__azfinal.pt`` (steps None) or ``{dir}/gen__azv{steps}.pt``.
+
+    Keyed to the single generalist stem — there is no per-deck AZ net anymore."""
+    name = (f"{AZ_GEN_STEM}__azfinal.pt" if steps is None
+            else f"{AZ_GEN_STEM}__azv{int(steps)}.pt")
+    return os.path.join(checkpoint_dir, name)
 
 
 def resolve_az_checkpoint(spec: str,
                           checkpoint_dir: str = _AZ_CKPT_DIR,
                           prefer: str = "final") -> Optional[str]:
-    """Resolve an AZ checkpoint shorthand/path. Priority: exact path; then
-    ``{deck}__azfinal.pt``; then the newest ``{deck}__azv*.pt``. Returns None if
-    nothing matches (so callers can fall back to a PPO warm-start).
+    """Resolve an AZ checkpoint spec to a path, generalist contract. Accepts:
+
+      - an explicit existing path (``.pt``) — returned as-is;
+      - the reserved stem ``'gen'`` → ``gen__azfinal.pt``, else the newest
+        ``gen__azv*.pt`` (respecting ``prefer``).
+
+    Returns ``None`` for anything else — a nonexistent path, or a bare (non-``gen``)
+    deck shorthand — so boolean probes stay well-behaved and callers can fall back
+    to a PPO warm-start. The user-facing "deck shorthands are gone" error is raised
+    at the controller layer (see opponents._load_az_evaluator), which pairs the
+    generalist net with an explicit deck.
 
     ``prefer="snapshot"`` flips the final/snapshot order — the trainer uses it to
     continue the CANDIDATE line (newest snapshot) while ``__azfinal`` stays the
     gate-promoted incumbent that self-play and opponent specs default to."""
     if spec and os.path.exists(spec):
         return spec
-    final = az_checkpoint_path(spec, None, checkpoint_dir)
+    if not spec or spec.strip().lower() != AZ_GEN_STEM:
+        return None
+    final = az_checkpoint_path(None, checkpoint_dir)
     if not os.path.exists(final):
         final = None
     import glob as _glob
-    sub = os.path.join(checkpoint_dir, os.path.dirname(spec))
-    stem = os.path.basename(spec)
-    snaps = _glob.glob(os.path.join(sub, f"{stem}__azv*.pt"))
+    snaps = _glob.glob(os.path.join(checkpoint_dir, f"{AZ_GEN_STEM}__azv*.pt"))
 
     def _steps(p):
         try:
