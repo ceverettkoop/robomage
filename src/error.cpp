@@ -201,7 +201,7 @@ void non_fatal_error(std::string err) {
 #endif
 }
 
-void fatal_error(std::string err) {
+[[noreturn]] void fatal_error(std::string err) {
 #ifndef NDEBUG
     print_backtrace();
 #endif

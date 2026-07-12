@@ -367,6 +367,23 @@ class PFSPCallback(BaseCallback):
             total = w + l
             if total:
                 self.logger.record(f"pfsp/winrate_with_{_deck_tag(sd)}", w / total)
+        # Recent-window per-self-deck win rates: the cumulative curves above barely
+        # move late in a run and lag real changes, so also log the sliding-window
+        # rate (already computed by winrate_by_self via the _recent_by_self deques).
+        # These are the responsive per-deck learning curves to watch.
+        recent_by_self = self.winrate_by_self()
+        present = [wr for wr in recent_by_self.values() if wr is not None]
+        for sd, wr in recent_by_self.items():
+            if wr is not None:
+                self.logger.record(f"pfsp/winrate_with_{_deck_tag(sd)}_recent", wr)
+        # Deck-balanced aggregate: average the per-deck recent rates with FIXED equal
+        # weight per deck (not the empirical episode mix). This removes the between-deck
+        # composition variance — the divergent per-deck winrates that make the raw
+        # rollout metrics jitter even when every deck is improving — leaving a single
+        # clean trend line for overall progress.
+        if present:
+            self.logger.record("pfsp/winrate_deck_balanced_recent",
+                               sum(present) / len(present))
         self.logger.record("pfsp/winrate_overall", self.overall_winrate())
         self.logger.record("pfsp/winrate_recent", rwr)
 
