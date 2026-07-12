@@ -201,9 +201,9 @@ CI perf probe expects release-build timing). Gate everything with `make check`.
    `git fetch origin delver_checkpoint_temp && git checkout
    origin/delver_checkpoint_temp -- train/checkpoints/league/ur_delver__final.zip`
    (then `git restore --staged` it). Or train a fresh baseline:
-   `train.py --deck <deck> --opponent <deck>` (consider
-   `ROBOMAGE_PER_ACTION_HEAD=1` — content-based priors search better than the
-   positional head, and it's what AZNet mirrors).
+   `train.py --deck <deck> --opponent <deck>` (fresh models default to the
+   per-action head — content-based priors search better than the positional
+   head, and it's what AZNet mirrors; `--stock-head` opts out).
 2. **The Phase B gate** — DONE 2026-07-11 (see "Phase B strength gate —
    PASSED" above; run with `league/bw_dnt` instead of ur_delver). Kept as a
    recipe for gating other decks/checkpoints — one command, committed on the

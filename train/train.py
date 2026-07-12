@@ -68,13 +68,17 @@ from stable_baselines3.common.logger import configure as sb3_configure_logger
 
 import numpy as np
 
-# ── Per-action logit head (prototype, opt-in) ────────────────────────────────
-# Set ROBOMAGE_PER_ACTION_HEAD=1 to train with PerActionMaskablePolicy, which
-# scores each candidate action from its own encoded features (category + target
-# card embedding + controller_is_self) instead of a flat positional Linear. This
-# changes the network shape, so such runs are NOT checkpoint-compatible with
-# stock MlpPolicy models — start them --fresh.
-USE_PER_ACTION_HEAD = os.environ.get("ROBOMAGE_PER_ACTION_HEAD", "0").lower() \
+# ── Per-action logit head (the default) ──────────────────────────────────────
+# Fresh models train with PerActionMaskablePolicy, which scores each candidate
+# action from its own encoded features (category + target card embedding +
+# controller_is_self + zone + referenced-entity embedding) instead of a flat
+# positional Linear — and is the flavor AZNet's from_ppo warm-start transfers
+# 1:1. Opt out with --stock-head (any training subcommand) or
+# ROBOMAGE_PER_ACTION_HEAD=0 to build the legacy stock MlpPolicy head.
+# The two flavors are NOT checkpoint-compatible: resuming a checkpoint always
+# keeps the flavor it was saved with (a mismatch with the session's flavor
+# prints a warning suggesting --fresh).
+USE_PER_ACTION_HEAD = os.environ.get("ROBOMAGE_PER_ACTION_HEAD", "1").lower() \
     not in ("0", "", "false", "no")
 
 
@@ -82,8 +86,9 @@ def _policy_config(policy_kwargs):
     """Resolve (policy, policy_kwargs) for MaskablePPO construction.
 
     Swaps in the per-action-logit head (and flips the extractor into
-    per_action_head mode) when ROBOMAGE_PER_ACTION_HEAD is set; otherwise returns
-    the stock "MlpPolicy" untouched.
+    per_action_head mode) unless the session opted out via --stock-head /
+    ROBOMAGE_PER_ACTION_HEAD=0, in which case the stock "MlpPolicy" is returned
+    untouched.
     """
     if not (USE_PER_ACTION_HEAD and USE_MASKABLE):
         return "MlpPolicy", policy_kwargs
@@ -510,7 +515,26 @@ def _reassert_hparams(model, label: str):
         print(f"[hyperparam] {label}: overriding stale clip_range "
               f"{stored_clip} -> {PPO_KWARGS['clip_range']}")
         model.clip_range = FloatSchedule(PPO_KWARGS["clip_range"])
+    _warn_head_flavor(model, label)
     return model
+
+
+def _warn_head_flavor(model, label: str):
+    """Warn when a resumed checkpoint's policy-head flavor differs from the
+    session's configured flavor. Unlike the hyperparameters above, the head
+    CANNOT be overridden on resume (the two flavors have different network
+    shapes), so the checkpoint's flavor always wins — the warning just makes
+    the silent divergence visible and points at --fresh."""
+    session_pa = USE_PER_ACTION_HEAD and USE_MASKABLE
+    ckpt_pa = isinstance(model.policy, PerActionMaskablePolicy)
+    if ckpt_pa == session_pa:
+        return
+    got = "per-action" if ckpt_pa else "stock MlpPolicy"
+    want = "per-action" if session_pa else "stock MlpPolicy"
+    print(f"[head] {label}: WARNING — resumed checkpoint has the {got} head but "
+          f"this session is configured for the {want} head; continuing with the "
+          f"checkpoint's {got} head (the flavors are not checkpoint-compatible). "
+          f"Use --fresh to retrain this deck with the {want} head.")
 
 
 def _apply_ppo_overrides(args):
@@ -1726,6 +1750,12 @@ if __name__ == "__main__":
         # These are the training subcommands — nudge toward a release engine build.
         _warn_if_debug_build(args.binary)
         _apply_ppo_overrides(args)
+        # --stock-head opts this session out of the default per-action logit
+        # head (fresh models only; a resumed checkpoint keeps its own flavor).
+        if getattr(args, "stock_head", False):
+            USE_PER_ACTION_HEAD = False
+            print("[head] --stock-head: fresh models this session use the "
+                  "stock MlpPolicy positional head")
 
     if args.command == "league":
         league(args.binary, decks=args.decks, total_timesteps=args.total_timesteps,

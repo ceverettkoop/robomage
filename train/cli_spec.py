@@ -272,6 +272,13 @@ def train_opts():
             help="Feature-extractor embed dim for fresh models (default: %d). "
                  "Ignored when resuming a checkpoint (its embed_dim is restored from "
                  "the saved policy_kwargs)." % EMBED_DIM),
+        Arg("--stock-head", "flag",
+            help="Build fresh models with the legacy stock MlpPolicy positional "
+                 "head instead of the default per-action logit head "
+                 "(PerActionMaskablePolicy). The flavors are not "
+                 "checkpoint-compatible; resuming always keeps the checkpoint's "
+                 "own head, so this only affects fresh (--fresh / first-time) "
+                 "models."),
         Arg("--n-epochs", "int", default=N_EPOCHS,
             help="PPO optimization epochs per update (default: %d). Applies to "
                  "fresh models AND overrides whatever a resumed checkpoint was "

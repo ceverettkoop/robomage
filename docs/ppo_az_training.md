@@ -18,10 +18,13 @@ itself.
 **Intended pattern: PPO to competence, AZ to mastery.** Spending search-priced
 samples to teach a random net that lands are good is waste — PPO learns the
 basics almost free, and `from_ppo` warm-starts AZNet from the finished PPO
-checkpoint so the AZ phase inherits rather than rediscovers them. Run the PPO
-phase with `ROBOMAGE_PER_ACTION_HEAD=1`: AZNet mirrors `PerActionMaskablePolicy`
+checkpoint so the AZ phase inherits rather than rediscovers them. The PPO phase
+trains the per-action head by default (`PerActionMaskablePolicy`; opt out with
+`--stock-head` or `ROBOMAGE_PER_ACTION_HEAD=0`): AZNet mirrors it
 parameter-for-parameter, so the per-action flavor transfers policy/value heads
-1:1 (stock MlpPolicy transfers the extractor trunk only).
+1:1 (a legacy stock-MlpPolicy checkpoint transfers the extractor trunk only —
+its AZ warm-start starts with random heads, which is exactly the
+uniform-policy cold start the default avoids).
 
 ## When to stop PPO and switch — the metrics
 
