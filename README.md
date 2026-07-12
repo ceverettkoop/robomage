@@ -101,6 +101,33 @@ train/.venv/bin/python train/train.py league --decks delver,mav --total-timestep
 train/.venv/bin/python train/train.py league --resume                                 # resume an interrupted run
 ```
 
+### AlphaZero (AZ) training
+
+The AZ loop trains a policy/value net on MCTS output instead of PPO gradients:
+self-play games are played with determinized search over engine snapshots
+(`--search-server`), each searched decision's visit counts become a policy
+target, and game outcomes train the value head. AZ models are per-deck like PPO
+ones, saved as `checkpoints/az/{deck}__azfinal.pt` (the gate-promoted incumbent)
+plus `{deck}__azv{steps}.pt` candidate snapshots, and warm-start automatically
+from the deck's PPO checkpoint. The usual pattern is PPO first, AZ after it
+plateaus — see `docs/ppo_az_training.md` for when to switch and
+`docs/alphazero_status.md` for the machinery.
+
+```bash
+train/.venv/bin/python train/train.py az --deck delver                # one full cycle: self-play -> train -> gate
+train/.venv/bin/python train/train.py az-selfplay --deck delver --games 50 --sims 128 --worlds 4  # generate shards only
+train/.venv/bin/python train/train.py az-train --deck delver          # train a candidate on the shard window
+train/.venv/bin/python train/train.py az-eval --deck delver --candidate delver --promote  # gate candidate vs incumbent
+train/.venv/bin/python train/train.py az-league                       # rotate AZ cycles across decks/league/
+train/.venv/bin/python train/eval_search_gate.py --checkpoint delver --deck delver  # search-vs-raw strength gate
+```
+
+Self-play uses the C++ actor (`make actor`, needs libtorch) automatically when
+`bin/az_actor` is built, else a pure-Python backend — same shards either way.
+AZ models play anywhere a controller spec is accepted: `az:delver?sims=128&worlds=4`
+(with search) or `azraw:delver` (net only); `mcts:delver` runs search over a PPO
+checkpoint instead.
+
 ## Play against model
 
 ```bash
