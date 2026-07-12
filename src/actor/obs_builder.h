@@ -3,7 +3,7 @@
 
 // Bit-exact, engine-side reconstruction of the Python RL observation vector.
 //
-// The gym env (train/env.py::_parse_bquery_payload) builds a 6700-float obs by
+// The gym env (train/env.py::_parse_bquery_payload) builds a 6922-float obs by
 // concatenating the machine-mode BQUERY payload (the STATE_SIZE state vector +
 // the padded per-action metadata arrays) and appending gathered cast/ability
 // cost rows. The in-process AlphaZero actor never speaks the stdio BQUERY
@@ -35,13 +35,13 @@ constexpr int ACTOR_STATE_HEADER_SIZE = ACTOR_SELF_IS_A_IDX + 2;  // + stack_siz
 static_assert(ACTOR_SELF_IS_A_IDX == 34, "self_is_a documented at float 34 (machine_io.h)");
 
 // obs = state | cats | ids | ctrl | zone | refs | hand_costs | bf_ability_costs.
-// Must equal train/env.py::OBS_SIZE (6700). Derived from the engine layout
+// Must equal train/env.py::OBS_SIZE (6922). Derived from the engine layout
 // constants so a layout change is caught by the static_assert, never a literal.
 constexpr int ACTOR_OBS_SIZE =
     STATE_SIZE + 5 * MAX_ACTIONS +
     MAX_HAND_SLOTS * ACTOR_N_COST_FEATS +
     MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS;
-static_assert(ACTOR_OBS_SIZE == 6700, "actor obs size must match env.py OBS_SIZE");
+static_assert(ACTOR_OBS_SIZE == 6922, "actor obs size must match env.py OBS_SIZE");
 
 struct ActorObs {
     std::vector<float> obs;  // ACTOR_OBS_SIZE floats

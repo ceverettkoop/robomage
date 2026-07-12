@@ -78,6 +78,7 @@ try:
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
         KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -94,6 +95,7 @@ except ImportError:
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
         KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -310,7 +312,20 @@ _EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
 _EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13
 _EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
 
-assert _EXTRAS_END == STATE_SIZE, (_EXTRAS_END, STATE_SIZE)
+# ── Deck-identity tail blocks (mirror machine_io.h [5974-6195]) ──────────────
+# Each slot is (card_id, count): card id via norm_card_id (empty = -1 sentinel),
+# count normalized /4.0. Slots packed ascending by vocab id, no holes.
+#   SELF_LIVE_LIBRARY : the viewer's LIBRARY zone tallied live (viewer-only).
+#   OPP_DECK_MAIN / OPP_DECK_SIDE : the opponent's STATIC decklist (post-board).
+_DECKLIST_SLOT_SIZE     = 2                       # card id + count per slot
+_SELF_LIVE_LIB_START    = _EXTRAS_END
+_SELF_LIVE_LIB_END      = _SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_MAIN_START    = _SELF_LIVE_LIB_END
+_OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_SIDE_START    = _OPP_DECK_MAIN_END
+_OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
+
+assert _OPP_DECK_SIDE_END == STATE_SIZE, (_OPP_DECK_SIDE_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
@@ -349,6 +364,11 @@ def _build_sideboard_mask():
         (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
         (_REVEALED_START, _REVEALED_END),           # opponent revealed multi-hot
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
+        # The opponent's STATIC decklist is exactly what informs sideboarding, so
+        # both opp-deck blocks stay visible. The SELF_LIVE_LIBRARY block is NOT
+        # kept (the library zone is stale during the sideboard phase); its card-id
+        # positions are sentinel-filled below, its counts masked to 0.0.
+        (_OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END),
     ):
         keep[lo:hi] = True
     # The "self is Player A" flag MUST survive the mask: it is the seat-routing
@@ -377,6 +397,9 @@ def _build_sideboard_mask():
         card_id_idx.append(i)
     for i in range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END):        # known opp hand
         card_id_idx.append(i)
+    for s in range(DECKLIST_MAIN_SLOTS):                               # self live library
+        # card id is the first float of each (card_id, count) slot; count masks to 0.0
+        card_id_idx.append(_SELF_LIVE_LIB_START + s * _DECKLIST_SLOT_SIZE)
     for i in card_id_idx:
         if not keep[i]:
             fill[i] = _ACTION_CARD_ID_NULL

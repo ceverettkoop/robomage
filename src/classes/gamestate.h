@@ -17,6 +17,8 @@ extern "C" {
 #define MAX_STACK_TGTS 4   // announced targets serialized per stack entry (truncated)
 #define MAX_GY_SLOTS 64  // per player
 #define MAX_HAND_SLOTS 10
+#define DECKLIST_MAIN_SLOTS 48  // distinct-name slots: self live library + opp maindeck
+#define DECKLIST_SIDE_SLOTS 15  // distinct-name slots: opp sideboard
 #define MAX_ACTIONS 64
 #define MAX_CHOICE_DESC 128
 #define PERM_COUNTERS_LEN 64  // PermanentState.counters summary width (mirrored in train/env.py)
@@ -195,10 +197,27 @@ typedef struct GameState_tag {
     int  pending_decision_card;
     bool pending_decision_ctrl_is_self;  // pending source's controller == viewer
 
-    // Global extras (serialized at the very end of the state vector)
+    // Global extras (serialized before the deck-identity tail blocks)
     bool is_day;               // game designation is day (CR 731.1)
     bool is_night;             // game designation is night
     int  pending_choice_kind;  // MandatoryChoice enum value (NONE = 0)
+
+    // ── Deck-identity tail blocks (serialized last; see machine_io.h) ──────────
+    // Each block is a list of (vocab id, count) slots, packed ascending by vocab
+    // id with no holes; id = -1 marks an empty slot (count 0). counts are raw
+    // integers (serialize_state normalizes by /4).
+    //
+    // Self LIVE library contents: the viewer's LIBRARY zone tallied live at
+    // serialization time (cards leaving/returning to the library are reflected).
+    // Viewer-only — the opponent's live library stays hidden.
+    int self_live_library_id[DECKLIST_MAIN_SLOTS];
+    int self_live_library_ct[DECKLIST_MAIN_SLOTS];
+    // Opponent-of-viewer's STATIC decklist (post-sideboard config for game 2+ of a
+    // bo3), read from deck_state; maindeck then sideboard.
+    int opp_deck_main_id[DECKLIST_MAIN_SLOTS];
+    int opp_deck_main_ct[DECKLIST_MAIN_SLOTS];
+    int opp_deck_side_id[DECKLIST_SIDE_SLOTS];
+    int opp_deck_side_ct[DECKLIST_SIDE_SLOTS];
 } GameState;
 
 #ifdef __cplusplus

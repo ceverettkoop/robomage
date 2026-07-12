@@ -9,6 +9,7 @@
 #include "card_db.h"
 #include "companion.h"
 #include "classes/deck.h"
+#include "classes/deck_state.h"
 #include "classes/game.h"
 #include "cli_output.h"
 #include "components/ability.h"
@@ -109,6 +110,11 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // A snapshot from a previous game of the match must never be restorable
     // into this game's fresh ECS.
     snapshot_release_all();
+    // Refresh the static decklist store for the state serializer. Called each game
+    // start so a bo3's post-sideboard (mutated) Deck structs are reflected in the
+    // opponent-decklist observation blocks (see deck_state.h / machine_io.h tail).
+    deck_state_set(Zone::PLAYER_A, deck_a);
+    deck_state_set(Zone::PLAYER_B, deck_b);
     cur_game = Game(seed);
     cur_game.generate_players(deck_a, deck_b);
     // Apply starting-life overrides (test harness --life-a/--life-b) before any play.

@@ -60,7 +60,7 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// Fixed-size state vector layout (STATE_SIZE = 5974 floats):
+// Fixed-size state vector layout (STATE_SIZE = 6196 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -224,8 +224,27 @@
 //                  [5968-5973] MandatoryChoice one-hot x6 (NONE at index 0, then
 //                       DECLARE_ATTACKERS_CHOICE, DECLARE_BLOCKERS_CHOICE,
 //                       CLEANUP_DISCARD, CHOOSE_ENTITY, ASSIGN_COMBAT_DAMAGE_CHOICE)
+//
+//  ── Deck-identity tail blocks ────────────────────────────────────────────────
+//  Each slot is (card_id, count): card_id via norm_card_id (empty slot = -1
+//  sentinel), count normalized /4.0 (basics may exceed 1.0). Slots are packed
+//  ascending by vocab index with NO holes (a testable invariant that keeps the
+//  encoding byte-stable across actors). Overflow (more distinct names than slots)
+//  or a name absent from the vocab is a fatal_error, never a silent truncation.
+//
+//  [5974-6069]   Self LIVE library: 48 slots x (card_id, count) = 96.
+//                The viewer's LIBRARY zone tallied live at serialization time, so
+//                cards leaving/returning to the library are always reflected.
+//                Viewer-only — the opponent's live library stays hidden.
+//
+//  [6070-6165]   Opponent-of-viewer STATIC maindeck: 48 slots x (card_id, count) = 96.
+//  [6166-6195]   Opponent-of-viewer STATIC sideboard: 15 slots x (card_id, count) = 30.
+//                The opponent's configured decklist (open-decklist ruleset), read
+//                from deck_state — the post-sideboard config for game 2+ of a bo3.
+//                Refreshed at game start; during the between-games sideboard phase
+//                itself the lists still show the just-played game's config.
 
-static constexpr int STATE_SIZE             = 5974;
+static constexpr int STATE_SIZE             = 6196;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
 static constexpr int PERM_SLOT_SIZE    = 38;   // 11 stat/combat/type + 2 counters + 4 refs + 2 flags + 16 keywords + chosen-name id + returnable-exile id + card-id float
 static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot
