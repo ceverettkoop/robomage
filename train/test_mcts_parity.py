@@ -179,6 +179,14 @@ def main():
         ev = TSEvaluator(ts_path)
         ctrl = ParitySearchController(ev)
         env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=False)
+        # The C++ actor plays each game to the engine's natural end (no decision
+        # cap); RoboMageEnv's MAX_STEPS is a training-only safety truncation. If
+        # the deterministic parity game runs longer than that cap, the Python
+        # drive would truncate mid-game while the actor plays on, so the two
+        # would compare an unequal number of searched roots even though every
+        # shared root matched. Disable the cap here so both sides run the SAME
+        # full game (the game is guaranteed to terminate — the actor proves it).
+        env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
         ctrl.bind_env(env)
         try:
             obs, _ = env.reset(options={"engine_seed": SEED})
