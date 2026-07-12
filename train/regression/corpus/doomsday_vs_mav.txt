@@ -2866,6 +2866,8 @@
    3: Cast Daze (alternate cost)
    4: Activate Street Wraith from hand (Draw)
    5: Activate Street Wraith from hand (Draw)
+   6: Tap Undercity Sewers for (U)
+   7: Tap Undercity Sewers for (B)
   >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
   Player A pays 1 life
@@ -2933,6 +2935,8 @@
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
    2: Activate Street Wraith from hand (Draw)
+   3: Tap Undercity Sewers for (U)
+   4: Tap Undercity Sewers for (B)
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Counter)
@@ -2957,6 +2961,8 @@
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)
    2: Activate Street Wraith from hand (Draw)
+   3: Tap Undercity Sewers for (U)
+   4: Tap Undercity Sewers for (B)
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Destroy)
