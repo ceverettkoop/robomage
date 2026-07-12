@@ -22,6 +22,7 @@
 
 #include "az_evaluator.h"
 #include "az_mcts.h"
+#include "npz_writer.h"
 #include "classes/deck.h"
 #include "classes/match_state.h"
 #include "components/zone.h"
@@ -49,14 +50,27 @@ struct ActorConfig {
     double c_puct = 1.5;
     int batch = 1;
     uint32_t world_seeds = 42;  // --world-seeds base (see az_mcts.h seed formula)
+    // Self-play (--selfplay, implies --search) config.
+    bool selfplay = false;
+    double noise_eps = 0.25;
+    double noise_alpha = 1.0;
+    int temp_moves = 20;
+    std::string out_dir;               // empty -> ../train/az_data/<deck>
+    bool rng_seed_set = false;
+    uint32_t rng_seed = 0;             // default derived from --seed
 };
+
+// Shard flush threshold — mirrors az_selfplay.py::FLUSH_SAMPLES.
+constexpr size_t FLUSH_SAMPLES = 4096;
 
 void print_usage(const char* prog) {
     std::fprintf(stderr,
                  "usage: %s --deck <name> [--seed N] [--games N] "
                  "[--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
                  "       [--search [--sims N] [--worlds N] [--c F] [--batch K] "
-                 "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n",
+                 "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n"
+                 "       [--selfplay [--noise-eps F] [--noise-alpha F] "
+                 "[--temp-moves N] [--out-dir <dir>] [--rng-seed N]]\n",
                  prog);
 }
 
@@ -101,6 +115,21 @@ int main(int argc, char const* argv[]) {
         } else if (a == "--world-seeds") {
             cfg.world_seeds = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--world-seeds")));
+        } else if (a == "--selfplay") {
+            cfg.selfplay = true;
+            cfg.search = true;  // self-play implies MCTS search
+        } else if (a == "--noise-eps") {
+            cfg.noise_eps = std::stod(need_arg(argc, argv, i, "--noise-eps"));
+        } else if (a == "--noise-alpha") {
+            cfg.noise_alpha = std::stod(need_arg(argc, argv, i, "--noise-alpha"));
+        } else if (a == "--temp-moves") {
+            cfg.temp_moves = std::stoi(need_arg(argc, argv, i, "--temp-moves"));
+        } else if (a == "--out-dir") {
+            cfg.out_dir = need_arg(argc, argv, i, "--out-dir");
+        } else if (a == "--rng-seed") {
+            cfg.rng_seed = static_cast<uint32_t>(
+                std::stoul(need_arg(argc, argv, i, "--rng-seed")));
+            cfg.rng_seed_set = true;
         } else if (a == "--resources") {
             cfg.resources = need_arg(argc, argv, i, "--resources");
         } else if (a == "--help" || a == "-h") {
@@ -163,8 +192,31 @@ int main(int argc, char const* argv[]) {
         mc.c_puct = cfg.c_puct;
         mc.batch = cfg.batch;
         mc.world_seed_base = cfg.world_seeds;
+        mc.selfplay = cfg.selfplay;
+        mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
+        mc.noise_alpha = cfg.noise_alpha;
+        mc.temp_moves = cfg.temp_moves;
+        mc.selfplay_rng_seed = cfg.rng_seed_set ? cfg.rng_seed : cfg.seed;
         mcts = std::make_unique<AZMcts>(mc, cfg.uniform ? nullptr : &evaluator);
         search_set_game_end_hook([&](int winner) { return mcts->on_game_end(winner); });
+    }
+
+    // Self-play shard accumulator: default out-dir ../train/az_data/<deck> (the
+    // binary runs from bin/, so this resolves to the repo's train/az_data/<deck>,
+    // matching az_selfplay.py's layout and the trainer's shard_*.npz glob).
+    std::unique_ptr<ShardAccumulator> shards;
+    if (cfg.selfplay) {
+        std::string dir = cfg.out_dir.empty()
+                              ? ("../train/az_data/" + cfg.deck)
+                              : cfg.out_dir;
+        shards = std::make_unique<ShardAccumulator>(
+            dir, FLUSH_SAMPLES, static_cast<size_t>(ACTOR_OBS_SIZE),
+            static_cast<size_t>(MAX_ACTIONS));
+        std::fprintf(stderr,
+                     "az_actor: self-play out_dir=%s sims=%d worlds=%d "
+                     "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d\n",
+                     dir.c_str(), cfg.sims, cfg.worlds, cfg.noise_eps,
+                     cfg.noise_alpha, cfg.temp_moves);
     }
 
     InputLogger::instance().set_input_provider(
@@ -192,9 +244,37 @@ int main(int argc, char const* argv[]) {
         std::srand(seed_g);
         match_reset_revealed();
         EcsSystems sys = init_ecs();
+        if (cfg.selfplay) mcts->begin_game();  // reset per-game move counter + samples
         int winner = play_single_game(sys, deck, deck, true, seed_g);
         std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
                     winner == Zone::PLAYER_A ? "A" : "B");
+        std::fflush(stdout);
+
+        if (cfg.selfplay) {
+            // Backfill z per stored sample from its mover's perspective vs the
+            // winner (draw -> 0), then accumulate; flush at the GAME boundary so a
+            // game is never split across shards (mirrors az_selfplay.py).
+            bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
+                        winner != static_cast<int>(Zone::PLAYER_B);
+            bool winner_is_a = winner == static_cast<int>(Zone::PLAYER_A);
+            const std::vector<SelfPlaySample>& gs = mcts->game_samples();
+            for (const SelfPlaySample& s : gs) {
+                float z = draw ? 0.0f
+                               : (s.mover_is_a == winner_is_a ? 1.0f : -1.0f);
+                shards->add_sample(s.obs.data(), s.pi.data(), z, s.mask.data());
+            }
+            shards->maybe_flush();
+            const char* wstr = draw ? "DRAW" : (winner_is_a ? "A" : "B");
+            std::printf("SELFPLAY: game %d samples=%zu winner=%s\n", g + 1,
+                        gs.size(), wstr);
+            std::fflush(stdout);
+        }
+    }
+
+    if (cfg.selfplay) {
+        shards->flush_final();
+        std::printf("SELFPLAY: total_samples=%zu shards=%zu\n",
+                    shards->total_samples(), shards->shards_written());
         std::fflush(stdout);
     }
 

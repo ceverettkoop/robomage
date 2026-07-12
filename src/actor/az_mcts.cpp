@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <random>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -108,7 +109,19 @@ struct AZMcts::Impl {
 
     std::vector<SearchRootResult> results;
 
-    explicit Impl(const MCTSConfig& c, AZEvaluator* e) : cfg(c), eval(e) {}
+    // ── self-play state ─────────────────────────────────────────────────────
+    std::mt19937 rng;                        // noise + real-action sampling RNG
+    long move_counter = 0;                   // per-game real-decision counter
+    std::vector<float> root_obs;             // clean root obs (captured before determinize)
+    std::vector<SelfPlaySample> game_samples; // samples stored this game
+
+    explicit Impl(const MCTSConfig& c, AZEvaluator* e)
+        : cfg(c), eval(e), rng(c.selfplay_rng_seed) {}
+
+    void begin_game() {
+        move_counter = 0;
+        game_samples.clear();
+    }
 
     // ── evaluator wrappers (uniform-safe) ──────────────────────────────────
     AZEvalResultD eval_one(const float* o, int nc) {
@@ -158,9 +171,32 @@ struct AZMcts::Impl {
         cur_world_seed = cfg.world_seed_base +
                          100003u * static_cast<uint32_t>(this_root) +
                          static_cast<uint32_t>(w);
-        // Per-world Dirichlet root noise is disabled in the parity/actor build
-        // (mcts.py root_noise_eps default 0.0); reuse the base priors verbatim.
-        cur_root = make_node(root_n, root_priors, root_is_a);
+        // Root Dirichlet noise, redrawn per world over the shared base priors —
+        // mcts.py: priors = (1-eps)*root_priors + eps*dirichlet(alpha*[1]*nc).
+        // eps=0 (parity default) reuses the base priors verbatim. A standard
+        // Dirichlet is gamma(alpha) per component normalized by the sum, drawn
+        // from the per-run RNG (no cross-language parity required).
+        if (cfg.noise_eps > 0.0) {
+            std::gamma_distribution<double> gamma(cfg.noise_alpha, 1.0);
+            std::vector<double> noise(static_cast<size_t>(root_n));
+            double sum = 0.0;
+            for (int i = 0; i < root_n; i++) {
+                double g = gamma(rng);
+                noise[static_cast<size_t>(i)] = g;
+                sum += g;
+            }
+            std::vector<double> priors(static_cast<size_t>(root_n));
+            for (int i = 0; i < root_n; i++) {
+                double d = sum > 0.0 ? noise[static_cast<size_t>(i)] / sum
+                                     : 1.0 / static_cast<double>(root_n);
+                priors[static_cast<size_t>(i)] =
+                    (1.0 - cfg.noise_eps) * root_priors[static_cast<size_t>(i)] +
+                    cfg.noise_eps * d;
+            }
+            cur_root = make_node(root_n, priors, root_is_a);
+        } else {
+            cur_root = make_node(root_n, root_priors, root_is_a);
+        }
     }
 
     int start_descent() {
@@ -223,6 +259,9 @@ struct AZMcts::Impl {
     int begin_or_fallback(const float* o, int nc) {
         bool searchable = search_loop_safe() && nc > 1;
         if (!searchable) {
+            // A trivial / unsafe real decision: not stored, evaluator-argmax
+            // fallback. It still counts as one real move for the tau schedule.
+            move_counter += 1;
             if (nc <= 1) return 0;
             std::vector<double> priors = eval_priors(o, nc);
             int best = 0;
@@ -230,7 +269,10 @@ struct AZMcts::Impl {
                 if (priors[static_cast<size_t>(i)] > priors[static_cast<size_t>(best)]) best = i;
             return best;
         }
-        // BEGIN SEARCH (mirrors mcts.py::run_search setup).
+        // BEGIN SEARCH (mirrors mcts.py::run_search setup). Capture the CLEAN root
+        // obs (the state the net saw for base priors) before any determinize —
+        // this is what a self-play sample stores.
+        root_obs.assign(o, o + ACTOR_OBS_SIZE);
         this_root = root_counter++;
         root_n = nc;
         root_is_a = o[SELF_IS_A_IDX] > 0.5f;
@@ -346,11 +388,39 @@ struct AZMcts::Impl {
             if (visit_totals[static_cast<size_t>(i)] > visit_totals[static_cast<size_t>(best)])
                 best = i;
 
+        // Self-play: store the searched sample and pick the real action per the
+        // tau schedule (sample-from-visits for the first temp_moves real moves,
+        // argmax after). Parity/eval mode stores nothing and always plays argmax.
+        int chosen = best;
+        if (cfg.selfplay) {
+            SelfPlaySample s;
+            s.obs = root_obs;                                    // clean root obs
+            s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
+            s.mask.assign(static_cast<size_t>(MAX_ACTIONS), 0);
+            s.mover_is_a = root_is_a;
+            for (int i = 0; i < root_n; i++) {
+                s.pi[static_cast<size_t>(i)] =
+                    total > 0 ? static_cast<float>(
+                                    static_cast<double>(visit_totals[static_cast<size_t>(i)]) /
+                                    static_cast<double>(total))
+                              : 0.0f;
+                s.mask[static_cast<size_t>(i)] = 1;
+            }
+            game_samples.push_back(std::move(s));
+
+            if (move_counter < cfg.temp_moves && total > 0) {
+                std::discrete_distribution<int> dist(
+                    visit_totals.begin(), visit_totals.begin() + root_n);
+                chosen = dist(rng);
+            }
+            move_counter += 1;
+        }
+
         phase = IDLE;
         pool.clear();
         pending.clear();
         path.clear();
-        return best;
+        return chosen;
     }
 
     int on_decision(const std::vector<LegalAction>& actions) {
@@ -396,3 +466,7 @@ int AZMcts::on_decision(const std::vector<LegalAction>& actions) {
 }
 bool AZMcts::on_game_end(int winner) { return impl_->on_game_end(winner); }
 const std::vector<SearchRootResult>& AZMcts::results() const { return impl_->results; }
+void AZMcts::begin_game() { impl_->begin_game(); }
+const std::vector<SelfPlaySample>& AZMcts::game_samples() const {
+    return impl_->game_samples;
+}

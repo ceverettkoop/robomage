@@ -44,6 +44,26 @@ struct MCTSConfig {
     int max_depth = 60;
     int batch = 1;                  // 1 = exact mcts.py parity; K>1 = virtual-loss batching
     uint32_t world_seed_base = 42;  // world seed(root r, world w) = base + 100003*r + w
+
+    // ── self-play (--selfplay) ──────────────────────────────────────────────
+    // When `selfplay` is set, each SEARCHED root stores a training sample and the
+    // first `temp_moves` real moves sample the real action from the visit
+    // distribution (rng) instead of argmax. Root Dirichlet noise (eps/alpha) is
+    // mixed into the base priors per world in begin_world. Defaults keep the
+    // parity paths (--search without --selfplay) noise-free (eps=0) and argmax.
+    bool selfplay = false;
+    double noise_eps = 0.0;         // 0 disables root noise (parity default)
+    double noise_alpha = 1.0;       // Dirichlet concentration
+    int temp_moves = 20;            // # of leading real moves that sample-from-visits
+    uint32_t selfplay_rng_seed = 0; // seeds the per-run noise+sampling RNG
+};
+
+// One stored self-play training sample (z is backfilled at real game end).
+struct SelfPlaySample {
+    std::vector<float> obs;     // ACTOR_OBS_SIZE — clean root obs (before determinize)
+    std::vector<float> pi;      // MAX_ACTIONS — normalized root visits in [:nc], else 0
+    std::vector<uint8_t> mask;  // MAX_ACTIONS — 1 in [:nc], else 0
+    bool mover_is_a;            // root mover seat (obs[SELF_IS_A]>0.5)
 };
 
 // One searched root's outcome (recorded for --dump-visits and stats).
@@ -75,6 +95,13 @@ public:
 
     // Per-searched-root results, in order.
     const std::vector<SearchRootResult>& results() const;
+
+    // ── self-play ───────────────────────────────────────────────────────────
+    // Reset per-game state (real-move counter + this game's stored samples).
+    // Call at the start of each self-play game (the RNG streams across games).
+    void begin_game();
+    // Samples stored during the current game (valid until the next begin_game()).
+    const std::vector<SelfPlaySample>& game_samples() const;
 
 private:
     struct Impl;
