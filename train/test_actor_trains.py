@@ -55,7 +55,12 @@ SIMS = 16
 WORLDS = 2
 TRAIN_BATCHES = 120
 TRAIN_BS = 64
-TRAIN_LR = 1e-3
+# LR is calibrated to the trunk capacity: the wider NET_ARCH ([512,512]) has a
+# larger effective step at a given LR, so 1e-3 (tuned for the old [256,256] body)
+# overshoots and the loss diverges on this tiny shard; 3e-4 converges stably at
+# both widths. This is a training-stability constant for the smoke, not a gate on
+# the exact LR.
+TRAIN_LR = 3e-4
 TRAIN_SEED = 0
 ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
 

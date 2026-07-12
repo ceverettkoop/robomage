@@ -100,7 +100,11 @@ class ScriptTrunk(nn.Module):
         "STACK_TGT_OFF", "STACK_TGT_SLOTS", "STACK_TGT_FIELDS", "GY_START",
         "GY_END", "GY_SLOTS", "EXILE_START", "EXILE_END", "EXILE_SLOTS",
         "HAND_START", "HAND_END", "HAND_SLOTS", "OPP_KNOWN_HAND_START",
-        "OPP_KNOWN_HAND_END", "OPP_KNOWN_HAND_SLOTS", "MAX_ACTIONS",
+        "OPP_KNOWN_HAND_END", "OPP_KNOWN_HAND_SLOTS", "SELF_LIVE_LIB_START",
+        "SELF_LIVE_LIB_END", "OPP_DECK_MAIN_START", "OPP_DECK_MAIN_END",
+        "OPP_DECK_SIDE_START", "OPP_DECK_SIDE_END", "DECKLIST_MAIN_SLOTS",
+        "DECKLIST_SIDE_SLOTS", "DECKLIST_SLOT_SIZE", "DECKLIST_CARD_OFF",
+        "DECKLIST_COUNT_OFF", "MAX_ACTIONS",
         "N_ENTITY_REF_SLOTS", "EMBED_DIM", "PER_ACTION_DIM",
         "features_dim", "per_action_offset", "per_action_slots", "per_action_dim",
     ]
@@ -114,6 +118,7 @@ class ScriptTrunk(nn.Module):
         self.perm_encoder = fe.perm_encoder
         self.stack_encoder = fe.stack_encoder
         self.entity_encoder = fe.entity_encoder
+        self.decklist_encoder = fe.decklist_encoder
         self.revealed_encoder = fe.revealed_encoder
         self.action_cat_emb = fe.action_cat_emb
         self.zone_emb = fe.zone_emb
@@ -169,6 +174,17 @@ class ScriptTrunk(nn.Module):
         self.OPP_KNOWN_HAND_START = int(_ex._OPP_KNOWN_HAND_START)
         self.OPP_KNOWN_HAND_END = int(_ex._OPP_KNOWN_HAND_END)
         self.OPP_KNOWN_HAND_SLOTS = int(_ex._OPP_KNOWN_HAND_SLOTS)
+        self.SELF_LIVE_LIB_START = int(_ex._SELF_LIVE_LIB_START)
+        self.SELF_LIVE_LIB_END = int(_ex._SELF_LIVE_LIB_END)
+        self.OPP_DECK_MAIN_START = int(_ex._OPP_DECK_MAIN_START)
+        self.OPP_DECK_MAIN_END = int(_ex._OPP_DECK_MAIN_END)
+        self.OPP_DECK_SIDE_START = int(_ex._OPP_DECK_SIDE_START)
+        self.OPP_DECK_SIDE_END = int(_ex._OPP_DECK_SIDE_END)
+        self.DECKLIST_MAIN_SLOTS = int(_ex._DECKLIST_MAIN_SLOTS)
+        self.DECKLIST_SIDE_SLOTS = int(_ex._DECKLIST_SIDE_SLOTS)
+        self.DECKLIST_SLOT_SIZE = int(_ex._DECKLIST_SLOT_SIZE)
+        self.DECKLIST_CARD_OFF = int(_ex._DECKLIST_CARD_OFF)
+        self.DECKLIST_COUNT_OFF = int(_ex._DECKLIST_COUNT_OFF)
         self.MAX_ACTIONS = int(_ex._MAX_ACTIONS)
         self.N_ENTITY_REF_SLOTS = int(_ex.N_ENTITY_REF_SLOTS)
         self.EMBED_DIM = int(fe._embed_dim)
@@ -229,6 +245,12 @@ class ScriptTrunk(nn.Module):
             -1, self.OPP_KNOWN_HAND_SLOTS, 1)
         top_lib = obs[:, self.KNOWN_TOP_LIB_START:self.KNOWN_TOP_LIB_END].reshape(
             -1, self.KNOWN_TOP_LIB_SLOTS, 1)
+        self_lib = obs[:, self.SELF_LIVE_LIB_START:self.SELF_LIVE_LIB_END].reshape(
+            -1, self.DECKLIST_MAIN_SLOTS, self.DECKLIST_SLOT_SIZE)
+        opp_main = obs[:, self.OPP_DECK_MAIN_START:self.OPP_DECK_MAIN_END].reshape(
+            -1, self.DECKLIST_MAIN_SLOTS, self.DECKLIST_SLOT_SIZE)
+        opp_side = obs[:, self.OPP_DECK_SIDE_START:self.OPP_DECK_SIDE_END].reshape(
+            -1, self.DECKLIST_SIDE_SLOTS, self.DECKLIST_SLOT_SIZE)
 
         perm_card_emb, perm_present = self._embed_ids(perms[:, :, self.PERM_CARD_OFF])
         perm_chosen_emb, _ = self._embed_ids(perms[:, :, self.PERM_CHOSEN_NAME_OFF])
@@ -255,6 +277,16 @@ class ScriptTrunk(nn.Module):
         opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
         top_lib_emb_in, _ = self._embed_ids(top_lib[:, :, 0])
 
+        self_lib_emb, self_lib_present = self._embed_ids(self_lib[:, :, self.DECKLIST_CARD_OFF])
+        opp_main_emb, opp_main_present = self._embed_ids(opp_main[:, :, self.DECKLIST_CARD_OFF])
+        opp_side_emb, opp_side_present = self._embed_ids(opp_side[:, :, self.DECKLIST_CARD_OFF])
+        self_lib_in = torch.cat(
+            [self_lib_emb, self_lib[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
+        opp_main_in = torch.cat(
+            [opp_main_emb, opp_main[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
+        opp_side_in = torch.cat(
+            [opp_side_emb, opp_side[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
+
         perm_emb = self.perm_encoder(perm_in)
         stk_emb = self.stack_encoder(stk_in)
         gy_emb = self.entity_encoder(gy_emb_in)
@@ -262,6 +294,9 @@ class ScriptTrunk(nn.Module):
         hand_emb = self.entity_encoder(hand_emb_in)
         opp_hand_emb = self.entity_encoder(opp_hand_emb_in)
         top_lib_emb = self.entity_encoder(top_lib_emb_in)
+        self_lib_enc = self.decklist_encoder(self_lib_in)
+        opp_main_enc = self.decklist_encoder(opp_main_in)
+        opp_side_enc = self.decklist_encoder(opp_side_in)
 
         perm_agg = self._mean_max(perm_emb, perm_present)
         stk_agg = self._mean_max(stk_emb, stk_present)
@@ -271,10 +306,14 @@ class ScriptTrunk(nn.Module):
         opp_hand_agg = self._mean_max(opp_hand_emb, opp_hand_present)
         top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)
+        self_lib_agg = self._mean_max(self_lib_enc, self_lib_present)
+        opp_main_agg = self._mean_max(opp_main_enc, opp_main_present)
+        opp_side_agg = self._mean_max(opp_side_enc, opp_side_present)
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
                           revealed_agg, pending_feat, extras, action_extras,
-                          perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg], dim=-1)
+                          perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
+                          self_lib_agg, opp_main_agg, opp_side_agg], dim=-1)
 
         a0 = self.STATE_END
         cats = obs[:, a0:a0 + self.MAX_ACTIONS]

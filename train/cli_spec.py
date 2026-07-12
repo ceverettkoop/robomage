@@ -114,7 +114,7 @@ PPO_KWARGS = dict(
     ent_coef=ENT_COEF,
     target_kl=TARGET_KL,
 )
-NET_ARCH = [256, 256]  # policy/value MLP head sizes (after the feature extractor)
+NET_ARCH = [512, 512]  # policy/value MLP head sizes (after the feature extractor)
 
 # League (PFSP) defaults.
 # self-play is a small floor, not the bulk of games: the PFSP-weighted historical
