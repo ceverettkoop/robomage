@@ -76,10 +76,15 @@ from opponents import make_controller
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 _DECKS_ROOT = os.path.join(_REPO_ROOT, "bin", "resources", "decks")
 
-# The PFSP league roster — the decks whose cards must all behave properly. Deck
-# specs are given as the engine expects them (relative to decks/, so "league/x").
-LEAGUE = ["bug", "bw_dnt", "car_doomsday", "gw_maverick", "tron", "ur_delver",
-          "wrb_energy"]
+# The PFSP league roster — the decks whose cards must all behave properly.
+# Discovered from the .dk files actually present under decks/league/, so a
+# deck removed from (or added to) the roster doesn't require an edit here.
+# Deck specs are given as the engine expects them (relative to decks/, so
+# "league/x").
+LEAGUE = sorted(
+    os.path.splitext(os.path.basename(p))[0]
+    for p in glob.glob(os.path.join(_DECKS_ROOT, "league", "*.dk"))
+)
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "obsinv", "snapshot", "replay", "smoke", "fuzz"]
