@@ -492,7 +492,7 @@ def resolve_az_checkpoint(spec: str,
     ``prefer="snapshot"`` flips the final/snapshot order — the trainer uses it to
     continue the CANDIDATE line (newest snapshot) while ``__azfinal`` stays the
     gate-promoted incumbent that self-play and opponent specs default to."""
-    if spec and os.path.exists(spec):
+    if spec and spec.endswith(".pt") and os.path.exists(spec):
         return spec
     if not spec or spec.strip().lower() != AZ_GEN_STEM:
         return None

@@ -452,7 +452,7 @@ class AnalysisApp(App):
     CardButton:hover { background: $boost; }
     /* Decision panel: full-width strip between the board and the histogram
        (a right-hand column clipped off narrow terminals). */
-    #decision   { height: 16; border: round $accent; }
+    #decision   { height: 12; border: round $accent; }
     #decision-scroll { height: 1fr; }
     #decision-body { padding: 0 1; }
     """
