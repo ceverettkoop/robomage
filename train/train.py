@@ -1674,15 +1674,25 @@ def _league_roster() -> list[str]:
         if p.endswith(".dk"))
 
 
+def _wld_line(w: int, l: int, d: int) -> str:
+    """Format a W/L/D tally with its win percentage (model's perspective)."""
+    total = w + l + d
+    pct = 100 * w / total if total else 0.0
+    return f"{w}W/{l}L/{d}D  {pct:.1f}% win rate"
+
+
 def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
                  log_path: str | None = None):
-    """Sweep the one generalist over every league deck (mirror vs scripted:hard).
+    """Round-robin the one generalist over every league matchup vs scripted:hard.
 
     There is a single generalist checkpoint (``gen__final.zip``); this runs it
-    piloting *each* league deck (decks/league/*.dk) against scripted:hard on the
-    same deck — a per-deck mirror — for ``n_games`` each (default 50). So an
-    N-deck roster runs N matchups. A per-deck win-rate summary is appended to
-    ``log_path`` (default checkpoints/baseline_report.log) and printed to stdout.
+    piloting *each* league deck (decks/league/*.dk) against scripted:hard
+    piloting *each* league deck — the full N×N cross product, mirrors included —
+    for ``n_games`` per matchup (default 50). The report records every matchup's
+    win rate plus aggregate win rates per model deck (vs the whole scripted
+    field) and per opponent deck (against every model deck); all win rates are
+    from the model's perspective. It is appended to ``log_path`` (default
+    checkpoints/baseline_report.log) and printed to stdout.
     """
     roster = _league_roster()
     if not roster:
@@ -1700,23 +1710,43 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
         log_path = os.path.join(_CHECKPOINT_ABS, "baseline_report.log")
 
     stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    header = (f"=== generalist ({os.path.basename(ckpt)}) baseline sweep vs "
-              f"scripted:hard (per-deck mirror) — {stamp} — "
-              f"{n_games} games/deck, seed={seed} ===")
+    header = (f"=== generalist ({os.path.basename(ckpt)}) baseline round-robin vs "
+              f"scripted:hard ({len(roster)}x{len(roster)} matchups) — {stamp} — "
+              f"{n_games} games/matchup, seed={seed} ===")
     lines = [header]
     print(header, flush=True)
 
-    row_cells = []
+    # W/L/D tallies, always from the model's perspective: per deck the model
+    # pilots (across the whole scripted field) and per deck the scripted
+    # opponent pilots (across every model deck).
+    per_model_deck = {deck: [0, 0, 0] for deck in roster}
+    per_opp_deck = {deck: [0, 0, 0] for deck in roster}
+
     for deck in roster:
-        print(f"\n  gen (model) piloting {deck} vs {deck} (scripted:hard):", flush=True)
-        w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
-                           opp_deck=deck, seed=seed)
-        total = w + l + d
-        pct = 100 * w / total if total else 0
-        row_cells.append(f"{deck}={w}W/{l}L/{d}D({pct:.0f}%)")
-        lines.append(f"gen piloting {deck:<22} vs scripted:hard "
-                     f"{w}W/{l}L/{d}D  {pct:.1f}% win rate")
-    lines.append("  [gen] " + "  ".join(row_cells))
+        row_cells = []
+        for opp in roster:
+            print(f"\n  gen (model) piloting {deck} vs {opp} (scripted:hard):", flush=True)
+            w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
+                               opp_deck=opp, seed=seed)
+            total = w + l + d
+            pct = 100 * w / total if total else 0
+            row_cells.append(f"{opp}={w}W/{l}L/{d}D({pct:.0f}%)")
+            lines.append(f"gen piloting {deck:<22} vs scripted:hard {opp:<22} "
+                         + _wld_line(w, l, d))
+            for tally in (per_model_deck[deck], per_opp_deck[opp]):
+                tally[0] += w
+                tally[1] += l
+                tally[2] += d
+        lines.append(f"  [gen {deck}] " + "  ".join(row_cells))
+
+    lines.append("")
+    lines.append("per model deck (gen piloting it vs the whole scripted field):")
+    for deck, (w, l, d) in per_model_deck.items():
+        lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
+    lines.append("per opponent deck (scripted:hard piloting it vs every model deck; "
+                 "win rate is still the model's):")
+    for deck, (w, l, d) in per_opp_deck.items():
+        lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
 
     summary = "\n".join(lines)
     with open(log_path, "a") as f:
@@ -1947,7 +1977,7 @@ if __name__ == "__main__":
                          log_path=args.log)
         elif args.model is None:
             parser.error("baseline: give a model checkpoint (e.g. 'gen'), or --all "
-                         "to sweep the generalist over every league deck")
+                         "to round-robin the generalist over every league matchup")
         elif not args.deck:
             parser.error("baseline: --deck is required — a checkpoint no longer "
                          "encodes the deck it pilots. Pass the deck the generalist "

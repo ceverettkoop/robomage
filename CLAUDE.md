@@ -557,7 +557,7 @@ train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav  
 # baseline: model vs scripted HARD, mirror decks. --deck is REQUIRED (the model
 # encodes no deck); seats alternate per game, --seed reproducible.
 train/.venv/bin/python train/train.py baseline gen --deck delver                      # win rate vs scripted:hard piloting delver
-train/.venv/bin/python train/train.py baseline --all --games 100                      # sweep the generalist (gen__final.zip) on every roster deck; appends checkpoints/baseline_report.log (--log to override)
+train/.venv/bin/python train/train.py baseline --all --games 100                      # round-robin the generalist (gen__final.zip): every roster deck vs every roster deck (scripted:hard), per-matchup + per-deck win rates; appends checkpoints/baseline_report.log (--log to override)
 # observe: one command for any {scripted|model} vs {scripted|model} matchup
 # (replaced the old diag/watch commands). --games N for a multi-game pass + summary,
 # --verbose for the full per-decision transcript, --seed for reproducibility.
