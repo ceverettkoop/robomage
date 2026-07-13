@@ -15,6 +15,7 @@
 #include "classes/deck.h"
 #include "classes/game.h"
 #include "classes/gamestate.h"
+#include "classes/match_context.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 
@@ -73,7 +74,7 @@ struct EcsSystems {
 EcsSystems init_ecs();
 int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed);
-void run_sideboard_phase(Deck &deck, Zone::Ownership player);
+void run_sideboard_phase(Deck &deck, SideboardPhaseState &st);
 
 // Drive a full best-of-three MATCH — the single source of bo3 sequencing shared
 // by main.cpp (the robomage front end) and bin/az_actor. Mirrors the tabletop
