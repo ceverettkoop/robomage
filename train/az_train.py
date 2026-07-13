@@ -202,29 +202,49 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
 # Gating (candidate vs incumbent)
 # ----------------------------------------------------------------------
 
-def _gate_matchups(focus: str, roster, cross: int, seed: int) -> list:
-    """The matchup SAMPLE the gate plays: the focus mirror plus up to ``cross``
-    cross matchups (focus vs a distinct roster deck), seeded/reproducible. Each
-    entry is a (deck_x, deck_y) pair; the candidate always pilots deck_x and the
-    incumbent deck_y, with seats alternating within the pair."""
-    matchups = [(focus, focus)]
-    pool = [d for d in (roster or []) if d != focus]
-    if pool and cross > 0:
-        rng = np.random.default_rng(seed)
-        k = min(cross, len(pool))
-        idx = rng.choice(len(pool), size=int(k), replace=False)
-        matchups += [(focus, pool[int(i)]) for i in idx]
-    return matchups
+def _normalize_focus(deck, default_roster) -> list:
+    """Coerce a focus argument (None / str / list) into a non-empty deck list.
+    ``None`` or an empty list falls back to ``default_roster`` (the whole
+    decks/league/ roster)."""
+    if deck is None:
+        return list(default_roster)
+    if isinstance(deck, (list, tuple)):
+        return list(deck) or list(default_roster)
+    return [deck]
 
 
-def az_eval(deck: str, candidate: str, incumbent: Optional[str] = None, *,
+def _gate_matchups(focus_decks, roster, cross: int, seed: int) -> list:
+    """The matchup SAMPLE the gate plays: for EACH focus deck, its mirror plus up
+    to ``cross`` cross matchups (focus vs a distinct roster deck), seeded/
+    reproducible and de-duplicated (order-preserving). Each entry is a
+    (deck_x, deck_y) pair; the candidate always pilots deck_x and the incumbent
+    deck_y, with seats alternating within the pair."""
+    rng = np.random.default_rng(seed)
+    matchups = []
+    for focus in focus_decks:
+        matchups.append((focus, focus))
+        pool = [d for d in (roster or []) if d != focus]
+        if pool and cross > 0:
+            k = min(cross, len(pool))
+            idx = rng.choice(len(pool), size=int(k), replace=False)
+            matchups += [(focus, pool[int(i)]) for i in idx]
+    seen, out = set(), []
+    for m in matchups:
+        if m not in seen:
+            seen.add(m)
+            out.append(m)
+    return out
+
+
+def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = 20, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
             promote_threshold: float = 0.55, promote: bool = False,
             roster: Optional[list] = None, cross_matchups: int = 2,
             ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1) -> dict:
     """AGGREGATE gate: play ``candidate`` vs ``incumbent`` over a SAMPLE of
-    matchups (the focus-deck mirror plus cross matchups drawn from ``roster``),
-    both nets piloting the SAME matchup in a given game, seats alternating. Promote
+    matchups (for each focus deck in ``deck`` — a str or list — its mirror plus
+    cross matchups drawn from ``roster``), both nets piloting the SAME matchup in a
+    given game, seats alternating. Promote
     the candidate to ``gen__azfinal.pt`` when ``promote`` and the AGGREGATE win-rate
     across all matchups >= ``promote_threshold``. Prints a per-matchup W-L-D
     breakdown. The no-incumbent-yet fallback (vs scripted) is preserved."""
@@ -242,7 +262,8 @@ def az_eval(deck: str, candidate: str, incumbent: Optional[str] = None, *,
     have_inc = os.path.exists(inc_path)
     opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
 
-    matchups = _gate_matchups(deck, roster, cross_matchups, seed)
+    focus_decks = _normalize_focus(deck, roster or _default_az_league_roster())
+    matchups = _gate_matchups(focus_decks, roster, cross_matchups, seed)
     per = max(2, games // len(matchups))   # games per matchup (>=2 so seats alternate)
     print(f"[az-eval] {len(matchups)} matchup(s) x {per} games (bo1, seats "
           f"alternating): candidate={cand_path} vs "
@@ -296,7 +317,7 @@ def _meta_of(path: str) -> str:
 # One full cycle: generate -> train -> eval
 # ----------------------------------------------------------------------
 
-def az_cycle(deck: str, *, games: int = 50, sims: int = 64, worlds: int = 4,
+def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
              workers: Optional[int] = None, batches: int = 500,
              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
              eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
@@ -304,9 +325,14 @@ def az_cycle(deck: str, *, games: int = 50, sims: int = 64, worlds: int = 4,
              use_actor: Optional[bool] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              roster: Optional[list] = None) -> dict:
-    """Sequential single-process cycle for FOCUS deck ``deck``: cross-deck self-play
-    (mirror + roster, ``mirror_frac``) -> train the ONE gen candidate -> gate it
-    against the current incumbent over a matchup sample (promote on aggregate WR).
+    """Sequential single-process cycle: cross-deck self-play (mirror + roster,
+    ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
+    incumbent over a matchup sample (promote on aggregate WR).
+
+    ``deck`` is the FOCUS pool — a str (single focus), a list of stems (a
+    deck×opponent matrix), or None (default: the whole decks/league/ roster). Each
+    game one focus deck is drawn and plays a mirror (P=``mirror_frac``) or a draw
+    from ``roster`` (the opponent pool, default: the whole league roster).
 
     ``use_actor`` chooses the self-play backend (None=AUTO: the C++ actor iff
     built, else Python; see :func:`az_selfplay.generate`)."""
@@ -314,16 +340,19 @@ def az_cycle(deck: str, *, games: int = 50, sims: int = 64, worlds: int = 4,
 
     if roster is None:
         roster = _default_az_league_roster()
+    focus = _normalize_focus(deck, _default_az_league_roster())
+    label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
 
-    print("=== az cycle: self-play (cross-deck) ===")
-    gen = az_selfplay.generate(deck, games=games, sims=sims, worlds=worlds,
+    print(f"=== az cycle: self-play (cross-deck, focus={label}) ===")
+    gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
                                workers=workers, seed=seed, use_actor=use_actor,
-                               roster=roster, mirror_frac=mirror_frac)
+                               roster=roster, focus_decks=focus,
+                               mirror_frac=mirror_frac)
     print("=== az cycle: train (gen net) ===")
-    tr = train_az(deck, batches=batches, batch_size=batch_size, lr=lr,
+    tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
                   window=window, seed=seed)
     print("=== az cycle: eval/gate (aggregate) ===")
-    ev = az_eval(deck, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
+    ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
                  worlds=eval_worlds, promote_threshold=promote_threshold,
                  promote=True, seed=seed, roster=roster)
     return {"generate": gen, "train": tr, "eval": ev}
@@ -537,14 +566,29 @@ def run_eval(args) -> None:
             seed=args.seed if args.seed is not None else 1)
 
 
+def _split_decks(val) -> Optional[list]:
+    """Parse a comma-joined multipick flag into a deck list (None if empty)."""
+    if not val:
+        return None
+    return [d.strip() for d in val.split(",") if d.strip()] or None
+
+
 def run_cycle(args) -> None:
-    az_cycle(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
+    # --deck (comma-joined multipick) is the FOCUS pool and --opponents the
+    # opponent pool for this cycle's self-play + gating; either default (None/empty)
+    # falls back to the whole decks/league/ roster inside az_cycle. So a bare
+    # `train.py az` runs the full league deck×opponent matrix; pass a single --deck
+    # to fix one focus.
+    focus = _split_decks(getattr(args, "deck", None))
+    roster = _split_decks(getattr(args, "opponents", None))
+    az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, window=args.window, eval_games=args.eval_games,
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
              promote_threshold=args.promote_threshold,
              seed=args.seed if args.seed is not None else 1,
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+             roster=roster,
              use_actor=_resolve_use_actor(args))
 
 

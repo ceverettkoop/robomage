@@ -62,25 +62,31 @@ def league_roster() -> list:
                   for p in os.listdir(_LEAGUE_DECKS_DIR) if p.endswith(".dk"))
 
 
-def build_matchup_schedule(focus: str, roster, games: int, mirror_frac: float,
-                           seed: int) -> list:
+def build_matchup_schedule(focus_decks, opponent_decks, games: int,
+                           mirror_frac: float, seed: int) -> list:
     """Deterministic per-game (deck_a, deck_b) schedule for one generation run.
 
-    Each game the opponent deck is the FOCUS deck itself (mirror) with probability
-    ``mirror_frac``, else a uniform draw from the league ``roster``; the focus
-    deck's seat (A vs B) is randomized per game so seat-A bias doesn't accumulate.
-    The one generalist net values every state, so cross-deck negamax backup in
-    MCTS is sound. Seeded RNG → the schedule replays identically for a given seed."""
+    Each game a FOCUS deck is drawn uniformly from ``focus_decks`` (a single-deck
+    list reduces to the classic single-focus run); its opponent is that same deck
+    (mirror) with probability ``mirror_frac``, else a uniform draw from
+    ``opponent_decks``. The focus deck's seat (A vs B) is randomized per game so
+    seat-A bias doesn't accumulate. The one generalist net values every state, so
+    cross-deck negamax backup in MCTS is sound. Seeded RNG → the schedule replays
+    identically for a given seed (and, for a single-deck ``focus_decks``, byte-
+    identically to the pre-matrix schedule — no extra RNG draw is consumed)."""
     rng = np.random.default_rng(seed)
-    pool = list(roster or [])
+    focus = list(focus_decks or [])
+    pool = list(opponent_decks or [])
     sched = []
     for _ in range(games):
+        # Single-focus: don't consume an RNG draw (preserves old schedules exactly).
+        fdeck = focus[0] if len(focus) == 1 else focus[int(rng.integers(len(focus)))]
         if not pool or rng.random() < mirror_frac:
-            opp = focus
+            opp = fdeck
         else:
             opp = pool[int(rng.integers(len(pool)))]
         focus_is_a = rng.random() < 0.5
-        sched.append((focus, opp) if focus_is_a else (opp, focus))
+        sched.append((fdeck, opp) if focus_is_a else (opp, fdeck))
     return sched
 
 
@@ -314,12 +320,16 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
              out_dir: Optional[str] = None, seed: int = 1,
              use_actor: Optional[bool] = None,
              roster: Optional[list] = None,
+             focus_decks: Optional[list] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC) -> dict:
-    """Generate ``games`` self-play games with FOCUS deck ``deck`` and write shards.
+    """Generate ``games`` self-play games over a FOCUS pool and write shards.
 
-    Each game the opponent deck is the focus deck (mirror) with probability
-    ``mirror_frac``, else a uniform draw from ``roster`` (default: every
-    ``decks/league/*.dk``); the seeded schedule alternates the focus deck's seat.
+    ``focus_decks`` is the pool of decks the generalist pilots (default ``[deck]``,
+    i.e. single-focus); each game one is drawn uniformly. Its opponent is that same
+    deck (mirror) with probability ``mirror_frac``, else a uniform draw from
+    ``roster`` (default: every ``decks/league/*.dk``); the seeded schedule
+    alternates the focus deck's seat. Passing a multi-deck ``focus_decks`` (with a
+    multi-deck ``roster``) makes one run span a full deck×opponent matrix.
     Shards pool into ``out_dir`` (default ``az_data/gen/`` — filenames are globally
     unique, so cross-deck runs share one pool feeding the single generalist net).
 
@@ -337,6 +347,7 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
     os.makedirs(out_dir, exist_ok=True)
     if roster is None:
         roster = league_roster()
+    focus = list(focus_decks) if focus_decks else [deck]
 
     have_actor = os.path.exists(_ACTOR_BIN)
     if use_actor is None:
@@ -349,9 +360,10 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
             f"--actor requested but the actor binary is not built at {_ACTOR_BIN} "
             f"(build it with `make actor`, or pass --no-actor)")
 
-    schedule = build_matchup_schedule(deck, roster, games, mirror_frac, seed)
+    schedule = build_matchup_schedule(focus, roster, games, mirror_frac, seed)
     source = resolve_source(deck, checkpoint)
-    print(f"[az-selfplay] focus={deck} games={games} sims={sims} worlds={worlds} "
+    focus_lbl = focus[0] if len(focus) == 1 else f"{len(focus)} decks [{','.join(focus)}]"
+    print(f"[az-selfplay] focus={focus_lbl} games={games} sims={sims} worlds={worlds} "
           f"workers={workers} mirror_frac={mirror_frac}")
     print(f"[az-selfplay] net source: mode={source['mode']} path={source['path']}")
     print(f"[az-selfplay] out_dir={out_dir}")

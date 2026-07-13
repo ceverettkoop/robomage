@@ -612,8 +612,19 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
         Arg("--seed", "int", default=1),
     ]),
-    Sub("az", "One AlphaZero cycle: self-play -> train -> eval/gate", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
+    Sub("az",
+        "One AlphaZero cycle (self-play -> train -> eval/gate) over a deck x "
+        "opponent matrix (default: whole league; pass one --deck to fix a focus)",
+        items=[
+        Arg("--deck", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated FOCUS deck pool the generalist pilots "
+                 "(default: every deck in decks/league/). Pass a single deck to "
+                 "fix one focus (the classic single-deck cycle)."),
+        Arg("--opponents", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated opponent-deck pool for self-play + gating "
+                 "(default: every deck in decks/league/). Each focus deck plays "
+                 "each; per game the opponent is the mirror with P=--mirror-frac, "
+                 "else a uniform draw from this pool."),
         Arg("--games", "int", default=50, help="Self-play games this cycle"),
         Arg("--sims", "int", default=64, help="Self-play PUCT sims"),
         Arg("--worlds", "int", default=4),

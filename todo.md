@@ -1,5 +1,12 @@
 TODO:
 
+FEED AZ BACK INTO PPO:
+Aistill AZ's policy into PPO (search-improved actions taught to the fast net), and let PPO keep learning its own value via RL. 
+Don't try to move the value across — the two critics are answering different questions.
+
+Policy: yes, and it's the principled direction (this is literally Expert Iteration / AlphaZero-as-teacher). AZ's MCTS visit-count distribution π* is a stronger policy target than PPO's on-policy logits. You distill it into PPO's policy head via supervised cross-entropy/KL to π* over self-play states — or, equivalently, behavior-clone AZ self-play trajectories into PPO offline. The reverse tensor map already exists implicitly: from_ppo's mapping (features_extractor↔trunk, mlp_extractor.value_net↔value_body, value_net↔value_head, action_scorer↔action_scorer) is symmetric for the shape-matching per-action flavor, so the shared trunk + policy head graft back cleanly. Caveat: SB3 MaskablePPO has no built-in distillation hook — you'd add an auxiliary CE loss or do an offline BC pre-train.
+
+
 ## Open engine correctness issues
 
 - Dauthi Voidwalker (vocab 88) does not work exactly as written — casts immediately (should be
