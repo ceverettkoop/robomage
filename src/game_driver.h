@@ -7,6 +7,7 @@
 // objects EXCEPT obj/main.o and still have the globals, ECS setup, and per-game
 // loop available.
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -73,5 +74,22 @@ EcsSystems init_ecs();
 int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed);
 void run_sideboard_phase(Deck &deck, Zone::Ownership player);
+
+// Drive a full best-of-three MATCH — the single source of bo3 sequencing shared
+// by main.cpp (the robomage front end) and bin/az_actor. Mirrors the tabletop
+// flow: for each game it sets match_game_number, calls `before_game`, spins a
+// fresh ECS, plays the game via play_single_game (Player A on the play in game 1,
+// the loser on the play thereafter), records the winner, prints
+// GAME_RESULT/MATCH_RESULT, calls `after_game`, then runs BOTH players' sideboard
+// phases (unless the match is already decided). `deck_a`/`deck_b` are taken BY
+// VALUE because sideboarding mutates them across games. `match_reset_revealed()`
+// is called once at match start (the revealed accumulator spans the whole match).
+// Callers must `std::srand(seed)` before calling (main.cpp does; the actor does
+// per match) — the per-game engine RNG is seeded from `seed + game_num` inside.
+// `before_game`/`after_game` may be empty. Returns the match winner
+// (Zone::PLAYER_A or Zone::PLAYER_B).
+int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
+                   const std::function<void(int game_num, bool a_goes_first)> &before_game = {},
+                   const std::function<void(int game_num, int winner)> &after_game = {});
 
 #endif /* GAME_DRIVER_H */

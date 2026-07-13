@@ -140,11 +140,13 @@ def _read_visits_dump(path):
     return out
 
 
-def _run_actor(ts_path, dump_path, batch):
+def _run_actor(ts_path, dump_path, batch, bo3=False):
     cmd = [ACTOR_BIN, "--search", "--sims", str(SIMS), "--worlds", str(WORLDS),
            "--c", str(C_PUCT), "--batch", str(batch), "--world-seeds",
            str(SEED_BASE), "--deck", DECK, "--seed", str(SEED),
            "--model", ts_path, "--dump-visits", dump_path, "--games", "1"]
+    if bo3:
+        cmd.append("--bo3")
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
     if proc.returncode != 0:
@@ -152,6 +154,57 @@ def _run_actor(ts_path, dump_path, batch):
               + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
         return None
     return _read_visits_dump(dump_path)
+
+
+def _python_reference(ts_path, bo3):
+    """Drive the SAME game (bo1) or MATCH (bo3) through the Python reference,
+    searching each loop-safe root. Returns the ParitySearchController's records."""
+    ev = TSEvaluator(ts_path)
+    ctrl = ParitySearchController(ev)
+    env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
+    # The C++ actor plays to the engine's natural end (no decision cap); disable
+    # RoboMageEnv's training-only step truncation so both sides run the SAME full
+    # game/match and compare an equal number of searched roots.
+    env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
+    ctrl.bind_env(env)
+    try:
+        obs, _ = env.reset(options={"engine_seed": SEED})
+        runner.drive_game(env, obs, ctrl, ctrl)
+    finally:
+        env.close()
+    return ctrl.records
+
+
+def _compare_visits(tag, actor1, py):
+    """Assert exact visit-count parity between the actor (batch=1) and the Python
+    reference over every searched root. Returns (rc, total_sims)."""
+    if len(actor1) != len(py):
+        print(f"FAIL [{tag}]: searched-root count differs — actor={len(actor1)} "
+              f"python={len(py)}", file=sys.stderr)
+        n = min(len(actor1), len(py))
+        for i in range(n):
+            if (actor1[i][1] != py[i][1]
+                    or not np.array_equal(actor1[i][2], py[i][2])):
+                print(f"  first divergence at searched root {i} "
+                      f"(nc actor={actor1[i][1]} python={py[i][1]})",
+                      file=sys.stderr)
+                break
+        return 1, 0
+
+    total_sims = 0
+    for i, ((a_ri, a_nc, a_v), (p_ri, p_nc, p_v)) in enumerate(zip(actor1, py)):
+        if a_ri != p_ri or a_nc != p_nc:
+            print(f"FAIL [{tag}]: root {i} header differs: actor=({a_ri},{a_nc}) "
+                  f"python=({p_ri},{p_nc})", file=sys.stderr)
+            return 1, 0
+        if not np.array_equal(a_v, p_v):
+            print(f"FAIL [{tag}]: visits differ at searched root {i} "
+                  f"(index={a_ri}, num_choices={a_nc})", file=sys.stderr)
+            print(f"  actor : {a_v.tolist()}", file=sys.stderr)
+            print(f"  python: {p_v.tolist()}", file=sys.stderr)
+            return 1, 0
+        total_sims += int(a_v.sum())
+    return 0, total_sims
 
 
 def main():
@@ -169,66 +222,29 @@ def main():
         ts_path = torchscript_export_path(ckpt)
         save_torchscript(net, ts_path)
 
-        # 2) C++ actor, batch=1: search every root, dump visits.
-        dump1 = os.path.join(td, "visits_b1.bin")
-        actor1 = _run_actor(ts_path, dump1, batch=1)
-        if actor1 is None:
-            return 1
-
-        # 3) Python reference: drive the SAME game, search each root.
-        ev = TSEvaluator(ts_path)
-        ctrl = ParitySearchController(ev)
-        env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=False)
-        # The C++ actor plays each game to the engine's natural end (no decision
-        # cap); RoboMageEnv's MAX_STEPS is a training-only safety truncation. If
-        # the deterministic parity game runs longer than that cap, the Python
-        # drive would truncate mid-game while the actor plays on, so the two
-        # would compare an unequal number of searched roots even though every
-        # shared root matched. Disable the cap here so both sides run the SAME
-        # full game (the game is guaranteed to terminate — the actor proves it).
-        env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
-        ctrl.bind_env(env)
-        try:
-            obs, _ = env.reset(options={"engine_seed": SEED})
-            runner.drive_game(env, obs, ctrl, ctrl)
-        finally:
-            env.close()
-        py = ctrl.records
-
-        # 4) Compare batch=1 visit vectors exactly.
-        if len(actor1) != len(py):
-            print(f"FAIL: searched-root count differs — actor={len(actor1)} "
-                  f"python={len(py)}", file=sys.stderr)
-            n = min(len(actor1), len(py))
-            for i in range(n):
-                if (actor1[i][1] != py[i][1]
-                        or not np.array_equal(actor1[i][2], py[i][2])):
-                    print(f"  first divergence at searched root {i} "
-                          f"(nc actor={actor1[i][1]} python={py[i][1]})",
-                          file=sys.stderr)
-                    break
-            return 1
-
-        total_sims = 0
-        for i, ((a_ri, a_nc, a_v), (p_ri, p_nc, p_v)) in enumerate(zip(actor1, py)):
-            if a_ri != p_ri or a_nc != p_nc:
-                print(f"FAIL: root {i} header differs: actor=({a_ri},{a_nc}) "
-                      f"python=({p_ri},{p_nc})", file=sys.stderr)
+        # bo1 game AND a full bo3 match (the bo3 case exercises the between-games
+        # sideboard-phase decisions, which fall back to the policy head on BOTH
+        # sides — so the two games stay in lockstep across the match and every
+        # searched root's visit vector must still match bit-for-bit).
+        actor1 = None  # bo1 batch=1 visits, reused by the K=16 report below
+        for bo3 in (False, True):
+            tag = "bo3" if bo3 else "bo1"
+            dump1 = os.path.join(td, f"visits_b1_{tag}.bin")
+            visits = _run_actor(ts_path, dump1, batch=1, bo3=bo3)
+            if visits is None:
                 return 1
-            if not np.array_equal(a_v, p_v):
-                print(f"FAIL: visits differ at searched root {i} "
-                      f"(index={a_ri}, num_choices={a_nc})", file=sys.stderr)
-                print(f"  actor : {a_v.tolist()}", file=sys.stderr)
-                print(f"  python: {p_v.tolist()}", file=sys.stderr)
-                return 1
-            total_sims += int(a_v.sum())
+            py = _python_reference(ts_path, bo3)
+            rc, total_sims = _compare_visits(tag, visits, py)
+            if rc:
+                return rc
+            print(f"PASS [{tag}]: MCTS visit-count parity exact over {len(visits)} "
+                  f"searched roots ({total_sims} total root visits) "
+                  f"[deck={DECK} seed={SEED} sims={SIMS} worlds={WORLDS} "
+                  f"c={C_PUCT} batch=1]")
+            if not bo3:
+                actor1 = visits
 
-        print(f"PASS: MCTS visit-count parity exact over {len(actor1)} searched "
-              f"roots ({total_sims} total root visits) "
-              f"[deck={DECK} seed={SEED} sims={SIMS} worlds={WORLDS} "
-              f"c={C_PUCT} batch=1]")
-
-        # 5) K=16 batched-leaf sanity check (report only). The actor plays
+        # 5) K=16 batched-leaf sanity check (report only, bo1). The actor plays
         # argmax(visits) at each root, so once a batch=16 root's argmax differs
         # from batch=1 the real move — and every state after — diverges and the
         # remaining roots are searched over DIFFERENT positions (not comparable).

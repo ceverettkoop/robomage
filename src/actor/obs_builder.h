@@ -51,8 +51,9 @@ struct ActorObs {
 // Build the bit-exact observation for the decision whose legal menu is `actions`.
 // MUST be called at a machine-mode decision, mirroring the order the stdio path
 // uses (populate_gamestate -> populate_query -> serialize_state) so the shared
-// entity->slot map is consistent. Fatal-errors if a sideboard phase is active
-// (bo1 never sideboards; the env's stale-board mask is intentionally not ported).
+// entity->slot map is consistent. During a bo3 between-games sideboard phase it
+// applies the same stale-board observation mask env.py applies, so the obs stays
+// bit-for-bit identical to the Python pipeline in bo3.
 ActorObs build_obs(const std::vector<LegalAction>& actions);
 
 #endif /* ACTOR_OBS_BUILDER_H */

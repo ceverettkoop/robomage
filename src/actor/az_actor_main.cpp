@@ -43,6 +43,7 @@ struct ActorConfig {
     std::string resources;  // empty -> <cwd>/resources
     unsigned int seed = 1;
     int games = 1;
+    bool bo3 = false;  // --bo3: each of `games` units is a best-of-three MATCH
     bool uniform = false;
     // MCTS (--search) config.
     bool search = false;
@@ -67,7 +68,7 @@ constexpr size_t FLUSH_SAMPLES = 4096;
 void print_usage(const char* prog) {
     std::fprintf(stderr,
                  "usage: %s --deck <name> [--deck-b <name>] [--seed N] [--games N] "
-                 "[--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
+                 "[--bo3] [--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
                  "       [--search [--sims N] [--worlds N] [--c F] [--batch K] "
                  "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
@@ -97,6 +98,8 @@ int main(int argc, char const* argv[]) {
             cfg.seed = static_cast<unsigned int>(std::stoul(need_arg(argc, argv, i, "--seed")));
         } else if (a == "--games") {
             cfg.games = std::stoi(need_arg(argc, argv, i, "--games"));
+        } else if (a == "--bo3") {
+            cfg.bo3 = true;
         } else if (a == "--model") {
             cfg.model = need_arg(argc, argv, i, "--model");
         } else if (a == "--uniform") {
@@ -245,37 +248,60 @@ int main(int argc, char const* argv[]) {
     Deck deck_a(RESOURCE_DIR + "/decks/" + cfg.deck + ".dk");
     Deck deck_b(RESOURCE_DIR + "/decks/" + deck_b_name_eff + ".dk");
 
-    for (int g = 0; g < cfg.games; g++) {
-        unsigned int seed_g = cfg.seed + static_cast<unsigned int>(g);
-        // Mirror main.cpp's single-game setup: srand(seed), reset the match-scoped
-        // revealed accumulator, fresh ECS, then play Player A on the play.
-        std::srand(seed_g);
-        match_reset_revealed();
-        EcsSystems sys = init_ecs();
-        if (cfg.selfplay) mcts->begin_game();  // reset per-game move counter + samples
-        int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
-        std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
-                    winner == Zone::PLAYER_A ? "A" : "B");
+    // Per-game self-play sample backfill: price each stored sample from its
+    // mover's perspective vs the GAME's winner (draw -> 0), accumulate, then flush
+    // at the GAME boundary so a game is never split across shards (mirrors
+    // az_selfplay.py's per-game pricing — in bo3 each sample carries the result of
+    // the particular game it belonged to, not the match). `game_log_idx` numbers
+    // the SELFPLAY lines across all games of the run. Returns the sample count.
+    int game_log_idx = 0;
+    auto backfill_selfplay = [&](int winner) {
+        if (!cfg.selfplay) return;
+        bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
+                    winner != static_cast<int>(Zone::PLAYER_B);
+        bool winner_is_a = winner == static_cast<int>(Zone::PLAYER_A);
+        const std::vector<SelfPlaySample>& gs = mcts->game_samples();
+        for (const SelfPlaySample& s : gs) {
+            float z = draw ? 0.0f : (s.mover_is_a == winner_is_a ? 1.0f : -1.0f);
+            shards->add_sample(s.obs.data(), s.pi.data(), z, s.mask.data());
+        }
+        shards->maybe_flush();
+        const char* wstr = draw ? "DRAW" : (winner_is_a ? "A" : "B");
+        std::printf("SELFPLAY: game %d samples=%zu winner=%s\n", ++game_log_idx,
+                    gs.size(), wstr);
         std::fflush(stdout);
+    };
 
-        if (cfg.selfplay) {
-            // Backfill z per stored sample from its mover's perspective vs the
-            // winner (draw -> 0), then accumulate; flush at the GAME boundary so a
-            // game is never split across shards (mirrors az_selfplay.py).
-            bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
-                        winner != static_cast<int>(Zone::PLAYER_B);
-            bool winner_is_a = winner == static_cast<int>(Zone::PLAYER_A);
-            const std::vector<SelfPlaySample>& gs = mcts->game_samples();
-            for (const SelfPlaySample& s : gs) {
-                float z = draw ? 0.0f
-                               : (s.mover_is_a == winner_is_a ? 1.0f : -1.0f);
-                shards->add_sample(s.obs.data(), s.pi.data(), z, s.mask.data());
-            }
-            shards->maybe_flush();
-            const char* wstr = draw ? "DRAW" : (winner_is_a ? "A" : "B");
-            std::printf("SELFPLAY: game %d samples=%zu winner=%s\n", g + 1,
-                        gs.size(), wstr);
+    if (cfg.bo3) {
+        // Each of `--games` units is a best-of-three MATCH. Space match seeds by 3
+        // (a match uses seeds match_seed + {0,1,2}) so games never share a seed
+        // across matches. play_bo3_match owns the exact sequencing main.cpp uses
+        // (game boundaries, loser-on-the-play, revealed accumulator, sideboarding),
+        // with per-game hooks: begin_game resets the tau counter + sample buffer
+        // (like Python's per-game game_move reset), and the after-game hook prices
+        // that game's samples.
+        for (int m = 0; m < cfg.games; m++) {
+            unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
+            std::srand(match_seed);
+            play_bo3_match(
+                deck_a, deck_b, match_seed,
+                [&](int, bool) { if (cfg.selfplay) mcts->begin_game(); },
+                [&](int, int winner) { backfill_selfplay(winner); });
+        }
+    } else {
+        for (int g = 0; g < cfg.games; g++) {
+            unsigned int seed_g = cfg.seed + static_cast<unsigned int>(g);
+            // Mirror main.cpp's single-game setup: srand(seed), reset the
+            // match-scoped revealed accumulator, fresh ECS, then Player A on the play.
+            std::srand(seed_g);
+            match_reset_revealed();
+            EcsSystems sys = init_ecs();
+            if (cfg.selfplay) mcts->begin_game();  // reset per-game move counter + samples
+            int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
+            std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
+                        winner == Zone::PLAYER_A ? "A" : "B");
             std::fflush(stdout);
+            backfill_selfplay(winner);
         }
     }
 

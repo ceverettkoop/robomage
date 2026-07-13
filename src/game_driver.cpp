@@ -1,5 +1,6 @@
 #include "game_driver.h"
 
+#include <cstdio>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -11,6 +12,7 @@
 #include "classes/deck.h"
 #include "classes/deck_state.h"
 #include "classes/game.h"
+#include "classes/match_state.h"
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
@@ -24,6 +26,7 @@
 #include "components/token.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "error.h"
 #include "input_logger.h"
 #include "machine_io.h"
 #include "search_server.h"
@@ -377,4 +380,62 @@ void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
 
     sideboard_phase = false;
     sideboard_phase_player = Zone::UNKNOWN;
+}
+
+int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
+                   const std::function<void(int, bool)> &before_game,
+                   const std::function<void(int, int)> &after_game) {
+    bool a_goes_first = true;
+    match_wins_a = 0;
+    match_wins_b = 0;
+    match_reset_revealed();  // clear revealed-cards accumulator for the whole match
+
+    for (int game_num = 0; game_num < 3; game_num++) {
+        match_game_number = game_num;
+        game_log("\n----- MATCH GAME %d of 3 -----\n", game_num + 1);
+
+        if (before_game) before_game(game_num, a_goes_first);
+
+        EcsSystems sys = init_ecs();
+        int winner = play_single_game(sys, deck_a, deck_b, a_goes_first,
+                                      seed + static_cast<unsigned int>(game_num));
+
+        // Every end-of-game path must have set a winner; the else-branch below
+        // would otherwise silently credit a winnerless game to B.
+        if (winner != Zone::PLAYER_A && winner != Zone::PLAYER_B)
+            fatal_error("bo3 game " + std::to_string(game_num + 1) +
+                        " ended with no winner (Game::winner unset)");
+
+        if (winner == Zone::PLAYER_A) {
+            match_wins_a++;
+            std::printf("GAME_RESULT: %d Player A wins\n", game_num + 1);
+        } else {
+            match_wins_b++;
+            std::printf("GAME_RESULT: %d Player B wins\n", game_num + 1);
+        }
+        std::fflush(stdout);
+
+        if (after_game) after_game(game_num, winner);
+
+        if (match_wins_a == 2) {
+            std::printf("MATCH_RESULT: Player A wins %d-%d\n", match_wins_a, match_wins_b);
+            std::fflush(stdout);
+            break;
+        }
+        if (match_wins_b == 2) {
+            std::printf("MATCH_RESULT: Player B wins %d-%d\n", match_wins_a, match_wins_b);
+            std::fflush(stdout);
+            break;
+        }
+
+        // loser goes first next game
+        a_goes_first = (winner != Zone::PLAYER_A);
+
+        // sideboarding phase - ECS from the just-ended game is still valid
+        // (player entities exist for populate_gamestate, card_db works for load_card)
+        run_sideboard_phase(deck_a, Zone::PLAYER_A);
+        run_sideboard_phase(deck_b, Zone::PLAYER_B);
+    }
+    match_game_number = -1;
+    return match_wins_a > match_wins_b ? Zone::PLAYER_A : Zone::PLAYER_B;
 }
