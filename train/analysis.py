@@ -61,6 +61,8 @@ import glob
 import re
 import sys
 import os
+import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 
@@ -4118,13 +4120,67 @@ def _report_search_compare(ctrl, args):
                 print(f"        search pick: (same action, visit mass shifted)")
 
 
-def cmd_search_compare(args):
-    """Drive N games with an MCTS controller and report, per searched decision,
-    net priors vs MCTS visits and net value vs search root value."""
+class _MergedSearchStats:
+    """Duck-types the bits of ``_SearchCompareController`` that
+    ``_report_search_compare`` reads (``records``/``stats``), so results
+    gathered from parallel worker batches can be reported the same way as a
+    single in-process controller."""
+
+    def __init__(self):
+        self.records = []
+        self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0}
+
+    def absorb(self, records, stats):
+        self.records.extend(records)
+        for k in self.stats:
+            self.stats[k] += stats.get(k, 0)
+
+
+def _run_search_compare_batch(payload):
+    """Worker entry point (one process per batch): rebuild the evaluator/
+    controller from scratch — a loaded model isn't picklable across the
+    process boundary — and drive this batch's games. Returns
+    ``(batch_id, n_games, records, stats, elapsed)``."""
+    (batch_id, model_spec, opponent_spec, deck_a, deck_b, n_games, seed,
+     sims, worlds, c_puct, binary_path, bo3) = payload
+    t0 = time.time()
+    try:
+        import torch
+        torch.set_num_threads(1)
+    except ImportError:
+        pass
     import runner
     from opponents import make_controller
 
-    evaluator, _ = _build_search_evaluator(args.model)
+    evaluator, _ = _build_search_evaluator(model_spec)
+    ctrl_model = _make_search_compare_controller(
+        evaluator, sims=sims, worlds=worlds, c_puct=c_puct, rng_seed=seed)
+    ctrl_opp = make_controller(opponent_spec)
+    runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
+                     binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
+                     n_games=n_games, bo3=bo3, seed=seed, transcript="quiet")
+    return batch_id, n_games, ctrl_model.records, dict(ctrl_model.stats), time.time() - t0
+
+
+def _split_batches(n_games, n_workers, seed):
+    """Contiguous, seed-disjoint batches: batch i's local seed+j lines up
+    with the sequential run's seed+(global index), so results are the same
+    set of (deck, seed) games regardless of worker count."""
+    n_workers = max(1, min(n_workers, n_games))
+    base, extra = divmod(n_games, n_workers)
+    batches = []
+    start = 0
+    for i in range(n_workers):
+        count = base + (1 if i < extra else 0)
+        if count:
+            batches.append((start, count))
+        start += count
+    return batches
+
+
+def cmd_search_compare(args):
+    """Drive N games with an MCTS controller and report, per searched decision,
+    net priors vs MCTS visits and net value vs search root value."""
     deck_a = getattr(args, "deck_a", None)
     if not deck_a:
         print("Model deck is required — a checkpoint no longer encodes a deck; "
@@ -4136,18 +4192,74 @@ def cmd_search_compare(args):
         deck_b = deck_a
     args.deck_a, args.deck_b = deck_a, deck_b
 
-    ctrl_model = _make_search_compare_controller(
-        evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
-        rng_seed=args.seed)
-    ctrl_opp = make_controller(args.opponent)
+    n_workers = max(1, getattr(args, "workers", 1) or 1)
+    bo3 = getattr(args, "bo3", False)
 
-    print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c}) "
-          f"vs {args.opponent} [{deck_b}] over {args.n_games} game(s)...")
-    runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
-                     binary_path=args.binary, deck_a=deck_a, deck_b=deck_b,
-                     n_games=args.n_games, bo3=getattr(args, "bo3", False),
-                     seed=args.seed, transcript="quiet")
-    _report_search_compare(ctrl_model, args)
+    if n_workers <= 1:
+        import runner
+        from opponents import make_controller
+
+        evaluator, _ = _build_search_evaluator(args.model)
+        ctrl_model = _make_search_compare_controller(
+            evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
+            rng_seed=args.seed)
+        ctrl_opp = make_controller(args.opponent)
+
+        print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c}) "
+              f"vs {args.opponent} [{deck_b}] over {args.n_games} game(s)...")
+
+        t0 = time.time()
+        done = 0
+
+        def _progress(record):
+            nonlocal done
+            done += 1
+            elapsed = time.time() - t0
+            rate = done / elapsed if elapsed > 0 else 0.0
+            eta = (args.n_games - done) / rate if rate > 0 else float("inf")
+            st = ctrl_model.stats
+            print(f"  game {done}/{args.n_games}  "
+                  f"(searched {st['searched']}, fallback {st['fallback']})  "
+                  f"elapsed {elapsed:.1f}s  eta {eta:.1f}s", flush=True)
+
+        runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
+                         binary_path=args.binary, deck_a=deck_a, deck_b=deck_b,
+                         n_games=args.n_games, bo3=bo3,
+                         seed=args.seed, transcript="quiet", on_game_end=_progress)
+        _report_search_compare(ctrl_model, args)
+        return
+
+    # Parallel: split n_games across worker processes, each rebuilding its own
+    # evaluator/controller (a loaded model can't cross the process boundary),
+    # then merge every batch's records/stats before reporting.
+    batches = _split_batches(args.n_games, n_workers, args.seed)
+    payloads = [
+        (i, args.model, args.opponent, deck_a, deck_b, count, args.seed + start,
+         args.sims, args.worlds, args.c, args.binary, bo3)
+        for i, (start, count) in enumerate(batches)
+    ]
+    print(f"Search-compare (parallel): {deck_a} (search {args.sims}x{args.worlds}, "
+          f"c={args.c}) vs {args.opponent} [{deck_b}] over {args.n_games} game(s) "
+          f"across {len(payloads)} worker(s)...")
+
+    merged = _MergedSearchStats()
+    t0 = time.time()
+    done_games = 0
+    with ProcessPoolExecutor(max_workers=len(payloads)) as ex:
+        futs = {ex.submit(_run_search_compare_batch, p): p[0] for p in payloads}
+        for fut in as_completed(futs):
+            batch_id, n, records, stats, dt = fut.result()
+            merged.absorb(records, stats)
+            done_games += n
+            elapsed = time.time() - t0
+            rate = done_games / elapsed if elapsed > 0 else 0.0
+            eta = (args.n_games - done_games) / rate if rate > 0 else float("inf")
+            print(f"  [batch {batch_id}] {n} game(s) in {dt:.1f}s -> "
+                  f"{done_games}/{args.n_games} done "
+                  f"({100 * done_games / args.n_games:.0f}%)  "
+                  f"elapsed {elapsed:.1f}s  eta {eta:.1f}s", flush=True)
+
+    _report_search_compare(merged, args)
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
