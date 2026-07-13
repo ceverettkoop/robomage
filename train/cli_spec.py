@@ -611,10 +611,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
         Arg("--seed", "int", default=1),
+        Arg("--bo1", "flag",
+            help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
+                 "opts back into one-off games"),
     ]),
     Sub("az",
         "One AlphaZero cycle (self-play -> train -> eval/gate) over a deck x "
-        "opponent matrix (default: whole league; pass one --deck to fix a focus)",
+        "opponent matrix (default: whole league; pass one --deck to fix a focus). "
+        "bo3 by default (per-game value target); --bo1 to opt out",
         items=[
         Arg("--deck", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated FOCUS deck pool the generalist pilots "
@@ -641,11 +645,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per self-play game (default 0.25); "
                  "else a uniform league-roster draw"),
+        Arg("--bo1", "flag",
+            help="Run bo1 self-play + gate. The az cycle defaults to bo3 matches "
+                 "with a per-game value target; this opts back into single games"),
         _actor_mode(),
     ]),
     Sub("az-league",
         "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
-        "decks/league/ roster", items=[
+        "decks/league/ roster (bo3 by default; --bo1 to opt out)", items=[
         Arg("--resume", "flag",
             help="Resume an interrupted az-league run from its saved progress "
                  "(checkpoints/_az_league_progress.json, rewritten after each deck "
@@ -676,6 +683,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per self-play game (default 0.25); "
                  "else a uniform league-roster draw"),
+        Arg("--bo1", "flag",
+            help="Run bo1 self-play + gate for every slot. The league defaults to "
+                 "bo3 matches with a per-game value target; this opts back into "
+                 "single games (persisted in the resume sidecar)"),
         _actor_mode(),
     ]),
 ])

@@ -43,7 +43,7 @@ def _run_batch(args):
     cb = make_controller(b_spec)
     t0 = time.time()
     r = run_match(ca, cb, deck_a=deck, deck_b=deck,
-                  games=games, bo3=False, seed=seed, transcript="quiet")
+                  games=games, bo3=True, seed=seed, transcript="quiet")
     stats = getattr(ca, "stats", None) or getattr(cb, "stats", None) or {}
     return tag, r.wins, r.losses, r.draws, dict(stats), time.time() - t0
 

@@ -240,14 +240,15 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = 20, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
             promote_threshold: float = 0.55, promote: bool = False,
             roster: Optional[list] = None, cross_matchups: int = 2,
-            ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1) -> dict:
+            ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True) -> dict:
     """AGGREGATE gate: play ``candidate`` vs ``incumbent`` over a SAMPLE of
     matchups (for each focus deck in ``deck`` — a str or list — its mirror plus
-    cross matchups drawn from ``roster``), both nets piloting the SAME matchup in a
-    given game, seats alternating. Promote
-    the candidate to ``gen__azfinal.pt`` when ``promote`` and the AGGREGATE win-rate
-    across all matchups >= ``promote_threshold``. Prints a per-matchup W-L-D
-    breakdown. The no-incumbent-yet fallback (vs scripted) is preserved."""
+    cross matchups drawn from ``roster``), both nets piloting the SAME matchup,
+    seats alternating. With ``bo3`` (default) each contest is a best-of-three MATCH
+    and the gate is decided on the aggregate MATCH win-rate. Promote the candidate
+    to ``gen__azfinal.pt`` when ``promote`` and the AGGREGATE win-rate across all
+    matchups >= ``promote_threshold``. Prints a per-matchup W-L-D breakdown. The
+    no-incumbent-yet fallback (vs scripted) is preserved."""
     from runner import run_match
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
@@ -264,9 +265,10 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
 
     focus_decks = _normalize_focus(deck, roster or _default_az_league_roster())
     matchups = _gate_matchups(focus_decks, roster, cross_matchups, seed)
-    per = max(2, games // len(matchups))   # games per matchup (>=2 so seats alternate)
-    print(f"[az-eval] {len(matchups)} matchup(s) x {per} games (bo1, seats "
-          f"alternating): candidate={cand_path} vs "
+    per = max(2, games // len(matchups))   # matches per matchup (>=2 so seats alternate)
+    unit = "matches" if bo3 else "games"
+    print(f"[az-eval] {len(matchups)} matchup(s) x {per} {unit} "
+          f"({'bo3' if bo3 else 'bo1'}, seats alternating): candidate={cand_path} vs "
           f"{'incumbent ' + inc_path if have_inc else 'scripted (no incumbent yet)'} "
           f"@ sims={sims} worlds={worlds}")
 
@@ -278,11 +280,11 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
         mseed = seed + mi * 100003
         if per - half:  # candidate (piloting dx) in seat A
             r = run_match(cand_spec, opp_spec, deck_a=dx, deck_b=dy,
-                          games=per - half, bo3=False, seed=mseed, transcript="quiet")
+                          games=per - half, bo3=bo3, seed=mseed, transcript="quiet")
             mw += r.wins; ml += r.losses; md += r.draws
         if half:        # candidate (piloting dx) in seat B — flip tally to cand view
             r = run_match(opp_spec, cand_spec, deck_a=dy, deck_b=dx,
-                          games=half, bo3=False, seed=mseed + per, transcript="quiet")
+                          games=half, bo3=bo3, seed=mseed + per, transcript="quiet")
             mw += r.losses; ml += r.wins; md += r.draws
         w += mw; l += ml; d += md
         tag = f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
@@ -324,7 +326,7 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
              promote_threshold: float = 0.55, seed: int = 1,
              use_actor: Optional[bool] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
-             roster: Optional[list] = None) -> dict:
+             roster: Optional[list] = None, bo3: bool = True) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
@@ -343,18 +345,19 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
     focus = _normalize_focus(deck, _default_az_league_roster())
     label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
 
-    print(f"=== az cycle: self-play (cross-deck, focus={label}) ===")
+    print(f"=== az cycle: self-play (cross-deck, focus={label}, "
+          f"{'bo3' if bo3 else 'bo1'}) ===")
     gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
                                workers=workers, seed=seed, use_actor=use_actor,
                                roster=roster, focus_decks=focus,
-                               mirror_frac=mirror_frac)
+                               mirror_frac=mirror_frac, bo3=bo3)
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
                   window=window, seed=seed)
     print("=== az cycle: eval/gate (aggregate) ===")
     ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
                  worlds=eval_worlds, promote_threshold=promote_threshold,
-                 promote=True, seed=seed, roster=roster)
+                 promote=True, seed=seed, roster=roster, bo3=bo3)
     return {"generate": gen, "train": tr, "eval": ev}
 
 
@@ -417,7 +420,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               promote_threshold: float = 0.55, seed: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
               use_actor: Optional[bool] = None, resume: bool = False,
-              ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
+              bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
 
     The unit of work is one deck cycle; the flat slot list is
@@ -455,6 +458,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         seed = int(p.get("seed", seed))
         mirror_frac = float(p.get("mirror_frac", mirror_frac))
         use_actor = p.get("use_actor", use_actor)
+        bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
         results = list(state.get("results", []))
         print(f"[az-league] resuming from {_az_league_state_path(ckpt_dir)}: "
@@ -487,6 +491,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
             "seed": seed, "mirror_frac": mirror_frac, "use_actor": use_actor,
+            "bo3": bo3,
         },
     }
 
@@ -522,7 +527,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
-                       mirror_frac=mirror_frac, roster=roster)
+                       mirror_frac=mirror_frac, roster=roster, bo3=bo3)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         print(f"[az-league] slot {si + 1}/{total} deck={deck}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
@@ -560,10 +565,12 @@ def run_train(args) -> None:
 
 
 def run_eval(args) -> None:
+    # az-eval defaults to bo3 matches; --bo1 opts back into single games.
     az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
             promote_threshold=args.promote_threshold, promote=args.promote,
-            seed=args.seed if args.seed is not None else 1)
+            seed=args.seed if args.seed is not None else 1,
+            bo3=not getattr(args, "bo1", False))
 
 
 def _split_decks(val) -> Optional[list]:
@@ -581,6 +588,7 @@ def run_cycle(args) -> None:
     # to fix one focus.
     focus = _split_decks(getattr(args, "deck", None))
     roster = _split_decks(getattr(args, "opponents", None))
+    # az defaults to bo3 matches (per-game value target); --bo1 opts back to bo1.
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, window=args.window, eval_games=args.eval_games,
@@ -588,7 +596,7 @@ def run_cycle(args) -> None:
              promote_threshold=args.promote_threshold,
              seed=args.seed if args.seed is not None else 1,
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
-             roster=roster,
+             roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args))
 
 
@@ -602,7 +610,8 @@ def run_league(args) -> None:
               promote_threshold=args.promote_threshold,
               seed=args.seed if args.seed is not None else 1,
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
-              use_actor=_resolve_use_actor(args), resume=args.resume)
+              use_actor=_resolve_use_actor(args), resume=args.resume,
+              bo3=not getattr(args, "bo1", False))
 
 
 if __name__ == "__main__":
@@ -632,6 +641,8 @@ if __name__ == "__main__":
     e.add_argument("--promote-threshold", type=float, default=0.55)
     e.add_argument("--promote", action="store_true")
     e.add_argument("--seed", type=int, default=1)
+    e.add_argument("--bo1", action="store_true",
+                   help="Single-game gate (default: bo3 match win-rate)")
     e.set_defaults(func=run_eval)
 
     c = sub.add_parser("cycle", help="One generate->train->eval cycle")
@@ -652,6 +663,8 @@ if __name__ == "__main__":
     c.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                    help="P(opponent deck == focus deck) per self-play game "
                         "(else uniform league-roster draw)")
+    c.add_argument("--bo1", action="store_true",
+                   help="Run bo1 self-play + gate (default: bo3 with per-game value)")
     cg = c.add_mutually_exclusive_group()
     cg.add_argument("--actor", action="store_true",
                     help="Force the C++ az_actor self-play backend")
@@ -684,6 +697,8 @@ if __name__ == "__main__":
     lg.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                     help="P(opponent deck == focus deck) per self-play game "
                          "(else uniform league-roster draw)")
+    lg.add_argument("--bo1", action="store_true",
+                    help="Run bo1 self-play + gate (default: bo3 with per-game value)")
     lgg = lg.add_mutually_exclusive_group()
     lgg.add_argument("--actor", action="store_true",
                      help="Force the C++ az_actor self-play backend")

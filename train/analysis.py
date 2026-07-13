@@ -409,6 +409,19 @@ def _is_az_model_spec(spec):
     return resolve_az_checkpoint(s) is not None
 
 
+def _effective_bo3(args) -> bool:
+    """Whether to simulate in bo3. AZ/MCTS models are trained and gated in bo3
+    (Phase 1a), so analysing one defaults to bo3 even without ``--bo3``; a
+    scripted/PPO model keeps ``--bo3`` opt-in. The explicit flag always forces
+    bo3 on."""
+    if getattr(args, "bo3", False):
+        return True
+    model = getattr(args, "model", None)
+    if isinstance(model, str) and model.strip().lower().startswith("mcts:"):
+        return True
+    return _is_az_model_spec(model)
+
+
 def _az_spec_base(spec):
     """Strip an ``az:``/``azraw:`` prefix from a model spec (else return it)."""
     s = spec.strip()
@@ -568,7 +581,7 @@ def _load_model_and_env(args):
             opp_model = MaskablePPO.load(_resolve_model_path(args.opponent))
 
     env = RoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
-                      bo3=getattr(args, "bo3", False))
+                      bo3=_effective_bo3(args))
     return model, env, opp_model
 
 
@@ -4193,7 +4206,7 @@ def cmd_search_compare(args):
     args.deck_a, args.deck_b = deck_a, deck_b
 
     n_workers = max(1, getattr(args, "workers", 1) or 1)
-    bo3 = getattr(args, "bo3", False)
+    bo3 = _effective_bo3(args)
 
     if n_workers <= 1:
         import runner
