@@ -38,4 +38,14 @@ void deck_state_reset();
 const std::vector<DecklistEntry> &deck_state_main(Zone::Ownership owner);
 const std::vector<DecklistEntry> &deck_state_side(Zone::Ownership owner);
 
+// Whole-store copy for the match-scoped game snapshot (see snapshot.cpp): a
+// sideboard-rooted MCTS sim rolls forward into game k+1, whose play_single_game
+// start overwrites these globals via deck_state_set — so the snapshot must
+// capture them at the sideboard root and restore them wholesale on rollback.
+struct DeckStateSnapshot {
+    std::vector<DecklistEntry> main_a, side_a, main_b, side_b;
+};
+void deck_state_capture(DeckStateSnapshot &out);
+void deck_state_restore(const DeckStateSnapshot &in);
+
 #endif /* DECK_STATE_H */

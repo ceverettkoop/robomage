@@ -20,6 +20,7 @@ extern Coordinator global_coordinator;
 extern int match_game_number;  // -1 = single game, 0-2 = bo3 game index (main.cpp)
 
 bool search_server_mode = false;
+unsigned int g_sim_seed_salt = 0;
 
 static bool any_slot_live();
 static bool read_command_line(char *buf, size_t len);
@@ -59,6 +60,23 @@ int search_unwind_choice() {
 
 void search_apply_pending_restore() {
     if (g_pending_restore_slot < 0) return;
+    // A MATCH-scoped restore targets a sideboard root one dispatcher level up;
+    // leave it latched for search_apply_pending_match_restore() to apply there.
+    if (snapshot_slot_is_match(g_pending_restore_slot)) return;
+    int slot = g_pending_restore_slot;
+    g_pending_restore_slot = -1;
+    g_unwind_count = 0;
+    if (!snapshot_restore(slot)) {
+        fatal_error("search-server: RESTORE from empty snapshot slot " + std::to_string(slot));
+    }
+}
+
+bool search_match_restore_pending() {
+    return g_pending_restore_slot >= 0 && snapshot_slot_is_match(g_pending_restore_slot);
+}
+
+void search_apply_pending_match_restore() {
+    if (!search_match_restore_pending()) return;
     int slot = g_pending_restore_slot;
     g_pending_restore_slot = -1;
     g_unwind_count = 0;
@@ -177,6 +195,20 @@ bool search_intercept_game_end() {
         if (sscanf(line, "%31s", tok) != 1) continue;
         if (strcmp(tok, "RESTORE") == 0) {
             int slot = parse_slot_arg(line, "RESTORE");
+            if (!snapshot_slot_live(slot)) {
+                fatal_error("search-server: RESTORE from empty snapshot slot " +
+                            std::to_string(slot));
+            }
+            // A GAME-scoped restore is safe to apply in place here (loop level, no
+            // simulation frames below). A MATCH-scoped one rewinds the between-game
+            // MatchContext/stage that only play_bo3_match's dispatcher owns: latch
+            // it and return true so the unwind exits play_single_game via its
+            // loop-top match check and the dispatcher applies the rollback.
+            if (snapshot_slot_is_match(slot)) {
+                g_pending_restore_slot = slot;
+                g_unwind_count = 0;
+                return true;
+            }
             if (!snapshot_restore(slot)) {
                 fatal_error("search-server: RESTORE from empty snapshot slot " +
                             std::to_string(slot));

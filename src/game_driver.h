@@ -7,6 +7,7 @@
 // objects EXCEPT obj/main.o and still have the globals, ECS setup, and per-game
 // loop available.
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
@@ -64,6 +65,18 @@ extern int match_wins_a;
 extern int match_wins_b;
 extern bool sideboard_phase;
 extern Zone::Ownership sideboard_phase_player;
+
+// The whole bo3 match's between-game state (dispatched over by play_bo3_match).
+// Exposed so the match-scoped game snapshot (snapshot.cpp) can capture/restore
+// it across an init_ecs() teardown — a sideboard-rooted MCTS search snapshots
+// the match, rolls forward into the next game, and restores this wholesale.
+extern MatchContext g_match_ctx;
+
+// Bumped every init_ecs() (next to card_db.clear()). The snapshot captures it so
+// snapshot_restore knows a card_db.clear()+reload happened across the rollback
+// (a coincidental size match would otherwise skip the card_db copy and leave the
+// name->entity map pointing at torn-down prototype entities).
+extern uint64_t g_card_db_generation;
 
 struct EcsSystems {
     std::shared_ptr<Orderer> orderer;

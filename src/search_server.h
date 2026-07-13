@@ -39,6 +39,10 @@
 
 extern bool search_server_mode;
 
+// Determinization seed salt (Stage 3 placeholder). Captured/restored by the match
+// snapshot so the plumbing is complete; always 0 until Stage 3 consumes it.
+extern unsigned int g_sim_seed_salt;
+
 // Loop-safety marker, set around the loop-safe get_input call sites.
 void search_set_loop_safe(bool safe);
 bool search_loop_safe();
@@ -47,7 +51,17 @@ bool search_loop_safe();
 // unwind step and fatals past a runaway cap.
 bool search_restore_pending();
 int search_unwind_choice();
+// Apply a pending GAME-scoped restore at the play_single_game loop top. A pending
+// MATCH-scoped restore is a NO-OP here — it stays latched for play_bo3_match's
+// dispatcher (see below), because rolling a sideboard root back also rewinds the
+// between-game MatchContext/stage, which only the dispatcher owns.
 void search_apply_pending_restore();
+
+// A pending restore whose target slot is a MATCH-scoped (sideboard-root)
+// snapshot. play_single_game's loop top returns to the dispatcher when this is
+// true; the dispatcher applies it via search_apply_pending_match_restore().
+bool search_match_restore_pending();
+void search_apply_pending_match_restore();
 
 // Latch a restore for the main loop to apply (the in-process equivalent of the
 // stdio RESTORE command): validates the slot is live, then arms the pending

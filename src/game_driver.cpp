@@ -86,12 +86,17 @@ Zone::Ownership sideboard_phase_player = Zone::UNKNOWN;
 
 // The whole bo3 match's between-game state in one snapshottable value struct.
 // play_bo3_match dispatches over its `stage`; the legacy globals above remain
-// authoritative-in-sync (machine_io/input_logger read them). Kept internal for
-// Stage 1 (a later stage exposes it for snapshot/restore across init_ecs()).
-static MatchContext g_match_ctx;
+// authoritative-in-sync (machine_io/input_logger read them). Exposed (Stage 2)
+// so the match-scoped game snapshot can capture/restore it across init_ecs().
+MatchContext g_match_ctx;
+
+// Incremented each init_ecs(); the snapshot captures its value so a restore can
+// tell a card_db.clear()+reload happened across the rollback (see game_driver.h).
+uint64_t g_card_db_generation = 0;
 
 EcsSystems init_ecs() {
     card_db.clear();
+    ++g_card_db_generation;
     global_coordinator.Init();
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
@@ -118,8 +123,11 @@ EcsSystems init_ecs() {
 int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed) {
     // A snapshot from a previous game of the match must never be restorable
-    // into this game's fresh ECS.
-    snapshot_release_all();
+    // into this game's fresh ECS — UNLESS a match-scoped snapshot is live: a
+    // sideboard-rooted MCTS sim rolls forward into THIS game precisely to search,
+    // and dropping its snapshot here would strand the rollback. The guard keeps
+    // the original invariant for ordinary game starts (no match snapshot live).
+    if (!snapshot_any_match_scope_live()) snapshot_release_all();
     // Refresh the static decklist store for the state serializer. Called each game
     // start so a bo3's post-sideboard (mutated) Deck structs are reflected in the
     // opponent-decklist observation blocks (see deck_state.h / machine_io.h tail).
@@ -194,8 +202,14 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     while (!cur_game.ended || search_intercept_game_end()) {
         // A RESTORE that arrived mid-decision unwound to here; apply it before
         // anything reads game state, so this iteration re-derives (and re-emits)
-        // the restored decision.
+        // the restored decision. (Applies GAME-scoped restores only.)
         search_apply_pending_restore();
+        // A MATCH-scoped restore stays latched: it targets a sideboard root one
+        // level up, so bail out of this game's loop and let play_bo3_match's
+        // dispatcher apply it (its loop top) and re-enter the restored stage. The
+        // returned winner is ignored — the dispatcher checks the pending restore
+        // before reading it.
+        if (search_match_restore_pending()) return cur_game.winner;
         if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
             cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
             prev_turn = cur_game.turn;
@@ -266,6 +280,15 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     // would carry whatever the just-ended game left behind. cur_game is discarded
     // (replaced by Game(seed)) when the next game starts, so nothing to restore.
     cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
+    // Reset the pending-decision baseline to 0 for this phase. The OUT menu wraps
+    // its query in a PendingDecisionScope(in_card_eid) whose RAII prev-restore
+    // depends on the baseline: on the natural first pass it is 0. A resume after a
+    // MATCH-scoped restore re-enters with the snapshot's in_card_eid still sitting
+    // in cur_game.pending_decision_source, so without this reset the recreated
+    // scope would capture in_card_eid as its prev and leak it into the post-swap IN
+    // menu — desyncing the restored line's observation from the natural one. This
+    // is a no-op in normal play (no decision is pending between games).
+    cur_game.pending_decision_source = 0;
     const char *player_name = (player == Zone::PLAYER_A) ? "Player A" : "Player B";
     // Each card is a one-shot decision per phase: once moved, it cannot be
     // moved back. Prevents oscillation and makes the 15-swap cap easier to
@@ -281,6 +304,11 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     bool resume_at_out = (st.pending_in_sb_idx >= 0);
 
     while (true) {
+        // A MATCH-scoped restore latched during a simulation unwinds through here
+        // (its target is this very sideboard root, one dispatcher level up): bail
+        // without building the menu or mutating the deck; the dispatcher applies
+        // the restore and re-enters this phase from the restored state.
+        if (search_match_restore_pending()) return;
         // The chosen IN card carries across the IN→OUT menu step. On a resume
         // (st.pending_in_sb_idx >= 0) it is re-derived below and we skip straight
         // to the OUT menu; otherwise it is picked from the IN menu.
@@ -326,7 +354,15 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
 
             populate_gamestate(&gs, player);
             print_game_state(&gs);
+            // Loop-safe: re-entering run_sideboard_phase from the restored match
+            // state re-derives this exact IN menu (the snapshot round-trip proves
+            // it byte-for-byte), so SNAPSHOT/DETERMINIZE are legal here.
+            search_set_loop_safe(true);
             int choice = InputLogger::instance().get_input(actions);
+            search_set_loop_safe(false);
+            // A RESTORE latched during the query (stdio command) unwinds via
+            // choice 0; bail before acting so no swap is performed on rollback.
+            if (search_match_restore_pending()) return;
 
             if (choice == 0) break;  // done
 
@@ -363,7 +399,18 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         // pending-decision context slots — see the machine_io.h layout).
         PendingDecisionScope pending(in_card_eid);
         populate_gamestate(&gs, player);
+        // A restore latched before we reach the query (e.g. during the IN-menu
+        // wait) must bail here — the OUT menu's choice 0 is a real swap, not a
+        // no-op, so unwinding through it would corrupt the deck.
+        if (search_match_restore_pending()) return;
+        // Loop-safe: on rollback we re-enter with resume_at_out and re-derive this
+        // exact OUT menu (with its pending-decision context), so it round-trips.
+        search_set_loop_safe(true);
         int out_choice = InputLogger::instance().get_input(out_actions);
+        search_set_loop_safe(false);
+        // A RESTORE latched during THIS query unwinds via choice 0; bail before
+        // the swap so the deck is not mutated on the rollback path.
+        if (search_match_restore_pending()) return;
 
         size_t md_idx = out_action_to_md_idx[static_cast<size_t>(out_choice)];
         std::string card_out = deck.main_deck[md_idx].second;
@@ -445,16 +492,34 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
 
     bool match_done = false;
     while (!match_done && ctx.game_num < 3) {
+        // A MATCH-scoped restore latched by a sideboard-rooted simulation (its
+        // unwind bailed out of the inner game/sideboard loop) is applied here,
+        // rolling the whole match — cur_game, ECS, ctx (stage/decks/sb), deck_state
+        // and the match globals — back to the sideboard root before the switch
+        // re-enters the restored stage.
+        if (search_match_restore_pending()) search_apply_pending_match_restore();
+
         switch (ctx.stage) {
         case MatchContext::PLAY_GAME: {
             match_game_number = ctx.game_num;
-            game_log("\n----- MATCH GAME %d of 3 -----\n", ctx.game_num + 1);
-
-            if (before_game) before_game(ctx.game_num, ctx.a_goes_first);
+            // A sideboard-rooted sim rolls forward into this game only to search;
+            // its real-match side effects (the actor's begin_game/backfill hooks,
+            // the banner) must not fire. Suppress them while a match snapshot lives.
+            bool simulating = snapshot_any_match_scope_live();
+            if (!simulating) {
+                game_log("\n----- MATCH GAME %d of 3 -----\n", ctx.game_num + 1);
+                if (before_game) before_game(ctx.game_num, ctx.a_goes_first);
+            }
 
             EcsSystems sys = init_ecs();
             int winner = play_single_game(sys, ctx.deck_a, ctx.deck_b, ctx.a_goes_first,
                                           ctx.base_seed + static_cast<unsigned int>(ctx.game_num));
+
+            // A sim's unwind exited play_single_game with a MATCH restore still
+            // latched: take none of the real-game bookkeeping below (winner
+            // validation, tally, GAME_RESULT, after_game, stage advance) — loop
+            // back so the dispatcher top applies the restore.
+            if (search_match_restore_pending()) continue;
 
             // Every end-of-game path must have set a winner; the else-branch below
             // would otherwise silently credit a winnerless game to B.
@@ -500,6 +565,10 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
         }
         case MatchContext::SIDEBOARD_A: {
             run_sideboard_phase(ctx.deck_a, ctx.sb);
+            // A sim's unwind (or a restore latched during this phase) exited
+            // run_sideboard_phase with a MATCH restore latched: don't advance the
+            // stage — loop back and apply the restore at the dispatcher top.
+            if (search_match_restore_pending()) continue;
             ctx.sb = SideboardPhaseState();
             ctx.sb.player = Zone::PLAYER_B;
             ctx.stage = MatchContext::SIDEBOARD_B;
@@ -507,6 +576,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
         }
         case MatchContext::SIDEBOARD_B: {
             run_sideboard_phase(ctx.deck_b, ctx.sb);
+            if (search_match_restore_pending()) continue;
             ctx.game_num++;
             ctx.stage = MatchContext::PLAY_GAME;
             break;
