@@ -320,6 +320,7 @@ def _meta_of(path: str) -> str:
 # ----------------------------------------------------------------------
 
 def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
+             sb_sims: int = 32, sb_worlds: int = 4, sb_max_depth: int = 200,
              workers: Optional[int] = None, batches: int = 500,
              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
              eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
@@ -348,6 +349,8 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
     print(f"=== az cycle: self-play (cross-deck, focus={label}, "
           f"{'bo3' if bo3 else 'bo1'}) ===")
     gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
+                               sb_sims=sb_sims, sb_worlds=sb_worlds,
+                               sb_max_depth=sb_max_depth,
                                workers=workers, seed=seed, use_actor=use_actor,
                                roster=roster, focus_decks=focus,
                                mirror_frac=mirror_frac, bo3=bo3)
@@ -414,6 +417,7 @@ def _default_az_league_roster() -> list:
 
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               games: int = 50, sims: int = 64, worlds: int = 4,
+              sb_sims: int = 32, sb_worlds: int = 4, sb_max_depth: int = 200,
               workers: Optional[int] = None, batches: int = 500,
               batch_size: int = 256, lr: float = 1e-3, window: int = 50,
               eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
@@ -446,6 +450,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         games = int(p.get("games", games))
         sims = int(p.get("sims", sims))
         worlds = int(p.get("worlds", worlds))
+        sb_sims = int(p.get("sb_sims", sb_sims))
+        sb_worlds = int(p.get("sb_worlds", sb_worlds))
+        sb_max_depth = int(p.get("sb_max_depth", sb_max_depth))
         workers = p.get("workers", workers)
         batches = int(p.get("batches", batches))
         batch_size = int(p.get("batch_size", batch_size))
@@ -486,7 +493,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         "rotations": rotations,
         "cycles_per_deck": cycles_per_deck,
         "params": {
-            "games": games, "sims": sims, "worlds": worlds, "workers": workers,
+            "games": games, "sims": sims, "worlds": worlds,
+            "sb_sims": sb_sims, "sb_worlds": sb_worlds, "sb_max_depth": sb_max_depth,
+            "workers": workers,
             "batches": batches, "batch_size": batch_size, "lr": lr,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
@@ -499,6 +508,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     print(f"  rotations={rotations}  cycles_per_deck={cycles_per_deck}  "
           f"slots={total}  (starting at slot {slot_index})")
     print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
+          f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth}  "
           f"batches={batches} window={window}  "
           f"eval_games={eval_games} promote>={promote_threshold}")
 
@@ -522,7 +532,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         print(f"[az-league slot {si + 1}/{total}] rotation {r + 1}/{rotations}  "
               f"deck={deck}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})")
         print(f"{'='*60}")
-        res = az_cycle(deck, games=games, sims=sims, worlds=worlds, workers=workers,
+        res = az_cycle(deck, games=games, sims=sims, worlds=worlds,
+                       sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                       workers=workers,
                        batches=batches, batch_size=batch_size, lr=lr, window=window,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
@@ -590,6 +602,9 @@ def run_cycle(args) -> None:
     roster = _split_decks(getattr(args, "opponents", None))
     # az defaults to bo3 matches (per-game value target); --bo1 opts back to bo1.
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
+             sb_sims=getattr(args, "sb_sims", 32),
+             sb_worlds=getattr(args, "sb_worlds", 4),
+             sb_max_depth=getattr(args, "sb_max_depth", 200),
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, window=args.window, eval_games=args.eval_games,
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
@@ -604,6 +619,9 @@ def run_league(args) -> None:
     az_league(decks=args.decks, rotations=args.rotations,
               cycles_per_deck=args.cycles_per_deck,
               games=args.games, sims=args.sims, worlds=args.worlds,
+              sb_sims=getattr(args, "sb_sims", 32),
+              sb_worlds=getattr(args, "sb_worlds", 4),
+              sb_max_depth=getattr(args, "sb_max_depth", 200),
               workers=args.workers, batches=args.batches, batch_size=args.batch_size,
               lr=args.lr, window=args.window, eval_games=args.eval_games,
               eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
@@ -650,6 +668,12 @@ if __name__ == "__main__":
     c.add_argument("--games", type=int, default=50)
     c.add_argument("--sims", type=int, default=64)
     c.add_argument("--worlds", type=int, default=4)
+    c.add_argument("--sb-sims", type=int, default=32,
+                   help="PUCT sims at a bo3 sideboard root (bo3 only)")
+    c.add_argument("--sb-worlds", type=int, default=4,
+                   help="Determinized worlds at a bo3 sideboard root")
+    c.add_argument("--sb-max-depth", type=int, default=200,
+                   help="Rollout depth cap at a bo3 sideboard root")
     c.add_argument("--workers", type=int, default=None)
     c.add_argument("--batches", type=int, default=500)
     c.add_argument("--batch-size", type=int, default=256)
@@ -684,6 +708,12 @@ if __name__ == "__main__":
     lg.add_argument("--games", type=int, default=50)
     lg.add_argument("--sims", type=int, default=64)
     lg.add_argument("--worlds", type=int, default=4)
+    lg.add_argument("--sb-sims", type=int, default=32,
+                    help="PUCT sims at a bo3 sideboard root (bo3 only)")
+    lg.add_argument("--sb-worlds", type=int, default=4,
+                    help="Determinized worlds at a bo3 sideboard root")
+    lg.add_argument("--sb-max-depth", type=int, default=200,
+                    help="Rollout depth cap at a bo3 sideboard root")
     lg.add_argument("--workers", type=int, default=None)
     lg.add_argument("--batches", type=int, default=500)
     lg.add_argument("--batch-size", type=int, default=256)

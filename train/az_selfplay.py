@@ -28,13 +28,17 @@ from typing import Optional
 import numpy as np
 
 try:
-    from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX
+    from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _MATCH_CTX_START
     from cli_spec import BIN_DIR
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
-    from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX
+    from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _MATCH_CTX_START
     from train.cli_spec import BIN_DIR
     from train.opponents import GEN_STEM
+
+# is_sideboard_phase lives at _MATCH_CTX_START + 3 in the state vector (see the
+# _MATCH_CTX layout in env.py: game_number, self_wins, opp_wins, sideboard_phase).
+_IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
 _ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
@@ -46,6 +50,13 @@ _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 DEFAULT_ROOT_NOISE_EPS = 0.25
 DEFAULT_ROOT_NOISE_ALPHA = 1.0
 DEFAULT_TEMP_MOVES = 20        # sample-from-visits for the first N real decisions, then argmax
+# Sideboard-rooted search budget. A sideboard prompt is a valid MCTS root
+# (Stage 1-3), but each rollout there re-crosses init_ecs() + deck load + shuffle
+# on RESTORE and its horizon spans the whole next game, so give it its own
+# (deeper, fewer-sim) budget instead of the per-in-game-decision one.
+DEFAULT_SB_SIMS = 32
+DEFAULT_SB_WORLDS = 4
+DEFAULT_SB_MAX_DEPTH = 200
 DEFAULT_MIRROR_FRAC = 0.25     # P(opponent deck == focus deck) per self-play game
 FLUSH_SAMPLES = 4096           # write a shard once this many samples accumulate
 HEARTBEAT_MOVES = 25           # Python backend: mid-game progress line every N decisions
@@ -149,7 +160,9 @@ def _build_net(source: dict):
 # ----------------------------------------------------------------------
 
 def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
-                root_noise_eps, root_noise_alpha, seed, on_progress=None):
+                root_noise_eps, root_noise_alpha, seed, on_progress=None,
+                sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
+                sb_max_depth=DEFAULT_SB_MAX_DEPTH):
     """Play one match (bo1: a single game; bo3: a best-of-three) and return
     (samples, game_winners, searched, fallback, dropped).
 
@@ -163,8 +176,19 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     Game boundaries are detected from ``info['game_result']`` (the engine emitted a
     GAME_RESULT line on that step's read); the game's winner is the sign of that
     step's reward delta (+ -> A won, - -> B won), matching env.py's bo3 reward
-    (±BO3_GAME_WIN_REWARD per game). Sideboard decisions between games are not
-    loop-safe, so they never enter ``samples``.
+    (±BO3_GAME_WIN_REWARD per game).
+
+    Bo3 sideboard prompts BETWEEN games are now loop-safe MCTS roots (Stage 1-3):
+    when searchable they enter ``samples`` like any other decision. They are keyed
+    off the ``is_sideboard_phase`` state flag (``_IS_SIDEBOARD_IDX``) and searched
+    with the SIDEBOARD budget (``sb_sims``/``sb_worlds``/``sb_max_depth``) — heavier
+    per step (each restore re-crosses init_ecs) and deeper (the horizon is the whole
+    next game). Because ``game_move`` and ``game_idx`` are advanced at the preceding
+    game's GAME_RESULT boundary, a sideboard sample naturally carries
+    ``game_idx == k+1`` (the UPCOMING game) — so ``_backfill_and_pack`` prices it by
+    that game's winner — and re-enters the per-game temperature schedule at
+    ``game_move == 0``. (Do NOT key off ``is_post_board``/``game_number``: at a
+    game-1->2 sideboard root those still reflect the ENDED game.)
 
     ``on_progress(move, searched, fallback)``, when given, fires every
     HEARTBEAT_MOVES decisions. Observation-only: it must not (and cannot)
@@ -189,9 +213,19 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
         searchable = bool(env.last_search_safe) and num_choices > 1
 
         if searchable:
-            result = run_search(env, evaluator, sims=sims, worlds=worlds,
-                                root_noise_eps=root_noise_eps,
-                                root_noise_alpha=root_noise_alpha, rng=rng)
+            # A bo3 sideboard root is more expensive per sim (restore re-crosses
+            # init_ecs + deck load + shuffle) and has a game-long horizon, so it
+            # gets its own budget. Key ONLY off is_sideboard_phase — is_post_board
+            # / game_number still reflect the just-ended game at a g1->g2 root.
+            if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
+                result = run_search(env, evaluator, sims=sb_sims, worlds=sb_worlds,
+                                    max_depth=sb_max_depth,
+                                    root_noise_eps=root_noise_eps,
+                                    root_noise_alpha=root_noise_alpha, rng=rng)
+            else:
+                result = run_search(env, evaluator, sims=sims, worlds=worlds,
+                                    root_noise_eps=root_noise_eps,
+                                    root_noise_alpha=root_noise_alpha, rng=rng)
             visits = result.policy_target(1.0)          # normalized visit counts
             pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
             pi[:num_choices] = visits.astype(np.float32)
@@ -287,7 +321,8 @@ def _match_winner(game_winners) -> str:
 
 
 def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
-            root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3):
+            root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
+            sb_sims, sb_worlds, sb_max_depth):
     """Play this worker's slice of the matchup schedule. ``matchups`` is a list of
     per-MATCH (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
     swapped per match before its reset respawns the engine. With ``bo3`` each
@@ -328,7 +363,8 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                 env, evaluator, rng, sims=sims, worlds=worlds,
                 temp_moves=temp_moves, root_noise_eps=root_noise_eps,
                 root_noise_alpha=root_noise_alpha, seed=seed,
-                on_progress=beat)
+                on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
+                sb_max_depth=sb_max_depth)
             obs, pi, z, mask = _backfill_and_pack(samples, game_winners)
             buf.append((obs, pi, z, mask))
             total_samples += len(samples)
@@ -408,6 +444,8 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
              roster: Optional[list] = None,
              focus_decks: Optional[list] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
+             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
+             sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
              bo3: bool = False) -> dict:
     """Generate ``games`` self-play MATCHES over a FOCUS pool and write shards.
 
@@ -424,6 +462,10 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
     ``bo3`` runs best-of-three matches with a PER-GAME value target (each sample's
     z is the result of the game it belonged to). Because the C++ actor still
     assumes bo1, ``bo3`` FORCES the pure-Python backend regardless of ``use_actor``.
+    In bo3 the between-game sideboard prompts are searched MCTS roots with their own
+    (heavier, deeper) budget ``sb_sims``/``sb_worlds``/``sb_max_depth`` — see
+    :func:`_play_match`. These knobs are consumed only by the Python bo3 backend
+    (the actor is bo1-only until Stage 5), so they are ignored under ``use_actor``.
 
     ``use_actor`` picks the generation backend (ignored when ``bo3``):
       * ``None`` (AUTO, default) — use the C++ ``bin/az_actor`` iff it is built,
@@ -467,6 +509,9 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
     unit = "matches" if bo3 else "games"
     print(f"[az-selfplay] focus={focus_lbl} {unit}={games} bo3={bo3} sims={sims} "
           f"worlds={worlds} workers={workers} mirror_frac={mirror_frac}")
+    if bo3:
+        print(f"[az-selfplay] sideboard-root budget: sb_sims={sb_sims} "
+              f"sb_worlds={sb_worlds} sb_max_depth={sb_max_depth}")
     print(f"[az-selfplay] net source: mode={source['mode']} path={source['path']}")
     print(f"[az-selfplay] out_dir={out_dir}")
     print(f"[az-selfplay] matchups: {_schedule_summary(schedule)}")
@@ -478,8 +523,11 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed)
     if use_actor:
+        # The C++ actor is bo1-only (Stage 5 mirrors the sb budget in MCTSConfig);
+        # the sb_* knobs are consumed only by the Python bo3 backend below.
         return _generate_actor(deck, actor_bin=_ACTOR_BIN, **common)
-    return _generate_python(deck, bo3=bo3, **common)
+    return _generate_python(deck, bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
+                            sb_max_depth=sb_max_depth, **common)
 
 
 # ----------------------------------------------------------------------
@@ -488,7 +536,8 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
 
 def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                      root_noise_eps, root_noise_alpha, out_dir, seed,
-                     bo3=False) -> dict:
+                     bo3=False, sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
+                     sb_max_depth=DEFAULT_SB_MAX_DEPTH) -> dict:
     import multiprocessing as mp
 
     matches = len(schedule)
@@ -511,7 +560,7 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
         p = ctx.Process(target=_worker,
                         args=(slices[wi], source, sims, worlds, temp_moves,
                               root_noise_eps, root_noise_alpha, out_dir, seed,
-                              wi, result_q, bo3))
+                              wi, result_q, bo3, sb_sims, sb_worlds, sb_max_depth))
         p.start()
         procs.append(p)
 
@@ -795,7 +844,10 @@ def run(args) -> None:
              workers=args.workers, checkpoint=args.checkpoint,
              temp_moves=args.temp_moves, seed=args.seed if args.seed is not None else 1,
              out_dir=args.out, use_actor=_resolve_use_actor(args),
-             mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC))
+             mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+             sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+             sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
+             sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH))
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -813,6 +865,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                          "(default: generalist AZ ckpt, else gen PPO warm-start, "
                          "else random)")
     ap.add_argument("--temp-moves", type=int, default=DEFAULT_TEMP_MOVES)
+    ap.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
+                    help="PUCT sims at a bo3 sideboard root (bo3 only; default %d)"
+                         % DEFAULT_SB_SIMS)
+    ap.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
+                    help="Determinized worlds at a bo3 sideboard root (default %d)"
+                         % DEFAULT_SB_WORLDS)
+    ap.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
+                    help="Rollout depth cap at a bo3 sideboard root (default %d)"
+                         % DEFAULT_SB_MAX_DEPTH)
     ap.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                     help="P(opponent deck == focus deck) per game (default %.2f); "
                          "else a uniform league-roster draw" % DEFAULT_MIRROR_FRAC)
