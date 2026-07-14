@@ -39,7 +39,7 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import AZNet, obs_space_from_const, save_torchscript, torchscript_export_path
-from env import MAX_ACTIONS
+from env import MAX_ACTIONS, _MATCH_CTX_START
 from cli_spec import BIN_DIR
 import runner
 from search_env import SearchRoboMageEnv
@@ -50,13 +50,24 @@ SIMS = 16
 WORLDS = 2
 C_PUCT = 1.5
 SEED_BASE = 42
+# Explicit sideboard-root budget for the sb-budget parity case (the in-game
+# sims/worlds/max_depth stay SIMS/WORLDS/default). Mirrors az_selfplay's separate
+# sb_sims/sb_worlds/sb_max_depth knobs; Stage 5 threads them into MCTSConfig.
+SB_SIMS = 8
+SB_WORLDS = 2
+SB_MAX_DEPTH = 200
+# is_sideboard_phase flag in the state vector (env's _MATCH_CTX layout:
+# game_number, self_wins, opp_wins, sideboard_phase).
+_IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
 ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
 
 
 def world_seeds_for(root_index: int) -> list:
-    """The shared per-world seed formula (mirrors az_mcts.cpp::begin_world)."""
+    """The shared per-world seed formula (mirrors az_mcts.cpp::begin_world). Yields
+    max(WORLDS, SB_WORLDS) seeds so both the in-game and the (possibly wider)
+    sideboard budget can draw their first `worlds` entries from the same list."""
     return [(SEED_BASE + 100003 * root_index + w) & 0xFFFFFFFF
-            for w in range(WORLDS)]
+            for w in range(max(WORLDS, SB_WORLDS))]
 
 
 class TSEvaluator:
@@ -95,12 +106,18 @@ class ParitySearchController:
 
     wants_search_env = True
 
-    def __init__(self, evaluator):
+    def __init__(self, evaluator, sb_budget=False):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
         self.ev = evaluator
         self.env = None
         self.root_counter = 0
         self.records = []  # list[(root_index, num_choices, np.int64[num_choices])]
+        self.is_sb = []    # parallel to records: was each searched root a sideboard root
+        # When set, mirror the actor's sideboard budget (SB_SIMS/SB_WORLDS/
+        # SB_MAX_DEPTH) at is_sideboard_phase roots; in-game roots stay on the
+        # SIMS/WORLDS/default budget. Off => every root uses the in-game budget
+        # (the inherited-budget bo1/bo3 cases).
+        self.sb_budget = sb_budget
 
     def bind_env(self, env):
         self.env = env
@@ -115,10 +132,17 @@ class ParitySearchController:
             return int(np.argmax(priors))
         r = self.root_counter
         self.root_counter += 1
-        result = run_search(env, self.ev, sims=SIMS, worlds=WORLDS,
-                            c_puct=C_PUCT, world_seeds=world_seeds_for(r))
+        is_sb = bool(obs[_IS_SIDEBOARD_IDX] > 0.5)
+        if self.sb_budget and is_sb:
+            result = run_search(env, self.ev, sims=SB_SIMS, worlds=SB_WORLDS,
+                                max_depth=SB_MAX_DEPTH, c_puct=C_PUCT,
+                                world_seeds=world_seeds_for(r))
+        else:
+            result = run_search(env, self.ev, sims=SIMS, worlds=WORLDS,
+                                c_puct=C_PUCT, world_seeds=world_seeds_for(r))
         self.records.append((r, int(num_choices),
                              result.visits.astype(np.int64)))
+        self.is_sb.append(is_sb)
         return result.best_action()
 
 
@@ -140,13 +164,16 @@ def _read_visits_dump(path):
     return out
 
 
-def _run_actor(ts_path, dump_path, batch, bo3=False):
+def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None):
     cmd = [ACTOR_BIN, "--search", "--sims", str(SIMS), "--worlds", str(WORLDS),
            "--c", str(C_PUCT), "--batch", str(batch), "--world-seeds",
            str(SEED_BASE), "--deck", DECK, "--seed", str(SEED),
            "--model", ts_path, "--dump-visits", dump_path, "--games", "1"]
     if bo3:
         cmd.append("--bo3")
+    if sb is not None:
+        cmd += ["--sb-sims", str(sb[0]), "--sb-worlds", str(sb[1]),
+                "--sb-max-depth", str(sb[2])]
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
     if proc.returncode != 0:
@@ -156,11 +183,12 @@ def _run_actor(ts_path, dump_path, batch, bo3=False):
     return _read_visits_dump(dump_path)
 
 
-def _python_reference(ts_path, bo3):
+def _python_reference(ts_path, bo3, sb_budget=False):
     """Drive the SAME game (bo1) or MATCH (bo3) through the Python reference,
-    searching each loop-safe root. Returns the ParitySearchController's records."""
+    searching each loop-safe root. When ``sb_budget`` mirrors the actor's separate
+    sideboard budget at is_sideboard_phase roots. Returns (records, is_sb)."""
     ev = TSEvaluator(ts_path)
-    ctrl = ParitySearchController(ev)
+    ctrl = ParitySearchController(ev, sb_budget=sb_budget)
     env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
     # The C++ actor plays to the engine's natural end (no decision cap); disable
     # RoboMageEnv's training-only step truncation so both sides run the SAME full
@@ -172,7 +200,7 @@ def _python_reference(ts_path, bo3):
         runner.drive_game(env, obs, ctrl, ctrl)
     finally:
         env.close()
-    return ctrl.records
+    return ctrl.records, ctrl.is_sb
 
 
 def _compare_visits(tag, actor1, py):
@@ -207,6 +235,15 @@ def _compare_visits(tag, actor1, py):
     return 0, total_sims
 
 
+def _sb_root_summary(records, is_sb):
+    """Summarize the sideboard-phase searched roots: count + each root's total
+    visit count. A root's total visits == its sims_run (sims_per_world*worlds), so
+    this reads out the budget in force at the sideboard roots (SIMS under the
+    inherited budget, SB_SIMS under the explicit sb budget)."""
+    sums = [int(v.sum()) for (_ri, _nc, v), sb in zip(records, is_sb) if sb]
+    return f"{len(sums)} sideboard root(s), visit totals {sums}"
+
+
 def main():
     if not os.path.exists(ACTOR_BIN):
         print(f"FAIL: {ACTOR_BIN} not found — build it with `make actor`",
@@ -222,18 +259,20 @@ def main():
         ts_path = torchscript_export_path(ckpt)
         save_torchscript(net, ts_path)
 
-        # bo1 game AND a full bo3 match (the bo3 case exercises the between-games
-        # sideboard-phase decisions, which fall back to the policy head on BOTH
-        # sides — so the two games stay in lockstep across the match and every
-        # searched root's visit vector must still match bit-for-bit).
-        actor1 = None  # bo1 batch=1 visits, reused by the K=16 report below
+        # bo1 game AND a full bo3 match. The bo3 case exercises the between-games
+        # sideboard-phase decisions, which are now SEARCHED MCTS roots on BOTH
+        # sides (Stage 1-3) at the INHERITED in-game budget — so the two games
+        # stay in lockstep across the match and every searched root's visit vector
+        # (including the sideboard roots) must match bit-for-bit.
+        actor1 = None            # bo1 batch=1 visits, reused by the K=16 report below
+        sb_default_summary = None  # bo3 inherited-budget sideboard-root summary (gate #4)
         for bo3 in (False, True):
             tag = "bo3" if bo3 else "bo1"
             dump1 = os.path.join(td, f"visits_b1_{tag}.bin")
             visits = _run_actor(ts_path, dump1, batch=1, bo3=bo3)
             if visits is None:
                 return 1
-            py = _python_reference(ts_path, bo3)
+            py, is_sb = _python_reference(ts_path, bo3)
             rc, total_sims = _compare_visits(tag, visits, py)
             if rc:
                 return rc
@@ -241,8 +280,36 @@ def main():
                   f"searched roots ({total_sims} total root visits) "
                   f"[deck={DECK} seed={SEED} sims={SIMS} worlds={WORLDS} "
                   f"c={C_PUCT} batch=1]")
-            if not bo3:
+            if bo3:
+                sb_default_summary = _sb_root_summary(visits, is_sb)
+            else:
                 actor1 = visits
+
+        # Explicit sb-budget case (bo3): run the actor with a SEPARATE sideboard
+        # budget (--sb-sims/--sb-worlds/--sb-max-depth) while the in-game budget
+        # stays SIMS/WORLDS/default, and mirror the same split in the Python
+        # reference (keyed off the is_sideboard_phase state flag). Every root —
+        # including the sideboard roots now searched at the reduced budget — must
+        # still be bit-exact between the actor and the reference.
+        dump_sb = os.path.join(td, "visits_b1_bo3_sb.bin")
+        actor_sb = _run_actor(ts_path, dump_sb, batch=1, bo3=True,
+                              sb=(SB_SIMS, SB_WORLDS, SB_MAX_DEPTH))
+        if actor_sb is None:
+            return 1
+        py_sb, is_sb_sb = _python_reference(ts_path, bo3=True, sb_budget=True)
+        rc, total_sims = _compare_visits("bo3-sb", actor_sb, py_sb)
+        if rc:
+            return rc
+        sb_budget_summary = _sb_root_summary(actor_sb, is_sb_sb)
+        print(f"PASS [bo3-sb]: MCTS visit-count parity exact over {len(actor_sb)} "
+              f"searched roots ({total_sims} total root visits) "
+              f"[in-game sims={SIMS} worlds={WORLDS}; sideboard sims={SB_SIMS} "
+              f"worlds={SB_WORLDS} max_depth={SB_MAX_DEPTH}]")
+        # Gate #4: prove the budget split took effect — a sideboard root's total
+        # visits equal its sims_run, so it reads SIMS under the inherited budget
+        # and SB_SIMS under the explicit sb budget.
+        print(f"REPORT: sideboard-root budget split — default bo3 (inherited): "
+              f"{sb_default_summary}; sb-budget bo3: {sb_budget_summary}")
 
         # 5) K=16 batched-leaf sanity check (report only, bo1). The actor plays
         # argmax(visits) at each root, so once a batch=16 root's argmax differs

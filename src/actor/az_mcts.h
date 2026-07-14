@@ -45,6 +45,19 @@ struct MCTSConfig {
     int batch = 1;                  // 1 = exact mcts.py parity; K>1 = virtual-loss batching
     uint32_t world_seed_base = 42;  // world seed(root r, world w) = base + 100003*r + w
 
+    // ── bo3 sideboard-root budget (mirrors az_selfplay.py's sb_sims/sb_worlds/
+    // sb_max_depth) ─────────────────────────────────────────────────────────
+    // A between-game sideboard prompt is a valid MCTS root (Stage 1-3), but each
+    // rollout there re-crosses init_ecs() + deck load + shuffle on RESTORE and its
+    // horizon spans the whole next game, so it gets its own (deeper, fewer-sim)
+    // budget. -1 = INHERIT the in-game sims/worlds/max_depth (so the parity paths
+    // and existing callers are unchanged by default). Selected per-search from the
+    // `sideboard_phase` engine global at root setup, then stored per-search so the
+    // whole descent uses the ROOT's budget.
+    int sb_sims = -1;
+    int sb_worlds = -1;
+    int sb_max_depth = -1;
+
     // ── self-play (--selfplay) ──────────────────────────────────────────────
     // When `selfplay` is set, each SEARCHED root stores a training sample and the
     // first `temp_moves` real moves sample the real action from the visit
@@ -97,10 +110,20 @@ public:
     const std::vector<SearchRootResult>& results() const;
 
     // ── self-play ───────────────────────────────────────────────────────────
-    // Reset per-game state (real-move counter + this game's stored samples).
-    // Call at the start of each self-play game (the RNG streams across games).
-    void begin_game();
-    // Samples stored during the current game (valid until the next begin_game()).
+    // Full reset of per-match sample-buffer state (real-move counter + stored
+    // samples). Call ONCE before a bo3 match (the RNG streams across games), and
+    // per-game in the bo1 loop.
+    void begin_match();
+    // End-of-game reset: clears the buffered samples and resets the tau/move
+    // counter. Call AFTER a game's samples have been priced+flushed (from the
+    // actor's backfill hook), so any sideboard samples recorded before the NEXT
+    // game start stay buffered and are priced by that next game's result — and the
+    // tau counter resets at the game boundary (before the sideboard prompts),
+    // matching Python's per-game game_move.
+    void end_game();
+    // Samples stored since the last begin_match()/end_game() (valid until the next
+    // one). In bo3, between a game's backfill and the next game's start this holds
+    // the sideboard-root samples awaiting the next game's z.
     const std::vector<SelfPlaySample>& game_samples() const;
 
 private:

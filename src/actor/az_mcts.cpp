@@ -17,6 +17,12 @@
 #include "search_server.h"    // search_loop_safe, search_request_restore, determinize_hidden_state
 #include "snapshot.h"         // snapshot_save, snapshot_release_all
 
+// True while a between-game bo3 sideboard prompt is live (the same engine global
+// the obs is_sideboard_phase flag serializes from). Selects the sideboard search
+// budget at root setup — do NOT use match_game_number, which reflects the just-
+// ended game at a g1->g2 sideboard root.
+extern bool sideboard_phase;
+
 // Observation float "self is Player A" (mirrors train/env.py::_SELF_IS_A_IDX).
 // Determines which seat moves at a node.
 static constexpr int SELF_IS_A_IDX = ACTOR_SELF_IS_A_IDX;
@@ -98,6 +104,13 @@ struct AZMcts::Impl {
     int sims_run = 0;
     long sim_steps = 0;
     int sims_per_world = 1;
+    // The budget in force for THIS search (chosen at root setup: the sideboard
+    // budget when the root is a sideboard prompt and the sb_* config is >= 0, else
+    // the in-game budget). Stored per-search so the world/sim loop bound and the
+    // descent depth cap all use the ROOT's budget throughout.
+    int cur_sims = 0;
+    int cur_worlds = 0;
+    int cur_max_depth = 0;
     int cur_world = 0;
     int cur_sim = 0;  // index of the simulation currently running within cur_world
     uint32_t cur_world_seed = 0;
@@ -118,7 +131,16 @@ struct AZMcts::Impl {
     explicit Impl(const MCTSConfig& c, AZEvaluator* e)
         : cfg(c), eval(e), rng(c.selfplay_rng_seed) {}
 
-    void begin_game() {
+    void begin_match() {
+        move_counter = 0;
+        game_samples.clear();
+    }
+
+    void end_game() {
+        // Called after a game's samples are priced+flushed. Any sideboard samples
+        // recorded before the next game starts accumulate into the now-empty
+        // buffer and get priced by the next game's z; the tau counter restarts at
+        // the game boundary (before the sideboard prompts), matching Python.
         move_counter = 0;
         game_samples.clear();
     }
@@ -278,11 +300,17 @@ struct AZMcts::Impl {
         root_is_a = o[SELF_IS_A_IDX] > 0.5f;
         root_priors = eval_priors(o, nc);
         snapshot_save(SEARCH_SLOT);
+        // Select this root's budget: the sideboard budget when the root is a
+        // sideboard prompt (and the sb_* config is set), else the in-game budget.
+        bool sb = sideboard_phase;
+        cur_sims = (sb && cfg.sb_sims >= 0) ? cfg.sb_sims : cfg.sims;
+        cur_worlds = (sb && cfg.sb_worlds >= 0) ? cfg.sb_worlds : cfg.worlds;
+        cur_max_depth = (sb && cfg.sb_max_depth >= 0) ? cfg.sb_max_depth : cfg.max_depth;
         visit_totals.assign(static_cast<size_t>(nc), 0);
         value_acc = 0.0;
         sims_run = 0;
         sim_steps = 0;
-        sims_per_world = std::max(1, cfg.sims / std::max(1, cfg.worlds));
+        sims_per_world = std::max(1, cur_sims / std::max(1, cur_worlds));
         pool.clear();
         pending.clear();
         path.clear();
@@ -333,7 +361,7 @@ struct AZMcts::Impl {
                         std::to_string(nc));
         }
         // Descend into the existing child (node = child). Depth cap: value-only.
-        if (static_cast<int>(path.size()) >= cfg.max_depth) {
+        if (static_cast<int>(path.size()) >= cur_max_depth) {
             AZEvalResultD r = eval_one(o, nc);
             backup(path, r.value, child->self_is_a);
             finish_sim();
@@ -353,7 +381,7 @@ struct AZMcts::Impl {
             if (cfg.batch > 1) flush_pending();
             accumulate_world();
             cur_world += 1;
-            if (cur_world >= cfg.worlds) return finalize();
+            if (cur_world >= cur_worlds) return finalize();
             begin_world(cur_world);
             cur_sim = 0;
         }
@@ -470,7 +498,8 @@ int AZMcts::on_decision(const std::vector<LegalAction>& actions) {
 }
 bool AZMcts::on_game_end(int winner) { return impl_->on_game_end(winner); }
 const std::vector<SearchRootResult>& AZMcts::results() const { return impl_->results; }
-void AZMcts::begin_game() { impl_->begin_game(); }
+void AZMcts::begin_match() { impl_->begin_match(); }
+void AZMcts::end_game() { impl_->end_game(); }
 const std::vector<SelfPlaySample>& AZMcts::game_samples() const {
     return impl_->game_samples;
 }
