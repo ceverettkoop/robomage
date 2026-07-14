@@ -238,8 +238,10 @@ class SearchController:
                  sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
                  sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
                  time_budget: float | None = None,
-                 sims_cap: int = 0, sb_sims_cap: int = 0):
+                 sims_cap: int = 0, sb_sims_cap: int = 0, procs: int = 1):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
+        if procs < 1:
+            raise ValueError(f"procs must be >= 1, got {procs}")
         self._evaluator = evaluator
         self._sims = sims
         self._worlds = worlds
@@ -254,17 +256,22 @@ class SearchController:
         self._time_budget = time_budget
         self._sims_cap = sims_cap
         self._sb_sims_cap = sb_sims_cap
+        # Mirror-pool engine count for world-parallel interactive search. procs==1
+        # (the default) keeps the single-env run_search call site byte-identical
+        # (parity depends on it); procs>1 fans the worlds across procs-1 extra
+        # lockstep engine processes (interactive consumers only).
+        self._procs = procs
         self.label = label
         self._rng = np.random.default_rng(rng_seed)
         self._env = None
         self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0,
-                      "sb_searched": 0}
+                      "sb_searched": 0, "pool_procs": procs}
 
     def bind_env(self, env) -> None:
         self._env = env
 
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
-        from mcts import run_search
+        from mcts import run_search, run_search_parallel
 
         env = self._env
         searchable = (
@@ -276,21 +283,35 @@ class SearchController:
             self.stats["fallback"] += 1
             priors, _ = self._evaluator.evaluate(obs, num_choices)
             return int(np.argmax(priors))
+        # Mirror pool: with procs>1 the worlds fan out across procs-1 extra engine
+        # processes (interactive only; duck-typed so a plain env is tolerated).
+        # envs is None => procs==1 (or no mirror support) => the original
+        # single-env run_search call, byte-identical.
+        envs = None
+        if self._procs > 1:
+            ensure = getattr(env, "ensure_mirrors", None)
+            if ensure is not None:
+                ensure(self._procs - 1)
+                envs = env.search_envs()
+
+        def _search(**kw):
+            if envs is not None:
+                return run_search_parallel(envs, self._evaluator, **kw)
+            return run_search(env, self._evaluator, **kw)
+
         # A bo3 sideboard root gets the deeper/fewer-sim sideboard budget (its
         # horizon is the whole next game). Key ONLY off is_sideboard_phase —
         # is_post_board / game_number still reflect the just-ended game at a
         # g1->g2 root. In-game roots keep run_search's default max_depth (60).
         tb = self._time_budget
         if obs[_IS_SIDEBOARD_IDX] > 0.5:
-            result = run_search(
-                env, self._evaluator,
+            result = _search(
                 sims=(self._sb_sims_cap if tb is not None else self._sb_sims),
                 worlds=self._sb_worlds, c_puct=self._c_puct,
                 max_depth=self._sb_max_depth, rng=self._rng, time_budget_s=tb)
             self.stats["sb_searched"] += 1
         else:
-            result = run_search(
-                env, self._evaluator,
+            result = _search(
                 sims=(self._sims_cap if tb is not None else self._sims),
                 worlds=self._worlds, c_puct=self._c_puct,
                 rng=self._rng, time_budget_s=tb)
@@ -640,7 +661,8 @@ def _make_search_controller(spec: str, *,
     path / deck shorthand, and the knobs are sims, worlds, c (c_puct),
     temp (root temperature), vscale (PPO value tanh scale), seed (search RNG),
     time (wall-clock seconds/decision — runs as many sims as fit, overriding
-    sims as the terminator), and the bo3 sideboard-root budget sb_sims /
+    sims as the terminator), procs (world-parallel engine processes for
+    interactive search; default 1), and the bo3 sideboard-root budget sb_sims /
     sb_worlds / sb_max_depth.
     """
     from mcts import PPOEvaluator, UniformEvaluator
@@ -652,6 +674,7 @@ def _make_search_controller(spec: str, *,
     temperature = _spec_knob(params, "temp", 0.0, float, spec)
     v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
     rng_seed = _spec_knob(params, "seed", 0, int, spec)
+    procs = _spec_knob(params, "procs", 1, int, spec)
     sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
     sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
     sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
@@ -669,7 +692,7 @@ def _make_search_controller(spec: str, *,
                             temperature=temperature, label=label, rng_seed=rng_seed,
                             sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth, time_budget=time_budget,
-                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap)
+                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs)
 
 
 class AZRawController:
@@ -711,11 +734,12 @@ def _load_az_evaluator(base: str):
 def _make_az_controller(spec: str, *, search: bool):
     """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
 
-    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&sb_sims=&sb_worlds=&sb_max_depth=]``
+    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=]``
     where <base> is an AZ checkpoint path / deck shorthand (falls back to a PPO
     warm-start). ``time=<seconds>`` sets a wall-clock per-decision budget (runs
-    as many sims as fit, overriding sims as the terminator). sb_* set the bo3
-    sideboard-root search budget."""
+    as many sims as fit, overriding sims as the terminator). ``procs=<n>`` fans
+    the worlds across n engine processes (world-parallel interactive search;
+    default 1). sb_* set the bo3 sideboard-root search budget."""
     base, params = _parse_spec_query(spec)
     evaluator, resolved = _load_az_evaluator(base)
     if not search:
@@ -725,6 +749,7 @@ def _make_az_controller(spec: str, *, search: bool):
     c_puct = _spec_knob(params, "c", 1.5, float, spec)
     temperature = _spec_knob(params, "temp", 0.0, float, spec)
     rng_seed = _spec_knob(params, "seed", 0, int, spec)
+    procs = _spec_knob(params, "procs", 1, int, spec)
     sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
     sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
     sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
@@ -734,7 +759,7 @@ def _make_az_controller(spec: str, *, search: bool):
                             label=f"az:{base}({_effort_label(sims, worlds, time_budget)})",
                             rng_seed=rng_seed, sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth, time_budget=time_budget,
-                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap)
+                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:

@@ -136,6 +136,13 @@ if __name__ == "__main__":
         # Wall-clock per-decision budget: the search runs as many sims as fit in
         # this many seconds. Appended last so it wins over any time= in the spec.
         model_path += ("&" if "?" in model_path else "?") + f"time={args.think_time}"
+    if args.search_procs is not None:
+        if not is_search_spec:
+            parser.error("--search-procs only applies to a search opponent "
+                         "(--model az:<ckpt> or mcts:<ckpt>)")
+        # World-parallel search across N engine processes. Appended last so it
+        # wins over any procs= already present in the spec.
+        model_path += ("&" if "?" in model_path else "?") + f"procs={args.search_procs}"
     if args.scripted:
         # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
         model_path = "scripted"

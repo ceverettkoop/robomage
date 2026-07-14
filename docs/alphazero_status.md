@@ -489,6 +489,30 @@ sims/decision (vs the 128 fixed default); `time=1` bo3 ≈ 103 mean over 471 roo
 incl. 28 timed sideboard roots. Standalone check: `train/test_search_time_budget.py`
 (not wired into a ci tier — wall-clock bounds can be flaky under CI load).
 
+### World-parallel mirror-pool search (Stage 10)
+
+The engine is a single-threaded global-singleton ECS, so one process runs one
+simulation at a time — but a determinized search's `worlds` are fully independent
+(own root node, own seed, per-sim `restore(0)`+`determinize(seed)`). For
+**interactive** consumers (play/TUI/observe/analysis) the `procs=<n>` spec knob
+(and `play.py --search-procs <n>`) opts into a **mirror pool**: `SearchRoboMageEnv`
+records its real-action history and `ensure_mirrors(k)` spins up `k` extra engine
+processes, each reset to the primary's seed and fast-forwarded by replaying that
+history to a byte-identical state (asserted via obs equality). At a searchable
+decision the worlds split contiguously across `[primary] + mirrors` and
+`mcts.run_search_parallel` runs each env's slice in its own thread (each thread
+mostly blocks on its engine pipe, so the GIL is not the bottleneck); the shared
+evaluator is serialized under a lock (engine stepping at ~6ms/sim dominates the net
+eval). World seeds are pre-drawn with the exact `run_search` derivation, so with one
+env the parallel path is **bit-identical** to plain `run_search` and with N it just
+fans the same worlds out — visit counts sum across envs. Any mirror drift/spawn
+failure disables the pool with one stderr warning and the primary plays on alone
+(interactive robustness over strictness). `run_search` itself is untouched and
+`procs` defaults to 1, so **self-play and the parity corpus never touch this path**.
+Regression: `train/test_mirror_search.py`, wired into `ci_check.py` as the default
+`mirror` tier (torch-free: bit-exact merge, bo3 lockstep across the sideboard
+boundary, and drift-fallback).
+
 ## Analysis-tool integration (M10)
 
 The model-analysis tools (`train/analysis.py` + its shared CLI in

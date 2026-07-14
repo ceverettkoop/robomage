@@ -74,6 +74,14 @@ harness, the TUI, and `play.py` — accepts:
     `play.py --think-time <seconds>` is the CLI front door that appends this knob.
     When `time=` is absent the fixed-`sims` path is byte-for-byte unchanged (the
     actor visit-parity corpus depends on it).
+  - `procs=<n>` (default `1`) runs a **world-parallel mirror pool** for
+    **interactive** search: the engine is single-threaded, but a search's `worlds`
+    are independent, so `n-1` extra engine processes are kept in lockstep with the
+    primary game and the worlds fan out across all `n` processes concurrently
+    (~near-linear more sims/decision for `procs ≤ worlds`, whether the terminator
+    is `sims` or `time=`). `procs=1` is byte-identical to the plain single-engine
+    search — self-play and the parity corpus never use the pool. `play.py
+    --search-procs <n>` is the CLI front door. e.g. `az:gen?time=2&procs=4`.
 - a prebuilt `Controller` instance (passed through)
 
 The human-in-a-Textual-TUI seat is the exception: the TUI (`tui_game.py`,
