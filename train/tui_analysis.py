@@ -466,7 +466,15 @@ class AnalysisApp(App):
         Binding("home", "step_home", "first", priority=True),
         Binding("end", "step_end", "last", priority=True),
         Binding("w", "whatif", "Whatif @ step"),
+        Binding("plus", "resize_board(1)", "Bigger board"),
+        Binding("minus", "resize_board(-1)", "Smaller board"),
     ]
+
+    # Min/max row heights for each resizable board panel (mirrors tui_game.py's
+    # GameApp._PANEL_LIMITS) — lets a short terminal shrink the board below its
+    # CSS default so it fits between the top bar and the decision box without
+    # #board-col falling back to its VerticalScroll.
+    _PANEL_LIMITS = {"#opp-bf": (6, 16), "#self-bf": (6, 16), "#self-hand": (3, 10)}
 
     def __init__(self, args):
         super().__init__()
@@ -479,6 +487,9 @@ class AnalysisApp(App):
         self._cur_step = 0
         self._engine_busy = True    # startup load+collect owns the env first
         self._analysis_busy = False
+        # Live heights of the resizable board panels (must match the CSS
+        # defaults above); see action_resize_board.
+        self._panel_h = {"#opp-bf": 7, "#self-bf": 7, "#self-hand": 5}
 
     # ----- layout -----
 
@@ -685,6 +696,22 @@ class AnalysisApp(App):
 
     def action_whatif(self) -> None:
         self._run_menu_entry("whatif")
+
+    def action_resize_board(self, delta: int) -> None:
+        """Grow (delta>0) or shrink (delta<0) the board panels.
+
+        Unlike tui_game (where shrinking the panels feeds a 1fr log region),
+        here the board itself is what's cramped on a short terminal, so this
+        resizes the panels directly rather than trading rows with a sibling."""
+        changed = False
+        for sel, (lo, hi) in self._PANEL_LIMITS.items():
+            new = max(lo, min(hi, self._panel_h[sel] + delta))
+            if new != self._panel_h[sel]:
+                self._panel_h[sel] = new
+                self.query_one(sel).styles.height = new
+                changed = True
+        if not changed:
+            self.bell()
 
     async def _select_game(self, gn: int) -> None:
         if not (0 <= gn < len(self._games)):
