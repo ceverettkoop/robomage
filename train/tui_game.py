@@ -143,6 +143,24 @@ def _edge_colors(colors):
     return tuple(colors[i % len(colors)] for i in range(4))
 
 
+# Trailing icons appended to a hand card's label so its kind is obvious at a
+# glance (a hand card shows only its name otherwise). Lands and creatures are the
+# two kinds worth flagging; a card that is both reads as a land (that is how it is
+# played from hand).
+_LAND_ICON = "🏔"
+_CREATURE_ICON = "🐾"
+
+
+def _hand_type_icon(card_idx):
+    """Land/creature icon for a hand card's label, or '' for anything else."""
+    types = decode.card_types(card_idx).split()
+    if "Land" in types:
+        return _LAND_ICON
+    if "Creature" in types:
+        return _CREATURE_ICON
+    return ""
+
+
 # ── Clickable card widget ─────────────────────────────────────────────────────
 
 class CardClicked(Message):
@@ -155,6 +173,12 @@ class CardClicked(Message):
         super().__init__()
 
 
+# Attacking creatures get a dashed border in this red — deliberately brighter and
+# more saturated than the muted color-identity red (#d64b3b) so an attacker reads
+# distinctly, not like a merely red-costed card.
+_ATTACK_BORDER = "#ff2b2b"
+
+
 class CardButton(Static):
     """A single clickable card (permanent or hand card).
 
@@ -162,17 +186,24 @@ class CardButton(Static):
     the card's color identity; each edge is painted its color at mount time so
     multicolor cards show a split border (see `_edge_colors`). `zone`
     ("battlefield"/"hand") distinguishes a card from a same-named copy in the
-    other zone so cross-highlighting doesn't spill between them."""
+    other zone so cross-highlighting doesn't spill between them. `attacking`
+    replaces the color-identity border with a dashed red one so an attacking
+    creature stands out during combat."""
 
     def __init__(self, label: str, card_idx: int, controller: str,
-                 edge_colors=None, zone: str = "battlefield"):
+                 edge_colors=None, zone: str = "battlefield",
+                 attacking: bool = False):
         super().__init__(label)
         self._card_idx = card_idx
         self._controller = controller
         self._edge_colors = edge_colors
         self._zone = zone
+        self._attacking = attacking
 
     def on_mount(self) -> None:
+        if self._attacking:
+            self.styles.border = ("dashed", _ATTACK_BORDER)
+            return
         if not self._edge_colors:
             return
         top, right, bottom, left = self._edge_colors
@@ -328,8 +359,8 @@ class GameApp(App):
         ("q", "inspect", "Oracle (hold)"),
         ("space", "pass_zero", "Pass"),
         ("p", "autopass", "Autopass"),
-        ("plus", "resize_log(1)", "Bigger log"),
-        ("minus", "resize_log(-1)", "Smaller log"),
+        ("greater_than_sign", "resize_log(1)", "Bigger log"),
+        ("less_than_sign", "resize_log(-1)", "Smaller log"),
         ("0", "pick('0')", "Pick"),
         ("1", "pick('1')", ""), ("2", "pick('2')", ""), ("3", "pick('3')", ""),
         ("4", "pick('4')", ""), ("5", "pick('5')", ""), ("6", "pick('6')", ""),
@@ -905,9 +936,13 @@ class GameApp(App):
 
     def _show_oracle(self, card_idx: int) -> None:
         name = decode.card_index_to_name(card_idx)
+        cost = decode.fmt_mana_cost(decode.card_mana_cost(card_idx))
         oracle = decode.card_oracle_text(card_idx)
         body = Text()
         body.append(name, style="bold")
+        if cost:
+            body.append("   ")
+            body.append(cost, style="bold yellow")
         body.append("\n")
         body.append(oracle or "(no oracle text)",
                     style="" if oracle else "italic dim")
@@ -995,7 +1030,7 @@ class GameApp(App):
         box = self.query_one(selector, VerticalScroll)
         await box.remove_children()
         widgets = [self._mk_card(decode.fmt_perm(p), p["card_idx"], controller,
-                                 "battlefield")
+                                 "battlefield", p.get("attacking", False))
                    for p in perms]
         if widgets:
             await box.mount(*widgets)
@@ -1003,17 +1038,24 @@ class GameApp(App):
     async def _rebuild_hand(self, hand) -> None:
         box = self.query_one("#self-hand", VerticalScroll)
         await box.remove_children()
-        widgets = [self._mk_card(c["name"], c["card_idx"], "self", "hand")
+        widgets = [self._mk_card(self._hand_label(c["card_idx"], c["name"]),
+                                 c["card_idx"], "self", "hand")
                    for c in hand]
         if widgets:
             await box.mount(*widgets)
 
     @staticmethod
+    def _hand_label(card_idx: int, name: str) -> str:
+        icon = _hand_type_icon(card_idx)
+        return f"{name} {icon}" if icon else name
+
+    @staticmethod
     def _mk_card(label: str, card_idx: int, controller: str,
-                 zone: str) -> "CardButton":
-        """Build a CardButton whose border edges encode the card's color identity."""
+                 zone: str, attacking: bool = False) -> "CardButton":
+        """Build a CardButton whose border edges encode the card's color identity
+        (or a dashed red attacking border when `attacking`)."""
         edges = _edge_colors(decode.card_border_colors(card_idx))
-        return CardButton(label, card_idx, controller, edges, zone)
+        return CardButton(label, card_idx, controller, edges, zone, attacking)
 
     def _match_strip(self, match) -> str:
         """Compact bo3 score prefix ("Game 2 · You 1–0 · ") for the phase line, or
