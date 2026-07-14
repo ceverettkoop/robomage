@@ -22,6 +22,7 @@ heads), Phase C (AZNet), and torch-free testing (UniformEvaluator).
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 from typing import Optional, Protocol, Sequence
 
@@ -142,6 +143,7 @@ def run_search(
     rng: Optional[np.random.Generator] = None,
     snapshot_slot: int = 0,
     world_seeds: Optional[Sequence[int]] = None,
+    time_budget_s: Optional[float] = None,
 ) -> SearchResult:
     """Search the env's current decision. The env must be parked at a real,
     loop-safe decision (env.last_search_safe). On return the env is back at
@@ -151,7 +153,20 @@ def run_search(
     ``world_seeds`` (optional): when given, the per-world determinize seeds are
     consumed from it in order instead of drawn from ``rng`` — used for
     reproducible cross-implementation parity (the C++ actor derives the same
-    seeds by a shared formula). Default ``None`` keeps the original rng draw."""
+    seeds by a shared formula). Default ``None`` keeps the original rng draw.
+
+    ``time_budget_s`` (optional): a WALL-CLOCK budget in seconds. When ``None``
+    (the default) the search runs the fixed ``sims`` count via the original
+    per-world sequential loop — this path is byte-for-byte unchanged and is what
+    the parity corpus / self-play depend on, so do NOT alter its iteration order.
+    When set, the deadline is the terminator: worlds' root nodes are built up
+    front (identical priors / world-seed derivation), then simulations run
+    ROUND-ROBIN across worlds until the budget elapses, so a timed cutoff never
+    biases visits toward whichever world ran first. A floor of one simulation per
+    world always runs (even under a tiny budget, so every determinized deal is
+    looked at). ``sims`` then acts as an OPTIONAL hard cap: when ``sims > 0`` the
+    round-robin also stops at ``sims`` total simulations (``min(cap, deadline)``);
+    pass ``sims<=0`` to let the clock alone terminate."""
     rng = rng if rng is not None else np.random.default_rng()
     if world_seeds is not None and len(world_seeds) < worlds:
         raise ValueError(
@@ -170,6 +185,12 @@ def run_search(
     sim_steps = 0
     sims_per_world = max(1, sims // max(1, worlds))
 
+    # Derive per-world seeds and root nodes up front. The derivation order
+    # (world_seed then optional dirichlet noise, for w=0..worlds-1) is identical
+    # to the historical inline loop, so the ``rng`` consumption sequence is
+    # unchanged — the fixed-budget path below stays bit-exact.
+    seeds: list[int] = []
+    roots: list[_Node] = []
     for w in range(worlds):
         world_seed = (int(world_seeds[w]) if world_seeds is not None
                       else int(rng.integers(1, 2**31 - 1)))
@@ -177,15 +198,37 @@ def run_search(
         if root_noise_eps > 0.0:
             noise = rng.dirichlet([root_noise_alpha] * root_n)
             priors = (1.0 - root_noise_eps) * root_priors + root_noise_eps * noise
-        root = _Node(root_n, priors, root_is_a)
+        seeds.append(world_seed)
+        roots.append(_Node(root_n, priors, root_is_a))
 
-        for _ in range(sims_per_world):
-            env.restore(snapshot_slot)
-            env.determinize(world_seed)
-            v = _simulate(env, evaluator, root, c_puct, max_depth)
-            sims_run += 1
-            sim_steps += v[1]
+    def _one_sim(w: int) -> None:
+        nonlocal sims_run, sim_steps
+        env.restore(snapshot_slot)
+        env.determinize(seeds[w])
+        v = _simulate(env, evaluator, roots[w], c_puct, max_depth)
+        sims_run += 1
+        sim_steps += v[1]
 
+    if time_budget_s is None:
+        # UNCHANGED sequential per-world loop (parity corpus / self-play depend
+        # on this exact order and count).
+        for w in range(worlds):
+            for _ in range(sims_per_world):
+                _one_sim(w)
+    else:
+        deadline = time.monotonic() + float(time_budget_s)
+        cap = sims if sims and sims > 0 else None
+        # Floor: one sim per world, unconditionally.
+        for w in range(worlds):
+            _one_sim(w)
+        i = 0
+        while time.monotonic() < deadline:
+            if cap is not None and sims_run >= cap:
+                break
+            _one_sim(i % worlds)
+            i += 1
+
+    for root in roots:
         visit_totals += root.N
         value_acc += float(root.W.sum())
 

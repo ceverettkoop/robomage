@@ -129,6 +129,13 @@ if __name__ == "__main__":
         if args.worlds is not None:
             knobs.append(f"worlds={args.worlds}")
         model_path += ("&" if "?" in model_path else "?") + "&".join(knobs)
+    if args.think_time is not None:
+        if not is_search_spec:
+            parser.error("--think-time only applies to a search opponent "
+                         "(--model az:<ckpt> or mcts:<ckpt>)")
+        # Wall-clock per-decision budget: the search runs as many sims as fit in
+        # this many seconds. Appended last so it wins over any time= in the spec.
+        model_path += ("&" if "?" in model_path else "?") + f"time={args.think_time}"
     if args.scripted:
         # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
         model_path = "scripted"

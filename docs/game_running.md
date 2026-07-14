@@ -64,6 +64,16 @@ harness, the TUI, and `play.py` — accepts:
   horizon spans the whole next game, so `SearchController` switches to the
   sideboard budget there rather than the in-game one (whose `max_depth` default is
   60). e.g. `az:gen?sims=64&worlds=4&sb_sims=32`.
+  - `time=<seconds>` sets a **wall-clock per-decision budget** instead of a fixed
+    sim count: the search interleaves its `worlds` round-robin and runs as many
+    simulations as fit in that many seconds, then stops (more time = stronger
+    play). The one budget applies to both in-game and sideboard roots (the
+    `sb_max_depth` split still applies). It overrides `sims` as the terminator —
+    `sims`/`sb_sims`, when explicitly pinned alongside `time=`, act only as a hard
+    cap. A floor of one sim per world always runs. e.g. `az:gen?time=5&worlds=4`.
+    `play.py --think-time <seconds>` is the CLI front door that appends this knob.
+    When `time=` is absent the fixed-`sims` path is byte-for-byte unchanged (the
+    actor visit-parity corpus depends on it).
 - a prebuilt `Controller` instance (passed through)
 
 The human-in-a-Textual-TUI seat is the exception: the TUI (`tui_game.py`,

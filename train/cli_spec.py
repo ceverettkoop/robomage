@@ -805,6 +805,11 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
         Arg("--worlds", "int", default=None,
             help="Search opponent only: determinized worlds per decision "
                  "(sims are split across worlds); overrides the spec's worlds= (TUI only)"),
+        Arg("--think-time", "float", default=None,
+            help="Search opponent only (az:/mcts: --model): wall-clock seconds "
+                 "per decision — the search runs as many simulations as fit in "
+                 "this budget (more time = stronger play); overrides sims= as the "
+                 "terminator (TUI only)"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),

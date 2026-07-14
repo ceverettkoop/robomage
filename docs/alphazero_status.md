@@ -469,6 +469,26 @@ runs without crashing on the masked sideboard obs. Observed per-decision latency
 the default sideboard budget (`sb_sims=32`, `sb_worlds=4`, `sb_max_depth=200`):
 ~200ms mean (166–312ms) per sideboard decision, vs ~68ms in-game at `sims=8`.
 
+### Wall-clock per-decision search budget (Stage 8)
+
+A search seat's effort can be set by **wall-clock time** instead of a fixed sim
+count: the `time=<seconds>` spec knob (`az:gen?time=5&worlds=4`, `mcts:…?time=…`) —
+and `play.py --think-time <seconds>` which appends it — give the search a
+per-decision deadline, within which it runs as many simulations as fit (more time =
+stronger play). `mcts.run_search` gained `time_budget_s`: when set it builds the
+`worlds` roots up front and runs sims **round-robin** across worlds until the
+deadline (so a timed cutoff never biases visits toward the first world), with a
+floor of one sim per world; `sims`/`sb_sims` become an optional hard cap. When
+`time=` is absent the original per-world sequential loop is **byte-for-byte
+unchanged** (actor visit-parity holds). The one budget applies to both in-game and
+sideboard roots (the `sb_max_depth` split still applies). `runner.run_games` now
+prints a per-side search-effort line (roots searched, sideboard split, total and
+mean sims/decision) so the effort spent is visible. Measured with `az:gen` on
+`league/ur_delver` vs `league/gw_maverick`: `time=2&worlds=4` ≈ 190 mean
+sims/decision (vs the 128 fixed default); `time=1` bo3 ≈ 103 mean over 471 roots
+incl. 28 timed sideboard roots. Standalone check: `train/test_search_time_budget.py`
+(not wired into a ci tier — wall-clock bounds can be flaky under CI load).
+
 ## Analysis-tool integration (M10)
 
 The model-analysis tools (`train/analysis.py` + its shared CLI in
