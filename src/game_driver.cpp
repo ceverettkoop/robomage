@@ -36,6 +36,12 @@
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
 
+// Per-game seed for a bo3 game. Salt 0 (the real line) reproduces today's exact
+// seed; a nonzero g_sim_seed_salt (set by a sideboard-root DETERMINIZE) folds in
+// to sample a distinct next-game deal per searched world. One engine-side
+// definition so the C++ actor and the Python stdio driver stay in parity.
+static unsigned int match_game_seed(const MatchContext &ctx);
+
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
 Deck DEFAULT_DECK_ONE;
@@ -513,7 +519,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
 
             EcsSystems sys = init_ecs();
             int winner = play_single_game(sys, ctx.deck_a, ctx.deck_b, ctx.a_goes_first,
-                                          ctx.base_seed + static_cast<unsigned int>(ctx.game_num));
+                                          match_game_seed(ctx));
 
             // A sim's unwind exited play_single_game with a MATCH restore still
             // latched: take none of the real-game bookkeeping below (winner
@@ -588,4 +594,12 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     ctx.active = false;
     int result = ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A : Zone::PLAYER_B;
     return result;
+}
+
+static unsigned int match_game_seed(const MatchContext &ctx) {
+    // Real line (salt 0): exactly the historical seed, ctx.base_seed + game_num.
+    // A searched world (salt != 0, set by a sideboard-root DETERMINIZE) mixes the
+    // salt through a golden-ratio multiply so distinct salts give distinct deals.
+    return ctx.base_seed + static_cast<unsigned int>(ctx.game_num) +
+           (g_sim_seed_salt ? 0x9e3779b9u * g_sim_seed_salt : 0u);
 }

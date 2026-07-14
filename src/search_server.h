@@ -39,8 +39,11 @@
 
 extern bool search_server_mode;
 
-// Determinization seed salt (Stage 3 placeholder). Captured/restored by the match
-// snapshot so the plumbing is complete; always 0 until Stage 3 consumes it.
+// Determinization seed salt. Set by a sideboard-root DETERMINIZE (Stage 3) to
+// pick WHICH next-game deal a searched world gets; match_game_seed (game_driver)
+// folds it into the next game's per-game seed. Captured/restored by the match
+// snapshot (captured as 0 at a real sideboard prompt), so every RESTORE resets it
+// and the real line always runs at salt 0. 0 = the real, unsalted line.
 extern unsigned int g_sim_seed_salt;
 
 // Loop-safety marker, set around the loop-safe get_input call sites.

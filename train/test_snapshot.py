@@ -888,6 +888,202 @@ def test_sideboard_sim_result():
                 pass
 
 
+def _write_var_decks():
+    """Stacked bo3 decks with basic-land VARIETY (unlike the all-Swamp sb_det
+    decks) so a different next-game shuffle produces a visibly different opening
+    deal in the observation state vector. All-lands mirrors still deck out under
+    auto-0, so game 1 ends with a real winner and the match reaches MATCH_RESULT.
+    Both seats get the same 60 (15 each of Swamp/Island/Forest/Mountain) and a
+    Plains sideboard (never sided in under auto-0)."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    paths = []
+    body = ("15 Swamp\n15 Island\n15 Forest\n15 Mountain\n"
+            "SIDEBOARD:\n15 Plains\n")
+    for name in ("var_det_a", "var_det_b"):
+        p = os.path.join(d, f"{name}.dk")
+        with open(p, "w") as f:
+            f.write(body)
+        paths.append(p)
+    return paths
+
+
+def _record_full_stream(seed, extra, cap=40000):
+    """Auto-0 a whole match from the opening read to real EOF, recording every
+    query's (nc, payload, safe). Returns (records, match_result)."""
+    eng = Engine(seed, extra=extra)
+    try:
+        records = []
+        cur = eng.read()
+        result = _match_result_from(cur)
+        n = 0
+        while cur.kind == "q" and n < cap:
+            records.append((cur.nc, cur.payload, cur.safe))
+            cur = eng.play(0)
+            m = _match_result_from(cur)
+            if m:
+                result = m
+            n += 1
+        if cur.kind != "eof":
+            raise ProtocolError(f"control match did not reach EOF (got {cur.kind})")
+        return records, result
+    finally:
+        eng.kill()
+
+
+def _descend_record(eng, depth):
+    """Play [0]*depth, recording (kind, nc, payload, is_sb) per step; stop early
+    at a non-query (terminal/eof)."""
+    stream = []
+    for _ in range(depth):
+        r = eng.play(0)
+        if r.kind != "q":
+            stream.append((r.kind, None, None, None))
+            break
+        stream.append(("q", r.nc, r.payload, _is_sideboard_query(r)))
+    return stream
+
+
+def _payloads(stream):
+    return [s[2] for s in stream]
+
+
+def test_sideboard_world_variation():
+    """A sideboard-root DETERMINIZE samples WHICH next-game deal this world gets
+    (Stage 3). At a bo3 sideboard root with a live snapshot:
+
+    - DETERMINIZE(s1), descend a fixed choice line across the game boundary into
+      game 2 -> record the query stream (its game-2 portion reflects the deal);
+    - RESTORE, DETERMINIZE(s2 != s1), same line -> the game-2 stream DIFFERS
+      (a different shuffle/deal);
+    - RESTORE, DETERMINIZE(s1) again, same line -> byte-identical to the first
+      recording (same world => same deal => same menus);
+    - RESTORE, RELEASE, auto-play the REAL match to completion -> byte-identical
+      to a clean control run of the same seed with no snapshot/determinize
+      commands (salt isolation: the real game 2 is unaffected).
+    """
+    seed = 13
+    extra = ["--bo3", "--deck-a", "temp/var_det_a", "--deck-b", "temp/var_det_b"]
+    deck_paths = _write_var_decks()
+    try:
+        control, control_result = _record_full_stream(seed, extra)
+
+        eng = Engine(seed, extra=extra)
+        try:
+            # Auto-0 to the first sideboard root (player A IN menu), recording the
+            # prefix so we can prove the real line matches the control end to end.
+            prefix = []
+            cur = eng.read()
+            for _ in range(8000):
+                if _is_sideboard_query(cur):
+                    break
+                if cur.kind != "q":
+                    raise ProtocolError(f"reached {cur.kind} before a sideboard root")
+                prefix.append((cur.nc, cur.payload, cur.safe))
+                cur = eng.play(0)
+            else:
+                raise ProtocolError("never reached a sideboard root")
+            if not cur.safe:
+                raise ProtocolError("sideboard root not safe=1")
+            snap_pl, snap_nc = cur.payload, cur.nc
+            q = eng.snapshot(0)
+            _assert_same_query(q, snap_pl, snap_nc, "world-var post-SNAPSHOT re-emit")
+
+            # A fixed choice line: A done, B done, then into game 2. 24 steps lands
+            # well inside game 2 where the deal is reflected in the observation.
+            depth = 24
+            # s1 vs s2 must produce different deals at this seed; s1==s3 identical.
+            s1, s2 = 1, 2
+
+            dq1 = eng.determinize(s1)
+            _assert_same_query(dq1, snap_pl, snap_nc,
+                               "world-var DETERMINIZE re-emits the (unchanged) root")
+            stream1 = _descend_record(eng, depth)
+
+            rq = eng.restore(0)
+            _assert_same_query(rq, snap_pl, snap_nc, "world-var RESTORE #1")
+            eng.determinize(s2)
+            stream2 = _descend_record(eng, depth)
+
+            rq = eng.restore(0)
+            _assert_same_query(rq, snap_pl, snap_nc, "world-var RESTORE #2")
+            eng.determinize(s1)
+            stream3 = _descend_record(eng, depth)
+
+            # Same world (s1) => identical deal => byte-identical descent.
+            if _payloads(stream1) != _payloads(stream3):
+                d = None
+                for i, (a, b) in enumerate(zip(_payloads(stream1), _payloads(stream3))):
+                    if a != b:
+                        d = i
+                        break
+                raise ProtocolError(f"same-world (seed {s1}) descents diverged at "
+                                    f"step {d} — determinization is not reproducible")
+
+            # Different worlds (s1 vs s2) => different deal. The sideboard portion
+            # of the descent is identical (salt does not touch the sideboard
+            # prompt); the divergence must appear in the game-2 (non-sideboard)
+            # portion. (Rarely two salts could share an opening prefix — s1/s2 are
+            # chosen to differ at this seed; the deep 24-step window makes a full
+            # collision astronomically unlikely.)
+            p1, p2 = _payloads(stream1), _payloads(stream2)
+            if p1 == p2:
+                raise ProtocolError(
+                    f"different world seeds ({s1} vs {s2}) produced an identical "
+                    f"{depth}-step descent — sideboard-root DETERMINIZE did not "
+                    "vary the next-game deal")
+            first_diff = next(i for i in range(min(len(p1), len(p2)))
+                              if p1[i] != p2[i])
+            if stream1[first_diff][3]:  # is_sb flag on the first differing step
+                raise ProtocolError(
+                    f"world seeds diverged inside a SIDEBOARD prompt (step "
+                    f"{first_diff}) — the salt must only affect the game-2 deal")
+
+            # RESTORE + RELEASE, then auto-play the REAL match. Reassemble the real
+            # query stream (prefix + released tail) and assert it is byte-identical
+            # to the clean control run: salt back to 0, game 2 unaffected.
+            eng.restore(0)
+            rel = eng.release()
+            _assert_same_query(rel, snap_pl, snap_nc, "world-var post-RELEASE re-emit")
+            tail = [(rel.nc, rel.payload, rel.safe)]
+            cur = rel
+            result = _match_result_from(cur)
+            for _ in range(40000):
+                cur = eng.play(0)
+                m = _match_result_from(cur)
+                if m:
+                    result = m
+                if cur.kind != "q":
+                    break
+                tail.append((cur.nc, cur.payload, cur.safe))
+            if cur.kind != "eof":
+                raise ProtocolError(f"real line did not reach EOF (got {cur.kind})")
+
+            real = prefix + tail
+            if len(real) != len(control):
+                raise ProtocolError(f"real line length {len(real)} != control "
+                                    f"{len(control)} — salt leaked into the real game")
+            for i, (a, b) in enumerate(zip(real, control)):
+                if a[1] != b[1]:
+                    raise ProtocolError(f"real line diverged from control at query "
+                                        f"{i} (byte {_first_diff(a[1], b[1])}) — "
+                                        "sideboard-root salt is not isolated")
+            if result != control_result:
+                raise ProtocolError(f"real MATCH_RESULT {result!r} != control "
+                                    f"{control_result!r}")
+            return (f"same-world identical ({depth} steps), worlds {s1}/{s2} differ "
+                    f"at game-2 step {first_diff}, real line == control "
+                    f"({len(real)} queries, {result!r})")
+        finally:
+            eng.kill()
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_perf():
     """Time SNAPSHOT+RESTORE pairs at one decision. Reported for CI logs; WARNs
     (does not fail) above a lenient debug-build threshold — the sub-ms bar is a
@@ -931,6 +1127,7 @@ TESTS = [
     ("sideboard_determinize", test_sideboard_determinize),
     ("sideboard_search_roundtrip", test_sideboard_search_roundtrip),
     ("sideboard_sim_result", test_sideboard_sim_result),
+    ("sideboard_world_variation", test_sideboard_world_variation),
     ("perf", test_perf),
 ]
 

@@ -18,6 +18,7 @@
 extern Game cur_game;
 extern Coordinator global_coordinator;
 extern int match_game_number;  // -1 = single game, 0-2 = bo3 game index (main.cpp)
+extern bool sideboard_phase;   // true while a between-game sideboard prompt is live
 
 bool search_server_mode = false;
 unsigned int g_sim_seed_salt = 0;
@@ -228,6 +229,21 @@ bool search_intercept_game_end() {
 }
 
 void determinize_hidden_state(unsigned int world_seed) {
+    // At a sideboard root the only hidden information is which next-game deal this
+    // world gets: both 75s are public, and the opponent's in/out choices are
+    // interior tree nodes. The just-ended game's ECS is irrelevant to the future,
+    // so skip all zone mixing and simply record this world's seed salt — the next
+    // game's per-game seed (match_game_seed in game_driver.cpp) folds it in, so
+    // each world samples a distinct shuffle/deal. Gate on the sideboard_phase
+    // global, NOT match_game_number: at a game-1->2 sideboard root that index is
+    // still the ENDED game's (0). g_sim_seed_salt is captured (as 0) at the real
+    // sideboard prompt and restored on every RESTORE, so each DETERMINIZE sets a
+    // fresh salt from a clean baseline and the final restore returns the real line
+    // to salt 0.
+    if (sideboard_phase) {
+        g_sim_seed_salt = world_seed;
+        return;
+    }
     std::mt19937 world_gen(world_seed);
     Zone::Ownership p = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     Zone::Ownership opp = (p == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
