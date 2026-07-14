@@ -123,13 +123,11 @@ inside simulations; only rooting is blocked.
   live C++ call stack that a game-state snapshot cannot rebuild. Making those searchable means
   either resolution-state serialization or moving the choices to the loop top (cf. the deferred
   modal-at-cast refactor); not worth it piecemeal.
-- Mulligans and bo3 sideboarding are also unsafe roots; low training value, fine as fallbacks.
-
-## ML / observation
-
-- ML can only pay for spells AFTER choosing them — precludes some rare optimal lines (e.g. floating
-  mana) but reduces noise. LED is the written exception (allows ML to float mana).
-- ML does not know what's in exile.
+- bo3 sideboarding is now a SEARCHABLE root (Phase 2, DONE 2026-07-13): a MATCH-scoped snapshot
+  survives the per-game wipe, so the sideboard decision is searched on the next game's horizon
+  and stored as an AZ training sample (next-game z) on both the Python and C++ actor backends.
+  See docs/alphazero_status.md "Phase 2 — learned sideboarding". Mulligans remain unsafe roots
+  (low training value, fine as fallbacks).
 
 ## Engine robustness
 

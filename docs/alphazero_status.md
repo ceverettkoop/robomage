@@ -371,6 +371,65 @@ train/.venv/bin/python train/train.py az-league                 # --resume to co
 train/.venv/bin/python train/bench_actor.py --games 2 --sims 128 --worlds 4
 ```
 
+## Phase 2 — learned sideboarding — DONE (2026-07-13)
+
+**What it is.** In a best-of-three match the between-game sideboard decision (which
+cards to swap between main deck and sideboard) is no longer a blind heuristic: it is
+a **searched MCTS root** evaluated on the **next game's** horizon, and the choice is
+persisted as a training sample whose value target is the result of that next game
+(next-game `z`). The generalist therefore *learns to sideboard* from the same
+self-play loop that teaches it to play — both backends (pure-Python and the C++
+`bin/az_actor`) generate these samples, bit-for-bit compatibly.
+
+**Mechanism in brief.**
+
+- **MATCH-scoped snapshot across `init_ecs()`** — a sideboard prompt sits *between*
+  two games, i.e. across a fresh ECS. A match-scoped snapshot slot survives the
+  per-game `snapshot_release_all`, so the sideboard root can be snapshotted, searched
+  (with simulations that roll into the *next* game), and restored, all without
+  corrupting the real match state. The bo3 match loop is resumable and the sideboard
+  prompt is a **loop-safe** searchable root (a sim's unwind re-enters the dispatcher
+  top rather than double-counting the game).
+- **Seed-salt determinization** — a sideboard root's determinized worlds are salted
+  by the *next* game's seed, so the K sampled worlds vary correctly game-to-game
+  (covered by the snapshot-tier world-variation test).
+- **Sideboard-root search budget** — the sideboard root gets its own heavier, deeper
+  budget: `sb_sims=32` / `sb_worlds=4` / `sb_max_depth=200` (the rollout horizon is
+  game-long, so it is deeper than an in-game decision). These are inert for bo1.
+- **Actor parity + next-game flush** — the C++ actor mirrors the Python match loop
+  exactly: `--bo3` treats each `--games` unit as a match (match seeds spaced by 3),
+  it searches the sideboard root with the same `--sb-sims`/`--sb-worlds`/
+  `--sb-max-depth` budget, and it **flushes** each game's samples priced by that
+  game's winner while sideboard samples recorded between a game's backfill and the
+  next game's start stay buffered and are priced by the NEXT game (matching Python's
+  `game_idx == k+1` sideboard samples). All obs + MCTS visits stay bit-exact with the
+  Python reference.
+
+**New CLI knobs** (on `az-selfplay` where bo3 applies, and `az` / `az-league` /
+`az-eval`, all bo3 by default with `--bo1` to opt out):
+
+```
+--sb-sims N        PUCT sims at a bo3 sideboard root (default 32)
+--sb-worlds N      determinized worlds at a bo3 sideboard root (default 4)
+--sb-max-depth N   rollout depth cap at a bo3 sideboard root (default 200)
+```
+
+Both self-play backends now run bo3 — `--actor` / `--no-actor` (default AUTO) picks
+the backend independently of bo3 (the actor is no longer bo1-only). The actor argv
+carries `--bo3` plus the three `--sb-*` flags; `--games` means MATCHES on both
+backends.
+
+**CI coverage.**
+
+- `snapshot` tier (`test_snapshot.py`) — the match-scoped snapshot roundtrip across
+  `init_ecs()` and the seed-salt world-variation at a sideboard root.
+- `sbselfplay` tier — the Python bo3 self-play persists searched sideboard samples
+  with next-game `z` (in-game samples priced by their own game's winner).
+- `actor` tier — the bo3 sideboard parity case (`test_actor_parity.py` /
+  `test_mcts_parity.py` bo3 MATCH cases, obs + visit parity) and
+  `test_actor_shards.py`'s bo3 case (64 sideboard samples, `z` verified against the
+  next game's winner, trainer-ingestible shard schema).
+
 ## Analysis-tool integration (M10)
 
 The model-analysis tools (`train/analysis.py` + its shared CLI in
@@ -477,9 +536,11 @@ as the design intent it was built against:
   declared companion is public and stays pinned; game 1 models the known
   pre-board 60). Covered by the `sideboard_determinize` CI test. Mild accepted
   approximations are documented in `src/search_server.cpp`.
-- Snapshot slots are wiped at each game start (`snapshot_release_all` in
-  `play_single_game`) — no cross-game reuse; bo3 sideboard decisions are unsafe
-  roots (searchable later if wanted).
+- Per-GAME snapshot slots are wiped at each game start (`snapshot_release_all` in
+  `play_single_game`) — no cross-game reuse. The bo3 **sideboard** decision is the
+  exception: it is a searchable root backed by a MATCH-scoped snapshot that survives
+  the per-game wipe (Phase 2, above), so a sideboard prompt can be searched on the
+  next game's horizon.
 - `train/checkpoints/` and `train/az_data/` are gitignored artifacts; move
   checkpoints between machines out-of-band.
 - The stock `delver__final.zip` here was trained WITHOUT the per-action head;

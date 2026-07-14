@@ -460,14 +460,16 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
     unique, so cross-deck runs share one pool feeding the single generalist net).
 
     ``bo3`` runs best-of-three matches with a PER-GAME value target (each sample's
-    z is the result of the game it belonged to). Because the C++ actor still
-    assumes bo1, ``bo3`` FORCES the pure-Python backend regardless of ``use_actor``.
-    In bo3 the between-game sideboard prompts are searched MCTS roots with their own
-    (heavier, deeper) budget ``sb_sims``/``sb_worlds``/``sb_max_depth`` — see
-    :func:`_play_match`. These knobs are consumed only by the Python bo3 backend
-    (the actor is bo1-only until Stage 5), so they are ignored under ``use_actor``.
+    z is the result of the game it belonged to). BOTH backends support bo3 (the
+    C++ actor mirrors the Python match loop, including the searched sideboard
+    roots), so ``bo3`` no longer constrains the backend choice. In bo3 the
+    between-game sideboard prompts are searched MCTS roots with their own (heavier,
+    deeper) budget ``sb_sims``/``sb_worlds``/``sb_max_depth`` — see
+    :func:`_play_match` for the Python path and the actor's ``--sb-sims``/
+    ``--sb-worlds``/``--sb-max-depth`` flags for the C++ path. These knobs are
+    consumed only in bo3 (they are inert for bo1 on either backend).
 
-    ``use_actor`` picks the generation backend (ignored when ``bo3``):
+    ``use_actor`` picks the generation backend:
       * ``None`` (AUTO, default) — use the C++ ``bin/az_actor`` iff it is built,
         else the pure-Python multiprocess path;
       * ``True`` — force the actor (loud error if ``bin/az_actor`` is missing);
@@ -485,15 +487,11 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
 
     have_actor = os.path.exists(_ACTOR_BIN)
     if bo3:
-        # The actor backend is bo1-only (Phase 1b). Force Python for bo3.
-        if use_actor:
-            print("[az-selfplay] bo3 requested: forcing the pure-Python backend "
-                  "(the C++ az_actor is bo1-only)")
-        use_actor = False
-        chosen = "forced (bo3)"
-        # One-time discard of legacy bo1 shards before the first bo3 run.
+        # One-time discard of legacy bo1 shards before the first bo3 run. This is
+        # backend-agnostic (the .bo3_migrated sentinel gates it either way) and
+        # runs regardless of which backend generates the bo3 shards below.
         _discard_pre_bo3_shards(out_dir)
-    elif use_actor is None:
+    if use_actor is None:
         use_actor = have_actor
         chosen = "AUTO"
     else:
@@ -523,9 +521,13 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed)
     if use_actor:
-        # The C++ actor is bo1-only (Stage 5 mirrors the sb budget in MCTSConfig);
-        # the sb_* knobs are consumed only by the Python bo3 backend below.
-        return _generate_actor(deck, actor_bin=_ACTOR_BIN, **common)
+        # The C++ actor mirrors the Python match loop for bo3 (Stage 6), including
+        # the searched sideboard roots — pass bo3 + the sb budget through so the
+        # actor argv carries --bo3 and --sb-sims/--sb-worlds/--sb-max-depth. The
+        # sb_* knobs are inert for bo1.
+        return _generate_actor(deck, actor_bin=_ACTOR_BIN, bo3=bo3, sb_sims=sb_sims,
+                               sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                               **common)
     return _generate_python(deck, bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth, **common)
 
@@ -666,15 +668,25 @@ def _ensure_actor_torchscript(source: dict):
     return ts, tmpdir
 
 
-def _parse_actor_output(stdout: str):
-    """Aggregate one actor worker's stdout: (total_samples, wins_a, wins_b, draws)."""
+def _parse_actor_output(stdout: str, bo3: bool = False):
+    """Aggregate one actor worker's stdout: (total_samples, wins_a, wins_b, draws).
+
+    Sample counts always come from the terminal ``SELFPLAY: total_samples=`` line.
+    Win tallies come from the appropriate result unit: bo1 counts per-GAME
+    ``SELFPLAY: game … winner=`` lines; bo3 counts per-MATCH ``MATCH_RESULT:``
+    lines (a bo3 match always ends 2-x, so there is no match draw)."""
     samples = wins_a = wins_b = draws = 0
     for line in stdout.splitlines():
         if line.startswith("SELFPLAY: total_samples="):
             for tok in line.split():
                 if tok.startswith("total_samples="):
                     samples = int(tok.split("=", 1)[1])
-        elif line.startswith("SELFPLAY: game "):
+        elif bo3 and line.startswith("MATCH_RESULT:"):
+            if line.startswith("MATCH_RESULT: Player A wins"):
+                wins_a += 1
+            elif line.startswith("MATCH_RESULT: Player B wins"):
+                wins_b += 1
+        elif not bo3 and line.startswith("SELFPLAY: game "):
             if line.endswith("winner=A"):
                 wins_a += 1
             elif line.endswith("winner=B"):
@@ -687,7 +699,10 @@ def _parse_actor_output(stdout: str):
 def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        out_dir, deck_b=None, noise_eps=DEFAULT_ROOT_NOISE_EPS,
                        noise_alpha=DEFAULT_ROOT_NOISE_ALPHA,
-                       temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None) -> list:
+                       temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None,
+                       bo3=False, sb_sims=DEFAULT_SB_SIMS,
+                       sb_worlds=DEFAULT_SB_WORLDS,
+                       sb_max_depth=DEFAULT_SB_MAX_DEPTH) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
     The single source of the actor CLI contract on the Python side — used by
@@ -696,7 +711,12 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     instead of leaning on the actor's compiled-in defaults).
 
     ``deck`` is Player A's deck; ``deck_b`` is Player B's (None -> mirror = deck),
-    so one actor process runs one (deck_a, deck_b) matchup batch."""
+    so one actor process runs one (deck_a, deck_b) matchup batch.
+
+    With ``bo3`` each of ``games`` units is a best-of-three MATCH (the actor spaces
+    match seeds by 3 internally), and the ``sb_*`` knobs set the searched
+    sideboard-root budget (``--sb-sims``/``--sb-worlds``/``--sb-max-depth``); they
+    are inert for bo1."""
     cmd = [actor_bin, "--selfplay", "--deck", deck,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds),
@@ -704,6 +724,11 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--noise-eps", str(noise_eps),
            "--noise-alpha", str(noise_alpha),
            "--temp-moves", str(temp_moves)]
+    if bo3:
+        cmd += ["--bo3",
+                "--sb-sims", str(sb_sims),
+                "--sb-worlds", str(sb_worlds),
+                "--sb-max-depth", str(sb_max_depth)]
     if deck_b is not None and deck_b != deck:
         cmd += ["--deck-b", deck_b]
     if rng_seed is not None:
@@ -713,7 +738,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
 
 def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
-                    actor_bin) -> dict:
+                    actor_bin, bo3=False, sb_sims=DEFAULT_SB_SIMS,
+                    sb_worlds=DEFAULT_SB_WORLDS,
+                    sb_max_depth=DEFAULT_SB_MAX_DEPTH) -> dict:
     import glob
     import shutil
     import subprocess
@@ -722,7 +749,11 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
 
     ts_path, tmpdir = _ensure_actor_torchscript(source)
     out_dir = os.path.abspath(out_dir)
+    # `games` is the number of scheduled MATCHES; with --bo3 the actor treats each
+    # of a group's `games=n` units as a best-of-three match (same "games = matches"
+    # meaning as the Python backend), so no unit conversion is needed here.
     games = len(schedule)
+    unit = "matches" if bo3 else "games"
 
     # Group the schedule into per-(deck_a, deck_b) actor invocations so each actor
     # process runs one matchup batch (mirror or cross-deck) with a DISJOINT seed
@@ -741,17 +772,24 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     prog_lock = threading.Lock()
     prog = {"done": 0}
 
+    # Progress unit == the scheduling unit: count per-MATCH MATCH_RESULT lines in
+    # bo3 (each match may span up to 3 games) and per-GAME SELFPLAY lines in bo1, so
+    # `done/games` and the ETA denominator stay consistent (games == #matches).
+    def _is_progress_line(line):
+        return (line.startswith("MATCH_RESULT:") if bo3
+                else line.startswith("SELFPLAY: game "))
+
     def _pump(gi, stream, sink, is_stdout):
         for line in stream:
             sink.append(line)
-            if is_stdout and line.startswith("SELFPLAY: game "):
+            if is_stdout and _is_progress_line(line):
                 with prog_lock:
                     prog["done"] += 1
                     done = prog["done"]
                     elapsed = time.time() - t_start
                     eta = elapsed / done * (games - done)
                 print(f"[az-selfplay] g{gi} {line.strip()} | total {done}/{games} "
-                      f"games, elapsed {_fmt_secs(elapsed)}, eta {_fmt_secs(eta)}",
+                      f"{unit}, elapsed {_fmt_secs(elapsed)}, eta {_fmt_secs(eta)}",
                       flush=True)
         stream.close()
 
@@ -762,7 +800,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             actor_bin, deck=da, deck_b=db, seed=base, games=n,
             sims=sims, worlds=worlds, model=ts_path, out_dir=out_dir,
             noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
-            temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1))
+            temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
+            bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
+            sb_max_depth=sb_max_depth)
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -788,12 +828,12 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         if rec["p"].returncode != 0:
             failed.append((rec["gi"], rec["p"].returncode, "".join(rec["err"])))
             return
-        s, wa, wb, dr = _parse_actor_output("".join(rec["out"]))
+        s, wa, wb, dr = _parse_actor_output("".join(rec["out"]), bo3=bo3)
         total_samples += s
         agg["wins_a"] += wa
         agg["wins_b"] += wb
         agg["draws"] += dr
-        print(f"[az-selfplay] matchup {rec['da']}|{rec['db']}: games={rec['n']} "
+        print(f"[az-selfplay] matchup {rec['da']}|{rec['db']}: {unit}={rec['n']} "
               f"samples={s} A={wa} B={wb} draws={dr}")
 
     cap = max(1, workers)
