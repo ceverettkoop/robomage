@@ -238,6 +238,7 @@ def _gate_matchups(focus_decks, roster, cross: int, seed: int) -> list:
 
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = 20, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
+            sb_sims: int = 32, sb_worlds: int = 4, sb_max_depth: int = 200,
             promote_threshold: float = 0.55, promote: bool = False,
             roster: Optional[list] = None, cross_matchups: int = 2,
             ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True) -> dict:
@@ -258,7 +259,9 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     inc_path = incumbent if os.path.exists(incumbent) else \
         (resolve_az_checkpoint(incumbent) or incumbent)
 
-    knobs = f"?sims={sims}&worlds={worlds}&c={c_puct}"
+    # bo3 gate: sideboard roots get their own (deeper) budget, mirroring self-play.
+    knobs = (f"?sims={sims}&worlds={worlds}&c={c_puct}"
+             f"&sb_sims={sb_sims}&sb_worlds={sb_worlds}&sb_max_depth={sb_max_depth}")
     cand_spec = f"az:{cand_path}{knobs}"
     have_inc = os.path.exists(inc_path)
     opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
@@ -359,7 +362,8 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
                   window=window, seed=seed)
     print("=== az cycle: eval/gate (aggregate) ===")
     ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
-                 worlds=eval_worlds, promote_threshold=promote_threshold,
+                 worlds=eval_worlds, sb_sims=sb_sims, sb_worlds=sb_worlds,
+                 sb_max_depth=sb_max_depth, promote_threshold=promote_threshold,
                  promote=True, seed=seed, roster=roster, bo3=bo3)
     return {"generate": gen, "train": tr, "eval": ev}
 
@@ -580,6 +584,9 @@ def run_eval(args) -> None:
     # az-eval defaults to bo3 matches; --bo1 opts back into single games.
     az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
+            sb_sims=getattr(args, "sb_sims", 32),
+            sb_worlds=getattr(args, "sb_worlds", 4),
+            sb_max_depth=getattr(args, "sb_max_depth", 200),
             promote_threshold=args.promote_threshold, promote=args.promote,
             seed=args.seed if args.seed is not None else 1,
             bo3=not getattr(args, "bo1", False))
@@ -656,6 +663,12 @@ if __name__ == "__main__":
     e.add_argument("--games", type=int, default=20)
     e.add_argument("--sims", type=int, default=32)
     e.add_argument("--worlds", type=int, default=2)
+    e.add_argument("--sb-sims", type=int, default=32,
+                   help="PUCT sims at a bo3 sideboard root (bo3 only)")
+    e.add_argument("--sb-worlds", type=int, default=4,
+                   help="Determinized worlds at a bo3 sideboard root (bo3 only)")
+    e.add_argument("--sb-max-depth", type=int, default=200,
+                   help="Rollout depth at a bo3 sideboard root (bo3 only)")
     e.add_argument("--promote-threshold", type=float, default=0.55)
     e.add_argument("--promote", action="store_true")
     e.add_argument("--seed", type=int, default=1)

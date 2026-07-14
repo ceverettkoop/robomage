@@ -336,7 +336,7 @@ opt-in target and its CI tier self-skips when the binary isn't built.
 
 1. **Obs bit-parity** — `test_actor_parity.py`: the C++ obs builder reproduces
    the engine's observation vector **bit-exact over 226 decisions**
-   (`league/ur_delver`, seed 1, `OBS_SIZE=6700`).
+   (`league/ur_delver`, seed 1, `OBS_SIZE=6922`).
 2. **MCTS visit parity** — `test_mcts_parity.py`: C++ vs `mcts.py` visit counts
    **exact over 271 searched roots** (4336 total root visits; sims=16 worlds=2
    c=1.5, batch=1). Batched search (batch=16) is a separate line — it agrees on
@@ -430,6 +430,45 @@ backends.
   `test_actor_shards.py`'s bo3 case (64 sideboard samples, `z` verified against the
   next game's winner, trainer-ingestible shard schema).
 
+### User-facing tools at sideboard roots (Stage 7)
+
+Every consumer that drives a searching (`az:`/`azraw:`/`mcts:`) seat through the
+shared `opponents.SearchController` — `play.py` (via `tui_game`), `analysis.py`
+(`search` + `report`/`interactive`), `train.py observe`, and the
+`az_eval`/`eval_search_gate.py` promotion gate — now handles the bo3 **sideboard
+root** correctly:
+
+- **`SearchController` selects the sideboard budget at sideboard roots.** When the
+  current decision is a bo3 sideboard prompt (`obs[_IS_SIDEBOARD_IDX] > 0.5`) the
+  controller searches it with `sb_sims` / `sb_worlds` / `sb_max_depth` (defaults
+  `32` / `4` / `200`) instead of the in-game budget. This mirrors `az_selfplay`:
+  in-game roots keep `run_search`'s default `max_depth=60`, which at a sideboard
+  root would be swallowed by the remaining sideboard/mulligan prompts and land the
+  leaf value on a masked between-game observation (weak signal). The sideboard vs
+  in-game searched split is tallied separately in `stats["sb_searched"]`.
+- **Shared constants, no duplication.** `DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH` live in
+  `cli_spec.py` (the single home, imported by `az_selfplay`, `SearchController`,
+  and the CLI flag defaults); the sideboard-flag index `_IS_SIDEBOARD_IDX` is a
+  named constant in `env.py`.
+- **Spec query knobs.** `az:`/`azraw:`/`mcts:` specs accept
+  `?sb_sims=&sb_worlds=&sb_max_depth=` (alongside `sims=`/`worlds=`), so any tool
+  taking a controller spec (observe `--player-a`, play `--model`) can tune the
+  sideboard budget inline.
+- **`analysis.py search`** gained `--sb-sims`/`--sb-worlds`/`--sb-max-depth` and
+  reports how many searched roots were sideboard roots (`N searched (K at bo3
+  sideboard roots)`); its recording sub-controller applies the same budget split.
+- **`az_eval` / `eval_search_gate.py`** thread `--sb-sims`/`--sb-worlds`/
+  `--sb-max-depth` into the `az:`/`mcts:` spec they build, so the gate prices
+  sideboard roots explicitly rather than inheriting them silently.
+
+Verified end-to-end (`league/ur_delver` vs `league/gw_maverick`, `az:gen`): observe
+runs a bo3 to `MATCH_RESULT` with the model sideboarding and search firing at each
+sideboard swap; `analysis.py search` decodes SIDEBOARD roots; play's engine path
+(`runner.run_match`, human-like seat vs searched model) coexists cleanly; the gate
+runs without crashing on the masked sideboard obs. Observed per-decision latency at
+the default sideboard budget (`sb_sims=32`, `sb_worlds=4`, `sb_max_depth=200`):
+~200ms mean (166–312ms) per sideboard decision, vs ~68ms in-game at `sims=8`.
+
 ## Analysis-tool integration (M10)
 
 The model-analysis tools (`train/analysis.py` + its shared CLI in
@@ -480,7 +519,8 @@ conventions). Example:
 ```bash
 train/.venv/bin/python train/analysis.py search az:league/ur_delver \
     --deck-a league/ur_delver --deck-b league/ur_delver \
-    --n-games 4 --sims 64 --worlds 4 --top 8
+    --n-games 4 --sims 64 --worlds 4 --top 8 \
+    --bo3 --sb-sims 32 --sb-worlds 4 --sb-max-depth 200   # sb-* apply at bo3 sideboard roots
 ```
 
 Both are surfaced in the TUI for free: the `search` subcommand is declared in

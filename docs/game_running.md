@@ -56,6 +56,14 @@ harness, the TUI, and `play.py` — accepts:
   `opponents.resolve_checkpoint` — the single resolver shared by train.py,
   play.py and the TUI (a bare deck shorthand is rejected: the deck travels
   separately as an explicit parameter)
+- `"az:<gen-or-path>"` / `"mcts:<ckpt>"` (MCTS search) or `"azraw:<gen-or-path>"`
+  (raw AZ policy) — `SearchController`/`AZRawController`. The search specs take a
+  `?k=v&…` query: `sims`/`worlds`/`c`/`temp`/`seed` (in-game search) plus
+  `sb_sims`/`sb_worlds`/`sb_max_depth` — the **bo3 sideboard-root** budget
+  (defaults `32`/`4`/`200`). A sideboard prompt is a valid MCTS root but its
+  horizon spans the whole next game, so `SearchController` switches to the
+  sideboard budget there rather than the in-game one (whose `max_depth` default is
+  60). e.g. `az:gen?sims=64&worlds=4&sb_sims=32`.
 - a prebuilt `Controller` instance (passed through)
 
 The human-in-a-Textual-TUI seat is the exception: the TUI (`tui_game.py`,

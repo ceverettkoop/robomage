@@ -275,6 +275,10 @@ _HAND_START          = _EXILE_START + _EXILE_SLOTS_TOTAL * _EXILE_SLOT_SIZE
 _HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE
 _HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY
 _MATCH_CTX_START     = _HIST_END
+# _MATCH_CTX layout: game_number, self_wins, opp_wins, is_sideboard_phase.
+# The sideboard flag is the single source of truth for "this decision is a bo3
+# sideboard root" (used by az_selfplay + opponents.SearchController budget selection).
+_IS_SIDEBOARD_IDX    = _MATCH_CTX_START + 3
 _LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE
 _CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE
 _KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE

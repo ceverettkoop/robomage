@@ -17,6 +17,16 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resource lookup
 
+# AlphaZero sideboard-root search budget (single home; imported by az_selfplay,
+# opponents.SearchController, and the CLI flag defaults below). A bo3 sideboard
+# prompt IS a valid MCTS root, but each rollout there re-crosses init_ecs() + deck
+# load + shuffle on RESTORE and its horizon spans the whole next game, so it gets
+# its own deeper/fewer-sim budget rather than the per-in-game-decision one (whose
+# max_depth is mcts.run_search's default of 60 — too shallow for a game-long horizon).
+DEFAULT_SB_SIMS = 32
+DEFAULT_SB_WORLDS = 4
+DEFAULT_SB_MAX_DEPTH = 200
+
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
 N_ENVS_SELF_PLAY = 10  # self-play (each loads an opponent model)
@@ -743,6 +753,12 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
                 help="Games to drive with the MCTS controller (default: 4)"),
             Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
             Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
+            Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
+                help=f"bo3 sideboard-root sims (default: {DEFAULT_SB_SIMS})"),
+            Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
+                help=f"bo3 sideboard-root determinized worlds (default: {DEFAULT_SB_WORLDS})"),
+            Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
+                help=f"bo3 sideboard-root rollout depth (default: {DEFAULT_SB_MAX_DEPTH})"),
             Arg("--c", "float", default=1.5, help="PUCT exploration constant c_puct (default: 1.5)"),
             Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
             Arg("--top", "int", default=8,

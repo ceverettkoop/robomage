@@ -18,7 +18,8 @@ from typing import Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
 
-from env import MAX_ACTIONS, _SELF_IS_A_IDX
+from env import MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
+from cli_spec import DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH
 from scripted_agent import ScriptedAgent, make_agent
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
@@ -218,23 +219,38 @@ class SearchController:
     Decisions where the engine reports ``safe=0`` (mid-resolution prompts,
     mulligans — no snapshot possible) fall back to the evaluator's raw policy;
     the searched/fallback split is tallied in ``stats``.
+
+    Bo3 SIDEBOARD prompts between games are also loop-safe search roots, but each
+    rollout there is heavier (restore re-crosses init_ecs + deck load + shuffle)
+    and has a game-long horizon; the in-game ``max_depth`` (mcts.run_search's
+    default of 60) can be swallowed entirely by the remaining sideboard/mulligan
+    prompts, landing the leaf value on a masked between-game observation. So at a
+    sideboard root (``obs[_IS_SIDEBOARD_IDX] > 0.5``) the controller switches to
+    the SIDEBOARD budget (``sb_sims``/``sb_worlds``/``sb_max_depth``), mirroring
+    az_selfplay. The sideboard/in-game searched split is tallied separately.
     """
 
     wants_search_env = True
 
     def __init__(self, evaluator, *, sims: int = 128, worlds: int = 4,
                  c_puct: float = 1.5, temperature: float = 0.0,
-                 label: str = "mcts", rng_seed: int = 0):
+                 label: str = "mcts", rng_seed: int = 0,
+                 sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
+                 sb_max_depth: int = DEFAULT_SB_MAX_DEPTH):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
         self._evaluator = evaluator
         self._sims = sims
         self._worlds = worlds
         self._c_puct = c_puct
         self._temperature = temperature
+        self._sb_sims = sb_sims
+        self._sb_worlds = sb_worlds
+        self._sb_max_depth = sb_max_depth
         self.label = label
         self._rng = np.random.default_rng(rng_seed)
         self._env = None
-        self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0}
+        self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0,
+                      "sb_searched": 0}
 
     def bind_env(self, env) -> None:
         self._env = env
@@ -252,10 +268,21 @@ class SearchController:
             self.stats["fallback"] += 1
             priors, _ = self._evaluator.evaluate(obs, num_choices)
             return int(np.argmax(priors))
-        result = run_search(
-            env, self._evaluator,
-            sims=self._sims, worlds=self._worlds, c_puct=self._c_puct,
-            rng=self._rng)
+        # A bo3 sideboard root gets the deeper/fewer-sim sideboard budget (its
+        # horizon is the whole next game). Key ONLY off is_sideboard_phase —
+        # is_post_board / game_number still reflect the just-ended game at a
+        # g1->g2 root. In-game roots keep run_search's default max_depth (60).
+        if obs[_IS_SIDEBOARD_IDX] > 0.5:
+            result = run_search(
+                env, self._evaluator,
+                sims=self._sb_sims, worlds=self._sb_worlds, c_puct=self._c_puct,
+                max_depth=self._sb_max_depth, rng=self._rng)
+            self.stats["sb_searched"] += 1
+        else:
+            result = run_search(
+                env, self._evaluator,
+                sims=self._sims, worlds=self._worlds, c_puct=self._c_puct,
+                rng=self._rng)
         self.stats["searched"] += 1
         self.stats["sims"] += result.sims_run
         self.stats["sim_steps"] += result.sim_steps
@@ -573,7 +600,8 @@ def _make_search_controller(spec: str, *,
 
     Grammar: ``<base>[?k=v&k=v...]`` where <base> is "uniform" or a checkpoint
     path / deck shorthand, and the knobs are sims, worlds, c (c_puct),
-    temp (root temperature), vscale (PPO value tanh scale), seed (search RNG).
+    temp (root temperature), vscale (PPO value tanh scale), seed (search RNG),
+    and the bo3 sideboard-root budget sb_sims / sb_worlds / sb_max_depth.
     """
     from mcts import PPOEvaluator, UniformEvaluator
 
@@ -584,6 +612,9 @@ def _make_search_controller(spec: str, *,
     temperature = _spec_knob(params, "temp", 0.0, float, spec)
     v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
     rng_seed = _spec_knob(params, "seed", 0, int, spec)
+    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
+    sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
+    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
 
     if base.lower() == "uniform":
         evaluator = UniformEvaluator()
@@ -594,7 +625,9 @@ def _make_search_controller(spec: str, *,
         evaluator = PPOEvaluator(model, v_scale=v_scale)
         label = f"mcts:{base}({sims}x{worlds})"
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
-                            temperature=temperature, label=label, rng_seed=rng_seed)
+                            temperature=temperature, label=label, rng_seed=rng_seed,
+                            sb_sims=sb_sims, sb_worlds=sb_worlds,
+                            sb_max_depth=sb_max_depth)
 
 
 class AZRawController:
@@ -636,8 +669,9 @@ def _load_az_evaluator(base: str):
 def _make_az_controller(spec: str, *, search: bool):
     """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
 
-    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=]`` where <base> is an AZ
-    checkpoint path / deck shorthand (falls back to a PPO warm-start)."""
+    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&sb_sims=&sb_worlds=&sb_max_depth=]``
+    where <base> is an AZ checkpoint path / deck shorthand (falls back to a PPO
+    warm-start). sb_* set the bo3 sideboard-root search budget."""
     base, params = _parse_spec_query(spec)
     evaluator, resolved = _load_az_evaluator(base)
     if not search:
@@ -647,10 +681,14 @@ def _make_az_controller(spec: str, *, search: bool):
     c_puct = _spec_knob(params, "c", 1.5, float, spec)
     temperature = _spec_knob(params, "temp", 0.0, float, spec)
     rng_seed = _spec_knob(params, "seed", 0, int, spec)
+    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
+    sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
+    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                             temperature=temperature,
                             label=f"az:{base}({sims}x{worlds})",
-                            rng_seed=rng_seed)
+                            rng_seed=rng_seed, sb_sims=sb_sims, sb_worlds=sb_worlds,
+                            sb_max_depth=sb_max_depth)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:

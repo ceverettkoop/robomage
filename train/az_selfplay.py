@@ -28,17 +28,15 @@ from typing import Optional
 import numpy as np
 
 try:
-    from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _MATCH_CTX_START
-    from cli_spec import BIN_DIR
+    from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
+    from cli_spec import (BIN_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
+                          DEFAULT_SB_MAX_DEPTH)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
-    from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _MATCH_CTX_START
-    from train.cli_spec import BIN_DIR
+    from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
+    from train.cli_spec import (BIN_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
+                                DEFAULT_SB_MAX_DEPTH)
     from train.opponents import GEN_STEM
-
-# is_sideboard_phase lives at _MATCH_CTX_START + 3 in the state vector (see the
-# _MATCH_CTX layout in env.py: game_number, self_wins, opp_wins, sideboard_phase).
-_IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
 _ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
@@ -50,13 +48,9 @@ _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 DEFAULT_ROOT_NOISE_EPS = 0.25
 DEFAULT_ROOT_NOISE_ALPHA = 1.0
 DEFAULT_TEMP_MOVES = 20        # sample-from-visits for the first N real decisions, then argmax
-# Sideboard-rooted search budget. A sideboard prompt is a valid MCTS root
-# (Stage 1-3), but each rollout there re-crosses init_ecs() + deck load + shuffle
-# on RESTORE and its horizon spans the whole next game, so give it its own
-# (deeper, fewer-sim) budget instead of the per-in-game-decision one.
-DEFAULT_SB_SIMS = 32
-DEFAULT_SB_WORLDS = 4
-DEFAULT_SB_MAX_DEPTH = 200
+# Sideboard-rooted search budget (DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH) lives in
+# cli_spec — the single home shared with opponents.SearchController and the CLI
+# flag defaults — and is imported above.
 DEFAULT_MIRROR_FRAC = 0.25     # P(opponent deck == focus deck) per self-play game
 FLUSH_SAMPLES = 4096           # write a shard once this many samples accumulate
 HEARTBEAT_MOVES = 25           # Python backend: mid-game progress line every N decisions
