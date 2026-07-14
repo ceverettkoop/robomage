@@ -4684,8 +4684,8 @@
    1: Cast Knight of the Reliquary
   >> B/B: 1 (Cast Knight of the Reliquary)
 --- Narrative ---
-  Player B activated Plains for 1(W)
   Player B activated Savannah for 1(G)
+  Player B activated Plains for 1(W)
   Player B activated Talon Gates of Madara for 1(C)
   Player B casts Knight of the Reliquary
 

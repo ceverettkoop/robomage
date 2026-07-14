@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <map>
+#include <set>
 #include <tuple>
 
 #include "classes/action.h"
@@ -1030,9 +1031,41 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     // colored pip only a painful source produces) does.
     auto painless = [](const SourceInfo &s) { return !mana_ability_is_painful(s.ability); };
 
-    // Pay colored costs first — prefer single-color sources to preserve flexibility
-    for (auto it = remaining.begin(); it != remaining.end(); ) {
-        if (*it == GENERIC) { ++it; continue; }
+    // Pay colored costs first. Pay the MOST color-constrained pip first: the greedy per-pip
+    // payer below has no lookahead, so if it spends a shared dual (e.g. a Tropical Island that
+    // taps for G or U) on a plentiful color, it can strand a later pip whose ONLY producer was
+    // that dual — the spell then reads as unpayable even though a valid assignment exists
+    // (a {1}{G}{U} spell over Tropical Island + Underground Sea + Wasteland is the canonical
+    // case: paying the U pip with the Tropical leaves nothing to make G). Ordering the colored
+    // pips by how many distinct untapped sources can produce each color (scarcest first, ties by
+    // color enum for determinism) makes the scarce pip claim its producer before a flexible pip
+    // can take it. `producer_count` is computed once from the pre-payment source set; that
+    // static order is enough to reserve uniquely-sourced colors. (Under ManaConvert every source
+    // pays every pip, so the scarcity ordering is a harmless no-op.)
+    std::map<Colors, int> producer_count;
+    {
+        std::map<Colors, std::set<Entity>> by_color;
+        for (const auto &si : valid_sources)
+            if (si.color >= WHITE && si.color <= COLORLESS)
+                by_color[si.color].insert(si.entity);
+        for (const auto &[c, ents] : by_color) producer_count[c] = static_cast<int>(ents.size());
+    }
+    auto pip_scarcity = [&](Colors c) {
+        auto pc = producer_count.find(c);
+        return pc == producer_count.end() ? 0 : pc->second;
+    };
+    while (true) {
+        // Select the remaining colored pip whose color has the fewest producers. `remaining`
+        // is sorted ascending by color enum, so replacing only on a STRICTLY-smaller scarcity
+        // makes ties resolve to the lowest color enum (the first equal-scarcity pip scanned).
+        auto it = remaining.end();
+        int best = 0;
+        for (auto pit = remaining.begin(); pit != remaining.end(); ++pit) {
+            if (*pit == GENERIC) continue;
+            int sc = pip_scarcity(*pit);
+            if (it == remaining.end() || sc < best) { best = sc; it = pit; }
+        }
+        if (it == remaining.end()) break;  // no colored pips left — pay generic below
         Colors needed = *it;
 
         // Check pool first: exact color, or — under ManaConvert — any mana already floating.
