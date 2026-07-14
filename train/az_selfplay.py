@@ -1,16 +1,21 @@
-"""AlphaZero self-play data generation for ONE deck (mirror match, bo1).
+"""AlphaZero self-play data generation for ONE deck (mirror match, bo1 or bo3).
 
 Each worker owns a :class:`search_env.SearchRoboMageEnv` (deck vs itself) and one
 shared :class:`az_net.AZNet` piloting BOTH seats. At every decision that is
 loop-safe (``env.last_search_safe``) with >1 choice it runs a determinized PUCT
 search (:func:`mcts.run_search`) with root Dirichlet noise; unsafe / trivial
 decisions fall back to the net's raw-policy argmax. For each SEARCHED decision it
-stores (obs, visit-distribution pi, legal mask, mover seat); at game end each
-sample's outcome z (+1/-1 from that mover's perspective, 0 on a draw) is filled
-in. Samples are written to ``az_data/{deck}/shard_{ts}_{pid}_{n}.npz``.
+stores (obs, visit-distribution pi, legal mask, mover seat, game index).
+
+In bo3 mode a "game" of generation is actually a best-of-three MATCH: each match
+yields up to three games of samples, and each sample's outcome z (+1/-1 from that
+mover's perspective, 0 on a draw) is the result of the PARTICULAR game the
+decision belonged to — not the match result. Samples are written to
+``az_data/{deck}/shard_{ts}_{pid}_{n}.npz``.
 
 Run standalone (``az_selfplay.py --deck delver --games 2 --sims 12 --worlds 2``)
-or via ``train.py az-selfplay``.
+or via ``train.py az-selfplay`` (bo1); the ``train.py az`` / ``az-league`` cycles
+drive it in bo3.
 """
 
 from __future__ import annotations
@@ -23,12 +28,14 @@ from typing import Optional
 import numpy as np
 
 try:
-    from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX
-    from cli_spec import BIN_DIR
+    from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
+    from cli_spec import (BIN_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
+                          DEFAULT_SB_MAX_DEPTH)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
-    from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX
-    from train.cli_spec import BIN_DIR
+    from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
+    from train.cli_spec import (BIN_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
+                                DEFAULT_SB_MAX_DEPTH)
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
@@ -41,6 +48,9 @@ _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 DEFAULT_ROOT_NOISE_EPS = 0.25
 DEFAULT_ROOT_NOISE_ALPHA = 1.0
 DEFAULT_TEMP_MOVES = 20        # sample-from-visits for the first N real decisions, then argmax
+# Sideboard-rooted search budget (DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH) lives in
+# cli_spec — the single home shared with opponents.SearchController and the CLI
+# flag defaults — and is imported above.
 DEFAULT_MIRROR_FRAC = 0.25     # P(opponent deck == focus deck) per self-play game
 FLUSH_SAMPLES = 4096           # write a shard once this many samples accumulate
 HEARTBEAT_MOVES = 25           # Python backend: mid-game progress line every N decisions
@@ -62,25 +72,31 @@ def league_roster() -> list:
                   for p in os.listdir(_LEAGUE_DECKS_DIR) if p.endswith(".dk"))
 
 
-def build_matchup_schedule(focus: str, roster, games: int, mirror_frac: float,
-                           seed: int) -> list:
+def build_matchup_schedule(focus_decks, opponent_decks, games: int,
+                           mirror_frac: float, seed: int) -> list:
     """Deterministic per-game (deck_a, deck_b) schedule for one generation run.
 
-    Each game the opponent deck is the FOCUS deck itself (mirror) with probability
-    ``mirror_frac``, else a uniform draw from the league ``roster``; the focus
-    deck's seat (A vs B) is randomized per game so seat-A bias doesn't accumulate.
-    The one generalist net values every state, so cross-deck negamax backup in
-    MCTS is sound. Seeded RNG → the schedule replays identically for a given seed."""
+    Each game a FOCUS deck is drawn uniformly from ``focus_decks`` (a single-deck
+    list reduces to the classic single-focus run); its opponent is that same deck
+    (mirror) with probability ``mirror_frac``, else a uniform draw from
+    ``opponent_decks``. The focus deck's seat (A vs B) is randomized per game so
+    seat-A bias doesn't accumulate. The one generalist net values every state, so
+    cross-deck negamax backup in MCTS is sound. Seeded RNG → the schedule replays
+    identically for a given seed (and, for a single-deck ``focus_decks``, byte-
+    identically to the pre-matrix schedule — no extra RNG draw is consumed)."""
     rng = np.random.default_rng(seed)
-    pool = list(roster or [])
+    focus = list(focus_decks or [])
+    pool = list(opponent_decks or [])
     sched = []
     for _ in range(games):
+        # Single-focus: don't consume an RNG draw (preserves old schedules exactly).
+        fdeck = focus[0] if len(focus) == 1 else focus[int(rng.integers(len(focus)))]
         if not pool or rng.random() < mirror_frac:
-            opp = focus
+            opp = fdeck
         else:
             opp = pool[int(rng.integers(len(pool)))]
         focus_is_a = rng.random() < 0.5
-        sched.append((focus, opp) if focus_is_a else (opp, focus))
+        sched.append((fdeck, opp) if focus_is_a else (opp, fdeck))
     return sched
 
 
@@ -137,10 +153,36 @@ def _build_net(source: dict):
 # One game of self-play
 # ----------------------------------------------------------------------
 
-def _play_game(env, evaluator, rng, *, sims, worlds, temp_moves,
-               root_noise_eps, root_noise_alpha, seed, on_progress=None):
-    """Play one mirror game; return (samples, winner) where samples is a list of
-    dicts {obs, pi, mask, mover_is_a} and winner is 'A'/'B'/None (draw).
+def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
+                root_noise_eps, root_noise_alpha, seed, on_progress=None,
+                sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
+                sb_max_depth=DEFAULT_SB_MAX_DEPTH):
+    """Play one match (bo1: a single game; bo3: a best-of-three) and return
+    (samples, game_winners, searched, fallback, dropped).
+
+    ``samples`` is a list of dicts {obs, pi, mask, mover_is_a, game_idx}; each is
+    tagged with the 0-based index of the game it was played in. ``game_winners``
+    is the ordered list of each COMPLETED game's winner ('A'/'B'/None for a draw),
+    so ``game_winners[sample['game_idx']]`` prices that sample. ``dropped`` counts
+    samples discarded because the match TRUNCATED mid-game (the in-progress game
+    has no result, so its samples carry no valid z).
+
+    Game boundaries are detected from ``info['game_result']`` (the engine emitted a
+    GAME_RESULT line on that step's read); the game's winner is the sign of that
+    step's reward delta (+ -> A won, - -> B won), matching env.py's bo3 reward
+    (±BO3_GAME_WIN_REWARD per game).
+
+    Bo3 sideboard prompts BETWEEN games are now loop-safe MCTS roots (Stage 1-3):
+    when searchable they enter ``samples`` like any other decision. They are keyed
+    off the ``is_sideboard_phase`` state flag (``_IS_SIDEBOARD_IDX``) and searched
+    with the SIDEBOARD budget (``sb_sims``/``sb_worlds``/``sb_max_depth``) — heavier
+    per step (each restore re-crosses init_ecs) and deeper (the horizon is the whole
+    next game). Because ``game_move`` and ``game_idx`` are advanced at the preceding
+    game's GAME_RESULT boundary, a sideboard sample naturally carries
+    ``game_idx == k+1`` (the UPCOMING game) — so ``_backfill_and_pack`` prices it by
+    that game's winner — and re-enters the per-game temperature schedule at
+    ``game_move == 0``. (Do NOT key off ``is_post_board``/``game_number``: at a
+    game-1->2 sideboard root those still reflect the ENDED game.)
 
     ``on_progress(move, searched, fallback)``, when given, fires every
     HEARTBEAT_MOVES decisions. Observation-only: it must not (and cannot)
@@ -150,9 +192,12 @@ def _play_game(env, evaluator, rng, *, sims, worlds, temp_moves,
 
     obs, _ = env.reset(seed=seed)
     samples = []
-    winner = None
-    move = 0
+    game_winners = []   # winner of each completed game, in order
+    game_idx = 0        # index of the game currently in progress
+    game_move = 0       # decisions made in the current game (temperature schedule)
+    move = 0            # decisions made in the whole match (heartbeat/progress)
     done = False
+    dropped = 0
     searched = 0
     fallback = 0
 
@@ -162,18 +207,30 @@ def _play_game(env, evaluator, rng, *, sims, worlds, temp_moves,
         searchable = bool(env.last_search_safe) and num_choices > 1
 
         if searchable:
-            result = run_search(env, evaluator, sims=sims, worlds=worlds,
-                                root_noise_eps=root_noise_eps,
-                                root_noise_alpha=root_noise_alpha, rng=rng)
+            # A bo3 sideboard root is more expensive per sim (restore re-crosses
+            # init_ecs + deck load + shuffle) and has a game-long horizon, so it
+            # gets its own budget. Key ONLY off is_sideboard_phase — is_post_board
+            # / game_number still reflect the just-ended game at a g1->g2 root.
+            if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
+                result = run_search(env, evaluator, sims=sb_sims, worlds=sb_worlds,
+                                    max_depth=sb_max_depth,
+                                    root_noise_eps=root_noise_eps,
+                                    root_noise_alpha=root_noise_alpha, rng=rng)
+            else:
+                result = run_search(env, evaluator, sims=sims, worlds=worlds,
+                                    root_noise_eps=root_noise_eps,
+                                    root_noise_alpha=root_noise_alpha, rng=rng)
             visits = result.policy_target(1.0)          # normalized visit counts
             pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
             pi[:num_choices] = visits.astype(np.float32)
             mask = np.zeros(MAX_ACTIONS, dtype=bool)
             mask[:num_choices] = True
             samples.append({"obs": env._obs.copy(), "pi": pi, "mask": mask,
-                            "mover_is_a": priority_is_a})
+                            "mover_is_a": priority_is_a, "game_idx": game_idx})
             searched += 1
-            if move < temp_moves:
+            # Temperature schedule is per-game: the first temp_moves decisions of
+            # EACH game sample from the visit counts, then switch to argmax.
+            if game_move < temp_moves:
                 action = int(rng.choice(num_choices, p=visits))
             else:
                 action = result.best_action()
@@ -182,20 +239,42 @@ def _play_game(env, evaluator, rng, *, sims, worlds, temp_moves,
             action = int(np.argmax(priors))
             fallback += 1
 
-        obs, reward, terminated, truncated, _ = env.step(action)
+        obs, reward, terminated, truncated, info = env.step(action)
         move += 1
+        game_move += 1
+        # A GAME_RESULT landed on this step -> the game the just-stepped action
+        # belonged to has finished. Record its winner and advance to the next game.
+        boundary = bool(info.get("game_result"))
+        if boundary:
+            game_winners.append("A" if reward > 0 else ("B" if reward < 0 else None))
+            game_idx += 1
+            game_move = 0
         if on_progress is not None and move % HEARTBEAT_MOVES == 0:
             on_progress(move, searched, fallback)
         if terminated or truncated:
             done = True
-            if terminated:
-                winner = "A" if reward > 0 else ("B" if reward < 0 else None)
-    return samples, winner, searched, fallback
+            if terminated and not boundary:
+                # bo1 mode emits no GAME_RESULT line — the single game ends with a
+                # plain "Player X wins" + terminated. Price the in-progress game
+                # from the terminal reward sign (bo3's final game already recorded
+                # via the boundary branch above, so guard on `not boundary`).
+                game_winners.append(
+                    "A" if reward > 0 else ("B" if reward < 0 else None))
+            if truncated:
+                # The match hit MAX_STEPS_BO3 mid-game: keep samples from the
+                # games that finished (they have a z), drop the in-progress game's
+                # samples (no result yet -> no valid target).
+                n_done = len(game_winners)
+                kept = [s for s in samples if s["game_idx"] < n_done]
+                dropped = len(samples) - len(kept)
+                samples = kept
+    return samples, game_winners, searched, fallback, dropped
 
 
-def _backfill_and_pack(samples, winner):
-    """Fill z per sample from its mover's perspective vs the winner, then pack to
-    arrays. Draw (winner None) -> z=0."""
+def _backfill_and_pack(samples, game_winners):
+    """Fill z per sample from its mover's perspective vs the winner of the GAME the
+    sample belongs to (``game_winners[game_idx]``), then pack to arrays. A drawn
+    game (winner None) -> z=0."""
     n = len(samples)
     obs = np.zeros((n, OBS_SIZE), dtype=np.float32)
     pi = np.zeros((n, MAX_ACTIONS), dtype=np.float32)
@@ -205,6 +284,7 @@ def _backfill_and_pack(samples, winner):
         obs[i] = s["obs"]
         pi[i] = s["pi"]
         mask[i] = s["mask"]
+        winner = game_winners[s["game_idx"]]
         if winner is None:
             z[i] = 0.0
         else:
@@ -226,11 +306,22 @@ def _write_shard(out_dir, arrays, n_idx):
 # Worker
 # ----------------------------------------------------------------------
 
+def _match_winner(game_winners) -> str:
+    """The match result ('A'/'B'/'DRAW') from a game-winner list — whoever won
+    more games (bo1: the single game; bo3: first to two)."""
+    a = game_winners.count("A")
+    b = game_winners.count("B")
+    return "A" if a > b else ("B" if b > a else "DRAW")
+
+
 def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
-            root_noise_alpha, out_dir, base_seed, worker_idx, result_q):
+            root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
+            sb_sims, sb_worlds, sb_max_depth):
     """Play this worker's slice of the matchup schedule. ``matchups`` is a list of
-    per-game (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
-    swapped per game before its reset respawns the engine."""
+    per-MATCH (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
+    swapped per match before its reset respawns the engine. With ``bo3`` each
+    matchup is a best-of-three yielding up to three games of samples (decks stay
+    fixed across the games of one match)."""
     import torch
     torch.set_num_threads(1)   # avoid oversubscription across worker processes
     from search_env import SearchRoboMageEnv
@@ -240,43 +331,51 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
     evaluator = AZEvaluator(net)
     rng = np.random.default_rng(base_seed + 100003 * (worker_idx + 1))
 
-    n_games = len(matchups)
+    n_matches = len(matchups)
     da0, db0 = matchups[0] if matchups else (None, None)
-    env = SearchRoboMageEnv(deck_a=da0, deck_b=db0)
+    env = SearchRoboMageEnv(deck_a=da0, deck_b=db0, bo3=bo3, auto_sideboard=False)
     total_samples = 0
     shards = []
     buf = []
     shard_n = 0
-    stats = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
+    stats = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0,
+             "games": 0, "dropped": 0}
     try:
-        for g in range(n_games):
-            seed = base_seed + worker_idx * 100000 + g
-            # Swap decks for this game; reset() (inside _play_game) respawns the
+        for m in range(n_matches):
+            seed = base_seed + worker_idx * 100000 + m
+            # Swap decks for this match; reset() (inside _play_match) respawns the
             # engine reading the current _deck_a/_deck_b.
-            env._deck_a, env._deck_b = matchups[g]
+            env._deck_a, env._deck_b = matchups[m]
 
-            def beat(move, searched_ct, fallback_ct, _g=g):
+            def beat(move, searched_ct, fallback_ct, _m=m):
                 result_q.put({"kind": "beat", "worker": worker_idx,
-                              "game": _g + 1, "n_games": n_games, "move": move,
+                              "match": _m + 1, "n_matches": n_matches, "move": move,
                               "searched": searched_ct, "fallback": fallback_ct})
 
             t0 = time.time()
-            samples, winner, searched, fallback = _play_game(
+            samples, game_winners, searched, fallback, dropped = _play_match(
                 env, evaluator, rng, sims=sims, worlds=worlds,
                 temp_moves=temp_moves, root_noise_eps=root_noise_eps,
                 root_noise_alpha=root_noise_alpha, seed=seed,
-                on_progress=beat)
-            obs, pi, z, mask = _backfill_and_pack(samples, winner)
+                on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
+                sb_max_depth=sb_max_depth)
+            obs, pi, z, mask = _backfill_and_pack(samples, game_winners)
             buf.append((obs, pi, z, mask))
             total_samples += len(samples)
             stats["searched"] += searched
             stats["fallback"] += fallback
-            stats["wins_a"] += int(winner == "A")
-            stats["wins_b"] += int(winner == "B")
-            stats["draws"] += int(winner is None)
-            result_q.put({"kind": "game", "worker": worker_idx, "game": g + 1,
-                          "n_games": n_games, "winner": winner or "DRAW",
-                          "samples": len(samples), "searched": searched,
+            stats["dropped"] += dropped
+            stats["games"] += len(game_winners)
+            mwinner = _match_winner(game_winners)
+            stats["wins_a"] += int(mwinner == "A")
+            stats["wins_b"] += int(mwinner == "B")
+            stats["draws"] += int(mwinner == "DRAW")
+            result_q.put({"kind": "match", "worker": worker_idx, "match": m + 1,
+                          "n_matches": n_matches, "winner": mwinner,
+                          "game_score": "-".join(str(game_winners.count(x))
+                                                  for x in ("A", "B")),
+                          "games": len(game_winners), "samples": len(samples),
+                          "dropped": dropped, "searched": searched,
                           "fallback": fallback, "secs": time.time() - t0})
             if sum(len(b[2]) for b in buf) >= FLUSH_SAMPLES:
                 shards.append(_write_shard(out_dir, _concat(buf), shard_n))
@@ -306,6 +405,29 @@ def _concat(buf):
 # Driver
 # ----------------------------------------------------------------------
 
+def _discard_pre_bo3_shards(out_dir: str) -> None:
+    """One-time cleanup on the FIRST bo3 self-play run into ``out_dir``: delete the
+    legacy bo1 ``shard_*.npz`` (bo1 and bo3 shards share a schema and would
+    otherwise be mixed by the trainer's recency window). Guarded by a sentinel file
+    so subsequent bo3 runs KEEP their accumulated bo3 shards. Never touches the PPO
+    ``checkpoints/gen__*.zip`` — only this pooled az_data dir."""
+    import glob
+    sentinel = os.path.join(out_dir, ".bo3_migrated")
+    if os.path.exists(sentinel):
+        return
+    stale = glob.glob(os.path.join(out_dir, "shard_*.npz"))
+    for p in stale:
+        try:
+            os.remove(p)
+        except OSError as exc:
+            print(f"[az-selfplay] WARNING: could not remove stale shard {p}: {exc}")
+    if stale:
+        print(f"[az-selfplay] discarded {len(stale)} pre-bo3 (bo1) shard(s) from "
+              f"{out_dir} before the first bo3 run")
+    with open(sentinel, "w") as fh:
+        fh.write(time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
+
+
 def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
              workers: Optional[int] = None, checkpoint: Optional[str] = None,
              temp_moves: int = DEFAULT_TEMP_MOVES,
@@ -314,14 +436,32 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
              out_dir: Optional[str] = None, seed: int = 1,
              use_actor: Optional[bool] = None,
              roster: Optional[list] = None,
-             mirror_frac: float = DEFAULT_MIRROR_FRAC) -> dict:
-    """Generate ``games`` self-play games with FOCUS deck ``deck`` and write shards.
+             focus_decks: Optional[list] = None,
+             mirror_frac: float = DEFAULT_MIRROR_FRAC,
+             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
+             sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
+             bo3: bool = False) -> dict:
+    """Generate ``games`` self-play MATCHES over a FOCUS pool and write shards.
 
-    Each game the opponent deck is the focus deck (mirror) with probability
-    ``mirror_frac``, else a uniform draw from ``roster`` (default: every
-    ``decks/league/*.dk``); the seeded schedule alternates the focus deck's seat.
+    ``games`` is a count of MATCHES (bo1: one game each; bo3: up to three games
+    each). ``focus_decks`` is the pool of decks the generalist pilots (default
+    ``[deck]``, i.e. single-focus); each match one is drawn uniformly. Its opponent
+    is that same deck (mirror) with probability ``mirror_frac``, else a uniform draw
+    from ``roster`` (default: every ``decks/league/*.dk``); the seeded schedule
+    alternates the focus deck's seat. Passing a multi-deck ``focus_decks`` (with a
+    multi-deck ``roster``) makes one run span a full deck×opponent matrix.
     Shards pool into ``out_dir`` (default ``az_data/gen/`` — filenames are globally
     unique, so cross-deck runs share one pool feeding the single generalist net).
+
+    ``bo3`` runs best-of-three matches with a PER-GAME value target (each sample's
+    z is the result of the game it belonged to). BOTH backends support bo3 (the
+    C++ actor mirrors the Python match loop, including the searched sideboard
+    roots), so ``bo3`` no longer constrains the backend choice. In bo3 the
+    between-game sideboard prompts are searched MCTS roots with their own (heavier,
+    deeper) budget ``sb_sims``/``sb_worlds``/``sb_max_depth`` — see
+    :func:`_play_match` for the Python path and the actor's ``--sb-sims``/
+    ``--sb-worlds``/``--sb-max-depth`` flags for the C++ path. These knobs are
+    consumed only in bo3 (they are inert for bo1 on either backend).
 
     ``use_actor`` picks the generation backend:
       * ``None`` (AUTO, default) — use the C++ ``bin/az_actor`` iff it is built,
@@ -337,8 +477,14 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
     os.makedirs(out_dir, exist_ok=True)
     if roster is None:
         roster = league_roster()
+    focus = list(focus_decks) if focus_decks else [deck]
 
     have_actor = os.path.exists(_ACTOR_BIN)
+    if bo3:
+        # One-time discard of legacy bo1 shards before the first bo3 run. This is
+        # backend-agnostic (the .bo3_migrated sentinel gates it either way) and
+        # runs regardless of which backend generates the bo3 shards below.
+        _discard_pre_bo3_shards(out_dir)
     if use_actor is None:
         use_actor = have_actor
         chosen = "AUTO"
@@ -349,10 +495,15 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
             f"--actor requested but the actor binary is not built at {_ACTOR_BIN} "
             f"(build it with `make actor`, or pass --no-actor)")
 
-    schedule = build_matchup_schedule(deck, roster, games, mirror_frac, seed)
+    schedule = build_matchup_schedule(focus, roster, games, mirror_frac, seed)
     source = resolve_source(deck, checkpoint)
-    print(f"[az-selfplay] focus={deck} games={games} sims={sims} worlds={worlds} "
-          f"workers={workers} mirror_frac={mirror_frac}")
+    focus_lbl = focus[0] if len(focus) == 1 else f"{len(focus)} decks [{','.join(focus)}]"
+    unit = "matches" if bo3 else "games"
+    print(f"[az-selfplay] focus={focus_lbl} {unit}={games} bo3={bo3} sims={sims} "
+          f"worlds={worlds} workers={workers} mirror_frac={mirror_frac}")
+    if bo3:
+        print(f"[az-selfplay] sideboard-root budget: sb_sims={sb_sims} "
+              f"sb_worlds={sb_worlds} sb_max_depth={sb_max_depth}")
     print(f"[az-selfplay] net source: mode={source['mode']} path={source['path']}")
     print(f"[az-selfplay] out_dir={out_dir}")
     print(f"[az-selfplay] matchups: {_schedule_summary(schedule)}")
@@ -364,8 +515,15 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed)
     if use_actor:
-        return _generate_actor(deck, actor_bin=_ACTOR_BIN, **common)
-    return _generate_python(deck, **common)
+        # The C++ actor mirrors the Python match loop for bo3 (Stage 6), including
+        # the searched sideboard roots — pass bo3 + the sb budget through so the
+        # actor argv carries --bo3 and --sb-sims/--sb-worlds/--sb-max-depth. The
+        # sb_* knobs are inert for bo1.
+        return _generate_actor(deck, actor_bin=_ACTOR_BIN, bo3=bo3, sb_sims=sb_sims,
+                               sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                               **common)
+    return _generate_python(deck, bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
+                            sb_max_depth=sb_max_depth, **common)
 
 
 # ----------------------------------------------------------------------
@@ -373,13 +531,15 @@ def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
 # ----------------------------------------------------------------------
 
 def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_moves,
-                     root_noise_eps, root_noise_alpha, out_dir, seed) -> dict:
+                     root_noise_eps, root_noise_alpha, out_dir, seed,
+                     bo3=False, sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
+                     sb_max_depth=DEFAULT_SB_MAX_DEPTH) -> dict:
     import multiprocessing as mp
 
-    games = len(schedule)
+    matches = len(schedule)
     # Split the matchup schedule across workers (contiguous slices).
-    per = [games // workers] * workers
-    for i in range(games % workers):
+    per = [matches // workers] * workers
+    for i in range(matches % workers):
         per[i] += 1
     slices = []
     off = 0
@@ -396,17 +556,19 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
         p = ctx.Process(target=_worker,
                         args=(slices[wi], source, sims, worlds, temp_moves,
                               root_noise_eps, root_noise_alpha, out_dir, seed,
-                              wi, result_q))
+                              wi, result_q, bo3, sb_sims, sb_worlds, sb_max_depth))
         p.start()
         procs.append(p)
 
-    # Live progress: workers stream beat/game/shard events onto the queue and
+    # Live progress: workers stream beat/match/shard events onto the queue and
     # finish with a 'done' record each. Consume until every worker reported.
     import queue as _queue
     t_start = time.time()
     results = []
+    matches_done = 0
     games_done = 0
     samples_so_far = 0
+    dropped_so_far = 0
     tally = {"A": 0, "B": 0, "DRAW": 0}
     while len(results) < len(procs):
         try:
@@ -420,22 +582,26 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
             continue
         kind = msg.get("kind")
         if kind == "beat":
-            print(f"[az-selfplay] w{msg['worker']} g{msg['game']}/{msg['n_games']}: "
+            print(f"[az-selfplay] w{msg['worker']} m{msg['match']}/{msg['n_matches']}: "
                   f"move {msg['move']}, searched {msg['searched']}, "
                   f"fallback {msg['fallback']}", flush=True)
-        elif kind == "game":
-            games_done += 1
+        elif kind == "match":
+            matches_done += 1
+            games_done += msg["games"]
             samples_so_far += msg["samples"]
+            dropped_so_far += msg.get("dropped", 0)
             tally[msg["winner"]] += 1
             elapsed = time.time() - t_start
-            eta = elapsed / games_done * (games - games_done)
-            print(f"[az-selfplay] w{msg['worker']} g{msg['game']}/{msg['n_games']}: "
-                  f"winner={msg['winner']} samples={msg['samples']} "
+            eta = elapsed / matches_done * (matches - matches_done)
+            drop_note = (f" dropped={msg['dropped']}" if msg.get("dropped") else "")
+            print(f"[az-selfplay] w{msg['worker']} m{msg['match']}/{msg['n_matches']}: "
+                  f"match={msg['winner']} (games A-B {msg['game_score']}) "
+                  f"samples={msg['samples']}{drop_note} "
                   f"searched={msg['searched']} fallback={msg['fallback']} "
-                  f"in {_fmt_secs(msg['secs'])} | total {games_done}/{games} games, "
-                  f"{samples_so_far} samples, A {tally['A']} B {tally['B']} "
-                  f"D {tally['DRAW']}, elapsed {_fmt_secs(elapsed)}, "
-                  f"eta {_fmt_secs(eta)}", flush=True)
+                  f"in {_fmt_secs(msg['secs'])} | total {matches_done}/{matches} "
+                  f"matches ({games_done} games), {samples_so_far} samples, "
+                  f"match A {tally['A']} B {tally['B']} D {tally['DRAW']}, "
+                  f"elapsed {_fmt_secs(elapsed)}, eta {_fmt_secs(eta)}", flush=True)
         elif kind == "shard":
             print(f"[az-selfplay] w{msg['worker']} wrote {msg['path']}", flush=True)
         else:  # 'done' (also tolerates legacy kind-less records)
@@ -445,13 +611,18 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
 
     total_samples = sum(r["samples"] for r in results)
     all_shards = [s for r in results for s in r["shards"]]
-    agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
+    agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0,
+           "games": 0, "dropped": 0}
     for r in results:
         for k in agg:
-            agg[k] += r["stats"][k]
-    print(f"[az-selfplay] done: {total_samples} samples, {len(all_shards)} shards (PYTHON)")
+            agg[k] += r["stats"].get(k, 0)
+    print(f"[az-selfplay] done: {total_samples} samples, {len(all_shards)} shards "
+          f"from {matches} matches ({agg['games']} games) (PYTHON)")
+    if agg["dropped"]:
+        print(f"[az-selfplay] dropped {agg['dropped']} sample(s) from "
+              f"truncated in-progress games (no game result)")
     print(f"[az-selfplay] decisions searched={agg['searched']} "
-          f"fallback={agg['fallback']}; results A={agg['wins_a']} "
+          f"fallback={agg['fallback']}; match results A={agg['wins_a']} "
           f"B={agg['wins_b']} draws={agg['draws']}")
     return {"samples": total_samples, "shards": all_shards, "stats": agg,
             "out_dir": out_dir, "source": source}
@@ -491,15 +662,25 @@ def _ensure_actor_torchscript(source: dict):
     return ts, tmpdir
 
 
-def _parse_actor_output(stdout: str):
-    """Aggregate one actor worker's stdout: (total_samples, wins_a, wins_b, draws)."""
+def _parse_actor_output(stdout: str, bo3: bool = False):
+    """Aggregate one actor worker's stdout: (total_samples, wins_a, wins_b, draws).
+
+    Sample counts always come from the terminal ``SELFPLAY: total_samples=`` line.
+    Win tallies come from the appropriate result unit: bo1 counts per-GAME
+    ``SELFPLAY: game … winner=`` lines; bo3 counts per-MATCH ``MATCH_RESULT:``
+    lines (a bo3 match always ends 2-x, so there is no match draw)."""
     samples = wins_a = wins_b = draws = 0
     for line in stdout.splitlines():
         if line.startswith("SELFPLAY: total_samples="):
             for tok in line.split():
                 if tok.startswith("total_samples="):
                     samples = int(tok.split("=", 1)[1])
-        elif line.startswith("SELFPLAY: game "):
+        elif bo3 and line.startswith("MATCH_RESULT:"):
+            if line.startswith("MATCH_RESULT: Player A wins"):
+                wins_a += 1
+            elif line.startswith("MATCH_RESULT: Player B wins"):
+                wins_b += 1
+        elif not bo3 and line.startswith("SELFPLAY: game "):
             if line.endswith("winner=A"):
                 wins_a += 1
             elif line.endswith("winner=B"):
@@ -512,7 +693,10 @@ def _parse_actor_output(stdout: str):
 def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        out_dir, deck_b=None, noise_eps=DEFAULT_ROOT_NOISE_EPS,
                        noise_alpha=DEFAULT_ROOT_NOISE_ALPHA,
-                       temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None) -> list:
+                       temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None,
+                       bo3=False, sb_sims=DEFAULT_SB_SIMS,
+                       sb_worlds=DEFAULT_SB_WORLDS,
+                       sb_max_depth=DEFAULT_SB_MAX_DEPTH) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
     The single source of the actor CLI contract on the Python side — used by
@@ -521,7 +705,12 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     instead of leaning on the actor's compiled-in defaults).
 
     ``deck`` is Player A's deck; ``deck_b`` is Player B's (None -> mirror = deck),
-    so one actor process runs one (deck_a, deck_b) matchup batch."""
+    so one actor process runs one (deck_a, deck_b) matchup batch.
+
+    With ``bo3`` each of ``games`` units is a best-of-three MATCH (the actor spaces
+    match seeds by 3 internally), and the ``sb_*`` knobs set the searched
+    sideboard-root budget (``--sb-sims``/``--sb-worlds``/``--sb-max-depth``); they
+    are inert for bo1."""
     cmd = [actor_bin, "--selfplay", "--deck", deck,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds),
@@ -529,6 +718,11 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--noise-eps", str(noise_eps),
            "--noise-alpha", str(noise_alpha),
            "--temp-moves", str(temp_moves)]
+    if bo3:
+        cmd += ["--bo3",
+                "--sb-sims", str(sb_sims),
+                "--sb-worlds", str(sb_worlds),
+                "--sb-max-depth", str(sb_max_depth)]
     if deck_b is not None and deck_b != deck:
         cmd += ["--deck-b", deck_b]
     if rng_seed is not None:
@@ -538,7 +732,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
 
 def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
-                    actor_bin) -> dict:
+                    actor_bin, bo3=False, sb_sims=DEFAULT_SB_SIMS,
+                    sb_worlds=DEFAULT_SB_WORLDS,
+                    sb_max_depth=DEFAULT_SB_MAX_DEPTH) -> dict:
     import glob
     import shutil
     import subprocess
@@ -547,7 +743,11 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
 
     ts_path, tmpdir = _ensure_actor_torchscript(source)
     out_dir = os.path.abspath(out_dir)
+    # `games` is the number of scheduled MATCHES; with --bo3 the actor treats each
+    # of a group's `games=n` units as a best-of-three match (same "games = matches"
+    # meaning as the Python backend), so no unit conversion is needed here.
     games = len(schedule)
+    unit = "matches" if bo3 else "games"
 
     # Group the schedule into per-(deck_a, deck_b) actor invocations so each actor
     # process runs one matchup batch (mirror or cross-deck) with a DISJOINT seed
@@ -566,17 +766,24 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     prog_lock = threading.Lock()
     prog = {"done": 0}
 
+    # Progress unit == the scheduling unit: count per-MATCH MATCH_RESULT lines in
+    # bo3 (each match may span up to 3 games) and per-GAME SELFPLAY lines in bo1, so
+    # `done/games` and the ETA denominator stay consistent (games == #matches).
+    def _is_progress_line(line):
+        return (line.startswith("MATCH_RESULT:") if bo3
+                else line.startswith("SELFPLAY: game "))
+
     def _pump(gi, stream, sink, is_stdout):
         for line in stream:
             sink.append(line)
-            if is_stdout and line.startswith("SELFPLAY: game "):
+            if is_stdout and _is_progress_line(line):
                 with prog_lock:
                     prog["done"] += 1
                     done = prog["done"]
                     elapsed = time.time() - t_start
                     eta = elapsed / done * (games - done)
                 print(f"[az-selfplay] g{gi} {line.strip()} | total {done}/{games} "
-                      f"games, elapsed {_fmt_secs(elapsed)}, eta {_fmt_secs(eta)}",
+                      f"{unit}, elapsed {_fmt_secs(elapsed)}, eta {_fmt_secs(eta)}",
                       flush=True)
         stream.close()
 
@@ -587,7 +794,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             actor_bin, deck=da, deck_b=db, seed=base, games=n,
             sims=sims, worlds=worlds, model=ts_path, out_dir=out_dir,
             noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
-            temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1))
+            temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
+            bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
+            sb_max_depth=sb_max_depth)
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -613,12 +822,12 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         if rec["p"].returncode != 0:
             failed.append((rec["gi"], rec["p"].returncode, "".join(rec["err"])))
             return
-        s, wa, wb, dr = _parse_actor_output("".join(rec["out"]))
+        s, wa, wb, dr = _parse_actor_output("".join(rec["out"]), bo3=bo3)
         total_samples += s
         agg["wins_a"] += wa
         agg["wins_b"] += wb
         agg["draws"] += dr
-        print(f"[az-selfplay] matchup {rec['da']}|{rec['db']}: games={rec['n']} "
+        print(f"[az-selfplay] matchup {rec['da']}|{rec['db']}: {unit}={rec['n']} "
               f"samples={s} A={wa} B={wb} draws={dr}")
 
     cap = max(1, workers)
@@ -669,7 +878,10 @@ def run(args) -> None:
              workers=args.workers, checkpoint=args.checkpoint,
              temp_moves=args.temp_moves, seed=args.seed if args.seed is not None else 1,
              out_dir=args.out, use_actor=_resolve_use_actor(args),
-             mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC))
+             mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+             sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+             sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
+             sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH))
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -687,6 +899,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                          "(default: generalist AZ ckpt, else gen PPO warm-start, "
                          "else random)")
     ap.add_argument("--temp-moves", type=int, default=DEFAULT_TEMP_MOVES)
+    ap.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
+                    help="PUCT sims at a bo3 sideboard root (bo3 only; default %d)"
+                         % DEFAULT_SB_SIMS)
+    ap.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
+                    help="Determinized worlds at a bo3 sideboard root (default %d)"
+                         % DEFAULT_SB_WORLDS)
+    ap.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
+                    help="Rollout depth cap at a bo3 sideboard root (default %d)"
+                         % DEFAULT_SB_MAX_DEPTH)
     ap.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                     help="P(opponent deck == focus deck) per game (default %.2f); "
                          "else a uniform league-roster draw" % DEFAULT_MIRROR_FRAC)

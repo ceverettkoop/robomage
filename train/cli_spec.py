@@ -17,6 +17,16 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resource lookup
 
+# AlphaZero sideboard-root search budget (single home; imported by az_selfplay,
+# opponents.SearchController, and the CLI flag defaults below). A bo3 sideboard
+# prompt IS a valid MCTS root, but each rollout there re-crosses init_ecs() + deck
+# load + shuffle on RESTORE and its horizon spans the whole next game, so it gets
+# its own deeper/fewer-sim budget rather than the per-in-game-decision one (whose
+# max_depth is mcts.run_search's default of 60 — too shallow for a game-long horizon).
+DEFAULT_SB_SIMS = 32
+DEFAULT_SB_WORLDS = 4
+DEFAULT_SB_MAX_DEPTH = 200
+
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
 N_ENVS_SELF_PLAY = 10  # self-play (each loads an opponent model)
@@ -344,7 +354,12 @@ def sim_args():
     return [
         Arg("model", "str", required=True, suggest="agent",
             help="Model to analyze: 'gen', a .zip path, or az:gen/azraw:gen "
-                 "for the generalist AlphaZero net"),
+                 "for the generalist AlphaZero net. A SEARCH spec (az:/mcts: "
+                 "prefix, e.g. az:gen?sims=128&worlds=4) makes the simulated "
+                 "trace games be PLAYED by the real MCTS controller, so the "
+                 "browser inspects states arising from search-quality play "
+                 "(slow); azraw:gen and a bare PPO spec keep raw-policy traces. "
+                 "The inspection net (value/probs/SHAP) is the same either way."),
         Arg("--opponent", "str", default="scripted", suggest="agent",
             help="Opponent controller: 'gen', a model .zip path, az:gen/azraw:gen, "
                  "or 'scripted' for the rule-based agent piloting the opponent deck "
@@ -578,6 +593,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "ckpt, else gen PPO warm-start, else random init)"),
         Arg("--temp-moves", "int", default=20,
             help="Sample from visit counts for the first N real decisions, then argmax"),
+        Arg("--sb-sims", "int", default=32,
+            help="PUCT sims at a bo3 sideboard root (bo3 only; heavier per step "
+                 "than an in-game decision; default 32)"),
+        Arg("--sb-worlds", "int", default=4,
+            help="Determinized worlds at a bo3 sideboard root (default 4)"),
+        Arg("--sb-max-depth", "int", default=200,
+            help="Rollout depth cap at a bo3 sideboard root (game-long horizon; "
+                 "default 200)"),
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per game (default 0.25); else a "
                  "uniform league-roster draw"),
@@ -611,12 +634,33 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
         Arg("--seed", "int", default=1),
+        Arg("--bo1", "flag",
+            help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
+                 "opts back into one-off games"),
     ]),
-    Sub("az", "One AlphaZero cycle: self-play -> train -> eval/gate", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
+    Sub("az",
+        "One AlphaZero cycle (self-play -> train -> eval/gate) over a deck x "
+        "opponent matrix (default: whole league; pass one --deck to fix a focus). "
+        "bo3 by default (per-game value target); --bo1 to opt out",
+        items=[
+        Arg("--deck", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated FOCUS deck pool the generalist pilots "
+                 "(default: every deck in decks/league/). Pass a single deck to "
+                 "fix one focus (the classic single-deck cycle)."),
+        Arg("--opponents", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated opponent-deck pool for self-play + gating "
+                 "(default: every deck in decks/league/). Each focus deck plays "
+                 "each; per game the opponent is the mirror with P=--mirror-frac, "
+                 "else a uniform draw from this pool."),
         Arg("--games", "int", default=50, help="Self-play games this cycle"),
         Arg("--sims", "int", default=64, help="Self-play PUCT sims"),
         Arg("--worlds", "int", default=4),
+        Arg("--sb-sims", "int", default=32,
+            help="PUCT sims at a bo3 sideboard root (bo3 only; default 32)"),
+        Arg("--sb-worlds", "int", default=4,
+            help="Determinized worlds at a bo3 sideboard root (default 4)"),
+        Arg("--sb-max-depth", "int", default=200,
+            help="Rollout depth cap at a bo3 sideboard root (default 200)"),
         Arg("--workers", "int", default=None),
         Arg("--batches", "int", default=500),
         Arg("--batch-size", "int", default=256),
@@ -630,11 +674,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per self-play game (default 0.25); "
                  "else a uniform league-roster draw"),
+        Arg("--bo1", "flag",
+            help="Run bo1 self-play + gate. The az cycle defaults to bo3 matches "
+                 "with a per-game value target; this opts back into single games"),
         _actor_mode(),
     ]),
     Sub("az-league",
         "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
-        "decks/league/ roster", items=[
+        "decks/league/ roster (bo3 by default; --bo1 to opt out)", items=[
         Arg("--resume", "flag",
             help="Resume an interrupted az-league run from its saved progress "
                  "(checkpoints/_az_league_progress.json, rewritten after each deck "
@@ -650,6 +697,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--games", "int", default=50, help="Self-play games per cycle"),
         Arg("--sims", "int", default=64, help="Self-play PUCT sims"),
         Arg("--worlds", "int", default=4),
+        Arg("--sb-sims", "int", default=32,
+            help="PUCT sims at a bo3 sideboard root (bo3 only; default 32)"),
+        Arg("--sb-worlds", "int", default=4,
+            help="Determinized worlds at a bo3 sideboard root (default 4)"),
+        Arg("--sb-max-depth", "int", default=200,
+            help="Rollout depth cap at a bo3 sideboard root (default 200)"),
         Arg("--workers", "int", default=None,
             help="Self-play worker processes (default max(1, cpu-2))"),
         Arg("--batches", "int", default=500),
@@ -665,6 +718,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per self-play game (default 0.25); "
                  "else a uniform league-roster draw"),
+        Arg("--bo1", "flag",
+            help="Run bo1 self-play + gate for every slot. The league defaults to "
+                 "bo3 matches with a per-game value target; this opts back into "
+                 "single games (persisted in the resume sidecar)"),
         _actor_mode(),
     ]),
 ])
@@ -701,6 +758,12 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
                 help="Games to drive with the MCTS controller (default: 4)"),
             Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
             Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
+            Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
+                help=f"bo3 sideboard-root sims (default: {DEFAULT_SB_SIMS})"),
+            Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
+                help=f"bo3 sideboard-root determinized worlds (default: {DEFAULT_SB_WORLDS})"),
+            Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
+                help=f"bo3 sideboard-root rollout depth (default: {DEFAULT_SB_MAX_DEPTH})"),
             Arg("--c", "float", default=1.5, help="PUCT exploration constant c_puct (default: 1.5)"),
             Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
             Arg("--top", "int", default=8,
@@ -747,6 +810,16 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
         Arg("--worlds", "int", default=None,
             help="Search opponent only: determinized worlds per decision "
                  "(sims are split across worlds); overrides the spec's worlds= (TUI only)"),
+        Arg("--think-time", "float", default=None,
+            help="Search opponent only (az:/mcts: --model): wall-clock seconds "
+                 "per decision — the search runs as many simulations as fit in "
+                 "this budget (more time = stronger play); overrides sims= as the "
+                 "terminator (TUI only)"),
+        Arg("--search-procs", "int", default=None,
+            help="Search opponent only (az:/mcts: --model): number of engine "
+                 "processes to fan the determinized worlds across for a faster "
+                 "search (world-parallel; more procs = more sims/decision in the "
+                 "same wall-clock). Default 1 (TUI only)"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),

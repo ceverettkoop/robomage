@@ -84,3 +84,17 @@ const std::vector<DecklistEntry> &deck_state_main(Zone::Ownership owner) {
 const std::vector<DecklistEntry> &deck_state_side(Zone::Ownership owner) {
     return (owner == Zone::PLAYER_A) ? g_deck_side_a : g_deck_side_b;
 }
+
+void deck_state_capture(DeckStateSnapshot &out) {
+    out.main_a = g_deck_main_a;
+    out.side_a = g_deck_side_a;
+    out.main_b = g_deck_main_b;
+    out.side_b = g_deck_side_b;
+}
+
+void deck_state_restore(const DeckStateSnapshot &in) {
+    g_deck_main_a = in.main_a;
+    g_deck_side_a = in.side_a;
+    g_deck_main_b = in.main_b;
+    g_deck_side_b = in.side_b;
+}

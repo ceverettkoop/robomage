@@ -143,6 +143,24 @@ def _edge_colors(colors):
     return tuple(colors[i % len(colors)] for i in range(4))
 
 
+# Trailing icons appended to a hand card's label so its kind is obvious at a
+# glance (a hand card shows only its name otherwise). Lands and creatures are the
+# two kinds worth flagging; a card that is both reads as a land (that is how it is
+# played from hand).
+_LAND_ICON = "🏔"
+_CREATURE_ICON = "🐾"
+
+
+def _hand_type_icon(card_idx):
+    """Land/creature icon for a hand card's label, or '' for anything else."""
+    types = decode.card_types(card_idx).split()
+    if "Land" in types:
+        return _LAND_ICON
+    if "Creature" in types:
+        return _CREATURE_ICON
+    return ""
+
+
 # ── Clickable card widget ─────────────────────────────────────────────────────
 
 class CardClicked(Message):
@@ -155,6 +173,12 @@ class CardClicked(Message):
         super().__init__()
 
 
+# Attacking creatures get a dashed border in this red — deliberately brighter and
+# more saturated than the muted color-identity red (#d64b3b) so an attacker reads
+# distinctly, not like a merely red-costed card.
+_ATTACK_BORDER = "#ff2b2b"
+
+
 class CardButton(Static):
     """A single clickable card (permanent or hand card).
 
@@ -162,17 +186,24 @@ class CardButton(Static):
     the card's color identity; each edge is painted its color at mount time so
     multicolor cards show a split border (see `_edge_colors`). `zone`
     ("battlefield"/"hand") distinguishes a card from a same-named copy in the
-    other zone so cross-highlighting doesn't spill between them."""
+    other zone so cross-highlighting doesn't spill between them. `attacking`
+    replaces the color-identity border with a dashed red one so an attacking
+    creature stands out during combat."""
 
     def __init__(self, label: str, card_idx: int, controller: str,
-                 edge_colors=None, zone: str = "battlefield"):
+                 edge_colors=None, zone: str = "battlefield",
+                 attacking: bool = False):
         super().__init__(label)
         self._card_idx = card_idx
         self._controller = controller
         self._edge_colors = edge_colors
         self._zone = zone
+        self._attacking = attacking
 
     def on_mount(self) -> None:
+        if self._attacking:
+            self.styles.border = ("dashed", _ATTACK_BORDER)
+            return
         if not self._edge_colors:
             return
         top, right, bottom, left = self._edge_colors
@@ -261,6 +292,18 @@ class GameOver(Message):
         super().__init__()
 
 
+class OppThinking(Message):
+    """Toggle the "opponent is thinking" indicator around a MODEL opponent's
+    move. Posted from the driver thread on either side of the (possibly slow —
+    a search controller with a wall-clock budget) `_opp_act` call; the UI thread
+    starts/stops an elapsed-seconds ticker in response. Only used for model/search
+    opponents — a scripted opponent answers in microseconds and would just flicker."""
+
+    def __init__(self, active):
+        self.active = active
+        super().__init__()
+
+
 # ── The app ───────────────────────────────────────────────────────────────────
 
 class GameApp(App):
@@ -316,8 +359,8 @@ class GameApp(App):
         ("q", "inspect", "Oracle (hold)"),
         ("space", "pass_zero", "Pass"),
         ("p", "autopass", "Autopass"),
-        ("plus", "resize_log(1)", "Bigger log"),
-        ("minus", "resize_log(-1)", "Smaller log"),
+        ("greater_than_sign", "resize_log(1)", "Bigger log"),
+        ("less_than_sign", "resize_log(-1)", "Smaller log"),
         ("0", "pick('0')", "Pick"),
         ("1", "pick('1')", ""), ("2", "pick('2')", ""), ("3", "pick('3')", ""),
         ("4", "pick('4')", ""), ("5", "pick('5')", ""), ("6", "pick('6')", ""),
@@ -337,11 +380,21 @@ class GameApp(App):
         # is_sideboard}, human-frame) — drives the score line and the winner
         # text. Populated on every StateUpdate; None until the first one.
         self._match = None
+        self._is_model = is_model
         self._opp_label = "Model" if is_model else "Scripted"
         self._human_q = self._make_queue()
         self._actions = []
         self._awaiting = False
         self._reward = 0.0
+        # Set the instant ctrl+q is pressed so the driver thread — which may be
+        # blocked deep inside a long opponent search when the killed engine pipe
+        # raises — exits silently instead of posting into a dying app.
+        self._quitting = False
+        # Elapsed-seconds ticker for the "opponent is thinking" indicator (a
+        # model/search opponent only). Started/stopped on the UI thread by
+        # on_opp_thinking; None while idle. See OppThinking.
+        self._think_timer = None
+        self._think_start = 0.0
         # The CardButton the mouse is currently over (Enter/Leave tracked in
         # on_enter/on_leave). Drives the action<->permanent cross-highlighting,
         # and is the anchor the card-inspect popup reads.
@@ -440,7 +493,17 @@ class GameApp(App):
                 opp_acted = False
                 autopass_acted = False
                 if opp_turn:
-                    action = int(self._opp_act(obs, num))
+                    # A model/search opponent can take seconds to answer; show a
+                    # thinking indicator around the call (the driver runs on a
+                    # worker thread, so the UI stays live meanwhile). The finally
+                    # clears it even if _opp_act raises (quit/error).
+                    if self._is_model:
+                        self.post_message(OppThinking(True))
+                    try:
+                        action = int(self._opp_act(obs, num))
+                    finally:
+                        if self._is_model:
+                            self.post_message(OppThinking(False))
                     if 0 <= action < len(actions) and actions[action]["category"] != 0:
                         self.post_message(LogLines(
                             [_opp_event_text(actions[action], self._opp_label)]))
@@ -474,8 +537,15 @@ class GameApp(App):
 
             self.post_message(GameOver(self._winner_text()))
         except EOFError:
+            if self._quitting:
+                return
             self.post_message(GameOver(self._winner_text()))
         except Exception as exc:  # surface, don't swallow
+            # A ctrl+q mid-search kills the engine, which unblocks the pipe read
+            # with an error that lands here — but the app is already tearing down,
+            # so return silently rather than posting into a dying app.
+            if self._quitting:
+                return
             self.post_message(LogLines([f"[red]driver error: {exc!r}[/red]"]))
             self.post_message(GameOver(self._winner_text()))
 
@@ -585,6 +655,24 @@ class GameApp(App):
         for line in message.lines:
             if line.strip():
                 self._write_event(line)
+
+    def on_opp_thinking(self, message: OppThinking) -> None:
+        """Show/hide the elapsed-seconds "opponent is thinking" indicator around
+        a model/search opponent's move (runs on the UI thread, so the ticker is
+        safe to start/stop here)."""
+        if message.active:
+            self._think_start = time.monotonic()
+            self._tick_think()
+            if self._think_timer is None:
+                self._think_timer = self.set_interval(1.0, self._tick_think)
+        elif self._think_timer is not None:
+            self._think_timer.stop()
+            self._think_timer = None
+
+    def _tick_think(self) -> None:
+        elapsed = int(time.monotonic() - self._think_start)
+        self.query_one("#prompt", Static).update(
+            f"⏳ {self._opp_label} is thinking…  ({elapsed}s)")
 
     def on_game_over(self, message: GameOver) -> None:
         self._awaiting = False
@@ -848,9 +936,13 @@ class GameApp(App):
 
     def _show_oracle(self, card_idx: int) -> None:
         name = decode.card_index_to_name(card_idx)
+        cost = decode.fmt_mana_cost(decode.card_mana_cost(card_idx))
         oracle = decode.card_oracle_text(card_idx)
         body = Text()
         body.append(name, style="bold")
+        if cost:
+            body.append("   ")
+            body.append(cost, style="bold yellow")
         body.append("\n")
         body.append(oracle or "(no oracle text)",
                     style="" if oracle else "italic dim")
@@ -884,6 +976,10 @@ class GameApp(App):
             self.bell()
 
     def action_quit(self) -> None:
+        # Flag the shutdown first: if the driver is blocked in a long opponent
+        # search, on_unmount's env.close() kills the engine and the pipe read
+        # errors out in _drive, which then returns silently on this flag.
+        self._quitting = True
         try:
             self._human_q.put_nowait(None)
         except Exception:
@@ -934,7 +1030,7 @@ class GameApp(App):
         box = self.query_one(selector, VerticalScroll)
         await box.remove_children()
         widgets = [self._mk_card(decode.fmt_perm(p), p["card_idx"], controller,
-                                 "battlefield")
+                                 "battlefield", p.get("attacking", False))
                    for p in perms]
         if widgets:
             await box.mount(*widgets)
@@ -942,17 +1038,24 @@ class GameApp(App):
     async def _rebuild_hand(self, hand) -> None:
         box = self.query_one("#self-hand", VerticalScroll)
         await box.remove_children()
-        widgets = [self._mk_card(c["name"], c["card_idx"], "self", "hand")
+        widgets = [self._mk_card(self._hand_label(c["card_idx"], c["name"]),
+                                 c["card_idx"], "self", "hand")
                    for c in hand]
         if widgets:
             await box.mount(*widgets)
 
     @staticmethod
+    def _hand_label(card_idx: int, name: str) -> str:
+        icon = _hand_type_icon(card_idx)
+        return f"{name} {icon}" if icon else name
+
+    @staticmethod
     def _mk_card(label: str, card_idx: int, controller: str,
-                 zone: str) -> "CardButton":
-        """Build a CardButton whose border edges encode the card's color identity."""
+                 zone: str, attacking: bool = False) -> "CardButton":
+        """Build a CardButton whose border edges encode the card's color identity
+        (or a dashed red attacking border when `attacking`)."""
         edges = _edge_colors(decode.card_border_colors(card_idx))
-        return CardButton(label, card_idx, controller, edges, zone)
+        return CardButton(label, card_idx, controller, edges, zone, attacking)
 
     def _match_strip(self, match) -> str:
         """Compact bo3 score prefix ("Game 2 · You 1–0 · ") for the phase line, or

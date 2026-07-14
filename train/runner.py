@@ -400,6 +400,26 @@ def run_games(controller_a, controller_b, *,
               f"{'es' if bo3 else 's'} ({win_pct:.1f}% Player A win rate){extra}",
               file=stream, flush=True)
 
+    # Lightweight per-side search-effort summary for MCTS/AZ seats — lets the
+    # user see the effort actually spent (mean sims/decision), which is the
+    # payoff of a wall-clock --think-time budget. Skipped for non-search seats
+    # (no .stats["searched"]) and deduped when one object drives both seats.
+    if transcript != "quiet":
+        seen = set()
+        for lbl, ctrl in ((label_a, controller_a), (label_b, controller_b)):
+            if id(ctrl) in seen:
+                continue
+            seen.add(id(ctrl))
+            st = getattr(ctrl, "stats", None)
+            if not isinstance(st, dict) or not st.get("searched"):
+                continue
+            searched = st["searched"]
+            mean_sims = st.get("sims", 0) / max(1, searched)
+            print(f"  [{lbl}] search effort: {searched} roots "
+                  f"({st.get('sb_searched', 0)} sideboard), {st.get('sims', 0)} "
+                  f"sims total, {mean_sims:.0f} mean sims/decision",
+                  file=stream, flush=True)
+
     return wins, losses, draws
 
 

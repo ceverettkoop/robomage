@@ -21,10 +21,27 @@ real episode). Driver discipline: snapshots may only be live *during* a
 search — ``release()`` must be called before the chosen real action is
 stepped, otherwise a real game-end would park the engine in the SIM_RESULT
 intercept while ``step()``'s reader waits for a query that never comes.
+
+Mirror pool (world-parallel interactive search)
+-----------------------------------------------
+For interactive consumers only (play/TUI/observe/analysis), ``ensure_mirrors(k)``
+lazily spins up ``k`` extra engine processes kept in lockstep with this primary:
+each mirror ``reset()``s to the primary's ``last_engine_seed`` and replays the
+recorded real-action history, so it holds a byte-identical game state (same
+binary + ctor state flags + seed + action stream => identical engine state).
+``step()`` forwards every real action to the live mirrors and re-checks obs
+equality; ``search_envs()`` then exposes ``[self] + mirrors`` so
+``mcts.run_search_parallel`` can split the determinized worlds across the
+processes. Same driver discipline as snapshots: mirrors receive real ``step()``s
+only when no snapshots are live (a search restores+releases every env before the
+real move). Any mirror drift/failure disables the whole pool (the primary plays
+on alone) — interactive robustness beats strictness. Self-play and the parity
+corpus never touch this path (procs defaults to 1).
 """
 
 from __future__ import annotations
 
+import sys
 from typing import NamedTuple, Optional
 
 import numpy as np
@@ -51,8 +68,123 @@ class ProtocolError(RuntimeError):
 class SearchRoboMageEnv(RoboMageEnv):
     """RoboMageEnv wired for the --search-server snapshot protocol."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Mirror pool (interactive world-parallel search). The action history is
+        # recorded unconditionally (tiny) so a mirror created mid-game can be
+        # fast-forwarded to the current decision by replay.
+        self._action_history: list[int] = []
+        self._mirrors: list["SearchRoboMageEnv"] = []
+        self._mirror_pool_disabled = False
+
     def _extra_engine_flags(self) -> list:
         return ["--search-server"]
+
+    # ------------------------------------------------------------------
+    # gym overrides (record history + keep mirrors in lockstep)
+    # ------------------------------------------------------------------
+
+    def reset(self, *, seed=None, options=None):
+        obs, info = super().reset(seed=seed, options=options)
+        # A new episode invalidates any mirrors (stale seed/state) and re-arms
+        # the pool for this env.
+        self._action_history = []
+        self._close_mirrors()
+        self._mirror_pool_disabled = False
+        return obs, info
+
+    def step(self, action: int):
+        result = super().step(action)
+        # Record the PRE-remap env-index action (the same value step() consumed,
+        # before its own confirm-slot remap): replaying it into a mirror
+        # re-derives the identical remap, so the mirror stays byte-identical.
+        self._action_history.append(int(action))
+        if self._mirrors and not self._mirror_pool_disabled:
+            self._forward_to_mirrors(int(action))
+        return result
+
+    def close(self):
+        self._close_mirrors()
+        super().close()
+
+    # ------------------------------------------------------------------
+    # Mirror pool
+    # ------------------------------------------------------------------
+
+    def _mirror_ctor_kwargs(self) -> dict:
+        """State-relevant ctor kwargs for a mirror. Only params that affect the
+        engine's game state are copied; output-only flags (narrative, log_viewer,
+        log_decisions, render_mode) are EXCLUDED — a mirror is a plain
+        SearchRoboMageEnv, never Narrative, and must not clobber the primary's
+        RMLOG file via log_decisions."""
+        return dict(
+            binary_path=self.binary_path,
+            deck_a=self._deck_a, deck_b=self._deck_b,
+            bo3=self._bo3, auto_sideboard=self._auto_sideboard,
+            no_shuffle=self._no_shuffle,
+            battlefield_a=self._battlefield_a, battlefield_b=self._battlefield_b,
+            graveyard_a=self._graveyard_a, graveyard_b=self._graveyard_b,
+            exile_a=self._exile_a, exile_b=self._exile_b,
+            sideboard_a=self._sideboard_a, sideboard_b=self._sideboard_b,
+            life_a=self._life_a, life_b=self._life_b,
+        )
+
+    def ensure_mirrors(self, k: int) -> None:
+        """Lazily bring the live mirror count up to ``k``. Each new mirror resets
+        to this env's seed and replays the recorded action history, then its obs
+        is asserted byte-equal to the primary's. Any failure disables the pool for
+        this env (the primary plays on alone) — never raises to the caller."""
+        if k <= 0 or self._mirror_pool_disabled:
+            return
+        while len(self._mirrors) < k:
+            m = None
+            try:
+                m = SearchRoboMageEnv(**self._mirror_ctor_kwargs())
+                m.reset(options={"engine_seed": self.last_engine_seed})
+                for a in self._action_history:
+                    m.step(int(a))
+                if not np.array_equal(m._obs, self._obs):
+                    raise RuntimeError("mirror obs != primary after history replay")
+                self._mirrors.append(m)
+            except Exception as e:  # noqa: BLE001 — robustness over strictness
+                if m is not None:
+                    try:
+                        m.close()
+                    except Exception:
+                        pass
+                self._disable_pool(f"mirror spawn/replay failed: {e}")
+                return
+
+    def search_envs(self) -> list:
+        """The engines available to a parallel search: this primary plus every
+        live mirror (empty mirror list => just [self], a plain single-env search)."""
+        return [self] + list(self._mirrors)
+
+    def _forward_to_mirrors(self, action: int) -> None:
+        for m in self._mirrors:
+            try:
+                m.step(action)
+                if not np.array_equal(m._obs, self._obs):
+                    raise RuntimeError("mirror obs diverged from primary after step")
+            except Exception as e:  # noqa: BLE001 — robustness over strictness
+                self._disable_pool(f"mirror lockstep step failed: {e}")
+                return
+
+    def _disable_pool(self, reason: str) -> None:
+        if self._mirror_pool_disabled:
+            return
+        self._mirror_pool_disabled = True
+        print(f"[search-mirror] pool disabled: {reason}; primary continues alone",
+              file=sys.stderr, flush=True)
+        self._close_mirrors()
+
+    def _close_mirrors(self) -> None:
+        for m in self._mirrors:
+            try:
+                m.close()
+            except Exception:
+                pass
+        self._mirrors = []
 
     # ------------------------------------------------------------------
     # Protocol commands (each re-emits the current/restored decision query)

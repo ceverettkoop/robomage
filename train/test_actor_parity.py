@@ -80,45 +80,45 @@ def _read_dump(path):
     return out
 
 
-def main():
-    if not os.path.exists(ACTOR_BIN):
-        print(f"FAIL: {ACTOR_BIN} not found — build it with `make actor`", file=sys.stderr)
-        return 1
+def _run_case(td, ts_path, bo3):
+    """Run one parity case (bo1 or a bo3 MATCH): the C++ actor with --dump-obs and
+    the Python env driven by the same azraw controller. Returns (actor_obs, py_obs)
+    lists of (num_choices, obs) — or None on an actor error."""
+    tag = "bo3" if bo3 else "bo1"
+    # 1) C++ actor: one game (bo1) or one best-of-three match (--bo3), dumping obs.
+    dump_path = os.path.join(td, f"actor_obs_{tag}.bin")
+    cmd = [ACTOR_BIN, "--deck", DECK, "--seed", str(SEED),
+           "--model", ts_path, "--dump-obs", dump_path, "--games", "1"]
+    if bo3:
+        cmd.append("--bo3")
+    proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE)
+    if proc.returncode != 0:
+        print(f"FAIL [{tag}]: az_actor exited nonzero:\n"
+              + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
+        return None
+    actor_obs = _read_dump(dump_path)
 
-    with tempfile.TemporaryDirectory() as td:
-        # 1) Deterministic AZNet -> state_dict ckpt + TorchScript export.
-        torch.manual_seed(0)
-        net = AZNet(obs_space_from_const()).eval()
-        ckpt = os.path.join(td, "parity__azfinal.pt")
-        net.save(ckpt)
-        ts_path = torchscript_export_path(ckpt)     # parity__azfinal.ts.pt
-        save_torchscript(net, ts_path)
+    # 2) Drive the SAME game/match through the Python env, both seats azraw.
+    ctrl = AZRawController(ts_path)
+    env = RoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
+    if bo3:
+        # The actor plays the whole match to the engine's natural end; disable the
+        # env's training-only step cap so the Python drive runs the identical match
+        # (rather than truncating mid-game and comparing an unequal root count).
+        env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
+    try:
+        obs, _ = env.reset(options={"engine_seed": SEED})
+        runner.drive_game(env, obs, ctrl, ctrl)
+    finally:
+        env.close()
+    return actor_obs, ctrl.records
 
-        # 2) Run the C++ actor for one game, dumping every decision's obs.
-        dump_path = os.path.join(td, "actor_obs.bin")
-        cmd = [ACTOR_BIN, "--deck", DECK, "--seed", str(SEED),
-               "--model", ts_path, "--dump-obs", dump_path, "--games", "1"]
-        proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE)
-        if proc.returncode != 0:
-            print("FAIL: az_actor exited nonzero:\n"
-                  + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
-            return 1
-        actor_obs = _read_dump(dump_path)
 
-        # 3) Drive the SAME game through the Python env, both seats azraw.
-        ctrl = AZRawController(ts_path)
-        env = RoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=False)
-        try:
-            obs, _ = env.reset(options={"engine_seed": SEED})
-            runner.drive_game(env, obs, ctrl, ctrl)
-        finally:
-            env.close()
-        py_obs = ctrl.records
-
-    # 4) Compare.
+def _compare(tag, actor_obs, py_obs):
+    """Assert bit-exact obs parity; return 0 on success, 1 on any mismatch."""
     if len(actor_obs) != len(py_obs):
-        print(f"FAIL: decision count differs — actor={len(actor_obs)} "
+        print(f"FAIL [{tag}]: decision count differs — actor={len(actor_obs)} "
               f"python={len(py_obs)}", file=sys.stderr)
         n = min(len(actor_obs), len(py_obs))
         for i in range(n):
@@ -132,21 +132,48 @@ def main():
 
     for i, ((a_nc, a_obs), (p_nc, p_obs)) in enumerate(zip(actor_obs, py_obs)):
         if a_nc != p_nc:
-            print(f"FAIL: num_choices differ at decision {i}: "
+            print(f"FAIL [{tag}]: num_choices differ at decision {i}: "
                   f"actor={a_nc} python={p_nc}", file=sys.stderr)
             return 1
         if not np.array_equal(a_obs, p_obs):
             diff = np.flatnonzero(a_obs != p_obs)
-            print(f"FAIL: obs differ at decision {i} "
+            print(f"FAIL [{tag}]: obs differ at decision {i} "
                   f"({diff.size} floats differ)", file=sys.stderr)
             for j in diff[:10]:
                 print(f"  obs[{j}]: actor={a_obs[j]!r} python={p_obs[j]!r}",
                       file=sys.stderr)
             return 1
 
-    print(f"PASS: obs bit-exact over {len(actor_obs)} decisions "
+    print(f"PASS [{tag}]: obs bit-exact over {len(actor_obs)} decisions "
           f"(deck={DECK} seed={SEED}, OBS_SIZE={OBS_SIZE})")
     return 0
+
+
+def main():
+    if not os.path.exists(ACTOR_BIN):
+        print(f"FAIL: {ACTOR_BIN} not found — build it with `make actor`", file=sys.stderr)
+        return 1
+
+    with tempfile.TemporaryDirectory() as td:
+        # Deterministic AZNet -> state_dict ckpt + TorchScript export (shared).
+        torch.manual_seed(0)
+        net = AZNet(obs_space_from_const()).eval()
+        ckpt = os.path.join(td, "parity__azfinal.pt")
+        net.save(ckpt)
+        ts_path = torchscript_export_path(ckpt)     # parity__azfinal.ts.pt
+        save_torchscript(net, ts_path)
+
+        # bo1 game AND a full bo3 match (which exercises the between-games
+        # sideboard-phase observation mask — the bo3 context block and the masked
+        # stale board must both stay bit-for-bit identical to the Python pipeline).
+        rc = 0
+        for bo3 in (False, True):
+            tag = "bo3" if bo3 else "bo1"
+            case = _run_case(td, ts_path, bo3)
+            if case is None:
+                return 1
+            rc |= _compare(tag, *case)
+    return rc
 
 
 if __name__ == "__main__":

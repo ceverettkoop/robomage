@@ -34,6 +34,13 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
+// Rebuilt from scratch by gather_active_statics on every SBE pass; its ActiveStatic
+// entries hold raw pointers into component arrays, so it can be left holding stale
+// pointers across a snapshot restore (the ECS component storage moves). That is
+// safe: nothing reads g_active_statics outside the SBE / legal-action machinery,
+// which never runs at a sideboard prompt (the only cross-game restore root), and
+// the very next SBE pass rebuilds it before any reader. It is deliberately NOT part
+// of the game snapshot.
 std::vector<ActiveStatic> g_active_statics;
 
 void StateManager::init() {

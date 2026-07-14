@@ -336,7 +336,7 @@ opt-in target and its CI tier self-skips when the binary isn't built.
 
 1. **Obs bit-parity** — `test_actor_parity.py`: the C++ obs builder reproduces
    the engine's observation vector **bit-exact over 226 decisions**
-   (`league/ur_delver`, seed 1, `OBS_SIZE=6700`).
+   (`league/ur_delver`, seed 1, `OBS_SIZE=6922`).
 2. **MCTS visit parity** — `test_mcts_parity.py`: C++ vs `mcts.py` visit counts
    **exact over 271 searched roots** (4336 total root visits; sims=16 worlds=2
    c=1.5, batch=1). Batched search (batch=16) is a separate line — it agrees on
@@ -370,6 +370,169 @@ train/.venv/bin/python train/train.py az-league                 # --resume to co
 # Throughput bench (C++ actor vs single-worker Python):
 train/.venv/bin/python train/bench_actor.py --games 2 --sims 128 --worlds 4
 ```
+
+## Phase 2 — learned sideboarding — DONE (2026-07-13)
+
+**What it is.** In a best-of-three match the between-game sideboard decision (which
+cards to swap between main deck and sideboard) is no longer a blind heuristic: it is
+a **searched MCTS root** evaluated on the **next game's** horizon, and the choice is
+persisted as a training sample whose value target is the result of that next game
+(next-game `z`). The generalist therefore *learns to sideboard* from the same
+self-play loop that teaches it to play — both backends (pure-Python and the C++
+`bin/az_actor`) generate these samples, bit-for-bit compatibly.
+
+**Mechanism in brief.**
+
+- **MATCH-scoped snapshot across `init_ecs()`** — a sideboard prompt sits *between*
+  two games, i.e. across a fresh ECS. A match-scoped snapshot slot survives the
+  per-game `snapshot_release_all`, so the sideboard root can be snapshotted, searched
+  (with simulations that roll into the *next* game), and restored, all without
+  corrupting the real match state. The bo3 match loop is resumable and the sideboard
+  prompt is a **loop-safe** searchable root (a sim's unwind re-enters the dispatcher
+  top rather than double-counting the game).
+- **Seed-salt determinization** — a sideboard root's determinized worlds are salted
+  by the *next* game's seed, so the K sampled worlds vary correctly game-to-game
+  (covered by the snapshot-tier world-variation test).
+- **Sideboard-root search budget** — the sideboard root gets its own heavier, deeper
+  budget: `sb_sims=32` / `sb_worlds=4` / `sb_max_depth=200` (the rollout horizon is
+  game-long, so it is deeper than an in-game decision). These are inert for bo1.
+- **Actor parity + next-game flush** — the C++ actor mirrors the Python match loop
+  exactly: `--bo3` treats each `--games` unit as a match (match seeds spaced by 3),
+  it searches the sideboard root with the same `--sb-sims`/`--sb-worlds`/
+  `--sb-max-depth` budget, and it **flushes** each game's samples priced by that
+  game's winner while sideboard samples recorded between a game's backfill and the
+  next game's start stay buffered and are priced by the NEXT game (matching Python's
+  `game_idx == k+1` sideboard samples). All obs + MCTS visits stay bit-exact with the
+  Python reference.
+
+**New CLI knobs** (on `az-selfplay` where bo3 applies, and `az` / `az-league` /
+`az-eval`, all bo3 by default with `--bo1` to opt out):
+
+```
+--sb-sims N        PUCT sims at a bo3 sideboard root (default 32)
+--sb-worlds N      determinized worlds at a bo3 sideboard root (default 4)
+--sb-max-depth N   rollout depth cap at a bo3 sideboard root (default 200)
+```
+
+Both self-play backends now run bo3 — `--actor` / `--no-actor` (default AUTO) picks
+the backend independently of bo3 (the actor is no longer bo1-only). The actor argv
+carries `--bo3` plus the three `--sb-*` flags; `--games` means MATCHES on both
+backends.
+
+**CI coverage.**
+
+- `snapshot` tier (`test_snapshot.py`) — the match-scoped snapshot roundtrip across
+  `init_ecs()` and the seed-salt world-variation at a sideboard root.
+- `sbselfplay` tier — the Python bo3 self-play persists searched sideboard samples
+  with next-game `z` (in-game samples priced by their own game's winner).
+- `actor` tier — the bo3 sideboard parity case (`test_actor_parity.py` /
+  `test_mcts_parity.py` bo3 MATCH cases, obs + visit parity) and
+  `test_actor_shards.py`'s bo3 case (64 sideboard samples, `z` verified against the
+  next game's winner, trainer-ingestible shard schema).
+
+### User-facing tools at sideboard roots (Stage 7)
+
+Every consumer that drives a searching (`az:`/`azraw:`/`mcts:`) seat through the
+shared `opponents.SearchController` — `play.py` (via `tui_game`), `analysis.py`
+(`search` + `report`/`interactive`), `train.py observe`, and the
+`az_eval`/`eval_search_gate.py` promotion gate — now handles the bo3 **sideboard
+root** correctly:
+
+- **`SearchController` selects the sideboard budget at sideboard roots.** When the
+  current decision is a bo3 sideboard prompt (`obs[_IS_SIDEBOARD_IDX] > 0.5`) the
+  controller searches it with `sb_sims` / `sb_worlds` / `sb_max_depth` (defaults
+  `32` / `4` / `200`) instead of the in-game budget. This mirrors `az_selfplay`:
+  in-game roots keep `run_search`'s default `max_depth=60`, which at a sideboard
+  root would be swallowed by the remaining sideboard/mulligan prompts and land the
+  leaf value on a masked between-game observation (weak signal). The sideboard vs
+  in-game searched split is tallied separately in `stats["sb_searched"]`.
+- **Shared constants, no duplication.** `DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH` live in
+  `cli_spec.py` (the single home, imported by `az_selfplay`, `SearchController`,
+  and the CLI flag defaults); the sideboard-flag index `_IS_SIDEBOARD_IDX` is a
+  named constant in `env.py`.
+- **Spec query knobs.** `az:`/`azraw:`/`mcts:` specs accept
+  `?sb_sims=&sb_worlds=&sb_max_depth=` (alongside `sims=`/`worlds=`), so any tool
+  taking a controller spec (observe `--player-a`, play `--model`) can tune the
+  sideboard budget inline.
+- **`analysis.py search`** gained `--sb-sims`/`--sb-worlds`/`--sb-max-depth` and
+  reports how many searched roots were sideboard roots (`N searched (K at bo3
+  sideboard roots)`); its recording sub-controller applies the same budget split.
+- **`az_eval` / `eval_search_gate.py`** thread `--sb-sims`/`--sb-worlds`/
+  `--sb-max-depth` into the `az:`/`mcts:` spec they build, so the gate prices
+  sideboard roots explicitly rather than inheriting them silently.
+
+Verified end-to-end (`league/ur_delver` vs `league/gw_maverick`, `az:gen`): observe
+runs a bo3 to `MATCH_RESULT` with the model sideboarding and search firing at each
+sideboard swap; `analysis.py search` decodes SIDEBOARD roots; play's engine path
+(`runner.run_match`, human-like seat vs searched model) coexists cleanly; the gate
+runs without crashing on the masked sideboard obs. Observed per-decision latency at
+the default sideboard budget (`sb_sims=32`, `sb_worlds=4`, `sb_max_depth=200`):
+~200ms mean (166–312ms) per sideboard decision, vs ~68ms in-game at `sims=8`.
+
+### Wall-clock per-decision search budget (Stage 8)
+
+A search seat's effort can be set by **wall-clock time** instead of a fixed sim
+count: the `time=<seconds>` spec knob (`az:gen?time=5&worlds=4`, `mcts:…?time=…`) —
+and `play.py --think-time <seconds>` which appends it — give the search a
+per-decision deadline, within which it runs as many simulations as fit (more time =
+stronger play). `mcts.run_search` gained `time_budget_s`: when set it builds the
+`worlds` roots up front and runs sims **round-robin** across worlds until the
+deadline (so a timed cutoff never biases visits toward the first world), with a
+floor of one sim per world; `sims`/`sb_sims` become an optional hard cap. When
+`time=` is absent the original per-world sequential loop is **byte-for-byte
+unchanged** (actor visit-parity holds). The one budget applies to both in-game and
+sideboard roots (the `sb_max_depth` split still applies). `runner.run_games` now
+prints a per-side search-effort line (roots searched, sideboard split, total and
+mean sims/decision) so the effort spent is visible. Measured with `az:gen` on
+`league/ur_delver` vs `league/gw_maverick`: `time=2&worlds=4` ≈ 190 mean
+sims/decision (vs the 128 fixed default); `time=1` bo3 ≈ 103 mean over 471 roots
+incl. 28 timed sideboard roots. Standalone check: `train/test_search_time_budget.py`
+(not wired into a ci tier — wall-clock bounds can be flaky under CI load).
+
+### World-parallel mirror-pool search (Stage 10)
+
+The engine is a single-threaded global-singleton ECS, so one process runs one
+simulation at a time — but a determinized search's `worlds` are fully independent
+(own root node, own seed, per-sim `restore(0)`+`determinize(seed)`). For
+**interactive** consumers (play/TUI/observe/analysis) the `procs=<n>` spec knob
+(and `play.py --search-procs <n>`) opts into a **mirror pool**: `SearchRoboMageEnv`
+records its real-action history and `ensure_mirrors(k)` spins up `k` extra engine
+processes, each reset to the primary's seed and fast-forwarded by replaying that
+history to a byte-identical state (asserted via obs equality). At a searchable
+decision the worlds split contiguously across `[primary] + mirrors` and
+`mcts.run_search_parallel` runs each env's slice in its own thread (each thread
+mostly blocks on its engine pipe, so the GIL is not the bottleneck); the shared
+evaluator is serialized under a lock (engine stepping at ~6ms/sim dominates the net
+eval). World seeds are pre-drawn with the exact `run_search` derivation, so with one
+env the parallel path is **bit-identical** to plain `run_search` and with N it just
+fans the same worlds out — visit counts sum across envs. Any mirror drift/spawn
+failure disables the pool with one stderr warning and the primary plays on alone
+(interactive robustness over strictness). `run_search` itself is untouched and
+`procs` defaults to 1, so **self-play and the parity corpus never touch this path**.
+Regression: `train/test_mirror_search.py`, wired into `ci_check.py` as the default
+`mirror` tier (torch-free: bit-exact merge, bo3 lockstep across the sideboard
+boundary, and drift-fallback).
+
+### Analysis trace games honor search specs (Stage 11)
+
+`analysis.py` (and the `tui_analysis.py` browser, which shares its simulation
+layer) used to play its trace games with the RAW net policy even for an
+`az:`/`mcts:` model — the prefix only chose which net loaded. Now the **spec
+prefix is the lever**: when the model (or model-opponent) spec is a search spec
+(`az:` / `mcts:`), the simulated trace games are PLAYED by the real
+`opponents.SearchController` (built via `make_controller`, bound to a
+search-capable `SearchRoboMageEnv`), so the browser inspects states arising from
+search-quality play. `azraw:gen` and bare PPO specs keep the raw-policy
+`ModelController` — exactly what those specs mean everywhere else, so no new CLI
+flag. The **inspection net** (SHAP / value / policy-probs displays) is still
+loaded exactly as before via `_load_az_analysis_model` / `MaskablePPO.load` and
+evaluated on the recorded obs — only how games are *driven* changed. The
+SearchController is cached per model object (env is reused across games; its
+`stats` accumulate) and its searched/fallback/sims tally is printed after the run.
+Whatif/replay is preserved: `_replay_to_step` feeds recorded `full_actions` (no
+live search during a replay); the whatif counterfactual `_rollout_from` re-drives
+the branch live, which now legitimately searches on a search spec (works with the
+search env; snapshots released between decisions as usual).
 
 ## Analysis-tool integration (M10)
 
@@ -421,7 +584,8 @@ conventions). Example:
 ```bash
 train/.venv/bin/python train/analysis.py search az:league/ur_delver \
     --deck-a league/ur_delver --deck-b league/ur_delver \
-    --n-games 4 --sims 64 --worlds 4 --top 8
+    --n-games 4 --sims 64 --worlds 4 --top 8 \
+    --bo3 --sb-sims 32 --sb-worlds 4 --sb-max-depth 200   # sb-* apply at bo3 sideboard roots
 ```
 
 Both are surfaced in the TUI for free: the `search` subcommand is declared in
@@ -477,9 +641,11 @@ as the design intent it was built against:
   declared companion is public and stays pinned; game 1 models the known
   pre-board 60). Covered by the `sideboard_determinize` CI test. Mild accepted
   approximations are documented in `src/search_server.cpp`.
-- Snapshot slots are wiped at each game start (`snapshot_release_all` in
-  `play_single_game`) — no cross-game reuse; bo3 sideboard decisions are unsafe
-  roots (searchable later if wanted).
+- Per-GAME snapshot slots are wiped at each game start (`snapshot_release_all` in
+  `play_single_game`) — no cross-game reuse. The bo3 **sideboard** decision is the
+  exception: it is a searchable root backed by a MATCH-scoped snapshot that survives
+  the per-game wipe (Phase 2, above), so a sideboard prompt can be searched on the
+  next game's horizon.
 - `train/checkpoints/` and `train/az_data/` are gitignored artifacts; move
   checkpoints between machines out-of-band.
 - The stock `delver__final.zip` here was trained WITHOUT the per-action head;

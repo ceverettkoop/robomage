@@ -43,7 +43,7 @@ def _run_batch(args):
     cb = make_controller(b_spec)
     t0 = time.time()
     r = run_match(ca, cb, deck_a=deck, deck_b=deck,
-                  games=games, bo3=False, seed=seed, transcript="quiet")
+                  games=games, bo3=True, seed=seed, transcript="quiet")
     stats = getattr(ca, "stats", None) or getattr(cb, "stats", None) or {}
     return tag, r.wins, r.losses, r.draws, dict(stats), time.time() - t0
 
@@ -57,6 +57,13 @@ def main() -> int:
                     help="Total gate games, split evenly across seats (default 192)")
     ap.add_argument("--sims", type=int, default=128)
     ap.add_argument("--worlds", type=int, default=4)
+    ap.add_argument("--sb-sims", type=int, default=None,
+                    help="bo3 sideboard-root sims (default: the SearchController "
+                         "sideboard budget, DEFAULT_SB_SIMS)")
+    ap.add_argument("--sb-worlds", type=int, default=None,
+                    help="bo3 sideboard-root determinized worlds (default budget)")
+    ap.add_argument("--sb-max-depth", type=int, default=None,
+                    help="bo3 sideboard-root rollout depth (default budget)")
     ap.add_argument("--c", type=float, default=1.5, dest="c_puct")
     ap.add_argument("--vscale", type=float, default=1.0,
                     help="Value squash scale for the PPO value head")
@@ -71,6 +78,10 @@ def main() -> int:
 
     spec = (f"mcts:{args.checkpoint}?sims={args.sims}&worlds={args.worlds}"
             f"&c={args.c_puct}&vscale={args.vscale}")
+    for knob, val in (("sb_sims", args.sb_sims), ("sb_worlds", args.sb_worlds),
+                      ("sb_max_depth", args.sb_max_depth)):
+        if val is not None:
+            spec += f"&{knob}={val}"
     raw = args.checkpoint
 
     batches = []

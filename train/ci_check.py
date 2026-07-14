@@ -29,6 +29,16 @@ fails, so one invocation reports every finding):
           SIM_RESULT terminal intercept, and determinize invariants
           (train/test_snapshot.py). Catches a regression in the in-process
           MCTS search primitives.
+  sbselfplay The AZ self-play collector turns bo3 sideboard search roots into
+          samples priced by the UPCOMING game's winner: one small bo3 match
+          through the real _play_match, then assert a sideboard sample exists,
+          gates the next game, and its z is +/-1 per that game's result
+          (train/test_sideboard_selfplay.py). Torch-free; needs bin/robomage.
+  mirror  World-parallel mirror-pool search for interactive play: a plain
+          run_search and a run_search_parallel over primary+mirror (worlds split
+          across processes) merge to bit-identical visits; a mirror stays in
+          lockstep through a full bo3; a desynced mirror disables the pool and
+          the primary plays on (train/test_mirror_search.py). Torch-free.
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
           matches — catches unintended narrative/behavior drift.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
@@ -87,7 +97,8 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "obsinv", "snapshot", "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "obsinv", "snapshot", "sbselfplay", "mirror",
+             "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -253,6 +264,36 @@ def tier_snapshot(rep):
                              f"{r.stdout}{r.stderr}")
 
 
+def tier_sbselfplay(rep):
+    """AZ self-play persists searched bo3 sideboard samples priced by next game.
+
+    Runs one small bo3 match through the real self-play collector and asserts the
+    sideboard-decision data path (see train/test_sideboard_selfplay.py). Torch-free
+    and quick; gates the Stage-4 sideboard-search plumbing."""
+    r = subprocess.run([sys.executable, "train/test_sideboard_selfplay.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("sbselfplay", "sideboard self-play data-path violation "
+                                f"(test_sideboard_selfplay.py exit {r.returncode}):\n"
+                                f"{r.stdout}{r.stderr}")
+
+
+def tier_mirror(rep):
+    """World-parallel mirror-pool search regression (interactive play only).
+
+    Runs train/test_mirror_search.py: bit-exact single-vs-parallel visit merge,
+    lockstep across a bo3, and graceful pool-disable on mirror drift. Torch-free
+    and quick; needs bin/robomage."""
+    r = subprocess.run([sys.executable, "train/test_mirror_search.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("mirror", "mirror-pool search violation "
+                            f"(test_mirror_search.py exit {r.returncode}):\n"
+                            f"{r.stdout}{r.stderr}")
+
+
 def tier_replay(rep):
     """Run the byte-identical replay-diff corpus check."""
     r = subprocess.run([sys.executable, "train/regression/replay_diff.py", "check"],
@@ -412,11 +453,13 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "snapshot"} & set(tiers)
+    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "snapshot",
+                  "sbselfplay", "mirror"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "obsinv", "snapshot"} & set(tiers):
+    if {"smoke", "fuzz", "vocab", "obsinv", "snapshot", "sbselfplay",
+        "mirror"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
             print(f"no card scripts under {cards_dir} — run "
@@ -434,6 +477,10 @@ def main(argv=None):
             tier_obsinv(rep)
         elif t == "snapshot":
             tier_snapshot(rep)
+        elif t == "sbselfplay":
+            tier_sbselfplay(rep)
+        elif t == "mirror":
+            tier_mirror(rep)
         elif t == "replay":
             tier_replay(rep)
         elif t == "smoke":

@@ -7,6 +7,8 @@
 // objects EXCEPT obj/main.o and still have the globals, ECS setup, and per-game
 // loop available.
 
+#include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,6 +16,7 @@
 #include "classes/deck.h"
 #include "classes/game.h"
 #include "classes/gamestate.h"
+#include "classes/match_context.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 
@@ -63,6 +66,18 @@ extern int match_wins_b;
 extern bool sideboard_phase;
 extern Zone::Ownership sideboard_phase_player;
 
+// The whole bo3 match's between-game state (dispatched over by play_bo3_match).
+// Exposed so the match-scoped game snapshot (snapshot.cpp) can capture/restore
+// it across an init_ecs() teardown — a sideboard-rooted MCTS search snapshots
+// the match, rolls forward into the next game, and restores this wholesale.
+extern MatchContext g_match_ctx;
+
+// Bumped every init_ecs() (next to card_db.clear()). The snapshot captures it so
+// snapshot_restore knows a card_db.clear()+reload happened across the rollback
+// (a coincidental size match would otherwise skip the card_db copy and leave the
+// name->entity map pointing at torn-down prototype entities).
+extern uint64_t g_card_db_generation;
+
 struct EcsSystems {
     std::shared_ptr<Orderer> orderer;
     std::shared_ptr<StateManager> state_manager;
@@ -72,6 +87,23 @@ struct EcsSystems {
 EcsSystems init_ecs();
 int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed);
-void run_sideboard_phase(Deck &deck, Zone::Ownership player);
+void run_sideboard_phase(Deck &deck, SideboardPhaseState &st);
+
+// Drive a full best-of-three MATCH — the single source of bo3 sequencing shared
+// by main.cpp (the robomage front end) and bin/az_actor. Mirrors the tabletop
+// flow: for each game it sets match_game_number, calls `before_game`, spins a
+// fresh ECS, plays the game via play_single_game (Player A on the play in game 1,
+// the loser on the play thereafter), records the winner, prints
+// GAME_RESULT/MATCH_RESULT, calls `after_game`, then runs BOTH players' sideboard
+// phases (unless the match is already decided). `deck_a`/`deck_b` are taken BY
+// VALUE because sideboarding mutates them across games. `match_reset_revealed()`
+// is called once at match start (the revealed accumulator spans the whole match).
+// Callers must `std::srand(seed)` before calling (main.cpp does; the actor does
+// per match) — the per-game engine RNG is seeded from `seed + game_num` inside.
+// `before_game`/`after_game` may be empty. Returns the match winner
+// (Zone::PLAYER_A or Zone::PLAYER_B).
+int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
+                   const std::function<void(int game_num, bool a_goes_first)> &before_game = {},
+                   const std::function<void(int game_num, int winner)> &after_game = {});
 
 #endif /* GAME_DRIVER_H */

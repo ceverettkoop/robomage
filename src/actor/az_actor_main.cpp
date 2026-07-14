@@ -43,6 +43,7 @@ struct ActorConfig {
     std::string resources;  // empty -> <cwd>/resources
     unsigned int seed = 1;
     int games = 1;
+    bool bo3 = false;  // --bo3: each of `games` units is a best-of-three MATCH
     bool uniform = false;
     // MCTS (--search) config.
     bool search = false;
@@ -51,6 +52,11 @@ struct ActorConfig {
     double c_puct = 1.5;
     int batch = 1;
     uint32_t world_seeds = 42;  // --world-seeds base (see az_mcts.h seed formula)
+    // bo3 sideboard-root budget (mirrors az_selfplay.py). -1 = inherit the in-game
+    // sims/worlds/max_depth.
+    int sb_sims = -1;
+    int sb_worlds = -1;
+    int sb_max_depth = -1;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
     double noise_eps = 0.25;
@@ -67,9 +73,11 @@ constexpr size_t FLUSH_SAMPLES = 4096;
 void print_usage(const char* prog) {
     std::fprintf(stderr,
                  "usage: %s --deck <name> [--deck-b <name>] [--seed N] [--games N] "
-                 "[--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
+                 "[--bo3] [--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
                  "       [--search [--sims N] [--worlds N] [--c F] [--batch K] "
                  "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n"
+                 "       [--sb-sims N] [--sb-worlds N] [--sb-max-depth N] "
+                 "(bo3 sideboard-root budget; -1=inherit)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
                  "[--temp-moves N] [--out-dir <dir>] [--rng-seed N]]\n",
                  prog);
@@ -97,6 +105,8 @@ int main(int argc, char const* argv[]) {
             cfg.seed = static_cast<unsigned int>(std::stoul(need_arg(argc, argv, i, "--seed")));
         } else if (a == "--games") {
             cfg.games = std::stoi(need_arg(argc, argv, i, "--games"));
+        } else if (a == "--bo3") {
+            cfg.bo3 = true;
         } else if (a == "--model") {
             cfg.model = need_arg(argc, argv, i, "--model");
         } else if (a == "--uniform") {
@@ -118,6 +128,12 @@ int main(int argc, char const* argv[]) {
         } else if (a == "--world-seeds") {
             cfg.world_seeds = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--world-seeds")));
+        } else if (a == "--sb-sims") {
+            cfg.sb_sims = std::stoi(need_arg(argc, argv, i, "--sb-sims"));
+        } else if (a == "--sb-worlds") {
+            cfg.sb_worlds = std::stoi(need_arg(argc, argv, i, "--sb-worlds"));
+        } else if (a == "--sb-max-depth") {
+            cfg.sb_max_depth = std::stoi(need_arg(argc, argv, i, "--sb-max-depth"));
         } else if (a == "--selfplay") {
             cfg.selfplay = true;
             cfg.search = true;  // self-play implies MCTS search
@@ -199,6 +215,9 @@ int main(int argc, char const* argv[]) {
         mc.c_puct = cfg.c_puct;
         mc.batch = cfg.batch;
         mc.world_seed_base = cfg.world_seeds;
+        mc.sb_sims = cfg.sb_sims;              // -1 = inherit in-game sims
+        mc.sb_worlds = cfg.sb_worlds;          // -1 = inherit in-game worlds
+        mc.sb_max_depth = cfg.sb_max_depth;    // -1 = inherit in-game max_depth
         mc.selfplay = cfg.selfplay;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
         mc.noise_alpha = cfg.noise_alpha;
@@ -245,37 +264,71 @@ int main(int argc, char const* argv[]) {
     Deck deck_a(RESOURCE_DIR + "/decks/" + cfg.deck + ".dk");
     Deck deck_b(RESOURCE_DIR + "/decks/" + deck_b_name_eff + ".dk");
 
-    for (int g = 0; g < cfg.games; g++) {
-        unsigned int seed_g = cfg.seed + static_cast<unsigned int>(g);
-        // Mirror main.cpp's single-game setup: srand(seed), reset the match-scoped
-        // revealed accumulator, fresh ECS, then play Player A on the play.
-        std::srand(seed_g);
-        match_reset_revealed();
-        EcsSystems sys = init_ecs();
-        if (cfg.selfplay) mcts->begin_game();  // reset per-game move counter + samples
-        int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
-        std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
-                    winner == Zone::PLAYER_A ? "A" : "B");
+    // Per-game self-play sample backfill: price each stored sample from its
+    // mover's perspective vs the GAME's winner (draw -> 0), accumulate, then flush
+    // at the GAME boundary so a game is never split across shards (mirrors
+    // az_selfplay.py's per-game pricing — in bo3 each sample carries the result of
+    // the particular game it belonged to, not the match). `game_log_idx` numbers
+    // the SELFPLAY lines across all games of the run. Returns the sample count.
+    int game_log_idx = 0;
+    auto backfill_selfplay = [&](int winner) {
+        if (!cfg.selfplay) return;
+        bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
+                    winner != static_cast<int>(Zone::PLAYER_B);
+        bool winner_is_a = winner == static_cast<int>(Zone::PLAYER_A);
+        const std::vector<SelfPlaySample>& gs = mcts->game_samples();
+        for (const SelfPlaySample& s : gs) {
+            float z = draw ? 0.0f : (s.mover_is_a == winner_is_a ? 1.0f : -1.0f);
+            shards->add_sample(s.obs.data(), s.pi.data(), z, s.mask.data());
+        }
+        shards->maybe_flush();
+        const char* wstr = draw ? "DRAW" : (winner_is_a ? "A" : "B");
+        std::printf("SELFPLAY: game %d samples=%zu winner=%s\n", ++game_log_idx,
+                    gs.size(), wstr);
         std::fflush(stdout);
+        // End-of-game reset AFTER pricing+flushing: clears the buffer and resets
+        // the tau counter at the game boundary. Any bo3 sideboard samples recorded
+        // between now and the next game's start accumulate into the now-empty
+        // buffer and are priced by the NEXT game's z (mirrors az_selfplay.py, where
+        // a sideboard sample carries game_idx == k+1 and game_move restarts at 0).
+        mcts->end_game();
+    };
 
-        if (cfg.selfplay) {
-            // Backfill z per stored sample from its mover's perspective vs the
-            // winner (draw -> 0), then accumulate; flush at the GAME boundary so a
-            // game is never split across shards (mirrors az_selfplay.py).
-            bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
-                        winner != static_cast<int>(Zone::PLAYER_B);
-            bool winner_is_a = winner == static_cast<int>(Zone::PLAYER_A);
-            const std::vector<SelfPlaySample>& gs = mcts->game_samples();
-            for (const SelfPlaySample& s : gs) {
-                float z = draw ? 0.0f
-                               : (s.mover_is_a == winner_is_a ? 1.0f : -1.0f);
-                shards->add_sample(s.obs.data(), s.pi.data(), z, s.mask.data());
-            }
-            shards->maybe_flush();
-            const char* wstr = draw ? "DRAW" : (winner_is_a ? "A" : "B");
-            std::printf("SELFPLAY: game %d samples=%zu winner=%s\n", g + 1,
-                        gs.size(), wstr);
+    if (cfg.bo3) {
+        // Each of `--games` units is a best-of-three MATCH. Space match seeds by 3
+        // (a match uses seeds match_seed + {0,1,2}) so games never share a seed
+        // across matches. play_bo3_match owns the exact sequencing main.cpp uses
+        // (game boundaries, loser-on-the-play, revealed accumulator, sideboarding),
+        // with per-game hooks. The sample buffer + tau counter reset ONCE per match
+        // here (begin_match) and again at each game boundary inside the after-game
+        // hook (backfill_selfplay -> end_game, AFTER pricing that game). before_game
+        // no longer clears anything, so sideboard samples recorded between a game's
+        // backfill and the next game's start stay buffered and are priced by the
+        // NEXT game (matching Python's game_idx == k+1 sideboard samples + the
+        // game_move reset at the boundary).
+        for (int m = 0; m < cfg.games; m++) {
+            unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
+            std::srand(match_seed);
+            if (cfg.selfplay) mcts->begin_match();
+            play_bo3_match(
+                deck_a, deck_b, match_seed,
+                [&](int, bool) {},
+                [&](int, int winner) { backfill_selfplay(winner); });
+        }
+    } else {
+        for (int g = 0; g < cfg.games; g++) {
+            unsigned int seed_g = cfg.seed + static_cast<unsigned int>(g);
+            // Mirror main.cpp's single-game setup: srand(seed), reset the
+            // match-scoped revealed accumulator, fresh ECS, then Player A on the play.
+            std::srand(seed_g);
+            match_reset_revealed();
+            EcsSystems sys = init_ecs();
+            if (cfg.selfplay) mcts->begin_match();  // reset per-game move counter + samples
+            int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
+            std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
+                        winner == Zone::PLAYER_A ? "A" : "B");
             std::fflush(stdout);
+            backfill_selfplay(winner);
         }
     }
 

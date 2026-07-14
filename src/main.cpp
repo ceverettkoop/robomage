@@ -136,52 +136,10 @@ static void game_loop() {
     cli_print_seed(seed);
 
     if (bo3_mode) {
-        Deck deck_a = DEFAULT_DECK_ONE;
-        Deck deck_b = DEFAULT_DECK_TWO;
-        bool a_goes_first = true;
-        match_wins_a = 0;
-        match_wins_b = 0;
-        match_reset_revealed();  // clear revealed-cards accumulator for the whole match
-
-        for (int game_num = 0; game_num < 3; game_num++) {
-            match_game_number = game_num;
-            game_log("\n----- MATCH GAME %d of 3 -----\n", game_num + 1);
-
-            auto sys = init_ecs();
-            int winner = play_single_game(sys, deck_a, deck_b, a_goes_first, seed + static_cast<unsigned int>(game_num));
-
-            // Every end-of-game path must have set a winner; the else-branch
-            // below would otherwise silently credit a winnerless game to B.
-            if (winner != Zone::PLAYER_A && winner != Zone::PLAYER_B)
-                fatal_error("bo3 game " + std::to_string(game_num + 1) +
-                            " ended with no winner (Game::winner unset)");
-
-            if (winner == Zone::PLAYER_A) {
-                match_wins_a++;
-                printf("GAME_RESULT: %d Player A wins\n", game_num + 1);
-            } else {
-                match_wins_b++;
-                printf("GAME_RESULT: %d Player B wins\n", game_num + 1);
-            }
-
-            if (match_wins_a == 2) {
-                printf("MATCH_RESULT: Player A wins %d-%d\n", match_wins_a, match_wins_b);
-                break;
-            }
-            if (match_wins_b == 2) {
-                printf("MATCH_RESULT: Player B wins %d-%d\n", match_wins_a, match_wins_b);
-                break;
-            }
-
-            // loser goes first next game
-            a_goes_first = (winner != Zone::PLAYER_A);
-
-            // sideboarding phase - ECS from the just-ended game is still valid
-            // (player entities exist for populate_gamestate, card_db works for load_card)
-            run_sideboard_phase(deck_a, Zone::PLAYER_A);
-            run_sideboard_phase(deck_b, Zone::PLAYER_B);
-        }
-        match_game_number = -1;
+        // The full bo3 match sequencing lives in game_driver's play_bo3_match so
+        // main.cpp and bin/az_actor share ONE implementation (game boundaries,
+        // loser-on-the-play, revealed accumulator, sideboarding between games).
+        play_bo3_match(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, seed);
     } else {
         match_reset_revealed();  // accumulator works in single-game mode too
         auto sys = init_ecs();
