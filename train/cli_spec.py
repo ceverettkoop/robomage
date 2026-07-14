@@ -354,7 +354,12 @@ def sim_args():
     return [
         Arg("model", "str", required=True, suggest="agent",
             help="Model to analyze: 'gen', a .zip path, or az:gen/azraw:gen "
-                 "for the generalist AlphaZero net"),
+                 "for the generalist AlphaZero net. A SEARCH spec (az:/mcts: "
+                 "prefix, e.g. az:gen?sims=128&worlds=4) makes the simulated "
+                 "trace games be PLAYED by the real MCTS controller, so the "
+                 "browser inspects states arising from search-quality play "
+                 "(slow); azraw:gen and a bare PPO spec keep raw-policy traces. "
+                 "The inspection net (value/probs/SHAP) is the same either way."),
         Arg("--opponent", "str", default="scripted", suggest="agent",
             help="Opponent controller: 'gen', a model .zip path, az:gen/azraw:gen, "
                  "or 'scripted' for the rule-based agent piloting the opponent deck "

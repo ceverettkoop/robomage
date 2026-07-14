@@ -410,6 +410,18 @@ def _is_az_model_spec(spec):
     return resolve_az_checkpoint(s) is not None
 
 
+def _is_search_spec(spec) -> bool:
+    """True if ``spec`` is a search spec (``az:`` / ``mcts:`` prefix) whose trace
+    games should be PLAYED by the real MCTS SearchController.
+
+    ``azraw:`` is deliberately NOT a search spec (it is the raw AZNet policy) —
+    ``"az:"`` requires the colon in the third position, so ``"azraw:gen"`` (an
+    ``r`` there) does not match. Bare PPO specs and ``.pt`` paths are likewise
+    raw-policy. The prefix is the only lever: no new CLI flag."""
+    return (isinstance(spec, str)
+            and spec.strip().lower().startswith(("az:", "mcts:")))
+
+
 def _effective_bo3(args) -> bool:
     """Whether to simulate in bo3. AZ/MCTS models are trained and gated in bo3
     (Phase 1a), so analysing one defaults to bo3 even without ``--bo3``; a
@@ -430,6 +442,20 @@ def _az_spec_base(spec):
         if s.lower().startswith(pfx):
             return s[len(pfx):].strip()
     return s
+
+
+def _inspection_spec(spec):
+    """Map a play spec to the spec that loads the INSPECTION net (value/probs/
+    SHAP), which never runs a search: drop any ``?query`` knobs (they configure
+    the SearchController, not the net / checkpoint path), and reduce an ``mcts:``
+    search spec to its base checkpoint — the search's PPO evaluator net. ``az:`` /
+    ``azraw:`` keep their prefix so ``_load_az_analysis_model`` loads an AZNet."""
+    if not isinstance(spec, str):
+        return spec
+    base = spec.split("?", 1)[0].strip()
+    if base.lower().startswith("mcts:"):
+        return base[len("mcts:"):].strip()
+    return base
 
 
 def _resolve_any_path(spec):
@@ -543,7 +569,13 @@ def _load_model_and_env(args):
 
     binary = getattr(args, "binary", BINARY)
 
-    model_path = _resolve_any_path(args.model)
+    # The INSPECTION net loads from the search-prefix/query-stripped spec (an
+    # mcts: search plays with a PPO net, so inspect that PPO net; az: inspects
+    # the AZNet). The FULL original spec (with knobs) travels as _play_spec below
+    # so the trace loop can build the matching SearchController.
+    insp_model_spec = _inspection_spec(args.model)
+    insp_opp_spec = _inspection_spec(args.opponent)
+    model_path = _resolve_any_path(insp_model_spec)
 
     # Deck resolution. A checkpoint no longer encodes a deck — there is one
     # generalist that pilots whatever deck it is told to. So the model's deck
@@ -570,19 +602,35 @@ def _load_model_and_env(args):
     # title) see the actual decks even when they were inferred, not just given.
     args.deck_a, args.deck_b = deck_a, deck_b
 
-    if _is_az_model_spec(args.model):
-        model, _ = _load_az_analysis_model(args.model)
+    if _is_az_model_spec(insp_model_spec):
+        model, _ = _load_az_analysis_model(insp_model_spec)
     else:
         model = MaskablePPO.load(model_path)
+    # Remember the ORIGINAL spec on the loaded (inspection) model so the trace
+    # loop can decide HOW to play the games (raw policy vs MCTS) — the model
+    # object here is always the inspection net (SHAP/value/probs); a search spec
+    # additionally spins up a SearchController that plays via make_controller.
+    model._play_spec = args.model
     opp_model = None
     if args.opponent != "scripted":
-        if _is_az_model_spec(args.opponent):
-            opp_model, _ = _load_az_analysis_model(args.opponent)
+        if _is_az_model_spec(insp_opp_spec):
+            opp_model, _ = _load_az_analysis_model(insp_opp_spec)
         else:
-            opp_model = MaskablePPO.load(_resolve_model_path(args.opponent))
+            opp_model = MaskablePPO.load(_resolve_model_path(insp_opp_spec))
+        opp_model._play_spec = args.opponent
 
-    env = RoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
-                      bo3=_effective_bo3(args))
+    # A search spec (az:/mcts:) plays its trace games with a real MCTS
+    # SearchController, which needs the engine's --search-server protocol and a
+    # search-capable env. Mirror runner.py's duck-typed env swap.
+    search_play = (_is_search_spec(args.model)
+                   or (opp_model is not None and _is_search_spec(args.opponent)))
+    if search_play:
+        from search_env import SearchRoboMageEnv
+        env_cls = SearchRoboMageEnv
+    else:
+        env_cls = RoboMageEnv
+    env = env_cls(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
+                  bo3=_effective_bo3(args))
     return model, env, opp_model
 
 
@@ -628,19 +676,53 @@ def _reset_for_game(env, model_is_a, engine_seed=None):
     return obs, env.last_engine_seed
 
 
-def _controllers_for(model, opp_model, model_is_a):
+def _playing_controller(model, label, env):
+    """Build the seat controller that PLAYS the trace games for a loaded model.
+
+    When the model's original spec is a search spec (``az:`` / ``mcts:``), the
+    seat is a real MCTS ``SearchController`` (built via
+    ``opponents.make_controller`` and bound to the search-capable env) so trace
+    games arise from search-quality play. Any other spec (``azraw:``, a bare PPO
+    ``.zip``/``gen``) keeps today's raw-policy ``ModelController`` — exactly what
+    those specs mean everywhere else. The INSPECTION net (this ``model``) is
+    loaded separately in ``_load_model_and_env`` and is untouched; only how the
+    trace games are *driven* changes.
+
+    The SearchController is built once and cached on the model object (the env is
+    reused across analysis games, and its ``stats`` should accumulate across the
+    whole run); it is re-``bind_env``'d each time in case the env was rebuilt.
+    """
+    from opponents import ModelController, make_controller
+    spec = getattr(model, "_play_spec", None)
+    if _is_search_spec(spec):
+        ctrl = getattr(model, "_search_ctrl", None)
+        if ctrl is None:
+            ctrl = make_controller(spec, deterministic=True)
+            model._search_ctrl = ctrl
+        if env is not None:
+            bind = getattr(ctrl, "bind_env", None)
+            if bind is not None:
+                bind(env)
+        return ctrl
+    return ModelController(model, label=label, deterministic=True)
+
+
+def _controllers_for(model, opp_model, model_is_a, env=None):
     """Build (ctrl_a, ctrl_b, ctrl_model) for a model-vs-opponent game.
 
-    The opponent is a deterministic ModelController when ``opp_model`` is
-    given, else the scripted HARD agent — the same seats the hand-rolled loops
-    used before this moved onto runner.drive_game.
+    The model seat (and the opponent seat when ``opp_model`` is given) plays via
+    :func:`_playing_controller` — a raw-policy ``ModelController`` normally, or a
+    real MCTS ``SearchController`` when the original spec was ``az:``/``mcts:``.
+    A scripted opponent is the HARD agent. ``env`` (the search-capable env when
+    search play is active) is handed to any controller that advertises
+    ``bind_env``.
     """
-    from opponents import ModelController, ScriptedController
+    from opponents import ScriptedController
     from scripted_agent import make_agent
 
-    ctrl_model = ModelController(model, label="Model", deterministic=True)
+    ctrl_model = _playing_controller(model, "Model", env)
     if opp_model is not None:
-        ctrl_opp = ModelController(opp_model, label="Opp", deterministic=True)
+        ctrl_opp = _playing_controller(opp_model, "Opp", env)
     else:
         ctrl_opp = ScriptedController(make_agent("scripted"), label="Scripted")
     ctrl_a, ctrl_b = ((ctrl_model, ctrl_opp) if model_is_a
@@ -681,11 +763,14 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
     import torch
     import runner
 
+    _announce_search_play(model, opp_model)
+
     games = []
     for g in range(n_games):
         model_is_a = bool(np.random.random() < 0.5)
         obs, engine_seed = _reset_for_game(env, model_is_a)
-        ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model, model_is_a)
+        ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model,
+                                                      model_is_a, env)
 
         trace_obs = []
         trace_vals = []
@@ -747,7 +832,31 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                 result_str += f" {score[0]}-{score[1]}"
             print(f"  game {g}/{n_games - 1}: {len(trace_obs)} decisions, {result_str}",
                   flush=True)
+    _report_search_stats(model, opp_model)
     return games
+
+
+def _announce_search_play(model, opp_model):
+    """Print a one-line notice for each seat whose trace games are MCTS-played."""
+    for who, m in (("model", model), ("opponent", opp_model)):
+        spec = getattr(m, "_play_spec", None) if m is not None else None
+        if _is_search_spec(spec):
+            print(f"  {who} trace games played by MCTS ({spec}) — slow "
+                  f"(~sims/decision); use azraw:/bare spec for raw-policy traces",
+                  flush=True)
+
+
+def _report_search_stats(model, opp_model):
+    """Print each search seat's accumulated searched/fallback/sims tally."""
+    for who, m in (("model", model), ("opponent", opp_model)):
+        ctrl = getattr(m, "_search_ctrl", None) if m is not None else None
+        stats = getattr(ctrl, "stats", None) if ctrl is not None else None
+        if stats is not None:
+            print(f"  {who} MCTS [{getattr(ctrl, 'label', 'mcts')}]: "
+                  f"searched={stats.get('searched', 0)} "
+                  f"sb_searched={stats.get('sb_searched', 0)} "
+                  f"fallback={stats.get('fallback', 0)} "
+                  f"sims={stats.get('sims', 0)}", flush=True)
 
 
 def _game_is_replayable(game):
@@ -820,7 +929,8 @@ def _rollout_from(model, env, opp_model, obs, model_is_a, first_action,
     rec_actions = []
 
     if not (terminated or truncated):
-        ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model, model_is_a)
+        ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model,
+                                                      model_is_a, env)
 
         def on_query(d):
             if d.controller is not ctrl_model:

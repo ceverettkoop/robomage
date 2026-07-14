@@ -513,6 +513,27 @@ Regression: `train/test_mirror_search.py`, wired into `ci_check.py` as the defau
 `mirror` tier (torch-free: bit-exact merge, bo3 lockstep across the sideboard
 boundary, and drift-fallback).
 
+### Analysis trace games honor search specs (Stage 11)
+
+`analysis.py` (and the `tui_analysis.py` browser, which shares its simulation
+layer) used to play its trace games with the RAW net policy even for an
+`az:`/`mcts:` model — the prefix only chose which net loaded. Now the **spec
+prefix is the lever**: when the model (or model-opponent) spec is a search spec
+(`az:` / `mcts:`), the simulated trace games are PLAYED by the real
+`opponents.SearchController` (built via `make_controller`, bound to a
+search-capable `SearchRoboMageEnv`), so the browser inspects states arising from
+search-quality play. `azraw:gen` and bare PPO specs keep the raw-policy
+`ModelController` — exactly what those specs mean everywhere else, so no new CLI
+flag. The **inspection net** (SHAP / value / policy-probs displays) is still
+loaded exactly as before via `_load_az_analysis_model` / `MaskablePPO.load` and
+evaluated on the recorded obs — only how games are *driven* changed. The
+SearchController is cached per model object (env is reused across games; its
+`stats` accumulate) and its searched/fallback/sims tally is printed after the run.
+Whatif/replay is preserved: `_replay_to_step` feeds recorded `full_actions` (no
+live search during a replay); the whatif counterfactual `_rollout_from` re-drives
+the branch live, which now legitimately searches on a search spec (works with the
+search env; snapshots released between decisions as usual).
+
 ## Analysis-tool integration (M10)
 
 The model-analysis tools (`train/analysis.py` + its shared CLI in
