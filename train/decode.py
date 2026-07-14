@@ -211,6 +211,53 @@ def card_oracle_text(card_idx):
     return text
 
 
+_SCRIPT_FIELD_CACHE = {}
+
+
+def _card_script_field(card_idx, field):
+    """First `<field>:` line from a vocab card's Forge script, stripped, or ''.
+
+    Shares the DFC-aware script resolution and vocab bounds/token guards with
+    card_oracle_text; result cached per (id, field)."""
+    key = (card_idx, field)
+    if key in _SCRIPT_FIELD_CACHE:
+        return _SCRIPT_FIELD_CACHE[key]
+    val = ""
+    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
+        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
+        if path:
+            prefix = field + ":"
+            try:
+                with open(path) as f:
+                    for raw in f:
+                        if raw.startswith(prefix):
+                            val = raw[len(prefix):].strip()
+                            break
+            except OSError:
+                pass
+    _SCRIPT_FIELD_CACHE[key] = val
+    return val
+
+
+def card_mana_cost(card_idx):
+    """Mana cost string from the card script (e.g. '1 G'); '' for no-cost cards
+    (lands carry Forge's 'no cost' sentinel)."""
+    cost = _card_script_field(card_idx, "ManaCost")
+    return "" if cost.lower() == "no cost" else cost
+
+
+def card_types(card_idx):
+    """Type line from the card script (e.g. 'Creature Bear', 'Basic Land'); ''
+    when unavailable."""
+    return _card_script_field(card_idx, "Types")
+
+
+def fmt_mana_cost(cost):
+    """Render a raw mana-cost string ('1 G') in MTG brace notation ('{1}{G}');
+    an empty cost stays empty."""
+    return "".join(f"{{{t}}}" for t in cost.split()) if cost else ""
+
+
 def onehot_to_card(state, base):
     """Decode the card-id float at `base` to a card name, or None if empty."""
     idx = _slot_card_idx(state, base)
