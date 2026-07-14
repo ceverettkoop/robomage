@@ -468,6 +468,26 @@ class AnalysisApp(App):
         Binding("w", "whatif", "Whatif @ step"),
     ]
 
+    # ── Responsive vertical budget ────────────────────────────────────────────
+    # The board must stay fully visible above the decision panel at any terminal
+    # height. _relayout distributes the available rows across the adjustable
+    # regions, giving each its comfortable height when there is room and
+    # shrinking toward its minimum when there isn't. Tuples are (min, comfortable);
+    # the CSS defaults must equal the comfortable values (they are the pre-measure
+    # starting state). _relayout gives up rows in priority order — histogram
+    # first, then the decision box, then the board's own panels last — so the
+    # board stays whole for as long as possible.
+    # Panel minima keep their cards renderable (a bordered card needs 3 outer
+    # rows for one text row; the split battlefield panels hold two such rows, and
+    # #self-hand is fixed at 5 per its CSS comment — below it the hand cards
+    # collapse to empty rectangles).
+    _VHIST_H = (7, 15)
+    _DECISION_H = (6, 12)
+    _PANEL_H = {"#opp-bf": (6, 7), "#self-bf": (6, 7), "#self-hand": (5, 5)}
+    # Non-resizable board rows: phase(1) + opp-info(1) + stack(3) + self-info(1)
+    # + graveyards(3). The board never shrinks below these plus the panel minima.
+    _BOARD_FIXED_H = 9
+
     def __init__(self, args):
         super().__init__()
         self._args = args
@@ -479,6 +499,11 @@ class AnalysisApp(App):
         self._cur_step = 0
         self._engine_busy = True    # startup load+collect owns the env first
         self._analysis_busy = False
+        # Rows consumed by the chrome (header + footer + tab bar) — everything
+        # that is neither the histogram nor the tab's own content. Measured once
+        # from the live layout so _relayout never hardcodes Textual's tab-bar
+        # height; see _chrome_overhead / _relayout.
+        self._overhead = None
 
     # ----- layout -----
 
@@ -533,7 +558,87 @@ class AnalysisApp(App):
             "Decision — legal actions with policy P(a)"
         self.query_one("#phase", Static).update(
             "[dim]Waiting for the first simulated game…[/dim]")
+        # Fit the board to the initial terminal size once the first layout pass
+        # has assigned real widget heights (on_mount runs pre-layout).
+        self.call_after_refresh(self._relayout)
         self._load_and_collect(self._args.n_games)
+
+    # ----- responsive layout -----
+
+    def on_resize(self, event: events.Resize) -> None:
+        # self.size still reports the pre-resize height inside this handler, so
+        # feed the new height straight from the event.
+        self._relayout(event.size.height)
+
+    def _chrome_overhead(self):
+        """Rows taken by the header, footer, and tab bar (everything that is not
+        the histogram or the tab's content), measured once from the live layout.
+
+        With #board-col at 1fr and #decision fixed, board-col + decision always
+        fills the tab's content region, so screen_height - (board-col + decision
+        + vhist) isolates the chrome — a constant independent of how we later
+        resize those regions. Uses outer_size (border-inclusive) so the measure
+        is in the same units as the CSS/styles heights _relayout assigns.
+        Returns None until the widgets report real sizes."""
+        if self._overhead is not None:
+            return self._overhead
+        try:
+            board = self.query_one("#board-col").outer_size.height
+            dec = self.query_one("#decision").outer_size.height
+            vh = self.query_one("#vhist", ValueHistogram).outer_size.height
+        except Exception:
+            return None
+        if board <= 0 or vh <= 0:
+            return None
+        ov = self.size.height - (board + dec + vh)
+        if ov < 0:
+            return None
+        self._overhead = ov
+        return ov
+
+    def _relayout(self, height=None) -> None:
+        """Size the histogram, decision box, and board panels so the whole board
+        fits above the decision box at the current terminal height, shrinking the
+        least board-critical regions first (see the _VHIST_H note above). `height`
+        is the live terminal height (passed from on_resize, where self.size lags);
+        it defaults to self.size.height for the post-mount initial pass."""
+        overhead = self._chrome_overhead()
+        if overhead is None:
+            return
+        h = self.size.height if height is None else height
+        budget = h - overhead
+        if budget <= 0:
+            return
+        vhist = self._VHIST_H[1]
+        decision = self._DECISION_H[1]
+        panels = {sel: hi for sel, (_lo, hi) in self._PANEL_H.items()}
+        panel_order = ["#self-hand", "#opp-bf", "#self-bf"]
+
+        def total():
+            return vhist + decision + self._BOARD_FIXED_H + sum(panels.values())
+
+        pi = 0
+        while total() > budget:
+            if vhist > self._VHIST_H[0]:
+                vhist -= 1
+            elif decision > self._DECISION_H[0]:
+                decision -= 1
+            elif any(panels[s] > self._PANEL_H[s][0] for s in panel_order):
+                # Round-robin the panels so they shrink evenly rather than
+                # collapsing one before touching the next.
+                for _ in range(len(panel_order)):
+                    s = panel_order[pi % len(panel_order)]
+                    pi += 1
+                    if panels[s] > self._PANEL_H[s][0]:
+                        panels[s] -= 1
+                        break
+            else:
+                break   # all regions at their minimum: board-col scrolls (tiny term)
+
+        self.query_one("#vhist", ValueHistogram).styles.height = vhist
+        self.query_one("#decision", Vertical).styles.height = decision
+        for sel, ph in panels.items():
+            self.query_one(sel).styles.height = ph
 
     # ----- engine worker (owns the env; one job at a time) -----
 
