@@ -103,6 +103,13 @@ struct LegalAction {
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).
         bool card_is_public = false;
+        // Per-action ordinal/value scalar, serialized to ML ALONGSIDE `category`.
+        // Disambiguates options that share a category and reference no distinct
+        // entity (so they'd otherwise serialize identically): the mode index of a
+        // modal spell, the chosen value of an X ladder, a flexible producer's color
+        // index, a cast variant (normal/alt-cost/offspring/...), a top-of-library
+        // placement depth, a binary pay/decline, etc. -1 = not applicable.
+        int option_ordinal = -1;
 
         LegalAction(ActionType t, const std::string &desc)
             : type(t), source_entity(0), target_entity(0), description(desc) {}

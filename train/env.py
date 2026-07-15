@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a BQUERY line to stdout:
 
-    BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl><float32[MAX_ACTIONS] pub><int32[MAX_ACTIONS] zone><int32[MAX_ACTIONS] refs>
+    BQUERY: <num_choices> <STATE_SIZE> <MAX_ACTIONS>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl><float32[MAX_ACTIONS] pub><int32[MAX_ACTIONS] zone><int32[MAX_ACTIONS] refs><int32[MAX_ACTIONS] ords>
 
 The environment sends back a single integer on stdin.
 
@@ -73,7 +73,8 @@ except ImportError:
 # `_EXTRAS_END == STATE_SIZE` assert below into a real C++↔Python cross-check.
 try:
     from _enums import (
-        ACTION_CATEGORY_MAX, REF_ZONE_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
+        ACTION_CATEGORY_MAX, REF_ZONE_MAX, OPTION_ORDINAL_MAX, N_OBS_KEYWORDS,
+        N_MANDATORY_CHOICES,
         STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
@@ -90,7 +91,8 @@ try:
         CAT_SHUFFLE)
 except ImportError:
     from train._enums import (
-        ACTION_CATEGORY_MAX, REF_ZONE_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
+        ACTION_CATEGORY_MAX, REF_ZONE_MAX, OPTION_ORDINAL_MAX, N_OBS_KEYWORDS,
+        N_MANDATORY_CHOICES,
         STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
@@ -115,7 +117,7 @@ assert _ENUM_N_CARD_TYPES == N_CARD_TYPES, (_ENUM_N_CARD_TYPES, N_CARD_TYPES)
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
 # Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of
-# cats(int32)/ids/ctrl(float32)/pub(float32)/zone(int32)/refs(int32)
+# cats(int32)/ids/ctrl(float32)/pub(float32)/zone(int32)/refs(int32)/ords(int32)
 _BQUERY_STATE_BYTES = STATE_SIZE * 4
 _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
@@ -123,6 +125,7 @@ _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
 _BQUERY_PUB_BYTES   = MAX_ACTIONS * 4  # float32 — card_is_public per action
 _BQUERY_ZONE_BYTES  = MAX_ACTIONS * 4  # int32 — ActionRefZone per action
 _BQUERY_REFS_BYTES  = MAX_ACTIONS * 4  # int32 — entity-slot ref of the choice's source (-1 = none)
+_BQUERY_ORDS_BYTES  = MAX_ACTIONS * 4  # int32 — per-action ordinal/value scalar (-1 = none)
 # Per-action human-readable descriptions, emitted ONLY under --narrative
 # (gated on the engine side too). Fixed [MAX_ACTIONS][MAX_CHOICE_DESC] NUL-padded
 # char block. MAX_CHOICE_DESC imported from _enums (src/classes/gamestate.h).
@@ -190,9 +193,10 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 # MAX_HAND_SLOTS imported from _enums (src/classes/gamestate.h).
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS         # 10 * 7 = 70
 _BF_ABILITY_FEATS = MAX_BATTLEFIELD_SLOTS * _N_COST_FEATS  # 48 * 7 = 336
-# Action metadata in the obs: cats | ids | ctrl | zone_ref | slot_ref (5 blocks
-# of MAX_ACTIONS). pub stays a side-channel (self._action_public), not in the obs.
-OBS_SIZE = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 6700
+# Action metadata in the obs: cats | ids | ctrl | zone_ref | slot_ref | ordinal
+# (6 blocks of MAX_ACTIONS). pub stays a side-channel (self._action_public), not
+# in the obs.
+OBS_SIZE = STATE_SIZE + 6 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -553,6 +557,7 @@ class RoboMageEnv(gym.Env):
         self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
         self._action_public = np.zeros(MAX_ACTIONS, dtype=np.float32)  # card_is_public per action
         self._action_cats = np.zeros(MAX_ACTIONS, dtype=np.int32)  # raw ActionCategory per action
+        self._action_ordinals = np.full(MAX_ACTIONS, -1, dtype=np.int32)  # raw option_ordinal per action
         # Under --search-server the engine precedes each query with a
         # "SEARCHINFO safe=<0|1>" marker (whether SNAPSHOT/DETERMINIZE are legal
         # at this decision); None when the flag is off / no query seen yet.
@@ -695,7 +700,7 @@ class RoboMageEnv(gym.Env):
         binary payload: float32[STATE_SIZE], int32[MAX_ACTIONS] cats,
         float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl,
         float32[MAX_ACTIONS] pub, int32[MAX_ACTIONS] zone,
-        int32[MAX_ACTIONS] refs.
+        int32[MAX_ACTIONS] refs, int32[MAX_ACTIONS] ords.
         Returns (obs, info).
         """
         reward = 0.0
@@ -842,12 +847,15 @@ class RoboMageEnv(gym.Env):
             self._read_exactly(_BQUERY_ZONE_BYTES), dtype=np.int32)
         refs_int = np.frombuffer(
             self._read_exactly(_BQUERY_REFS_BYTES), dtype=np.int32)
+        ords_int = np.frombuffer(
+            self._read_exactly(_BQUERY_ORDS_BYTES), dtype=np.int32)
 
         # Per-action "card identity is public" flags (revealed tutors). Kept as a
         # side-channel — observers (TUI) read it; not part of the ML observation
         # vector yet, so OBS_SIZE and trained checkpoints are unaffected.
         self._action_public = pub_arr
         self._action_cats = cats_int
+        self._action_ordinals = ords_int
 
         # Under --narrative the engine appends a fixed char block of
         # per-action descriptions (the exact CLI labels). Read and
@@ -910,7 +918,11 @@ class RoboMageEnv(gym.Env):
         # (idx + 1) / 108, so -1 (none) lands exactly on 0.0.
         o[_act_end + 3 * MAX_ACTIONS:_act_end + 4 * MAX_ACTIONS] = (
             (refs_int + 1) / N_ENTITY_REF_SLOTS)
-        _hc_start = _act_end + 4 * MAX_ACTIONS
+        # Per-action ordinal/value scalar, normalized the same way so -1 (n/a)
+        # lands on 0.0: (ord + 1) / (OPTION_ORDINAL_MAX + 1).
+        o[_act_end + 4 * MAX_ACTIONS:_act_end + 5 * MAX_ACTIONS] = (
+            (ords_int + 1) / (OPTION_ORDINAL_MAX + 1))
+        _hc_start = _act_end + 5 * MAX_ACTIONS
         o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
         _bf_start = _hc_start + _HAND_COST_FEATS
         o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()

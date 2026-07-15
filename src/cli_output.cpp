@@ -128,9 +128,11 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
     float   pub [MAX_ACTIONS]  = {};  // 1.0 = card identity publicly known (revealed), else 0.0
     int32_t zone[MAX_ACTIONS]  = {};  // ActionRefZone of the choice's entity (REF_NONE = none)
     int32_t refs[MAX_ACTIONS];        // entity-reference slot of the choice's source (-1 = none)
+    int32_t ords[MAX_ACTIONS];        // per-action ordinal/value scalar (-1 = not applicable)
     std::fill(ids,  ids  + MAX_ACTIONS, id_null);
     std::fill(ctrl, ctrl + MAX_ACTIONS, ctrl_null);
     std::fill(refs, refs + MAX_ACTIONS, static_cast<int32_t>(-1));
+    std::fill(ords, ords + MAX_ACTIONS, static_cast<int32_t>(-1));
 
     for (int i = 0; i < q->num_choices; i++) {
         cats[i] = q->choices[i].category;
@@ -143,6 +145,7 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
         pub[i]  = q->choices[i].card_is_public ? 1.0f : 0.0f;
         zone[i] = static_cast<int32_t>(q->choices[i].zone_ref);
         refs[i] = static_cast<int32_t>(q->choices[i].slot_ref);
+        ords[i] = static_cast<int32_t>(q->choices[i].option_ordinal);
     }
 
     fwrite(cats, sizeof(int32_t), MAX_ACTIONS, stdout);
@@ -151,6 +154,7 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
     fwrite(pub,  sizeof(float),   MAX_ACTIONS, stdout);
     fwrite(zone, sizeof(int32_t), MAX_ACTIONS, stdout);
     fwrite(refs, sizeof(int32_t), MAX_ACTIONS, stdout);
+    fwrite(ords, sizeof(int32_t), MAX_ACTIONS, stdout);
 
     // Human-readable per-action descriptions (e.g. "Target Player B (20 life)",
     // "Pay 4 life", "Put on top"), only under --narrative so the ML training path
