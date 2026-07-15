@@ -464,6 +464,7 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
         LegalAction la(CAST_SPELL, card_entity, "Cast " + back.name);
         la.category = ActionCategory::CAST_SPELL;
         la.cast_back_face = true;
+        la.option_ordinal = 3;  // cast variant: 3 = modal-DFC back face
         actions.push_back(la);
     }
 }
@@ -675,6 +676,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             std::string desc = "Cast " + card_data.name;
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
+            la.option_ordinal = 0;  // cast variant: 0 = normal
 
             // Check CantBeCast statics from cached active_statics
             if (rules_mod::cast_prohibited(priority_player, card_data)) continue;
@@ -706,6 +708,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (can_alt) {
                 LegalAction alt_la = la;
                 alt_la.use_alt_cost = true;
+                alt_la.option_ordinal = 1;  // cast variant: 1 = alternate/impending cost
                 alt_la.description = "Cast " + card_data.name +
                     (card_data.alt_cost.is_impending ? " (impending)" : " (alternate cost)");
                 actions.push_back(alt_la);
@@ -720,6 +723,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                                         card_data.has_improvise)) {
                     LegalAction off_la = la;
                     off_la.use_offspring = true;
+                    off_la.option_ordinal = 2;  // cast variant: 2 = offspring
                     off_la.description = "Cast " + card_data.name + " (offspring)";
                     actions.push_back(off_la);
                 }
@@ -783,6 +787,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         LegalAction fb_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (flashback)");
         fb_la.category = ActionCategory::CAST_SPELL;
         fb_la.use_flashback = true;
+        fb_la.option_ordinal = 4;  // cast variant: 4 = flashback
         actions.push_back(fb_la);
     }
     // ESCAPE (CR 702.139): a card in its owner's graveyard may be cast from there for its
@@ -837,6 +842,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         LegalAction esc_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (escape)");
         esc_la.category = ActionCategory::CAST_SPELL;
         esc_la.use_escape = true;
+        esc_la.option_ordinal = 5;  // cast variant: 5 = escape
         actions.push_back(esc_la);
     }
     // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
@@ -878,6 +884,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         LegalAction gy_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (from graveyard)");
         gy_la.category = ActionCategory::CAST_SPELL;
+        gy_la.option_ordinal = 6;  // cast variant: 6 = cast-from-graveyard permission (Emry)
         actions.push_back(gy_la);
     }
     // IMPULSE-CAST PERMISSIONS (Amped Raptor's DB$ Play): a card exiled this turn that its
@@ -943,6 +950,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + imp_suffix);
         imp_la.category = ActionCategory::CAST_SPELL;
         imp_la.impulse_cast = true;
+        imp_la.option_ordinal = 7;  // cast variant: 7 = impulse/free cast from exile
         actions.push_back(imp_la);
     }
     // checking permanents for activated abilities

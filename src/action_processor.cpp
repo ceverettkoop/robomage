@@ -2008,10 +2008,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                         if (can_pay_life) {
                             LegalAction pay_life(PASS_PRIORITY, "Pay 2 life (instead of {" + color_name + "})");
                             pay_life.category = ActionCategory::PAYING_COSTS;
+                            pay_life.option_ordinal = 0;  // Phyrexian pip: 0 = pay life
                             phyrex_actions.push_back(pay_life);
                         }
                         LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
                         pay_mana.category = ActionCategory::PAYING_COSTS;
+                        pay_mana.option_ordinal = 1;  // Phyrexian pip: 1 = pay mana
                         phyrex_actions.push_back(pay_mana);
                         int phyrex_choice = InputLogger::instance().get_input(phyrex_actions);
                         // The life option occupies index 0 only when it was offered; with it
