@@ -60,10 +60,15 @@ bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer) {
     while (!remaining.empty()) {
         std::vector<LegalAction> actions;
         // First block: "put on top" for each remaining card; second block: "into graveyard".
+        // Depth (0-indexed from the top) the card kept on top this round will sit
+        // at: to_top[0] ends up topmost, so it is the count already kept. Shared by
+        // the whole "put on top" block — decision context, not disambiguation.
+        int place_depth = static_cast<int>(to_top.size());
         for (Entity card : remaining) {
             auto &cd = global_coordinator.GetComponent<CardData>(card);
             LegalAction la(PASS_PRIORITY, card, "Put " + cd.name + " on top of library");
             la.category = ActionCategory::TOP_LIBRARY;
+            la.option_ordinal = place_depth;
             actions.push_back(la);
         }
         for (Entity card : remaining) {
