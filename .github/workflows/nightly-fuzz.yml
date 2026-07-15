@@ -75,17 +75,24 @@ jobs:
 
       # torch supplies both the Python AZ stack (run_search / AZNet, needed by the
       # parity references) and the libtorch the actor links. CPU-only wheel keeps
-      # the download small; cached across nights.
+      # the download small; cached across nights. stable_baselines3/sb3-contrib
+      # are also required here: extractor.py (imported by az_net.py, which the
+      # actor-parity tests import) unconditionally imports
+      # stable_baselines3.common.torch_layers and
+      # sb3_contrib.common.maskable.policies at module load. The default CI
+      # image (setup-robomage) deliberately omits both, since ordinary CI never
+      # touches the AZ actor stack — installed here only, not there.
       - name: Cache torch wheel
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: pip-torch-cpu-${{ runner.os }}
 
-      - name: Install torch (CPU) + build the actor
+      - name: Install torch (CPU) + stable-baselines3 + build the actor
         run: |
           train/.venv/bin/python -m pip install --quiet torch \
             --index-url https://download.pytorch.org/whl/cpu
+          train/.venv/bin/python -m pip install --quiet stable-baselines3 sb3-contrib
           make actor -j"$(nproc)"
 
       - name: AZ actor parity (bo1 + bo3)
