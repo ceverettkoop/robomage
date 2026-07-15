@@ -143,7 +143,7 @@ static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Ent
         for (auto e : choices) {
             std::string nm = global_coordinator.GetComponent<CardData>(e).name;
             LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
-            la.category = ActionCategory::SACRIFICE_PERMANENT;
+            la.category = ActionCategory::EXILE_FROM_YARD;
             menu.push_back(la);
         }
         int choice = InputLogger::instance().get_input(menu);
@@ -182,7 +182,7 @@ static void pay_exile_from_grave_count_cost(Zone::Ownership caster, int count, E
         for (auto e : choices) {
             std::string nm = global_coordinator.GetComponent<CardData>(e).name;
             LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
-            la.category = ActionCategory::SACRIFICE_PERMANENT;
+            la.category = ActionCategory::EXILE_FROM_YARD;
             menu.push_back(la);
         }
         int choice = InputLogger::instance().get_input(menu);

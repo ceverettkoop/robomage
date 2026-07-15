@@ -56,7 +56,8 @@ _CAT_DISPLAY = {
     "BLOCK_TARGET": "BLK_TGT", "OPTIONAL_YESNO": "YES_NO",
     "PLAY_FREE": "PLAY_FREE", "SYLVAN_CHOICE": "SYLVAN",
     "CHOOSE_CARD": "CHOOSE_CARD", "ASSIGN_DAMAGE": "ASSIGN_DMG",
-    "COMPANION": "COMPANION",
+    "COMPANION": "COMPANION", "DONT_SHUFFLE": "DONT_SHUFFLE",
+    "KEEP_HAND": "KEEP_HAND", "EXILE_FROM_YARD": "EXILE_FROM_YARD",
 }
 
 # C++ ActionRefZone enum name -> short display string for the per-action
@@ -132,11 +133,14 @@ def parse_int_constant(path, name):
 
 def _enum_body(path, header_pattern):
     """Return the comment-stripped body of the enum opened by header_pattern."""
-    src = open(path).read()
+    # Strip comments BEFORE the brace match: a `}` inside a comment (e.g. the
+    # `{3}` in a mana-cost comment) would otherwise terminate the non-greedy
+    # `\}` early and silently drop every entry after it.
+    src = _strip_comments(open(path).read())
     m = re.search(header_pattern + r"\s*\{(.*?)\}", src, flags=re.DOTALL)
     if not m:
         raise RuntimeError(f"could not find enum {header_pattern!r} in {path}")
-    return _strip_comments(m.group(1))
+    return m.group(1)
 
 
 def _split_entries(body):

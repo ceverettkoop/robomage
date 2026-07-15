@@ -88,7 +88,7 @@ try:
         CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
         CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
         CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
-        CAT_SHUFFLE)
+        CAT_SHUFFLE, CAT_KEEP_HAND)
 except ImportError:
     from train._enums import (
         ACTION_CATEGORY_MAX, REF_ZONE_MAX, OPTION_ORDINAL_MAX, N_OBS_KEYWORDS,
@@ -106,7 +106,7 @@ except ImportError:
         CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
         CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
         CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
-        CAT_SHUFFLE)
+        CAT_SHUFFLE, CAT_KEEP_HAND)
 
 # STATE_SIZE / MAX_ACTIONS are imported from _enums (src/machine_io.h,
 # src/classes/gamestate.h). Card identity is 1 id float/slot, not a one-hot.
@@ -989,7 +989,8 @@ _CAT_ACTIVATE   = CAT_ACTIVATE_ABILITY  # activate a non-mana ability (fetch lan
 _CAT_CAST       = CAT_CAST_SPELL
 _CAT_TARGET     = CAT_SELECT_TARGET
 _CAT_LAND       = CAT_PLAY_LAND
-_CAT_MULLIGAN   = CAT_MULLIGAN
+_CAT_MULLIGAN   = CAT_MULLIGAN  # opening mulligan: take a mulligan (paired with KEEP_HAND)
+_CAT_KEEP_HAND  = CAT_KEEP_HAND  # opening mulligan: keep the current hand
 _CAT_SEARCH     = CAT_SEARCH_LIBRARY  # search library (action 0 = fail to find, 1+ = actual cards)
 _CAT_OTHER      = CAT_OTHER_CHOICE  # generic/unclassified choice (fallback default)
 _CAT_DISCARD    = CAT_DISCARD  # choose a card to discard (cost, effect, or cleanup)

@@ -111,9 +111,11 @@ from _enums import (_CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX,  # noqa: 
                     CAT_PASS_PRIORITY, CAT_CAST_SPELL, CAT_PLAY_LAND,
                     CAT_ACTIVATE_ABILITY, CAT_SELECT_TARGET, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
-                    CAT_CONFIRM_BLOCKERS, CAT_MULLIGAN, CAT_BOTTOM_DECK_CARD,
+                    CAT_CONFIRM_BLOCKERS, CAT_MULLIGAN, CAT_KEEP_HAND,
+                    CAT_BOTTOM_DECK_CARD,
                     CAT_MANA_W, CAT_MANA_C, CAT_SEARCH_LIBRARY, CAT_TOP_LIBRARY,
-                    CAT_PAYING_COSTS, CAT_DIG_CHOICE, CAT_OTHER_CHOICE)
+                    CAT_PAYING_COSTS, CAT_DIG_CHOICE, CAT_OTHER_CHOICE,
+                    CAT_SHUFFLE, CAT_DONT_SHUFFLE, CAT_EXILE_FROM_YARD)
 
 # Categories whose choice references a specific board/stack entity, where an
 # "@slotN" suffix disambiguates same-named cards: select attacker/blocker,
@@ -931,6 +933,14 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS,
         return "Confirm blockers"
     elif cat == CAT_MULLIGAN:
         return f"Mulligan ({name})" if name else "Mulligan"
+    elif cat == CAT_KEEP_HAND:
+        return "Keep hand"
+    elif cat == CAT_SHUFFLE:
+        return "Shuffle"
+    elif cat == CAT_DONT_SHUFFLE:
+        return "Don't shuffle"
+    elif cat == CAT_EXILE_FROM_YARD:
+        return f"Exile from graveyard: {name}" if name else "Exile from graveyard"
     elif cat == CAT_BOTTOM_DECK_CARD:
         return f"Bottom: {name}"
     elif CAT_MANA_W <= cat <= CAT_MANA_C:
@@ -994,9 +1004,9 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
                        and i < len(descriptions) and descriptions[i].strip() else None)
         if engine_desc is not None:
             desc = engine_desc
-        elif cat == CAT_MULLIGAN:
-            # Mulligan query: index 0 = keep, index 1 = mulligan.
-            desc = "Keep hand" if i == 0 else "Mulligan"
+        elif cat in (CAT_MULLIGAN, CAT_KEEP_HAND):
+            # Mulligan query: KEEP_HAND (index 0) = keep, MULLIGAN = mulligan.
+            desc = "Keep hand" if cat == CAT_KEEP_HAND else "Mulligan"
         else:
             desc = describe_action(cat, card_name, ctrl_str, labels,
                                    slot_ref=slot_ref)
@@ -1034,7 +1044,8 @@ def decode_actions_from_obs(obs, num_choices, public_flags=None,
 # ── Decision-type classification (all read the integer category array) ────────
 
 def is_mulligan(cats):
-    return len(cats) > 0 and all(c == CAT_MULLIGAN for c in cats)
+    # A mulligan menu is the KEEP_HAND / MULLIGAN pair (keep = index 0).
+    return len(cats) > 0 and all(c in (CAT_MULLIGAN, CAT_KEEP_HAND) for c in cats)
 
 
 def is_bottom(cats):

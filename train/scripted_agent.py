@@ -33,7 +33,8 @@ from env import (
     STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, N_CARD_TYPES, MAX_HAND_SLOTS,
     # action category constants
     _CAT_PASS, _CAT_SEL_ATK, _CAT_CONF_ATK, _CAT_SEL_BLK, _CAT_CONF_BLK,
-    _CAT_ACTIVATE, _CAT_CAST, _CAT_TARGET, _CAT_LAND, _CAT_MULLIGAN, _CAT_SEARCH,
+    _CAT_ACTIVATE, _CAT_CAST, _CAT_TARGET, _CAT_LAND, _CAT_MULLIGAN, _CAT_KEEP_HAND,
+    _CAT_SEARCH,
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY, _CAT_SB_DONE,
     _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD, _CAT_YESNO,
     # battlefield / stack layout
@@ -1106,10 +1107,10 @@ class ScriptedAgent:
         the stack slot is read only on a fail-only menu.
         """
         # cats[0] is enough to classify the menus we care about: a mulligan
-        # query is all-MULLIGAN, and a fail-only search menu has exactly one
-        # action. Avoids decoding the whole category array a second time.
+        # query opens with the KEEP_HAND action (index 0), and a fail-only search
+        # menu has exactly one action. Avoids decoding the whole category array.
         c0 = int(round(float(obs[STATE_SIZE]) * ACTION_CATEGORY_MAX))
-        if c0 == _CAT_MULLIGAN:
+        if c0 in (_CAT_MULLIGAN, _CAT_KEEP_HAND):
             # A game always opens with a mulligan query, so seeing one means a
             # new game started: clear the guard even when nobody called
             # new_game() (same safety net as _explore_seen in _explore_action).

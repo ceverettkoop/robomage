@@ -62,7 +62,7 @@ bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
             LegalAction(PASS_PRIORITY, std::string("Don't shuffle")),
             LegalAction(PASS_PRIORITY, std::string("Shuffle")),
         };
-        shuffle_actions[0].category = ActionCategory::SHUFFLE;
+        shuffle_actions[0].category = ActionCategory::DONT_SHUFFLE;
         shuffle_actions[1].category = ActionCategory::SHUFFLE;
         int shuffle_choice = InputLogger::instance().get_input(shuffle_actions);
         if (shuffle_choice == 1) {
