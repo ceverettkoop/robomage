@@ -516,6 +516,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         for (size_t xv = 0; xv <= max_x; xv++) {
             LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
             la.category = ActionCategory::CHOOSE_X;
+            la.option_ordinal = static_cast<int>(xv);  // the chosen X value
             x_actions.push_back(la);
         }
         int x_choice = InputLogger::instance().get_input(x_actions);
@@ -536,6 +537,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         for (int xv = 0; xv <= max_x; xv++) {
             LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
             la.category = ActionCategory::CHOOSE_X;
+            la.option_ordinal = static_cast<int>(xv);  // the chosen X value
             x_actions.push_back(la);
         }
         int x_choice = InputLogger::instance().get_input(x_actions);
@@ -1474,6 +1476,7 @@ static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orde
                     : ("Mode " + std::to_string(i + 1));
             LegalAction la(PASS_PRIORITY, desc);
             la.category = ActionCategory::CHOOSE_MODE;
+            la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
             mode_actions.push_back(la);
             mode_indices.push_back(i);
         }
@@ -1932,6 +1935,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     for (size_t xv = 0; xv <= max_x; xv++) {
                         LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
                         la.category = ActionCategory::CHOOSE_X;
+                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
                     }
                     int x_choice = InputLogger::instance().get_input(x_actions);
@@ -2048,6 +2052,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     for (size_t xv = 0; xv <= max_x; xv++) {
                         LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
                         la.category = ActionCategory::CHOOSE_X;
+                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
                     }
                     int x_choice = InputLogger::instance().get_input(x_actions);

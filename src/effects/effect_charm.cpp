@@ -69,6 +69,7 @@ bool charm(Ability &ab, std::shared_ptr<Orderer> orderer) {
                     : ("Mode " + std::to_string(i + 1));
             LegalAction la(PASS_PRIORITY, desc);
             la.category = ActionCategory::CHOOSE_MODE;
+            la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
             mode_actions.push_back(la);
             mode_indices.push_back(i);
         }

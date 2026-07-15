@@ -1396,6 +1396,7 @@ void prompt_delve_exiles(Zone::Ownership controller, ManaValue &cost, Entity pai
                            "Exile " + std::to_string(n) + (n == 1 ? " card" : " cards") +
                                " from graveyard (Delve)");
             la.category = ActionCategory::CHOOSE_X;
+            la.option_ordinal = static_cast<int>(n);  // the delve exile count
             la.card_is_public = true;  // the spell being cast is public
             count_menu.push_back(la);
         }
