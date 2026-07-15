@@ -56,10 +56,11 @@ from env import (
 from cli_spec import BINARY, BIN_DIR
 
 # The binary payload framing after every BQUERY header, WITHOUT --narrative:
-# STATE_SIZE float32 state, then six MAX_ACTIONS-wide metadata arrays
-# (cats int32, ids f32, ctrl f32, pub f32, zone int32, refs int32). This is the
-# exact size input_logger.cpp emits; a short/over read desyncs the whole stream.
-PAYLOAD_BYTES = STATE_SIZE * 4 + 6 * MAX_ACTIONS * 4
+# STATE_SIZE float32 state, then seven MAX_ACTIONS-wide metadata arrays
+# (cats int32, ids f32, ctrl f32, pub f32, zone int32, refs int32, ords int32).
+# This is the exact size cli_output.cpp emits; a short/over read desyncs the
+# whole stream.
+PAYLOAD_BYTES = STATE_SIZE * 4 + 7 * MAX_ACTIONS * 4
 
 
 class ProtocolError(AssertionError):
