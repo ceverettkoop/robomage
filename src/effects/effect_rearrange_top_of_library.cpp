@@ -37,10 +37,17 @@ bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
     for (size_t pick = 0; pick + 1 < actual; pick++) {
         game_log("Choose which card goes %zu from top:\n", actual - pick);
         std::vector<LegalAction> pick_actions;
+        // Depth (0-indexed from the top) at which the card chosen this pick will
+        // sit: the game_log above places it "actual - pick" from the top, so the
+        // top card is depth 0 and the 3rd-from-top is depth 2 (e.g. Ponder). The
+        // whole menu shares this depth — it is decision CONTEXT (which slot are we
+        // filling), not intra-menu disambiguation (the cards already differ).
+        int place_depth = static_cast<int>(actual - pick - 1);
         for (auto card : remaining) {
             auto &cd = global_coordinator.GetComponent<CardData>(card);
             LegalAction la(PASS_PRIORITY, card, cd.name);
             la.category = ActionCategory::TOP_LIBRARY;
+            la.option_ordinal = place_depth;
             pick_actions.push_back(la);
         }
         int choice = InputLogger::instance().get_input(pick_actions);
@@ -62,7 +69,7 @@ bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
             LegalAction(PASS_PRIORITY, std::string("Don't shuffle")),
             LegalAction(PASS_PRIORITY, std::string("Shuffle")),
         };
-        shuffle_actions[0].category = ActionCategory::SHUFFLE;
+        shuffle_actions[0].category = ActionCategory::DONT_SHUFFLE;
         shuffle_actions[1].category = ActionCategory::SHUFFLE;
         int shuffle_choice = InputLogger::instance().get_input(shuffle_actions);
         if (shuffle_choice == 1) {

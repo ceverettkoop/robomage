@@ -75,7 +75,9 @@ bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
             LegalAction(PASS_PRIORITY, std::string("Put on top of library")),
         };
         pay_actions[0].category = ActionCategory::SYLVAN_CHOICE;
+        pay_actions[0].option_ordinal = 1;  // 1 = pay 4 life
         pay_actions[1].category = ActionCategory::SYLVAN_CHOICE;
+        pay_actions[1].option_ordinal = 0;  // 0 = put on top of library
         int choice = InputLogger::instance().get_input(pay_actions);
         if (choice == 0) {
             pl.life_total -= 4;

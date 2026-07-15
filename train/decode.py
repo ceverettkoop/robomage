@@ -107,13 +107,15 @@ _TOKEN_IDX = N_CARD_TYPES - 1
 # source of truth for both the values and these names. Re-run it after changing
 # the C++ enums.
 from _enums import (_CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX,  # noqa: E402
-                    _MC_NAMES, _OBS_KEYWORDS,
+                    OPTION_ORDINAL_MAX, _MC_NAMES, _OBS_KEYWORDS,
                     CAT_PASS_PRIORITY, CAT_CAST_SPELL, CAT_PLAY_LAND,
                     CAT_ACTIVATE_ABILITY, CAT_SELECT_TARGET, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
-                    CAT_CONFIRM_BLOCKERS, CAT_MULLIGAN, CAT_BOTTOM_DECK_CARD,
+                    CAT_CONFIRM_BLOCKERS, CAT_MULLIGAN, CAT_KEEP_HAND,
+                    CAT_BOTTOM_DECK_CARD,
                     CAT_MANA_W, CAT_MANA_C, CAT_SEARCH_LIBRARY, CAT_TOP_LIBRARY,
-                    CAT_PAYING_COSTS, CAT_DIG_CHOICE, CAT_OTHER_CHOICE)
+                    CAT_PAYING_COSTS, CAT_DIG_CHOICE, CAT_OTHER_CHOICE,
+                    CAT_SHUFFLE, CAT_DONT_SHUFFLE, CAT_EXILE_FROM_YARD)
 
 # Categories whose choice references a specific board/stack entity, where an
 # "@slotN" suffix disambiguates same-named cards: select attacker/blocker,
@@ -863,6 +865,17 @@ def action_slot_refs(obs, num_choices=MAX_ACTIONS):
     return (np.round(raw * N_ENTITY_REF_SLOTS) - 1).astype(int)
 
 
+def action_ordinals(obs, num_choices=MAX_ACTIONS):
+    """Integer option_ordinal per legal action (-1 = not applicable).
+
+    Sixth action-metadata block (cats|ids|ctrl|zone|refs|ords): the per-action
+    ordinal/value scalar (mode index, X value, color index, cast variant,
+    top-of-library depth, ...), normalized (ord + 1) / (OPTION_ORDINAL_MAX + 1).
+    """
+    raw = obs[STATE_SIZE + 5 * MAX_ACTIONS: STATE_SIZE + 5 * MAX_ACTIONS + num_choices]
+    return (np.round(raw * (OPTION_ORDINAL_MAX + 1)) - 1).astype(int)
+
+
 def _ctrl_str(ctrl_val, labels=SELF_OPP_LABELS):
     """Resolve a viewer-relative controller flag to a label word, or None.
 
@@ -931,6 +944,14 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS,
         return "Confirm blockers"
     elif cat == CAT_MULLIGAN:
         return f"Mulligan ({name})" if name else "Mulligan"
+    elif cat == CAT_KEEP_HAND:
+        return "Keep hand"
+    elif cat == CAT_SHUFFLE:
+        return "Shuffle"
+    elif cat == CAT_DONT_SHUFFLE:
+        return "Don't shuffle"
+    elif cat == CAT_EXILE_FROM_YARD:
+        return f"Exile from graveyard: {name}" if name else "Exile from graveyard"
     elif cat == CAT_BOTTOM_DECK_CARD:
         return f"Bottom: {name}"
     elif CAT_MANA_W <= cat <= CAT_MANA_C:
@@ -952,14 +973,15 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS,
 
 def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
                    labels=SELF_OPP_LABELS, descriptions=None, zone_refs=None,
-                   slot_refs=None):
+                   slot_refs=None, ordinals=None):
     """Decode the per-action arrays into a list of dicts.
 
     Each dict: index, category (int), category_name, card (name or None),
     card_idx (vocab index or -1), controller ('own'|'opp'|None), description,
     card_is_public (bool — card identity publicly known, e.g. a revealed tutor),
     zone_ref (int ActionRefZone of the referenced entity, 0 = none),
-    slot_ref (int entity-slot ref of the referenced entity, -1 = none).
+    slot_ref (int entity-slot ref of the referenced entity, -1 = none),
+    option_ordinal (int per-action ordinal/value scalar, -1 = not applicable).
 
     `zone_refs` is the per-action ActionRefZone array (decode.action_zone_refs /
     env side-channel); it disambiguates a card that appears in two zones at once
@@ -990,13 +1012,15 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
         is_public = bool(public_flags[i] > 0.5) if public_flags is not None else False
         slot_ref = (int(slot_refs[i]) if slot_refs is not None
                     and i < len(slot_refs) else -1)
+        ordinal = (int(ordinals[i]) if ordinals is not None
+                   and i < len(ordinals) else -1)
         engine_desc = (descriptions[i] if descriptions is not None
                        and i < len(descriptions) and descriptions[i].strip() else None)
         if engine_desc is not None:
             desc = engine_desc
-        elif cat == CAT_MULLIGAN:
-            # Mulligan query: index 0 = keep, index 1 = mulligan.
-            desc = "Keep hand" if i == 0 else "Mulligan"
+        elif cat in (CAT_MULLIGAN, CAT_KEEP_HAND):
+            # Mulligan query: KEEP_HAND (index 0) = keep, MULLIGAN = mulligan.
+            desc = "Keep hand" if cat == CAT_KEEP_HAND else "Mulligan"
         else:
             desc = describe_action(cat, card_name, ctrl_str, labels,
                                    slot_ref=slot_ref)
@@ -1011,6 +1035,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
             "card_is_public": is_public,
             "zone_ref": int(zone_refs[i]) if zone_refs is not None and i < len(zone_refs) else 0,
             "slot_ref": slot_ref,
+            "option_ordinal": ordinal,
         })
     return actions
 
@@ -1028,13 +1053,15 @@ def decode_actions_from_obs(obs, num_choices, public_flags=None,
                           action_card_ids(obs), action_ctrls(obs), num_choices,
                           public_flags, labels, descriptions,
                           zone_refs=action_zone_refs(obs, num_choices),
-                          slot_refs=action_slot_refs(obs, num_choices))
+                          slot_refs=action_slot_refs(obs, num_choices),
+                          ordinals=action_ordinals(obs, num_choices))
 
 
 # ── Decision-type classification (all read the integer category array) ────────
 
 def is_mulligan(cats):
-    return len(cats) > 0 and all(c == CAT_MULLIGAN for c in cats)
+    # A mulligan menu is the KEEP_HAND / MULLIGAN pair (keep = index 0).
+    return len(cats) > 0 and all(c in (CAT_MULLIGAN, CAT_KEEP_HAND) for c in cats)
 
 
 def is_bottom(cats):
@@ -1152,7 +1179,11 @@ def format_state_lines(gs):
 
 def format_action_lines(actions):
     """Enumerated legal-action lines (the 'Actions:' menu, shared transcript)."""
-    return [f"  {a['index']:>2}: {a['description']}" for a in actions]
+    def _line(a):
+        ordv = a.get("option_ordinal", -1)
+        suffix = f"  [#{ordv}]" if ordv >= 0 else ""
+        return f"  {a['index']:>2}: {a['description']}{suffix}"
+    return [_line(a) for a in actions]
 
 
 def format_decision_block(decision_idx, gs, actions):

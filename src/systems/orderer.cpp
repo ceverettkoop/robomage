@@ -609,7 +609,7 @@ void Orderer::do_london_mulligan(bool player_a_goes_first) {
             LegalAction(PASS_PRIORITY, std::string("Keep")),
             LegalAction(PASS_PRIORITY, std::string("Mulligan")),
         };
-        mull_actions[0].category = ActionCategory::MULLIGAN;
+        mull_actions[0].category = ActionCategory::KEEP_HAND;
         mull_actions[1].category = ActionCategory::MULLIGAN;
         int choice = InputLogger::instance().get_input(mull_actions);
         if (choice == 0) {

@@ -308,7 +308,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim                                  # opponent revealed-cards multi-hot
             + card_embed_dim + 1                         # pending-decision source embed + ctrl flag
             + _EXTRAS_SIZE                               # 19 global extras (raw passthrough)
-            + (observation_space.shape[0] - _STATE_END)  # action extras (5 blocks incl. refs + costs)
+            + (observation_space.shape[0] - _STATE_END)  # action extras (6 blocks incl. refs + ords + costs)
             + embed_dim * 2                              # perm masked mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
             + embed_dim * 2                              # graveyard masked-mean + max
@@ -401,7 +401,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             self.zone_emb = nn.Embedding(N_REF_ZONES, _REF_ZONE_EMBED)
             self.action_encoder = nn.Sequential(
                 nn.Linear(_ACTION_CAT_EMBED + card_embed_dim + 1 + _REF_ZONE_EMBED
-                          + embed_dim,
+                          + embed_dim + 1,  # +1 ctrl flag, +1 option_ordinal scalar
                           embed_dim),
                 nn.ReLU(),
                 nn.Linear(embed_dim, self.per_action_dim),
@@ -541,17 +541,18 @@ class CardGameExtractor(BaseFeaturesExtractor):
             return base
 
         # Encode each candidate action from its own (category, referenced-card,
-        # controller, zone_ref, referenced-entity embedding) tuple. The action
-        # block is the first 5*MAX_ACTIONS floats of action_extras:
-        # cats | ids | ctrl | zone | refs. Appended flat; sliced back out by the
-        # policy's action scorer. Padded slots (beyond num_choices) are harmless —
-        # their logits are masked out by MaskablePPO's action mask downstream.
+        # controller, zone_ref, referenced-entity embedding, option ordinal) tuple.
+        # The action block is the first 6*MAX_ACTIONS floats of action_extras:
+        # cats | ids | ctrl | zone | refs | ords. Appended flat; sliced back out by
+        # the policy's action scorer. Padded slots (beyond num_choices) are harmless
+        # — their logits are masked out by MaskablePPO's action mask downstream.
         a0 = _STATE_END
         cats = obs[:, a0:a0 + _MAX_ACTIONS]
         act_ids = obs[:, a0 + _MAX_ACTIONS:a0 + 2 * _MAX_ACTIONS]
         ctrl = obs[:, a0 + 2 * _MAX_ACTIONS:a0 + 3 * _MAX_ACTIONS]
         zone = obs[:, a0 + 3 * _MAX_ACTIONS:a0 + 4 * _MAX_ACTIONS]
         refs = obs[:, a0 + 4 * _MAX_ACTIONS:a0 + 5 * _MAX_ACTIONS]
+        ords = obs[:, a0 + 5 * _MAX_ACTIONS:a0 + 6 * _MAX_ACTIONS]
         cat_idx = torch.round(cats * ACTION_CATEGORY_MAX).long().clamp_(0, ACTION_CATEGORY_MAX)
         cat_e = self.action_cat_emb(cat_idx)                 # (B, A, cat_embed)
         act_id_e, _ = self._embed_ids(act_ids)               # (B, A, card_embed)
@@ -575,7 +576,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
         ref_e = torch.gather(ent_table, 1,
                              ref_idx.unsqueeze(-1).expand(-1, -1, E))  # (B, A, E)
 
-        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1), zone_e, ref_e], dim=-1)
+        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1), zone_e, ref_e,
+                           ords.unsqueeze(-1)], dim=-1)
         pa = self.action_encoder(pa_in)                      # (B, A, per_action_dim)
         return torch.cat([base, pa.reshape(pa.shape[0], -1)], dim=-1)
 

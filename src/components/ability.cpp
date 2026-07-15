@@ -377,11 +377,13 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
             std::string("Discard ") + std::to_string(count) +
             (count == 1 ? " card (spell is not countered)" : " cards (spell is not countered)"));
         pay.category = ActionCategory::PAY_UNLESS;
+        pay.option_ordinal = 1;  // 1 = pay
         actions.push_back(pay);
     }
     size_t decline_idx = actions.size();
     LegalAction decline(PASS_PRIORITY, std::string("Don't discard (spell is countered)"));
     decline.category = ActionCategory::PAY_UNLESS;
+    decline.option_ordinal = 0;  // 0 = don't pay
     actions.push_back(decline);
 
     int choice = InputLogger::instance().get_input(actions);
@@ -440,11 +442,13 @@ bool run_unless_loop(
             LegalAction pay(PASS_PRIORITY,
                 std::string("Pay ") + std::to_string(cost) + " life (spell is not countered)");
             pay.category = ActionCategory::PAY_UNLESS;
+            pay.option_ordinal = 1;  // 1 = pay
             unless_actions.push_back(pay);
         }
         size_t decline_idx = unless_actions.size();
         LegalAction decline(PASS_PRIORITY, std::string("Don't pay (spell is countered)"));
         decline.category = ActionCategory::PAY_UNLESS;
+        decline.option_ordinal = 0;  // 0 = don't pay
         unless_actions.push_back(decline);
 
         int choice = InputLogger::instance().get_input(unless_actions);
@@ -472,11 +476,13 @@ bool run_unless_loop(
             LegalAction pay(PASS_PRIORITY,
                 std::string("Pay {E} x") + std::to_string(cost));
             pay.category = ActionCategory::PAY_UNLESS;
+            pay.option_ordinal = 1;  // 1 = pay
             unless_actions.push_back(pay);
         }
         size_t decline_idx = unless_actions.size();
         LegalAction decline(PASS_PRIORITY, std::string("Don't pay"));
         decline.category = ActionCategory::PAY_UNLESS;
+        decline.option_ordinal = 0;  // 0 = don't pay
         unless_actions.push_back(decline);
 
         int choice = InputLogger::instance().get_input(unless_actions);
@@ -514,12 +520,14 @@ bool run_unless_loop(
         if (can_pay) {
             LegalAction pay(PASS_PRIORITY, std::string("Pay {") + std::to_string(cost) + "} (spell is not countered)");
             pay.category = ActionCategory::PAY_UNLESS;
+            pay.option_ordinal = 1;  // 1 = pay
             unless_actions.push_back(pay);
         }
         size_t decline_idx = unless_actions.size();
         {
             LegalAction decline(PASS_PRIORITY, std::string("Don't pay (spell is countered)"));
             decline.category = ActionCategory::PAY_UNLESS;
+            decline.option_ordinal = 0;  // 0 = don't pay
             unless_actions.push_back(decline);
         }
 
@@ -1390,9 +1398,11 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         std::vector<LegalAction> yn;
         LegalAction decline(PASS_PRIORITY, std::string("Decline"));
         decline.category = ActionCategory::OPTIONAL_YESNO;
+        decline.option_ordinal = 0;  // 0 = decline
         yn.push_back(decline);
         LegalAction accept(PASS_PRIORITY, std::string("Accept"));
         accept.category = ActionCategory::OPTIONAL_YESNO;
+        accept.option_ordinal = 1;  // 1 = accept
         yn.push_back(accept);
         bool prev_priority = cur_game.player_a_has_priority;
         cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
@@ -1417,9 +1427,11 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         std::vector<LegalAction> yn;
         LegalAction decline(PASS_PRIORITY, std::string("Decline"));
         decline.category = ActionCategory::OPTIONAL_YESNO;
+        decline.option_ordinal = 0;  // 0 = decline
         yn.push_back(decline);
         LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
         accept.category = ActionCategory::OPTIONAL_YESNO;
+        accept.option_ordinal = 1;  // 1 = accept
         yn.push_back(accept);
         bool prev_priority = cur_game.player_a_has_priority;
         cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);

@@ -129,6 +129,9 @@ typedef struct ActionChoice_tag {
     ActionRefZone zone_ref;
     int           slot_ref;                    // source entity's slot in the unified entity-ref
                                                // space (see machine_io.cpp map; -1 = none)
+    int           option_ordinal;              // per-action ordinal/value scalar (mode index, X
+                                               // value, color index, cast variant, depth, ...);
+                                               // -1 = not applicable. See LegalAction::option_ordinal
     char          description[MAX_CHOICE_DESC]; //NOT SERIALIZED TO ML
 } ActionChoice;
 

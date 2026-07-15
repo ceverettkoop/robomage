@@ -246,6 +246,10 @@
 
 static constexpr int STATE_SIZE             = 6196;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
+static constexpr int OPTION_ORDINAL_MAX = 63;  // normalizer for the per-action option_ordinal scalar
+                                               // (see LegalAction::option_ordinal): mode index, X
+                                               // value, color index, cast variant, top-of-library
+                                               // depth, binary pole; -1 = not applicable
 static constexpr int PERM_SLOT_SIZE    = 38;   // 11 stat/combat/type + 2 counters + 4 refs + 2 flags + 16 keywords + chosen-name id + returnable-exile id + card-id float
 static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot
 static constexpr int STACK_TGT_SLOTS   = MAX_STACK_TGTS;  // serialized targets per stack slot (truncated)

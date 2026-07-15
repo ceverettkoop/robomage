@@ -143,7 +143,7 @@ static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Ent
         for (auto e : choices) {
             std::string nm = global_coordinator.GetComponent<CardData>(e).name;
             LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
-            la.category = ActionCategory::SACRIFICE_PERMANENT;
+            la.category = ActionCategory::EXILE_FROM_YARD;
             menu.push_back(la);
         }
         int choice = InputLogger::instance().get_input(menu);
@@ -182,7 +182,7 @@ static void pay_exile_from_grave_count_cost(Zone::Ownership caster, int count, E
         for (auto e : choices) {
             std::string nm = global_coordinator.GetComponent<CardData>(e).name;
             LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
-            la.category = ActionCategory::SACRIFICE_PERMANENT;
+            la.category = ActionCategory::EXILE_FROM_YARD;
             menu.push_back(la);
         }
         int choice = InputLogger::instance().get_input(menu);
@@ -516,6 +516,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         for (size_t xv = 0; xv <= max_x; xv++) {
             LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
             la.category = ActionCategory::CHOOSE_X;
+            la.option_ordinal = static_cast<int>(xv);  // the chosen X value
             x_actions.push_back(la);
         }
         int x_choice = InputLogger::instance().get_input(x_actions);
@@ -536,6 +537,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         for (int xv = 0; xv <= max_x; xv++) {
             LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
             la.category = ActionCategory::CHOOSE_X;
+            la.option_ordinal = static_cast<int>(xv);  // the chosen X value
             x_actions.push_back(la);
         }
         int x_choice = InputLogger::instance().get_input(x_actions);
@@ -1474,6 +1476,7 @@ static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orde
                     : ("Mode " + std::to_string(i + 1));
             LegalAction la(PASS_PRIORITY, desc);
             la.category = ActionCategory::CHOOSE_MODE;
+            la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
             mode_actions.push_back(la);
             mode_indices.push_back(i);
         }
@@ -1932,6 +1935,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     for (size_t xv = 0; xv <= max_x; xv++) {
                         LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
                         la.category = ActionCategory::CHOOSE_X;
+                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
                     }
                     int x_choice = InputLogger::instance().get_input(x_actions);
@@ -2004,10 +2008,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                         if (can_pay_life) {
                             LegalAction pay_life(PASS_PRIORITY, "Pay 2 life (instead of {" + color_name + "})");
                             pay_life.category = ActionCategory::PAYING_COSTS;
+                            pay_life.option_ordinal = 0;  // Phyrexian pip: 0 = pay life
                             phyrex_actions.push_back(pay_life);
                         }
                         LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
                         pay_mana.category = ActionCategory::PAYING_COSTS;
+                        pay_mana.option_ordinal = 1;  // Phyrexian pip: 1 = pay mana
                         phyrex_actions.push_back(pay_mana);
                         int phyrex_choice = InputLogger::instance().get_input(phyrex_actions);
                         // The life option occupies index 0 only when it was offered; with it
@@ -2048,6 +2054,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     for (size_t xv = 0; xv <= max_x; xv++) {
                         LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
                         la.category = ActionCategory::CHOOSE_X;
+                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
                     }
                     int x_choice = InputLogger::instance().get_input(x_actions);

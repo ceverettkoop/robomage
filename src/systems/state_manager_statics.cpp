@@ -885,6 +885,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     for (size_t idx : order) {
                         LegalAction la(PASS_PRIORITY, entity, "Choose creature type: " + subtype_names[idx]);
                         la.category = ActionCategory::CHOOSE_TYPE;
+                        // Menu position distinguishes the same-entity options (all carry the
+                        // naming permanent). Bounded by the normalizer; the list is small.
+                        la.option_ordinal = static_cast<int>(type_choices.size());
                         type_choices.push_back(la);
                     }
 

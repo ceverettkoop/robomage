@@ -35,6 +35,7 @@ bool choose_number(Ability &ab, std::shared_ptr<Orderer> orderer) {
     for (int n = 0; n <= max; n++) {
         LegalAction la(PASS_PRIORITY, std::to_string(n));
         la.category = ActionCategory::CHOOSE_X;
+        la.option_ordinal = n;  // the chosen number
         choices.push_back(la);
     }
     int choice = InputLogger::instance().get_input(choices);

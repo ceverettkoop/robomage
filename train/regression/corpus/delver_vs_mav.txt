@@ -69,7 +69,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
-   1: Cast Once Upon a Time (alternate cost)
+   1: Cast Once Upon a Time (alternate cost)  [#1]
   >> B/B: 1 (Cast Once Upon a Time (alternate cost))
 --- Narrative ---
   Player B casts for free (alternate cost)
@@ -168,7 +168,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Ponder
+   1: Cast Ponder  [#0]
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -187,8 +187,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -208,9 +208,9 @@
   Opp revealed: Once Upon a Time
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Unholy Heat
-   1: Scalding Tarn
-   2: Mishra's Bauble
+   0: Unholy Heat  [#2]
+   1: Scalding Tarn  [#2]
+   2: Mishra's Bauble  [#2]
   >> A/A: 0 (Unholy Heat)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -228,8 +228,8 @@
   Opp revealed: Once Upon a Time
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Scalding Tarn
-   1: Mishra's Bauble
+   0: Scalding Tarn  [#1]
+   1: Mishra's Bauble  [#1]
   >> A/A: 0 (Scalding Tarn)
 
 --- Decision 12 ---
@@ -266,7 +266,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Mishra's Bauble
+   1: Cast Mishra's Bauble  [#0]
   >> A/A: 1 (Cast Mishra's Bauble)
 --- Narrative ---
   Player A casts Mishra's Bauble
@@ -285,8 +285,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Mishra's Bauble enters the battlefield
@@ -378,7 +378,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Green Sun's Zenith
+   1: Cast Green Sun's Zenith  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -399,7 +399,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Green Sun's Zenith
+   1: Cast Green Sun's Zenith  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 3 (Player A) --------
@@ -488,7 +488,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dragon's Rage Channeler
+   1: Cast Dragon's Rage Channeler  [#0]
   >> A/A: 1 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player A activated Mountain for 1(R)
@@ -508,8 +508,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler enters the battlefield
@@ -527,7 +527,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Swords to Plowshares
+   1: Cast Swords to Plowshares  [#0]
   >> B/B: 1 (Cast Swords to Plowshares)
 --- Narrative ---
   Choose target for Swords to Plowshares:
@@ -566,8 +566,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
 
 --- Decision 28 ---
@@ -627,7 +627,7 @@
   Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Dragon's Rage Channeler on top of library
+   0: Put Dragon's Rage Channeler on top of library  [#0]
    1: Put Dragon's Rage Channeler into graveyard
   >> A/A: 1 (Put Dragon's Rage Channeler into graveyard)
 --- Narrative ---
@@ -649,7 +649,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
-   0: Don't pay (spell is countered)
+   0: Don't pay (spell is countered)  [#0]
   >> B/B: 0 (Don't pay (spell is countered))
 --- Narrative ---
   Swords to Plowshares is countered
@@ -679,7 +679,7 @@
    2: Play Wasteland
    3: Play Wasteland
    4: Play Windswept Heath
-   5: Cast Green Sun's Zenith
+   5: Cast Green Sun's Zenith  [#0]
   >> B/B: 1 (Play Talon Gates of Madara)
 --- Narrative ---
   Player B played Talon Gates of Madara
@@ -719,7 +719,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Green Sun's Zenith
+   1: Cast Green Sun's Zenith  [#0]
   >> B/B: 1 (Cast Green Sun's Zenith)
 --- Narrative ---
   Choose X value (0-1):
@@ -736,8 +736,8 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
-   0: X = 0
-   1: X = 1
+   0: X = 0  [#0]
+   1: X = 1  [#1]
   >> B/B: 0 (X = 0)
 --- Narrative ---
   Player B chooses X = 0
@@ -788,7 +788,7 @@
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Cast Unholy Heat
+   1: Cast Unholy Heat  [#0]
   >> A/A: 1 (Cast Unholy Heat)
 --- Narrative ---
   Choose target for Unholy Heat:
@@ -830,7 +830,7 @@
   Opp GY:  Swords to Plowshares, Once Upon a Time
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
-   0: Put Delver of Secrets on top of library
+   0: Put Delver of Secrets on top of library  [#0]
    1: Put Delver of Secrets into graveyard
   >> A/A: 1 (Put Delver of Secrets into graveyard)
 --- Narrative ---
@@ -924,8 +924,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Keen-Eyed Curator
-   2: Cast Knight of the Reliquary
+   1: Cast Keen-Eyed Curator  [#0]
+   2: Cast Knight of the Reliquary  [#0]
   >> B/B: 1 (Cast Keen-Eyed Curator)
 --- Narrative ---
   Player B activated Savannah for 1(G)
@@ -947,7 +947,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
 
 --- Decision 45 ---
@@ -1007,7 +1007,7 @@
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Extras: opp_lands_played=1, self_revolt
   Actions:
-   0: Put Dragon's Rage Channeler on top of library
+   0: Put Dragon's Rage Channeler on top of library  [#0]
    1: Put Dragon's Rage Channeler into graveyard
   >> A/A: 1 (Put Dragon's Rage Channeler into graveyard)
 --- Narrative ---
@@ -1028,7 +1028,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Extras: self_lands_played=1, opp_revolt
   Actions:
-   0: Don't pay (spell is countered)
+   0: Don't pay (spell is countered)  [#0]
   >> B/B: 0 (Don't pay (spell is countered))
 --- Narrative ---
   Keen-Eyed Curator is countered
@@ -1104,7 +1104,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Once Upon a Time
+   1: Cast Once Upon a Time  [#0]
   >> B/B: 1 (Cast Once Upon a Time)
 --- Narrative ---
   Player B activated Savannah for 1(G)
@@ -1149,7 +1149,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Endurance (alternate cost)
+   1: Cast Endurance (alternate cost)  [#1]
   >> B/B: 1 (Cast Endurance (alternate cost))
 
 --- Decision 54 ---
@@ -1183,8 +1183,8 @@
   Self exile: Knight of the Reliquary
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
-   0: Endurance (ChangeZoneAll, targeted)
-   1: Endurance (evoke: sacrifice)
+   0: Endurance (ChangeZoneAll, targeted)  [#0]
+   1: Endurance (evoke: sacrifice)  [#1]
   >> B/B: 0 (Endurance (ChangeZoneAll, targeted))
 --- Narrative ---
   Choose target for Endurance:
@@ -1414,7 +1414,7 @@
   Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Cast Brainstorm
+   1: Cast Brainstorm  [#0]
   >> A/A: 1 (Cast Brainstorm)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -1456,7 +1456,7 @@
   Opp exile:  Knight of the Reliquary
   Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
-   0: Put Lightning Bolt on top of library
+   0: Put Lightning Bolt on top of library  [#0]
    1: Put Lightning Bolt into graveyard
   >> A/A: 1 (Put Lightning Bolt into graveyard)
 --- Narrative ---
@@ -1551,8 +1551,8 @@
   Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Cast Lightning Bolt
-   2: Cast Lightning Bolt
+   1: Cast Lightning Bolt  [#0]
+   2: Cast Lightning Bolt  [#0]
   >> A/A: 1 (Cast Lightning Bolt)
 --- Narrative ---
   Choose target for Lightning Bolt:
@@ -1617,7 +1617,7 @@
   Known top: Lightning Bolt, Murktide Regent, ?, ?, ?
   Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
-   0: Put Lightning Bolt on top of library
+   0: Put Lightning Bolt on top of library  [#0]
    1: Put Lightning Bolt into graveyard
   >> A/A: 1 (Put Lightning Bolt into graveyard)
 --- Narrative ---
@@ -1764,7 +1764,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Lightning Bolt
+   1: Cast Lightning Bolt  [#0]
   >> A/A: 1 (Cast Lightning Bolt)
 --- Narrative ---
   Choose target for Lightning Bolt:
@@ -1859,7 +1859,7 @@
   Opp revealed: Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
-   0: Put Unholy Heat on top of library
+   0: Put Unholy Heat on top of library  [#0]
    1: Put Unholy Heat into graveyard
   >> A/A: 1 (Put Unholy Heat into graveyard)
 --- Narrative ---
@@ -2310,7 +2310,7 @@
    0: Pass priority
    1: Play Scalding Tarn
    2: Play Wasteland
-   3: Cast Delver of Secrets
+   3: Cast Delver of Secrets  [#0]
   >> A/A: 3 (Cast Delver of Secrets)
 --- Narrative ---
   Player A activated Island for 1(U)

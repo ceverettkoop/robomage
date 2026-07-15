@@ -5,8 +5,8 @@
 # OBS_KEYWORDS array in src/machine_io.h.
 # Re-run train/gen_enums.py after changing any of them.
 
-ACTION_CATEGORY_MAX = 46
-N_ACTION_CATEGORIES = 47
+ACTION_CATEGORY_MAX = 49
+N_ACTION_CATEGORIES = 50
 
 # ── Observation layout / size constants (parsed from the C++ headers, the
 # single source of truth). train/env.py imports these instead of hand-
@@ -28,6 +28,7 @@ ACTION_HISTORY_SIZE = 128  # src/classes/game.h
 STATE_SIZE = 6196  # src/machine_io.h
 N_CARD_TYPES = 1024  # src/machine_io.h
 PERM_SLOT_SIZE = 38  # src/machine_io.h
+OPTION_ORDINAL_MAX = 63  # src/machine_io.h
 
 # Name-keyed ActionCategory constants: CAT_<ENUM_NAME> = value, for every
 # entry in the C++ ActionCategory enum (src/classes/action.h).
@@ -78,6 +79,9 @@ CAT_SYLVAN_CHOICE = 43
 CAT_CHOOSE_CARD = 44
 CAT_ASSIGN_DAMAGE = 45
 CAT_COMPANION = 46
+CAT_DONT_SHUFFLE = 47
+CAT_KEEP_HAND = 48
+CAT_EXILE_FROM_YARD = 49
 
 # ActionCategory value -> short display name.
 _CAT_NAMES = {
@@ -128,6 +132,9 @@ _CAT_NAMES = {
     44: "CHOOSE_CARD",  # CHOOSE_CARD
     45: "ASSIGN_DMG",  # ASSIGN_DAMAGE
     46: "COMPANION",  # COMPANION
+    47: "DONT_SHUFFLE",  # DONT_SHUFFLE
+    48: "KEEP_HAND",  # KEEP_HAND
+    49: "EXILE_FROM_YARD",  # EXILE_FROM_YARD
 }
 
 # Step (turn phase) display names, in enum order.

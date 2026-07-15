@@ -989,6 +989,9 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                 for (size_t gi : group) {
                     LegalAction la(PASS_PRIORITY, pending[gi].source, pending[gi].label);
                     la.category = ActionCategory::ORDER_TRIGGERS;
+                    // Menu position disambiguates two triggers that share one source
+                    // permanent (same-entity collision).
+                    la.option_ordinal = static_cast<int>(choices.size());
                     choices.push_back(la);
                 }
                 game_log("%s orders %zu simultaneous triggers (pick which goes on the stack next).\n",

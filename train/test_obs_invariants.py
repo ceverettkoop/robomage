@@ -32,7 +32,7 @@ import decode
 import runner
 from env import (
     RoboMageEnv, STATE_SIZE, N_CARD_TYPES, N_ENTITY_REF_SLOTS, BIN_DIR,
-    ACTION_CATEGORY_MAX,
+    ACTION_CATEGORY_MAX, MAX_ACTIONS, OPTION_ORDINAL_MAX,
     _SELF_PERM_START, _OPP_PERM_START, _PERM_SLOTS, _PERM_SLOT_SIZE,
     _PERM_CHOSEN_NAME_OFF, _PERM_RETURNABLE_OFF, _PERM_CARD_OFF,
     _OFF_ATTACHED_TO, _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
@@ -331,6 +331,20 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         _fail(decision_idx, seat, "opp_deck.constancy", "-", "changed",
               "opponent static decklist block changed across decisions of the same seat")
     deck_block_by_seat[seat] = opp_block
+
+    # (10) Every per-action option_ordinal float round-trips into
+    # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata
+    # block, normalized (ord + 1) / (OPTION_ORDINAL_MAX + 1) so -1 (n/a) -> 0.0.
+    _ords_start = STATE_SIZE + 5 * MAX_ACTIONS
+    for i in range(MAX_ACTIONS):
+        v = obs[_ords_start + i]
+        if not np.isfinite(v):
+            _fail(decision_idx, seat, "action.option_ordinal", i, v,
+                  "non-finite option_ordinal float")
+        ordv = int(round(float(v) * (OPTION_ORDINAL_MAX + 1))) - 1
+        if not (-1 <= ordv <= OPTION_ORDINAL_MAX):
+            _fail(decision_idx, seat, "action.option_ordinal", i, v,
+                  f"option_ordinal {ordv} out of range [-1,{OPTION_ORDINAL_MAX}]")
 
 
 # ── Game driving ──────────────────────────────────────────────────────────────

@@ -106,8 +106,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Thoughtseize
-   2: Cast Ponder
+   1: Cast Thoughtseize  [#0]
+   2: Cast Ponder  [#0]
    3: Activate Street Wraith from hand (Draw)
    4: Activate Edge of Autumn from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
@@ -398,7 +398,7 @@
    1: Play Polluted Delta
    2: Play Volcanic Island
    3: Play Scalding Tarn
-   4: Cast Mishra's Bauble
+   4: Cast Mishra's Bauble  [#0]
   >> B/B: 4 (Cast Mishra's Bauble)
 --- Narrative ---
   Player B casts Mishra's Bauble
@@ -552,7 +552,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Brainstorm
+   1: Cast Brainstorm  [#0]
   >> B/B: 1 (Cast Brainstorm)
 --- Narrative ---
   Player B activated Island for 1(U)
@@ -571,7 +571,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 33 ---
@@ -894,7 +894,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Ponder
+   1: Cast Ponder  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
@@ -934,7 +934,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> B/B: 1 (Cast Daze (alternate cost))
 
 --- Decision 52 ---
@@ -1010,7 +1010,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
-   0: Don't pay (spell is countered)
+   0: Don't pay (spell is countered)  [#0]
   >> A/A: 0 (Don't pay (spell is countered))
 --- Narrative ---
   Ponder is countered
@@ -1219,7 +1219,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Ponder
+   1: Cast Ponder  [#0]
   >> B/B: 1 (Cast Ponder)
 --- Narrative ---
   Player B activated Island for 1(U)
@@ -1261,9 +1261,9 @@
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
-   0: Volcanic Island
-   1: Ponder
-   2: Ponder
+   0: Volcanic Island  [#2]
+   1: Ponder  [#2]
+   2: Ponder  [#2]
   >> B/B: 0 (Volcanic Island)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -1282,8 +1282,8 @@
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1
   Actions:
-   0: Ponder
-   1: Ponder
+   0: Ponder  [#1]
+   1: Ponder  [#1]
   >> B/B: 0 (Ponder)
 
 --- Decision 71 ---
@@ -1668,7 +1668,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Personal Tutor on top of library
+   0: Put Personal Tutor on top of library  [#0]
    1: Put Personal Tutor into graveyard
   >> A/A: 1 (Put Personal Tutor into graveyard)
 --- Narrative ---
@@ -1872,8 +1872,8 @@
    1: Play Volcanic Island
    2: Play Scalding Tarn
    3: Play Scalding Tarn
-   4: Cast Ponder
-   5: Cast Ponder
+   4: Cast Ponder  [#0]
+   5: Cast Ponder  [#0]
   >> B/B: 4 (Cast Ponder)
 --- Narrative ---
   Player B activated Island for 1(U)
@@ -1914,9 +1914,9 @@
   Known top: Volcanic Island, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
-   0: Volcanic Island
-   1: Mishra's Bauble
-   2: Thundering Falls
+   0: Volcanic Island  [#2]
+   1: Mishra's Bauble  [#2]
+   2: Thundering Falls  [#2]
   >> B/B: 0 (Volcanic Island)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -1935,8 +1935,8 @@
   Known top: Volcanic Island, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
-   0: Mishra's Bauble
-   1: Thundering Falls
+   0: Mishra's Bauble  [#1]
+   1: Thundering Falls  [#1]
   >> B/B: 0 (Mishra's Bauble)
 
 --- Decision 105 ---
@@ -1995,9 +1995,9 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dragon's Rage Channeler
-   2: Cast Lightning Bolt
-   3: Cast Ponder
+   1: Cast Dragon's Rage Channeler  [#0]
+   2: Cast Lightning Bolt  [#0]
+   3: Cast Ponder  [#0]
   >> B/B: 1 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player B activated Volcanic Island for 1(R)
@@ -2219,7 +2219,7 @@
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Cast Thoughtseize
+   1: Cast Thoughtseize  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
@@ -2260,7 +2260,7 @@
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Cast Force of Will (alternate cost)
+   1: Cast Force of Will (alternate cost)  [#1]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 0 (Pass priority)
 --- Narrative ---
@@ -2485,8 +2485,8 @@
    1: Play Scalding Tarn
    2: Play Scalding Tarn
    3: Play Thundering Falls
-   4: Cast Mishra's Bauble
-   5: Cast Ponder
+   4: Cast Mishra's Bauble  [#0]
+   5: Cast Ponder  [#0]
   >> B/B: 4 (Cast Mishra's Bauble)
 --- Narrative ---
   Player B casts Mishra's Bauble
@@ -2506,7 +2506,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Cast Force of Will (alternate cost)
+   1: Cast Force of Will (alternate cost)  [#1]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
@@ -2610,7 +2610,7 @@
   Known top: Volcanic Island, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
-   0: Put Volcanic Island on top of library
+   0: Put Volcanic Island on top of library  [#0]
    1: Put Volcanic Island into graveyard
   >> B/B: 1 (Put Volcanic Island into graveyard)
 --- Narrative ---
@@ -2649,7 +2649,7 @@
    1: Play Scalding Tarn
    2: Play Scalding Tarn
    3: Play Thundering Falls
-   4: Cast Ponder
+   4: Cast Ponder  [#0]
   >> B/B: 4 (Cast Ponder)
 --- Narrative ---
   Player B activated Island for 1(U)
@@ -2692,7 +2692,7 @@
   Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
-   0: Put Flooded Strand on top of library
+   0: Put Flooded Strand on top of library  [#0]
    1: Put Flooded Strand into graveyard
   >> B/B: 1 (Put Flooded Strand into graveyard)
 --- Narrative ---
@@ -2734,9 +2734,9 @@
   Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
-   0: Mishra's Bauble
-   1: Brainstorm
-   2: Force of Will
+   0: Mishra's Bauble  [#2]
+   1: Brainstorm  [#2]
+   2: Force of Will  [#2]
   >> B/B: 0 (Mishra's Bauble)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -2755,8 +2755,8 @@
   Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
-   0: Brainstorm
-   1: Force of Will
+   0: Brainstorm  [#1]
+   1: Force of Will  [#1]
   >> B/B: 0 (Brainstorm)
 
 --- Decision 147 ---
@@ -3099,7 +3099,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Cast Thoughtseize
+   1: Cast Thoughtseize  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
@@ -3847,7 +3847,7 @@
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Lightning Bolt
+   1: Cast Lightning Bolt  [#0]
   >> B/B: 1 (Cast Lightning Bolt)
 --- Narrative ---
   Choose target for Lightning Bolt:
@@ -3912,7 +3912,7 @@
   Opp exile:  Thassa's Oracle
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
-   0: Put Wasteland on top of library
+   0: Put Wasteland on top of library  [#0]
    1: Put Wasteland into graveyard
   >> B/B: 1 (Put Wasteland into graveyard)
 --- Narrative ---
@@ -4016,7 +4016,7 @@
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Island, Thoughtseize, Thassa's Oracle, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
-   0: Put Cori-Steel Cutter on top of library
+   0: Put Cori-Steel Cutter on top of library  [#0]
    1: Put Cori-Steel Cutter into graveyard
   >> B/B: 1 (Put Cori-Steel Cutter into graveyard)
 --- Narrative ---

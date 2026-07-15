@@ -88,7 +88,7 @@ import decode
 # fallback) so legacy `choice:` specs keep working — while the new verbs below
 # pin a specific kind of decision.
 _OTHER_CATS = {10, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-               36, 37, 38, 39, 40, 41, 42, 43, 44}
+               36, 37, 38, 39, 40, 41, 42, 43, 44, 47, 48, 49}
 _VERB_CATS = {
     "pass": {0},
     "cast": {7},
@@ -98,12 +98,13 @@ _VERB_CATS = {
     "attack": {2, 3}, "block": {4, 5},
     "mana": {13, 14, 15, 16, 17, 18}, "tap": {13, 14, 15, 16, 17, 18},
     "search": {19, 44}, "top": {20}, "bottom": {12}, "dig": {23},
-    "mulligan": {11}, "keep": {11},
-    "pay": {22}, "choice": set(_OTHER_CATS), "shuffle": {21},
+    "mulligan": {11}, "keep": {48},
+    "pay": {22}, "choice": set(_OTHER_CATS), "shuffle": {21}, "noshuffle": {47},
     "sb-in": {24}, "sb-out": {25}, "sb-done": {26}, "companion": {46},
     # Convenience verbs that pin a specific former-OTHER decision kind.
     "sacrifice": {27}, "return": {28}, "x": {29}, "discard": {30},
     "mode": {31}, "color": {32}, "name": {34}, "free": {42},
+    "exile": {49},   # exile a card from the graveyard to pay an Escape cost
     "desc": set(),   # any category — pure description-substring match
 }
 

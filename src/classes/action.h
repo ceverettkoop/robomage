@@ -68,9 +68,14 @@ enum class ActionCategory {
     CHOOSE_CARD = 44,          // choose a card from a zone for a non-library zone-change
     ASSIGN_DAMAGE = 45,        // T3.10: attacker assigns lethal combat damage to a chosen blocker
     COMPANION = 46,            // CR 702.139: pay {3} to put your chosen companion from the sideboard into hand
+    DONT_SHUFFLE = 47,         // decline the optional shuffle after a rearrange-top effect (Ponder etc.);
+                               // paired with SHUFFLE so the two choices are distinct to the model
+    KEEP_HAND = 48,            // opening mulligan: keep the current hand (paired with MULLIGAN's take-a-mulligan)
+    EXILE_FROM_YARD = 49,      // exile a card from the graveyard to pay a cost (Escape); distinct from
+                               // SACRIFICE_PERMANENT (a permanent leaving the battlefield)
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 46;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 49;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;
@@ -103,6 +108,13 @@ struct LegalAction {
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).
         bool card_is_public = false;
+        // Per-action ordinal/value scalar, serialized to ML ALONGSIDE `category`.
+        // Disambiguates options that share a category and reference no distinct
+        // entity (so they'd otherwise serialize identically): the mode index of a
+        // modal spell, the chosen value of an X ladder, a flexible producer's color
+        // index, a cast variant (normal/alt-cost/offspring/...), a top-of-library
+        // placement depth, a binary pay/decline, etc. -1 = not applicable.
+        int option_ordinal = -1;
 
         LegalAction(ActionType t, const std::string &desc)
             : type(t), source_entity(0), target_entity(0), description(desc) {}
