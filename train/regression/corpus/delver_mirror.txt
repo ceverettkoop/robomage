@@ -126,7 +126,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Ponder
+   1: Cast Ponder  [#0]
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -143,8 +143,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -162,9 +162,9 @@
   Self GY: Misty Rainforest
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Unholy Heat
-   1: Dragon's Rage Channeler
-   2: Cori-Steel Cutter
+   0: Unholy Heat  [#2]
+   1: Dragon's Rage Channeler  [#2]
+   2: Cori-Steel Cutter  [#2]
   >> A/A: 0 (Unholy Heat)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -180,8 +180,8 @@
   Self GY: Misty Rainforest
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Dragon's Rage Channeler
-   1: Cori-Steel Cutter
+   0: Dragon's Rage Channeler  [#1]
+   1: Cori-Steel Cutter  [#1]
   >> A/A: 0 (Dragon's Rage Channeler)
 
 --- Decision 10 ---
@@ -225,7 +225,7 @@
    1: Play Polluted Delta
    2: Play Volcanic Island
    3: Play Scalding Tarn
-   4: Cast Mishra's Bauble
+   4: Cast Mishra's Bauble  [#0]
   >> B/B: 4 (Cast Mishra's Bauble)
 --- Narrative ---
   Player B casts Mishra's Bauble
@@ -242,8 +242,8 @@
   Opp revealed: Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
 
 --- Decision 13 ---
@@ -293,7 +293,7 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: opp_revolt
   Actions:
-   0: Don't pay (spell is countered)
+   0: Don't pay (spell is countered)  [#0]
   >> B/B: 0 (Don't pay (spell is countered))
 --- Narrative ---
   Mishra's Bauble is countered
@@ -372,8 +372,8 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Brainstorm
-   2: Cast Ponder
+   1: Cast Brainstorm  [#0]
+   2: Cast Ponder  [#0]
   >> B/B: 1 (Cast Brainstorm)
 --- Narrative ---
   Player B activated Island for 1(U)
@@ -392,7 +392,7 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 3)
@@ -506,7 +506,7 @@
    1: Play Flooded Strand
    2: Play Volcanic Island
    3: Play Scalding Tarn
-   4: Cast Ponder
+   4: Cast Ponder  [#0]
   >> B/B: 4 (Cast Ponder)
 --- Narrative ---
   Player B activated Island for 1(U)
@@ -526,7 +526,7 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 26 ---
@@ -543,7 +543,7 @@
   Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
 
 --- Decision 27 ---
@@ -599,7 +599,7 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> B/B: 1 (Cast Daze (alternate cost))
 
 --- Decision 30 ---
@@ -655,7 +655,7 @@
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: self_revolt, opp_revolt
   Actions:
-   0: Don't pay (spell is countered)
+   0: Don't pay (spell is countered)  [#0]
   >> A/A: 0 (Don't pay (spell is countered))
 --- Narrative ---
   Daze is countered
@@ -676,9 +676,9 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_revolt, opp_revolt
   Actions:
-   0: Delver of Secrets
-   1: Dragon's Rage Channeler
-   2: Murktide Regent
+   0: Delver of Secrets  [#2]
+   1: Dragon's Rage Channeler  [#2]
+   2: Murktide Regent  [#2]
   >> B/B: 0 (Delver of Secrets)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -696,8 +696,8 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_revolt, opp_revolt
   Actions:
-   0: Dragon's Rage Channeler
-   1: Murktide Regent
+   0: Dragon's Rage Channeler  [#1]
+   1: Murktide Regent  [#1]
   >> B/B: 0 (Dragon's Rage Channeler)
 
 --- Decision 35 ---
@@ -857,10 +857,10 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Murktide Regent
-   2: Cast Dragon's Rage Channeler
-   3: Cast Dragon's Rage Channeler
-   4: Cast Dragon's Rage Channeler
+   1: Cast Murktide Regent  [#0]
+   2: Cast Dragon's Rage Channeler  [#0]
+   3: Cast Dragon's Rage Channeler  [#0]
+   4: Cast Dragon's Rage Channeler  [#0]
   >> B/B: 1 (Cast Murktide Regent)
 --- Narrative ---
   Choose a card to exile via Delve (1 of 5):
@@ -1002,7 +1002,7 @@
    0: Pass priority
    1: Play Scalding Tarn
    2: Play Wasteland
-   3: Cast Delver of Secrets
+   3: Cast Delver of Secrets  [#0]
   >> A/A: 3 (Cast Delver of Secrets)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -1092,9 +1092,9 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dragon's Rage Channeler
-   2: Cast Dragon's Rage Channeler
-   3: Cast Unholy Heat
+   1: Cast Dragon's Rage Channeler  [#0]
+   2: Cast Dragon's Rage Channeler  [#0]
+   3: Cast Unholy Heat  [#0]
   >> A/A: 1 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player A activated Mountain for 1(R)
@@ -1125,10 +1125,10 @@
    0: Pass priority
    1: Play Volcanic Island
    2: Play Scalding Tarn
-   3: Cast Dragon's Rage Channeler
-   4: Cast Dragon's Rage Channeler
-   5: Cast Dragon's Rage Channeler
-   6: Cast Cori-Steel Cutter
+   3: Cast Dragon's Rage Channeler  [#0]
+   4: Cast Dragon's Rage Channeler  [#0]
+   5: Cast Dragon's Rage Channeler  [#0]
+   6: Cast Cori-Steel Cutter  [#0]
   >> B/B: 3 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player B activated Volcanic Island for 1(R)
@@ -1168,9 +1168,9 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dragon's Rage Channeler
-   2: Cast Dragon's Rage Channeler
-   3: Cast Cori-Steel Cutter
+   1: Cast Dragon's Rage Channeler  [#0]
+   2: Cast Dragon's Rage Channeler  [#0]
+   3: Cast Cori-Steel Cutter  [#0]
   >> B/B: 1 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player B activated Volcanic Island for 1(R)
@@ -1241,7 +1241,7 @@
   Opp revealed: Volcanic Island, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Cast Unholy Heat
+   1: Cast Unholy Heat  [#0]
   >> A/A: 1 (Cast Unholy Heat)
 --- Narrative ---
   Choose target for Unholy Heat:
@@ -1289,7 +1289,7 @@
   Opp exile:  Flooded Strand, Ponder, Daze, Brainstorm, Mishra's Bauble
   Opp revealed: Volcanic Island, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   Actions:
-   0: Put Force of Will on top of library
+   0: Put Force of Will on top of library  [#0]
    1: Put Force of Will into graveyard
   >> A/A: 1 (Put Force of Will into graveyard)
 --- Narrative ---
@@ -1334,7 +1334,7 @@
   Actions:
    0: Pass priority
    1: Play Wasteland
-   2: Cast Delver of Secrets
+   2: Cast Delver of Secrets  [#0]
   >> A/A: 2 (Cast Delver of Secrets)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -1517,9 +1517,9 @@
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
-   2: Cast Dragon's Rage Channeler
-   3: Cast Cori-Steel Cutter
-   4: Cast Cori-Steel Cutter
+   2: Cast Dragon's Rage Channeler  [#0]
+   3: Cast Cori-Steel Cutter  [#0]
+   4: Cast Cori-Steel Cutter  [#0]
   >> B/B: 2 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player B activated Volcanic Island for 1(R)
@@ -1606,8 +1606,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Cori-Steel Cutter
-   2: Cast Cori-Steel Cutter
+   1: Cast Cori-Steel Cutter  [#0]
+   2: Cast Cori-Steel Cutter  [#0]
   >> B/B: 1 (Cast Cori-Steel Cutter)
 --- Narrative ---
   Player B activated Mountain for 1(R)
@@ -1629,9 +1629,9 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Dragon's Rage Channeler (Surveil)
-   1: Dragon's Rage Channeler (Surveil)
-   2: Dragon's Rage Channeler (Surveil)
+   0: Dragon's Rage Channeler (Surveil)  [#0]
+   1: Dragon's Rage Channeler (Surveil)  [#1]
+   2: Dragon's Rage Channeler (Surveil)  [#2]
   >> B/B: 0 (Dragon's Rage Channeler (Surveil))
 --- Narrative ---
   Dragon's Rage Channeler triggered
@@ -1651,8 +1651,8 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Dragon's Rage Channeler (Surveil)
-   1: Dragon's Rage Channeler (Surveil)
+   0: Dragon's Rage Channeler (Surveil)  [#0]
+   1: Dragon's Rage Channeler (Surveil)  [#1]
   >> B/B: 0 (Dragon's Rage Channeler (Surveil))
 --- Narrative ---
   Dragon's Rage Channeler triggered
@@ -1676,7 +1676,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Lightning Bolt on top of library
+   0: Put Lightning Bolt on top of library  [#0]
    1: Put Lightning Bolt into graveyard
   >> B/B: 1 (Put Lightning Bolt into graveyard)
 --- Narrative ---
@@ -1700,7 +1700,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Mishra's Bauble on top of library
+   0: Put Mishra's Bauble on top of library  [#0]
    1: Put Mishra's Bauble into graveyard
   >> B/B: 1 (Put Mishra's Bauble into graveyard)
 --- Narrative ---
@@ -1724,7 +1724,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Scalding Tarn on top of library
+   0: Put Scalding Tarn on top of library  [#0]
    1: Put Scalding Tarn into graveyard
   >> B/B: 1 (Put Scalding Tarn into graveyard)
 --- Narrative ---
@@ -1870,8 +1870,8 @@
   Opp exile:  Flooded Strand, Ponder, Daze, Brainstorm, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter
   Actions:
-   0: Delver of Secrets (PeekAndReveal)
-   1: Delver of Secrets (PeekAndReveal)
+   0: Delver of Secrets (PeekAndReveal)  [#0]
+   1: Delver of Secrets (PeekAndReveal)  [#1]
   >> A/A: 0 (Delver of Secrets (PeekAndReveal))
 --- Narrative ---
   Delver of Secrets triggered
@@ -1937,8 +1937,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter
   Actions:
    0: Pass priority
-   1: Cast Dragon's Rage Channeler
-   2: Cast Cori-Steel Cutter
+   1: Cast Dragon's Rage Channeler  [#0]
+   2: Cast Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player A activated Mountain for 1(R)
@@ -2085,8 +2085,8 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Murktide Regent
-   2: Cast Cori-Steel Cutter
+   1: Cast Murktide Regent  [#0]
+   2: Cast Cori-Steel Cutter  [#0]
    3: Equip Cori-Steel Cutter
   >> B/B: 1 (Cast Murktide Regent)
 --- Narrative ---
@@ -2104,8 +2104,8 @@
   Self exile: Flooded Strand, Ponder, Daze, Brainstorm, Mishra's Bauble
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
-   0: Exile 4 cards from graveyard (Delve)
-   1: Exile 5 cards from graveyard (Delve)
+   0: Exile 4 cards from graveyard (Delve)  [#4]
+   1: Exile 5 cards from graveyard (Delve)  [#5]
   >> B/B: 1 (Exile 5 cards from graveyard (Delve))
 --- Narrative ---
   Choose a card to exile via Delve (1 of 5):

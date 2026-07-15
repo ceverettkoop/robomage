@@ -106,8 +106,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Thoughtseize
-   2: Cast Ponder
+   1: Cast Thoughtseize  [#0]
+   2: Cast Ponder  [#0]
    3: Activate Street Wraith from hand (Draw)
    4: Activate Edge of Autumn from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
@@ -184,7 +184,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Force of Will (alternate cost)
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
   Player B pays 1 life
@@ -507,7 +507,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Lotus Petal
+   1: Cast Lotus Petal  [#0]
   >> B/B: 1 (Cast Lotus Petal)
 --- Narrative ---
   Player B casts Lotus Petal
@@ -543,8 +543,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Ponder
+   1: Cast Dark Ritual  [#0]
+   2: Cast Ponder  [#0]
   >> B/B: 2 (Cast Ponder)
 --- Narrative ---
   Player B sacrifices Lotus Petal
@@ -584,9 +584,9 @@
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Doomsday
-   1: Daze
-   2: Dark Ritual
+   0: Doomsday  [#2]
+   1: Daze  [#2]
+   2: Dark Ritual  [#2]
   >> B/B: 0 (Doomsday)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -604,8 +604,8 @@
   Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Daze
-   1: Dark Ritual
+   0: Daze  [#1]
+   1: Dark Ritual  [#1]
   >> B/B: 0 (Daze)
 
 --- Decision 36 ---
@@ -822,7 +822,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Ponder
+   1: Cast Ponder  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
@@ -864,9 +864,9 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
   Actions:
-   0: Edge of Autumn
-   1: Force of Will
-   2: Doomsday
+   0: Edge of Autumn  [#2]
+   1: Force of Will  [#2]
+   2: Doomsday  [#2]
   >> A/A: 0 (Edge of Autumn)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -885,8 +885,8 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Extras: self_lands_played=1
   Actions:
-   0: Force of Will
-   1: Doomsday
+   0: Force of Will  [#1]
+   1: Doomsday  [#1]
   >> A/A: 0 (Force of Will)
 
 --- Decision 52 ---
@@ -1127,8 +1127,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 65 ---
@@ -1164,8 +1164,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 67 ---
@@ -1203,8 +1203,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 69 ---
@@ -1260,8 +1260,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1282,8 +1282,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 73 ---
@@ -1319,8 +1319,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 75 ---
@@ -1356,8 +1356,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 77 ---
@@ -1393,8 +1393,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 79 ---
@@ -1451,8 +1451,8 @@
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Force of Will
@@ -1488,8 +1488,8 @@
   Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 84 ---
@@ -1570,8 +1570,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -1638,8 +1638,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -1661,7 +1661,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Lotus Petal on top of library
+   0: Put Lotus Petal on top of library  [#0]
    1: Put Lotus Petal into graveyard
   >> A/A: 1 (Put Lotus Petal into graveyard)
 --- Narrative ---
@@ -1699,8 +1699,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 94 ---
@@ -1735,8 +1735,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1773,8 +1773,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1794,8 +1794,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 99 ---
@@ -1850,8 +1850,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 102 ---
@@ -1886,8 +1886,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 104 ---
@@ -1922,8 +1922,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 106 ---
@@ -1958,8 +1958,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 6 (Player B) --------
@@ -1981,8 +1981,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 109 ---
@@ -2016,8 +2016,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 111 ---
@@ -2050,8 +2050,8 @@
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
-   2: Cast Dark Ritual
-   3: Cast Dark Ritual
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
   >> B/B: 1 (Play Verdant Catacombs)
 --- Narrative ---
   Player B played Verdant Catacombs
@@ -2070,8 +2070,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
    3: Activate Verdant Catacombs (ChangeZone)
   >> B/B: 3 (Activate Verdant Catacombs (ChangeZone))
 --- Narrative ---
@@ -2094,8 +2094,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 115 ---
@@ -2158,8 +2158,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 118 ---
@@ -2193,8 +2193,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 120 ---
@@ -2230,8 +2230,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 122 ---
@@ -2284,8 +2284,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2305,8 +2305,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 126 ---
@@ -2340,8 +2340,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 128 ---
@@ -2375,8 +2375,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 130 ---
@@ -2410,8 +2410,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 132 ---
@@ -2465,8 +2465,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Lotus Petal
@@ -2500,8 +2500,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 137 ---
@@ -2517,8 +2517,8 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Cast Thoughtseize
-   2: Cast Lotus Petal
+   1: Cast Thoughtseize  [#0]
+   2: Cast Lotus Petal  [#0]
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
@@ -2576,10 +2576,10 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Daze
-   2: Cast Daze (alternate cost)
-   3: Cast Dark Ritual
-   4: Cast Dark Ritual
+   1: Cast Daze  [#0]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Dark Ritual  [#0]
+   4: Cast Dark Ritual  [#0]
   >> B/B: 1 (Cast Daze)
 --- Narrative ---
   Choose target for Daze:
@@ -2640,7 +2640,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Tap Island for (U)
-   1: Don't pay (spell is countered)
+   1: Don't pay (spell is countered)  [#0]
   >> A/A: 0 (Tap Island for (U))
 --- Narrative ---
   Player A tapped Island for {U}
@@ -2658,8 +2658,8 @@
   Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
-   0: Pay {1} (spell is not countered)
-   1: Don't pay (spell is countered)
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
   >> A/A: 0 (Pay {1} (spell is not countered))
 --- Narrative ---
   Player A pays {1} — spell is not countered
@@ -2726,7 +2726,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Cast Lotus Petal
+   1: Cast Lotus Petal  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Lotus Petal)
 --- Narrative ---
@@ -2913,8 +2913,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 158 ---
@@ -2949,8 +2949,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 160 ---
@@ -2983,9 +2983,9 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
-   3: Cast Dauthi Voidwalker
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dauthi Voidwalker  [#0]
   >> B/B: 3 (Cast Dauthi Voidwalker)
 --- Narrative ---
   Player B activated Swamp for 1(B)
@@ -3193,7 +3193,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Dark Ritual)
 --- Narrative ---
@@ -3410,8 +3410,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
    3: Activate Dauthi Voidwalker (ChooseCard)
   >> B/B: 0 (Pass priority)
 
@@ -3449,8 +3449,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
    3: Activate Dauthi Voidwalker (ChooseCard)
   >> B/B: 0 (Pass priority)
 
@@ -3487,8 +3487,8 @@
   Actions:
    0: Pass priority
    1: Play Island
-   2: Cast Dark Ritual
-   3: Cast Dark Ritual
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
    4: Activate Dauthi Voidwalker (ChooseCard)
   >> B/B: 1 (Play Island)
 --- Narrative ---
@@ -3509,8 +3509,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
    3: Activate Dauthi Voidwalker (ChooseCard)
   >> B/B: 3 (Activate Dauthi Voidwalker (ChooseCard))
 --- Narrative ---
@@ -3533,8 +3533,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 190 ---
@@ -3597,8 +3597,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 193 ---
@@ -3637,8 +3637,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 195 ---
@@ -3673,8 +3673,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 197 ---
@@ -3711,8 +3711,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 199 ---
@@ -3767,8 +3767,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3788,8 +3788,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 203 ---
@@ -3824,8 +3824,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 205 ---
@@ -3860,8 +3860,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 207 ---
@@ -3896,8 +3896,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 209 ---
@@ -3953,8 +3953,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Daze
@@ -3989,8 +3989,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 214 ---
@@ -4023,8 +4023,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 216 ---
@@ -4057,8 +4057,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -4093,8 +4093,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -4112,8 +4112,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 221 ---
@@ -4166,8 +4166,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 224 ---
@@ -4200,8 +4200,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 226 ---
@@ -4234,8 +4234,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 228 ---
@@ -4268,8 +4268,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 12 (Player B) --------
@@ -4290,8 +4290,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 231 ---
@@ -4326,8 +4326,8 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 1 (Cast Dark Ritual)
 --- Narrative ---
   Player B activated Swamp for 1(B)
@@ -4347,7 +4347,7 @@
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 1 (Cast Dark Ritual)
 --- Narrative ---
   Player B activated Underground Sea for 1(B)
@@ -4367,9 +4367,9 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Cast Force of Will (alternate cost)
-   2: Cast Daze
-   3: Cast Daze (alternate cost)
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Daze  [#0]
+   3: Cast Daze (alternate cost)  [#1]
    4: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
@@ -4673,7 +4673,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Cast Personal Tutor
+   1: Cast Personal Tutor  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Personal Tutor)
 --- Narrative ---
@@ -4951,12 +4951,12 @@
   Opp revealed: Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Undercity Sewers, Underground Sea
   Extras: self_lands_played=1
   Actions:
-   0: Choose creature type: Lhurgoyf
-   1: Choose creature type: Wraith
-   2: Choose creature type: Dauthi
-   3: Choose creature type: Rogue
-   4: Choose creature type: Merfolk
-   5: Choose creature type: Wizard
+   0: Choose creature type: Lhurgoyf  [#0]
+   1: Choose creature type: Wraith  [#1]
+   2: Choose creature type: Dauthi  [#2]
+   3: Choose creature type: Rogue  [#3]
+   4: Choose creature type: Merfolk  [#4]
+   5: Choose creature type: Wizard  [#5]
   >> B/B: 0 (Choose creature type: Lhurgoyf)
 --- Narrative ---
   Player B chose creature type: Lhurgoyf
@@ -5167,7 +5167,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Cast Lotus Petal
+   1: Cast Lotus Petal  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Lotus Petal)
 --- Narrative ---
@@ -5207,8 +5207,8 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Cast Doomsday
-   2: Cast Doomsday
+   1: Cast Doomsday  [#0]
+   2: Cast Doomsday  [#0]
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Doomsday)
 --- Narrative ---
@@ -5679,11 +5679,11 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
   Actions:
-   0: Force of Will
-   1: Street Wraith
-   2: Street Wraith
-   3: Street Wraith
-   4: Thassa's Oracle
+   0: Force of Will  [#4]
+   1: Street Wraith  [#4]
+   2: Street Wraith  [#4]
+   3: Street Wraith  [#4]
+   4: Thassa's Oracle  [#4]
   >> A/A: 0 (Force of Will)
 --- Narrative ---
   Choose which card goes 4 from top:
@@ -5704,10 +5704,10 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
   Actions:
-   0: Street Wraith
-   1: Street Wraith
-   2: Street Wraith
-   3: Thassa's Oracle
+   0: Street Wraith  [#3]
+   1: Street Wraith  [#3]
+   2: Street Wraith  [#3]
+   3: Thassa's Oracle  [#3]
   >> A/A: 0 (Street Wraith)
 --- Narrative ---
   Choose which card goes 3 from top:
@@ -5728,9 +5728,9 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
   Actions:
-   0: Street Wraith
-   1: Street Wraith
-   2: Thassa's Oracle
+   0: Street Wraith  [#2]
+   1: Street Wraith  [#2]
+   2: Thassa's Oracle  [#2]
   >> A/A: 2 (Thassa's Oracle)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -5751,8 +5751,8 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Extras: self_revolt
   Actions:
-   0: Street Wraith
-   1: Street Wraith
+   0: Street Wraith  [#1]
+   1: Street Wraith  [#1]
   >> A/A: 0 (Street Wraith)
 --- Narrative ---
   Resolving ability (category: LoseLife, amount: 8)
@@ -5854,7 +5854,7 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Cast Lion's Eye Diamond
+   1: Cast Lion's Eye Diamond  [#0]
   >> B/B: 1 (Cast Lion's Eye Diamond)
 --- Narrative ---
   Player B casts Lion's Eye Diamond
@@ -6117,7 +6117,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Cast Thassa's Oracle
+   1: Cast Thassa's Oracle  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thassa's Oracle)
 --- Narrative ---

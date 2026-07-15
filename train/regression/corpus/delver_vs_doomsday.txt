@@ -126,7 +126,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Ponder
+   1: Cast Ponder  [#0]
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -143,8 +143,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
   >> A/A: 0 (Pass priority)
 
 --- Decision 8 ---
@@ -159,7 +159,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Force of Will (alternate cost)
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
   Player B pays 1 life
@@ -214,8 +214,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
 
 --- Decision 12 ---
@@ -268,7 +268,7 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: opp_lands_played=1, opp_revolt
   Actions:
-   0: Don't pay (spell is countered)
+   0: Don't pay (spell is countered)  [#0]
   >> B/B: 0 (Don't pay (spell is countered))
 --- Narrative ---
   Force of Will is countered
@@ -289,9 +289,9 @@
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Unholy Heat
-   1: Dragon's Rage Channeler
-   2: Cori-Steel Cutter
+   0: Unholy Heat  [#2]
+   1: Dragon's Rage Channeler  [#2]
+   2: Cori-Steel Cutter  [#2]
   >> A/A: 0 (Unholy Heat)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -309,8 +309,8 @@
   Opp revealed: Force of Will, Personal Tutor
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Dragon's Rage Channeler
-   1: Cori-Steel Cutter
+   0: Dragon's Rage Channeler  [#1]
+   1: Cori-Steel Cutter  [#1]
   >> A/A: 0 (Dragon's Rage Channeler)
 
 --- Decision 17 ---
@@ -410,7 +410,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Lotus Petal
+   1: Cast Lotus Petal  [#0]
   >> B/B: 1 (Cast Lotus Petal)
 --- Narrative ---
   Player B casts Lotus Petal
@@ -429,8 +429,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Ponder
+   1: Cast Dark Ritual  [#0]
+   2: Cast Ponder  [#0]
   >> B/B: 2 (Cast Ponder)
 --- Narrative ---
   Player B sacrifices Lotus Petal
@@ -453,9 +453,9 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Doomsday
-   1: Daze
-   2: Dark Ritual
+   0: Doomsday  [#2]
+   1: Daze  [#2]
+   2: Dark Ritual  [#2]
   >> B/B: 0 (Doomsday)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -473,8 +473,8 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Daze
-   1: Dark Ritual
+   0: Daze  [#1]
+   1: Dark Ritual  [#1]
   >> B/B: 0 (Daze)
 
 --- Decision 25 ---
@@ -569,8 +569,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 29 ---
@@ -588,8 +588,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -609,8 +609,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -630,8 +630,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -652,8 +652,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 33 ---
@@ -671,8 +671,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 34 ---
@@ -690,8 +690,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 35 ---
@@ -709,8 +709,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 5 (Player A) --------
@@ -732,8 +732,8 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Unholy Heat
@@ -752,8 +752,8 @@
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 38 ---
@@ -812,8 +812,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -860,9 +860,9 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dragon's Rage Channeler
-   2: Cast Dragon's Rage Channeler
-   3: Cast Cori-Steel Cutter
+   1: Cast Dragon's Rage Channeler  [#0]
+   2: Cast Dragon's Rage Channeler  [#0]
+   3: Cast Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player A activated Mountain for 1(R)
@@ -883,7 +883,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> A/A: 0 (Pass priority)
 
 --- Decision 44 ---
@@ -902,9 +902,9 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
-   2: Cast Dark Ritual
-   3: Cast Dark Ritual
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
   >> B/B: 1 (Cast Daze (alternate cost))
 
 --- Decision 45 ---
@@ -963,7 +963,7 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Daze (alternate cost)
+   1: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
 
 --- Decision 48 ---
@@ -1022,7 +1022,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
-   0: Don't pay (spell is countered)
+   0: Don't pay (spell is countered)  [#0]
   >> B/B: 0 (Don't pay (spell is countered))
 --- Narrative ---
   Daze is countered
@@ -1069,8 +1069,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 53 ---
@@ -1087,8 +1087,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1107,8 +1107,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1127,8 +1127,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1148,8 +1148,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 57 ---
@@ -1166,8 +1166,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 58 ---
@@ -1184,8 +1184,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 59 ---
@@ -1202,8 +1202,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 7 (Player A) --------
@@ -1224,7 +1224,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
-   1: Cast Unholy Heat
+   1: Cast Unholy Heat  [#0]
   >> A/A: 1 (Cast Unholy Heat)
 --- Narrative ---
   Choose target for Unholy Heat:
@@ -1264,8 +1264,8 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -1286,7 +1286,7 @@
   Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
-   0: Put Lightning Bolt on top of library
+   0: Put Lightning Bolt on top of library  [#0]
    1: Put Lightning Bolt into graveyard
   >> A/A: 1 (Put Lightning Bolt into graveyard)
 --- Narrative ---
@@ -1306,8 +1306,8 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 2)
@@ -1328,8 +1328,8 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Cori-Steel Cutter
@@ -1348,8 +1348,8 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 67 ---
@@ -1386,8 +1386,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 69 ---
@@ -1404,8 +1404,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1424,8 +1424,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1444,8 +1444,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1465,8 +1465,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 73 ---
@@ -1483,8 +1483,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 74 ---
@@ -1501,8 +1501,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 75 ---
@@ -1519,8 +1519,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 8 (Player B) --------
@@ -1541,8 +1541,8 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Lotus Petal
@@ -1560,8 +1560,8 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 78 ---
@@ -1578,9 +1578,9 @@
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
-   2: Cast Dark Ritual
-   3: Cast Dark Ritual
-   4: Cast Lotus Petal
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Cast Lotus Petal  [#0]
   >> B/B: 4 (Cast Lotus Petal)
 --- Narrative ---
   Player B casts Lotus Petal
@@ -1599,8 +1599,8 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
-   2: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Lotus Petal enters the battlefield
@@ -1619,8 +1619,8 @@
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
-   2: Cast Dark Ritual
-   3: Cast Dark Ritual
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
   >> B/B: 2 (Cast Dark Ritual)
 --- Narrative ---
   Player B activated Underground Sea for 1(B)
@@ -1640,7 +1640,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: AddMana)
@@ -1660,8 +1660,8 @@
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
-   2: Cast Doomsday
-   3: Cast Dark Ritual
+   2: Cast Doomsday  [#0]
+   3: Cast Dark Ritual  [#0]
   >> B/B: 1 (Play Verdant Catacombs)
 --- Narrative ---
   Player B played Verdant Catacombs
@@ -1680,8 +1680,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Doomsday
-   2: Cast Dark Ritual
+   1: Cast Doomsday  [#0]
+   2: Cast Dark Ritual  [#0]
    3: Activate Verdant Catacombs (ChangeZone)
   >> B/B: 3 (Activate Verdant Catacombs (ChangeZone))
 --- Narrative ---
@@ -1704,7 +1704,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -1749,8 +1749,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Doomsday
-   2: Cast Dark Ritual
+   1: Cast Doomsday  [#0]
+   2: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 87 ---
@@ -1767,7 +1767,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1786,7 +1786,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1805,7 +1805,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1825,7 +1825,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 91 ---
@@ -1842,7 +1842,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 92 ---
@@ -1859,7 +1859,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 93 ---
@@ -1876,7 +1876,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 9 (Player A) --------
@@ -1897,7 +1897,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Lightning Bolt
@@ -1915,7 +1915,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Cast Lightning Bolt
+   1: Cast Lightning Bolt  [#0]
   >> A/A: 1 (Cast Lightning Bolt)
 --- Narrative ---
   Choose target for Lightning Bolt:
@@ -1955,7 +1955,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
@@ -1974,7 +1974,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 99 ---
@@ -2051,7 +2051,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Destroy)
@@ -2071,7 +2071,7 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 104 ---
@@ -2088,7 +2088,7 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2107,7 +2107,7 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2126,7 +2126,7 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2146,7 +2146,7 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 108 ---
@@ -2163,7 +2163,7 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 109 ---
@@ -2180,7 +2180,7 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 110 ---
@@ -2197,7 +2197,7 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 10 (Player B) --------
@@ -2218,7 +2218,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Doomsday
@@ -2236,7 +2236,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 113 ---
@@ -2252,7 +2252,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 114 ---
@@ -2268,7 +2268,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2286,7 +2286,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2304,7 +2304,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2323,7 +2323,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 118 ---
@@ -2339,7 +2339,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 119 ---
@@ -2355,7 +2355,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 120 ---
@@ -2371,7 +2371,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 11 (Player A) --------
@@ -2392,7 +2392,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Thundering Falls
@@ -2410,7 +2410,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 123 ---
@@ -2427,9 +2427,9 @@
   Actions:
    0: Pass priority
    1: Play Thundering Falls
-   2: Cast Dragon's Rage Channeler
-   3: Cast Cori-Steel Cutter
-   4: Cast Cori-Steel Cutter
+   2: Cast Dragon's Rage Channeler  [#0]
+   3: Cast Cori-Steel Cutter  [#0]
+   4: Cast Cori-Steel Cutter  [#0]
   >> A/A: 2 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player A activated Mountain for 1(R)
@@ -2449,7 +2449,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler enters the battlefield
@@ -2490,7 +2490,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -2512,7 +2512,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1
   Actions:
-   0: Put Force of Will on top of library
+   0: Put Force of Will on top of library  [#0]
    1: Put Force of Will into graveyard
   >> A/A: 1 (Put Force of Will into graveyard)
 --- Narrative ---
@@ -2532,7 +2532,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 129 ---
@@ -2549,7 +2549,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2568,7 +2568,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2587,7 +2587,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2607,7 +2607,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 133 ---
@@ -2624,7 +2624,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 134 ---
@@ -2641,7 +2641,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 135 ---
@@ -2658,7 +2658,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 12 (Player B) --------
@@ -2679,7 +2679,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Force of Will
@@ -2697,7 +2697,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 138 ---
@@ -2713,7 +2713,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 139 ---
@@ -2729,7 +2729,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2747,7 +2747,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2765,7 +2765,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2784,7 +2784,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 143 ---
@@ -2800,7 +2800,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 144 ---
@@ -2816,7 +2816,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 145 ---
@@ -2832,7 +2832,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 13 (Player A) --------
@@ -2853,7 +2853,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Flooded Strand
@@ -2871,7 +2871,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 148 ---
@@ -2888,8 +2888,8 @@
   Actions:
    0: Pass priority
    1: Play Flooded Strand
-   2: Cast Cori-Steel Cutter
-   3: Cast Cori-Steel Cutter
+   2: Cast Cori-Steel Cutter  [#0]
+   3: Cast Cori-Steel Cutter  [#0]
   >> A/A: 2 (Cast Cori-Steel Cutter)
 --- Narrative ---
   Player A activated Mountain for 1(R)
@@ -2911,7 +2911,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -2932,7 +2932,7 @@
   Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
-   0: Put Lightning Bolt on top of library
+   0: Put Lightning Bolt on top of library  [#0]
    1: Put Lightning Bolt into graveyard
   >> A/A: 1 (Put Lightning Bolt into graveyard)
 --- Narrative ---
@@ -2952,7 +2952,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Cori-Steel Cutter enters the battlefield
@@ -3011,7 +3011,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -3056,7 +3056,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Cori-Steel Cutter
+   1: Cast Cori-Steel Cutter  [#0]
    2: Equip Cori-Steel Cutter
   >> A/A: 1 (Cast Cori-Steel Cutter)
 --- Narrative ---
@@ -3079,8 +3079,8 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Dragon's Rage Channeler (Surveil)
-   1: Cori-Steel Cutter (Token)
+   0: Dragon's Rage Channeler (Surveil)  [#0]
+   1: Cori-Steel Cutter (Token)  [#1]
   >> A/A: 0 (Dragon's Rage Channeler (Surveil))
 --- Narrative ---
   Dragon's Rage Channeler triggered
@@ -3101,7 +3101,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Token)
@@ -3122,8 +3122,8 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Decline: attach Cori-Steel Cutter to Monk token
-   1: Accept: attach Cori-Steel Cutter to Monk token
+   0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
+   1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
   >> A/A: 0 (Decline: attach Cori-Steel Cutter to Monk token)
 --- Narrative ---
   Resolving ability (category: Cleanup)
@@ -3143,7 +3143,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -3165,7 +3165,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Volcanic Island on top of library
+   0: Put Volcanic Island on top of library  [#0]
    1: Put Volcanic Island into graveyard
   >> A/A: 1 (Put Volcanic Island into graveyard)
 --- Narrative ---
@@ -3186,7 +3186,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Cori-Steel Cutter enters the battlefield
@@ -3205,7 +3205,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 164 ---
@@ -3222,7 +3222,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler must attack and is declared as an attacker.
@@ -3262,7 +3262,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to block.
@@ -3281,7 +3281,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3302,7 +3302,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 169 ---
@@ -3319,7 +3319,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 170 ---
@@ -3336,7 +3336,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 171 ---
@@ -3353,7 +3353,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 14 (Player B) --------
@@ -3374,7 +3374,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Barrowgoyf
@@ -3392,7 +3392,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 174 ---
@@ -3408,7 +3408,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 175 ---
@@ -3424,7 +3424,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3442,7 +3442,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3460,7 +3460,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3479,7 +3479,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 179 ---
@@ -3495,7 +3495,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 180 ---
@@ -3511,7 +3511,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 181 ---
@@ -3527,7 +3527,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 15 (Player A) --------
@@ -3548,7 +3548,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Delver of Secrets
@@ -3566,7 +3566,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 184 ---
@@ -3582,7 +3582,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Cast Delver of Secrets
+   1: Cast Delver of Secrets  [#0]
    2: Equip Cori-Steel Cutter
    3: Equip Cori-Steel Cutter
   >> A/A: 1 (Cast Delver of Secrets)
@@ -3604,7 +3604,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Delver of Secrets enters the battlefield
@@ -3663,7 +3663,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 189 ---
@@ -3679,7 +3679,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler must attack and is declared as an attacker.
@@ -3766,7 +3766,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to block.
@@ -3784,7 +3784,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3806,7 +3806,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 196 ---
@@ -3822,7 +3822,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 197 ---
@@ -3838,7 +3838,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 198 ---
@@ -3854,7 +3854,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 16 (Player B) --------
@@ -3875,7 +3875,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Bloodstained Mire
@@ -3893,7 +3893,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 201 ---
@@ -3910,7 +3910,7 @@
   Actions:
    0: Pass priority
    1: Play Bloodstained Mire
-   2: Cast Dark Ritual
+   2: Cast Dark Ritual  [#0]
   >> B/B: 1 (Play Bloodstained Mire)
 --- Narrative ---
   Player B played Bloodstained Mire
@@ -3929,7 +3929,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
    2: Activate Bloodstained Mire (ChangeZone)
   >> B/B: 2 (Activate Bloodstained Mire (ChangeZone))
 --- Narrative ---
@@ -3952,7 +3952,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -3999,7 +3999,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -4021,7 +4021,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Misty Rainforest on top of library
+   0: Put Misty Rainforest on top of library  [#0]
    1: Put Misty Rainforest into graveyard
   >> B/B: 1 (Put Misty Rainforest into graveyard)
 --- Narrative ---
@@ -4041,7 +4041,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 208 ---
@@ -4058,7 +4058,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -4077,7 +4077,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -4096,7 +4096,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -4116,7 +4116,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 212 ---
@@ -4133,7 +4133,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 213 ---
@@ -4150,7 +4150,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 214 ---
@@ -4167,7 +4167,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 17 (Player A) --------
@@ -4190,7 +4190,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: PeekAndReveal)
@@ -4230,7 +4230,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Unholy Heat
@@ -4248,7 +4248,7 @@
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Cast Unholy Heat
+   1: Cast Unholy Heat  [#0]
   >> A/A: 1 (Cast Unholy Heat)
 --- Narrative ---
   Choose target for Unholy Heat:
@@ -4289,8 +4289,8 @@
   Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Actions:
-   0: Dragon's Rage Channeler (Surveil)
-   1: Monk token (ProwessBonus)
+   0: Dragon's Rage Channeler (Surveil)  [#0]
+   1: Monk token (ProwessBonus)  [#1]
   >> A/A: 0 (Dragon's Rage Channeler (Surveil))
 --- Narrative ---
   Dragon's Rage Channeler triggered
@@ -4310,7 +4310,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ProwessBonus)
@@ -4330,7 +4330,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -4351,7 +4351,7 @@
   Opp exile:  Personal Tutor
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Actions:
-   0: Put Brainstorm on top of library
+   0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
   >> A/A: 1 (Put Brainstorm into graveyard)
 --- Narrative ---
@@ -4371,7 +4371,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 2)
@@ -4392,7 +4392,7 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 226 ---
@@ -4451,7 +4451,7 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 229 ---
@@ -4468,7 +4468,7 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler must attack and is declared as an attacker.
@@ -4531,7 +4531,7 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to block.
@@ -4550,7 +4550,7 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual
+   1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---

@@ -79,7 +79,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
-   1: Cast Once Upon a Time (alternate cost)
+   1: Cast Once Upon a Time (alternate cost)  [#1]
   >> B/B: 1 (Cast Once Upon a Time (alternate cost))
 --- Narrative ---
   Player B casts for free (alternate cost)
@@ -171,8 +171,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Thoughtseize
-   2: Cast Ponder
+   1: Cast Thoughtseize  [#0]
+   2: Cast Ponder  [#0]
    3: Activate Street Wraith from hand (Draw)
    4: Activate Edge of Autumn from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
@@ -682,7 +682,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Ponder
+   1: Cast Ponder  [#0]
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
@@ -726,9 +726,9 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Extras: self_lands_played=1
   Actions:
-   0: Edge of Autumn
-   1: Force of Will
-   2: Doomsday
+   0: Edge of Autumn  [#2]
+   1: Force of Will  [#2]
+   2: Doomsday  [#2]
   >> A/A: 0 (Edge of Autumn)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -748,8 +748,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Extras: self_lands_played=1
   Actions:
-   0: Force of Will
-   1: Doomsday
+   0: Force of Will  [#1]
+   1: Doomsday  [#1]
   >> A/A: 0 (Force of Will)
 
 --- Decision 43 ---
@@ -1349,7 +1349,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Put Flooded Strand on top of library
+   0: Put Flooded Strand on top of library  [#0]
    1: Put Flooded Strand into graveyard
   >> A/A: 1 (Put Flooded Strand into graveyard)
 --- Narrative ---
@@ -1552,7 +1552,7 @@
    1: Play Wasteland
    2: Play Wasteland
    3: Play Windswept Heath
-   4: Cast Noble Hierarch
+   4: Cast Noble Hierarch  [#0]
   >> B/B: 4 (Cast Noble Hierarch)
 --- Narrative ---
   Player B activated Savannah for 1(G)
@@ -1609,7 +1609,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Swords to Plowshares
+   1: Cast Swords to Plowshares  [#0]
    2: Activate Wasteland (Destroy)
   >> B/B: 1 (Cast Swords to Plowshares)
 --- Narrative ---
@@ -1866,7 +1866,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Cast Thoughtseize
+   1: Cast Thoughtseize  [#0]
    2: Activate Street Wraith from hand (Draw)
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
@@ -2206,7 +2206,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Knight of the Reliquary
+   1: Cast Knight of the Reliquary  [#0]
    2: Activate Wasteland (Destroy)
    3: Activate Wasteland (Destroy)
   >> B/B: 1 (Cast Knight of the Reliquary)
@@ -2687,7 +2687,7 @@
    0: Pass priority
    1: Play Windswept Heath
    2: Play Windswept Heath
-   3: Cast Green Sun's Zenith
+   3: Cast Green Sun's Zenith  [#0]
    4: Activate Knight of the Reliquary (ChangeZone)
    5: Activate Wasteland (Destroy)
    6: Activate Wasteland (Destroy)
@@ -2707,10 +2707,10 @@
   Self exile: Noble Hierarch
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
-   0: X = 0
-   1: X = 1
-   2: X = 2
-   3: X = 3
+   0: X = 0  [#0]
+   1: X = 1  [#1]
+   2: X = 2  [#2]
+   3: X = 3  [#3]
   >> B/B: 0 (X = 0)
 --- Narrative ---
   Player B chooses X = 0
@@ -2861,9 +2861,9 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Force of Will (alternate cost)
-   2: Cast Daze
-   3: Cast Daze (alternate cost)
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Daze  [#0]
+   3: Cast Daze (alternate cost)  [#1]
    4: Activate Street Wraith from hand (Draw)
    5: Activate Street Wraith from hand (Draw)
    6: Tap Undercity Sewers for (U)
@@ -3962,7 +3962,7 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Cast Ponder
+   1: Cast Ponder  [#0]
    2: Activate Street Wraith from hand (Draw)
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Ponder)
@@ -4008,9 +4008,9 @@
   Opp exile:  Noble Hierarch
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
-   0: Dark Ritual
-   1: Thassa's Oracle
-   2: Polluted Delta
+   0: Dark Ritual  [#2]
+   1: Thassa's Oracle  [#2]
+   2: Polluted Delta  [#2]
   >> A/A: 1 (Thassa's Oracle)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -4030,8 +4030,8 @@
   Opp exile:  Noble Hierarch
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
-   0: Dark Ritual
-   1: Polluted Delta
+   0: Dark Ritual  [#1]
+   1: Polluted Delta  [#1]
   >> A/A: 0 (Dark Ritual)
 
 --- Decision 203 ---
@@ -4404,7 +4404,7 @@
   Actions:
    0: Pass priority
    1: Play Windswept Heath
-   2: Cast Noble Hierarch
+   2: Cast Noble Hierarch  [#0]
    3: Activate Knight of the Reliquary (ChangeZone)
   >> B/B: 2 (Cast Noble Hierarch)
 --- Narrative ---
@@ -4681,7 +4681,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Knight of the Reliquary
+   1: Cast Knight of the Reliquary  [#0]
   >> B/B: 1 (Cast Knight of the Reliquary)
 --- Narrative ---
   Player B activated Savannah for 1(G)
@@ -4928,7 +4928,7 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Cast Thoughtseize
+   1: Cast Thoughtseize  [#0]
    2: Activate Street Wraith from hand (Draw)
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
@@ -5775,7 +5775,7 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Cast Lotus Petal
+   1: Cast Lotus Petal  [#0]
    2: Activate Street Wraith from hand (Draw)
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Lotus Petal)
@@ -5817,8 +5817,8 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Cast Doomsday
-   2: Cast Doomsday
+   1: Cast Doomsday  [#0]
+   2: Cast Doomsday  [#0]
    3: Activate Street Wraith from hand (Draw)
    4: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Doomsday)
@@ -6278,11 +6278,11 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Extras: self_revolt
   Actions:
-   0: Thoughtseize
-   1: Force of Will
-   2: Street Wraith
-   3: Street Wraith
-   4: Thassa's Oracle
+   0: Thoughtseize  [#4]
+   1: Force of Will  [#4]
+   2: Street Wraith  [#4]
+   3: Street Wraith  [#4]
+   4: Thassa's Oracle  [#4]
   >> A/A: 0 (Thoughtseize)
 --- Narrative ---
   Choose which card goes 4 from top:
@@ -6303,10 +6303,10 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Extras: self_revolt
   Actions:
-   0: Force of Will
-   1: Street Wraith
-   2: Street Wraith
-   3: Thassa's Oracle
+   0: Force of Will  [#3]
+   1: Street Wraith  [#3]
+   2: Street Wraith  [#3]
+   3: Thassa's Oracle  [#3]
   >> A/A: 0 (Force of Will)
 --- Narrative ---
   Choose which card goes 3 from top:
@@ -6327,9 +6327,9 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Extras: self_revolt
   Actions:
-   0: Street Wraith
-   1: Street Wraith
-   2: Thassa's Oracle
+   0: Street Wraith  [#2]
+   1: Street Wraith  [#2]
+   2: Thassa's Oracle  [#2]
   >> A/A: 2 (Thassa's Oracle)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -6350,8 +6350,8 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Extras: self_revolt
   Actions:
-   0: Street Wraith
-   1: Street Wraith
+   0: Street Wraith  [#1]
+   1: Street Wraith  [#1]
   >> A/A: 0 (Street Wraith)
 --- Narrative ---
   Resolving ability (category: LoseLife, amount: 5)
@@ -6468,7 +6468,7 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Cast Life from the Loam
+   1: Cast Life from the Loam  [#0]
    2: Activate Knight of the Reliquary (ChangeZone)
    3: Activate Knight of the Reliquary (ChangeZone)
   >> B/B: 1 (Cast Life from the Loam)
