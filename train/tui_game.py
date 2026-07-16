@@ -368,11 +368,15 @@ class GameApp(App):
     ]
 
     def __init__(self, env, opp_act, opp_is_a, human_deck, opp_deck, is_model,
-                 bo3=True):
+                 bo3=True, clock_fn=None):
         super().__init__()
         self._env = env
         self._opp_act = opp_act              # callable(obs, num_choices) -> int
         self._opp_is_a = opp_is_a
+        # Optional callable -> the opponent's remaining match-clock seconds
+        # (None when no chess clock is armed). Read on the UI thread by the
+        # thinking ticker; a single dict-float read, so cross-thread safe.
+        self._clock_fn = clock_fn
         self._human_deck = human_deck
         self._opp_deck = opp_deck
         self._bo3 = bo3
@@ -671,8 +675,13 @@ class GameApp(App):
 
     def _tick_think(self) -> None:
         elapsed = int(time.monotonic() - self._think_start)
+        bank = ""
+        remaining = self._clock_fn() if self._clock_fn is not None else None
+        if remaining is not None:
+            r = int(remaining)
+            bank = f"  ·  bank {r // 60}:{r % 60:02d}"
         self.query_one("#prompt", Static).update(
-            f"⏳ {self._opp_label} is thinking…  ({elapsed}s)")
+            f"⏳ {self._opp_label} is thinking…  ({elapsed}s){bank}")
 
     def on_game_over(self, message: GameOver) -> None:
         self._awaiting = False
@@ -1216,5 +1225,11 @@ def run(binary_path, model_path, human_player=None,
     def opp_act(obs, num):
         return int(ctrl.choose(obs, num, action_masks=env.action_masks()))
 
-    GameApp(env, opp_act, opp_is_a, human_deck, model_deck, is_model, bo3=bo3).run()
+    # Surface a match-clock bank (mcts:/az: ?clock=) in the thinking indicator.
+    clock_fn = None
+    if isinstance(getattr(ctrl, "stats", None), dict) and ctrl.stats.get("clock_bank"):
+        clock_fn = lambda: ctrl.stats.get("clock_remaining")  # noqa: E731
+
+    GameApp(env, opp_act, opp_is_a, human_deck, model_deck, is_model, bo3=bo3,
+            clock_fn=clock_fn).run()
     return 0

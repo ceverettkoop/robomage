@@ -820,6 +820,18 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "processes to fan the determinized worlds across for a faster "
                  "search (world-parallel; more procs = more sims/decision in the "
                  "same wall-clock). Default 1 (TUI only)"),
+        Arg("--match-clock", "float", default=None,
+            help="Search opponent only: total wall-clock thinking bank in "
+                 "seconds for the WHOLE match (chess clock; 1500 = 25 min for "
+                 "a bo3). Each decision draws a variable budget from the bank "
+                 "— harder decisions earn more time, obvious ones stop early. "
+                 "Appends clock= to the spec (TUI only)"),
+        Arg("--paced", "flag",
+            help="Pad every opponent decision to a jittered ~0.5-0.9s response "
+                 "floor so timing leaks nothing (default ON for a search "
+                 "opponent with --match-clock/--think-time; TUI only)"),
+        Arg("--no-paced", "flag",
+            help="Disable the paced-response floor (instant obvious decisions)"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),

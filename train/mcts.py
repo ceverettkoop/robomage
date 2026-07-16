@@ -98,6 +98,7 @@ class SearchResult:
     num_choices: int
     sims_run: int
     sim_steps: int              # total engine sim_step calls (cost metric)
+    stopped_early: bool = False  # timed search ended on the stability check
 
     def best_action(self) -> int:
         return int(np.argmax(self.visits))
@@ -132,6 +133,45 @@ class _Node:
         return int(np.argmax(q + u))
 
 
+# Stability early-stop tuning (timed searches with a min deadline only).
+_STAB_CHECK_EVERY = 32   # sims between stability checks
+_STAB_SHARE = 0.6        # global top-action visit share required to stop
+_STAB_CLOSE = 0.8        # top2/top1 visit ratio above which the root is contested
+_STAB_Q_MIN_FRAC = 0.25  # actions with >= this fraction of top visits are Q candidates
+
+
+def _stability_stop(roots: "list[_Node]", prev_top: int) -> tuple[bool, int]:
+    """Decide whether a timed search past its min deadline has converged.
+
+    Sums the live per-world root visit/value arrays into the GLOBAL root
+    statistics and stops only when the top action dominates (visit share above
+    ``_STAB_SHARE``), the runner-up is not close (``_STAB_CLOSE``), the
+    best-by-Q among reasonably-visited candidates agrees with best-by-visits,
+    and the argmax was the same on the previous check (``prev_top``). Returns
+    ``(stop, top)`` so the caller threads ``top`` into the next check. Pure
+    numpy, draws no rng."""
+    N = roots[0].N.copy()
+    W = roots[0].W.copy()
+    for r in roots[1:]:
+        N += r.N
+        W += r.W
+    total = int(N.sum())
+    if total <= 0 or N.size < 2:
+        return False, -1
+    order = np.argsort(N)
+    top = int(order[-1])
+    if N[top] / total <= _STAB_SHARE:
+        return False, top
+    if N[order[-2]] >= _STAB_CLOSE * N[top]:
+        return False, top
+    # Low-visit Q estimates are noise; only well-visited actions may veto.
+    cand = N >= max(1, int(_STAB_Q_MIN_FRAC * N[top]))
+    q = np.where(cand, W / np.maximum(N, 1), -np.inf)
+    if int(np.argmax(q)) != top:
+        return False, top
+    return top == prev_top, top
+
+
 def run_search(
     env: SearchRoboMageEnv,
     evaluator: Evaluator,
@@ -146,6 +186,7 @@ def run_search(
     snapshot_slot: int = 0,
     world_seeds: Optional[Sequence[int]] = None,
     time_budget_s: Optional[float] = None,
+    time_budget_min_s: Optional[float] = None,
 ) -> SearchResult:
     """Search the env's current decision. The env must be parked at a real,
     loop-safe decision (env.last_search_safe). On return the env is back at
@@ -168,7 +209,15 @@ def run_search(
     world always runs (even under a tiny budget, so every determinized deal is
     looked at). ``sims`` then acts as an OPTIONAL hard cap: when ``sims > 0`` the
     round-robin also stops at ``sims`` total simulations (``min(cap, deadline)``);
-    pass ``sims<=0`` to let the clock alone terminate."""
+    pass ``sims<=0`` to let the clock alone terminate.
+
+    ``time_budget_min_s`` (optional, timed searches only): a MIN deadline that
+    arms a stability early-stop. Once it has elapsed, every
+    ``_STAB_CHECK_EVERY`` sims the global root visits are checked
+    (:func:`_stability_stop`); a dominant, stable, value-consistent top action
+    ends the search before ``time_budget_s`` and marks the result
+    ``stopped_early``. ``None`` (the default) keeps the timed loop's existing
+    semantics; the fixed-budget path ignores it entirely."""
     rng = rng if rng is not None else np.random.default_rng()
     if world_seeds is not None and len(world_seeds) < worlds:
         raise ValueError(
@@ -211,6 +260,7 @@ def run_search(
         sims_run += 1
         sim_steps += v[1]
 
+    stopped_early = False
     if time_budget_s is None:
         # UNCHANGED sequential per-world loop (parity corpus / self-play depend
         # on this exact order and count).
@@ -219,16 +269,30 @@ def run_search(
                 _one_sim(w)
     else:
         deadline = time.monotonic() + float(time_budget_s)
+        min_deadline = None
+        if time_budget_min_s is not None:
+            min_deadline = time.monotonic() + min(
+                float(time_budget_min_s), float(time_budget_s))
         cap = sims if sims and sims > 0 else None
         # Floor: one sim per world, unconditionally.
         for w in range(worlds):
             _one_sim(w)
         i = 0
+        since_check = 0
+        prev_top = -1
         while time.monotonic() < deadline:
             if cap is not None and sims_run >= cap:
                 break
+            if (min_deadline is not None and since_check >= _STAB_CHECK_EVERY
+                    and time.monotonic() >= min_deadline):
+                since_check = 0
+                stop, prev_top = _stability_stop(roots, prev_top)
+                if stop:
+                    stopped_early = True
+                    break
             _one_sim(i % worlds)
             i += 1
+            since_check += 1
 
     for root in roots:
         visit_totals += root.N
@@ -249,6 +313,7 @@ def run_search(
         num_choices=root_n,
         sims_run=sims_run,
         sim_steps=sim_steps,
+        stopped_early=stopped_early,
     )
 
 
@@ -279,6 +344,7 @@ def run_search_parallel(
     root_noise_alpha: float = 1.0,
     rng: Optional[np.random.Generator] = None,
     time_budget_s: Optional[float] = None,
+    time_budget_min_s: Optional[float] = None,
 ) -> SearchResult:
     """World-parallel :func:`run_search` for INTERACTIVE search only.
 
@@ -298,7 +364,15 @@ def run_search_parallel(
     (``root_noise_eps`` must be 0) because injecting it per world would consume the
     rng in a thread-order-dependent way. All ``worlds`` world seeds are pre-drawn
     up front with the exact derivation ``run_search`` uses, so a 1-env call
-    consumes ``rng`` identically to a plain ``run_search``."""
+    consumes ``rng`` identically to a plain ``run_search``.
+
+    ``time_budget_min_s`` is forwarded per env, so each worker's stability
+    early-stop (see :func:`run_search`) sees only its OWN world slice — a
+    noisier per-slice approximation of the global signal (the slices are i.i.d.
+    determinizations, and the timed path is already wall-clock
+    nondeterministic). Each worker's min deadline starts at its own thread
+    start; the workers launch near-simultaneously, so the skew just shifts the
+    window."""
     envs = list(envs)
     if len(envs) <= 1:
         # Single engine: delegate straight through, identical behavior (the seed
@@ -306,7 +380,8 @@ def run_search_parallel(
         return run_search(
             envs[0], evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
             max_depth=max_depth, root_noise_eps=root_noise_eps,
-            root_noise_alpha=root_noise_alpha, rng=rng, time_budget_s=time_budget_s)
+            root_noise_alpha=root_noise_alpha, rng=rng, time_budget_s=time_budget_s,
+            time_budget_min_s=time_budget_min_s)
 
     assert root_noise_eps == 0.0, (
         "run_search_parallel is inference-only: root dirichlet noise would consume "
@@ -350,7 +425,8 @@ def run_search_parallel(
         return run_search(
             usable[i], locked, sims=sims_i, worlds=k_i, c_puct=c_puct,
             max_depth=max_depth, root_noise_eps=0.0, rng=None,
-            world_seeds=seeds_i, time_budget_s=time_budget_s)
+            world_seeds=seeds_i, time_budget_s=time_budget_s,
+            time_budget_min_s=time_budget_min_s)
 
     results: list[Optional[SearchResult]] = [None] * n_envs
     errors: list[tuple[int, Exception]] = []
@@ -391,6 +467,7 @@ def run_search_parallel(
         num_choices=root_n,
         sims_run=sims_run,
         sim_steps=sim_steps,
+        stopped_early=any(r.stopped_early for r in results),
     )
 
 
