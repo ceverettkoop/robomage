@@ -415,9 +415,14 @@ def run_games(controller_a, controller_b, *,
                 continue
             searched = st["searched"]
             mean_sims = st.get("sims", 0) / max(1, searched)
+            clock_note = ""
+            if st.get("clock_bank"):
+                clock_note = (f", clock {st.get('clock_remaining', 0.0):.0f}/"
+                              f"{st['clock_bank']:.0f}s left, "
+                              f"{st.get('early_stops', 0)} early stops")
             print(f"  [{lbl}] search effort: {searched} roots "
                   f"({st.get('sb_searched', 0)} sideboard), {st.get('sims', 0)} "
-                  f"sims total, {mean_sims:.0f} mean sims/decision",
+                  f"sims total, {mean_sims:.0f} mean sims/decision{clock_note}",
                   file=stream, flush=True)
 
     return wins, losses, draws

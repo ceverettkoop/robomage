@@ -14,11 +14,13 @@ import glob as _glob
 import math
 import os
 import re
+import time
 from typing import Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
 
-from env import MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
+from env import (MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
+                 _CUR_TURN_IDX, _MATCH_CTX_START)
 from cli_spec import DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH
 from scripted_agent import ScriptedAgent, make_agent
 
@@ -208,6 +210,94 @@ class ModelController:
         return int(action)
 
 
+class MatchClock:
+    """Chess-clock time manager for a search controller: one wall-clock bank
+    spans a whole match (bo3 or bo1), and each searched decision draws a
+    variable ``(min_s, max_s)`` deadline pair from it.
+
+    The allocation is ``remaining / C`` (C = estimated remaining searchable
+    decisions, from the turn number and match score), scaled by a difficulty
+    multiplier derived from the root priors (entropy / top-2 gap / menu width),
+    and clamped to ``[t_min, min(t_max, remaining/4)]``. ``t_min`` behaves like
+    a Fischer increment: it is granted even on an empty bank, so an exhausted
+    clock degrades to fast play rather than stalling. The min deadline arms the
+    in-search stability early-stop (see ``mcts.run_search``), which is what
+    actually lets obvious decisions finish cheap and contested ones run long.
+
+    Takes only decoded scalars, no obs vector — unit-testable without an engine.
+    """
+
+    _TURN_END_EST = 24     # 0-based player-turn by which a game typically ends
+    _DEC_PER_TURN = 2.0    # searched roots per player-turn for one seat
+    _MIN_TURNS_LEFT = 4    # horizon floor once past _TURN_END_EST
+    _GAME_DEC_EST = 48     # searched roots in one full future game
+    _SB_DEC_EST = 6        # sideboard roots ahead of each future game
+    _HORIZON_LO, _HORIZON_HI = 8, 120
+    _M_LO, _M_HI = 0.35, 1.75  # difficulty-multiplier clamp
+
+    def __init__(self, bank_s: float, *, t_min: float = 0.5,
+                 t_max: float = 60.0, sb_t_max: float = 15.0):
+        self.bank = float(bank_s)
+        self.t_min = float(t_min)
+        self.t_max = float(t_max)
+        self.sb_t_max = float(sb_t_max)
+        self.remaining = self.bank
+
+    def reset(self) -> None:
+        self.remaining = self.bank
+
+    def debit(self, elapsed_s: float) -> None:
+        self.remaining = max(0.0, self.remaining - max(0.0, float(elapsed_s)))
+
+    def _horizon(self, turn: int, game_number: int, self_wins: int,
+                 opp_wins: int) -> float:
+        """Estimated searchable decisions left on this clock (one seat)."""
+        turns_left = max(self._TURN_END_EST - max(0, turn), self._MIN_TURNS_LEFT)
+        in_game = self._DEC_PER_TURN * turns_left
+        # Expected FUTURE games: bo1 (game_number 0) and a 1-1 score have none;
+        # 0-0 means game 2 is certain and game 3 ~50%; a 1-0 lead ~50% of one.
+        if game_number <= 0 or (self_wins >= 1 and opp_wins >= 1):
+            extra_games = 0.0
+        elif self_wins == 0 and opp_wins == 0:
+            extra_games = 1.5
+        else:
+            extra_games = 0.5
+        horizon = in_game + extra_games * (self._GAME_DEC_EST + self._SB_DEC_EST)
+        return min(max(horizon, self._HORIZON_LO), self._HORIZON_HI)
+
+    def _difficulty(self, priors, num_choices: int) -> float:
+        """Multiplier from the root policy: contested roots (flat priors, wide
+        menus) earn more time than obvious ones (one dominant prior)."""
+        if priors is None or num_choices < 2:
+            return 1.0
+        p = np.asarray(priors, dtype=np.float64)[:num_choices]
+        total = p.sum()
+        if not np.isfinite(total) or total <= 0.0:
+            return 1.0
+        p = p / total
+        top2 = np.sort(p)[-2:]
+        gap = float(top2[1] - top2[0])
+        with np.errstate(divide="ignore", invalid="ignore"):
+            h = -np.where(p > 0.0, p * np.log(p), 0.0).sum()
+        h_norm = float(h / math.log(num_choices))
+        width = min(num_choices - 2, 14) / 14.0
+        m = 0.5 + 1.25 * h_norm - 1.0 * gap + 0.25 * width
+        return min(max(m, self._M_LO), self._M_HI)
+
+    def allocate(self, *, turn: int, game_number: int, self_wins: int,
+                 opp_wins: int, is_sideboard: bool, priors,
+                 num_choices: int) -> tuple[float, float]:
+        """Return the ``(min_s, max_s)`` deadline pair for one decision."""
+        c = self._horizon(turn, game_number, self_wins, opp_wins)
+        base = self.remaining / c
+        m = self._difficulty(priors, num_choices)
+        t_cap = self.sb_t_max if is_sideboard else self.t_max
+        t_hi = min(base * m, t_cap, self.remaining / 4.0)
+        t_hi = max(t_hi, self.t_min)  # Fischer floor: granted even when empty
+        t_lo = min(max(0.25 * t_hi, self.t_min), t_hi)
+        return t_lo, t_hi
+
+
 class SearchController:
     """MCTS-at-inference controller: PUCT search over the engine's snapshot
     protocol, with priors/values from a pluggable evaluator (a PPO checkpoint's
@@ -228,6 +318,15 @@ class SearchController:
     sideboard root (``obs[_IS_SIDEBOARD_IDX] > 0.5``) the controller switches to
     the SIDEBOARD budget (``sb_sims``/``sb_worlds``/``sb_max_depth``), mirroring
     az_selfplay. The sideboard/in-game searched split is tallied separately.
+
+    ``clock`` (opt-in) arms a match-level chess clock (:class:`MatchClock`):
+    one wall-clock bank for the whole match, allocated per decision (harder
+    roots earn more time, obvious ones early-stop via the search's stability
+    check) and reset in ``bind_env``. ``paced`` (opt-in, human-facing play)
+    pads every decision — searched, fallback, or single-choice — to a jittered
+    ~0.5-0.9s floor so response time leaks nothing about whether there was
+    anything to think about. Both default off and leave every existing code
+    path (training, eval gates, analysis) byte-identical.
     """
 
     wants_search_env = True
@@ -238,10 +337,20 @@ class SearchController:
                  sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
                  sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
                  time_budget: float | None = None,
-                 sims_cap: int = 0, sb_sims_cap: int = 0, procs: int = 1):
+                 sims_cap: int = 0, sb_sims_cap: int = 0, procs: int = 1,
+                 clock: float | None = None, clock_t_min: float = 0.5,
+                 clock_t_max: float = 60.0, clock_sb_t_max: float = 15.0,
+                 paced: bool = False):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
         if procs < 1:
             raise ValueError(f"procs must be >= 1, got {procs}")
+        if clock is not None and clock <= 0:
+            raise ValueError(f"clock must be > 0 seconds, got {clock}")
+        if clock_t_min <= 0:
+            raise ValueError(f"tmin must be > 0 seconds, got {clock_t_min}")
+        if clock_t_max < clock_t_min:
+            raise ValueError(
+                f"tmax ({clock_t_max}) must be >= tmin ({clock_t_min})")
         self._evaluator = evaluator
         self._sims = sims
         self._worlds = worlds
@@ -261,16 +370,49 @@ class SearchController:
         # (parity depends on it); procs>1 fans the worlds across procs-1 extra
         # lockstep engine processes (interactive consumers only).
         self._procs = procs
+        # Match-level chess clock (opt-in): a wall-clock bank spanning one
+        # whole match, allocated per decision by MatchClock. Paced mode pads
+        # every choose() to a jittered floor to mask timing tells (play-only).
+        self._clock = (MatchClock(clock, t_min=clock_t_min, t_max=clock_t_max,
+                                  sb_t_max=clock_sb_t_max)
+                       if clock is not None else None)
+        self._paced = bool(paced)
         self.label = label
         self._rng = np.random.default_rng(rng_seed)
         self._env = None
         self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0,
-                      "sb_searched": 0, "pool_procs": procs}
+                      "sb_searched": 0, "pool_procs": procs, "early_stops": 0}
+        if self._clock is not None:
+            self.stats["clock_bank"] = self._clock.bank
+            self.stats["clock_remaining"] = self._clock.remaining
 
     def bind_env(self, env) -> None:
         self._env = env
+        # bind_env fires once per match (runner.run_games / tui_game.run), so
+        # this is the one-bank-per-match reset point.
+        if self._clock is not None:
+            self._clock.reset()
+            self.stats["clock_remaining"] = self._clock.remaining
 
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        t0 = time.monotonic()
+        try:
+            return self._choose_impl(obs, num_choices, action_masks,
+                                     decoded_actions)
+        finally:
+            if self._clock is not None:
+                # Debit BEFORE the pacing pad: the pad is presentation-only
+                # (hundreds of trivial decisions would silently drain the bank).
+                self._clock.debit(time.monotonic() - t0)
+                self.stats["clock_remaining"] = self._clock.remaining
+            if self._paced:
+                pad = (0.5 + float(self._rng.uniform(0.0, 0.4))) \
+                    - (time.monotonic() - t0)
+                if pad > 0.0:
+                    time.sleep(pad)
+
+    def _choose_impl(self, obs, num_choices, action_masks=None,
+                     decoded_actions=None) -> int:
         from mcts import run_search, run_search_parallel
 
         env = self._env
@@ -304,20 +446,41 @@ class SearchController:
         # is_post_board / game_number still reflect the just-ended game at a
         # g1->g2 root. In-game roots keep run_search's default max_depth (60).
         tb = self._time_budget
-        if obs[_IS_SIDEBOARD_IDX] > 0.5:
+        tmin_s = None
+        is_sb = obs[_IS_SIDEBOARD_IDX] > 0.5
+        if self._clock is not None:
+            # Difficulty signal: one extra deterministic root eval (run_search
+            # re-evaluates internally). Cheap next to a multi-second search,
+            # draws no rng, and keeps the parity-sensitive search code untouched.
+            priors, _ = self._evaluator.evaluate(obs, num_choices)
+            turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
+            g = int(round(float(obs[_MATCH_CTX_START]) * 3))
+            ws = int(round(float(obs[_MATCH_CTX_START + 1]) * 2))
+            wo = int(round(float(obs[_MATCH_CTX_START + 2]) * 2))
+            tmin_s, alloc = self._clock.allocate(
+                turn=turn, game_number=g, self_wins=ws, opp_wins=wo,
+                is_sideboard=is_sb, priors=priors, num_choices=num_choices)
+            # An explicit time= budget acts as a per-decision ceiling.
+            tb = alloc if tb is None else min(alloc, tb)
+            tmin_s = min(tmin_s, tb)
+        timed = tb is not None
+        if is_sb:
             result = _search(
-                sims=(self._sb_sims_cap if tb is not None else self._sb_sims),
+                sims=(self._sb_sims_cap if timed else self._sb_sims),
                 worlds=self._sb_worlds, c_puct=self._c_puct,
-                max_depth=self._sb_max_depth, rng=self._rng, time_budget_s=tb)
+                max_depth=self._sb_max_depth, rng=self._rng, time_budget_s=tb,
+                time_budget_min_s=tmin_s)
             self.stats["sb_searched"] += 1
         else:
             result = _search(
-                sims=(self._sims_cap if tb is not None else self._sims),
+                sims=(self._sims_cap if timed else self._sims),
                 worlds=self._worlds, c_puct=self._c_puct,
-                rng=self._rng, time_budget_s=tb)
+                rng=self._rng, time_budget_s=tb, time_budget_min_s=tmin_s)
         self.stats["searched"] += 1
         self.stats["sims"] += result.sims_run
         self.stats["sim_steps"] += result.sim_steps
+        if result.stopped_early:
+            self.stats["early_stops"] += 1
         if self._temperature <= 1e-6:
             return result.best_action()
         pi = result.policy_target(self._temperature)
@@ -550,15 +713,20 @@ def make_controller(spec, *,
       - "play:<spec,spec,...>" → PlayController (semantic action script,
         same grammar as the test harness ``--play``);
       - "actions:<i,i,...>" → ActionListController (positional indices);
-      - "mcts:<gen-or-path>[?sims=128&worlds=4&c=1.5&temp=0&vscale=1&time=]" →
+      - "mcts:<gen-or-path>[?sims=128&worlds=4&c=1.5&temp=0&vscale=1&time=&clock=&paced=]" →
         SearchController running PUCT search with that checkpoint's
         policy/value heads as priors/leaf values ("mcts:uniform" for the
         torch-free uniform evaluator — plumbing tests, weak play; "mcts:gen"
         or an explicit .zip for a real net — the deck it pilots is a separate
         parameter). ``time=<seconds>`` sets a wall-clock per-decision budget:
         the search runs as many sims as fit in that many seconds (more time =
-        stronger play), overriding sims as the terminator;
-      - "az:<gen-or-path>[?sims=&worlds=&c=&temp=&seed=&time=]" → SearchController
+        stronger play), overriding sims as the terminator.
+        ``clock=<seconds>`` instead arms a whole-MATCH chess-clock bank
+        (variable per-decision allocation between tmin/tmax — harder roots
+        earn more time, obvious ones stop early); ``paced=1`` pads every
+        decision to a jittered ~0.5-0.9s floor to mask timing tells in
+        human-facing play;
+      - "az:<gen-or-path>[?sims=&worlds=&c=&temp=&seed=&time=&clock=&paced=]" → SearchController
         driven by an AZNet ("az:gen" → the generalist AZ net, else a warm-start
         from the gen PPO net; an explicit .pt/.zip path also works);
       - "azraw:<gen-or-path>" → AZRawController (AZNet policy argmax, no
@@ -628,6 +796,39 @@ def _spec_knob(params: dict, key: str, default, conv, spec: str):
             f"{conv.__name__} value, got {raw!r}") from None
 
 
+def _boolean(raw: str) -> bool:
+    """Bool converter for _spec_knob (its error message uses conv.__name__)."""
+    v = raw.strip().lower()
+    if v in ("1", "true", "yes", "on"):
+        return True
+    if v in ("0", "false", "no", "off"):
+        return False
+    raise ValueError(raw)
+
+
+_boolean.__name__ = "boolean"  # cleaner knob-error text ("needs a boolean value")
+
+
+def _parse_clock_knobs(params: dict, spec: str):
+    """Parse the match-clock/pacing knobs shared by the mcts:/az: grammars.
+
+    Returns ``(clock, tmin, tmax, sb_tmax, paced)``. ``clock=<seconds>`` arms a
+    match-level chess clock (one bank for the whole match; see MatchClock);
+    tmin/tmax bound the per-decision allocation, sb_tmax caps sideboard roots.
+    ``paced=1`` pads every decision to a jittered ~0.5-0.9s response floor
+    (human-facing play only). Range validation lives in SearchController so
+    programmatic construction fails identically."""
+    clock = _spec_knob(params, "clock", None, float, spec)
+    if clock is not None and clock <= 0.0:
+        raise ValueError(f"bad controller spec {spec!r}: knob 'clock' needs a "
+                         f"positive seconds value, got {clock!r}")
+    tmin = _spec_knob(params, "tmin", 0.5, float, spec)
+    tmax = _spec_knob(params, "tmax", 60.0, float, spec)
+    sb_tmax = _spec_knob(params, "sb_tmax", 15.0, float, spec)
+    paced = _spec_knob(params, "paced", False, _boolean, spec)
+    return clock, tmin, tmax, sb_tmax, paced
+
+
 def _parse_time_budget(params: dict, spec: str, sims: int, sb_sims: int):
     """Parse the optional ``time=<seconds>`` wall-clock budget knob.
 
@@ -646,8 +847,11 @@ def _parse_time_budget(params: dict, spec: str, sims: int, sb_sims: int):
     return time_budget, sims_cap, sb_sims_cap
 
 
-def _effort_label(sims: int, worlds: int, time_budget: float | None) -> str:
+def _effort_label(sims: int, worlds: int, time_budget: float | None,
+                  clock: float | None = None) -> str:
     """Compact effort suffix for a search controller's display label."""
+    if clock is not None:
+        return f"clock{clock:g}s x{worlds}"
     if time_budget is not None:
         return f"{time_budget:g}s x{worlds}"
     return f"{sims}x{worlds}"
@@ -662,8 +866,10 @@ def _make_search_controller(spec: str, *,
     temp (root temperature), vscale (PPO value tanh scale), seed (search RNG),
     time (wall-clock seconds/decision — runs as many sims as fit, overriding
     sims as the terminator), procs (world-parallel engine processes for
-    interactive search; default 1), and the bo3 sideboard-root budget sb_sims /
-    sb_worlds / sb_max_depth.
+    interactive search; default 1), the bo3 sideboard-root budget sb_sims /
+    sb_worlds / sb_max_depth, and the match-clock knobs clock (whole-match
+    wall-clock bank in seconds, allocated per decision) / tmin / tmax /
+    sb_tmax / paced (jittered ~0.5-0.9s response floor for human play).
     """
     from mcts import PPOEvaluator, UniformEvaluator
 
@@ -679,20 +885,23 @@ def _make_search_controller(spec: str, *,
     sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
     sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
     time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
+    clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
 
     if base.lower() == "uniform":
         evaluator = UniformEvaluator()
-        label = f"mcts:uniform({_effort_label(sims, worlds, time_budget)})"
+        label = f"mcts:uniform({_effort_label(sims, worlds, time_budget, clock)})"
     else:
         resolver = checkpoint_resolver or resolve_checkpoint
         model = _load_model(resolver(base))
         evaluator = PPOEvaluator(model, v_scale=v_scale)
-        label = f"mcts:{base}({_effort_label(sims, worlds, time_budget)})"
+        label = f"mcts:{base}({_effort_label(sims, worlds, time_budget, clock)})"
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                             temperature=temperature, label=label, rng_seed=rng_seed,
                             sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth, time_budget=time_budget,
-                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs)
+                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
+                            clock=clock, clock_t_min=tmin, clock_t_max=tmax,
+                            clock_sb_t_max=sb_tmax, paced=paced)
 
 
 class AZRawController:
@@ -734,12 +943,15 @@ def _load_az_evaluator(base: str):
 def _make_az_controller(spec: str, *, search: bool):
     """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
 
-    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=]``
+    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
     where <base> is an AZ checkpoint path / deck shorthand (falls back to a PPO
     warm-start). ``time=<seconds>`` sets a wall-clock per-decision budget (runs
     as many sims as fit, overriding sims as the terminator). ``procs=<n>`` fans
     the worlds across n engine processes (world-parallel interactive search;
-    default 1). sb_* set the bo3 sideboard-root search budget."""
+    default 1). sb_* set the bo3 sideboard-root search budget. ``clock=<seconds>``
+    arms a whole-match chess-clock bank (per-decision allocation bounded by
+    tmin/tmax, sideboard roots by sb_tmax); ``paced=1`` pads every decision to a
+    jittered ~0.5-0.9s response floor for human play."""
     base, params = _parse_spec_query(spec)
     evaluator, resolved = _load_az_evaluator(base)
     if not search:
@@ -754,12 +966,15 @@ def _make_az_controller(spec: str, *, search: bool):
     sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
     sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
     time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
+    clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                             temperature=temperature,
-                            label=f"az:{base}({_effort_label(sims, worlds, time_budget)})",
+                            label=f"az:{base}({_effort_label(sims, worlds, time_budget, clock)})",
                             rng_seed=rng_seed, sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth, time_budget=time_budget,
-                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs)
+                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
+                            clock=clock, clock_t_min=tmin, clock_t_max=tmax,
+                            clock_sb_t_max=sb_tmax, paced=paced)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:

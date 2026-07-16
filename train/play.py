@@ -143,6 +143,30 @@ if __name__ == "__main__":
         # World-parallel search across N engine processes. Appended last so it
         # wins over any procs= already present in the spec.
         model_path += ("&" if "?" in model_path else "?") + f"procs={args.search_procs}"
+    if args.match_clock is not None:
+        if not is_search_spec:
+            parser.error("--match-clock only applies to a search opponent "
+                         "(--model az:<ckpt> or mcts:<ckpt>)")
+        # Whole-match chess-clock bank; per-decision budgets are allocated from
+        # it. Appended last so it wins over any clock= already in the spec.
+        model_path += ("&" if "?" in model_path else "?") + f"clock={args.match_clock}"
+    if args.paced and args.no_paced:
+        parser.error("--paced and --no-paced are mutually exclusive")
+    if (args.paced or args.no_paced) and not is_search_spec:
+        parser.error("--paced/--no-paced only apply to a search opponent "
+                     "(--model az:<ckpt> or mcts:<ckpt>)")
+    if is_search_spec:
+        # Paced default: ON whenever the opponent has a variable thinking budget
+        # (a match clock or per-decision think time) — that is when response
+        # timing would otherwise leak whether there was anything to think about.
+        # Appended last so it wins over any paced= already in the spec.
+        has_variable_budget = (args.match_clock is not None
+                               or args.think_time is not None
+                               or "clock=" in model_path or "time=" in model_path)
+        if args.no_paced:
+            model_path += ("&" if "?" in model_path else "?") + "paced=0"
+        elif args.paced or has_variable_budget:
+            model_path += ("&" if "?" in model_path else "?") + "paced=1"
     if args.scripted:
         # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
         model_path = "scripted"
