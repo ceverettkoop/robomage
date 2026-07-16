@@ -827,9 +827,11 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "— harder decisions earn more time, obvious ones stop early. "
                  "Appends clock= to the spec (TUI only)"),
         Arg("--paced", "flag",
-            help="Pad every opponent decision to a jittered ~0.5-0.9s response "
-                 "floor so timing leaks nothing (default ON for a search "
-                 "opponent with --match-clock/--think-time; TUI only)"),
+            help="Mask opponent response-timing tells: a small jittered "
+                 "(~0.02-0.05s) floor on every decision, plus occasional "
+                 "0.2-0.5s fake-think pauses when the opponent was never even "
+                 "offered a decision (default ON for a search opponent with "
+                 "--match-clock/--think-time; TUI only)"),
         Arg("--no-paced", "flag",
             help="Disable the paced-response floor (instant obvious decisions)"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),

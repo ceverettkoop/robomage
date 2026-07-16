@@ -323,13 +323,28 @@ class SearchController:
     one wall-clock bank for the whole match, allocated per decision (harder
     roots earn more time, obvious ones early-stop via the search's stability
     check) and reset in ``bind_env``. ``paced`` (opt-in, human-facing play)
-    pads every decision — searched, fallback, or single-choice — to a jittered
-    ~0.5-0.9s floor so response time leaks nothing about whether there was
-    anything to think about. Both default off and leave every existing code
-    path (training, eval gates, analysis) byte-identical.
+    pads every decision — searched, fallback, or single-choice — to a small
+    jittered ~0.02-0.05s floor, and additionally offers :meth:`pace_idle`
+    beats (occasional 0.2-0.5s fake thinks when the game never queried this
+    controller at all), so response timing leaks nothing about whether there
+    was anything to think about. Both default off and leave every existing
+    code path (training, eval gates, analysis) byte-identical.
     """
 
     wants_search_env = True
+
+    # Paced-mode timing. Every paced response is padded to at least a small
+    # jittered floor (_PACE_FLOOR_S..+_PACE_JITTER_S — fast, just enough to
+    # blur "forced" vs "instantly decided"). Separately, pace_idle()
+    # occasionally (_PACE_IDLE_P) asks the driver to hold a LONGER
+    # _PACE_IDLE_MIN_S.._PACE_IDLE_MAX_S beat when the game never queried
+    # this controller at all, so to the human it looks like the model was
+    # offered (and took) a decision it never actually had.
+    _PACE_FLOOR_S = 0.02
+    _PACE_JITTER_S = 0.03
+    _PACE_IDLE_P = 0.25
+    _PACE_IDLE_MIN_S = 0.2
+    _PACE_IDLE_MAX_S = 0.5
 
     def __init__(self, evaluator, *, sims: int = 128, worlds: int = 4,
                  c_puct: float = 1.5, temperature: float = 0.0,
@@ -406,10 +421,24 @@ class SearchController:
                 self._clock.debit(time.monotonic() - t0)
                 self.stats["clock_remaining"] = self._clock.remaining
             if self._paced:
-                pad = (0.5 + float(self._rng.uniform(0.0, 0.4))) \
+                pad = (self._PACE_FLOOR_S
+                       + float(self._rng.uniform(0.0, self._PACE_JITTER_S))) \
                     - (time.monotonic() - t0)
                 if pad > 0.0:
                     time.sleep(pad)
+
+    def pace_idle(self) -> float:
+        """Seconds a human-facing driver should hold when the game passed BY
+        this controller without offering it a decision (no legal action, so no
+        query was ever emitted). Usually 0.0; occasionally, in paced mode, a
+        0.2-0.5s beat — shown to the human exactly like a real think, so an
+        instant hand-back no longer proves the model had nothing to decide.
+        The controller does not sleep here; the caller owns the pause (it may
+        want to show its thinking indicator around it)."""
+        if not self._paced or float(self._rng.random()) >= self._PACE_IDLE_P:
+            return 0.0
+        return float(self._rng.uniform(self._PACE_IDLE_MIN_S,
+                                       self._PACE_IDLE_MAX_S))
 
     def _choose_impl(self, obs, num_choices, action_masks=None,
                      decoded_actions=None) -> int:
@@ -723,9 +752,9 @@ def make_controller(spec, *,
         stronger play), overriding sims as the terminator.
         ``clock=<seconds>`` instead arms a whole-MATCH chess-clock bank
         (variable per-decision allocation between tmin/tmax — harder roots
-        earn more time, obvious ones stop early); ``paced=1`` pads every
-        decision to a jittered ~0.5-0.9s floor to mask timing tells in
-        human-facing play;
+        earn more time, obvious ones stop early); ``paced=1`` masks timing
+        tells in human-facing play (a small jittered response floor plus
+        occasional fake-think beats when no decision was even offered);
       - "az:<gen-or-path>[?sims=&worlds=&c=&temp=&seed=&time=&clock=&paced=]" → SearchController
         driven by an AZNet ("az:gen" → the generalist AZ net, else a warm-start
         from the gen PPO net; an explicit .pt/.zip path also works);
@@ -815,9 +844,10 @@ def _parse_clock_knobs(params: dict, spec: str):
     Returns ``(clock, tmin, tmax, sb_tmax, paced)``. ``clock=<seconds>`` arms a
     match-level chess clock (one bank for the whole match; see MatchClock);
     tmin/tmax bound the per-decision allocation, sb_tmax caps sideboard roots.
-    ``paced=1`` pads every decision to a jittered ~0.5-0.9s response floor
-    (human-facing play only). Range validation lives in SearchController so
-    programmatic construction fails identically."""
+    ``paced=1`` masks response-timing tells (a small jittered floor on every
+    decision plus occasional pace_idle fake-think beats; human-facing play
+    only). Range validation lives in SearchController so programmatic
+    construction fails identically."""
     clock = _spec_knob(params, "clock", None, float, spec)
     if clock is not None and clock <= 0.0:
         raise ValueError(f"bad controller spec {spec!r}: knob 'clock' needs a "
@@ -869,7 +899,7 @@ def _make_search_controller(spec: str, *,
     interactive search; default 1), the bo3 sideboard-root budget sb_sims /
     sb_worlds / sb_max_depth, and the match-clock knobs clock (whole-match
     wall-clock bank in seconds, allocated per decision) / tmin / tmax /
-    sb_tmax / paced (jittered ~0.5-0.9s response floor for human play).
+    sb_tmax / paced (response-timing masking for human play).
     """
     from mcts import PPOEvaluator, UniformEvaluator
 
@@ -950,8 +980,8 @@ def _make_az_controller(spec: str, *, search: bool):
     the worlds across n engine processes (world-parallel interactive search;
     default 1). sb_* set the bo3 sideboard-root search budget. ``clock=<seconds>``
     arms a whole-match chess-clock bank (per-decision allocation bounded by
-    tmin/tmax, sideboard roots by sb_tmax); ``paced=1`` pads every decision to a
-    jittered ~0.5-0.9s response floor for human play."""
+    tmin/tmax, sideboard roots by sb_tmax); ``paced=1`` masks response-timing
+    tells for human play (small jittered floor + occasional fake-think beats)."""
     base, params = _parse_spec_query(spec)
     evaluator, resolved = _load_az_evaluator(base)
     if not search:

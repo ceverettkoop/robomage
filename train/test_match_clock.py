@@ -115,8 +115,10 @@ def test_paced_floor() -> None:
     a = paced.choose(obs, 3)
     dt = time.monotonic() - t0
     check(0 <= a < 3, f"paced choose returned invalid action {a}")
-    check(0.5 <= dt <= 1.5, f"paced fallback took {dt:.3f}s, expected the "
-                            f"~0.5-0.9s jittered floor")
+    check(paced._PACE_FLOOR_S <= dt <= 0.5,
+          f"paced fallback took {dt:.3f}s, expected the "
+          f"~{paced._PACE_FLOOR_S}-{paced._PACE_FLOOR_S + paced._PACE_JITTER_S}s "
+          f"jittered floor")
     # The pad must not be debited from the bank (fallback thinks in ~ms).
     spent = paced.stats["clock_bank"] - paced.stats["clock_remaining"]
     check(spent < 0.1, f"paced pad leaked into the clock bank: {spent:.3f}s")
@@ -125,7 +127,7 @@ def test_paced_floor() -> None:
     t0 = time.monotonic()
     unpaced.choose(obs, 3)
     dt = time.monotonic() - t0
-    check(dt < 0.1, f"unpaced fallback took {dt:.3f}s, expected instant")
+    check(dt < 0.01, f"unpaced fallback took {dt:.3f}s, expected instant")
 
     # bind_env resets the bank for the next match.
     paced._clock.debit(100.0)
@@ -137,9 +139,33 @@ def test_paced_floor() -> None:
         print("PASS: paced-response floor and clock debit")
 
 
+def test_pace_idle() -> None:
+    # pace_idle returns a duration for the DRIVER to hold (it never sleeps
+    # itself): usually 0, occasionally a fake-think beat in the idle range.
+    paced = SearchController(StubEvaluator(), paced=True, rng_seed=1)
+    beats = [paced.pace_idle() for _ in range(400)]
+    holds = [b for b in beats if b > 0.0]
+    frac = len(holds) / len(beats)
+    check(0.1 <= frac <= 0.45,
+          f"pace_idle held {frac:.2f} of calls, expected ~{paced._PACE_IDLE_P}")
+    check(all(paced._PACE_IDLE_MIN_S <= b <= paced._PACE_IDLE_MAX_S
+              for b in holds),
+          f"pace_idle beat outside [{paced._PACE_IDLE_MIN_S}, "
+          f"{paced._PACE_IDLE_MAX_S}]: {holds[:5]}")
+
+    # Unpaced controllers never ask for a hold.
+    unpaced = SearchController(StubEvaluator(), rng_seed=1)
+    check(all(unpaced.pace_idle() == 0.0 for _ in range(100)),
+          "unpaced pace_idle should always return 0.0")
+
+    if not FAILURES:
+        print("PASS: pace_idle fake-think beats")
+
+
 def main() -> int:
     test_allocation_math()
     test_paced_floor()
+    test_pace_idle()
     if FAILURES:
         print(f"{len(FAILURES)} failure(s)", file=sys.stderr)
         return 1

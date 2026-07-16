@@ -368,7 +368,7 @@ class GameApp(App):
     ]
 
     def __init__(self, env, opp_act, opp_is_a, human_deck, opp_deck, is_model,
-                 bo3=True, clock_fn=None):
+                 bo3=True, clock_fn=None, pace_idle=None):
         super().__init__()
         self._env = env
         self._opp_act = opp_act              # callable(obs, num_choices) -> int
@@ -377,6 +377,11 @@ class GameApp(App):
         # (None when no chess clock is armed). Read on the UI thread by the
         # thinking ticker; a single dict-float read, so cross-thread safe.
         self._clock_fn = clock_fn
+        # Optional callable -> seconds to hold (usually 0.0) when the game
+        # never queried the opponent between two human decisions. A paced
+        # SearchController occasionally returns a 0.2-0.5s beat here so "no
+        # decision was offered" is not leaked by an instant hand-back.
+        self._pace_idle = pace_idle
         self._human_deck = human_deck
         self._opp_deck = opp_deck
         self._bo3 = bo3
@@ -467,6 +472,7 @@ class GameApp(App):
             obs, _ = env.reset()
             self.post_message(LogLines(env.flush_lines()))
             done = False
+            opp_queried = True   # nothing to mask before the first decision
             while not done:
                 num = env._num_choices
                 a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
@@ -486,6 +492,25 @@ class GameApp(App):
                 if not opp_turn and not autopass_now:
                     self._autopass = False            # stop autopass; human acts
                 human_must_act = not opp_turn and not autopass_now
+
+                # The human is about to get their menu without the opponent
+                # having been queried since the human's last decision (it had
+                # no legal action, so no query was ever emitted). A paced
+                # opponent occasionally asks us to hold a short beat here,
+                # presented exactly like a real think, so the instant
+                # hand-back doesn't reveal it had nothing to decide.
+                if (human_must_act and not opp_queried
+                        and self._pace_idle is not None and not self._quitting):
+                    hold = float(self._pace_idle())
+                    if hold > 0.0:
+                        if self._is_model:
+                            self.post_message(OppThinking(True))
+                        try:
+                            time.sleep(hold)
+                        finally:
+                            if self._is_model:
+                                self.post_message(OppThinking(False))
+                opp_queried = opp_turn
 
                 self.post_message(StateUpdate(obs, num,
                                               actions if human_must_act else [],
@@ -1231,5 +1256,5 @@ def run(binary_path, model_path, human_player=None,
         clock_fn = lambda: ctrl.stats.get("clock_remaining")  # noqa: E731
 
     GameApp(env, opp_act, opp_is_a, human_deck, model_deck, is_model, bo3=bo3,
-            clock_fn=clock_fn).run()
+            clock_fn=clock_fn, pace_idle=getattr(ctrl, "pace_idle", None)).run()
     return 0
