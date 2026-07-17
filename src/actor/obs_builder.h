@@ -37,10 +37,12 @@ static_assert(ACTOR_SELF_IS_A_IDX == 34, "self_is_a documented at float 34 (mach
 // obs = state | cats | ids | ctrl | zone | refs | ords | hand_costs | bf_ability_costs.
 // Must equal train/env.py::OBS_SIZE (6986). Derived from the engine layout
 // constants so a layout change is caught by the static_assert, never a literal.
-// The six per-action metadata blocks mirror env.py: cats | ids | ctrl | zone_ref
-// | slot_ref | option_ordinal (pub stays a side-channel, not in the obs).
+// The per-action metadata blocks (N_ACTION_OBS_BLOCKS: cats | ids | ctrl | zone_ref
+// | slot_ref | option_ordinal; pub stays a side-channel, not in the obs) are counted
+// from the shared machine_io.h constant that env.py also imports, so the block count
+// has one source of truth across the C++/Python boundary.
 constexpr int ACTOR_OBS_SIZE =
-    STATE_SIZE + 6 * MAX_ACTIONS +
+    STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS +
     MAX_HAND_SLOTS * ACTOR_N_COST_FEATS +
     MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS;
 static_assert(ACTOR_OBS_SIZE == 6986, "actor obs size must match env.py OBS_SIZE");

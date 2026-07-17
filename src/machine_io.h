@@ -250,6 +250,14 @@ static constexpr int OPTION_ORDINAL_MAX = 63;  // normalizer for the per-action 
                                                // (see LegalAction::option_ordinal): mode index, X
                                                // value, color index, cast variant, top-of-library
                                                // depth, binary pole; -1 = not applicable
+// Number of per-action metadata arrays folded into the RL observation vector,
+// in order: cats | ids | ctrl | zone_ref | slot_ref | option_ordinal. Each is
+// MAX_ACTIONS wide. The `pub` array is ALSO emitted in the BQUERY payload but is a
+// side-channel (observer-only), so it is NOT counted here. This is the ONE source
+// of truth for the block count: src/actor/obs_builder.h derives ACTOR_OBS_SIZE from
+// it, and train/env.py imports it (via _enums.py codegen) for OBS_SIZE — so the two
+// obs reconstructions can never disagree on how many action blocks there are.
+static constexpr int N_ACTION_OBS_BLOCKS = 6;
 static constexpr int PERM_SLOT_SIZE    = 38;   // 11 stat/combat/type + 2 counters + 4 refs + 2 flags + 16 keywords + chosen-name id + returnable-exile id + card-id float
 static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot
 static constexpr int STACK_TGT_SLOTS   = MAX_STACK_TGTS;  // serialized targets per stack slot (truncated)

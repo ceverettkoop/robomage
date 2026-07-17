@@ -74,7 +74,7 @@ except ImportError:
 try:
     from _enums import (
         ACTION_CATEGORY_MAX, REF_ZONE_MAX, OPTION_ORDINAL_MAX, N_OBS_KEYWORDS,
-        N_MANDATORY_CHOICES,
+        N_MANDATORY_CHOICES, N_ACTION_OBS_BLOCKS,
         STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
@@ -92,7 +92,7 @@ try:
 except ImportError:
     from train._enums import (
         ACTION_CATEGORY_MAX, REF_ZONE_MAX, OPTION_ORDINAL_MAX, N_OBS_KEYWORDS,
-        N_MANDATORY_CHOICES,
+        N_MANDATORY_CHOICES, N_ACTION_OBS_BLOCKS,
         STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
@@ -194,9 +194,11 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS         # 10 * 7 = 70
 _BF_ABILITY_FEATS = MAX_BATTLEFIELD_SLOTS * _N_COST_FEATS  # 48 * 7 = 336
 # Action metadata in the obs: cats | ids | ctrl | zone_ref | slot_ref | ordinal
-# (6 blocks of MAX_ACTIONS). pub stays a side-channel (self._action_public), not
-# in the obs.
-OBS_SIZE = STATE_SIZE + 6 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS
+# (N_ACTION_OBS_BLOCKS blocks of MAX_ACTIONS). pub stays a side-channel
+# (self._action_public), not in the obs. N_ACTION_OBS_BLOCKS is single-sourced from
+# src/machine_io.h (via _enums codegen), the same constant src/actor/obs_builder.h
+# uses, so the block count never drifts between the two obs reconstructions.
+OBS_SIZE = STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -922,7 +924,10 @@ class RoboMageEnv(gym.Env):
         # lands on 0.0: (ord + 1) / (OPTION_ORDINAL_MAX + 1).
         o[_act_end + 4 * MAX_ACTIONS:_act_end + 5 * MAX_ACTIONS] = (
             (ords_int + 1) / (OPTION_ORDINAL_MAX + 1))
-        _hc_start = _act_end + 5 * MAX_ACTIONS
+        # Hand costs begin right after all N_ACTION_OBS_BLOCKS per-action blocks
+        # (== _act_end + (N_ACTION_OBS_BLOCKS - 1) * MAX_ACTIONS, cats being the block
+        # already consumed by _act_end). Pin it to the shared count, not a bare literal.
+        _hc_start = STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS
         o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
         _bf_start = _hc_start + _HAND_COST_FEATS
         o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
@@ -1043,9 +1048,10 @@ def _gather_costs(matrix, ids):
     safe = np.clip(ids, 0, N_CARD_TYPES - 1)
     rows = matrix[safe]
     return np.where((ids >= 0)[:, None], rows, 0.0).astype(np.float32)
-# Start of bf_ability_costs block in the full obs vector
-# (5 per-action blocks: cats | ids | ctrl | zone_ref | slot_ref)
-_BF_COST_START    = STATE_SIZE + 5 * MAX_ACTIONS + _HAND_COST_FEATS
+# Start of bf_ability_costs block in the full obs vector, after the
+# N_ACTION_OBS_BLOCKS per-action metadata blocks (cats | ids | ctrl | zone_ref |
+# slot_ref | option_ordinal) and the hand-cost block.
+_BF_COST_START    = STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS + _HAND_COST_FEATS
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
 _AETHER_VIAL_VOCAB_IDX   = 121
