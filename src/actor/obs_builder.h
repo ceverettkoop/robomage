@@ -3,7 +3,7 @@
 
 // Bit-exact, engine-side reconstruction of the Python RL observation vector.
 //
-// The gym env (train/env.py::_parse_bquery_payload) builds a 6922-float obs by
+// The gym env (train/env.py::_parse_bquery_payload) builds a 6986-float obs by
 // concatenating the machine-mode BQUERY payload (the STATE_SIZE state vector +
 // the padded per-action metadata arrays) and appending gathered cast/ability
 // cost rows. The in-process AlphaZero actor never speaks the stdio BQUERY
@@ -34,14 +34,16 @@ constexpr int ACTOR_SELF_IS_A_IDX = ACTOR_IS_ACTIVE_IDX + 1;
 constexpr int ACTOR_STATE_HEADER_SIZE = ACTOR_SELF_IS_A_IDX + 2;  // + stack_size
 static_assert(ACTOR_SELF_IS_A_IDX == 34, "self_is_a documented at float 34 (machine_io.h)");
 
-// obs = state | cats | ids | ctrl | zone | refs | hand_costs | bf_ability_costs.
-// Must equal train/env.py::OBS_SIZE (6922). Derived from the engine layout
+// obs = state | cats | ids | ctrl | zone | refs | ords | hand_costs | bf_ability_costs.
+// Must equal train/env.py::OBS_SIZE (6986). Derived from the engine layout
 // constants so a layout change is caught by the static_assert, never a literal.
+// The six per-action metadata blocks mirror env.py: cats | ids | ctrl | zone_ref
+// | slot_ref | option_ordinal (pub stays a side-channel, not in the obs).
 constexpr int ACTOR_OBS_SIZE =
-    STATE_SIZE + 5 * MAX_ACTIONS +
+    STATE_SIZE + 6 * MAX_ACTIONS +
     MAX_HAND_SLOTS * ACTOR_N_COST_FEATS +
     MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS;
-static_assert(ACTOR_OBS_SIZE == 6922, "actor obs size must match env.py OBS_SIZE");
+static_assert(ACTOR_OBS_SIZE == 6986, "actor obs size must match env.py OBS_SIZE");
 
 struct ActorObs {
     std::vector<float> obs;  // ACTOR_OBS_SIZE floats
