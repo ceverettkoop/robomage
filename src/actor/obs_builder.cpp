@@ -85,7 +85,8 @@ static constexpr int ACT_IDS_START = ACT_CATS_START + MAX_ACTIONS;
 static constexpr int ACT_CTRL_START = ACT_IDS_START + MAX_ACTIONS;
 static constexpr int ACT_ZONE_START = ACT_CTRL_START + MAX_ACTIONS;
 static constexpr int ACT_REFS_START = ACT_ZONE_START + MAX_ACTIONS;
-static constexpr int HAND_COST_START = ACT_REFS_START + MAX_ACTIONS;
+static constexpr int ACT_ORDS_START = ACT_REFS_START + MAX_ACTIONS;
+static constexpr int HAND_COST_START = ACT_ORDS_START + MAX_ACTIONS;
 static constexpr int BF_COST_START = HAND_COST_START + MAX_HAND_SLOTS * ACTOR_N_COST_FEATS;
 
 static_assert(N_COST_FEATS == ACTOR_N_COST_FEATS, "cost matrix width mismatch");
@@ -214,6 +215,7 @@ ActorObs build_obs(const std::vector<LegalAction>& actions) {
     //   ctrl : float32 (pad -1/N)  -> verbatim
     //   zone : int32 (pad 0)  -> value / REF_ZONE_MAX          (float64 divide)
     //   refs : int32 (pad -1) -> (value + 1) / N_ENTITY_REF_SLOTS (float64 divide)
+    //   ords : int32 (pad -1) -> (value + 1) / (OPTION_ORDINAL_MAX + 1) (float64 divide)
     const float id_null = -1.0f / static_cast<float>(N_CARD_TYPES);
     const float ctrl_null = -1.0f / static_cast<float>(N_CARD_TYPES);
     for (int i = 0; i < MAX_ACTIONS; i++) {
@@ -222,6 +224,7 @@ ActorObs build_obs(const std::vector<LegalAction>& actions) {
         float ctrlf = ctrl_null;
         int zoneval = 0;
         int refval = -1;
+        int ordval = -1;
         if (i < q.num_choices) {
             const ActionChoice& ac = q.choices[i];
             cat = ac.category;
@@ -233,6 +236,7 @@ ActorObs build_obs(const std::vector<LegalAction>& actions) {
                         : ctrl_null;
             zoneval = static_cast<int>(ac.zone_ref);
             refval = ac.slot_ref;
+            ordval = ac.option_ordinal;
         }
         // int-array normalizers go through float64 (numpy int/int -> float64 ->
         // cast to float32) so the last-ULP rounding matches env.py exactly.
@@ -244,6 +248,8 @@ ActorObs build_obs(const std::vector<LegalAction>& actions) {
             static_cast<float>(static_cast<double>(zoneval) / static_cast<double>(ACTOR_REF_ZONE_MAX));
         o[ACT_REFS_START + i] =
             static_cast<float>(static_cast<double>(refval + 1) / static_cast<double>(N_ENTITY_REF_SLOTS));
+        o[ACT_ORDS_START + i] =
+            static_cast<float>(static_cast<double>(ordval + 1) / static_cast<double>(OPTION_ORDINAL_MAX + 1));
     }
 
     // Hand cast-cost rows: gather by each self-hand slot's card id.

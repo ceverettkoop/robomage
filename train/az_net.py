@@ -321,6 +321,7 @@ class ScriptTrunk(nn.Module):
         ctrl = obs[:, a0 + 2 * self.MAX_ACTIONS:a0 + 3 * self.MAX_ACTIONS]
         zone = obs[:, a0 + 3 * self.MAX_ACTIONS:a0 + 4 * self.MAX_ACTIONS]
         refs = obs[:, a0 + 4 * self.MAX_ACTIONS:a0 + 5 * self.MAX_ACTIONS]
+        ords = obs[:, a0 + 5 * self.MAX_ACTIONS:a0 + 6 * self.MAX_ACTIONS]
         cat_idx = torch.round(cats * self.ACTION_CATEGORY_MAX).long().clamp(
             0, self.ACTION_CATEGORY_MAX)
         cat_e = self.action_cat_emb(cat_idx)
@@ -341,7 +342,8 @@ class ScriptTrunk(nn.Module):
                               ref_idx).clamp(0, self.N_ENTITY_REF_SLOTS)
         ref_e = torch.gather(ent_table, 1, ref_idx.unsqueeze(-1).expand(-1, -1, E))
 
-        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1), zone_e, ref_e], dim=-1)
+        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1), zone_e, ref_e,
+                           ords.unsqueeze(-1)], dim=-1)
         pa = self.action_encoder(pa_in)
         return torch.cat([base, pa.reshape(pa.shape[0], -1)], dim=-1)
 
