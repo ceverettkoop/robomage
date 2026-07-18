@@ -43,7 +43,7 @@ from PySide6.QtGui import (QColor, QFont, QPainter, QPen, QBrush, QPixmap,
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                                QVBoxLayout, QHBoxLayout, QScrollArea, QSplitter,
                                QListWidget, QListWidgetItem, QPlainTextEdit,
-                               QToolButton)
+                               QToolButton, QSizePolicy)
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 import decode
@@ -57,13 +57,28 @@ from game_driver import (GameDriver, build_session, decode_human_frame,
 # Untapped cards are portrait at the real 63:88 Magic aspect; a tapped card is
 # painted rotated 90° into a CARD_H×CARD_W landscape box so a row of them reflows
 # just like a tabletop. Rows are a fixed height so 10+ permanents simply scroll.
-CARD_W = 80
-CARD_H = 112
+#
+# Base size is scaled up ~15% versus the original 80x112: moving the graveyard
+# line into the sidebar (see GraveyardPanel) and pinning the YOU/OPPONENT info
+# lines to their natural height (see GameWindow._build_ui) frees vertical space
+# in the board column, which goes back into taller rows and bigger cards rather
+# than sitting empty.
+_BASE_SCALE = 1.15
+CARD_W = round(80 * _BASE_SCALE)
+CARD_H = round(112 * _BASE_SCALE)
 CARD_RADIUS = 7
 ROW_H = CARD_H + 22          # card + margins + horizontal scrollbar allowance
-STACK_THUMB_W = 46
-STACK_THUMB_H = 64
+STACK_THUMB_W = round(46 * _BASE_SCALE)
+STACK_THUMB_H = round(64 * _BASE_SCALE)
 STACK_ROW_H = STACK_THUMB_H + 20
+STACK_EMPTY_H = 22          # auto-collapsed height when the stack is empty
+
+# The hand row is 1.5x the standard row height; hand cards are scaled up to
+# fill it (same aspect ratio, same narrow margin allowance as ROW_H) rather
+# than sitting small and centered in extra blank space.
+HAND_ROW_H = int(ROW_H * 1.5)
+HAND_CARD_H = HAND_ROW_H - (ROW_H - CARD_H)
+HAND_CARD_W = round(HAND_CARD_H * CARD_W / CARD_H)
 
 # Attacking creatures get a dashed border in this red — brighter/more saturated
 # than any muted color-identity red so an attacker reads distinctly (mirrors the
@@ -95,6 +110,7 @@ QMainWindow, QWidget { background: #101014; color: #d8d8d8; }
 QLabel#oppInfo  { color: #e05555; padding: 2px 4px; }
 QLabel#selfInfo { color: #33d17a; padding: 2px 4px; }
 QLabel#graveyards { color: #9a9aa2; padding: 2px 4px; }
+QLabel#exile { color: #9a9aa2; padding: 2px 4px; }
 QLabel#prompt {
     font-weight: bold; background: #24242e; color: #f0f0f4; padding: 4px 6px;
     border: 1px solid #2a2a33;
@@ -158,7 +174,7 @@ class CardWidget(QWidget):
     oracle_hide = Signal()
 
     def __init__(self, name, card_idx, controller, zone, *, perm=None, icon="",
-                 token_pt=None):
+                 token_pt=None, card_size=None):
         super().__init__()
         self._name = name
         self._card_idx = card_idx
@@ -170,6 +186,11 @@ class CardWidget(QWidget):
         self._scaled = None                  # cached card-sized scale of _pixmap
         self._highlight = None               # None | "action_linked" | "stack_target"
         self._edge_colors = _edge_colors(decode.card_border_colors(card_idx))
+        # Untapped (portrait) card size; defaults to the standard CARD_W/CARD_H
+        # but a larger box (e.g. hand cards) can be passed in. All paint metrics
+        # (fonts, chips, radius) scale proportionally off this.
+        self._card_w, self._card_h = card_size or (CARD_W, CARD_H)
+        self._scale = self._card_w / CARD_W
 
         # Status / stat fields derived once from the permanent dict so paintEvent
         # stays cheap (a hand card has none of these).
@@ -186,7 +207,8 @@ class CardWidget(QWidget):
         self.setMouseTracking(True)
 
     def sizeHint(self):
-        return QSize(CARD_H, CARD_W) if self._tapped else QSize(CARD_W, CARD_H)
+        return (QSize(self._card_h, self._card_w) if self._tapped
+                else QSize(self._card_w, self._card_h))
 
     def set_pixmap(self, pixmap):
         """Store Phase C card art (QPixmap) and repaint. A null/None pixmap
@@ -213,7 +235,7 @@ class CardWidget(QWidget):
             return None
         if self._scaled is None:
             self._scaled = self._pixmap.scaled(
-                QSize(int(CARD_W), int(CARD_H)),
+                QSize(self._card_w, self._card_h),
                 Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
         return self._scaled
 
@@ -255,15 +277,16 @@ class CardWidget(QWidget):
             painter.setOpacity(0.75)
         # A tapped card is drawn portrait then rotated 90° into its landscape box.
         if self._tapped:
-            painter.translate(CARD_H, 0)
+            painter.translate(self._card_h, 0)
             painter.rotate(90)
-        self._paint_card(painter, QRectF(0, 0, CARD_W, CARD_H))
+        self._paint_card(painter, QRectF(0, 0, self._card_w, self._card_h))
         painter.end()
 
     def _paint_card(self, painter, rect):
         r = rect.adjusted(1.5, 1.5, -1.5, -1.5)
         path = QPainterPath()
-        path.addRoundedRect(r, CARD_RADIUS, CARD_RADIUS)
+        radius = CARD_RADIUS * self._scale
+        path.addRoundedRect(r, radius, radius)
 
         # Body: Phase C art (clipped to the rounded rect) or the dark placeholder.
         art = self._card_pixmap()
@@ -288,7 +311,7 @@ class CardWidget(QWidget):
             self._paint_highlight(painter, path, _HL_ACTION_FILL, _HL_ACTION)
         elif self._attacking:
             pen = QPen(QColor(_ATTACK_BORDER))
-            pen.setWidth(2)
+            pen.setWidthF(2 * self._scale)
             pen.setStyle(Qt.DashLine)
             painter.setPen(pen)
             painter.drawPath(path)
@@ -298,7 +321,7 @@ class CardWidget(QWidget):
         # Name (wrapped, top). Over real art a translucent caption strip keeps
         # the name legible (unreadable directly on card art at this size).
         f = QFont(painter.font())
-        f.setPointSizeF(7.0)
+        f.setPointSizeF(7.0 * self._scale)
         painter.setFont(f)
         name_rect = QRectF(r.left() + 3, r.top() + 3, r.width() - 6, r.height() * 0.52)
         if art is not None:
@@ -318,17 +341,18 @@ class CardWidget(QWidget):
         # Hand-card type icon (top-right) — placeholder cards only; real art
         # already shows what the card is.
         if self._icon and art is None:
-            icon_rect = QRectF(r.right() - 16, r.top() + 2, 14, 14)
+            isz = 14 * self._scale
+            icon_rect = QRectF(r.right() - isz - 2, r.top() + 2, isz, isz)
             painter.drawText(icon_rect, Qt.AlignCenter, self._icon)
 
         # Status flags (small, below the name).
         if self._flags:
             painter.setPen(QColor("#c8a24a"))
             ff = QFont(painter.font())
-            ff.setPointSizeF(6.0)
+            ff.setPointSizeF(6.0 * self._scale)
             painter.setFont(ff)
             flag_rect = QRectF(r.left() + 3, r.top() + r.height() * 0.55,
-                               r.width() - 6, 12)
+                               r.width() - 6, 12 * self._scale)
             painter.drawText(flag_rect, Qt.AlignHCenter | Qt.AlignVCenter,
                              " ".join(self._flags))
 
@@ -342,7 +366,7 @@ class CardWidget(QWidget):
         """Overlay a cross-highlight: translucent `fill` tint + solid `border`."""
         painter.fillPath(path, QBrush(fill))
         pen = QPen(border)
-        pen.setWidth(2)
+        pen.setWidthF(2 * self._scale)
         painter.setPen(pen)
         painter.drawPath(path)
 
@@ -359,14 +383,14 @@ class CardWidget(QWidget):
             if not color:
                 continue
             pen = QPen(QColor(color))
-            pen.setWidth(3)
+            pen.setWidthF(3 * self._scale)
             painter.setPen(pen)
             painter.drawLine(a, b)
 
     def _paint_chip(self, painter, text, r, *, right):
         """Draw a small filled chip with `text` in a bottom corner of `r`."""
         f = QFont(painter.font())
-        f.setPointSizeF(6.5)
+        f.setPointSizeF(6.5 * self._scale)
         f.setBold(True)
         painter.setFont(f)
         fm = painter.fontMetrics()
@@ -734,15 +758,15 @@ class OraclePopup(QWidget):
 
 # ── The window ────────────────────────────────────────────────────────────────
 
-class LogPanel(QWidget):
-    """The game log as a right-hand side panel: a slim header with a collapse
-    toggle over the scrolling text. Collapsing shrinks the panel to just the
-    toggle strip (the splitter honors the maximumWidth) so the board gets the
-    full window width; the arrow button brings it back."""
+class _CollapsiblePanel(QWidget):
+    """Base for a right-hand sidebar section: a slim header with a collapse
+    toggle over a content widget. Collapsing shrinks the panel to just the
+    toggle strip (the vertical splitter honors the maximumHeight) so the
+    panels below it get the extra room; the arrow button brings it back."""
 
-    _COLLAPSED_W = 26
+    _COLLAPSED_H = 26
 
-    def __init__(self, parent=None):
+    def __init__(self, title, content, parent=None):
         super().__init__(parent)
         v = QVBoxLayout(self)
         v.setContentsMargins(0, 0, 0, 0)
@@ -750,19 +774,17 @@ class LogPanel(QWidget):
         header = QHBoxLayout()
         header.setContentsMargins(0, 0, 0, 0)
         self._btn = QToolButton()
-        self._btn.setArrowType(Qt.RightArrow)     # points toward the collapse
+        self._btn.setArrowType(Qt.DownArrow)      # points toward the collapse
         self._btn.setAutoRaise(True)
-        self._btn.setToolTip("Collapse/expand the log")
+        self._btn.setToolTip(f"Collapse/expand {title.lower()}")
         self._btn.clicked.connect(self.toggle)
-        self._title = QLabel("Log")
+        self._title = QLabel(title)
         header.addWidget(self._btn)
         header.addWidget(self._title)
         header.addStretch(1)
         v.addLayout(header)
-        self.text = QPlainTextEdit()
-        self.text.setReadOnly(True)
-        self.text.setMaximumBlockCount(2000)
-        v.addWidget(self.text)
+        self._content = content
+        v.addWidget(content)
         self._collapsed = False
 
     def toggle(self):
@@ -770,10 +792,47 @@ class LogPanel(QWidget):
 
     def set_collapsed(self, collapsed):
         self._collapsed = collapsed
-        self.text.setVisible(not collapsed)
+        self._content.setVisible(not collapsed)
         self._title.setVisible(not collapsed)
-        self._btn.setArrowType(Qt.LeftArrow if collapsed else Qt.RightArrow)
-        self.setMaximumWidth(self._COLLAPSED_W if collapsed else 16777215)
+        self._btn.setArrowType(Qt.UpArrow if collapsed else Qt.DownArrow)
+        self.setMaximumHeight(self._COLLAPSED_H if collapsed else 16777215)
+
+
+class LogPanel(_CollapsiblePanel):
+    """The game log, stacked in the right-hand sidebar above the action menu."""
+
+    def __init__(self, parent=None):
+        self.text = QPlainTextEdit()
+        self.text.setReadOnly(True)
+        self.text.setMaximumBlockCount(2000)
+        super().__init__("Log", self.text, parent)
+
+
+class GraveyardPanel(_CollapsiblePanel):
+    """Both players' graveyard contents, in the right-hand sidebar above the
+    log (moved off the board to reclaim vertical space for the card rows)."""
+
+    def __init__(self, parent=None):
+        self._text = QLabel()
+        self._text.setObjectName("graveyards")
+        self._text.setWordWrap(True)
+        super().__init__("Graveyards", self._text, parent)
+
+    def set_text(self, text):
+        self._text.setText(text)
+
+
+class ExilePanel(_CollapsiblePanel):
+    """Both players' exile-zone contents, in the right-hand sidebar."""
+
+    def __init__(self, parent=None):
+        self._text = QLabel()
+        self._text.setObjectName("exile")
+        self._text.setWordWrap(True)
+        super().__init__("Exile", self._text, parent)
+
+    def set_text(self, text):
+        self._text.setText(text)
 
 
 class GameWindow(QMainWindow):
@@ -876,6 +935,9 @@ class GameWindow(QMainWindow):
 
         self._opp_info = QLabel()
         self._opp_info.setObjectName("oppInfo")
+        # Fixed vertical policy: a single-line label should hug its text, not
+        # soak up the vbox's leftover space and sit padded above/below it.
+        self._opp_info.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         v.addWidget(self._opp_info)
 
         # Opponent's rows are flipped (lands on top, permanents below) so the two
@@ -895,25 +957,22 @@ class GameWindow(QMainWindow):
         v.addWidget(self._self_perms)
         v.addWidget(self._self_lands)
 
-        self._hand_row = CardRow()
+        self._hand_row = CardRow(height=HAND_ROW_H)
         self._hand_row.setObjectName("handRow")
         v.addWidget(self._hand_row)
 
         self._self_info = QLabel()
         self._self_info.setObjectName("selfInfo")
+        self._self_info.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         v.addWidget(self._self_info)
-
-        self._graveyards = QLabel()
-        self._graveyards.setObjectName("graveyards")
-        v.addWidget(self._graveyards)
 
         self._prompt = QLabel()
         self._prompt.setObjectName("prompt")
         self._prompt.setWordWrap(True)
         v.addWidget(self._prompt)
 
-        # Action menu below the board; the log sits in a collapsible panel on
-        # the right-hand side of the window.
+        # Action menu. Lives in the right-hand panel below the log (see below),
+        # not under the board.
         self._menu = QListWidget()
         self._menu.itemActivated.connect(self._on_item_activated)
         self._menu.installEventFilter(self)      # route digit/space/p/Q keys
@@ -924,19 +983,26 @@ class GameWindow(QMainWindow):
         self._menu.viewport().installEventFilter(self)
         self._log_panel = LogPanel()
         self._log = self._log_panel.text
+        self._gy_panel = GraveyardPanel()
+        self._exile_panel = ExilePanel()
 
-        # Vertical splitter: board block over the action menu.
-        self._vsplit = QSplitter(Qt.Vertical)
-        self._vsplit.addWidget(board)
-        self._vsplit.addWidget(self._menu)
-        self._vsplit.setStretchFactor(0, 5)
-        self._vsplit.setStretchFactor(1, 2)
+        # Right-hand panel: graveyards and exile (collapsible, off-board info)
+        # stacked above the log, with the action menu at the bottom.
+        self._right = QSplitter(Qt.Vertical)
+        self._right.addWidget(self._gy_panel)
+        self._right.addWidget(self._exile_panel)
+        self._right.addWidget(self._log_panel)
+        self._right.addWidget(self._menu)
+        self._right.setStretchFactor(0, 0)
+        self._right.setStretchFactor(1, 0)
+        self._right.setStretchFactor(2, 3)
+        self._right.setStretchFactor(3, 2)
 
-        # Horizontal splitter: board+menu | log panel. Kept on the window so the
-        # >/< shortcuts can nudge the log's width.
+        # Horizontal splitter: board | sidebar panel. Kept on the window so the
+        # >/< shortcuts can nudge the right panel's width.
         self._hsplit = QSplitter(Qt.Horizontal)
-        self._hsplit.addWidget(self._vsplit)
-        self._hsplit.addWidget(self._log_panel)
+        self._hsplit.addWidget(board)
+        self._hsplit.addWidget(self._right)
         self._hsplit.setStretchFactor(0, 3)
         self._hsplit.setStretchFactor(1, 1)
         self._hsplit.setSizes([860, 380])
@@ -975,9 +1041,12 @@ class GameWindow(QMainWindow):
             self._info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
         self._self_info.setText(
             self._info_line("YOU", gs["self"], gs["self_library"]))
-        self._graveyards.setText(
+        self._gy_panel.set_text(
             f"Your GY: {', '.join(gs['self_graveyard']) or '—'}\n"
             f"Opp GY:  {', '.join(gs['opp_graveyard']) or '—'}")
+        self._exile_panel.set_text(
+            f"Your exile: {', '.join(gs.get('self_exile', [])) or '—'}\n"
+            f"Opp exile:  {', '.join(gs.get('opp_exile', [])) or '—'}")
 
         # A fresh menu/board: drop any stale hover so cross-highlights don't
         # linger onto the newly-rebuilt widgets, and close the oracle popup (its
@@ -1216,10 +1285,12 @@ class GameWindow(QMainWindow):
 
     def _rebuild_stack(self, stack, mirrored):
         if not stack:
+            self._stack_row.setFixedHeight(STACK_EMPTY_H)
             label = QLabel("Stack: (empty)")
             label.setStyleSheet("color: #6a6a72;")
             self._stack_row.set_cards([label])
             return
+        self._stack_row.setFixedHeight(STACK_ROW_H)
         widgets = []
         for e in stack:
             w = StackItemWidget(e, stack_target_refs(e, mirrored))
@@ -1252,7 +1323,8 @@ class GameWindow(QMainWindow):
 
     def _mk_hand(self, c):
         w = CardWidget(c["name"], c["card_idx"], "self", "hand",
-                       icon=hand_type_icon(c["card_idx"]))
+                       icon=hand_type_icon(c["card_idx"]),
+                       card_size=(HAND_CARD_W, HAND_CARD_H))
         self._register(w, c["name"])
         self._apply_image(w, c["name"], None)
         return w
@@ -1400,14 +1472,14 @@ class GameWindow(QMainWindow):
         self._oracle.hide()
 
     def _nudge_splitter(self, delta):
-        """Grow (delta>0) / shrink (delta<0) the right-hand log panel by
-        shifting ~40 px between the board and log panes."""
+        """Grow (delta>0) / shrink (delta<0) the right-hand log+menu panel by
+        shifting ~40 px between the board and right panes."""
         sizes = self._hsplit.sizes()
         if len(sizes) != 2:
             return
         step = 40 * delta
         left = max(320, sizes[0] - step)
-        right = max(LogPanel._COLLAPSED_W, sizes[1] + step)
+        right = max(200, sizes[1] + step)
         self._hsplit.setSizes([left, right])
 
     def _phase_status(self, gs):
