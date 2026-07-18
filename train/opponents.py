@@ -199,6 +199,12 @@ class ModelController:
         self.label = label
         self._deterministic = deterministic
         self._mask = np.zeros(MAX_ACTIONS, dtype=bool)
+        # This controller only ever runs inference. Torch's per-construction
+        # parameter validation can spuriously reject a marginal fp32 softmax
+        # (MaskableCategorical re-validates its cached pre-mask probs against
+        # Simplex, tolerance ~1e-6) and crash a game mid-decision — disable it.
+        import torch
+        torch.distributions.Distribution.set_default_validate_args(False)
 
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         if action_masks is None:

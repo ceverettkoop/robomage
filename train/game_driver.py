@@ -458,6 +458,12 @@ class GameDriver:
                 if reward:
                     self._reward = reward
                 done = terminated or truncated
+                # A finished game disengages autopass: the human drives the
+                # between-games sideboard and the next game's mulligan
+                # themselves instead of autopass blowing through them (its
+                # UPKEEP stop mark never fires during those decisions).
+                if self._autopass and info.get("game_result"):
+                    self._autopass = False
                 flushed = env.flush_lines()
                 self._sink.on_log(flushed)
 

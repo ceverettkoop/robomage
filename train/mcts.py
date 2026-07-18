@@ -72,6 +72,13 @@ class PPOEvaluator:
         from _enums import MAX_ACTIONS
 
         self._max_actions = MAX_ACTIONS
+        # Inference-only path: torch validates every distribution construction,
+        # and MaskableCategorical.apply_masking re-validates the cached pre-mask
+        # probs, whose fp32 softmax sum occasionally lands just outside the
+        # Simplex tolerance (~1e-6). Search builds thousands of distributions
+        # per decision, making that spurious ValueError near-certain over a
+        # match — disable the validation here.
+        torch.distributions.Distribution.set_default_validate_args(False)
 
     def evaluate(self, obs: np.ndarray, num_choices: int) -> tuple[np.ndarray, float]:
         torch = self._torch
@@ -80,8 +87,14 @@ class PPOEvaluator:
         mask[:num_choices] = True
         with torch.no_grad():
             obs_t, _ = policy.obs_to_tensor(obs)
-            dist = policy.get_distribution(obs_t, action_masks=mask)
-            probs = dist.distribution.probs.detach().cpu().numpy()[0][:num_choices]
+            try:
+                dist = policy.get_distribution(obs_t, action_masks=mask)
+                probs = dist.distribution.probs.detach().cpu().numpy()[0][:num_choices]
+            except ValueError:
+                # Belt-and-braces for the same Simplex flake (e.g. a caller
+                # re-enabled validation): one uniform prior among thousands of
+                # sims is harmless.
+                probs = np.full(num_choices, 1.0 / num_choices)
             value = float(policy.predict_values(obs_t).item())
         total = probs.sum()
         if not np.isfinite(total) or total <= 0.0:
