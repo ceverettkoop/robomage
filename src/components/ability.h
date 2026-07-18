@@ -711,19 +711,7 @@ P& effect_params(Ability& ab) {
     return std::get<P>(ab.params);
 }
 
-// Search a zone for cards matching the comma-separated type list in change_type
-// (empty change_type matches all cards in the zone).
-// When mandatory=true, "fail to find" is suppressed unless the zone is empty.
-// Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
-// reveal=true marks every offered card choice as public knowledge (revealed
-// tutors), so observers may show the chosen card's name even into a hidden zone.
-// cmc_bound (>= 0) plus cmc_op ("EQ"/"LE"/...) additionally gate candidate cards by
-// mana value (Aether Vial: MV == charge-counter count, resolved by the caller); -1 = none.
-Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-                   Zone::ZoneValue zone, const std::string& change_type,
-                   bool mandatory = false,
-                   Zone::ZoneValue destination = Zone::GRAVEYARD,
-                   bool reveal = false,
-                   int cmc_bound = -1, const std::string& cmc_op = "");
+// (search_zone / search_multi_zone are declared in effects/effects.h — they
+// thread a FrameCtx, which this header cannot include without a cycle.)
 
 #endif /* ABILITY_H */

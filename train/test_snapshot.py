@@ -49,7 +49,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
                     CAT_ATTACK_TARGET, CAT_BLOCK_TARGET, CAT_ASSIGN_DAMAGE,
-                    CAT_OTHER_CHOICE)
+                    CAT_OTHER_CHOICE, CAT_CAST_SPELL, CAT_TOP_LIBRARY,
+                    CAT_BOTTOM_DECK_CARD)
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
@@ -681,6 +682,260 @@ def test_resolution_single_roundtrip():
         eng.kill()
         return (f"peek/reveal root @ {root_idx} (nc=2) safe=1, round-trip exact, "
                 f"pinned Bolt revealed in world, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def _write_pool_decks():
+    """Stacked decks for the frozen-pool (Batch 4) tests. With --no-shuffle A's
+    opening hand is the first 7 deck cards (Preordain + 6 Islands); an Island
+    battlefield preset pays the {U}, so a cast-first policy casts Preordain on
+    A's first turn and reaches its scry-2 loop — two consecutive per-card
+    keep/bottom picks over a FROZEN 2-card pool (Lightning Bolt then Grizzly
+    Bears, the 8th/9th deck cards). The rest of A's library is a VARIED run of
+    basics so a determinize resample of the unpinned cards becomes observable in
+    later draws; B's all-Forest deck keeps B's resampled hand/library
+    indistinguishable (any deal is 7 Forests), so sampled-world descents can
+    only diverge through A's library order."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    pa = os.path.join(d, "pool_pq_a.dk")
+    with open(pa, "w") as f:
+        f.write("1 Preordain\n6 Island\n1 Lightning Bolt\n1 Grizzly Bears\n"
+                "4 Mountain\n4 Forest\n4 Swamp\n4 Plains\n5 Island\n")
+    pb = os.path.join(d, "pool_pq_b.dk")
+    with open(pb, "w") as f:
+        f.write("30 Forest\n")
+    return [pa, pb]
+
+
+_POOL_EXTRA = ["--deck-a", "temp/pool_pq_a", "--deck-b", "temp/pool_pq_b",
+               "--no-shuffle", "--narrative", "--battlefield-a", "Island"]
+
+
+def _record_pool_line(seed, scry_choices, cap=4000):
+    """Play one full game with a payload-aware policy: cast the first castable
+    spell seen (Preordain, exactly once), answer the scry keep/bottom picks with
+    `scry_choices` in order, auto-0 everything else. Returns (records, choices,
+    outcome) where choices[i] is the integer played at decision i — the caller
+    replays the line by index, so the policy never has to be re-run."""
+    eng = Engine(seed, extra=_POOL_EXTRA)
+    records, choices = [], []
+    cast_done = False
+    scry_seen = 0
+    r = eng.read()
+    n = 0
+    while r.kind == "q" and n < cap:
+        cats = _query_cats(r.payload)[:r.nc]
+        a = 0
+        if not cast_done and bool((cats == CAT_CAST_SPELL).any()):
+            a = int(np.argmax(cats == CAT_CAST_SPELL))
+            cast_done = True
+        elif bool((cats == CAT_BOTTOM_DECK_CARD).any()):
+            if scry_seen < len(scry_choices):
+                a = scry_choices[scry_seen]
+            scry_seen += 1
+        records.append((r.nc, r.payload, r.safe))
+        choices.append(a)
+        r = eng.play(a)
+        n += 1
+    outcome = {"kind": r.kind, "returncode": r.returncode, "winner": r.winner}
+    eng.kill()
+    return records, choices, outcome
+
+
+def _scry_pick_indices(records):
+    """Decision indices whose menu contains a BOTTOM_DECK_CARD action — in the
+    pool scenario, exactly the per-card scry keep/bottom picks."""
+    return [i for i, (nc, pl, _s) in enumerate(records)
+            if bool((_query_cats(pl)[:nc] == CAT_BOTTOM_DECK_CARD).any())]
+
+
+def _assert_scry_pick(records, i, ctx):
+    nc, pl, safe = records[i]
+    if nc != 2:
+        raise ProtocolError(f"{ctx}: scry pick at {i} has {nc} options, expected "
+                            "the 2-option keep/bottom menu")
+    cats = _query_cats(pl)[:nc]
+    if not (cats[0] == CAT_TOP_LIBRARY and cats[1] == CAT_BOTTOM_DECK_CARD):
+        raise ProtocolError(f"{ctx}: scry pick at {i} categories {cats} are not "
+                            "[TOP_LIBRARY, BOTTOM_DECK_CARD]")
+    if not safe:
+        raise ProtocolError(f"{ctx}: scry pick at {i} reports safe=0 — a frozen-"
+                            "pool loop pick should be a loop-top pending decision")
+
+
+def test_pool_loop_roundtrip():
+    """Batch 4 (frozen-pool loops): the per-card picks of a multi-pick pool
+    effect — Preordain's scry-2 loop through effects::scry — are loop-top
+    pending decisions: BOTH picks (the second proving a MID-LOOP root, with a
+    partially-consumed pool in the frame rt) report safe=1 and are valid
+    SNAPSHOT/RESTORE roots. At each: SNAPSHOT re-emits exactly, a divergent
+    line (bottom instead of the control's keep, then a scrambled continuation)
+    then RESTORE returns byte-identically, and the resumed real line stays
+    byte-identical to a no-snapshot control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_pool_decks()
+    try:
+        control, choices, outcome = _record_pool_line(seed, scry_choices=(0, 0))
+        picks = _scry_pick_indices(control)
+        if len(picks) != 2:
+            raise ProtocolError(f"expected exactly 2 scry picks in the control "
+                                f"line, found {len(picks)}")
+        p1, p2 = picks
+        if p2 != p1 + 1:
+            raise ProtocolError(f"scry picks at {p1}/{p2} are not consecutive — "
+                                "the loop should re-arm immediately")
+        _assert_scry_pick(control, p1, "pool control")
+        _assert_scry_pick(control, p2, "pool control")
+
+        eng = Engine(seed, extra=_POOL_EXTRA)
+        cur = eng.read()
+        excursions = 0
+        for idx in range(len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"pool alignment at decision {idx}")
+            if idx in (p1, p2):
+                snap_nc, snap_pl = cur.nc, cur.payload
+                q = eng.snapshot(0)
+                _assert_same_query(q, snap_pl, snap_nc,
+                                   f"pool post-SNAPSHOT re-emit at {idx}")
+                # Divergent excursion: bottom the card (choice 1) instead of the
+                # control's keep, then a scrambled continuation.
+                dq = q
+                for i in range(8):
+                    dq = eng.play(1 if i == 0 else _diverge(i, dq.nc))
+                    if dq.kind != "q":
+                        break
+                rq = eng.restore(0)
+                _assert_same_query(rq, snap_pl, snap_nc,
+                                   f"pool post-RESTORE re-emit at {idx}")
+                rel = eng.release()
+                _assert_same_query(rel, snap_pl, snap_nc,
+                                   f"pool post-RELEASE re-emit at {idx}")
+                cur = rel
+                excursions += 1
+            cur = eng.play(choices[idx])
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed pool line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        if excursions != 2:
+            raise ProtocolError(f"expected 2 pool excursions, ran {excursions}")
+        return (f"scry picks @ {p1} and @ {p2} (mid-loop) both safe=1, "
+                f"round-trips exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_pool_determinize_pin():
+    """Batch 4 (determinize pinning for revealed pools): at a suspended MID-LOOP
+    scry root (the SECOND Preordain pick — the already-kept Lightning Bolt is no
+    longer in the parked menu, so keeping it in place relies purely on the
+    ScryRt.lib pin fed into collect_pending_pins), DETERMINIZE with several
+    seeds must:
+
+    - re-emit the root byte-identically (the parked menu and everything visible
+      to the chooser are world-invariant);
+    - keep every pinned looked-at card exactly in place: replaying the control
+      choices inside each world (bottom Grizzly Bears, then Preordain's draw)
+      yields post-root queries BYTE-IDENTICAL to the control line — the draw
+      still fetches the pinned Bolt off the top, which only holds if its
+      zone row (library, distance 0) survived the resample;
+    - still RESAMPLE the unpinned cards: deeper descents (later draws off the
+      varied library body) must diverge across world seeds;
+    - RESTORE back to the root byte-identically, with the released real line
+      byte-identical to the control run."""
+    seed = 5
+    deck_paths = _write_pool_decks()
+    try:
+        # Control: keep Bolt (pick 1), bottom Bears (pick 2) — the draw then
+        # takes Bolt, and A's later draws walk straight into the varied cards.
+        control, choices, outcome = _record_pool_line(seed, scry_choices=(0, 1))
+        picks = _scry_pick_indices(control)
+        if len(picks) != 2:
+            raise ProtocolError(f"expected exactly 2 scry picks in the control "
+                                f"line, found {len(picks)}")
+        p2 = picks[1]
+        _assert_scry_pick(control, p2, "pin control")
+
+        eng = Engine(seed, extra=_POOL_EXTRA)
+        cur = eng.read()
+        for idx in range(p2):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"pin alignment at decision {idx}")
+            cur = eng.play(choices[idx])
+        _assert_same_query(cur, control[p2][1], control[p2][0],
+                           "pin root alignment")
+        snap_nc, snap_pl = cur.nc, cur.payload
+        eng.snapshot(0)
+
+        head = 3    # post-root steps that must be world-invariant (pins held)
+        depth = 120  # descent length hashed for cross-world divergence
+        hashes = {}
+        for ds in (2, 3, 4):
+            rq = eng.restore(0)
+            _assert_same_query(rq, snap_pl, snap_nc, f"pin RESTORE (seed {ds})")
+            dq = eng.determinize(ds)
+            _assert_same_query(dq, snap_pl, snap_nc,
+                               f"pin post-DETERMINIZE re-emit (seed {ds})")
+            h = hashlib.sha256()
+            for j in range(depth):
+                cidx = p2 + j
+                a = choices[cidx] if cidx < len(choices) else 0
+                r = eng.play(a)
+                if r.kind != "q":
+                    h.update(b"END:" + (r.result or "eof").encode())
+                    break
+                if j < head:
+                    want_nc, want_pl, _ws = control[p2 + 1 + j]
+                    _assert_same_query(
+                        r, want_pl, want_nc,
+                        f"pin world (seed {ds}) step {j} diverged from control "
+                        "— a pinned looked-at card moved in the sampled world")
+                h.update(r.payload)
+            hashes[ds] = h.hexdigest()
+        if len(set(hashes.values())) == 1:
+            raise ProtocolError(
+                "all determinize worlds descended byte-identically for "
+                f"{depth} steps — the resample of UNPINNED library cards "
+                "appears to have no effect")
+
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, "pin final RESTORE")
+        rel = eng.release()
+        _assert_same_query(rel, snap_pl, snap_nc, "pin post-RELEASE re-emit")
+        cur = rel
+        for idx in range(p2, len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"pin resumed alignment at decision {idx}")
+            cur = eng.play(choices[idx])
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed pin line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        n_worlds = len(set(hashes.values()))
+        return (f"mid-loop root @ {p2}: {head} post-root steps world-invariant "
+                f"(pins held), {n_worlds}/3 distinct world descents, RESTORE "
+                f"exact, outcome={outcome['winner']!r}")
     finally:
         for p in deck_paths:
             try:
@@ -1475,6 +1730,8 @@ TESTS = [
     ("combat_target_roundtrip", test_combat_target_roundtrip),
     ("damage_assign_roundtrip", test_damage_assign_roundtrip),
     ("resolution_single_roundtrip", test_resolution_single_roundtrip),
+    ("pool_loop_roundtrip", test_pool_loop_roundtrip),
+    ("pool_determinize_pin", test_pool_determinize_pin),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

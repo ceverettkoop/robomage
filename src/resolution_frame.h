@@ -45,7 +45,73 @@ struct SacrificeRt {
 struct ChooseCardRt {
     size_t type_idx = 0;    // next ChooseEach type index (Ajani -4 per-type loop)
 };
-using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt>;
+// ── Batch 4: frozen-pool multi-pick loops (Shape B) ─────────────────────────
+// Each rt persists the pool/counters its handler computed ONCE before its ask
+// loop, so a resume re-enters the suspended pick against the exact same pool.
+// The library slices these rts hold are what pinned_entities() feeds into
+// determinization pinning: a world sampled at a suspended root must keep every
+// revealed/looked-at card exactly where the resumed handler (and its epilogue)
+// will look for it.
+struct DigRt {
+    bool init = false;            // slice/pool/counts computed + pre-loop log emitted
+    std::vector<Entity> lib;      // the WHOLE revealed slice (picked + to-bottom); all pinned
+    std::vector<Entity> pool;     // filter-matching candidates not yet picked
+    std::vector<Entity> chosen;   // picks so far, in pick order
+    size_t pick = 0;              // next pick index
+    size_t take_count = 0;        // how many may be taken (resolved once)
+    bool optional = false;        // "Take nothing" offered
+};
+struct ScryRt {
+    bool init = false;            // slice fetched + "scries N" log emitted
+    std::vector<Entity> lib;      // looked-at top slice, top-first; all pinned
+    size_t idx = 0;               // next per-card keep/bottom decision
+};
+struct SurveilRt {
+    bool init = false;            // slice fetched + look logs emitted
+    std::vector<Entity> remaining;  // looked-at cards not yet assigned; pinned
+    std::vector<Entity> to_top;     // chosen to stay on top, in choice order; pinned
+};
+struct RearrangeRt {
+    bool init = false;            // slice fetched + look log emitted
+    std::vector<Entity> lib;      // looked-at slice, top-first; all pinned
+    std::vector<Entity> remaining;    // not yet slotted
+    std::vector<Entity> chosen_order; // slot picks so far (deepest first)
+    size_t pick = 0;              // next slot pick
+    bool placed = false;          // put-back epilogue already ran (exactly once)
+};
+struct SylvanRt {
+    bool init = false;            // draw-2 + drawn-in-hand scan done
+    std::vector<Entity> drawn_in_hand;  // choose-from candidates; pinned
+    std::vector<Entity> chosen;         // the (up to) 2 chosen cards; pinned
+    size_t to_choose = 0;         // how many to choose (resolved once)
+    size_t pick = 0;              // next choose-a-card pick
+    size_t resolved = 0;          // next pay-4-life-or-top decision
+};
+// run_discard_unless (Reality Smasher's "unless they discard a card"): the
+// yes/no answer and the count of discards already made. The per-discard menu is
+// intentionally rebuilt from the LIVE hand each ask — the hand only shrinks by
+// the discards themselves between asks. Shares the level's rt slot with the
+// calling handler; safe because its only caller (effects::counter) holds no
+// competing rt.
+struct UnlessRt {
+    bool pay_answered = false;    // "Discard N cards" chosen; now picking the cards
+    size_t discards_done = 0;
+};
+// change_zone's search loop (fetch lands, Doomsday's 5-pick multi-zone tutor):
+// the outer pick count + the resolved dynamic bounds, computed once — earlier
+// picks mutate the counted state (cards moved, remembered grown), so a resume
+// must not re-evaluate them — plus the pre-repoint priority seat to restore in
+// the epilogue. The search menus themselves rebuild purely from the live zones
+// (the searchable pool IS the parked menu, so the menu pins cover it).
+struct ChangeZoneSearchRt {
+    bool init = false;            // counts resolved + prev seat saved
+    bool prev_priority = false;   // player_a_has_priority to restore after the loop
+    size_t num_to_move = 0;       // resolved ChangeNum (may be a count-SVar)
+    int cmc_bound = -1;           // resolved dynamic mana-value bound (Aether Vial)
+    size_t iter = 0;              // next pick index
+};
+using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
+                                   SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt>;
 
 // One level of the persisted resolve() continuation: the ROOT is the stack
 // object's own ability; nested levels hold the BY-VALUE in-flight copy of a
@@ -129,11 +195,11 @@ class FrameCtx {
 
 // Entities a suspended decision references, which determinization must pin in
 // place (a DETERMINIZE at a suspended root must not shuffle a card the parked
-// menu / the resolving ability refers to). Batch 3 slice: the union of pending
-// query menu entities, each FrameLevel's in-flight work targets/source (plus
-// the ROOT ability component's), and cur_game.remembered_entities. The full
-// per-handler EffectRuntime visitor (dig pools etc.) lands with the frozen-pool
-// batch.
+// menu / the resolving ability refers to). The union of: pending query menu
+// entities, each FrameLevel's in-flight work targets/source (plus the ROOT
+// ability component's), cur_game.remembered_entities, and each level's
+// EffectRuntime pool slices (dig/scry/surveil/rearrange lib slices, sylvan's
+// drawn/chosen set) via the per-handler visitor in resolution_frame.cpp.
 std::set<Entity> collect_pending_pins();
 
 #endif /* RESOLUTION_FRAME_H */

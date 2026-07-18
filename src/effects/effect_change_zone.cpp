@@ -430,28 +430,44 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // any number" lets the player choose fewer). dynamic_amount_expr is only set when ChangeNum$
     // itself is a count-SVar, so fixed-count fetches (and Green Sun's Zenith, whose X bounds the
     // filter, not the count) are unaffected.
-    size_t num_to_move;
-    if (!ab.dynamic_amount_expr.empty())
-        num_to_move = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, 0);
-    else
-        num_to_move = (ab.amount > 0) ? ab.amount : 1;
     bool multi_zone = ab.origins.size() > 1;
     bool reveal = search_reveals_card(ab);
+
+    // The resolved pick count and dynamic filter bound persist in the frame rt:
+    // earlier picks mutate the state they were counted from (cards moved, the
+    // remembered set grown — Doomsday's ChangeNum$ 5 over a shrinking pool), so
+    // a resume must NOT re-evaluate them. The loop index persists likewise so a
+    // resume re-enters the suspended pick.
+    ChangeZoneSearchRt local_rt;
+    ChangeZoneSearchRt &rt = fctx.can_suspend() ? fctx.rt<ChangeZoneSearchRt>() : local_rt;
+    if (!rt.init) {
+        if (!ab.dynamic_amount_expr.empty())
+            rt.num_to_move = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, 0);
+        else
+            rt.num_to_move = (ab.amount > 0) ? ab.amount : 1;
+        // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
+        // X = charge counters on this Aether Vial). Resolve against the ability's source so
+        // the hand search only offers creatures of the matching mana value (CR 122.1).
+        rt.cmc_bound = -1;
+        if (!ab.change_type_cmc_expr.empty())
+            rt.cmc_bound = evaluate_sa_svar(ab.change_type_cmc_expr, owner, ab.source);
+        rt.prev_priority = cur_game.player_a_has_priority;
+        rt.init = true;
+    }
 
     // Seat the search/pick prompt on the player who actually makes the choice. By default that
     // is the searched zone's owner — normally also the ability's controller, but a DefinedPlayer$
     // TargetedController search (White Orchid Phantom / Erode: the destroyed land's controller
     // may search THEIR library) belongs to that player, not the caster whose trigger is resolving
     // (the resolve seat is the controller's, set in stack_manager). The input/BQUERY seat follows
-    // cur_game.player_a_has_priority, so save/set/restore it around the prompts — the same pattern
-    // as request_optional_yesno and place_triggers_apnap.
+    // cur_game.player_a_has_priority, so set it here and restore rt.prev_priority after the loop
+    // (the set is idempotent on resume: a suspension persisted priority at this same seat).
     //
     // Chooser$ You overrides: the ability's CONTROLLER makes the selection from `owner`'s zone
     // (Thought-Knot Seer: you pick a nonland card from the targeted opponent's revealed hand to
     // exile). The searched cards are public knowledge there (the hand was revealed by the parent
     // RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's identity
     // is shown even into a hidden destination and recorded in the belief state.
-    bool prev_priority = cur_game.player_a_has_priority;
     if (ab.chooser_is_controller) {
         cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
         reveal = true;
@@ -459,22 +475,19 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
     }
 
-    // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
-    // X = charge counters on this Aether Vial). Resolve against the ability's source so
-    // the hand search only offers creatures of the matching mana value (CR 122.1).
-    int cmc_bound = -1;
-    if (!ab.change_type_cmc_expr.empty())
-        cmc_bound = evaluate_sa_svar(ab.change_type_cmc_expr, owner, ab.source);
-
-    for (size_t i = 0; i < num_to_move; i++) {
+    for (; rt.iter < rt.num_to_move; rt.iter++) {
+        bool suspended = false;
         Entity chosen = 0;
         if (multi_zone) {
             chosen = search_multi_zone(orderer, owner, ab.origins, ab.change_type, ab.mandatory, ab.destination,
-                reveal);
+                reveal, fctx, ab.source, suspended);
         } else {
             chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination,
-                reveal, cmc_bound, ab.change_type_cmc_op);
+                reveal, rt.cmc_bound, ab.change_type_cmc_op, fctx, ab.source, suspended);
         }
+        // Suspended: the seat stays persisted at the chooser (the parked query
+        // holds it); rt.prev_priority is restored by the completion epilogue.
+        if (suspended) return HandlerResult::SUSPENDED;
 
         // after we have chosen but before we place it where it goes, if we messed with library shuffle it
         if (ab.origin == Zone::LIBRARY) {
@@ -517,7 +530,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             break;
         }
     }
-    cur_game.player_a_has_priority = prev_priority;
+    cur_game.player_a_has_priority = rt.prev_priority;
     return HandlerResult::DONE_RUN_SUBS;
 }
 

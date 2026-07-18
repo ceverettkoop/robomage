@@ -108,13 +108,18 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         // UnlessCost$ PayEnergy<N> (Static Prison: "sacrifice CARDNAME unless you pay {E}"). The payer
         // (UnlessPayer$ You ⇒ the controller) may pay N energy to prevent the sacrifice; run_unless_loop
         // returns false when paid (don't sacrifice) and true when declined / unaffordable (sacrifice).
-        // (Still a blocking prompt this batch — Shape B unless-loops convert with the pool batch.)
+        // The yes-no may suspend (checked before the return value); the arm-only announcement is
+        // resuming-guarded so a resume never re-logs it.
         if (ab.unless_cost_is_energy) {
             Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
-            game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
-                     ab.unless_generic_cost);
-            if (!run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, UnlessPayKind::ENERGY))
-                return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is sacrificed
+            if (!ctx.resuming())
+                game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
+                         ab.unless_generic_cost);
+            bool suspended = false;
+            bool unpaid = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source,
+                                          ctx, suspended, UnlessPayKind::ENERGY);
+            if (suspended) return HandlerResult::SUSPENDED;
+            if (!unpaid) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is sacrificed
         }
         rt.pre_done = true;
     }

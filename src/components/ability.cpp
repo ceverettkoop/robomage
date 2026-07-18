@@ -45,6 +45,11 @@ extern Game cur_game;
 // (CR 608.2c). Forward-declared per CLAUDE.md.
 static void bind_sub_target(const Ability &parent, Ability &sub);
 
+// The "unless they discard N cards" flavor of run_unless_loop (CR 701.8), suspendable via
+// FrameCtx. Forward-declared per CLAUDE.md.
+static bool run_discard_unless(size_t count, Zone::Ownership controller,
+                               std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended);
+
 // Category-aware detail suffix for the "Resolving ability" log line. Display-only.
 // Forward-declared per CLAUDE.md.
 static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Orderer> orderer);
@@ -105,7 +110,9 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
 // 0 is a valid entity but will always be player a  so is never correct
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
     const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal,
-    int cmc_bound, const std::string &cmc_op) {
+    int cmc_bound, const std::string &cmc_op,
+    FrameCtx &ctx, Entity decision_source, bool &suspended) {
+    suspended = false;
     //  comma-separated subtypes
     std::vector<std::string> subtypes = split(change_type, ',');
 
@@ -191,10 +198,14 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         return 0;
     }
 
-    if (zone == Zone::LIBRARY) {
-        game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
-    } else {
-        game_log("%s chooses a card from %s %s:\n", player_name(owner).c_str(), player_name(owner).c_str(), zone_name);
+    // Arm-only log: the resume rebuilds the identical menu (the candidates are
+    // covered by the parked menu's determinize pins) without re-logging.
+    if (!ctx.resuming()) {
+        if (zone == Zone::LIBRARY) {
+            game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
+        } else {
+            game_log("%s chooses a card from %s %s:\n", player_name(owner).c_str(), player_name(owner).c_str(), zone_name);
+        }
     }
 
     std::vector<LegalAction> search_actions;
@@ -211,7 +222,15 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         search_actions.push_back(la);
     }
 
-    int choice = InputLogger::instance().get_input(search_actions);
+    // The calling handler has already seated priority on the choosing player
+    // (change_zone's search-seat repoint), so asking on the ambient seat is a
+    // no-op swap — the exact seat today's inline get_input read from.
+    Zone::Ownership chooser = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    int choice = ctx.ask(search_actions, chooser, decision_source);
+    if (choice < 0 && decision_suspended()) {
+        suspended = true;
+        return 0;
+    }
     // Map choice back: if fail-to-find is shown, index 0 = fail-to-find, 1..N = choices
     // If fail-to-find suppressed, index 0..N-1 = choices directly
     if (show_fail_to_find) {
@@ -227,7 +246,9 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
 // Used by Doomsday (Origin$ Graveyard,Library).
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination, bool reveal) {
+    Zone::ZoneValue destination, bool reveal,
+    FrameCtx &ctx, Entity decision_source, bool &suspended) {
+    suspended = false;
     // Collect contents from all zones
     std::vector<Entity> zone_contents;
     for (auto zone : zones) {
@@ -319,7 +340,9 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         if (!zone_list.empty()) zone_list += " and ";
         zone_list += zn;
     }
-    game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_list.c_str());
+    // Arm-only log (see search_zone above).
+    if (!ctx.resuming())
+        game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_list.c_str());
 
     // A library search uses SEARCH_LIBRARY/TOP_LIBRARY; a pick from only non-library
     // zones (e.g. Karn's -2 over Sideboard,Exile) is a CHOOSE_CARD decision.
@@ -347,7 +370,14 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         search_actions.push_back(la);
     }
 
-    int choice = InputLogger::instance().get_input(search_actions);
+    // Seat convention identical to search_zone: the caller already repointed
+    // priority at the choosing player.
+    Zone::Ownership chooser = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    int choice = ctx.ask(search_actions, chooser, decision_source);
+    if (choice < 0 && decision_suspended()) {
+        suspended = true;
+        return 0;
+    }
     if (show_fail_to_find) {
         if (choice >= 1 && choice <= static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice - 1)];
         return 0;
@@ -364,36 +394,53 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 // unless-cost (CR 701.8). Returns true if the cost was NOT paid (they declined or have too few
 // cards), i.e. the spell should be countered. Reusable by any "unless they discard N cards"
 // effect; the chosen cards go to the graveyard (a public zone — record the reveal in the belief
-// state). The caller has already set cur_game.player_a_has_priority to `controller`.
+// state). Asks are seated on `controller` through ctx.ask (which repoints and restores priority
+// around each prompt, reproducing the old caller-side swap). May suspend: `suspended` is set and
+// the return value is meaningless (check it FIRST). The yes/no answer and the discard-count
+// progress persist in the level's UnlessRt; the per-discard menu is intentionally rebuilt from
+// the LIVE hand each ask — between asks the hand only shrinks by the discards themselves.
 static bool run_discard_unless(size_t count, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer) {
-    std::vector<Entity> hand = orderer->get_hand(controller);
-    bool can_pay = hand.size() >= count;  // CR 701.8: must discard the full count or none
+                               std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended) {
+    suspended = false;
+    UnlessRt local_rt;
+    UnlessRt &rt = ctx.can_suspend() ? ctx.rt<UnlessRt>() : local_rt;
 
-    std::vector<LegalAction> actions;
-    size_t pay_idx = actions.size();
-    if (can_pay) {
-        LegalAction pay(PASS_PRIORITY,
-            std::string("Discard ") + std::to_string(count) +
-            (count == 1 ? " card (spell is not countered)" : " cards (spell is not countered)"));
-        pay.category = ActionCategory::PAY_UNLESS;
-        pay.option_ordinal = 1;  // 1 = pay
-        actions.push_back(pay);
-    }
-    size_t decline_idx = actions.size();
-    LegalAction decline(PASS_PRIORITY, std::string("Don't discard (spell is countered)"));
-    decline.category = ActionCategory::PAY_UNLESS;
-    decline.option_ordinal = 0;  // 0 = don't pay
-    actions.push_back(decline);
+    if (!rt.pay_answered) {
+        std::vector<Entity> hand = orderer->get_hand(controller);
+        bool can_pay = hand.size() >= count;  // CR 701.8: must discard the full count or none
 
-    int choice = InputLogger::instance().get_input(actions);
-    if (!can_pay || choice == static_cast<int>(decline_idx)) {
-        (void)pay_idx;
-        return true;  // countered
+        std::vector<LegalAction> actions;
+        size_t pay_idx = actions.size();
+        if (can_pay) {
+            LegalAction pay(PASS_PRIORITY,
+                std::string("Discard ") + std::to_string(count) +
+                (count == 1 ? " card (spell is not countered)" : " cards (spell is not countered)"));
+            pay.category = ActionCategory::PAY_UNLESS;
+            pay.option_ordinal = 1;  // 1 = pay
+            actions.push_back(pay);
+        }
+        size_t decline_idx = actions.size();
+        LegalAction decline(PASS_PRIORITY, std::string("Don't discard (spell is countered)"));
+        decline.category = ActionCategory::PAY_UNLESS;
+        decline.option_ordinal = 0;  // 0 = don't pay
+        actions.push_back(decline);
+
+        // Runs source-less today (no PendingDecisionScope at the old call site),
+        // so the ambient pending-decision value travels through the ask unchanged.
+        int choice = ctx.ask(actions, controller, cur_game.pending_decision_source);
+        if (choice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
+        if (!can_pay || choice == static_cast<int>(decline_idx)) {
+            (void)pay_idx;
+            return true;  // countered
+        }
+        rt.pay_answered = true;
     }
 
     // Pay: the payer chooses `count` distinct cards from hand to discard.
-    for (size_t i = 0; i < count; i++) {
+    for (; rt.discards_done < count; ++rt.discards_done) {
         std::vector<Entity> cur_hand = orderer->get_hand(controller);
         if (cur_hand.empty()) break;
         std::vector<LegalAction> dactions;
@@ -403,7 +450,11 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
             la.category = ActionCategory::DISCARD;
             dactions.push_back(la);
         }
-        int dchoice = InputLogger::instance().get_input(dactions);
+        int dchoice = ctx.ask(dactions, controller, cur_game.pending_decision_source);
+        if (dchoice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
         Entity chosen = dactions[static_cast<size_t>(dchoice)].source_entity;
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         game_log("%s discards %s — spell is not countered\n",
@@ -419,17 +470,18 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // kind: how the unless-cost is paid — {cost} generic mana (default), `cost` life (Ward—Pay N life,
 // CR 702.21), or discard `cost` card(s) (Reality Smasher, CR 701.8). A life payment is only offered
 // when the payer's life total >= cost (CR 119.4 — a player can't pay more life than they have).
+// The target's controller decides whether to pay, not the Daze caster: the LIFE/ENERGY yes-no and
+// the DISCARD flow seat their asks on `controller` through ctx.ask (which repoints and restores
+// priority around the prompt exactly as the old manual swap did) and may suspend — `suspended` is
+// set and the return value is meaningless (check it FIRST). The MANA kind keeps the manual swap
+// and its blocking tap-for-mana loop (a live-menu Shape C loop, converted in the live-menu batch).
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-    UnlessPayKind kind) {
-    // the target's controller decides whether to pay, not the Daze caster
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+    FrameCtx &ctx, bool &suspended, UnlessPayKind kind) {
+    suspended = false;
 
     if (kind == UnlessPayKind::DISCARD) {
-        bool countered = run_discard_unless(cost, controller, orderer);
-        cur_game.player_a_has_priority = prev_priority;
-        return countered;
+        return run_discard_unless(cost, controller, orderer, ctx, suspended);
     }
 
     if (kind == UnlessPayKind::LIFE) {
@@ -451,8 +503,13 @@ bool run_unless_loop(
         decline.option_ordinal = 0;  // 0 = don't pay
         unless_actions.push_back(decline);
 
-        int choice = InputLogger::instance().get_input(unless_actions);
-        cur_game.player_a_has_priority = prev_priority;
+        // Runs source-less today, so the ambient pending-decision value travels
+        // through the ask unchanged.
+        int choice = ctx.ask(std::move(unless_actions), controller, cur_game.pending_decision_source);
+        if (choice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             payer.life_total -= static_cast<int>(cost);
             game_log("%s pays %zu life — spell is not countered\n",
@@ -485,8 +542,11 @@ bool run_unless_loop(
         decline.option_ordinal = 0;  // 0 = don't pay
         unless_actions.push_back(decline);
 
-        int choice = InputLogger::instance().get_input(unless_actions);
-        cur_game.player_a_has_priority = prev_priority;
+        int choice = ctx.ask(std::move(unless_actions), controller, cur_game.pending_decision_source);
+        if (choice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             pay_energy(payer, static_cast<int>(cost));
             game_log("%s pays %zu energy.\n", player_name(controller).c_str(), cost);
@@ -495,6 +555,11 @@ bool run_unless_loop(
         (void)decline_idx;
         return true;
     }
+
+    // MANA kind (blocking this batch): the old manual seat swap around the whole
+    // tap-for-mana loop, restored on every exit below.
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
 
     std::multiset<Colors> cond_cost;
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);

@@ -219,19 +219,37 @@ bool parse_store_svar(Ability &ab, const std::string &key, const std::string &va
 // ── Shared resolution helpers ───────────────────────────────────────────────
 // De-static'd from ability.cpp so effect handlers in separate translation units
 // can reuse them. Definitions still live in ability.cpp for now.
-// (search_zone is declared in ability.h.)
 size_t evaluate_dynamic_amount(
     const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target,
     Entity source = 0);
+// Search a zone for cards matching the comma-separated type list in change_type
+// (empty change_type matches all cards in the zone).
+// When mandatory=true, "fail to find" is suppressed unless the zone is empty.
+// Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
+// reveal=true marks every offered card choice as public knowledge (revealed
+// tutors), so observers may show the chosen card's name even into a hidden zone.
+// cmc_bound (>= 0) plus cmc_op ("EQ"/"LE"/...) additionally gate candidate cards by
+// mana value (Aether Vial: MV == charge-counter count, resolved by the caller); -1 = none.
+// The pick asks through `ctx` (with `decision_source` as the pending-decision
+// context — the calling handler's ab.source); if the ask suspends, `suspended`
+// is set and 0 is returned mutating nothing — the caller must propagate
+// SUSPENDED. The candidate scan and menu rebuild identically on resume.
+Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
+    Zone::ZoneValue zone, const std::string &change_type, bool mandatory,
+    Zone::ZoneValue destination, bool reveal, int cmc_bound, const std::string &cmc_op,
+    FrameCtx &ctx, Entity decision_source, bool &suspended);
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination, bool reveal = false);
+    Zone::ZoneValue destination, bool reveal,
+    FrameCtx &ctx, Entity decision_source, bool &suspended);
 // The unless-cost payment kind for run_unless_loop: pay {N} generic mana (default), pay N life
 // (Ward—Pay life, CR 702.21), discard N card(s) from hand (Reality Smasher, CR 701.8), or pay N
 // energy ({E}, CR 122.1c — Static Prison's "unless you pay {E}"). Returns true if the prevented
-// effect should still happen (payer declined or couldn't pay).
+// effect should still happen (payer declined or couldn't pay). The LIFE/ENERGY yes-no and the
+// DISCARD flow ask through `ctx` and may suspend (`suspended` set, return value meaningless —
+// check it FIRST); the MANA tap-for-mana loop is still a blocking prompt (Shape C, Batch 7).
 enum class UnlessPayKind { MANA, LIFE, DISCARD, ENERGY };
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-                     UnlessPayKind kind = UnlessPayKind::MANA);
+                     FrameCtx &ctx, bool &suspended, UnlessPayKind kind = UnlessPayKind::MANA);
 
 #endif /* EFFECTS_H */

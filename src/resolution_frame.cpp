@@ -94,6 +94,36 @@ ResolveStatus FrameCtx::resolve_child(const Ability &child_template, FrameLevel:
     fatal_error("FrameCtx::resolve_child not implemented (container batches)");
 }
 
+static void pin_all(const std::vector<Entity> &entities, std::set<Entity> &pins) {
+    for (auto e : entities)
+        if (e != 0) pins.insert(e);
+}
+
+// pinned_entities() visitor over EffectRuntime: the per-handler pool slices a
+// suspended frozen-pool loop references. A dig pins its WHOLE revealed slice
+// (already-picked cards and the to-bottom remainder alike — the epilogue moves
+// both), scry/rearrange pin their looked-at library slices, surveil its
+// unassigned + kept-on-top cards, sylvan its drawn/chosen set (cards it may
+// still put back on top). SacrificeRt/ChooseCardRt/UnlessRt/ChangeZoneSearchRt
+// pin nothing extra: their menus are live battlefield/hand scans, and a
+// search's whole candidate pool is already listed in the parked menu (menu
+// pins), so there is no off-menu revealed state to protect.
+static void pin_effect_runtime(const EffectRuntime &rt, std::set<Entity> &pins) {
+    if (const auto *d = std::get_if<DigRt>(&rt)) {
+        pin_all(d->lib, pins);
+    } else if (const auto *s = std::get_if<ScryRt>(&rt)) {
+        pin_all(s->lib, pins);
+    } else if (const auto *sv = std::get_if<SurveilRt>(&rt)) {
+        pin_all(sv->remaining, pins);
+        pin_all(sv->to_top, pins);
+    } else if (const auto *r = std::get_if<RearrangeRt>(&rt)) {
+        pin_all(r->lib, pins);
+    } else if (const auto *sy = std::get_if<SylvanRt>(&rt)) {
+        pin_all(sy->drawn_in_hand, pins);
+        pin_all(sy->chosen, pins);
+    }
+}
+
 std::set<Entity> collect_pending_pins() {
     std::set<Entity> pins;
     const PendingQuery &pq = cur_game.pending_query;
@@ -116,6 +146,10 @@ std::set<Entity> collect_pending_pins() {
             if (lv.work.target != 0) pins.insert(lv.work.target);
             for (auto t : lv.work.targets)
                 if (t != 0) pins.insert(t);
+            // The level's suspended handler runtime: revealed/looked-at pool
+            // slices (dig, scry, surveil, rearrange, sylvan) that must survive
+            // a world resample in place.
+            pin_effect_runtime(lv.rt, pins);
         }
         if (fr.stack_entity != 0 &&
             global_coordinator.entity_has_component<Ability>(fr.stack_entity)) {
