@@ -8,6 +8,12 @@ emits a BQUERY line to stdout:
 
 The environment sends back a single integer on stdin.
 
+Under --broadcast-steps (broadcast_steps=True) the engine additionally emits
+passive "BSTATE:" frames — the identical payload, no response expected — at
+every forced auto-pass window, so an observer can render each game step. They
+are buffered in _passive_frames (see drain_passive_frames) and never consume
+an action.
+
 Action convention
 -----------------
 For top-level priority actions (main.cpp):
@@ -508,7 +514,8 @@ class RoboMageEnv(gym.Env):
                  exile_a: str | None = None, exile_b: str | None = None,
                  sideboard_a: str | None = None, sideboard_b: str | None = None,
                  life_a: int | None = None, life_b: int | None = None,
-                 log_viewer: str | None = None, log_decisions: bool = False):
+                 log_viewer: str | None = None, log_decisions: bool = False,
+                 broadcast_steps: bool = False):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
@@ -546,6 +553,14 @@ class RoboMageEnv(gym.Env):
         # episodes); log_decisions=True passes --log-decisions so a harness/observe
         # run can produce a self-contained RMLOG v2 replay log on request.
         self._log_decisions = log_decisions
+        # broadcast_steps=True passes --broadcast-steps: the engine emits a passive
+        # BSTATE frame (BQUERY payload, no response read) at every forced auto-pass
+        # window. The frames accumulate in _passive_frames as
+        # (obs_copy, perm_counters, perm_token_names) tuples until drained via
+        # drain_passive_frames() — display-only (the GUI's step-by-step pacing);
+        # they consume no actions, so replay/history/search are unaffected.
+        self._broadcast_steps = broadcast_steps
+        self._passive_frames = []
 
         self.observation_space = spaces.Box(
             low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
@@ -578,6 +593,7 @@ class RoboMageEnv(gym.Env):
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
         self._step_count = 0
+        self._passive_frames.clear()
         self._kill_proc()
         # Generate a unique seed for each game so time(nullptr) collisions don't
         # produce repeated games when many resets happen within the same second.
@@ -624,6 +640,8 @@ class RoboMageEnv(gym.Env):
             cmd += ["--log-viewer", self._log_viewer]
         if self._log_decisions:
             cmd += ["--log-decisions"]
+        if self._broadcast_steps:
+            cmd += ["--broadcast-steps"]
         cmd += self._extra_engine_flags()
         self._proc = subprocess.Popen(
             cmd,
@@ -773,6 +791,21 @@ class RoboMageEnv(gym.Env):
             # driver knows whether SNAPSHOT/DETERMINIZE are legal right now.
             if line.startswith(b"SEARCHINFO"):
                 self.last_search_safe = line.endswith(b"safe=1")
+                continue
+
+            # Passive step broadcast (--broadcast-steps): the BQUERY payload
+            # under a BSTATE header, requiring no response. Snapshot it for
+            # observers and keep reading — the next real BQUERY (or terminal
+            # line) always follows and overwrites the per-decision fields the
+            # shared parse just filled.
+            if line.startswith(b"BSTATE: "):
+                self._parse_bquery_payload(line)
+                self._passive_frames.append(
+                    (self._obs.copy(), self._perm_counters, self._perm_token_names))
+                # Undrained safety cap (only the GUI drains these): keep the
+                # most recent frames rather than growing without bound.
+                if len(self._passive_frames) > 256:
+                    del self._passive_frames[:-256]
                 continue
 
             if line.startswith(b"BQUERY: "):
@@ -932,15 +965,27 @@ class RoboMageEnv(gym.Env):
         _bf_start = _hc_start + _HAND_COST_FEATS
         o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
 
+    def drain_passive_frames(self) -> list:
+        """Return and clear the accumulated --broadcast-steps BSTATE frames:
+        (obs_copy, perm_counters, perm_token_names) tuples in arrival order.
+        Always empty unless the env was built with broadcast_steps=True."""
+        frames = self._passive_frames
+        self._passive_frames = []
+        return frames
+
     def _print_narrative_line(self, line: str):
         print(line, file=sys.stderr)
 
     def _kill_proc(self):
         if self._proc is not None:
             try:
+                # Kill BEFORE closing the pipes: closing stdin first races the
+                # engine noticing EOF — a --search-server engine parked at a
+                # decision then prints "FATAL: stdin closed" teardown noise
+                # before the SIGKILL lands.
+                self._proc.kill()
                 self._proc.stdin.close()
                 self._proc.stdout.close()
-                self._proc.kill()
                 self._proc.wait()
             except Exception:
                 pass

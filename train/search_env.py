@@ -160,6 +160,34 @@ class SearchRoboMageEnv(RoboMageEnv):
         live mirror (empty mirror list => just [self], a plain single-env search)."""
         return [self] + list(self._mirrors)
 
+    def spawn_detached_mirror(self, history_len: int,
+                              expect_obs: Optional[np.ndarray] = None
+                              ) -> "SearchRoboMageEnv":
+        """A byte-identical engine copy the CALLER owns — never registered in
+        this env's mirror pool, so it receives no forwarded real steps (the
+        caller catches it up by replaying further history itself). Used by the
+        GUI analysis window, whose engine is driven from a different thread
+        than the game loop. Replays ``self._action_history[:history_len]``
+        (a prefix read of the append-only list, so safe to call with the
+        driver thread stepping the primary concurrently); when ``expect_obs``
+        is given, the replayed obs must match it byte-for-byte. Raises on any
+        spawn/replay/verify failure (the partial mirror is closed first)."""
+        m = SearchRoboMageEnv(**self._mirror_ctor_kwargs())
+        try:
+            m.reset(options={"engine_seed": self.last_engine_seed})
+            for a in self._action_history[:history_len]:
+                m.step(int(a))
+            if expect_obs is not None and not np.array_equal(m._obs, expect_obs):
+                raise RuntimeError(
+                    "detached mirror obs != expected after history replay")
+            return m
+        except Exception:
+            try:
+                m.close()
+            except Exception:
+                pass
+            raise
+
     def _forward_to_mirrors(self, action: int) -> None:
         for m in self._mirrors:
             try:

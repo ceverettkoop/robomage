@@ -998,6 +998,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     std::string desc = (cd.is_reconfigure ? "Reconfigure " : "Equip ") + entity_name(entity);
                     LegalAction equip_la(ACTIVATE_ABILITY, entity, equip_ab, desc);
                     equip_la.category = ActionCategory::ACTIVATE_ABILITY;
+                    // Synthesised activation (no stored Ability): fixed ordinal above
+                    // any plausible ability-list index so it can't collide with the
+                    // per-ability ordinals below (normalizer OPTION_ORDINAL_MAX = 63).
+                    equip_la.option_ordinal = 32;
                     actions.push_back(equip_la);
                 }
                 // Reconfigure (CR 702.151): while attached, pay the cost to unattach. Sorcery-speed,
@@ -1012,12 +1016,21 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     std::string desc = "Unattach " + entity_name(entity);
                     LegalAction unattach_la(ACTIVATE_ABILITY, entity, unattach_ab, desc);
                     unattach_la.category = ActionCategory::ACTIVATE_ABILITY;
+                    unattach_la.option_ordinal = 33;  // synthesised: see equip above
                     actions.push_back(unattach_la);
                 }
             }
         }
 
+        // ability_index: the ability's stable position in this permanent's ability
+        // list, emitted as the action's option_ordinal so the ML observation can
+        // tell same-permanent activations apart (e.g. a planeswalker's loyalty
+        // abilities, which are otherwise feature-identical). Counted over the FULL
+        // list (including skipped/mana abilities) so an ability keeps one ordinal
+        // regardless of which of its siblings happen to be legal right now.
+        int ability_index = -1;
         for (const auto &ab : permanent.abilities) {
+            ++ability_index;
             if (ab.ability_type != Ability::ACTIVATED) continue;
             if (ab.activation_zone == Zone::HAND) continue;  // hand-only ability, not usable from battlefield
             // Loyalty abilities (606.3): sorcery-speed only, once per turn per permanent across
@@ -1088,6 +1101,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                                    + " (" + ab.category + ")";
                 LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
                 non_mana_la.category = ActionCategory::ACTIVATE_ABILITY;
+                non_mana_la.option_ordinal = ability_index;
                 actions.push_back(non_mana_la);
             }
         }
@@ -1095,7 +1109,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // Check hand for cards with ActivationZone$ Hand abilities (e.g. Talon Gates of Madara)
     for (auto card_entity : hand) {
         auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
+        int hand_ability_index = -1;  // ordinal: see the battlefield loop above
         for (const auto &ab : card_data.abilities) {
+            ++hand_ability_index;
             if (ab.ability_type != Ability::ACTIVATED) continue;
             if (ab.activation_zone != Zone::HAND) continue;
             // Ninjutsu (CR 702.49e): activatable only during the declare-blockers step, after
@@ -1130,6 +1146,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 : ("Activate " + card_data.name + " from hand (" + ab.category + ")");
             LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
             la.category = ActionCategory::ACTIVATE_ABILITY;
+            la.option_ordinal = hand_ability_index;
             actions.push_back(la);
         }
     }
@@ -1143,7 +1160,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         for (auto card_entity : orderer->get_graveyard(priority_player)) {
             if (!global_coordinator.entity_has_component<CardData>(card_entity)) continue;
             auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
+            int gy_ability_index = -1;  // ordinal: see the battlefield loop above
             for (const auto &ab : card_data.abilities) {
+                ++gy_ability_index;
                 if (ab.ability_type != Ability::ACTIVATED) continue;
                 if (ab.activation_zone != Zone::GRAVEYARD) continue;
                 if (ab.sorcery_speed_only && !gy_sorcery_speed) continue;
@@ -1154,6 +1173,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 std::string desc = "Unearth " + card_data.name;
                 LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
                 la.category = ActionCategory::ACTIVATE_ABILITY;
+                la.option_ordinal = gy_ability_index;
                 actions.push_back(la);
             }
         }

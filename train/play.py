@@ -108,17 +108,17 @@ if __name__ == "__main__":
     apply_to_parser(parser, PLAY_TOOL.subs[0])
     args = parser.parse_args()
 
-    if args.scripted and not args.tui:
-        parser.error("--scripted is only supported with --tui")
+    if args.scripted and not (args.tui or args.gui):
+        parser.error("--scripted is only supported with the TUI or GUI board")
 
     model_path = args.model
     is_ctrl_spec = bool(model_path) and model_path.lower().startswith(
         ("az:", "azraw:", "mcts:", "scripted"))
     is_search_spec = bool(model_path) and model_path.lower().startswith(
         ("az:", "mcts:"))
-    if is_ctrl_spec and not args.tui:
+    if is_ctrl_spec and not (args.tui or args.gui):
         parser.error("controller specs (az:/azraw:/mcts:/scripted) need the TUI "
-                     "board — text mode loads a PPO .zip directly")
+                     "or GUI board — text mode loads a PPO .zip directly")
     if args.sims is not None or args.worlds is not None:
         if not is_search_spec:
             parser.error("--sims/--worlds only apply to a search opponent "
@@ -143,6 +143,30 @@ if __name__ == "__main__":
         # World-parallel search across N engine processes. Appended last so it
         # wins over any procs= already present in the spec.
         model_path += ("&" if "?" in model_path else "?") + f"procs={args.search_procs}"
+    if args.match_clock is not None:
+        if not is_search_spec:
+            parser.error("--match-clock only applies to a search opponent "
+                         "(--model az:<ckpt> or mcts:<ckpt>)")
+        # Whole-match chess-clock bank; per-decision budgets are allocated from
+        # it. Appended last so it wins over any clock= already in the spec.
+        model_path += ("&" if "?" in model_path else "?") + f"clock={args.match_clock}"
+    if args.paced and args.no_paced:
+        parser.error("--paced and --no-paced are mutually exclusive")
+    if (args.paced or args.no_paced) and not is_search_spec:
+        parser.error("--paced/--no-paced only apply to a search opponent "
+                     "(--model az:<ckpt> or mcts:<ckpt>)")
+    if is_search_spec:
+        # Paced default: ON whenever the opponent has a variable thinking budget
+        # (a match clock or per-decision think time) — that is when response
+        # timing would otherwise leak whether there was anything to think about.
+        # Appended last so it wins over any paced= already in the spec.
+        has_variable_budget = (args.match_clock is not None
+                               or args.think_time is not None
+                               or "clock=" in model_path or "time=" in model_path)
+        if args.no_paced:
+            model_path += ("&" if "?" in model_path else "?") + "paced=0"
+        elif args.paced or has_variable_budget:
+            model_path += ("&" if "?" in model_path else "?") + "paced=1"
     if args.scripted:
         # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
         model_path = "scripted"
@@ -159,7 +183,29 @@ if __name__ == "__main__":
                          f"(train --deck {args.model_deck} --opponent <opp>), "
                          f"or use --model to specify a path, or --scripted for a rule-based opponent (TUI).")
 
-    if args.tui:
+    if args.gui:
+        # --gui takes precedence over --tui (the launcher form pre-checks --tui).
+        # PySide6 is an optional extra (train/requirements-gui.txt); if it isn't
+        # installed, fall back to the TUI when --tui was also set, else error with
+        # the install hint.
+        try:
+            import gui_game
+        except ImportError:
+            if args.tui:
+                print("PySide6 not installed — falling back to the TUI board "
+                      "(pip install -r train/requirements-gui.txt for the GUI).")
+                import tui_game
+                tui_game.run(args.binary, model_path, human_player=args.player,
+                             human_deck=args.human_deck, model_deck=args.model_deck,
+                             bo3=not args.bo1)
+            else:
+                parser.error("PySide6 not installed — pip install -r "
+                             "train/requirements-gui.txt, or use --tui")
+        else:
+            gui_game.run(args.binary, model_path, human_player=args.player,
+                         human_deck=args.human_deck, model_deck=args.model_deck,
+                         bo3=not args.bo1, analysis=args.analysis)
+    elif args.tui:
         import tui_game
         tui_game.run(args.binary, model_path, human_player=args.player,
                      human_deck=args.human_deck, model_deck=args.model_deck,

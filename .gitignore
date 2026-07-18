@@ -43,3 +43,7 @@ train/az_data/
 
 # In-process AlphaZero actor binary (Phase D) — built by `make actor`
 bin/az_actor
+
+# Cached Scryfall card art for the PySide6 board (train/scryfall_cache.py) —
+# downloaded on demand, never committed. Delete misses.json to retry lookups.
+bin/resources/card_images/

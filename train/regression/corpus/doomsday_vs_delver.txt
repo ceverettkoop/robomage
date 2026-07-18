@@ -69,7 +69,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 4 ---
@@ -79,7 +79,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 5 ---
@@ -92,7 +92,7 @@
    1: Play Underground Sea
    2: Play Island
    3: Play Misty Rainforest
-   4: Activate Street Wraith from hand (Draw)
+   4: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Underground Sea)
 --- Narrative ---
   Player A played Underground Sea
@@ -108,8 +108,8 @@
    0: Pass priority
    1: Cast Thoughtseize  [#0]
    2: Cast Ponder  [#0]
-   3: Activate Street Wraith from hand (Draw)
-   4: Activate Edge of Autumn from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
+   4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
   Choose target for Thoughtseize:
@@ -141,8 +141,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Edge of Autumn from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 2 (Activate Edge of Autumn from hand (Draw))
 
 --- Decision 9 ---
@@ -170,7 +170,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
@@ -186,7 +186,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Discard)
@@ -235,7 +235,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 14 ---
@@ -250,7 +250,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -267,7 +267,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -284,7 +284,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -302,7 +302,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 18 ---
@@ -317,7 +317,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 19 ---
@@ -332,7 +332,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 20 ---
@@ -347,7 +347,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 2 (Player B) --------
@@ -366,7 +366,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Volcanic Island
@@ -382,7 +382,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 23 ---
@@ -415,7 +415,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Mishra's Bauble enters the battlefield
@@ -434,7 +434,7 @@
    1: Play Polluted Delta
    2: Play Volcanic Island
    3: Play Scalding Tarn
-   4: Activate Mishra's Bauble (PeekAndReveal)
+   4: Activate Mishra's Bauble (PeekAndReveal)  [#0]
   >> B/B: 1 (Play Polluted Delta)
 --- Narrative ---
   Player B played Polluted Delta
@@ -451,8 +451,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Mishra's Bauble (PeekAndReveal)
-   2: Activate Polluted Delta (ChangeZone)
+   1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
+   2: Activate Polluted Delta (ChangeZone)  [#0]
   >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
   Choose target for Mishra's Bauble:
@@ -490,7 +490,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)
+   1: Activate Polluted Delta (ChangeZone)  [#0]
   >> B/B: 1 (Activate Polluted Delta (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -502,7 +502,7 @@
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 52
-  Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
+  Stack: Polluted Delta (ability, opponent) [amt=1] -> Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Known opp hand: Brainstorm, Daze, Ponder, Scalding Tarn
@@ -510,7 +510,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -521,7 +521,7 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
   Opp:   18 life | mana: empty | hand count: 5 | lib 52
-  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
@@ -588,7 +588,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 3)
@@ -661,7 +661,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: PeekAndReveal)
@@ -682,7 +682,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 38 ---
@@ -698,7 +698,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -716,7 +716,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -734,7 +734,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -753,7 +753,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 42 ---
@@ -769,7 +769,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 43 ---
@@ -785,7 +785,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 44 ---
@@ -801,7 +801,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 3 (Player A) --------
@@ -816,14 +816,14 @@
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
-  Stack: Mishra's Bauble (ability, opponent)
+  Stack: Mishra's Bauble (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Known opp hand: Daze, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
@@ -841,7 +841,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Thoughtseize
@@ -858,7 +858,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 48 ---
@@ -875,7 +875,7 @@
    0: Pass priority
    1: Play Island
    2: Play Misty Rainforest
-   3: Activate Street Wraith from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Island)
 --- Narrative ---
   Player A played Island
@@ -895,7 +895,7 @@
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -916,7 +916,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 51 ---
@@ -991,7 +991,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Counter)
@@ -1028,7 +1028,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 57 ---
@@ -1044,7 +1044,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1062,7 +1062,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1080,7 +1080,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1099,7 +1099,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 61 ---
@@ -1115,7 +1115,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 62 ---
@@ -1131,7 +1131,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 63 ---
@@ -1147,7 +1147,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 4 (Player B) --------
@@ -1167,7 +1167,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Dragon's Rage Channeler
@@ -1184,7 +1184,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 66 ---
@@ -1240,7 +1240,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -1322,7 +1322,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 73 ---
@@ -1339,7 +1339,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1358,7 +1358,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1377,7 +1377,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1397,7 +1397,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 77 ---
@@ -1414,7 +1414,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 78 ---
@@ -1431,7 +1431,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 79 ---
@@ -1448,7 +1448,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 5 (Player A) --------
@@ -1469,7 +1469,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Edge of Autumn
@@ -1487,8 +1487,8 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Edge of Autumn from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 2 (Activate Edge of Autumn from hand (Draw))
 
 --- Decision 82 ---
@@ -1523,7 +1523,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
@@ -1542,7 +1542,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 85 ---
@@ -1559,7 +1559,7 @@
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Misty Rainforest)
 --- Narrative ---
   Player A played Misty Rainforest
@@ -1578,8 +1578,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Misty Rainforest (ChangeZone)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -1592,7 +1592,7 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 49
   Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Opp BF:   Island (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Known opp hand: Scalding Tarn
@@ -1600,7 +1600,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -1612,7 +1612,7 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 49
   Opp:   19 life | mana: empty | hand count: 6 | lib 47
   Opp BF:   Island (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
@@ -1646,7 +1646,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -1688,7 +1688,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 92 ---
@@ -1705,7 +1705,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1724,7 +1724,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1743,7 +1743,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1763,7 +1763,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 96 ---
@@ -1780,7 +1780,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 97 ---
@@ -1797,7 +1797,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 98 ---
@@ -1814,7 +1814,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 6 (Player B) --------
@@ -1835,7 +1835,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Ponder
@@ -1853,7 +1853,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 101 ---
@@ -1893,7 +1893,7 @@
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -2018,7 +2018,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler enters the battlefield
@@ -2038,7 +2038,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 110 ---
@@ -2055,7 +2055,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2074,7 +2074,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2093,7 +2093,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2113,7 +2113,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 114 ---
@@ -2130,7 +2130,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 115 ---
@@ -2147,7 +2147,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 116 ---
@@ -2164,7 +2164,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 7 (Player A) --------
@@ -2185,7 +2185,7 @@
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Thassa's Oracle
@@ -2203,7 +2203,7 @@
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 119 ---
@@ -2220,7 +2220,7 @@
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
   Choose target for Thoughtseize:
@@ -2261,7 +2261,7 @@
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Discard)
@@ -2308,7 +2308,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 124 ---
@@ -2324,7 +2324,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2342,7 +2342,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2360,7 +2360,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2379,7 +2379,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 128 ---
@@ -2395,7 +2395,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 129 ---
@@ -2411,7 +2411,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 130 ---
@@ -2427,7 +2427,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 8 (Player B) --------
@@ -2448,7 +2448,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Mishra's Bauble
@@ -2466,7 +2466,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 133 ---
@@ -2507,7 +2507,7 @@
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
   Player A pays 1 life
@@ -2567,7 +2567,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Counter)
@@ -2588,7 +2588,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -2630,7 +2630,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 141 ---
@@ -2671,7 +2671,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -2713,7 +2713,7 @@
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -2817,7 +2817,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
   >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -2831,7 +2831,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
-  Stack: Scalding Tarn (ability, opponent)
+  Stack: Scalding Tarn (ability, opponent) [amt=1]
   Self GY: Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Self exile: Thassa's Oracle
@@ -2840,7 +2840,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2853,7 +2853,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2886,7 +2886,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 153 ---
@@ -2904,7 +2904,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler must attack and is declared as an attacker.
@@ -2945,7 +2945,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to block.
@@ -2965,7 +2965,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2987,7 +2987,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 158 ---
@@ -3005,7 +3005,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 159 ---
@@ -3023,7 +3023,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 160 ---
@@ -3041,7 +3041,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 9 (Player A) --------
@@ -3063,7 +3063,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Thoughtseize
@@ -3082,7 +3082,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 163 ---
@@ -3100,7 +3100,7 @@
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
   Choose target for Thoughtseize:
@@ -3142,7 +3142,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Discard)
@@ -3188,7 +3188,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 168 ---
@@ -3205,7 +3205,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3224,7 +3224,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3243,7 +3243,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3263,7 +3263,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 172 ---
@@ -3280,7 +3280,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 173 ---
@@ -3297,7 +3297,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 174 ---
@@ -3314,7 +3314,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 10 (Player B) --------
@@ -3336,7 +3336,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Force of Will
@@ -3355,7 +3355,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 177 ---
@@ -3391,7 +3391,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
   >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -3405,7 +3405,7 @@
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
-  Stack: Scalding Tarn (ability, opponent)
+  Stack: Scalding Tarn (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Self exile: Thassa's Oracle
@@ -3414,7 +3414,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -3427,7 +3427,7 @@
   Opp:   9 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Ponder, Flooded Strand, Volcanic Island, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
   Opp GY:  Thoughtseize, Force of Will, Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3458,7 +3458,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 182 ---
@@ -3476,7 +3476,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler must attack and is declared as an attacker.
@@ -3517,7 +3517,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to block.
@@ -3537,7 +3537,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3559,7 +3559,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 187 ---
@@ -3577,7 +3577,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 188 ---
@@ -3595,7 +3595,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 189 ---
@@ -3613,7 +3613,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 11 (Player A) --------
@@ -3635,7 +3635,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Street Wraith
@@ -3654,8 +3654,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 192 ---
@@ -3672,8 +3672,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 193 ---
@@ -3690,8 +3690,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3710,8 +3710,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3730,8 +3730,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3751,8 +3751,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 197 ---
@@ -3769,8 +3769,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 198 ---
@@ -3787,8 +3787,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 199 ---
@@ -3805,8 +3805,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 12 (Player B) --------
@@ -3828,8 +3828,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Lightning Bolt
@@ -3890,8 +3890,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -3933,8 +3933,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
@@ -3954,8 +3954,8 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 207 ---
@@ -3993,8 +3993,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -4036,8 +4036,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 211 ---
@@ -4054,8 +4054,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Dragon's Rage Channeler must attack and is declared as an attacker.
@@ -4095,8 +4095,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to block.
@@ -4115,8 +4115,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---

@@ -53,6 +53,13 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           visit-count parity (test_mcts_parity.py), and self-play shard schema /
           trainer ingest (test_actor_shards.py). Self-skips with a message when
           bin/az_actor is not built or torch is unavailable.
+  analysis The GUI analysis window's engine core: chunked IncrementalSearch is
+          bit-identical to run_search (pinned world seeds), pv/walk browse and
+          replay lines then hand the engine back clean (driver discipline), an
+          AnalysisSession's detached mirror stays in lockstep across a bo3
+          sideboard boundary by delta replay, and a cross-thread stop event
+          cancels within one chunk (train/test_analysis_session.py).
+          Torch-free; needs bin/robomage.
 
 Draw classification (per repo policy — draws are not acceptable, but the two
 causes differ in severity):
@@ -103,7 +110,7 @@ ALL_TIERS = ["pygen", "vocab", "obsinv", "snapshot", "sbselfplay", "mirror",
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
 # self-skips cleanly when either is absent (so it never breaks a stock build).
-OPT_IN_TIERS = ["actor"]
+OPT_IN_TIERS = ["actor", "analysis"]
 KNOWN_TIERS = ALL_TIERS + OPT_IN_TIERS
 
 # Transcript scan (stdout narrative + captured engine stderr). Two severities:
@@ -294,6 +301,21 @@ def tier_mirror(rep):
                             f"{r.stdout}{r.stderr}")
 
 
+def tier_analysis(rep):
+    """Analysis-window engine core regression (opt-in; interactive play only).
+
+    Runs train/test_analysis_session.py: chunked-vs-plain search bit-parity,
+    pv/walk driver discipline, AnalysisSession detached-mirror lockstep across
+    a bo3 sideboard boundary, and cancellation. Torch-free; needs bin/robomage."""
+    r = subprocess.run([sys.executable, "train/test_analysis_session.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("analysis", "analysis-session violation "
+                              f"(test_analysis_session.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
+
+
 def tier_replay(rep):
     """Run the byte-identical replay-diff corpus check."""
     r = subprocess.run([sys.executable, "train/regression/replay_diff.py", "check"],
@@ -454,12 +476,12 @@ def main(argv=None):
 
     # Game tiers need a built binary and provisioned card scripts.
     game_tiers = {"smoke", "fuzz", "replay", "obsinv", "snapshot",
-                  "sbselfplay", "mirror"} & set(tiers)
+                  "sbselfplay", "mirror", "analysis"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
     if {"smoke", "fuzz", "vocab", "obsinv", "snapshot", "sbselfplay",
-        "mirror"} & set(tiers):
+        "mirror", "analysis"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
             print(f"no card scripts under {cards_dir} — run "
@@ -489,6 +511,8 @@ def main(argv=None):
             tier_fuzz(rep, args, out_dir)
         elif t == "actor":
             tier_actor(rep)
+        elif t == "analysis":
+            tier_analysis(rep)
 
     print("\n" + "=" * 60, flush=True)
     print(f"ci_check: {len(rep.errors)} error(s), {len(rep.warnings)} warning(s)",

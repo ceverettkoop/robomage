@@ -69,7 +69,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 4 ---
@@ -79,7 +79,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 5 ---
@@ -92,7 +92,7 @@
    1: Play Underground Sea
    2: Play Island
    3: Play Misty Rainforest
-   4: Activate Street Wraith from hand (Draw)
+   4: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Underground Sea)
 --- Narrative ---
   Player A played Underground Sea
@@ -108,8 +108,8 @@
    0: Pass priority
    1: Cast Thoughtseize  [#0]
    2: Cast Ponder  [#0]
-   3: Activate Street Wraith from hand (Draw)
-   4: Activate Edge of Autumn from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
+   4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
   Choose target for Thoughtseize:
@@ -141,8 +141,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Edge of Autumn from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 2 (Activate Edge of Autumn from hand (Draw))
 
 --- Decision 9 ---
@@ -170,7 +170,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 11 ---
@@ -236,7 +236,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Counter)
@@ -255,7 +255,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
@@ -273,7 +273,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 17 ---
@@ -288,7 +288,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -305,7 +305,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -322,7 +322,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -340,7 +340,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 21 ---
@@ -355,7 +355,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 22 ---
@@ -370,7 +370,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 23 ---
@@ -385,7 +385,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 2 (Player B) --------
@@ -404,7 +404,7 @@
   Opp revealed: Force of Will, Personal Tutor
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Underground Sea
@@ -420,7 +420,7 @@
   Opp revealed: Force of Will, Personal Tutor
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 26 ---
@@ -454,8 +454,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)
-   2: Activate Edge of Autumn from hand (Draw)
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 2 (Activate Edge of Autumn from hand (Draw))
 
 --- Decision 28 ---
@@ -489,7 +489,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
@@ -525,7 +525,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Lotus Petal enters the battlefield
@@ -564,7 +564,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -641,7 +641,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 38 ---
@@ -656,7 +656,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -673,7 +673,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -690,7 +690,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -708,7 +708,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 42 ---
@@ -723,7 +723,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 43 ---
@@ -738,7 +738,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 44 ---
@@ -753,7 +753,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 3 (Player A) --------
@@ -772,7 +772,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Thoughtseize
@@ -788,7 +788,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 47 ---
@@ -804,7 +804,7 @@
    0: Pass priority
    1: Play Island
    2: Play Misty Rainforest
-   3: Activate Street Wraith from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Island)
 --- Narrative ---
   Player A played Island
@@ -823,7 +823,7 @@
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -843,7 +843,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -925,7 +925,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 54 ---
@@ -942,7 +942,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -961,7 +961,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -980,7 +980,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1000,7 +1000,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 58 ---
@@ -1017,7 +1017,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 59 ---
@@ -1034,7 +1034,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 60 ---
@@ -1051,7 +1051,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 4 (Player B) --------
@@ -1072,7 +1072,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Daze
@@ -1090,7 +1090,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 63 ---
@@ -1146,7 +1146,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 66 ---
@@ -1183,7 +1183,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1222,7 +1222,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1242,7 +1242,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 71 ---
@@ -1301,7 +1301,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 74 ---
@@ -1338,7 +1338,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 76 ---
@@ -1375,7 +1375,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 78 ---
@@ -1412,7 +1412,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 5 (Player A) --------
@@ -1434,7 +1434,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 81 ---
@@ -1471,7 +1471,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 83 ---
@@ -1507,7 +1507,7 @@
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Misty Rainforest)
 --- Narrative ---
   Player A played Misty Rainforest
@@ -1527,8 +1527,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Misty Rainforest (ChangeZone)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -1542,7 +1542,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -1551,7 +1551,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 87 ---
@@ -1561,7 +1561,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Underground Sea
   Opp BF:   Island
-  Stack: Misty Rainforest (ability, opponent)
+  Stack: Misty Rainforest (ability, opponent) [amt=1]
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -1584,7 +1584,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1619,7 +1619,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 90 ---
@@ -1681,7 +1681,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 93 ---
@@ -1717,7 +1717,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 95 ---
@@ -1755,7 +1755,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 97 ---
@@ -1812,7 +1812,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1832,7 +1832,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 101 ---
@@ -1868,7 +1868,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 103 ---
@@ -1904,7 +1904,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 105 ---
@@ -1940,7 +1940,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 107 ---
@@ -1998,7 +1998,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Doomsday
@@ -2033,7 +2033,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 112 ---
@@ -2072,7 +2072,7 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
    2: Cast Dark Ritual  [#0]
-   3: Activate Verdant Catacombs (ChangeZone)
+   3: Activate Verdant Catacombs (ChangeZone)  [#0]
   >> B/B: 3 (Activate Verdant Catacombs (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -2086,7 +2086,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -2105,7 +2105,7 @@
   Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Undercity Sewers (T) | Island
   Opp BF:   Underground Sea
-  Stack: Verdant Catacombs (ability, opponent)
+  Stack: Verdant Catacombs (ability, opponent) [amt=1]
   Self GY: Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -2113,7 +2113,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2126,7 +2126,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T) | Island
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -2176,7 +2176,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 119 ---
@@ -2211,7 +2211,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2248,7 +2248,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2267,7 +2267,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 124 ---
@@ -2323,7 +2323,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 127 ---
@@ -2358,7 +2358,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 129 ---
@@ -2393,7 +2393,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 131 ---
@@ -2428,7 +2428,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 7 (Player A) --------
@@ -2449,7 +2449,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 134 ---
@@ -2484,7 +2484,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 136 ---
@@ -2519,7 +2519,7 @@
    0: Pass priority
    1: Cast Thoughtseize  [#0]
    2: Cast Lotus Petal  [#0]
-   3: Activate Street Wraith from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
   Choose target for Thoughtseize:
@@ -2559,7 +2559,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 140 ---
@@ -2620,7 +2620,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Counter)
@@ -2678,7 +2678,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Discard)
@@ -2727,7 +2727,7 @@
   Actions:
    0: Pass priority
    1: Cast Lotus Petal  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Lotus Petal)
 --- Narrative ---
   Player A casts Lotus Petal
@@ -2747,7 +2747,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Lotus Petal enters the battlefield
@@ -2766,7 +2766,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 150 ---
@@ -2783,7 +2783,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2802,7 +2802,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2821,7 +2821,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2841,7 +2841,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 154 ---
@@ -2858,7 +2858,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 155 ---
@@ -2875,7 +2875,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 156 ---
@@ -2892,7 +2892,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 8 (Player B) --------
@@ -2931,7 +2931,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Dauthi Voidwalker
@@ -2967,7 +2967,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 161 ---
@@ -3007,7 +3007,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Dauthi Voidwalker enters the battlefield
@@ -3026,7 +3026,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 164 ---
@@ -3043,7 +3043,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3062,7 +3062,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3081,7 +3081,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3101,7 +3101,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 168 ---
@@ -3118,7 +3118,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 169 ---
@@ -3135,7 +3135,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 170 ---
@@ -3152,7 +3152,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 9 (Player A) --------
@@ -3174,7 +3174,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Dark Ritual
@@ -3194,7 +3194,7 @@
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Dark Ritual)
 --- Narrative ---
   Player A activated Undercity Sewers for 1(B)
@@ -3215,7 +3215,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: AddMana)
@@ -3237,7 +3237,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 175 ---
@@ -3255,7 +3255,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 176 ---
@@ -3273,7 +3273,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3293,7 +3293,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3313,7 +3313,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3334,7 +3334,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 180 ---
@@ -3352,7 +3352,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 181 ---
@@ -3370,7 +3370,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 182 ---
@@ -3388,7 +3388,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 10 (Player B) --------
@@ -3412,7 +3412,7 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
    2: Cast Dark Ritual  [#0]
-   3: Activate Dauthi Voidwalker (ChooseCard)
+   3: Activate Dauthi Voidwalker (ChooseCard)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 184 ---
@@ -3430,7 +3430,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Island
@@ -3451,7 +3451,7 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
    2: Cast Dark Ritual  [#0]
-   3: Activate Dauthi Voidwalker (ChooseCard)
+   3: Activate Dauthi Voidwalker (ChooseCard)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 186 ---
@@ -3469,7 +3469,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 187 ---
@@ -3489,7 +3489,7 @@
    1: Play Island
    2: Cast Dark Ritual  [#0]
    3: Cast Dark Ritual  [#0]
-   4: Activate Dauthi Voidwalker (ChooseCard)
+   4: Activate Dauthi Voidwalker (ChooseCard)  [#0]
   >> B/B: 1 (Play Island)
 --- Narrative ---
   Player B played Island
@@ -3511,7 +3511,7 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
    2: Cast Dark Ritual  [#0]
-   3: Activate Dauthi Voidwalker (ChooseCard)
+   3: Activate Dauthi Voidwalker (ChooseCard)  [#0]
   >> B/B: 3 (Activate Dauthi Voidwalker (ChooseCard))
 --- Narrative ---
   Player B sacrifices Dauthi Voidwalker
@@ -3554,7 +3554,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChooseCard)
@@ -3617,7 +3617,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: AddMana)
@@ -3656,7 +3656,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 196 ---
@@ -3692,7 +3692,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3730,7 +3730,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3750,7 +3750,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 201 ---
@@ -3807,7 +3807,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 204 ---
@@ -3843,7 +3843,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 206 ---
@@ -3879,7 +3879,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 208 ---
@@ -3915,7 +3915,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 11 (Player A) --------
@@ -3937,7 +3937,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 211 ---
@@ -3973,7 +3973,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 213 ---
@@ -4007,7 +4007,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 215 ---
@@ -4041,7 +4041,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 217 ---
@@ -4077,7 +4077,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 219 ---
@@ -4130,7 +4130,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -4150,7 +4150,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 223 ---
@@ -4184,7 +4184,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 225 ---
@@ -4218,7 +4218,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 227 ---
@@ -4252,7 +4252,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 229 ---
@@ -4308,7 +4308,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Doomsday
@@ -4370,7 +4370,7 @@
    1: Cast Force of Will (alternate cost)  [#1]
    2: Cast Daze  [#0]
    3: Cast Daze (alternate cost)  [#1]
-   4: Activate Street Wraith from hand (Draw)
+   4: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
   Player A pays 1 life
@@ -4431,7 +4431,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Counter)
@@ -4452,7 +4452,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: AddMana)
@@ -4472,7 +4472,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 240 ---
@@ -4489,7 +4489,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 241 ---
@@ -4506,7 +4506,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -4525,7 +4525,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -4544,7 +4544,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -4564,7 +4564,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 245 ---
@@ -4581,7 +4581,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 246 ---
@@ -4598,7 +4598,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 247 ---
@@ -4615,7 +4615,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 13 (Player A) --------
@@ -4637,7 +4637,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Personal Tutor
@@ -4656,7 +4656,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 250 ---
@@ -4674,7 +4674,7 @@
   Actions:
    0: Pass priority
    1: Cast Personal Tutor  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Personal Tutor)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -4695,7 +4695,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -4747,7 +4747,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 254 ---
@@ -4764,7 +4764,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -4783,7 +4783,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -4802,7 +4802,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -4822,7 +4822,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 258 ---
@@ -4839,7 +4839,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 259 ---
@@ -4856,7 +4856,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 260 ---
@@ -4873,7 +4873,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 14 (Player B) --------
@@ -4895,7 +4895,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Cavern of Souls
@@ -4914,7 +4914,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 263 ---
@@ -4976,7 +4976,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 266 ---
@@ -4994,7 +4994,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -5014,7 +5014,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -5034,7 +5034,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -5055,7 +5055,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 270 ---
@@ -5073,7 +5073,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 271 ---
@@ -5091,7 +5091,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 272 ---
@@ -5109,7 +5109,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 15 (Player A) --------
@@ -5131,7 +5131,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Lotus Petal
@@ -5150,7 +5150,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 275 ---
@@ -5168,7 +5168,7 @@
   Actions:
    0: Pass priority
    1: Cast Lotus Petal  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Lotus Petal)
 --- Narrative ---
   Player A casts Lotus Petal
@@ -5188,7 +5188,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Lotus Petal enters the battlefield
@@ -5209,7 +5209,7 @@
    0: Pass priority
    1: Cast Doomsday  [#0]
    2: Cast Doomsday  [#0]
-   3: Activate Street Wraith from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Doomsday)
 --- Narrative ---
   Player A activated Undercity Sewers for 1(B)
@@ -5235,7 +5235,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -5775,7 +5775,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Street Wraith from hand (Draw))
 --- Narrative ---
   Player A pays 2 life
@@ -5799,7 +5799,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Street Wraith from hand (Draw))
 --- Narrative ---
   Player A pays 2 life
@@ -5823,7 +5823,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Street Wraith from hand (Draw))
 --- Narrative ---
   Player A pays 2 life
@@ -6078,7 +6078,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 302 ---
@@ -6118,7 +6118,7 @@
   Actions:
    0: Pass priority
    1: Cast Thassa's Oracle  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Thassa's Oracle)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -6141,7 +6141,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 305 ---
@@ -6185,7 +6185,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Cavern of Souls, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 307 ---

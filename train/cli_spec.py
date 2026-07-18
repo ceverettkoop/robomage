@@ -820,7 +820,30 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "processes to fan the determinized worlds across for a faster "
                  "search (world-parallel; more procs = more sims/decision in the "
                  "same wall-clock). Default 1 (TUI only)"),
+        Arg("--match-clock", "float", default=None,
+            help="Search opponent only: total wall-clock thinking bank in "
+                 "seconds for the WHOLE match (chess clock; 1500 = 25 min for "
+                 "a bo3). Each decision draws a variable budget from the bank "
+                 "— harder decisions earn more time, obvious ones stop early. "
+                 "Appends clock= to the spec (TUI only)"),
+        Arg("--paced", "flag",
+            help="Mask opponent response-timing tells: a small jittered "
+                 "(~0.02-0.05s) floor on every decision, plus occasional "
+                 "0.2-0.5s fake-think pauses when the opponent was never even "
+                 "offered a decision (default ON for a search opponent with "
+                 "--match-clock/--think-time; TUI only)"),
+        Arg("--no-paced", "flag",
+            help="Disable the paced-response floor (instant obvious decisions)"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
+        Arg("--gui", "flag",
+            help="Launch the PySide6 desktop game board (train/gui_game.py). "
+                 "Takes precedence over --tui. Needs PySide6 (pip install -r "
+                 "train/requirements-gui.txt); if it is missing, falls back to "
+                 "the TUI when --tui is also set, else errors with the install hint."),
+        Arg("--analysis", "flag",
+            help="GUI only: open the analysis window (live MCTS evaluation of "
+                 "your decisions on a detached engine copy; default evaluator "
+                 "az:gen). The no-args GUI launcher has its own checkbox for this."),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
         Arg("--bo1", "flag",

@@ -502,7 +502,7 @@
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
-   2: Activate Wasteland (Destroy)
+   2: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Cast Green Sun's Zenith)
 --- Narrative ---
   Choose X value (0-1):
@@ -671,7 +671,7 @@
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Green Sun's Zenith
@@ -689,7 +689,7 @@
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 32 ---
@@ -709,7 +709,7 @@
    2: Play Windswept Heath
    3: Cast Green Sun's Zenith  [#0]
    4: Cast Keen-Eyed Curator  [#0]
-   5: Activate Wasteland (Destroy)
+   5: Activate Wasteland (Destroy)  [#1]
   >> B/B: 3 (Cast Green Sun's Zenith)
 --- Narrative ---
   Choose X value (0-2):
@@ -749,7 +749,7 @@
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -840,7 +840,7 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -941,7 +941,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Windswept Heath (ChangeZone)
+   1: Activate Windswept Heath (ChangeZone)  [#0]
   >> B/B: 1 (Activate Windswept Heath (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -957,7 +957,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Collector Ouphe [2/2] (SICK) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Talon Gates of Madara
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Dryad Arbor, Once Upon a Time
@@ -1049,7 +1049,7 @@
   Actions:
    0: Pass priority
    1: Play Savannah
-   2: Activate Keen-Eyed Curator (ChangeZone)
+   2: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Play Savannah)
 --- Narrative ---
   Player B played Savannah
@@ -1068,7 +1068,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -1116,7 +1116,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -1137,7 +1137,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -1274,7 +1274,7 @@
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Endurance
@@ -1295,7 +1295,7 @@
    0: Pass priority
    1: Cast Endurance  [#0]
    2: Cast Endurance (alternate cost)  [#1]
-   3: Activate Keen-Eyed Curator (ChangeZone)
+   3: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Cast Endurance)
 --- Narrative ---
   Player B activated Forest for 1(G)
@@ -1318,7 +1318,7 @@
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Endurance enters the battlefield
@@ -1361,7 +1361,7 @@
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZoneAll)
@@ -1380,7 +1380,7 @@
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 61 ---
@@ -1397,7 +1397,7 @@
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -1559,7 +1559,7 @@
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Wasteland
@@ -1578,7 +1578,7 @@
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 69 ---
@@ -1597,7 +1597,7 @@
    0: Pass priority
    1: Play Wasteland
    2: Cast Knight of the Reliquary  [#0]
-   3: Activate Keen-Eyed Curator (ChangeZone)
+   3: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 2 (Cast Knight of the Reliquary)
 --- Narrative ---
   Player B activated Savannah for 1(W)
@@ -1620,7 +1620,7 @@
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Knight of the Reliquary enters the battlefield
@@ -1641,7 +1641,7 @@
   Actions:
    0: Pass priority
    1: Play Wasteland
-   2: Activate Keen-Eyed Curator (ChangeZone)
+   2: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Play Wasteland)
 --- Narrative ---
   Player B played Wasteland
@@ -1661,8 +1661,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
-   2: Activate Wasteland (Destroy)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -1711,8 +1711,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
-   2: Activate Wasteland (Destroy)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
   >> B/B: 2 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -1911,7 +1911,7 @@
    0: Pass priority
    1: Cast Noble Hierarch  [#0]
    2: Cast Swords to Plowshares  [#0]
-   3: Activate Wasteland (Destroy)
+   3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Cast Noble Hierarch)
 --- Narrative ---
   Player A activated Wasteland for 1(C)
@@ -1941,8 +1941,8 @@
   Opp revealed: Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Wooded Foothills
@@ -1961,8 +1961,8 @@
   Opp revealed: Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 85 ---
@@ -1980,8 +1980,8 @@
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
-   2: Activate Keen-Eyed Curator (ChangeZone)
-   3: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Keen-Eyed Curator (ChangeZone)  [#0]
+   3: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 1 (Play Wooded Foothills)
 --- Narrative ---
   Player B played Wooded Foothills
@@ -2001,9 +2001,9 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
-   3: Activate Wooded Foothills (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   3: Activate Wooded Foothills (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -2053,9 +2053,9 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
-   3: Activate Wooded Foothills (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   3: Activate Wooded Foothills (ChangeZone)  [#0]
   >> B/B: 2 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 89 ---
@@ -2097,8 +2097,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
-   2: Activate Wooded Foothills (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
+   2: Activate Wooded Foothills (ChangeZone)  [#0]
   >> B/B: 2 (Activate Wooded Foothills (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -2112,7 +2112,7 @@
   Opp:   5 life | mana: empty | hand count: 6 | lib 45
   Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [8/8] (T) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Wooded Foothills (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
+  Stack: Wooded Foothills (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
   Self GY: Wooded Foothills, Forest, Wasteland, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Gaea's Cradle, Once Upon a Time
   Self exile: Dryad Arbor
@@ -2121,7 +2121,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2134,7 +2134,7 @@
   Opp:   5 life | mana: empty | hand count: 6 | lib 45
   Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [8/8] (T) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Wooded Foothills (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
+  Stack: Wooded Foothills (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
   Pending: Wooded Foothills (self)
   Self GY: Wooded Foothills, Forest, Wasteland, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Gaea's Cradle, Once Upon a Time
@@ -2167,7 +2167,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2223,7 +2223,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2244,7 +2244,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -2295,7 +2295,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2316,7 +2316,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -2363,7 +2363,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2383,7 +2383,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -2429,7 +2429,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2449,7 +2449,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -2494,7 +2494,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2514,7 +2514,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -2559,7 +2559,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2579,7 +2579,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -2623,7 +2623,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2643,7 +2643,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -2686,7 +2686,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -2706,7 +2706,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
