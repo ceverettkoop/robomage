@@ -44,6 +44,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 import decode
+import scryfall_cache
 from game_driver import (GameDriver, build_session, decode_human_frame,
                          actions_for_card, stack_target_refs,
                          menu_label, prompt_text, hand_type_icon, _edge_colors,
@@ -126,14 +127,17 @@ class CardWidget(QWidget):
     # Phase D wires it to action<->card cross-highlighting.
     hovered = Signal(object)
 
-    def __init__(self, name, card_idx, controller, zone, *, perm=None, icon=""):
+    def __init__(self, name, card_idx, controller, zone, *, perm=None, icon="",
+                 token_pt=None):
         super().__init__()
         self._name = name
         self._card_idx = card_idx
         self._controller = controller        # "self" | "opp"
         self._zone = zone                    # "battlefield" | "hand"
         self._icon = icon                    # hand-card type icon, else ""
-        self._pixmap = None                  # Phase C art, painted if set
+        self._token_pt = token_pt            # (p, t) for a token, else None
+        self._pixmap = None                  # Phase C art (full 'normal'), if set
+        self._scaled = None                  # cached card-sized scale of _pixmap
         self._edge_colors = _edge_colors(decode.card_border_colors(card_idx))
 
         # Status / stat fields derived once from the permanent dict so paintEvent
@@ -155,9 +159,22 @@ class CardWidget(QWidget):
 
     def set_pixmap(self, pixmap):
         """Store Phase C card art (QPixmap) and repaint. A null/None pixmap
-        reverts to the text placeholder."""
+        reverts to the text placeholder. The full 'normal' art is scaled to the
+        card size once (cached in _scaled) so paintEvent never rescales."""
         self._pixmap = pixmap
+        self._scaled = None                  # invalidate cached scale
         self.update()
+
+    def _card_pixmap(self):
+        """The card-sized (portrait CARD_W x CARD_H) smooth scale of the stored
+        art, computed once and cached; None when no usable art is set."""
+        if self._pixmap is None or self._pixmap.isNull():
+            return None
+        if self._scaled is None:
+            self._scaled = self._pixmap.scaled(
+                QSize(int(CARD_W), int(CARD_H)),
+                Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        return self._scaled
 
     # ----- input -----
 
@@ -206,10 +223,12 @@ class CardWidget(QWidget):
         path.addRoundedRect(r, CARD_RADIUS, CARD_RADIUS)
 
         # Body: Phase C art (clipped to the rounded rect) or the dark placeholder.
-        if self._pixmap is not None and not self._pixmap.isNull():
+        art = self._card_pixmap()
+        if art is not None:
             painter.save()
             painter.setClipPath(path)
-            painter.drawPixmap(r.toRect(), self._pixmap)
+            painter.setRenderHint(QPainter.SmoothPixmapTransform)
+            painter.drawPixmap(r.toRect(), art)
             painter.restore()
         else:
             painter.fillPath(path, QBrush(_CARD_FILL))
@@ -222,15 +241,21 @@ class CardWidget(QWidget):
             pen.setStyle(Qt.DashLine)
             painter.setPen(pen)
             painter.drawPath(path)
-        elif self._pixmap is None or self._pixmap.isNull():
+        elif art is None:
             self._paint_edges(painter, r)
 
-        # Name (wrapped, top).
-        painter.setPen(_CARD_TEXT)
+        # Name (wrapped, top). Over real art a translucent caption strip keeps
+        # the name legible (unreadable directly on card art at this size).
         f = QFont(painter.font())
         f.setPointSizeF(7.0)
         painter.setFont(f)
         name_rect = QRectF(r.left() + 3, r.top() + 3, r.width() - 6, r.height() * 0.52)
+        if art is not None:
+            strip = name_rect.adjusted(-2, -2, 2, 2)
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(QColor(12, 12, 16, 190))
+            painter.drawRoundedRect(strip, 3, 3)
+        painter.setPen(_CARD_TEXT)
         painter.drawText(name_rect, Qt.TextWordWrap | Qt.AlignHCenter | Qt.AlignTop,
                          self._name)
 
@@ -346,12 +371,23 @@ class _StackThumb(QWidget):
         super().__init__()
         self._card_idx = card_idx
         self._pixmap = None
+        self._scaled = None
         self._edge = _edge_colors(decode.card_border_colors(card_idx))
         self.setFixedSize(STACK_THUMB_W, STACK_THUMB_H)
 
     def set_pixmap(self, pixmap):
         self._pixmap = pixmap
+        self._scaled = None
         self.update()
+
+    def _thumb_pixmap(self):
+        if self._pixmap is None or self._pixmap.isNull():
+            return None
+        if self._scaled is None:
+            self._scaled = self._pixmap.scaled(
+                QSize(STACK_THUMB_W, STACK_THUMB_H),
+                Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        return self._scaled
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -359,9 +395,11 @@ class _StackThumb(QWidget):
         r = QRectF(1, 1, self.width() - 2, self.height() - 2)
         path = QPainterPath()
         path.addRoundedRect(r, 4, 4)
-        if self._pixmap is not None and not self._pixmap.isNull():
+        art = self._thumb_pixmap()
+        if art is not None:
             painter.setClipPath(path)
-            painter.drawPixmap(r.toRect(), self._pixmap)
+            painter.setRenderHint(QPainter.SmoothPixmapTransform)
+            painter.drawPixmap(r.toRect(), art)
         else:
             painter.fillPath(path, QBrush(_CARD_FILL))
             color = self._edge[0] or "#9a9aa2"
@@ -495,6 +533,44 @@ class DriverBridge(QObject):
         self.game_over.emit(text)
 
 
+# ── Scryfall image provider ───────────────────────────────────────────────────
+
+class ImageProvider(QObject):
+    """Bridges the Qt-free scryfall_cache pipeline to the board widgets.
+
+    `request(name, token_pt)` returns a ready QPixmap (from an in-memory cache or
+    a synchronous disk hit) or None; on a miss it kicks off an async download and
+    emits `image_ready(name)` on the UI thread once the file lands, so the window
+    can re-resolve every widget showing that name and slot the art in. Only names
+    that actually downloaded emit (a definitive miss stays a placeholder)."""
+
+    image_ready = Signal(str)                # card name that just became available
+
+    def __init__(self):
+        super().__init__()
+        self._pixmaps = {}                   # cache-key -> QPixmap (full 'normal')
+
+    def request(self, name, token_pt=None):
+        key = scryfall_cache._cache_key(name, token_pt)
+        pm = self._pixmaps.get(key)
+        if pm is not None:
+            return None if pm.isNull() else pm
+        path = scryfall_cache.get_cached(name, token_pt)
+        if path:
+            pm = QPixmap(path)
+            self._pixmaps[key] = pm
+            return None if pm.isNull() else pm
+        # Not on disk: queue an async download; _on_fetched re-emits to the UI.
+        scryfall_cache.fetch_async(name, self._on_fetched, token_pt)
+        return None
+
+    def _on_fetched(self, name, path):
+        # Runs on the download worker thread. A queued signal marshals to the UI
+        # thread, where request() will now find the freshly written file.
+        if path:
+            self.image_ready.emit(name)
+
+
 # ── The window ────────────────────────────────────────────────────────────────
 
 class GameWindow(QMainWindow):
@@ -509,9 +585,13 @@ class GameWindow(QMainWindow):
         self._bo3 = session.bo3
         self._opp_label = session.opp_label
 
-        # name -> [CardWidget] registry, rebuilt every StateUpdate; Phase C's
-        # image pipeline uses it to find every widget showing a given card name.
+        # name -> [CardWidget] registry, rebuilt every StateUpdate; the image
+        # pipeline uses it to find every widget showing a given card name.
+        # _stack_thumbs is the parallel name -> [_StackThumb] registry (stack
+        # thumbs aren't CardWidgets but take the same art).
         self._registry = {}
+        self._stack_thumbs = {}
+        self._provider = ImageProvider()
         self._actions = []
         self._awaiting = False
         self._thread = None
@@ -537,6 +617,7 @@ class GameWindow(QMainWindow):
         self._bridge.log_lines.connect(self.on_log_lines)
         self._bridge.opp_thinking.connect(self.on_opp_thinking)
         self._bridge.game_over.connect(self.on_game_over)
+        self._provider.image_ready.connect(self._on_image_ready)
         self._driver = GameDriver(
             env=session.env, opp_act=session.opp_act, opp_is_a=session.opp_is_a,
             is_model=session.is_model, opp_label=session.opp_label,
@@ -658,8 +739,9 @@ class GameWindow(QMainWindow):
             f"Your GY: {', '.join(gs['self_graveyard']) or '—'}\n"
             f"Opp GY:  {', '.join(gs['opp_graveyard']) or '—'}")
 
-        # Rebuild the board; registry is refreshed from scratch each frame.
+        # Rebuild the board; registries are refreshed from scratch each frame.
         self._registry = {}
+        self._stack_thumbs = {}
         self._rebuild_stack(gs["stack"], mirrored)
         self._rebuild_bf(self._opp_perms, self._opp_lands, gs["opp_battlefield"], "opp")
         self._rebuild_bf(self._self_perms, self._self_lands, gs["self_battlefield"], "self")
@@ -812,7 +894,13 @@ class GameWindow(QMainWindow):
             label.setStyleSheet("color: #6a6a72;")
             self._stack_row.set_cards([label])
             return
-        widgets = [StackItemWidget(e, stack_target_refs(e, mirrored)) for e in stack]
+        widgets = []
+        for e in stack:
+            w = StackItemWidget(e, stack_target_refs(e, mirrored))
+            name = e["name"]
+            self._stack_thumbs.setdefault(name, []).append(w._thumb)
+            self._apply_image(w._thumb, name, None)
+            widgets.append(w)
         self._stack_row.set_cards(widgets)
 
     def _rebuild_bf(self, perms_row, lands_row, perms, controller):
@@ -828,15 +916,48 @@ class GameWindow(QMainWindow):
             [self._mk_hand(c) for c in hand])
 
     def _mk_perm(self, p, controller):
-        w = CardWidget(p["name"], p["card_idx"], controller, "battlefield", perm=p)
+        token_pt = self._token_pt(p)
+        w = CardWidget(p["name"], p["card_idx"], controller, "battlefield",
+                       perm=p, token_pt=token_pt)
         self._register(w, p["name"])
+        self._apply_image(w, p["name"], token_pt)
         return w
 
     def _mk_hand(self, c):
         w = CardWidget(c["name"], c["card_idx"], "self", "hand",
                        icon=hand_type_icon(c["card_idx"]))
         self._register(w, c["name"])
+        self._apply_image(w, c["name"], None)
         return w
+
+    @staticmethod
+    def _token_pt(p):
+        """The Scryfall token lookup key for a permanent: (p, t) for a P/T token,
+        (None, None) for a non-creature token (Clue/Food/Treasure), else None (a
+        real named card)."""
+        if p.get("card_idx") != decode._TOKEN_IDX:
+            return None
+        if "power" in p:
+            return (p["power"], p["toughness"])
+        return (None, None)
+
+    def _apply_image(self, widget, name, token_pt):
+        """Ask the provider for `name`'s art; slot it in immediately if ready.
+        A miss leaves the placeholder; an async load arrives via image_ready."""
+        pm = self._provider.request(name, token_pt)
+        if pm is not None:
+            widget.set_pixmap(pm)
+
+    def _on_image_ready(self, name):
+        """A download finished: push the art into every live widget for `name`."""
+        for w in self._registry.get(name, []):
+            pm = self._provider.request(w._name, w._token_pt)
+            if pm is not None:
+                w.set_pixmap(pm)
+        for th in self._stack_thumbs.get(name, []):
+            pm = self._provider.request(name, None)
+            if pm is not None:
+                th.set_pixmap(pm)
 
     def _register(self, widget, name):
         widget.clicked.connect(self._on_card_clicked)
