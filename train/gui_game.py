@@ -42,7 +42,8 @@ from PySide6.QtGui import (QColor, QFont, QPainter, QPen, QBrush, QPixmap,
                            QPainterPath, QKeySequence, QShortcut)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                                QVBoxLayout, QHBoxLayout, QScrollArea, QSplitter,
-                               QListWidget, QListWidgetItem, QPlainTextEdit)
+                               QListWidget, QListWidgetItem, QPlainTextEdit,
+                               QToolButton)
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 import decode
@@ -301,16 +302,22 @@ class CardWidget(QWidget):
         painter.setFont(f)
         name_rect = QRectF(r.left() + 3, r.top() + 3, r.width() - 6, r.height() * 0.52)
         if art is not None:
-            strip = name_rect.adjusted(-2, -2, 2, 2)
+            # The strip hugs the wrapped text's actual extent — covering the
+            # whole name_rect (52% of the card) darkened the art badly.
+            br = painter.boundingRect(
+                name_rect, Qt.TextWordWrap | Qt.AlignHCenter | Qt.AlignTop,
+                self._name)
+            strip = QRectF(br).adjusted(-3, -2, 3, 2)
             painter.setPen(Qt.NoPen)
-            painter.setBrush(QColor(12, 12, 16, 190))
+            painter.setBrush(QColor(12, 12, 16, 165))
             painter.drawRoundedRect(strip, 3, 3)
         painter.setPen(_CARD_TEXT)
         painter.drawText(name_rect, Qt.TextWordWrap | Qt.AlignHCenter | Qt.AlignTop,
                          self._name)
 
-        # Hand-card type icon (top-right).
-        if self._icon:
+        # Hand-card type icon (top-right) — placeholder cards only; real art
+        # already shows what the card is.
+        if self._icon and art is None:
             icon_rect = QRectF(r.right() - 16, r.top() + 2, 14, 14)
             painter.drawText(icon_rect, Qt.AlignCenter, self._icon)
 
@@ -727,6 +734,48 @@ class OraclePopup(QWidget):
 
 # ── The window ────────────────────────────────────────────────────────────────
 
+class LogPanel(QWidget):
+    """The game log as a right-hand side panel: a slim header with a collapse
+    toggle over the scrolling text. Collapsing shrinks the panel to just the
+    toggle strip (the splitter honors the maximumWidth) so the board gets the
+    full window width; the arrow button brings it back."""
+
+    _COLLAPSED_W = 26
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        v = QVBoxLayout(self)
+        v.setContentsMargins(0, 0, 0, 0)
+        v.setSpacing(2)
+        header = QHBoxLayout()
+        header.setContentsMargins(0, 0, 0, 0)
+        self._btn = QToolButton()
+        self._btn.setArrowType(Qt.RightArrow)     # points toward the collapse
+        self._btn.setAutoRaise(True)
+        self._btn.setToolTip("Collapse/expand the log")
+        self._btn.clicked.connect(self.toggle)
+        self._title = QLabel("Log")
+        header.addWidget(self._btn)
+        header.addWidget(self._title)
+        header.addStretch(1)
+        v.addLayout(header)
+        self.text = QPlainTextEdit()
+        self.text.setReadOnly(True)
+        self.text.setMaximumBlockCount(2000)
+        v.addWidget(self.text)
+        self._collapsed = False
+
+    def toggle(self):
+        self.set_collapsed(not self._collapsed)
+
+    def set_collapsed(self, collapsed):
+        self._collapsed = collapsed
+        self.text.setVisible(not collapsed)
+        self._title.setVisible(not collapsed)
+        self._btn.setArrowType(Qt.LeftArrow if collapsed else Qt.RightArrow)
+        self.setMaximumWidth(self._COLLAPSED_W if collapsed else 16777215)
+
+
 class GameWindow(QMainWindow):
     """The Qt game board. Owns the widget tree, the DriverBridge, and the
     GameDriver; renders each StateUpdate and delivers the human's picks back."""
@@ -804,7 +853,8 @@ class GameWindow(QMainWindow):
 
         self._append_log(
             "Game starting...  Click a card or pick a numbered action. "
-            "Keys: digits = pick, space = pass, p = autopass, "
+            "Keys: digits = pick, enter = confirm highlighted, space = pass, "
+            "p = autopass, "
             "hold q or right-click a card = oracle text, </> = resize log, "
             "ctrl+q = quit.")
 
@@ -858,7 +908,8 @@ class GameWindow(QMainWindow):
         self._prompt.setWordWrap(True)
         v.addWidget(self._prompt)
 
-        # Bottom: action menu (~35%) + log.
+        # Action menu below the board; the log sits in a collapsible panel on
+        # the right-hand side of the window.
         self._menu = QListWidget()
         self._menu.itemActivated.connect(self._on_item_activated)
         self._menu.installEventFilter(self)      # route digit/space/p/Q keys
@@ -867,25 +918,26 @@ class GameWindow(QMainWindow):
         self._menu.setMouseTracking(True)
         self._menu.itemEntered.connect(self._on_menu_item_entered)
         self._menu.viewport().installEventFilter(self)
-        self._log = QPlainTextEdit()
-        self._log.setReadOnly(True)
-        self._log.setMaximumBlockCount(2000)
-        bottom = QSplitter(Qt.Horizontal)
-        bottom.addWidget(self._menu)
-        bottom.addWidget(self._log)
-        bottom.setStretchFactor(0, 35)
-        bottom.setStretchFactor(1, 65)
-        bottom.setSizes([340, 640])
+        self._log_panel = LogPanel()
+        self._log = self._log_panel.text
 
-        # Vertical splitter: board block over the menu/log area. Kept on the
-        # window so the >/< shortcuts can nudge the board/log division.
+        # Vertical splitter: board block over the action menu.
         self._vsplit = QSplitter(Qt.Vertical)
         self._vsplit.addWidget(board)
-        self._vsplit.addWidget(bottom)
+        self._vsplit.addWidget(self._menu)
         self._vsplit.setStretchFactor(0, 5)
         self._vsplit.setStretchFactor(1, 2)
-        self.setCentralWidget(self._vsplit)
-        self.resize(1120, 940)
+
+        # Horizontal splitter: board+menu | log panel. Kept on the window so the
+        # >/< shortcuts can nudge the log's width.
+        self._hsplit = QSplitter(Qt.Horizontal)
+        self._hsplit.addWidget(self._vsplit)
+        self._hsplit.addWidget(self._log_panel)
+        self._hsplit.setStretchFactor(0, 3)
+        self._hsplit.setStretchFactor(1, 1)
+        self._hsplit.setSizes([860, 380])
+        self.setCentralWidget(self._hsplit)
+        self.resize(1280, 940)
 
     # ----- driver lifecycle -----
 
@@ -1078,6 +1130,9 @@ class GameWindow(QMainWindow):
 
     def _handle_key(self, event):
         key = event.key()
+        if key in (Qt.Key_Return, Qt.Key_Enter):
+            self._action_submit_current()
+            return True
         if key == Qt.Key_Space:
             self._action_pass_zero()
             return True
@@ -1092,6 +1147,18 @@ class GameWindow(QMainWindow):
     def _action_pick(self, digit):
         if self._awaiting and 0 <= digit < len(self._actions):
             self._submit(digit)
+
+    def _action_submit_current(self):
+        """Enter = submit the currently highlighted menu row, wherever the
+        keyboard focus is (the list's own Enter only fires when it has focus)."""
+        if not self._awaiting:
+            return
+        item = self._menu.currentItem()
+        if item is None:
+            return
+        idx = item.data(Qt.UserRole)
+        if idx is not None:
+            self._submit(int(idx))
 
     def _action_pass_zero(self):
         """Spacebar = pass, but only when action 0 is the pass option (mirrors
@@ -1320,15 +1387,15 @@ class GameWindow(QMainWindow):
         self._oracle.hide()
 
     def _nudge_splitter(self, delta):
-        """Grow (delta>0) / shrink (delta<0) the bottom log/menu area by shifting
-        ~40 px between the board and bottom panes of the vertical splitter."""
-        sizes = self._vsplit.sizes()
+        """Grow (delta>0) / shrink (delta<0) the right-hand log panel by
+        shifting ~40 px between the board and log panes."""
+        sizes = self._hsplit.sizes()
         if len(sizes) != 2:
             return
         step = 40 * delta
-        top = max(120, sizes[0] - step)
-        bottom = max(120, sizes[1] + step)
-        self._vsplit.setSizes([top, bottom])
+        left = max(320, sizes[0] - step)
+        right = max(LogPanel._COLLAPSED_W, sizes[1] + step)
+        self._hsplit.setSizes([left, right])
 
     def _phase_status(self, gs):
         active = "A" if gs["active_is_a"] else "B"
