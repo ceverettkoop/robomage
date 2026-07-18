@@ -48,7 +48,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
-                    CAT_ATTACK_TARGET, CAT_BLOCK_TARGET)
+                    CAT_ATTACK_TARGET, CAT_BLOCK_TARGET, CAT_ASSIGN_DAMAGE)
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
@@ -449,6 +449,113 @@ def test_combat_target_roundtrip():
         return (f"attack-target @ {atk_idx} (nc=2) and block-target @ {blk_idx} "
                 f"(nc=1) both safe=1, round-trips exact, outcome="
                 f"{outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def _write_damage_decks():
+    """Lands-only stacked decks for the damage-assignment roots test. The combat
+    board comes from --battlefield presets: A's Grizzly Bears (2/2) attacks and
+    B's two Flying Men (1/1) both block it under auto-0, so the attacker's power
+    (2) equals the total lethal needed (1+1) and the regular damage step reaches
+    the prompted division — two consecutive DAMAGE_ASSIGN picks (menu sizes 3
+    then 2: each pick re-arms with the shrunken pool). Lands-only libraries deck
+    the game out under auto-0."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    paths = []
+    for name, land in (("dmg_pq_a", "Mountain"), ("dmg_pq_b", "Forest")):
+        p = os.path.join(d, f"{name}.dk")
+        with open(p, "w") as f:
+            f.write(f"30 {land}\n")
+        paths.append(p)
+    return paths
+
+
+_DAMAGE_EXTRA = ["--deck-a", "temp/dmg_pq_a", "--deck-b", "temp/dmg_pq_b",
+                 "--no-shuffle",
+                 "--battlefield-a", "Grizzly Bears",
+                 "--battlefield-b", "Flying Men,Flying Men"]
+
+
+def test_damage_assign_roundtrip():
+    """Batch 2 (snapshot-safe combat): the combat damage-assignment ordering
+    prompt is a loop-top pending decision — every pick reports safe=1 and is a
+    valid SNAPSHOT/RESTORE root. The bear-vs-two-Flying-Men board yields two
+    consecutive picks (nc=3: both blockers + Done, then nc=2 after the pool
+    shrinks — the resume→re-arm path). At each root: SNAPSHOT re-emits exactly,
+    a divergent assignment order (Done first, dumping the leftover power) then
+    RESTORE returns byte-identically, and the resumed real line stays
+    byte-identical to a no-snapshot control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_damage_decks()
+    try:
+        control, outcome = record_line(seed, _auto0, extra=_DAMAGE_EXTRA)
+        da_idx = _first_cat_index(control, CAT_ASSIGN_DAMAGE)
+        if da_idx is None:
+            raise ProtocolError("no damage-assignment decision in the control "
+                                "line — the two-blocker board should force one")
+        if control[da_idx][0] != 3:
+            raise ProtocolError(f"first assignment menu has {control[da_idx][0]} "
+                                "options, expected 3 (two blockers + Done)")
+        nxt = control[da_idx + 1]
+        if not bool((_query_cats(nxt[1])[:nxt[0]] == CAT_ASSIGN_DAMAGE).any()):
+            raise ProtocolError("decision after the first pick is not the second "
+                                "assignment pick — the resume should re-arm")
+        if nxt[0] != 2:
+            raise ProtocolError(f"second assignment menu has {nxt[0]} options, "
+                                "expected 2 (remaining blocker + Done)")
+        roots = (da_idx, da_idx + 1)
+        for i in roots:
+            if not control[i][2]:
+                raise ProtocolError(f"assignment decision {i} reports safe=0 — "
+                                    "it should be a loop-top pending decision now")
+
+        eng = Engine(seed, extra=_DAMAGE_EXTRA)
+        cur = eng.read()
+        excursions = 0
+        for idx in range(len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"damage alignment at decision {idx}")
+            if idx in roots:
+                snap_nc, snap_pl = cur.nc, cur.payload
+                q = eng.snapshot(0)
+                _assert_same_query(q, snap_pl, snap_nc,
+                                   f"damage post-SNAPSHOT re-emit at {idx}")
+                # Divergent excursion: Done first (dumps the unassigned power
+                # instead of the control's lethal pick), then a scrambled
+                # continuation.
+                dq = q
+                for i in range(8):
+                    dq = eng.play(dq.nc - 1 if i == 0 else _diverge(i, dq.nc))
+                    if dq.kind != "q":
+                        break
+                rq = eng.restore(0)
+                _assert_same_query(rq, snap_pl, snap_nc,
+                                   f"damage post-RESTORE re-emit at {idx}")
+                rel = eng.release()
+                _assert_same_query(rel, snap_pl, snap_nc,
+                                   f"damage post-RELEASE re-emit at {idx}")
+                cur = rel
+                excursions += 1
+            cur = eng.play(_auto0(idx, cur.nc))
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed damage line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        if excursions != 2:
+            raise ProtocolError(f"expected 2 damage excursions, ran {excursions}")
+        return (f"assignment picks @ {da_idx} (nc=3) and {da_idx + 1} (nc=2) "
+                f"both safe=1, round-trips exact, outcome={outcome['winner']!r}")
     finally:
         for p in deck_paths:
             try:
@@ -1241,6 +1348,7 @@ def test_perf():
 TESTS = [
     ("round_trip", test_round_trip),
     ("combat_target_roundtrip", test_combat_target_roundtrip),
+    ("damage_assign_roundtrip", test_damage_assign_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

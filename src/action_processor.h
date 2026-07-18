@@ -24,6 +24,14 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 // pending query. Called from the main loop's pending-query branch.
 void resume_combat_target_choice(Game& game);
 
+// Loop-top dispatcher entry for a parked combat damage-assignment pick
+// (PendingQuery tag DAMAGE_ASSIGN): applies the latched answer to the in-flight
+// attacker persisted in Game::pending_damage, then either arms the next pick's
+// query (same or next attacker — the caller must loop back to the pending-query
+// branch when pending_query.active is still set) or completes the assignment,
+// after which process_turn_based_actions proceeds to deal_combat_damage.
+void resume_damage_assignment(Game& game, std::shared_ptr<Orderer> orderer);
+
 // T3.10: true if some attacker this combat-damage step needs its controller to divide damage
 // among 2+ blockers it cannot all kill (and hasn't already been asked). When true, the combat
 // step requests ASSIGN_COMBAT_DAMAGE_CHOICE before dealing damage.

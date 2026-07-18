@@ -57,6 +57,9 @@ static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
+static bool arm_damage_assign_query(Game &game);
+static void finish_pending_attacker(Game &game);
+static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 // One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
 // amount, or a life amount when is_life) the targeting player must pay or have the spell/
@@ -2474,71 +2477,144 @@ bool any_attacker_needs_damage_assignment(Game &game, std::shared_ptr<Orderer> o
     return false;
 }
 
+// Build and park the next lethal-order pick for the in-flight attacker
+// (Game::pending_damage) as a loop-top pending decision (tag DAMAGE_ASSIGN):
+// offer only blockers still killable with the remaining damage, plus the Done
+// option — exactly the inner-loop menu the blocking get_input prompted with.
+// Prints the same "--- Assign ... ---" header at arm time (it precedes the menu
+// emission, as it preceded get_input before). Returns false without arming when
+// no blocker is still killable (the inner loop's `offered.empty()` break).
+static bool arm_damage_assign_query(Game &game) {
+    auto &pd = game.pending_damage;
+    std::string attacker_name = entity_name(pd.attacker);
+    std::vector<LegalAction> actions;
+    for (auto b : pd.pool) {
+        uint32_t need = lethal_needed_for_blocker(pd.attacker, b);
+        if (need == 0 || need > pd.remaining) continue;
+        auto &bcr = global_coordinator.GetComponent<Creature>(b);
+        LegalAction la(PASS_PRIORITY, b,
+            entity_name(b) + " [" + std::to_string(bcr.power) + "/" +
+                std::to_string(bcr.toughness) + "] (lethal " + std::to_string(need) + ")");
+        la.category = ActionCategory::ASSIGN_DAMAGE;
+        actions.push_back(la);
+    }
+    if (actions.empty()) return false;  // can't kill any more blockers
+    LegalAction done(PASS_PRIORITY, std::string("Done assigning ") + attacker_name);
+    done.category = ActionCategory::ASSIGN_DAMAGE;
+    actions.push_back(done);
+
+    game_log("\n--- Assign %s's combat damage (%u left) ---\n", attacker_name.c_str(), pd.remaining);
+    PendingQuery &pq = game.pending_query;
+    pq.tag = PendingQuery::DAMAGE_ASSIGN;
+    pq.menu = std::move(actions);
+    // The attacking (active) player divides the damage (510.1c); priority was
+    // seated at them by run_damage_assignment and stays there between arms.
+    pq.chooser_is_a = game.player_a_turn;
+    // Byte-compat: this prompt runs with pending_decision_source == 0 today (no
+    // PendingDecisionScope wraps it), and the corpus decodes that state field —
+    // keep 0 (same convention as the combat target sub-prompts).
+    pq.decision_source = 0;
+    pq.answered = false;
+    pq.answer = -1;
+    pq.active = true;
+    return true;
+}
+
+// Finish the in-flight attacker's division. 510.1a: all the attacker's power
+// must be assigned among its blockers (no trample reaches the player in the
+// prompt case, since power <= total lethal). Pour any leftover onto one blocker
+// — harmless overkill on the last one chosen, or a non-lethal mark on the first
+// blocker if none were killable (last_assigned == 0 implies no pick was made,
+// so the untouched pool still IS the full blocker list).
+static void finish_pending_attacker(Game &game) {
+    auto &pd = game.pending_damage;
+    if (pd.remaining > 0) {
+        Entity dump = pd.last_assigned ? pd.last_assigned : pd.pool.front();
+        game.combat_damage_assignment[pd.attacker][dump] += pd.remaining;
+    }
+    pd = Game::PendingDamageAssign{};
+}
+
 // Prompt the attacking player (rule 510.1c) to pick which blockers receive lethal damage, one
 // at a time, until power runs out. Records the per-blocker assignment in
 // game.combat_damage_assignment for deal_combat_damage() to apply.
-static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer) {
+//
+// Resumable: each pick is parked as a loop-top pending decision (DAMAGE_ASSIGN)
+// instead of blocking on get_input, so the whole multi-attacker division spreads
+// over several main-loop iterations — arm a query, return; the loop top emits it
+// and dispatches the answer back here (resume_choice >= 0), which applies the
+// pick exactly as the inline post-get_input code did and arms the next query
+// (same attacker, or the next one via the outer scan) or completes. In-flight
+// state lives in Game::pending_damage; completed attackers are skipped by their
+// combat_damage_assignment map entries, so the outer scan restarts from the top
+// on every resume and lands on the first undecided attacker.
+static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice) {
     bool first_strike_only = (game.cur_step == FIRST_STRIKE_DAMAGE);
     // The attacking (active) player chooses the division — route input to them.
     game.player_a_has_priority = game.player_a_turn;
-    game.combat_damage_assignment.clear();  // per strike step; survivors re-decide next step
+    auto &pd = game.pending_damage;
 
+    if (resume_choice >= 0) {
+        // Resume: apply the latched answer to the in-flight attacker's division.
+        PendingQuery &pq = game.pending_query;
+        bool is_done = (resume_choice == static_cast<int>(pq.menu.size()) - 1);
+        Entity chosen = is_done ? 0 : pq.menu[static_cast<size_t>(resume_choice)].source_entity;
+        pq = PendingQuery{};
+        if (is_done) {
+            finish_pending_attacker(game);
+        } else {
+            uint32_t need = lethal_needed_for_blocker(pd.attacker, chosen);
+            game.combat_damage_assignment[pd.attacker][chosen] = need;
+            pd.remaining -= need;
+            pd.last_assigned = chosen;
+            pd.pool.erase(std::remove(pd.pool.begin(), pd.pool.end(), chosen), pd.pool.end());
+            game_log("  %s assigns %u (lethal) to %s\n", entity_name(pd.attacker).c_str(), need,
+                     entity_name(chosen).c_str());
+            // Next pick for the same attacker, or its division is finished.
+            if (arm_damage_assign_query(game)) return;
+            finish_pending_attacker(game);
+        }
+    } else {
+        // Fresh entry (per strike step; survivors re-decide next step). The clear
+        // must NOT run on a resume — mid-assignment the map already holds the
+        // completed attackers' divisions (and the in-flight partial one).
+        game.combat_damage_assignment.clear();
+    }
+
+    // Outer scan: first attacker still needing a division starts one. The map
+    // entry (created when the division starts) doubles as the re-entrancy guard,
+    // mirroring any_attacker_needs_damage_assignment().
     for (auto attacker : orderer->mEntities) {
+        if (game.combat_damage_assignment.count(attacker)) continue;
         if (!attacker_needs_assignment(attacker, orderer, first_strike_only)) continue;
         auto &acr = global_coordinator.GetComponent<Creature>(attacker);
-        std::string attacker_name = entity_name(attacker);
-
-        std::vector<Entity> blockers = collect_live_blockers(attacker, orderer);
-        auto &assign = game.combat_damage_assignment[attacker];  // creates the entry (also the guard)
-        uint32_t remaining = acr.power;
-        std::vector<Entity> pool = blockers;  // blockers not yet assigned lethal
-        Entity last_assigned = 0;
-
-        while (true) {
-            // Offer only blockers we can still assign lethal to with the remaining damage.
-            std::vector<LegalAction> actions;
-            std::vector<Entity> offered;
-            for (auto b : pool) {
-                uint32_t need = lethal_needed_for_blocker(attacker, b);
-                if (need == 0 || need > remaining) continue;
-                auto &bcr = global_coordinator.GetComponent<Creature>(b);
-                LegalAction la(PASS_PRIORITY, b,
-                    entity_name(b) + " [" + std::to_string(bcr.power) + "/" +
-                        std::to_string(bcr.toughness) + "] (lethal " + std::to_string(need) + ")");
-                la.category = ActionCategory::ASSIGN_DAMAGE;
-                actions.push_back(la);
-                offered.push_back(b);
-            }
-            if (offered.empty()) break;  // can't kill any more blockers
-            LegalAction done(PASS_PRIORITY, std::string("Done assigning ") + attacker_name);
-            done.category = ActionCategory::ASSIGN_DAMAGE;
-            actions.push_back(done);
-
-            game_log("\n--- Assign %s's combat damage (%u left) ---\n", attacker_name.c_str(), remaining);
-            int choice = InputLogger::instance().get_input(actions);
-            if (choice == static_cast<int>(actions.size()) - 1) break;  // done
-
-            Entity chosen = offered[static_cast<size_t>(choice)];
-            uint32_t need = lethal_needed_for_blocker(attacker, chosen);
-            assign[chosen] = need;
-            remaining -= need;
-            last_assigned = chosen;
-            pool.erase(std::remove(pool.begin(), pool.end(), chosen), pool.end());
-            game_log("  %s assigns %u (lethal) to %s\n", attacker_name.c_str(), need,
-                     entity_name(chosen).c_str());
-        }
-
-        // 510.1a: all the attacker's power must be assigned among its blockers (no trample reaches
-        // the player in the prompt case, since power <= total lethal). Pour any leftover onto one
-        // blocker — harmless overkill on a chosen one, or a non-lethal mark if none were killable.
-        if (remaining > 0) {
-            Entity dump = last_assigned ? last_assigned : blockers.front();
-            assign[dump] += remaining;
-            remaining = 0;
-        }
+        game.combat_damage_assignment[attacker];  // creates the entry (also the guard)
+        pd.active = true;
+        pd.attacker = attacker;
+        pd.remaining = acr.power;
+        pd.pool = collect_live_blockers(attacker, orderer);
+        pd.last_assigned = 0;
+        if (arm_damage_assign_query(game)) return;
+        // No blocker killable even at full power: dump everything, no prompt.
+        finish_pending_attacker(game);
     }
 
     game.pending_choice = NONE;
+}
+
+// proc_mandatory_choice entry: a fresh ASSIGN_COMBAT_DAMAGE_CHOICE derivation.
+static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer) {
+    if (game.pending_damage.active || game.pending_query.active)
+        fatal_error("assign_combat_damage entered with a damage-assignment query parked");
+    run_damage_assignment(game, orderer, -1);
+}
+
+// Loop-top dispatcher entry (game_driver.cpp) for a parked DAMAGE_ASSIGN query.
+void resume_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer) {
+    if (!game.pending_damage.active || game.pending_query.tag != PendingQuery::DAMAGE_ASSIGN
+        || !game.pending_query.answered)
+        fatal_error("resume_damage_assignment without a parked damage-assignment query");
+    run_damage_assignment(game, orderer, game.pending_query.answer);
 }
 
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {

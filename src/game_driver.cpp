@@ -260,6 +260,16 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 case PendingQuery::BLOCK_TARGET:
                     resume_combat_target_choice(cur_game);
                     break;
+                case PendingQuery::DAMAGE_ASSIGN:
+                    resume_damage_assignment(cur_game, sys.orderer);
+                    // The resume may arm the NEXT pick's query (same or next
+                    // attacker): loop back so the pending branch emits it before
+                    // anything (turn-based actions, SBE) runs underneath it. When
+                    // the assignment completes instead, fall through — turn-based
+                    // actions find every attacker decided and deal combat damage,
+                    // exactly as the single-call flow did.
+                    if (cur_game.pending_query.active) continue;
+                    break;
                 default:
                     fatal_error("pending query dispatch not implemented for tag " +
                                 std::to_string(static_cast<int>(pq.tag)));

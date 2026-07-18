@@ -239,6 +239,22 @@ struct Game {
         // covers the parked selection. 0 = no sub-prompt parked.
         Entity pending_attacker = 0;
         Entity pending_blocker = 0;
+        // Combat damage-assignment suspension state (pending_query tag
+        // DAMAGE_ASSIGN): the attacker whose lethal-order division is mid-prompt,
+        // plus the former inner-loop locals of assign_combat_damage (remaining
+        // power to assign, blockers not yet assigned lethal, last blocker picked
+        // — the 510.1a leftover-dump target). Value member so a snapshot covers
+        // the in-flight division. active == true iff a DAMAGE_ASSIGN query is
+        // parked; completed attackers are tracked by their (possibly partial)
+        // combat_damage_assignment map entries, the outer scan's re-entrancy guard.
+        struct PendingDamageAssign {
+            bool active = false;
+            Entity attacker = 0;
+            uint32_t remaining = 0;
+            std::vector<Entity> pool;  // blockers not yet assigned lethal
+            Entity last_assigned = 0;
+        };
+        PendingDamageAssign pending_damage;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
