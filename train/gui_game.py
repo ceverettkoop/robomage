@@ -28,6 +28,9 @@ Headless sanity check: set ``ROBOMAGE_GUI_SMOKE=1`` to auto-quit cleanly shortly
 after the first StateUpdate renders (exit 0), or ``ROBOMAGE_GUI_SMOKE=N`` (N>1)
 to auto-play N human decisions — submitting the first legal action each time —
 before quitting. Pair it with ``QT_QPA_PLATFORM=offscreen`` for a display-less run.
+Add ``ROBOMAGE_ANALYSIS_SMOKE=1`` to also force the analysis window on (uniform
+evaluator, no torch) and fail (exit 1) unless a live analysis run delivered
+stats during the smoke.
 """
 
 import html
@@ -47,7 +50,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                                QListWidget, QListWidgetItem, QPlainTextEdit,
                                QToolButton, QSizePolicy, QDialog, QComboBox,
                                QFormLayout, QDialogButtonBox, QMessageBox,
-                               QGroupBox, QSpinBox, QDoubleSpinBox)
+                               QGroupBox, QSpinBox, QDoubleSpinBox, QCheckBox)
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 import decode
@@ -954,6 +957,7 @@ class GameWindow(QMainWindow):
         self._smoke_n = _smoke_n_from_env()
         self._smoke_seen = 0
         self._smoke_played = 0
+        self._smoke_analysis_waits = 0
 
         self._build_ui()
 
@@ -981,6 +985,22 @@ class GameWindow(QMainWindow):
             bo3=session.bo3, sink=self._bridge,
             clock_fn=session.clock_fn, pace_idle=session.pace_idle)
 
+        # Analysis window (separate top-level window; F9 toggles). Built only
+        # when the session was assembled with an AnalysisConfig — its worker
+        # thread is idle until the first analyze, so construction is cheap.
+        self._analysis = None
+        if getattr(session, "analysis_cfg", None) is not None:
+            from gui_analysis import AnalysisWindow
+            self._analysis = AnalysisWindow(session.env, session.analysis_cfg,
+                                            self._opp_is_a)
+            QShortcut(QKeySequence("F9"), self, activated=self._toggle_analysis)
+            # A search opponent's own per-decision SearchResult is free —
+            # surface it in the analysis window (shown only when its reveal
+            # toggle is on).
+            ctrl = getattr(session, "controller", None)
+            if ctrl is not None and hasattr(ctrl, "on_result"):
+                ctrl.on_result = self._analysis.opp_search_sink()
+
         # App-wide filter so the arrow-keys→action-pane hop works from any
         # focused widget (log, scroll rows, ...), not just the window itself.
         QApplication.instance().installEventFilter(self)
@@ -992,12 +1012,14 @@ class GameWindow(QMainWindow):
         QShortcut(QKeySequence(Qt.Key_Less), self,
                   activated=lambda: self._nudge_splitter(-1))
 
-        self._append_log(
-            "Game starting...  Click a card or pick a numbered action. "
-            "Keys: digits = pick, enter = confirm highlighted, space = pass, "
-            "p = autopass, "
-            "hold q or right-click a card = oracle text, </> = resize log, "
-            "ctrl+q = quit.")
+        keys = ("Game starting...  Click a card or pick a numbered action. "
+                "Keys: digits = pick, enter = confirm highlighted, space = pass, "
+                "p = autopass, "
+                "hold q or right-click a card = oracle text, </> = resize log, "
+                "ctrl+q = quit.")
+        if self._analysis is not None:
+            keys += "  F9 = analysis window (F5 analyze, Shift+F5 stop)."
+        self._append_log(keys)
 
     # ----- layout -----
 
@@ -1109,14 +1131,29 @@ class GameWindow(QMainWindow):
 
     def start(self):
         """Start the engine loop on a worker thread (called after show)."""
+        if self._analysis is not None:
+            self._analysis.show()
         self._thread = threading.Thread(target=self._driver.run,
                                         name="gui-driver", daemon=True)
         self._thread.start()
 
+    def _toggle_analysis(self):
+        if self._analysis is None:
+            return
+        if self._analysis.isVisible():
+            self._analysis.hide()
+        else:
+            self._analysis.show()
+
     def closeEvent(self, event):
         # Signal shutdown and join the worker before the caller closes the env.
         # request_quit sets _quitting so a loop blocked in a long opponent search
-        # returns silently once the env (and engine pipe) tear down.
+        # returns silently once the env (and engine pipe) tear down. The analysis
+        # worker (and its detached engine) shuts down first — it must never see
+        # the primary env's teardown as a divergence.
+        if self._analysis is not None:
+            self._analysis.shutdown()
+            self._analysis.close()
         self._driver.request_quit()
         if self._thread is not None:
             self._thread.join(timeout=2.0)
@@ -1181,6 +1218,9 @@ class GameWindow(QMainWindow):
         else:
             self._prompt.setText(f"{self._opp_label} is thinking...")
 
+        if self._analysis is not None:
+            self._analysis.on_decision(u)
+
         self._smoke_seen += 1
         self._maybe_smoke(u.human_turn)
 
@@ -1224,6 +1264,8 @@ class GameWindow(QMainWindow):
         self._menu.setEnabled(False)
         self._prompt.setText(text + "  (Ctrl+Q to quit)")
         self._append_log(text)
+        if self._analysis is not None:
+            self._analysis.on_game_over()
         if self._smoke_n is not None:
             QTimer.singleShot(80, self.close)
 
@@ -1366,6 +1408,8 @@ class GameWindow(QMainWindow):
         self._awaiting = False
         self._menu.clear()
         self._prompt.setText("...")
+        if self._analysis is not None:
+            self._analysis.on_human_acted()
         self._driver.submit(idx)
 
     # ----- helpers -----
@@ -1660,8 +1704,20 @@ class GameWindow(QMainWindow):
         QTimer.singleShot(15, self._smoke_submit)
 
     def _smoke_submit(self):
-        if self._awaiting and self._actions:
-            self._submit(0)
+        if not (self._awaiting and self._actions):
+            return
+        # Analysis smoke: when this decision is being analyzed, hold the
+        # auto-play until the first chunk of stats lands (re-check every 100ms,
+        # ~15s total budget across the run) — submitting would cancel the run.
+        if (self._analysis is not None
+                and os.environ.get("ROBOMAGE_ANALYSIS_SMOKE")
+                and self._analysis.pending_analyzable
+                and not self._analysis.smoke_ok
+                and self._smoke_analysis_waits < 150):
+            self._smoke_analysis_waits += 1
+            QTimer.singleShot(100, self._smoke_submit)
+            return
+        self._submit(0)
 
 
 def _smoke_n_from_env():
@@ -1692,6 +1748,16 @@ _OPPONENT_PRESETS = [
     ("Scripted — random", "scripted:random"),
     ("MCTS search (az:gen)", "az:gen"),
     ("Raw AZ policy (azraw:gen)", "azraw:gen"),
+]
+
+# Evaluator presets for the analysis window's combo (editable, like the
+# opponent combo). "az:gen" is the calibrated AZ value net (warm-started from
+# the PPO generalist when no AZ checkpoint exists); "mcts:gen" the PPO heads;
+# "uniform" a torch-free neutral evaluator (visits-only search).
+_ANALYSIS_EVAL_PRESETS = [
+    ("AZ net (az:gen) — calibrated win%", "az:gen"),
+    ("PPO heads (mcts:gen)", "mcts:gen"),
+    ("Uniform (no model)", "uniform"),
 ]
 
 # Deck subfolders hidden from the launcher dropdowns (mirrors tui.py's scan).
@@ -1785,6 +1851,7 @@ class LauncherDialog(QDialog):
         box.setLayout(form)
 
         self._search_box = self._build_search_box(cfg)
+        self._analysis_box = self._build_analysis_box(cfg)
 
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
@@ -1801,6 +1868,7 @@ class LauncherDialog(QDialog):
         layout.addWidget(subtitle)
         layout.addWidget(box)
         layout.addWidget(self._search_box)
+        layout.addWidget(self._analysis_box)
         layout.addWidget(buttons)
         self.setMinimumWidth(460)
         self._options = None
@@ -1845,6 +1913,63 @@ class LauncherDialog(QDialog):
         box = QGroupBox("Search opponent settings")
         box.setLayout(form)
         return box
+
+    def _build_analysis_box(self, cfg):
+        """The analysis-window group: enable + evaluator + search knobs. Unlike
+        the search box this applies to every opponent type (the analysis runs on
+        its own detached engine), so it is always visible."""
+        form = QFormLayout()
+        form.setSpacing(8)
+        self._analysis_enable = QCheckBox("Open the analysis window (F9 toggles in-game)")
+        self._analysis_enable.setChecked(bool(cfg.get("analysis_enabled", True)))
+        self._analysis_eval = QComboBox()
+        self._analysis_eval.setEditable(True)
+        for label, spec in _ANALYSIS_EVAL_PRESETS:
+            self._analysis_eval.addItem(label, spec)
+        self._set_combo_spec(self._analysis_eval,
+                             cfg.get("analysis_evaluator", "az:gen"))
+        self._analysis_eval.setToolTip(
+            "Evaluator behind the analysis search: az:gen (AZ net, calibrated "
+            "win%), mcts:gen (PPO heads), uniform (no model), or a checkpoint "
+            "path.")
+        self._analysis_worlds = self._int_field(
+            cfg.get("analysis_worlds"),
+            "Determinized worlds per analysis run (hidden-zone samples).")
+        self._analysis_cap = QSpinBox()
+        self._analysis_cap.setRange(-1, 1_000_000)
+        self._analysis_cap.setSpecialValueText("(default)")
+        self._analysis_cap.setValue(
+            -1 if cfg.get("analysis_cap") is None else int(cfg["analysis_cap"]))
+        self._analysis_cap.setToolTip(
+            "Simulation cap per analysis run (0 = run until stopped; "
+            "adjustable in the window too).")
+        self._analysis_auto = QCheckBox("Auto-analyze each decision")
+        self._analysis_auto.setChecked(bool(cfg.get("analysis_auto", True)))
+        form.addRow(self._analysis_enable)
+        form.addRow("Evaluator", self._analysis_eval)
+        form.addRow("Worlds", self._analysis_worlds)
+        form.addRow("Sims cap", self._analysis_cap)
+        form.addRow(self._analysis_auto)
+        box = QGroupBox("Analysis window (MCTS evaluation of your decisions)")
+        box.setLayout(form)
+        return box
+
+    @staticmethod
+    def _set_combo_spec(combo, spec):
+        idx = combo.findData(spec)
+        if idx >= 0:
+            combo.setCurrentIndex(idx)
+        else:
+            combo.setEditText(spec)
+
+    @staticmethod
+    def _combo_spec(combo):
+        """The combo's spec: a preset's data when the visible text still matches
+        that preset's label, else the raw typed text."""
+        idx = combo.currentIndex()
+        if idx >= 0 and combo.itemText(idx) == combo.currentText():
+            return combo.itemData(idx)
+        return combo.currentText().strip()
 
     @staticmethod
     def _int_field(value, tooltip):
@@ -1896,19 +2021,12 @@ class LauncherDialog(QDialog):
         return combo
 
     def _set_opponent(self, spec):
-        idx = self._opponent.findData(spec)
-        if idx >= 0:
-            self._opponent.setCurrentIndex(idx)
-        else:
-            self._opponent.setEditText(spec)
+        self._set_combo_spec(self._opponent, spec)
 
     def _opponent_spec(self):
         """The opponent spec: a preset's data when the visible text still matches
         that preset's label, else the raw typed text."""
-        idx = self._opponent.currentIndex()
-        if idx >= 0 and self._opponent.itemText(idx) == self._opponent.currentText():
-            return self._opponent.itemData(idx)
-        return self._opponent.currentText().strip()
+        return self._combo_spec(self._opponent)
 
     def _search_knobs(self):
         """(key, value) query pairs for the set search fields (empty ones omitted).
@@ -1966,11 +2084,20 @@ class LauncherDialog(QDialog):
             QMessageBox.critical(self, "Opponent unavailable", str(exc))
             return
 
+        analysis = None
+        if self._analysis_enable.isChecked():
+            evaluator = self._combo_spec(self._analysis_eval) or "az:gen"
+            cap = self._analysis_cap.value()
+            analysis = dict(evaluator=evaluator,
+                            worlds=self._spin_value(self._analysis_worlds),
+                            max_sims=None if cap < 0 else cap,
+                            auto=self._analysis_auto.isChecked())
+
         player = {0: None, 1: "A", 2: "B"}[self._player.currentIndex()]
         bo3 = bool(self._format.currentData())
         self._options = dict(binary=self._binary, model_path=model_path,
                              human_player=player, human_deck=human_deck,
-                             model_deck=model_deck, bo3=bo3)
+                             model_deck=model_deck, bo3=bo3, analysis=analysis)
         # Persist the BASE opponent + individual knobs (not the composed spec) so
         # the fields autofill cleanly next session without double-appending.
         _save_launcher_config(dict(
@@ -1980,7 +2107,13 @@ class LauncherDialog(QDialog):
             think_time=self._spin_value(self._think_time),
             search_procs=self._spin_value(self._search_procs),
             match_clock=self._spin_value(self._match_clock),
-            paced=self._paced.currentData()))
+            paced=self._paced.currentData(),
+            analysis_enabled=self._analysis_enable.isChecked(),
+            analysis_evaluator=self._combo_spec(self._analysis_eval),
+            analysis_worlds=self._spin_value(self._analysis_worlds),
+            analysis_cap=None if self._analysis_cap.value() < 0
+            else self._analysis_cap.value(),
+            analysis_auto=self._analysis_auto.isChecked()))
         self.accept()
 
     def options(self):
@@ -2023,6 +2156,30 @@ def _ensure_app():
     return app
 
 
+def _analysis_cfg_from(opts):
+    """An AnalysisConfig from launcher/CLI analysis options, or None (disabled).
+
+    `opts` is the launcher's analysis dict ({} = enabled with defaults, None =
+    off). ``ROBOMAGE_ANALYSIS_SMOKE`` overrides everything with a small
+    torch-free config so the headless smoke can exercise the pipeline."""
+    from analysis_session import AnalysisConfig
+
+    if os.environ.get("ROBOMAGE_ANALYSIS_SMOKE"):
+        return AnalysisConfig(evaluator_spec="uniform", worlds=2,
+                              chunk_sims=8, max_sims=32, auto_analyze=True)
+    if opts is None:
+        return None
+    cfg = AnalysisConfig()
+    if opts.get("evaluator"):
+        cfg.evaluator_spec = opts["evaluator"]
+    if opts.get("worlds"):
+        cfg.worlds = int(opts["worlds"])
+    if opts.get("max_sims") is not None:
+        cfg.max_sims = int(opts["max_sims"])
+    cfg.auto_analyze = bool(opts.get("auto", True))
+    return cfg
+
+
 def _run_session(session):
     """Show the board for an assembled session and run the Qt loop to completion."""
     window = GameWindow(session)
@@ -2030,6 +2187,12 @@ def _run_session(session):
         window.show()
         window.start()
         _ensure_app().exec()
+        if (os.environ.get("ROBOMAGE_ANALYSIS_SMOKE")
+                and not (window._analysis is not None
+                         and window._analysis.smoke_ok)):
+            print("ANALYSIS SMOKE FAILED: no analysis stats arrived",
+                  file=sys.stderr)
+            return 1
     finally:
         # The front end owns closing the env (the driver leaves it open).
         session.env.close()
@@ -2037,14 +2200,18 @@ def _run_session(session):
 
 
 def run(binary_path, model_path, human_player=None,
-        human_deck="delver", model_deck="delver", bo3=True):
+        human_deck="delver", model_deck="delver", bo3=True, analysis=False):
     """Launch the Qt game board. Same signature/semantics as tui_game.run:
     `model_path` of None/"scripted" ⇒ rule-based opponent; any
     opponents.make_controller spec works; `bo3` (default True) plays a
-    best-of-three match with sideboarding in one engine process."""
+    best-of-three match with sideboarding in one engine process. `analysis`
+    opens the analysis window (default config)."""
     _ensure_app()
+    analysis_cfg = _analysis_cfg_from({} if analysis else None)
     session = build_session(binary_path, model_path, human_player=human_player,
-                            human_deck=human_deck, model_deck=model_deck, bo3=bo3)
+                            human_deck=human_deck, model_deck=model_deck, bo3=bo3,
+                            analysis=analysis_cfg is not None)
+    session.analysis_cfg = analysis_cfg
     return _run_session(session)
 
 
@@ -2058,11 +2225,13 @@ def run_launcher(binary_path=None):
     if dialog.exec() != QDialog.DialogCode.Accepted:
         return 0
     opts = dialog.options()
+    analysis_cfg = _analysis_cfg_from(opts.get("analysis"))
     try:
         session = build_session(
             opts["binary"], opts["model_path"], human_player=opts["human_player"],
             human_deck=opts["human_deck"], model_deck=opts["model_deck"],
-            bo3=opts["bo3"])
+            bo3=opts["bo3"], analysis=analysis_cfg is not None)
+        session.analysis_cfg = analysis_cfg
     except Exception as exc:                              # noqa: BLE001
         QMessageBox.critical(None, "Could not start game", str(exc))
         return 1

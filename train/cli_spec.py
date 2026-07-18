@@ -840,6 +840,10 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "Takes precedence over --tui. Needs PySide6 (pip install -r "
                  "train/requirements-gui.txt); if it is missing, falls back to "
                  "the TUI when --tui is also set, else errors with the install hint."),
+        Arg("--analysis", "flag",
+            help="GUI only: open the analysis window (live MCTS evaluation of "
+                 "your decisions on a detached engine copy; default evaluator "
+                 "az:gen). The no-args GUI launcher has its own checkbox for this."),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
         Arg("--bo1", "flag",

@@ -99,7 +99,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest
   Extras: self_lands_played=1, self_revolt
@@ -803,7 +803,7 @@
   Opp:   18 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Underground Sea
   Opp BF:   Island
-  Stack: Scalding Tarn (ability, opponent)
+  Stack: Scalding Tarn (ability, opponent) [amt=1]
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -826,7 +826,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Underground Sea
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -1696,7 +1696,7 @@
   Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -1717,7 +1717,7 @@
   Opp:   18 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Lotus Petal | Underground Sea (T)
   Opp BF:   Island | Mountain (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
@@ -3003,7 +3003,7 @@
   Opp:   17 life | mana: empty | hand count: 1 | lib 41
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Thundering Falls
-  Stack: Flooded Strand (ability, opponent)
+  Stack: Flooded Strand (ability, opponent) [amt=1]
   Self GY: Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -3024,7 +3024,7 @@
   Opp:   15 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Mountain (T) | Thundering Falls
   Opp BF:   Lotus Petal | Swamp
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -3944,7 +3944,7 @@
   Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
-  Stack: Bloodstained Mire (ability, self)
+  Stack: Bloodstained Mire (ability, self) [amt=1]
   Self GY: Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
@@ -3965,7 +3965,7 @@
   Opp:   17 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Delver of Secrets [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Cori-Steel Cutter (->Delver of Secrets) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
-  Stack: Bloodstained Mire (ability, self)
+  Stack: Bloodstained Mire (ability, self) [amt=1]
   Pending: Bloodstained Mire (self)
   Self GY: Bloodstained Mire, Underground Sea, Verdant Catacombs, Dark Ritual, Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Volcanic Island, Flooded Strand, Lightning Bolt, Force of Will, Wasteland, Lightning Bolt, Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest

@@ -204,7 +204,7 @@ if __name__ == "__main__":
         else:
             gui_game.run(args.binary, model_path, human_player=args.player,
                          human_deck=args.human_deck, model_deck=args.model_deck,
-                         bo3=not args.bo1)
+                         bo3=not args.bo1, analysis=args.analysis)
     elif args.tui:
         import tui_game
         tui_game.run(args.binary, model_path, human_player=args.player,

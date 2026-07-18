@@ -938,9 +938,13 @@ class RoboMageEnv(gym.Env):
     def _kill_proc(self):
         if self._proc is not None:
             try:
+                # Kill BEFORE closing the pipes: closing stdin first races the
+                # engine noticing EOF — a --search-server engine parked at a
+                # decision then prints "FATAL: stdin closed" teardown noise
+                # before the SIGKILL lands.
+                self._proc.kill()
                 self._proc.stdin.close()
                 self._proc.stdout.close()
-                self._proc.kill()
                 self._proc.wait()
             except Exception:
                 pass

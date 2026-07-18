@@ -285,7 +285,14 @@ class StateUpdate:
     human's view and must not display the "self" hand (it's the opponent's).
     `perm_counters` / `perm_token_names` are (self[48], opp[48]) side-channels
     (env._perm_counters / env._perm_token_names) in the same perspective as obs
-    — decode swaps them with it."""
+    — decode swaps them with it.
+
+    `obs` is a private COPY (the env reuses its observation buffer, and a
+    search opponent or the analysis window refills it mid-decision).
+    `search_safe` / `history_len` feed the analysis window: whether this
+    decision is snapshot-restorable (None when the env has no search
+    protocol), and the env action-history length at this decision (the replay
+    prefix that reconstructs it on a detached analysis engine)."""
     obs: object
     num_choices: int
     actions: list                # decoded action dicts (human turn) or []
@@ -293,6 +300,8 @@ class StateUpdate:
     opp_perspective: bool = False
     perm_counters: object = None
     perm_token_names: object = None
+    search_safe: object = None
+    history_len: int = 0
 
 
 @dataclass
@@ -421,12 +430,14 @@ class GameDriver:
                 opp_queried = opp_turn
 
                 self._sink.on_state(StateUpdate(
-                    obs, num,
+                    obs.copy(), num,
                     actions if human_must_act else [],
                     human_turn=human_must_act,
                     opp_perspective=opp_turn,
                     perm_counters=getattr(env, "_perm_counters", None),
-                    perm_token_names=getattr(env, "_perm_token_names", None)))
+                    perm_token_names=getattr(env, "_perm_token_names", None),
+                    search_safe=getattr(env, "last_search_safe", None),
+                    history_len=len(getattr(env, "_action_history", ()))))
 
                 opp_acted = False
                 autopass_acted = False
@@ -606,10 +617,13 @@ class Session:
     bo3: bool
     clock_fn: object = None
     pace_idle: object = None
+    controller: object = None    # the opponent Controller (analysis hooks)
+    analysis_cfg: object = None  # AnalysisConfig when the front end enables it
 
 
 def build_session(binary_path, model_path, human_player=None,
-                  human_deck="delver", model_deck="delver", bo3=True):
+                  human_deck="delver", model_deck="delver", bo3=True,
+                  analysis=False):
     """Assemble the engine env, opponent controller, and seat/clock/pace plumbing
     for one session (front-end-agnostic). Returns a Session.
 
@@ -618,7 +632,9 @@ def build_session(binary_path, model_path, human_player=None,
     shorthand, or a scripted tier ("scripted:hard", "explore", ...) — so both
     front ends share the one agent grammar. `bo3` (default True) plays a
     best-of-three match — with sideboarding between games — in a single engine
-    process; pass ``bo3=False`` for a single game.
+    process; pass ``bo3=False`` for a single game. `analysis=True` forces the
+    search-capable env even for a non-search opponent, so the analysis window
+    can snapshot/replay the session (harmless when unused).
     """
     from opponents import make_controller, is_scripted_spec
 
@@ -644,7 +660,7 @@ def build_session(binary_path, model_path, human_player=None,
     # Without this a SearchController would run but silently never search
     # (last_search_safe missing -> permanent raw-policy fallback).
     env_cls = TuiEnv
-    if getattr(ctrl, "wants_search_env", False):
+    if getattr(ctrl, "wants_search_env", False) or analysis:
         from search_env import SearchNarrativeEnv
 
         class TuiSearchEnv(TuiEnvMixin, SearchNarrativeEnv):
@@ -669,4 +685,5 @@ def build_session(binary_path, model_path, human_player=None,
     return Session(env=env, opp_act=opp_act, opp_is_a=opp_is_a, is_model=is_model,
                    opp_label=opp_label, human_deck=human_deck, opp_deck=model_deck,
                    bo3=bo3, clock_fn=clock_fn,
-                   pace_idle=getattr(ctrl, "pace_idle", None))
+                   pace_idle=getattr(ctrl, "pace_idle", None),
+                   controller=ctrl)

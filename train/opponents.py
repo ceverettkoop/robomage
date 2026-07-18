@@ -401,6 +401,13 @@ class SearchController:
         self.label = label
         self._rng = np.random.default_rng(rng_seed)
         self._env = None
+        # Optional observer hook: called after every SEARCHED decision with
+        # (obs_copy, num_choices, SearchResult, chosen_action). Fires on the
+        # caller's (driver) thread; the GUI analysis window uses it to display
+        # the opponent's own search. Fallback (unsearched) decisions produce no
+        # result and never fire it. Hook errors are swallowed — a display hook
+        # must never break play.
+        self.on_result = None
         self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0,
                       "sb_searched": 0, "pool_procs": procs, "early_stops": 0}
         if self._clock is not None:
@@ -517,9 +524,17 @@ class SearchController:
         if result.stopped_early:
             self.stats["early_stops"] += 1
         if self._temperature <= 1e-6:
-            return result.best_action()
-        pi = result.policy_target(self._temperature)
-        return int(self._rng.choice(len(pi), p=pi))
+            chosen = result.best_action()
+        else:
+            pi = result.policy_target(self._temperature)
+            chosen = int(self._rng.choice(len(pi), p=pi))
+        if self.on_result is not None:
+            try:
+                self.on_result(np.array(obs, copy=True), int(num_choices),
+                               result, int(chosen))
+            except Exception:  # noqa: BLE001 — observer must never break play
+                pass
+        return chosen
 
 
 class ActionListController:
