@@ -82,6 +82,56 @@ int FrameCtx::ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity
     return choice;
 }
 
+// ── SBE_LATCHED helpers (pending_query.h) ───────────────────────────────────
+
+uint64_t pq_key(SbeSite site, bool chooser_is_a, uint64_t context, size_t menu_size) {
+    // Deterministic fold of the site identity. Only ever compared for equality
+    // within one process (the key lives in cur_game and snapshots in-process),
+    // so the exact mixing constants are irrelevant — distinctness across the
+    // handful of simultaneously-derivable questions is all that matters.
+    uint64_t h = static_cast<uint64_t>(site);
+    h = h * 1000003ull ^ (chooser_is_a ? 1ull : 2ull);
+    h = h * 1000003ull ^ context;
+    h = h * 1000003ull ^ static_cast<uint64_t>(menu_size);
+    return h;
+}
+
+bool pq_take_latched(uint64_t key, int *choice) {
+    PendingQuery &pq = cur_game.pending_query;
+    if (!pq.active) return false;  // first arrival — the site arms (or blocks)
+    // An SBE prompt site is only ever reached with a query parked when the
+    // main loop's SBE_LATCHED dispatch fell into the normal flow carrying an
+    // answered latch — anything else parked here is a protocol violation.
+    if (pq.tag != PendingQuery::SBE_LATCHED || !pq.answered)
+        fatal_error("SBE prompt site reached with a foreign/unanswered pending query parked");
+    if (pq.key != key)
+        fatal_error("SBE latched-answer key mismatch: the resumed scan derived a different question");
+    *choice = pq.answer;
+    // Restore the pre-arm priority, exactly as the blocking path's
+    // post-get_input restore does — the site never self-restores.
+    cur_game.player_a_has_priority = pq.prev_priority;
+    pq = PendingQuery{};
+    return true;
+}
+
+void pq_arm_sbe(uint64_t key, std::vector<LegalAction> menu, Zone::Ownership chooser,
+                Entity decision_source) {
+    PendingQuery &pq = cur_game.pending_query;
+    if (pq.active)
+        fatal_error("pq_arm_sbe: a pending query is already parked");
+    pq = PendingQuery{};
+    pq.tag = PendingQuery::SBE_LATCHED;
+    pq.active = true;
+    pq.menu = std::move(menu);
+    pq.chooser_is_a = (chooser == Zone::PLAYER_A);
+    pq.decision_source = decision_source;
+    pq.key = key;
+    // Persist priority at the chooser (the loop-top emitter asserts it); the
+    // pre-arm seat is restored by pq_take_latched at consume time.
+    pq.prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = pq.chooser_is_a;
+}
+
 ResolveStatus FrameCtx::resolve_child(const Ability &child_template, FrameLevel::ChildKind kind,
                                       int child_index, int iter_index, void (*bind)(Ability &child),
                                       std::shared_ptr<Orderer> orderer) {

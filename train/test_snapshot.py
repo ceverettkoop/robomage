@@ -50,7 +50,10 @@ from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
                     CAT_ATTACK_TARGET, CAT_BLOCK_TARGET, CAT_ASSIGN_DAMAGE,
                     CAT_OTHER_CHOICE, CAT_CAST_SPELL, CAT_TOP_LIBRARY,
-                    CAT_BOTTOM_DECK_CARD, CAT_ORDER_TRIGGERS, CAT_SELECT_TARGET)
+                    CAT_BOTTOM_DECK_CARD, CAT_ORDER_TRIGGERS, CAT_SELECT_TARGET,
+                    CAT_PLAY_LAND, CAT_KEEP_LEGEND, CAT_CHOOSE_TYPE,
+                    CAT_NAME_CARD)
+from card_costs import _VOCAB_NAMES
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
@@ -206,6 +209,15 @@ _SIDEBOARD_CATS = (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE)
 
 def _query_cats(payload):
     return np.frombuffer(payload[_CATS_OFF:_CATS_OFF + MAX_ACTIONS * 4], dtype=np.int32)
+
+
+# The per-action card-id floats (card_vocab_index / N_CARD_TYPES) are the SECOND
+# metadata array, right after the category ints.
+_IDS_OFF = _CATS_OFF + MAX_ACTIONS * 4
+
+
+def _query_ids(payload):
+    return np.frombuffer(payload[_IDS_OFF:_IDS_OFF + MAX_ACTIONS * 4], dtype=np.float32)
 
 
 def _is_sideboard_query(r):
@@ -1176,6 +1188,219 @@ def test_trigger_target_roundtrip():
                 pass
 
 
+# ── Batch 6: SBE prompts (legend rule, ETB choices) as latched roots ──────────
+
+def _write_decks(specs):
+    """Write temp .dk files from (name, content) pairs; return their paths."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    paths = []
+    for name, content in specs:
+        p = os.path.join(d, f"{name}.dk")
+        with open(p, "w") as f:
+            f.write(content)
+        paths.append(p)
+    return paths
+
+
+def _record_play_land_first_line(seed, extra, land_name, cap=4000):
+    """Control recording that plays ONE specific land: the FIRST decision whose
+    menu offers PLAY_LAND of `land_name` plays it (identified by the action's
+    vocab card id, since the hand offers several lands), every other decision
+    auto-0s. Returns (records, choices, outcome) like _record_cast_first_line."""
+    want = _VOCAB_NAMES.index(land_name)
+    eng = Engine(seed, extra=extra)
+    records, choices = [], []
+    played = False
+    r = eng.read()
+    idx = 0
+    while r.kind == "q" and idx < cap:
+        action = 0
+        if not played:
+            cats = _query_cats(r.payload)[:r.nc]
+            vocab = np.rint(_query_ids(r.payload)[:r.nc] * N_CARD_TYPES).astype(int)
+            hits = np.nonzero((cats == CAT_PLAY_LAND) & (vocab == want))[0]
+            if hits.size:
+                action = int(hits[0])
+                played = True
+        records.append((r.nc, r.payload, r.safe))
+        choices.append(action)
+        r = eng.play(action)
+        idx += 1
+    outcome = {"kind": r.kind, "returncode": r.returncode, "winner": r.winner}
+    eng.kill()
+    return records, choices, outcome
+
+
+def _find_sbe_root(control, cat, want_nc, ctx):
+    """Locate the first control decision of category `cat` and assert it is a
+    well-formed safe root (all options share the category, expected menu size,
+    safe=1)."""
+    root_idx = _first_cat_index(control, cat)
+    if root_idx is None:
+        raise ProtocolError(f"{ctx}: no decision with category {cat} in the "
+                            "control line")
+    nc, pl, safe = control[root_idx]
+    cats = _query_cats(pl)
+    if not bool((cats[:nc] == cat).all()):
+        raise ProtocolError(f"{ctx}: root categories {cats[:nc]} are not all {cat}")
+    if want_nc is not None and nc != want_nc:
+        raise ProtocolError(f"{ctx}: root menu has {nc} options, expected {want_nc}")
+    if not safe:
+        raise ProtocolError(f"{ctx}: root reports safe=0 — it should be a "
+                            "loop-top pending decision now")
+    return root_idx
+
+
+def _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx, ctx,
+                       expect_diverge):
+    """Shared SNAPSHOT/diverge/RESTORE driver for the SBE-prompt roots: replay
+    the control line to the root, SNAPSHOT (re-emit must be exact), play a
+    divergent excursion starting with the option AFTER the control's pick
+    (optionally asserting the very next query differs from the control's — the
+    choice observably changed the state), RESTORE + RELEASE byte-identically,
+    then resume the control line to EOF and compare the outcome."""
+    nc, pl, _safe = control[root_idx]
+    eng = Engine(seed, extra=extra)
+    try:
+        cur = eng.read()
+        for idx in range(root_idx):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"{ctx} alignment at decision {idx}")
+            cur = eng.play(choices[idx])
+        _assert_same_query(cur, pl, nc, f"{ctx} root alignment")
+        q = eng.snapshot(0)
+        _assert_same_query(q, pl, nc, f"{ctx} post-SNAPSHOT re-emit")
+        dq = eng.play((choices[root_idx] + 1) % nc)
+        if expect_diverge:
+            if dq.kind != "q":
+                raise ProtocolError(f"{ctx}: divergent pick ended the game "
+                                    "immediately")
+            if root_idx + 1 < len(control) and \
+                    _first_diff(dq.payload, control[root_idx + 1][1]) is None:
+                raise ProtocolError(f"{ctx}: picking the other option produced "
+                                    "a byte-identical next query — the choice "
+                                    "had no observable effect")
+        for i in range(1, 8):
+            if dq.kind != "q":
+                break
+            dq = eng.play(_diverge(i, dq.nc))
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl, nc, f"{ctx} post-RESTORE re-emit")
+        rel = eng.release()
+        _assert_same_query(rel, pl, nc, f"{ctx} post-RELEASE re-emit")
+        cur = rel
+        for idx in range(root_idx, len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"{ctx} resumed alignment at decision {idx}")
+            cur = eng.play(choices[idx])
+        if cur.kind != "eof" or cur.returncode != 0:
+            raise ProtocolError(f"{ctx}: resumed line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            raise ProtocolError(f"{ctx}: outcome mismatch: control "
+                                f"{outcome['winner']!r} vs resumed {cur.winner!r}")
+    finally:
+        eng.kill()
+
+
+def test_legend_rule_roundtrip():
+    """Batch 6 (SBE prompts): the 704.5j legend-rule keep choice is a loop-top
+    pending decision (tag SBE_LATCHED, latched-answer re-derivation): it
+    reports safe=1 and is a valid SNAPSHOT/RESTORE root. A preset Thalia plus a
+    second copy cast from hand (two preset Plains pay {1}{W}) collide when the
+    spell resolves; at the 2-option KEEP_LEGEND root: SNAPSHOT re-emits
+    exactly; keeping the OTHER copy must change the next query (the kept
+    permanent's identity/summoning sickness differ); RESTORE returns
+    byte-identically; the resumed line matches the control to EOF."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("legend_pq_a", "1 Thalia Guardian of Thraben\n29 Plains\n"),
+        ("legend_pq_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/legend_pq_a", "--deck-b", "temp/legend_pq_b",
+             "--no-shuffle",
+             "--battlefield-a", "Thalia Guardian of Thraben,Plains,Plains"]
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_KEEP_LEGEND, 2, "legend")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "legend", expect_diverge=True)
+        return (f"KEEP_LEGEND root @ {root_idx} (nc=2) safe=1, keeping the "
+                f"other copy diverges, round-trip exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_etb_choose_type_roundtrip():
+    """Batch 6 (SBE prompts): the ETB choose-a-creature-type prompt (Cavern of
+    Souls) is a loop-top pending decision (tag SBE_LATCHED). Playing the preset
+    Cavern as A's first land reaches a 2-option CHOOSE_TYPE menu (Delver of
+    Secrets in A's deck contributes Human + Wizard): safe=1, SNAPSHOT re-emits
+    exactly, a divergent excursion (the other type) then RESTORE returns
+    byte-identically, and the resumed line matches the control to EOF. (The
+    chosen type itself is not serialized to the observation, so no
+    next-query-differs assertion.)"""
+    seed = 5
+    deck_paths = _write_decks([
+        ("ctype_pq_a", "1 Cavern of Souls\n1 Delver of Secrets\n28 Plains\n"),
+        ("ctype_pq_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/ctype_pq_a", "--deck-b", "temp/ctype_pq_b",
+             "--no-shuffle"]
+    try:
+        control, choices, outcome = _record_play_land_first_line(
+            seed, extra, "Cavern of Souls")
+        root_idx = _find_sbe_root(control, CAT_CHOOSE_TYPE, 2, "etb-choose-type")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "etb-choose-type", expect_diverge=False)
+        return (f"CHOOSE_TYPE root @ {root_idx} (nc=2) safe=1, round-trip "
+                f"exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_etb_name_card_roundtrip():
+    """Batch 6 (SBE prompts): the ETB name-a-card prompt (Disruptor Flute) is a
+    loop-top pending decision (tag SBE_LATCHED). Casting the Flute off two
+    preset Plains reaches a 2-option NAME_CARD menu (B's deck holds Forest +
+    Mountain): safe=1, SNAPSHOT re-emits exactly, naming the OTHER card must
+    change the next query (the permanent's chosen-name id is serialized),
+    RESTORE returns byte-identically, and the resumed line matches the control
+    to EOF."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("flute_pq_a", "1 Disruptor Flute\n29 Plains\n"),
+        ("flute_pq_b", "15 Forest\n15 Mountain\n"),
+    ])
+    extra = ["--deck-a", "temp/flute_pq_a", "--deck-b", "temp/flute_pq_b",
+             "--no-shuffle",
+             "--battlefield-a", "Plains,Plains"]
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_NAME_CARD, 2, "etb-name-card")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "etb-name-card", expect_diverge=True)
+        return (f"NAME_CARD root @ {root_idx} (nc=2) safe=1, naming the other "
+                f"card diverges, round-trip exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -1966,6 +2191,9 @@ TESTS = [
     ("pool_determinize_pin", test_pool_determinize_pin),
     ("trigger_order_roundtrip", test_trigger_order_roundtrip),
     ("trigger_target_roundtrip", test_trigger_target_roundtrip),
+    ("legend_rule_roundtrip", test_legend_rule_roundtrip),
+    ("etb_choose_type_roundtrip", test_etb_choose_type_roundtrip),
+    ("etb_name_card_roundtrip", test_etb_name_card_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

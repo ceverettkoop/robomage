@@ -310,6 +310,20 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                         continue;
                     }
                     break;
+                case PendingQuery::SBE_LATCHED:
+                    // No site resume call — leave the ANSWERED query latched and
+                    // fall into the normal flow below. process_turn_based_actions
+                    // re-runs idempotently (flag-guarded per step), then
+                    // state_based_effects re-runs from scratch on the frozen
+                    // state: already-applied SBAs are silent no-ops, the deriving
+                    // scan re-finds the identical question (the legend conflict /
+                    // the mid-apply ETB choice), and the site's pq_take_latched
+                    // consumes the answer in place — skipping its arm-time logs,
+                    // which printed at first arrival. Tripwires: pq_take_latched
+                    // fatals on a key mismatch (a different question derived
+                    // first), and state_based_effects fatals if it settles
+                    // without re-deriving the question at all.
+                    break;
                 case PendingQuery::RESOLUTION: {
                     // Re-enter the suspended resolution DIRECTLY via advance_step,
                     // skipping turn-based actions / mandatory choices / SBE — SBAs
