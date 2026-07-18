@@ -12,6 +12,7 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "mana_system.h"
+#include "resolution_frame.h"
 #include "snapshot.h"
 #include "stable_rng.h"
 
@@ -283,14 +284,22 @@ void determinize_hidden_state(unsigned int world_seed) {
             opp_companion = global_coordinator.GetComponent<Player>(opp_pe).chosen_companion;
     }
 
+    // Entities a suspended decision references (a parked pending-query menu,
+    // the resolving ability's targets, the remembered set): a world sampled at
+    // a suspended root must keep them exactly where the resumed handler will
+    // look for them (e.g. the library top card of a parked peek/reveal), so
+    // they never enter the exchange pools below.
+    std::set<Entity> decision_pins = collect_pending_pins();
+
     Entity max_e = global_coordinator.GetMaxIssuedEntity();
     for (Entity e = 0; e < max_e; e++) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(e);
         if (z.location == Zone::LIBRARY && (z.owner == p || z.owner == opp)) {
             const int *known = (z.owner == Zone::PLAYER_A) ? known_a : known_b;
-            bool pinned = z.distance_from_top < KNOWN_TOP_LIBRARY_SIZE &&
-                          known[z.distance_from_top] != -1;
+            bool pinned = (z.distance_from_top < KNOWN_TOP_LIBRARY_SIZE &&
+                           known[z.distance_from_top] != -1) ||
+                          decision_pins.count(e) > 0;
             if (pinned) continue;
             if (z.owner == p) {
                 own_pool.push_back(e);
@@ -302,7 +311,10 @@ void determinize_hidden_state(unsigned int world_seed) {
             }
         } else if (z.location == Zone::HAND && z.owner == opp && !z.identity_known) {
             // Revealed hand cards (Duress, revealed tutor targets) stay put;
-            // only the genuinely unknown ones join the exchange pool.
+            // only the genuinely unknown ones join the exchange pool — and so do
+            // cards a suspended decision references (they must stay in hand
+            // where the parked menu expects them).
+            if (decision_pins.count(e) > 0) continue;
             opp_pool.push_back(e);
             opp_hand_slots++;
         } else if (opp_sideboard_hidden && z.location == Zone::SIDEBOARD &&

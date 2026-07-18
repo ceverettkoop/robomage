@@ -30,9 +30,13 @@ static void frame_finish();
 
 // First entry: save the incoming priority, count a triggered ability's
 // resolution once (Count$ResolvedThisTurn — guarded by counted_resolution so a
-// resume never recounts), push the ROOT level, and repoint priority at the
-// resolving controller exactly as the old locals did. Re-entry: verify the
-// scanned top is still the suspended object and change nothing.
+// resume never recounts), save-and-clear the remembered set (each top-level
+// resolution gets its own clean Remembered$ scope, CR 608.2 — formerly the
+// RememberedResolutionScope RAII in ability.cpp, moved here so a suspension
+// keeps the mid-resolution accumulations instead of unwinding them), push the
+// ROOT level, and repoint priority at the resolving controller exactly as the
+// old locals did. Re-entry: verify the scanned top is still the suspended
+// object and change nothing.
 static void frame_enter(Entity top_entity, const Ability &ab, bool count_triggered) {
     ResolutionFrame &fr = cur_game.resolution;
     if (fr.active) {
@@ -44,6 +48,8 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     fr.active = true;
     fr.stack_entity = top_entity;
     fr.prev_priority = cur_game.player_a_has_priority;
+    fr.saved_remembered = cur_game.remembered_entities;
+    cur_game.remembered_entities.clear();
     if (count_triggered && ab.ability_type == Ability::TRIGGERED) {
         cur_game.ability_resolution_counts[ab.source]++;
         fr.counted_resolution = true;
@@ -55,11 +61,12 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
 }
 
 // Completion epilogue shared by both resolve sites: restore the pre-resolution
-// priority and clear the frame. The caller then runs its existing
-// component-removal / zone-move / saga / DestroyEntity code unchanged.
+// priority and remembered set, and clear the frame. The caller then runs its
+// existing component-removal / zone-move / saga / DestroyEntity code unchanged.
 static void frame_finish() {
     ResolutionFrame &fr = cur_game.resolution;
     cur_game.player_a_has_priority = fr.prev_priority;
+    cur_game.remembered_entities = fr.saved_remembered;
     fr = ResolutionFrame{};
 }
 
@@ -165,7 +172,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 frame_enter(top_entity, ab, /*count_triggered=*/false);
                 // On suspension leave EVERYTHING in place (frame armed, spell on
                 // the stack, priority at the chooser) — the next advance_step
-                // re-enters here as the resume path. (Unreachable this batch.)
+                // re-enters here as the resume path.
                 if (ab.resolve(orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
                 frame_finish();
                 global_coordinator.RemoveComponent<Ability>(top_entity);

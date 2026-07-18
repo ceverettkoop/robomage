@@ -48,7 +48,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
-                    CAT_ATTACK_TARGET, CAT_BLOCK_TARGET, CAT_ASSIGN_DAMAGE)
+                    CAT_ATTACK_TARGET, CAT_BLOCK_TARGET, CAT_ASSIGN_DAMAGE,
+                    CAT_OTHER_CHOICE)
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
@@ -556,6 +557,130 @@ def test_damage_assign_roundtrip():
             raise ProtocolError(f"expected 2 damage excursions, ran {excursions}")
         return (f"assignment picks @ {da_idx} (nc=3) and {da_idx + 1} (nc=2) "
                 f"both safe=1, round-trips exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def _write_resolution_decks():
+    """Stacked decks for the resolution-suspension roots test. A's Delver of
+    Secrets (preset on the battlefield) fires its upkeep trigger every turn:
+    the trigger resolves through effects::peek_and_reveal, whose reveal y/n
+    prompt is now a suspended loop-top pending decision (Batch 3). A's deck is
+    stacked so the 8th card — the library top at the first upkeep, before any
+    draw — is a Lightning Bolt among Mountains, making the determinize pinning
+    observable: only the pin keeps the Bolt on top of an otherwise
+    indistinguishable all-Mountain library. Lands elsewhere deck the game out
+    under auto-0 (Bolt is never cast: action 0 always passes)."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    pa = os.path.join(d, "res_pq_a.dk")
+    with open(pa, "w") as f:
+        f.write("7 Mountain\n1 Lightning Bolt\n22 Mountain\n")
+    pb = os.path.join(d, "res_pq_b.dk")
+    with open(pb, "w") as f:
+        f.write("30 Forest\n")
+    return [pa, pb]
+
+
+_RESOLUTION_EXTRA = ["--deck-a", "temp/res_pq_a", "--deck-b", "temp/res_pq_b",
+                     "--no-shuffle", "--narrative",
+                     "--battlefield-a", "Delver of Secrets"]
+
+
+def test_resolution_single_roundtrip():
+    """Batch 3 (resolution suspension): a mid-resolution effect prompt — the
+    Delver upkeep peek/reveal y/n from effects::peek_and_reveal — is a loop-top
+    pending decision: it reports safe=1 and is a valid SNAPSHOT/RESTORE root.
+    It is the FIRST safe decision of the game (upkeep precedes the first
+    main-phase menu; all earlier queries are the safe=0 pregame mulligans), a
+    2-option OTHER_CHOICE menu. At the root: SNAPSHOT re-emits exactly; a
+    divergent line (Reveal instead of the control's Don't-reveal — transforming
+    Delver) then RESTORE returns byte-identically; the resumed real line stays
+    byte-identical to a no-snapshot control run with the same outcome. Also the
+    first determinize-pinning smoke: a DETERMINIZE at the root succeeds, the
+    re-emitted query is unchanged, and playing 'Reveal' inside that world still
+    reveals the Lightning Bolt the parked menu refers to (the pin kept it on
+    top through the world reshuffle); RESTORE then reverts byte-for-byte."""
+    seed = 5
+    deck_paths = _write_resolution_decks()
+    try:
+        control, outcome = record_line(seed, _auto0, extra=_RESOLUTION_EXTRA)
+        root_idx = next((i for i, (_, _, s) in enumerate(control) if s), None)
+        if root_idx is None:
+            raise ProtocolError("no safe decision in the control line")
+        if root_idx == 0:
+            raise ProtocolError("first decision is already safe — expected the "
+                                "safe=0 pregame mulligans first")
+        nc, pl, _safe = control[root_idx]
+        if nc != 2:
+            raise ProtocolError(f"first safe decision has {nc} options, expected "
+                                "the 2-option peek/reveal prompt")
+        cats = _query_cats(pl)
+        if not bool((cats[:nc] == CAT_OTHER_CHOICE).all()):
+            raise ProtocolError(f"first safe decision categories {cats[:nc]} are "
+                                f"not the peek/reveal OTHER_CHOICE ({CAT_OTHER_CHOICE})")
+
+        eng = Engine(seed, extra=_RESOLUTION_EXTRA)
+        cur = eng.read()
+        for idx in range(root_idx):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"resolution alignment at decision {idx}")
+            cur = eng.play(_auto0(idx, cur.nc))
+        _assert_same_query(cur, pl, nc, "resolution root alignment")
+        if not cur.safe:
+            eng.kill()
+            raise ProtocolError("peek/reveal prompt reports safe=0 — it should be "
+                                "a loop-top pending decision now")
+        q = eng.snapshot(0)
+        _assert_same_query(q, pl, nc, "resolution post-SNAPSHOT re-emit")
+
+        # Divergent excursion: Reveal (choice 1, transforming Delver on the
+        # instant on top), then a scrambled continuation.
+        dq = q
+        for i in range(8):
+            dq = eng.play(1 if i == 0 else _diverge(i, dq.nc))
+            if dq.kind != "q":
+                break
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl, nc, "resolution post-RESTORE re-emit")
+
+        # Determinize pinning smoke: the parked menu references the library top
+        # card (the stacked Lightning Bolt). DETERMINIZE must succeed, leave
+        # the re-emitted query unchanged, and keep the Bolt pinned on top — so
+        # a 'Reveal' inside the world still reveals Lightning Bolt.
+        dq = eng.determinize(3)
+        _assert_same_query(dq, pl, nc, "resolution post-DETERMINIZE re-emit")
+        wq = eng.play(1)  # Reveal
+        if not wq.note_has(b"Revealed: Lightning Bolt"):
+            eng.kill()
+            raise ProtocolError("determinized world did not reveal the pinned "
+                                "Lightning Bolt — the parked menu's library top "
+                                "card was shuffled away (pinning failed)")
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl, nc, "resolution post-pin-world RESTORE re-emit")
+
+        rel = eng.release()
+        _assert_same_query(rel, pl, nc, "resolution post-RELEASE re-emit")
+        cur = rel
+        for idx in range(root_idx, len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"resolution resumed alignment at decision {idx}")
+            cur = eng.play(_auto0(idx, cur.nc))
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed resolution line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        return (f"peek/reveal root @ {root_idx} (nc=2) safe=1, round-trip exact, "
+                f"pinned Bolt revealed in world, outcome={outcome['winner']!r}")
     finally:
         for p in deck_paths:
             try:
@@ -1349,6 +1474,7 @@ TESTS = [
     ("round_trip", test_round_trip),
     ("combat_target_roundtrip", test_combat_target_roundtrip),
     ("damage_assign_roundtrip", test_damage_assign_roundtrip),
+    ("resolution_single_roundtrip", test_resolution_single_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

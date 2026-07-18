@@ -25,7 +25,6 @@ extern Game cur_game;
 namespace effects {
 
 HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
     const PeekParams *pp = std::get_if<PeekParams>(&ab.params);
     if (pp && pp->no_reveal) {
         // Look at the top N cards of the target player's library privately, no reveal choice.
@@ -72,12 +71,19 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         return HandlerResult::DONE_NO_SUBS;
     }
     auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
-    game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
+    // Arm-only peek line: the resume rebuilds the same menu (the top card is
+    // pinned against determinize by collect_pending_pins) without re-logging.
+    if (!ctx.resuming())
+        game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
     std::vector<LegalAction> reveal_actions = {
         LegalAction(PASS_PRIORITY, top_card, std::string("Don't reveal")),
         LegalAction(PASS_PRIORITY, top_card, std::string("Reveal")),
     };
-    int reveal_choice = InputLogger::instance().get_input(reveal_actions);
+    // The old inline get_input ran without a priority repoint — ambient priority
+    // is the resolving controller here — so seating the ask on ab.controller is
+    // a no-op swap, byte-identical to today.
+    int reveal_choice = ctx.ask(std::move(reveal_actions), ab.controller, ab.source);
+    if (reveal_choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     if (reveal_choice == 1) {
         game_log("Revealed: %s\n", top_cd.name.c_str());

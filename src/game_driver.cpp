@@ -232,17 +232,36 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             g_in_main_loop = false;
             return cur_game.winner;
         }
+        // Set by the RESOLUTION dispatch below when a resumed resolution ran to
+        // completion inside its direct advance_step call: skip straight to the
+        // post-resolution half of the iteration (the post-advance SBE + legal
+        // actions) — exactly where today's single-call flow stands after
+        // advance_step returns false. Turn-based actions / mandatory choices /
+        // the pre-advance SBE already ran when the resolution first began, and
+        // SBAs never apply mid-resolution.
+        bool resolution_just_completed = false;
         // A suspended decision (pending_query.h) is emitted here — the FIRST
         // thing each iteration, before the turn header and before turn-based
         // actions / mandatory choices / SBE run (a suspended trigger placement
         // or combat sub-prompt must not let combat damage run underneath it).
         // The stored menu is re-emitted verbatim; loop-safe, so SNAPSHOT/
-        // DETERMINIZE are legal here. (Unreachable until a site suspends.)
+        // DETERMINIZE are legal here.
         if (cur_game.pending_query.active) {
             PendingQuery &pq = cur_game.pending_query;
             if (!pq.answered) {
                 if (cur_game.player_a_has_priority != pq.chooser_is_a)
                     fatal_error("pending query: priority is not at the chooser");
+                // Reset the pending-decision baseline to the arm-time value (0:
+                // every family arms from a loop-top-driven flow with no ambient
+                // pending decision). A SNAPSHOT at this decision is captured
+                // while the scope below holds pending_decision_source =
+                // pq.decision_source, so a RESTORE re-enters with that value
+                // still set — without the reset the recreated scope would
+                // capture it as its prev and leak it past the answer, desyncing
+                // the restored line's next observation from the natural one
+                // (the same hazard run_sideboard_phase documents). No-op on the
+                // natural line.
+                cur_game.pending_decision_source = 0;
                 PendingDecisionScope pending(pq.decision_source);
                 search_set_loop_safe(true);
                 int choice = InputLogger::instance().get_input(pq.menu);
@@ -270,38 +289,68 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // exactly as the single-call flow did.
                     if (cur_game.pending_query.active) continue;
                     break;
+                case PendingQuery::RESOLUTION: {
+                    // Re-enter the suspended resolution DIRECTLY via advance_step,
+                    // skipping turn-based actions / mandatory choices / SBE — SBAs
+                    // don't apply mid-resolution (CR 704.3 timing), and today the
+                    // whole resolution completed inside one advance_step call, so
+                    // nothing may run between its halves. The pass flags are still
+                    // true (left set at suspension), so advance_step re-enters
+                    // resolve_top, the phased resolve skips to the suspended point,
+                    // and the pending ask consumes the latched answer.
+                    bool advanced = cur_game.advance_step(sys.stack_manager, sys.orderer);
+                    // Purity tripwire: a resumed resolution must consume the
+                    // latched answer at the very ask that armed it — a still-
+                    // answered query means the handler diverged on re-entry.
+                    if (cur_game.pending_query.active && cur_game.pending_query.answered)
+                        fatal_error("resolution resume did not consume its latched answer");
+                    // Suspended again (a follow-up ask armed a new query): loop
+                    // back so the pending branch emits it before anything runs.
+                    if (advanced) continue;
+                    // Completed (advance_step reset the pass flags and returned
+                    // false): fall through to the post-resolution half below.
+                    resolution_just_completed = true;
+                    break;
+                }
                 default:
                     fatal_error("pending query dispatch not implemented for tag " +
                                 std::to_string(static_cast<int>(pq.tag)));
             }
         }
-        if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
-            cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
-            prev_turn = cur_game.turn;
-        }
         Zone::Ownership viewer = (has_human_player)
             ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
             : Zone::UNKNOWN;
 
-        sys.state_manager->process_turn_based_actions(cur_game, sys.orderer);
-        if (cur_game.is_mandatory_choice_pending()) {
-            populate_gamestate(&gs, viewer);
-            proc_mandatory_choice(cur_game, sys.orderer);
-            continue;
-        }
-        sys.state_manager->state_based_effects(cur_game, sys.orderer);
-        if (cur_game.ended) {
-            if (!search_intercept_game_end()) break;
-            continue;
-        }
-        if (cur_game.advance_step(sys.stack_manager, sys.orderer)) {
-            continue;
-        } else {
+        if (!resolution_just_completed) {
+            if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
+                cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
+                prev_turn = cur_game.turn;
+            }
+
+            sys.state_manager->process_turn_based_actions(cur_game, sys.orderer);
+            if (cur_game.is_mandatory_choice_pending()) {
+                populate_gamestate(&gs, viewer);
+                proc_mandatory_choice(cur_game, sys.orderer);
+                continue;
+            }
             sys.state_manager->state_based_effects(cur_game, sys.orderer);
             if (cur_game.ended) {
                 if (!search_intercept_game_end()) break;
                 continue;
             }
+            if (cur_game.advance_step(sys.stack_manager, sys.orderer)) {
+                continue;
+            }
+        }
+        // Post-advance SBE: something resolved (or nothing advanced) this
+        // iteration — run state-based effects before offering priority. A
+        // resolution completed via the RESOLUTION dispatch lands here directly,
+        // which is exactly where the single-call flow stood after its
+        // advance_step returned false.
+        sys.state_manager->state_based_effects(cur_game, sys.orderer);
+        if (cur_game.ended) {
+            if (!search_intercept_game_end()) break;
+            continue;
         }
 
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
@@ -337,6 +386,11 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         search_set_loop_safe(false);
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
+    // A real game end must never strand a suspended resolution (plan risk R7):
+    // the winner is decided by state-based effects, which never run while a
+    // resolution is parked, so an active frame/query here is a protocol bug.
+    if (cur_game.resolution.active || cur_game.pending_query.active)
+        fatal_error("game ended with a suspended resolution/pending query still parked");
     g_in_main_loop = false;
     return cur_game.winner;
 }

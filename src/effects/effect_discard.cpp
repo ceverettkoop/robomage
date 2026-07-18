@@ -52,7 +52,6 @@ static bool discard_filter_matches(Entity e, const std::string &discard_valid) {
 }
 
 HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
     // Target player reveals hand, then either the controller picks ONE matching card
     // (RevealYouChoose — Thoughtseize/Duress) or all matching cards are discarded
     // (RevealDiscardAll — Cabal Therapy).
@@ -92,13 +91,17 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    game_log("%s reveals their hand:\n", player_name(tgt_owner).c_str());
-    for (auto e : hand) {
-        auto &cd = global_coordinator.GetComponent<CardData>(e);
-        game_log("  %s\n", cd.name.c_str());
-        // The whole hand is revealed to the caster: record each card's identity in
-        // the belief state (match-scoped multi-hot + per-card known-in-hand flag).
-        mark_card_revealed(e, tgt_owner);
+    // Arm-only reveal: the logs and the belief-state recording ran when the pick
+    // below was armed; a resume must not repeat them.
+    if (!ctx.resuming()) {
+        game_log("%s reveals their hand:\n", player_name(tgt_owner).c_str());
+        for (auto e : hand) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            game_log("  %s\n", cd.name.c_str());
+            // The whole hand is revealed to the caster: record each card's identity in
+            // the belief state (match-scoped multi-hot + per-card known-in-hand flag).
+            mark_card_revealed(e, tgt_owner);
+        }
     }
 
     // Filter by DiscardValid$ — "Card.nonLand", "Card.nonCreature+nonLand", "Card.NamedCard"
@@ -123,9 +126,8 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     if (valid.empty()) {
         game_log("No valid cards to discard.\n");
     } else {
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
-        game_log("%s chooses a card to discard:\n", player_name(ab.controller).c_str());
+        if (!ctx.resuming())
+            game_log("%s chooses a card to discard:\n", player_name(ab.controller).c_str());
         std::vector<LegalAction> discard_actions;
         for (auto e : valid) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
@@ -133,12 +135,12 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             la.category = ActionCategory::DISCARD;
             discard_actions.push_back(la);
         }
-        int choice = InputLogger::instance().get_input(discard_actions);
+        int choice = ctx.ask(std::move(discard_actions), ab.controller, ab.source);
+        if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         Entity chosen = valid[static_cast<size_t>(choice)];
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         game_log("%s discards %s\n", player_name(tgt_owner).c_str(), cd.name.c_str());
         orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
-        cur_game.player_a_has_priority = prev_priority;
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

@@ -98,7 +98,6 @@ static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool u
 }
 
 HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
     (void)orderer;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
     // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
@@ -171,7 +170,8 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
             // TargetMin$ 0 (Cloak and Dagger: "up to one target creature"): the controller may
             // choose no creature. Offer an explicit decline option in that case.
             bool optional = (ab.target_min == 0);
-            game_log("Choose a creature for Pump:\n");
+            if (!ctx.resuming())
+                game_log("Choose a creature for Pump:\n");
             std::vector<LegalAction> tgt_actions;
             for (auto te : pump_targets) {
                 std::string ename = global_coordinator.GetComponent<Permanent>(te).name;
@@ -186,10 +186,8 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
                 none.category = ActionCategory::SELECT_TARGET;
                 tgt_actions.push_back(none);
             }
-            bool prev_priority = cur_game.player_a_has_priority;
-            cur_game.player_a_has_priority = (ctrl == Zone::PLAYER_A);
-            int choice = InputLogger::instance().get_input(tgt_actions);
-            cur_game.player_a_has_priority = prev_priority;
+            int choice = ctx.ask(std::move(tgt_actions), ctrl, ab.source);
+            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
                 ab.target = pump_targets[static_cast<size_t>(choice)];
         }

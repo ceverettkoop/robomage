@@ -34,8 +34,18 @@ enum class HandlerResult { DONE_RUN_SUBS, DONE_NO_SUBS, SUSPENDED };
 
 // Per-handler runtime state for a suspended effect (dig pools, unless-loop
 // counters, ...). Grown one alternative per converted handler in later batches;
-// std::monostate covers handlers with no suspended state.
-using EffectRuntime = std::variant<std::monostate>;
+// std::monostate covers handlers with no suspended state. The Batch 3 Shape A
+// single-prompt handlers mostly need none (their menus rebuild purely and the
+// pending query itself carries the answer); only the multi-ask loops persist
+// their progress here.
+struct SacrificeRt {
+    bool pre_done = false;  // remembered-reset + unless-energy gate already ran
+    size_t iter = 0;        // next sac_count iteration
+};
+struct ChooseCardRt {
+    size_t type_idx = 0;    // next ChooseEach type index (Ajani -4 per-type loop)
+};
+using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt>;
 
 // One level of the persisted resolve() continuation: the ROOT is the stack
 // object's own ability; nested levels hold the BY-VALUE in-flight copy of a
@@ -62,8 +72,9 @@ struct ResolutionFrame {
     Entity stack_entity = 0;         // the stack object being resolved (resume verifies it)
     bool prev_priority = false;      // player_a_has_priority to restore on completion
     bool counted_resolution = false; // ability_resolution_counts++ already applied (first entry)
-    std::vector<Entity> saved_remembered;  // remembered set to restore on completion (Batch 3;
-                                           // RememberedResolutionScope still owns this today)
+    std::vector<Entity> saved_remembered;  // remembered set to restore on completion
+                                           // (saved+cleared by frame_enter, restored by
+                                           // frame_finish in stack_manager.cpp)
     std::vector<FrameLevel> levels;
 };
 
@@ -77,11 +88,23 @@ class FrameCtx {
     public:
         static FrameCtx root();
         static FrameCtx blocking();
+        bool is_root() const { return root_mode; }
         bool can_suspend() const;
+        // True when re-entering suspended code with a latched answer pending —
+        // the next ask() reached will consume it. Pre-ask side effects
+        // (narrative logs, reveal bookkeeping) already ran when the query was
+        // armed, so converted handlers guard them with !resuming() so a resume
+        // never duplicates them.
+        bool resuming() const;
         // One decision: latched/blocking paths return the chosen index; the
         // suspend path parks the query and returns -1 (the caller returns
-        // SUSPENDED mutating nothing).
+        // SUSPENDED mutating nothing — check decision_suspended() to tell a
+        // suspension apart from a CLI flag value).
         int ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source);
+        // The active level of the persisted frame (the ROOT level this batch).
+        // The phase-tagged resolve() persists its resume point (phase/next_sub)
+        // here. Only valid when can_suspend() — fatal otherwise.
+        FrameLevel &level() { return current_level(); }
         // Drive a nested resolve as a persisted FrameLevel: first entry copies
         // `child_template` and binds it via `bind`; a resume re-enters the
         // persisted copy WITHOUT re-binding. (Placeholder until the container
@@ -104,9 +127,13 @@ class FrameCtx {
         bool root_mode = false;
 };
 
-// Entities a suspended decision references (menu entries, in-flight targets,
-// revealed pools), which determinization must pin in place. Stub until the
-// frozen-pool batch lands the real visitor.
+// Entities a suspended decision references, which determinization must pin in
+// place (a DETERMINIZE at a suspended root must not shuffle a card the parked
+// menu / the resolving ability refers to). Batch 3 slice: the union of pending
+// query menu entities, each FrameLevel's in-flight work targets/source (plus
+// the ROOT ability component's), and cur_game.remembered_entities. The full
+// per-handler EffectRuntime visitor (dig pools etc.) lands with the frozen-pool
+// batch.
 std::set<Entity> collect_pending_pins();
 
 #endif /* RESOLUTION_FRAME_H */

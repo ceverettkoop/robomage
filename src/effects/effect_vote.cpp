@@ -40,7 +40,6 @@ namespace effects {
 // chains that subability. If no permanent matches the filter (the opponent controls no nonland
 // permanents), the spell still resolves and does nothing.
 HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
-    PendingDecisionScope pending_scope(ab.source);
     // Translate Forge's "YouDontCtrl" (a permanent you don't control) into the evaluator's
     // OppCtrl, exactly as Ability::is_legal_target does, so "Permanent.nonLand+YouDontCtrl"
     // matches the opponent's nonland permanents. The controller is the "you" reference.
@@ -70,9 +69,8 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
 
     // Present the controller (the voter) the choice over the eligible permanents. This is a
     // CHOOSE_CARD-style decision (not a target), so it works even against hexproof/shroud.
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
-
+    // The candidate scan and menu build above are pure (re-derived identically on resume);
+    // the pre-ask log is arm-only.
     std::vector<LegalAction> picks;
     for (auto e : candidates) {
         const std::string &nm = global_coordinator.GetComponent<Permanent>(e).name;
@@ -82,9 +80,10 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
         picks.push_back(la);
     }
 
-    game_log("%s votes for a permanent to exile:\n", player_name(ab.controller).c_str());
-    int choice = InputLogger::instance().get_input(picks);
-    cur_game.player_a_has_priority = prev_priority;
+    if (!fctx.resuming())
+        game_log("%s votes for a permanent to exile:\n", player_name(ab.controller).c_str());
+    int choice = fctx.ask(std::move(picks), ab.controller, ab.source);
+    if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     Entity chosen = candidates[static_cast<size_t>(choice)];
     cur_game.remembered_entities.push_back(chosen);

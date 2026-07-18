@@ -36,6 +36,11 @@ struct PendingQuery {
     uint64_t key = 0;               // site key for latched-answer re-convergence (SBE flavor)
     bool answered = false;
     int answer = -1;
+    // player_a_has_priority at arm time (before the repoint at the chooser).
+    // FrameCtx::ask's consume path restores it, reproducing the blocking path's
+    // post-get_input priority restore — so code after a resumed ask sees the
+    // exact ambient priority it would have seen inline.
+    bool prev_priority = false;
 };
 
 #endif /* PENDING_QUERY_H */

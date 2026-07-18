@@ -1,22 +1,30 @@
 #include "resolution_frame.h"
 
+#include <string>
+
 #include "classes/game.h"
+#include "ecs/coordinator.h"
 #include "error.h"
+#include "game_driver.h"
 #include "input_logger.h"
 #include "pending_query.h"
 
 extern Game cur_game;
+extern Coordinator global_coordinator;
 
 FrameCtx FrameCtx::root() { return FrameCtx(true); }
 
 FrameCtx FrameCtx::blocking() { return FrameCtx(false); }
 
 bool FrameCtx::can_suspend() const {
-    // Blocking contexts never suspend. Root contexts CAN, but every call site
-    // starts blocking-equivalent and is flipped suspendable per conversion
-    // batch — so for now the root mode blocks too (zero behavior change).
-    return false;
+    // Blocking contexts never suspend. Root contexts can, but only once the
+    // main decision loop is running — a resolve reached outside it (pregame
+    // SBE on test-harness preplaced permanents) has no loop top to park a
+    // query at, so it blocks inline exactly as before.
+    return root_mode && in_main_loop();
 }
+
+bool FrameCtx::resuming() const { return can_suspend() && cur_game.pending_query.active; }
 
 FrameLevel &FrameCtx::current_level() {
     if (!root_mode || !cur_game.resolution.active || cur_game.resolution.levels.empty())
@@ -26,17 +34,37 @@ FrameLevel &FrameCtx::current_level() {
 
 int FrameCtx::ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source) {
     if (can_suspend()) {
+        PendingQuery &pq = cur_game.pending_query;
+        if (pq.active) {
+            // Consume the latched answer for THIS ask. The re-entered handler
+            // must have rebuilt the identical menu (menu builds are pure and
+            // nothing runs between suspend and resume) — a size mismatch means
+            // it diverged, which would misapply the answer.
+            if (!pq.answered)
+                fatal_error("FrameCtx::ask re-entered with an unanswered pending query");
+            if (pq.menu.size() != menu.size())
+                fatal_error("FrameCtx::ask: menu size changed between arm and resume (" +
+                            std::to_string(pq.menu.size()) + " vs " +
+                            std::to_string(menu.size()) + ")");
+            int answer = pq.answer;
+            // Restore the pre-prompt priority, exactly as the blocking path's
+            // post-get_input restore does, so code after the resumed ask sees
+            // the same ambient priority it would have inline.
+            cur_game.player_a_has_priority = pq.prev_priority;
+            pq = PendingQuery{};
+            return answer;
+        }
         // Suspend: park the query, persist priority at the chooser, and hand
         // -1 back so the caller returns SUSPENDED mutating nothing. The main
-        // loop re-emits the stored menu and resumes with the latched answer.
-        // (Unreachable until a site is flipped suspendable.)
-        PendingQuery &pq = cur_game.pending_query;
+        // loop re-emits the stored menu (loop-safe) and the resume path's
+        // re-entered ask consumes the latched answer above.
         pq = PendingQuery{};
         pq.tag = PendingQuery::RESOLUTION;
         pq.active = true;
         pq.menu = std::move(menu);
         pq.chooser_is_a = (chooser == Zone::PLAYER_A);
         pq.decision_source = decision_source;
+        pq.prev_priority = cur_game.player_a_has_priority;
         cur_game.player_a_has_priority = pq.chooser_is_a;
         return -1;
     }
@@ -67,7 +95,40 @@ ResolveStatus FrameCtx::resolve_child(const Ability &child_template, FrameLevel:
 }
 
 std::set<Entity> collect_pending_pins() {
-    // Real pin collection (menu entities, per-level work targets, EffectRuntime
-    // visitor, remembered set) lands with the frozen-pool batch.
-    return {};
+    std::set<Entity> pins;
+    const PendingQuery &pq = cur_game.pending_query;
+    if (pq.active) {
+        // The parked menu's entities: a determinized world must keep them where
+        // the menu (and the handler's pure rebuild on resume) expects them —
+        // e.g. the library top card a suspended peek/reveal is looking at.
+        for (const auto &la : pq.menu) {
+            if (la.source_entity != 0) pins.insert(la.source_entity);
+            if (la.target_entity != 0) pins.insert(la.target_entity);
+        }
+    }
+    const ResolutionFrame &fr = cur_game.resolution;
+    if (fr.active) {
+        // In-flight nested levels carry their own by-value ability copies; the
+        // ROOT level's work is unused — the resolving ability lives in the
+        // stack entity's component, so read its targets from there.
+        for (const auto &lv : fr.levels) {
+            if (lv.work.source != 0) pins.insert(lv.work.source);
+            if (lv.work.target != 0) pins.insert(lv.work.target);
+            for (auto t : lv.work.targets)
+                if (t != 0) pins.insert(t);
+        }
+        if (fr.stack_entity != 0 &&
+            global_coordinator.entity_has_component<Ability>(fr.stack_entity)) {
+            auto &ab = global_coordinator.GetComponent<Ability>(fr.stack_entity);
+            if (ab.source != 0) pins.insert(ab.source);
+            if (ab.target != 0) pins.insert(ab.target);
+            for (auto t : ab.targets)
+                if (t != 0) pins.insert(t);
+        }
+    }
+    // The remembered set: a suspended resolution's accumulated Remembered$
+    // references (Doomsday piles, RememberChanged) must survive a determinize.
+    for (auto e : cur_game.remembered_entities)
+        if (e != 0) pins.insert(e);
+    return pins;
 }
