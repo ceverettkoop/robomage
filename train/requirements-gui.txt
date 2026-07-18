@@ -1,0 +1,6 @@
+# Dependencies for the PySide6 desktop game board (train/gui_game.py). Install with:
+#   train/.venv/bin/pip install -r train/requirements-gui.txt
+# (PySide6 is ~200 MB; kept separate from the headless/training deps so cloud
+# installs skip it. `requests` is used by the Phase C Scryfall image pipeline.)
+PySide6>=6.6
+requests>=2.31

@@ -108,17 +108,17 @@ if __name__ == "__main__":
     apply_to_parser(parser, PLAY_TOOL.subs[0])
     args = parser.parse_args()
 
-    if args.scripted and not args.tui:
-        parser.error("--scripted is only supported with --tui")
+    if args.scripted and not (args.tui or args.gui):
+        parser.error("--scripted is only supported with the TUI or GUI board")
 
     model_path = args.model
     is_ctrl_spec = bool(model_path) and model_path.lower().startswith(
         ("az:", "azraw:", "mcts:", "scripted"))
     is_search_spec = bool(model_path) and model_path.lower().startswith(
         ("az:", "mcts:"))
-    if is_ctrl_spec and not args.tui:
+    if is_ctrl_spec and not (args.tui or args.gui):
         parser.error("controller specs (az:/azraw:/mcts:/scripted) need the TUI "
-                     "board — text mode loads a PPO .zip directly")
+                     "or GUI board — text mode loads a PPO .zip directly")
     if args.sims is not None or args.worlds is not None:
         if not is_search_spec:
             parser.error("--sims/--worlds only apply to a search opponent "
@@ -183,7 +183,13 @@ if __name__ == "__main__":
                          f"(train --deck {args.model_deck} --opponent <opp>), "
                          f"or use --model to specify a path, or --scripted for a rule-based opponent (TUI).")
 
-    if args.tui:
+    if args.gui:
+        # --gui takes precedence over --tui (the launcher form pre-checks --tui).
+        import gui_game
+        gui_game.run(args.binary, model_path, human_player=args.player,
+                     human_deck=args.human_deck, model_deck=args.model_deck,
+                     bo3=not args.bo1)
+    elif args.tui:
         import tui_game
         tui_game.run(args.binary, model_path, human_player=args.player,
                      human_deck=args.human_deck, model_deck=args.model_deck,
