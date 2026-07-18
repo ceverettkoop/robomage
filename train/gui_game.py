@@ -30,8 +30,10 @@ to auto-play N human decisions — submitting the first legal action each time �
 before quitting. Pair it with ``QT_QPA_PLATFORM=offscreen`` for a display-less run.
 """
 
+import html
 import os
 import threading
+import time
 
 import numpy as np
 
@@ -46,7 +48,7 @@ from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 import decode
 import scryfall_cache
 from game_driver import (GameDriver, build_session, decode_human_frame,
-                         actions_for_card, stack_target_refs,
+                         actions_for_card, action_zone, stack_target_refs,
                          menu_label, prompt_text, hand_type_icon, _edge_colors,
                          _STEP_ABBR)
 
@@ -70,6 +72,18 @@ _CARD_FILL = QColor("#1c1c24")
 _CARD_TEXT = QColor("#e6e6ea")
 _CHIP_BG = QColor("#0c0c10")
 
+# Cross-highlight accents (Phase D). Amber = "a menu action targets this card"
+# (mirrors the TUI's $warning action-linked highlight); red = "a stack object
+# targets this card / player" (the TUI's $error stack-target). Both are painted
+# as a translucent tint plus a solid border so they read over card art too.
+_HL_ACTION = QColor("#d8a12a")            # amber (action-linked)
+_HL_STACK = QColor("#e05555")             # red (stack target)
+_HL_ACTION_FILL = QColor(0xd8, 0xa1, 0x2a, 70)
+_HL_STACK_FILL = QColor(0xe0, 0x55, 0x55, 70)
+# Menu-row background used when a hovered card lights up the actions it feeds
+# (the reverse direction of the card-linked highlight).
+_MENU_HL_BG = QColor(0xd8, 0xa1, 0x2a, 70)
+
 
 # ── QSS theme ─────────────────────────────────────────────────────────────────
 # Dark terminal-ish palette matching the TUI: near-black background, light grey
@@ -83,6 +97,11 @@ QLabel#graveyards { color: #9a9aa2; padding: 2px 4px; }
 QLabel#prompt {
     font-weight: bold; background: #24242e; color: #f0f0f4; padding: 4px 6px;
     border: 1px solid #2a2a33;
+}
+/* A stack object hovered on the board paints its player target red — the
+   YOU/OPPONENT info line analog of the CardWidget stack-target tint. */
+QLabel#oppInfo[stackTarget="true"], QLabel#selfInfo[stackTarget="true"] {
+    background: #e05555; color: #101014; font-weight: bold;
 }
 QLabel#stepCell { color: #6a6a72; padding: 0 4px; }
 QLabel#stepCell[current="true"] {
@@ -100,6 +119,11 @@ QPlainTextEdit {
     border: 1px solid #2a2a33; background: #0c0c10; color: #cfcfcf;
 }
 QSplitter::handle { background: #2a2a33; }
+QSplitter::handle:horizontal { width: 3px; }
+QSplitter::handle:vertical { height: 3px; }
+/* Oracle-text popup (frameless, always-on-top): amber-bordered dark panel. */
+QWidget#oraclePopup { background: #16161c; border: 1px solid #d8a12a; }
+QWidget#oraclePopup QLabel { background: transparent; border: none; color: #d8d8d8; }
 """
 
 
@@ -123,9 +147,14 @@ class CardWidget(QWidget):
     # Left click commits an action for this card; the window resolves it against
     # the live menu (see GameWindow._on_card_clicked).
     clicked = Signal(int, str, str)          # card_idx, controller, zone
-    # Hover in/out — emits self on enter, None on leave. Unused in Phase B;
-    # Phase D wires it to action<->card cross-highlighting.
+    # Hover in/out — emits self on enter, None on leave. Wired to the
+    # action<->card cross-highlighting (the window lights up the menu rows this
+    # card feeds) and drives the Q-hold oracle popup's "currently hovered card".
     hovered = Signal(object)
+    # Right-button hold: show/hide this card's oracle-text popup. Emit self on
+    # press so the window can read the card's id/name/token_pt.
+    oracle_show = Signal(object)
+    oracle_hide = Signal()
 
     def __init__(self, name, card_idx, controller, zone, *, perm=None, icon="",
                  token_pt=None):
@@ -138,6 +167,7 @@ class CardWidget(QWidget):
         self._token_pt = token_pt            # (p, t) for a token, else None
         self._pixmap = None                  # Phase C art (full 'normal'), if set
         self._scaled = None                  # cached card-sized scale of _pixmap
+        self._highlight = None               # None | "action_linked" | "stack_target"
         self._edge_colors = _edge_colors(decode.card_border_colors(card_idx))
 
         # Status / stat fields derived once from the permanent dict so paintEvent
@@ -165,6 +195,16 @@ class CardWidget(QWidget):
         self._scaled = None                  # invalidate cached scale
         self.update()
 
+    def set_highlight(self, kind):
+        """Toggle a cross-highlight overlay: None, "action_linked" (amber — a
+        hovered menu action targets this card) or "stack_target" (red — a hovered
+        stack object targets it). Repaints with the highlight border/tint
+        overriding the normal per-edge / attacking borders (precedence
+        stack_target > action_linked > attacking > normal)."""
+        if self._highlight != kind:
+            self._highlight = kind
+            self.update()
+
     def _card_pixmap(self):
         """The card-sized (portrait CARD_W x CARD_H) smooth scale of the stored
         art, computed once and cached; None when no usable art is set."""
@@ -189,10 +229,12 @@ class CardWidget(QWidget):
             self._on_right_release()
 
     def _on_right_press(self):
-        """Reserved for the Phase D oracle-text popup (right-button hold)."""
+        """Right-button hold → ask the window to show this card's oracle popup."""
+        self.oracle_show.emit(self)
 
     def _on_right_release(self):
-        """Reserved for the Phase D oracle-text popup (right-button release)."""
+        """Right-button release → dismiss the oracle popup."""
+        self.oracle_hide.emit()
 
     def enterEvent(self, event):
         self.hovered.emit(self)
@@ -233,9 +275,17 @@ class CardWidget(QWidget):
         else:
             painter.fillPath(path, QBrush(_CARD_FILL))
 
-        # Borders: dashed red when attacking, else the per-edge color identity
-        # (placeholders only — real art carries the frame color).
-        if self._attacking:
+        # Borders (precedence: stack_target > action_linked > attacking >
+        # per-edge color identity). A cross-highlight paints a translucent tint
+        # over the body (so card art still reads through) plus a solid border,
+        # overriding both the attacking dashed border and the color-identity
+        # edges; real art otherwise carries its own frame color, so the per-edge
+        # WUBRG borders are placeholders-only.
+        if self._highlight == "stack_target":
+            self._paint_highlight(painter, path, _HL_STACK_FILL, _HL_STACK)
+        elif self._highlight == "action_linked":
+            self._paint_highlight(painter, path, _HL_ACTION_FILL, _HL_ACTION)
+        elif self._attacking:
             pen = QPen(QColor(_ATTACK_BORDER))
             pen.setWidth(2)
             pen.setStyle(Qt.DashLine)
@@ -280,6 +330,14 @@ class CardWidget(QWidget):
             self._paint_chip(painter, self._counters, r, right=False)
         if self._chip:
             self._paint_chip(painter, self._chip, r, right=True)
+
+    def _paint_highlight(self, painter, path, fill, border):
+        """Overlay a cross-highlight: translucent `fill` tint + solid `border`."""
+        painter.fillPath(path, QBrush(fill))
+        pen = QPen(border)
+        pen.setWidth(2)
+        painter.setPen(pen)
+        painter.drawPath(path)
 
     def _paint_edges(self, painter, r):
         """Paint the four color-identity border edges (see _edge_colors)."""
@@ -412,12 +470,16 @@ class _StackThumb(QWidget):
 
 class StackItemWidget(QWidget):
     """One object on the stack: a placeholder thumb + a description label using
-    the same text the TUI shows. Carries its human-frame target refs so Phase D
-    can highlight the targets on hover."""
+    the same text the TUI shows. Carries its human-frame target refs so hovering
+    it can highlight those targets on the board (see GameWindow._on_stack_hover)."""
+
+    # Hover in/out — emits self on enter, None on leave.
+    hovered = Signal(object)
 
     def __init__(self, entry, target_refs):
         super().__init__()
         self._target_refs = target_refs
+        self.setMouseTracking(True)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(4, 2, 8, 2)
         layout.setSpacing(6)
@@ -426,6 +488,12 @@ class StackItemWidget(QWidget):
         label = QLabel(_stack_item_label(entry))
         label.setWordWrap(True)
         layout.addWidget(label, 1)
+
+    def enterEvent(self, event):
+        self.hovered.emit(self)
+
+    def leaveEvent(self, event):
+        self.hovered.emit(None)
 
 
 def _stack_item_label(e):
@@ -571,6 +639,92 @@ class ImageProvider(QObject):
             self.image_ready.emit(name)
 
 
+# ── Oracle-text popup ─────────────────────────────────────────────────────────
+
+# Oracle-popup card image target height (px); the plan's ~420 px. The full
+# 'normal' 488×680 pixmap scales down to this sharply.
+ORACLE_IMG_H = 420
+
+
+class OraclePopup(QWidget):
+    """Frameless, always-on-top card-inspect popup (the Qt analog of the TUI's
+    #oracle banner): the card's full art over its name, mana cost and oracle text.
+
+    Shown while the right mouse button is held over a card or while 'Q' is held
+    (see GameWindow). It never steals focus or blocks input — a Qt.Tool window
+    with WA_ShowWithoutActivating and no focus policy — so the board keeps its
+    keyboard/mouse grab underneath. Art comes from the shared ImageProvider; a
+    miss shows a placeholder panel and the popup subscribes to image_ready so a
+    late download fills in while it is still open."""
+
+    def __init__(self, provider, parent=None):
+        super().__init__(parent, Qt.FramelessWindowHint | Qt.Tool |
+                         Qt.WindowStaysOnTopHint)
+        self.setObjectName("oraclePopup")
+        self.setAttribute(Qt.WA_ShowWithoutActivating, True)
+        self.setFocusPolicy(Qt.NoFocus)
+        self._provider = provider
+        self._name = None
+        self._token_pt = None
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(8, 8, 8, 8)
+        layout.setSpacing(6)
+        self._image = QLabel()
+        self._image.setAlignment(Qt.AlignCenter)
+        self._image.setFixedHeight(ORACLE_IMG_H)
+        layout.addWidget(self._image)
+        self._text = QLabel()
+        self._text.setWordWrap(True)
+        self._text.setTextFormat(Qt.RichText)
+        self._text.setMaximumWidth(360)
+        layout.addWidget(self._text)
+        provider.image_ready.connect(self._on_image_ready)
+
+    def show_card(self, card_idx, name, token_pt=None):
+        self._name = name
+        self._token_pt = token_pt
+        cost = decode.fmt_mana_cost(decode.card_mana_cost(card_idx))
+        oracle = decode.card_oracle_text(card_idx)
+        head = f"<b>{html.escape(name)}</b>"
+        if cost:
+            head += (f"&nbsp;&nbsp;<span style='color:#d8a12a;'><b>"
+                     f"{html.escape(cost)}</b></span>")
+        if oracle:
+            body = html.escape(oracle).replace("\n", "<br>")
+        else:
+            body = "<i>(no oracle text)</i>"
+        self._text.setText(head + "<br>" + body)
+        self._load_image()
+        self.adjustSize()
+        self._center_on_parent()
+        self.show()
+        self.raise_()
+
+    def _load_image(self):
+        pm = self._provider.request(self._name, self._token_pt)
+        if pm is not None and not pm.isNull():
+            self._image.setPixmap(pm.scaledToHeight(ORACLE_IMG_H,
+                                                    Qt.SmoothTransformation))
+        else:
+            # A miss leaves the placeholder text; a later download arrives via
+            # image_ready (only names that actually downloaded emit).
+            self._image.setPixmap(QPixmap())
+            self._image.setText("(loading image…)")
+
+    def _on_image_ready(self, name):
+        if self.isVisible() and name == self._name:
+            self._load_image()
+            self.adjustSize()
+            self._center_on_parent()
+
+    def _center_on_parent(self):
+        parent = self.parentWidget()
+        if parent is None:
+            return
+        c = parent.frameGeometry().center()
+        self.move(c.x() - self.width() // 2, c.y() - self.height() // 2)
+
+
 # ── The window ────────────────────────────────────────────────────────────────
 
 class GameWindow(QMainWindow):
@@ -591,10 +745,24 @@ class GameWindow(QMainWindow):
         # thumbs aren't CardWidgets but take the same art).
         self._registry = {}
         self._stack_thumbs = {}
+        # Flat list of every live CardWidget this frame (across both battlefields
+        # + hand), so cross-highlighting can scan by card_idx/controller/zone.
+        self._card_widgets = []
         self._provider = ImageProvider()
         self._actions = []
         self._awaiting = False
         self._thread = None
+
+        # Cross-highlighting / oracle state (Phase D). _hovered_card is the
+        # CardWidget the mouse is currently over (the Q-hold oracle anchor and the
+        # card->menu highlight source); _stack_target_labels are the info-line
+        # QLabels currently painted as a stack target.
+        self._hovered_card = None
+        self._stack_target_labels = []
+        # Elapsed-seconds "opponent is thinking" ticker (a model/search opponent
+        # only); started/stopped on the UI thread by on_opp_thinking.
+        self._think_timer = None
+        self._think_start = 0.0
 
         # Smoke-test auto-drive (headless CI-less sanity check). See module docs.
         self._smoke_n = _smoke_n_from_env()
@@ -618,6 +786,9 @@ class GameWindow(QMainWindow):
         self._bridge.opp_thinking.connect(self.on_opp_thinking)
         self._bridge.game_over.connect(self.on_game_over)
         self._provider.image_ready.connect(self._on_image_ready)
+        # Frameless oracle-text popup, parented to the window so it centers on it
+        # and stays above it (see OraclePopup); shown on Q-hold / right-click-hold.
+        self._oracle = OraclePopup(self._provider, self)
         self._driver = GameDriver(
             env=session.env, opp_act=session.opp_act, opp_is_a=session.opp_is_a,
             is_model=session.is_model, opp_label=session.opp_label,
@@ -625,10 +796,17 @@ class GameWindow(QMainWindow):
             clock_fn=session.clock_fn, pace_idle=session.pace_idle)
 
         QShortcut(QKeySequence("Ctrl+Q"), self, activated=self.close)
+        # >/< nudge the board/log division (parity with the TUI's resize_log).
+        QShortcut(QKeySequence(Qt.Key_Greater), self,
+                  activated=lambda: self._nudge_splitter(1))
+        QShortcut(QKeySequence(Qt.Key_Less), self,
+                  activated=lambda: self._nudge_splitter(-1))
 
         self._append_log(
             "Game starting...  Click a card or pick a numbered action. "
-            "Keys: digits = pick, space = pass, p = autopass, ctrl+q = quit.")
+            "Keys: digits = pick, space = pass, p = autopass, "
+            "hold q or right-click a card = oracle text, </> = resize log, "
+            "ctrl+q = quit.")
 
     # ----- layout -----
 
@@ -683,7 +861,12 @@ class GameWindow(QMainWindow):
         # Bottom: action menu (~35%) + log.
         self._menu = QListWidget()
         self._menu.itemActivated.connect(self._on_item_activated)
-        self._menu.installEventFilter(self)      # route digit/space/p keys
+        self._menu.installEventFilter(self)      # route digit/space/p/Q keys
+        # Menu-row hover -> highlight the card(s) that action targets. itemEntered
+        # needs mouse tracking on the view; the viewport Leave clears it.
+        self._menu.setMouseTracking(True)
+        self._menu.itemEntered.connect(self._on_menu_item_entered)
+        self._menu.viewport().installEventFilter(self)
         self._log = QPlainTextEdit()
         self._log.setReadOnly(True)
         self._log.setMaximumBlockCount(2000)
@@ -694,13 +877,14 @@ class GameWindow(QMainWindow):
         bottom.setStretchFactor(1, 65)
         bottom.setSizes([340, 640])
 
-        # Vertical splitter: board block over the menu/log area.
-        splitter = QSplitter(Qt.Vertical)
-        splitter.addWidget(board)
-        splitter.addWidget(bottom)
-        splitter.setStretchFactor(0, 5)
-        splitter.setStretchFactor(1, 2)
-        self.setCentralWidget(splitter)
+        # Vertical splitter: board block over the menu/log area. Kept on the
+        # window so the >/< shortcuts can nudge the board/log division.
+        self._vsplit = QSplitter(Qt.Vertical)
+        self._vsplit.addWidget(board)
+        self._vsplit.addWidget(bottom)
+        self._vsplit.setStretchFactor(0, 5)
+        self._vsplit.setStretchFactor(1, 2)
+        self.setCentralWidget(self._vsplit)
         self.resize(1120, 940)
 
     # ----- driver lifecycle -----
@@ -739,9 +923,17 @@ class GameWindow(QMainWindow):
             f"Your GY: {', '.join(gs['self_graveyard']) or '—'}\n"
             f"Opp GY:  {', '.join(gs['opp_graveyard']) or '—'}")
 
+        # A fresh menu/board: drop any stale hover so cross-highlights don't
+        # linger onto the newly-rebuilt widgets, and close the oracle popup (its
+        # card may no longer be on the board).
+        self._hovered_card = None
+        self._hide_oracle()
+        self._clear_stack_targets()
+
         # Rebuild the board; registries are refreshed from scratch each frame.
         self._registry = {}
         self._stack_thumbs = {}
+        self._card_widgets = []
         self._rebuild_stack(gs["stack"], mirrored)
         self._rebuild_bf(self._opp_perms, self._opp_lands, gs["opp_battlefield"], "opp")
         self._rebuild_bf(self._self_perms, self._self_lands, gs["self_battlefield"], "self")
@@ -777,10 +969,33 @@ class GameWindow(QMainWindow):
                 self._append_log(line)
 
     def on_opp_thinking(self, active):
-        # Phase B: a plain label toggle (the elapsed-time ticker + clock bank is
-        # Phase D). The menu prompt already shows "<opp> is thinking..." from the
-        # state update; nothing extra to do here yet.
-        pass
+        """Show/hide the elapsed-seconds "opponent is thinking" indicator around a
+        model/search opponent's move (and the paced fake-think idle beats, which
+        arrive on this same signal). Runs on the UI thread, so the QTimer ticker
+        is safe to start/stop here. Mirrors the TUI's on_opp_thinking/_tick_think."""
+        if active:
+            self._think_start = time.monotonic()
+            self._tick_think()
+            if self._think_timer is None:
+                self._think_timer = QTimer(self)
+                self._think_timer.timeout.connect(self._tick_think)
+                self._think_timer.start(1000)
+        elif self._think_timer is not None:
+            self._think_timer.stop()
+            self._think_timer = None
+            # Restore the static thinking prompt; the next state update refreshes
+            # it to the human's menu (or the next think) momentarily.
+            self._prompt.setText(f"{self._opp_label} is thinking...")
+
+    def _tick_think(self):
+        elapsed = int(time.monotonic() - self._think_start)
+        bank = ""
+        remaining = self._driver.clock_remaining()
+        if remaining is not None:
+            r = int(remaining)
+            bank = f"  ·  bank {r // 60}:{r % 60:02d}"
+        self._prompt.setText(
+            f"⏳ {self._opp_label} is thinking…  ({elapsed}s){bank}")
 
     def on_game_over(self, text):
         self._awaiting = False
@@ -808,9 +1023,10 @@ class GameWindow(QMainWindow):
         elif len(matches) == 1:
             self._submit(matches[0]["index"])
         else:
-            # Ambiguous -> don't guess: select the first option this card feeds
-            # and list them (full multi-row highlight is Phase D).
+            # Ambiguous -> don't guess: amber-highlight every option this card
+            # feeds, move the cursor to the first, and let the human disambiguate.
             idxs = [a["index"] for a in matches]
+            self._set_menu_highlights(idxs)
             row = self._row_for_index(idxs[0])
             if row is not None:
                 self._menu.setCurrentRow(row)
@@ -819,16 +1035,46 @@ class GameWindow(QMainWindow):
                 f"{', '.join(str(i) for i in idxs)} - pick a number.")
 
     def eventFilter(self, obj, event):
-        # Intercept digit/space/p in the menu so they drive the board instead of
-        # the list's built-in typeahead; Enter still fires itemActivated.
-        if obj is self._menu and event.type() == event.Type.KeyPress:
-            if self._handle_key(event):
-                return True
+        # Intercept digit/space/p/Q in the menu so they drive the board instead
+        # of the list's built-in typeahead; Enter still fires itemActivated. The
+        # menu viewport's Leave clears the menu-row->card cross-highlight.
+        et = event.type()
+        if obj is self._menu:
+            if et == event.Type.KeyPress:
+                if self._oracle_key(event, True):
+                    return True
+                if self._handle_key(event):
+                    return True
+            elif et == event.Type.KeyRelease:
+                if self._oracle_key(event, False):
+                    return True
+        elif obj is self._menu.viewport() and et == event.Type.Leave:
+            self._highlight_cards_for_action(None)
         return super().eventFilter(obj, event)
 
     def keyPressEvent(self, event):
+        if self._oracle_key(event, True):
+            return
         if not self._handle_key(event):
             super().keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        if self._oracle_key(event, False):
+            return
+        super().keyReleaseEvent(event)
+
+    def _oracle_key(self, event, pressed):
+        """Q pressed/released → show/hide the hovered card's oracle popup. The
+        isAutoRepeat guard means OS key-repeat while Q is held is ignored (the
+        popup stays up on the real press until the real release)."""
+        if event.key() != Qt.Key_Q or event.isAutoRepeat():
+            return False
+        if pressed:
+            if self._hovered_card is not None:
+                self._show_oracle(self._hovered_card)
+        else:
+            self._hide_oracle()
+        return True
 
     def _handle_key(self, event):
         key = event.key()
@@ -897,6 +1143,7 @@ class GameWindow(QMainWindow):
         widgets = []
         for e in stack:
             w = StackItemWidget(e, stack_target_refs(e, mirrored))
+            w.hovered.connect(self._on_stack_hover)
             name = e["name"]
             self._stack_thumbs.setdefault(name, []).append(w._thumb)
             self._apply_image(w._thumb, name, None)
@@ -961,7 +1208,127 @@ class GameWindow(QMainWindow):
 
     def _register(self, widget, name):
         widget.clicked.connect(self._on_card_clicked)
+        widget.hovered.connect(self._on_card_hover)
+        widget.oracle_show.connect(self._show_oracle)
+        widget.oracle_hide.connect(self._hide_oracle)
         self._registry.setdefault(name, []).append(widget)
+        self._card_widgets.append(widget)
+
+    # ----- cross-highlighting (Phase D) -----
+
+    def _on_card_hover(self, widget):
+        """Mouse entered (widget) / left (None) a card. Track it as the oracle
+        anchor and light up the menu actions it can drive."""
+        if widget is None:
+            self._hovered_card = None
+            self._set_menu_highlights([])
+            return
+        self._hovered_card = widget
+        if self._awaiting:
+            idxs = [a["index"] for a in actions_for_card(
+                self._actions, widget._card_idx, widget._controller, widget._zone)]
+            self._set_menu_highlights(idxs)
+
+    def _on_menu_item_entered(self, item):
+        """Mouse moved onto a menu row — highlight the card(s) it targets."""
+        self._highlight_cards_for_action(item.data(Qt.UserRole))
+
+    def _highlight_cards_for_action(self, index):
+        """Amber-highlight the card(s) the given action index refers to; a None
+        index (mouse left the list) clears them. Matches on card id, controller,
+        and — when the action carries a zone_ref — the exact board zone, so a
+        hand card never lights up its same-named battlefield twin (mirrors the
+        TUI's _highlight_perms_for_action)."""
+        self._clear_action_linked()
+        if index is None or not (0 <= index < len(self._actions)):
+            return
+        a = self._actions[index]
+        if a["card_idx"] < 0:
+            return
+        want_ctrl = a["controller"]
+        want_zone = action_zone(a)
+        for w in self._card_widgets:
+            if w._card_idx != a["card_idx"]:
+                continue
+            if want_ctrl is not None:
+                w_want = "own" if w._controller == "self" else "opp"
+                if w_want != want_ctrl:
+                    continue
+            if want_zone is not None and w._zone != want_zone:
+                continue
+            w.set_highlight("action_linked")
+
+    def _set_menu_highlights(self, indices):
+        """Amber-background the menu rows in `indices` (the reverse-direction
+        cross-highlight: a hovered card lights up the actions it feeds). Clears
+        all other rows. No-op outside a human decision."""
+        if not self._awaiting:
+            return
+        hl = set(indices)
+        for row in range(self._menu.count()):
+            it = self._menu.item(row)
+            on = it.data(Qt.UserRole) in hl
+            it.setBackground(QBrush(_MENU_HL_BG) if on else QBrush())
+
+    def _on_stack_hover(self, widget):
+        """Mouse entered (widget) / left (None) a stack object — paint its
+        announced targets red on the board and the player info line."""
+        if widget is None:
+            self._clear_stack_targets()
+        else:
+            self._highlight_stack_targets(widget._target_refs)
+
+    def _highlight_stack_targets(self, refs):
+        """Paint a hovered stack object's announced targets red: matching
+        battlefield permanent(s), and the YOU/OPPONENT info line for a player
+        target. `refs` are already in the human frame (is_self == YOU)."""
+        self._clear_stack_targets()
+        for ref in refs:
+            if ref["is_player"]:
+                label = self._self_info if ref["is_self"] else self._opp_info
+                label.setProperty("stackTarget", True)
+                label.style().unpolish(label)
+                label.style().polish(label)
+                self._stack_target_labels.append(label)
+            elif ref["card_idx"] >= 0:
+                want = "self" if ref["is_self"] else "opp"
+                for w in self._card_widgets:
+                    if w._card_idx == ref["card_idx"] and w._controller == want:
+                        w.set_highlight("stack_target")
+
+    def _clear_action_linked(self):
+        for w in self._card_widgets:
+            if w._highlight == "action_linked":
+                w.set_highlight(None)
+
+    def _clear_stack_targets(self):
+        for w in self._card_widgets:
+            if w._highlight == "stack_target":
+                w.set_highlight(None)
+        for label in self._stack_target_labels:
+            label.setProperty("stackTarget", False)
+            label.style().unpolish(label)
+            label.style().polish(label)
+        self._stack_target_labels = []
+
+    # ----- oracle popup (Phase D) -----
+
+    def _show_oracle(self, widget):
+        self._oracle.show_card(widget._card_idx, widget._name, widget._token_pt)
+
+    def _hide_oracle(self):
+        self._oracle.hide()
+
+    def _nudge_splitter(self, delta):
+        """Grow (delta>0) / shrink (delta<0) the bottom log/menu area by shifting
+        ~40 px between the board and bottom panes of the vertical splitter."""
+        sizes = self._vsplit.sizes()
+        if len(sizes) != 2:
+            return
+        step = 40 * delta
+        top = max(120, sizes[0] - step)
+        bottom = max(120, sizes[1] + step)
+        self._vsplit.setSizes([top, bottom])
 
     def _phase_status(self, gs):
         active = "A" if gs["active_is_a"] else "B"

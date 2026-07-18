@@ -185,10 +185,26 @@ if __name__ == "__main__":
 
     if args.gui:
         # --gui takes precedence over --tui (the launcher form pre-checks --tui).
-        import gui_game
-        gui_game.run(args.binary, model_path, human_player=args.player,
-                     human_deck=args.human_deck, model_deck=args.model_deck,
-                     bo3=not args.bo1)
+        # PySide6 is an optional extra (train/requirements-gui.txt); if it isn't
+        # installed, fall back to the TUI when --tui was also set, else error with
+        # the install hint.
+        try:
+            import gui_game
+        except ImportError:
+            if args.tui:
+                print("PySide6 not installed — falling back to the TUI board "
+                      "(pip install -r train/requirements-gui.txt for the GUI).")
+                import tui_game
+                tui_game.run(args.binary, model_path, human_player=args.player,
+                             human_deck=args.human_deck, model_deck=args.model_deck,
+                             bo3=not args.bo1)
+            else:
+                parser.error("PySide6 not installed — pip install -r "
+                             "train/requirements-gui.txt, or use --tui")
+        else:
+            gui_game.run(args.binary, model_path, human_player=args.player,
+                         human_deck=args.human_deck, model_deck=args.model_deck,
+                         bo3=not args.bo1)
     elif args.tui:
         import tui_game
         tui_game.run(args.binary, model_path, human_player=args.player,
