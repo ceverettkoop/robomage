@@ -111,8 +111,23 @@ struct ChangeZoneSearchRt {
     int cmc_bound = -1;           // resolved dynamic mana-value bound (Aether Vial)
     size_t iter = 0;              // next pick index
 };
+// ── Batch 7: live-menu loops (Shape C) ──────────────────────────────────────
+// change_zone's Defined$ Remembered bounded/optional selection (Cloak and
+// Dagger's DBChangeZone: "you may exile up to one of the remembered
+// candidates"): the candidate pool — and hence the menu — is rebuilt from the
+// remembered set's CURRENT zones at every arm and every consume (a card
+// already exiled left the eligible zones), so only the count of picks already
+// made persists; it caps the remaining picks after a resume. The other two
+// Shape C loops (change_zone's Yorion battlefield multi-select and
+// run_unless_loop's MANA kind) persist nothing at all: their loops carry no
+// counter — every pass is fully re-derived from live components (battlefield
+// contents / floated mana), so a resume just rebuilds the identical menu.
+struct ChangeZoneRememberedRt {
+    int picked = 0;               // picks completed so far (bounds the cap)
+};
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
-                                   SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt>;
+                                   SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
+                                   ChangeZoneRememberedRt>;
 
 // ── Shared target-selection sub-machine (Batch 5) ───────────────────────────
 // Suspension-aware form of select_target/select_single_target

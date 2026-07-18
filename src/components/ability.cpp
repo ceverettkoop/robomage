@@ -470,11 +470,12 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // kind: how the unless-cost is paid — {cost} generic mana (default), `cost` life (Ward—Pay N life,
 // CR 702.21), or discard `cost` card(s) (Reality Smasher, CR 701.8). A life payment is only offered
 // when the payer's life total >= cost (CR 119.4 — a player can't pay more life than they have).
-// The target's controller decides whether to pay, not the Daze caster: the LIFE/ENERGY yes-no and
-// the DISCARD flow seat their asks on `controller` through ctx.ask (which repoints and restores
-// priority around the prompt exactly as the old manual swap did) and may suspend — `suspended` is
-// set and the return value is meaningless (check it FIRST). The MANA kind keeps the manual swap
-// and its blocking tap-for-mana loop (a live-menu Shape C loop, converted in the live-menu batch).
+// The target's controller decides whether to pay, not the Daze caster: every kind seats its asks
+// on `controller` through ctx.ask (which repoints and restores priority around the prompt exactly
+// as the old manual swap did) and may suspend — `suspended` is set and the return value is
+// meaningless (check it FIRST). The MANA kind is a live-menu loop (Shape C): its pay/decline menu
+// interleaves per-source tap-for-mana actions rebuilt from live state each pass, so a chosen tap
+// executes at consume time, floats mana, and the loop re-arms the rebuilt menu.
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
     FrameCtx &ctx, bool &suspended, UnlessPayKind kind) {
@@ -556,11 +557,16 @@ bool run_unless_loop(
         return true;
     }
 
-    // MANA kind (blocking this batch): the old manual seat swap around the whole
-    // tap-for-mana loop, restored on every exit below.
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
-
+    // MANA kind (Daze / Mana Leak / Ward {N}): pay-{N}-unless with tap-for-mana
+    // sub-choices. A live-menu loop (Shape C) with no persisted progress: the
+    // menu is rebuilt from live state every pass — floated mana (Player.mana,
+    // snapshot-covered) changes which cost-bearing sources are offered and
+    // whether "Pay" is affordable — so a resume re-enters, rebuilds the
+    // identical menu, and the ask consumes the latched answer (its size assert
+    // guards drift). A chosen tap action executes its mana ability at consume
+    // time (mana floats), then the loop re-arms the rebuilt menu. Asks are
+    // seated on `controller` through ctx.ask, replacing the old manual seat
+    // swap around the whole loop.
     std::multiset<Colors> cond_cost;
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
@@ -596,17 +602,22 @@ bool run_unless_loop(
             unless_actions.push_back(decline);
         }
 
-        int choice = InputLogger::instance().get_input(unless_actions);
+        // Runs source-less today, so the ambient pending-decision value travels
+        // through the ask unchanged. Passed as an lvalue: the tap branch below
+        // still needs the menu to map the chosen action.
+        int choice = ctx.ask(unless_actions, controller, cur_game.pending_decision_source);
+        if (choice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
 
         if (choice == static_cast<int>(decline_idx)) {
-            cur_game.player_a_has_priority = prev_priority;
             return true;
         }
 
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             spend_mana(controller, cond_cost, paid_for);
             game_log("%s pays {%zu} — spell is not countered\n", player_name(controller).c_str(), cost);
-            cur_game.player_a_has_priority = prev_priority;
             return false;
         }
 

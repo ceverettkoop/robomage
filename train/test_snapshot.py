@@ -52,7 +52,7 @@ from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_OTHER_CHOICE, CAT_CAST_SPELL, CAT_TOP_LIBRARY,
                     CAT_BOTTOM_DECK_CARD, CAT_ORDER_TRIGGERS, CAT_SELECT_TARGET,
                     CAT_PLAY_LAND, CAT_KEEP_LEGEND, CAT_CHOOSE_TYPE,
-                    CAT_NAME_CARD)
+                    CAT_NAME_CARD, CAT_PAY_UNLESS, CAT_CHOOSE_CARD)
 from card_costs import _VOCAB_NAMES
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
@@ -218,6 +218,17 @@ _IDS_OFF = _CATS_OFF + MAX_ACTIONS * 4
 
 def _query_ids(payload):
     return np.frombuffer(payload[_IDS_OFF:_IDS_OFF + MAX_ACTIONS * 4], dtype=np.float32)
+
+
+# The per-action option_ordinal ints are the SEVENTH (last) metadata array
+# (cats, ids, ctrl, pub, zone, refs, ords). For a PAY_UNLESS menu the ordinal
+# distinguishes pay (1) from decline (0); the interleaved tap-for-mana actions
+# carry -1 (not applicable).
+_ORDS_OFF = _CATS_OFF + 6 * MAX_ACTIONS * 4
+
+
+def _query_ords(payload):
+    return np.frombuffer(payload[_ORDS_OFF:_ORDS_OFF + MAX_ACTIONS * 4], dtype=np.int32)
 
 
 def _is_sideboard_query(r):
@@ -1401,6 +1412,182 @@ def test_etb_name_card_roundtrip():
                 pass
 
 
+# ── Batch 7: live-menu loops (change_zone picks, unless-mana) as roots ────────
+
+def _record_cast_any_line(seed, extra, cap=4000):
+    """Control recording for the live-menu-loop tests: EVERY decision whose menu
+    offers a CAST_SPELL action casts the first one offered (here: A's creature,
+    then B's Daze in response — the normal-cost entry precedes the alternate-cost
+    duplicate), every other decision auto-0s. Auto-0 drives the unless-mana loop
+    through its natural line (tap, tap, then Pay — the pay entry is index 0 once
+    no untapped sources remain). Returns (records, choices, outcome)."""
+    eng = Engine(seed, extra=extra)
+    records, choices = [], []
+    r = eng.read()
+    idx = 0
+    while r.kind == "q" and idx < cap:
+        action = 0
+        cats = _query_cats(r.payload)[:r.nc]
+        hits = np.nonzero(cats == CAT_CAST_SPELL)[0]
+        if hits.size:
+            action = int(hits[0])
+        records.append((r.nc, r.payload, r.safe))
+        choices.append(action)
+        r = eng.play(action)
+        idx += 1
+    outcome = {"kind": r.kind, "returncode": r.returncode, "winner": r.winner}
+    eng.kill()
+    return records, choices, outcome
+
+
+def _unless_decline_index(nc, payload, ctx):
+    """Index of the decline entry in a PAY_UNLESS menu (category PAY_UNLESS,
+    option_ordinal 0 — tap actions carry other categories, pay carries 1)."""
+    cats = _query_cats(payload)[:nc]
+    ords = _query_ords(payload)[:nc]
+    hits = np.nonzero((cats == CAT_PAY_UNLESS) & (ords == 0))[0]
+    if hits.size != 1:
+        raise ProtocolError(f"{ctx}: expected exactly one decline entry, found "
+                            f"{hits.size}")
+    return int(hits[0])
+
+
+def test_unless_mana_roundtrip():
+    """Batch 7 (live-menu loops): the pay-{N}-unless prompt with tap-for-mana
+    sub-choices (run_unless_loop's MANA kind, under effects::counter) is a
+    loop-top pending decision. B Dazes A's Grizzly Bears; A has two untapped
+    Forests, so the unless loop runs THREE iterations under the control line —
+    tap (nc=3: two taps + decline; Pay is not yet affordable from the empty
+    pool), tap (nc=3: one tap + Pay + decline), Pay (nc=2: Pay + decline) — each
+    menu rebuilt from live state as mana floats. All three report safe=1. The
+    FIRST and THIRD iterations are exercised as SNAPSHOT/RESTORE roots (the
+    third proving a mid-loop root with a DIFFERENT menu size round-trips): at
+    each, SNAPSHOT re-emits exactly; declining instead (spell countered) must
+    change the next query; RESTORE returns byte-identically; and the resumed
+    real line stays byte-identical to the control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("unless_pq_a", "1 Grizzly Bears\n29 Mountain\n"),
+        ("unless_pq_b", "1 Daze\n29 Island\n"),
+    ])
+    extra = ["--deck-a", "temp/unless_pq_a", "--deck-b", "temp/unless_pq_b",
+             "--no-shuffle",
+             "--battlefield-a", "Forest,Forest,Forest,Forest",
+             "--battlefield-b", "Island,Island,Island"]
+    try:
+        control, choices, outcome = _record_cast_any_line(seed, extra)
+        u1 = _first_cat_index(control, CAT_PAY_UNLESS)
+        if u1 is None:
+            raise ProtocolError("no PAY_UNLESS decision in the control line — "
+                                "the Daze should force the unless prompt")
+        want = ((u1, 3), (u1 + 1, 3), (u1 + 2, 2))
+        for i, want_nc in want:
+            nc, pl, safe = control[i]
+            if not bool((_query_cats(pl)[:nc] == CAT_PAY_UNLESS).any()):
+                raise ProtocolError(f"decision {i} is not an unless iteration — "
+                                    "the loop should re-arm consecutively")
+            if nc != want_nc:
+                raise ProtocolError(f"unless iteration at {i} has {nc} options, "
+                                    f"expected {want_nc}")
+            if not safe:
+                raise ProtocolError(f"unless iteration at {i} reports safe=0 — "
+                                    "it should be a loop-top pending decision now")
+        roots = (u1, u1 + 2)
+
+        eng = Engine(seed, extra=extra)
+        cur = eng.read()
+        excursions = 0
+        for idx in range(len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"unless alignment at decision {idx}")
+            if idx in roots:
+                snap_nc, snap_pl = cur.nc, cur.payload
+                q = eng.snapshot(0)
+                _assert_same_query(q, snap_pl, snap_nc,
+                                   f"unless post-SNAPSHOT re-emit at {idx}")
+                # Divergent excursion: decline (spell countered) instead of the
+                # control's tap/Pay — the very next query must differ.
+                dq = eng.play(_unless_decline_index(snap_nc, snap_pl,
+                                                    f"unless root {idx}"))
+                if dq.kind != "q":
+                    eng.kill()
+                    raise ProtocolError(f"unless root {idx}: declining ended "
+                                        "the game immediately")
+                if idx + 1 < len(control) and \
+                        _first_diff(dq.payload, control[idx + 1][1]) is None:
+                    eng.kill()
+                    raise ProtocolError(f"unless root {idx}: declining produced "
+                                        "a byte-identical next query — the "
+                                        "choice had no observable effect")
+                for i in range(1, 8):
+                    if dq.kind != "q":
+                        break
+                    dq = eng.play(_diverge(i, dq.nc))
+                rq = eng.restore(0)
+                _assert_same_query(rq, snap_pl, snap_nc,
+                                   f"unless post-RESTORE re-emit at {idx}")
+                rel = eng.release()
+                _assert_same_query(rel, snap_pl, snap_nc,
+                                   f"unless post-RELEASE re-emit at {idx}")
+                cur = rel
+                excursions += 1
+            cur = eng.play(choices[idx])
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed unless line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        if excursions != 2:
+            raise ProtocolError(f"expected 2 unless excursions, ran {excursions}")
+        return (f"unless iterations @ {u1}/{u1 + 1}/{u1 + 2} (nc=3/3/2) all "
+                f"safe=1, roots @ {roots[0]} and @ {roots[1]} (mid-loop, "
+                f"different menu size) round-trip exact, decline diverges, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_yorion_blink_roundtrip():
+    """Batch 7 (live-menu loops): the non-targeted battlefield multi-select of a
+    ChangeZone (Yorion, Sky Nomad's blink: "exile any number of other nonland
+    permanents you own and control") is a loop-top pending decision. Casting the
+    preset-affordable Yorion fires its ETB trigger, whose resolution reaches a
+    2-option CHOOSE_CARD menu (Exile Grizzly Bears / Done): safe=1, SNAPSHOT
+    re-emits exactly, picking Done instead of the control's exile must change
+    the next query (the Bears stays on the battlefield), RESTORE returns
+    byte-identically, and the resumed line — Bears exiled, then returned by the
+    delayed trigger at end step — matches the control to EOF."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("yorion_pq_a", "1 Yorion Sky Nomad\n29 Mountain\n"),
+        ("yorion_pq_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/yorion_pq_a", "--deck-b", "temp/yorion_pq_b",
+             "--no-shuffle",
+             "--battlefield-a", "Plains,Plains,Plains,Plains,Island,Grizzly Bears"]
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_CHOOSE_CARD, 2, "yorion")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "yorion", expect_diverge=True)
+        return (f"CHOOSE_CARD root @ {root_idx} (nc=2) safe=1, Done diverges, "
+                f"round-trip exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -2194,6 +2381,8 @@ TESTS = [
     ("legend_rule_roundtrip", test_legend_rule_roundtrip),
     ("etb_choose_type_roundtrip", test_etb_choose_type_roundtrip),
     ("etb_name_card_roundtrip", test_etb_name_card_roundtrip),
+    ("unless_mana_roundtrip", test_unless_mana_roundtrip),
+    ("yorion_blink_roundtrip", test_yorion_blink_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

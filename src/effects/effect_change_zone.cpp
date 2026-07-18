@@ -16,7 +16,6 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../classes/action.h"
-#include "../input_logger.h"
 #include "../game_queries.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
@@ -271,9 +270,16 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         int cap = (ab.change_num >= 0) ? ab.change_num
                                        : (ab.amount > 0 ? static_cast<int>(ab.amount) : 1);
         bool optional = ab.optional_choice;
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
-        for (int picked = 0; picked < cap; picked++) {
+        // Live-menu loop (Shape C): only the pick counter persists — the
+        // candidate pool, and hence the menu, is rebuilt from the remembered
+        // set's current zones at every arm AND at every consume (that rebuild
+        // is what maps the latched answer back to an entity; ask's size assert
+        // guards drift). The asks are seated on the controller through
+        // fctx.ask, replacing the old manual seat swap around the whole loop.
+        ChangeZoneRememberedRt local_rt;
+        ChangeZoneRememberedRt &rt =
+            fctx.can_suspend() ? fctx.rt<ChangeZoneRememberedRt>() : local_rt;
+        for (; rt.picked < cap; rt.picked++) {
             // Rebuild the candidate list each pick (a card already moved leaves the eligible zones).
             std::vector<Entity> cands;
             for (auto e : cur_game.remembered_entities) {
@@ -302,11 +308,15 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 none.category = ActionCategory::CHOOSE_CARD;
                 picks.push_back(none);
             }
-            game_log("%s may exile a card until %s leaves the battlefield:\n",
-                player_name(ab.controller).c_str(),
-                global_coordinator.entity_has_component<CardData>(ab.source)
-                    ? global_coordinator.GetComponent<CardData>(ab.source).name.c_str() : "the source");
-            int choice = InputLogger::instance().get_input(picks);
+            // Arm-only pre-ask log: a resume re-enters this same pick with the
+            // announcement already printed at arm time.
+            if (!fctx.resuming())
+                game_log("%s may exile a card until %s leaves the battlefield:\n",
+                    player_name(ab.controller).c_str(),
+                    global_coordinator.entity_has_component<CardData>(ab.source)
+                        ? global_coordinator.GetComponent<CardData>(ab.source).name.c_str() : "the source");
+            int choice = fctx.ask(std::move(picks), ab.controller, ab.source);
+            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             if (choice < 0 || choice >= static_cast<int>(cands.size())) break;  // declined
             Entity chosen = cands[static_cast<size_t>(choice)];
             Zone::ZoneValue card_origin = global_coordinator.GetComponent<Zone>(chosen).location;
@@ -318,7 +328,6 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             if (ab.duration_until_host_leaves)
                 register_exile_until_host_leaves(ab.source, chosen, card_origin);
         }
-        cur_game.player_a_has_priority = prev_priority;
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -390,8 +399,14 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         MatchCtx ctx;
         ctx.controller = owner;
         ctx.source = ab.source;
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
+        // Live-menu loop (Shape C) with no persisted progress at all: the
+        // candidate pool is the live battlefield filtered by ChangeType$, so
+        // every pass — arm, consume, and post-pick re-arm alike — re-derives it
+        // from components (each exile removes its pick; the loop runs until
+        // "done" or the pool empties). The consume-side rebuild maps the
+        // latched answer back to an entity; ask's size assert guards drift.
+        // Asks are seated on `owner` (the selecting player) through fctx.ask,
+        // replacing the old manual seat swap around the whole loop.
         while (true) {
             std::vector<Entity> cands;
             for (auto e : battlefield_permanents(orderer->mEntities)) {
@@ -410,7 +425,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             LegalAction done(PASS_PRIORITY, "Done (exile no more)");
             done.category = ActionCategory::CHOOSE_CARD;
             picks.push_back(done);
-            int choice = InputLogger::instance().get_input(picks);
+            int choice = fctx.ask(std::move(picks), owner, ab.source);
+            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             if (choice < 0 || choice >= static_cast<int>(cands.size())) break;  // declined / done
             Entity chosen = cands[static_cast<size_t>(choice)];
             std::string cname = object_display_name(chosen);
@@ -418,7 +434,6 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             if (ab.remember_changed) cur_game.remembered_entities.push_back(chosen);
             game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
         }
-        cur_game.player_a_has_priority = prev_priority;
         return HandlerResult::DONE_RUN_SUBS;
     }
 
