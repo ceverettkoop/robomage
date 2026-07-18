@@ -85,7 +85,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Misty Rainforest (ChangeZone)
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
   >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -374,8 +374,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)
-   2: Activate Edge of Autumn from hand (Draw)
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 2 (Activate Edge of Autumn from hand (Draw))
 
 --- Decision 20 ---
@@ -789,7 +789,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
   >> A/A: 1 (Activate Scalding Tarn (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -1682,7 +1682,7 @@
    0: Pass priority
    1: Cast Doomsday  [#0]
    2: Cast Dark Ritual  [#0]
-   3: Activate Verdant Catacombs (ChangeZone)
+   3: Activate Verdant Catacombs (ChangeZone)  [#0]
   >> B/B: 3 (Activate Verdant Catacombs (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -2009,7 +2009,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -2989,7 +2989,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Flooded Strand (ChangeZone)
+   1: Activate Flooded Strand (ChangeZone)  [#0]
   >> A/A: 1 (Activate Flooded Strand (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -3057,7 +3057,7 @@
   Actions:
    0: Pass priority
    1: Cast Cori-Steel Cutter  [#0]
-   2: Equip Cori-Steel Cutter
+   2: Equip Cori-Steel Cutter  [#32]
   >> A/A: 1 (Cast Cori-Steel Cutter)
 --- Narrative ---
   Player A activated Volcanic Island for 1(R)
@@ -3583,8 +3583,8 @@
   Actions:
    0: Pass priority
    1: Cast Delver of Secrets  [#0]
-   2: Equip Cori-Steel Cutter
-   3: Equip Cori-Steel Cutter
+   2: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#32]
   >> A/A: 1 (Cast Delver of Secrets)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -3622,8 +3622,8 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter
-   2: Equip Cori-Steel Cutter
+   1: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#32]
   >> A/A: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Player A activated Mountain for 1(R)
@@ -3930,7 +3930,7 @@
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
-   2: Activate Bloodstained Mire (ChangeZone)
+   2: Activate Bloodstained Mire (ChangeZone)  [#0]
   >> B/B: 2 (Activate Bloodstained Mire (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -4409,8 +4409,8 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter
-   2: Equip Cori-Steel Cutter
+   1: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#32]
   >> A/A: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Player A activated Volcanic Island for 1(R)

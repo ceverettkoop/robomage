@@ -647,7 +647,10 @@ class CardRow(QScrollArea):
             item = self._layout.takeAt(0)
             w = item.widget()
             if w is not None:
-                w.setParent(None)
+                # hide, NOT setParent(None): a parentless widget becomes a
+                # top-level window, which on macOS can flash on screen as a
+                # small ghost window before deleteLater destroys it.
+                w.hide()
                 w.deleteLater()
         for w in widgets:
             self._layout.addWidget(w)

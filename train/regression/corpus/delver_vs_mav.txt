@@ -123,7 +123,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Misty Rainforest (ChangeZone)
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
   >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -304,7 +304,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Mishra's Bauble (PeekAndReveal)
+   1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
   >> A/A: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
   Choose target for Mishra's Bauble:
@@ -440,7 +440,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
   >> A/A: 1 (Activate Scalding Tarn (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -1249,7 +1249,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 59 ---
@@ -1266,7 +1266,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1285,7 +1285,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1304,7 +1304,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1324,7 +1324,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 63 ---
@@ -1341,7 +1341,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 64 ---
@@ -1358,7 +1358,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 65 ---
@@ -1375,7 +1375,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 9 (Player A) --------
@@ -1396,7 +1396,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Brainstorm
@@ -1435,7 +1435,7 @@
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -1476,7 +1476,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 3)
@@ -1595,7 +1595,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -1637,7 +1637,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
@@ -1656,7 +1656,7 @@
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 79 ---
@@ -1695,7 +1695,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wooded Foothills (ChangeZone)
+   1: Activate Wooded Foothills (ChangeZone)  [#0]
   >> A/A: 1 (Activate Wooded Foothills (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -1717,7 +1717,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -1808,7 +1808,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -1932,7 +1932,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 91 ---
@@ -1949,7 +1949,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1968,7 +1968,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1987,7 +1987,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2007,7 +2007,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 95 ---
@@ -2024,7 +2024,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 96 ---
@@ -2041,7 +2041,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 97 ---
@@ -2058,7 +2058,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 11 (Player A) --------
@@ -2079,7 +2079,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Volcanic Island
@@ -2097,7 +2097,7 @@
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Wooded Foothills, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 100 ---
@@ -2134,7 +2134,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -2251,7 +2251,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Windswept Heath (ChangeZone)
+   1: Activate Windswept Heath (ChangeZone)  [#0]
   >> B/B: 1 (Activate Windswept Heath (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -2350,7 +2350,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
   >> A/A: 1 (Activate Scalding Tarn (ChangeZone))
 --- Narrative ---
   Player A pays 1 life

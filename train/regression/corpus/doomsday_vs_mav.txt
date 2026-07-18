@@ -69,7 +69,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 4 ---
@@ -94,7 +94,7 @@
   Opp revealed: Once Upon a Time
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Dig)
@@ -128,7 +128,7 @@
   Opp revealed: Once Upon a Time
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 8 ---
@@ -140,7 +140,7 @@
   Opp revealed: Once Upon a Time
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 9 ---
@@ -155,7 +155,7 @@
    1: Play Underground Sea
    2: Play Island
    3: Play Misty Rainforest
-   4: Activate Street Wraith from hand (Draw)
+   4: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Underground Sea)
 --- Narrative ---
   Player A played Underground Sea
@@ -173,8 +173,8 @@
    0: Pass priority
    1: Cast Thoughtseize  [#0]
    2: Cast Ponder  [#0]
-   3: Activate Street Wraith from hand (Draw)
-   4: Activate Edge of Autumn from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
+   4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
   Choose target for Thoughtseize:
@@ -210,8 +210,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Edge of Autumn from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 2 (Activate Edge of Autumn from hand (Draw))
 
 --- Decision 13 ---
@@ -243,7 +243,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
@@ -261,7 +261,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Discard)
@@ -309,7 +309,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 18 ---
@@ -324,7 +324,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -341,7 +341,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -358,7 +358,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -376,7 +376,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 22 ---
@@ -391,7 +391,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 23 ---
@@ -406,7 +406,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 24 ---
@@ -421,7 +421,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 2 (Player B) --------
@@ -440,7 +440,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Knight of the Reliquary
@@ -456,7 +456,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 27 ---
@@ -490,7 +490,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 29 ---
@@ -506,7 +506,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -524,7 +524,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -542,7 +542,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -561,7 +561,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 33 ---
@@ -577,7 +577,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 34 ---
@@ -593,7 +593,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 35 ---
@@ -609,7 +609,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 3 (Player A) --------
@@ -629,7 +629,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Thoughtseize
@@ -646,7 +646,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 38 ---
@@ -663,7 +663,7 @@
    0: Pass priority
    1: Play Island
    2: Play Misty Rainforest
-   3: Activate Street Wraith from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Island)
 --- Narrative ---
   Player A played Island
@@ -683,7 +683,7 @@
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -704,7 +704,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -790,7 +790,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 45 ---
@@ -808,7 +808,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -828,7 +828,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -848,7 +848,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -869,7 +869,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 49 ---
@@ -887,7 +887,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 50 ---
@@ -905,7 +905,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 51 ---
@@ -923,7 +923,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 4 (Player B) --------
@@ -945,7 +945,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Wasteland
@@ -964,7 +964,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 54 ---
@@ -1023,7 +1023,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Phases)
@@ -1043,7 +1043,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 58 ---
@@ -1061,7 +1061,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1081,7 +1081,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1101,7 +1101,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1122,7 +1122,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 62 ---
@@ -1140,7 +1140,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 63 ---
@@ -1158,7 +1158,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 64 ---
@@ -1176,7 +1176,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 5 (Player A) --------
@@ -1198,7 +1198,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Force of Will
@@ -1217,7 +1217,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 67 ---
@@ -1235,7 +1235,7 @@
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
-   2: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Misty Rainforest)
 --- Narrative ---
   Player A played Misty Rainforest
@@ -1255,8 +1255,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Misty Rainforest (ChangeZone)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -1279,7 +1279,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -1327,7 +1327,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
@@ -1369,7 +1369,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 74 ---
@@ -1386,7 +1386,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1405,7 +1405,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1424,7 +1424,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1444,7 +1444,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 78 ---
@@ -1461,7 +1461,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 79 ---
@@ -1478,7 +1478,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 80 ---
@@ -1495,7 +1495,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 6 (Player B) --------
@@ -1516,7 +1516,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Noble Hierarch
@@ -1534,7 +1534,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 83 ---
@@ -1572,7 +1572,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Noble Hierarch enters the battlefield
@@ -1610,7 +1610,7 @@
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
-   2: Activate Wasteland (Destroy)
+   2: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Cast Swords to Plowshares)
 --- Narrative ---
   Choose target for Swords to Plowshares:
@@ -1651,7 +1651,7 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -1674,7 +1674,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 90 ---
@@ -1692,7 +1692,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1712,7 +1712,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -1732,7 +1732,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -1753,7 +1753,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 94 ---
@@ -1771,7 +1771,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 95 ---
@@ -1789,7 +1789,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 96 ---
@@ -1807,7 +1807,7 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 7 (Player A) --------
@@ -1829,7 +1829,7 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Street Wraith
@@ -1848,8 +1848,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 99 ---
@@ -1867,8 +1867,8 @@
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
-   2: Activate Street Wraith from hand (Draw)
-   3: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
   Choose target for Thoughtseize:
@@ -1910,8 +1910,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Discard)
@@ -1959,8 +1959,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 104 ---
@@ -1977,8 +1977,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -1997,8 +1997,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2017,8 +2017,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2038,8 +2038,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 108 ---
@@ -2056,8 +2056,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 109 ---
@@ -2074,8 +2074,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 110 ---
@@ -2092,8 +2092,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 8 (Player B) --------
@@ -2114,7 +2114,7 @@
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 112 ---
@@ -2131,8 +2131,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Windswept Heath
@@ -2150,7 +2150,7 @@
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 114 ---
@@ -2167,8 +2167,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 115 ---
@@ -2187,7 +2187,7 @@
    1: Play Wasteland
    2: Play Windswept Heath
    3: Play Windswept Heath
-   4: Activate Wasteland (Destroy)
+   4: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Play Wasteland)
 --- Narrative ---
   Player B played Wasteland
@@ -2207,8 +2207,8 @@
   Actions:
    0: Pass priority
    1: Cast Knight of the Reliquary  [#0]
-   2: Activate Wasteland (Destroy)
-   3: Activate Wasteland (Destroy)
+   2: Activate Wasteland (Destroy)  [#1]
+   3: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Cast Knight of the Reliquary)
 --- Narrative ---
   Player B activated Savannah for 1(W)
@@ -2233,8 +2233,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Knight of the Reliquary enters the battlefield
@@ -2255,8 +2255,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 119 ---
@@ -2274,8 +2274,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2295,8 +2295,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2316,8 +2316,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2338,8 +2338,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 123 ---
@@ -2357,8 +2357,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 124 ---
@@ -2376,8 +2376,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 125 ---
@@ -2395,8 +2395,8 @@
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 9 (Player A) --------
@@ -2418,8 +2418,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Daze
@@ -2438,8 +2438,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 128 ---
@@ -2456,8 +2456,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 129 ---
@@ -2474,8 +2474,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -2494,8 +2494,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -2514,8 +2514,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -2535,8 +2535,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 133 ---
@@ -2553,8 +2553,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 134 ---
@@ -2571,8 +2571,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 135 ---
@@ -2589,8 +2589,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 10 (Player B) --------
@@ -2611,9 +2611,9 @@
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Wasteland (Destroy)
-   3: Activate Wasteland (Destroy)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+   3: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 137 ---
@@ -2630,8 +2630,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Green Sun's Zenith
@@ -2649,9 +2649,9 @@
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Wasteland (Destroy)
-   3: Activate Wasteland (Destroy)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+   3: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 139 ---
@@ -2668,8 +2668,8 @@
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 140 ---
@@ -2688,9 +2688,9 @@
    1: Play Windswept Heath
    2: Play Windswept Heath
    3: Cast Green Sun's Zenith  [#0]
-   4: Activate Knight of the Reliquary (ChangeZone)
-   5: Activate Wasteland (Destroy)
-   6: Activate Wasteland (Destroy)
+   4: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   5: Activate Wasteland (Destroy)  [#1]
+   6: Activate Wasteland (Destroy)  [#1]
   >> B/B: 3 (Cast Green Sun's Zenith)
 --- Narrative ---
   Choose X value (0-3):
@@ -2731,9 +2731,9 @@
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Wasteland (Destroy)
-   3: Activate Wasteland (Destroy)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+   3: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 143 ---
@@ -2770,8 +2770,8 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
-   2: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
+   2: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -2816,7 +2816,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -2864,8 +2864,8 @@
    1: Cast Force of Will (alternate cost)  [#1]
    2: Cast Daze  [#0]
    3: Cast Daze (alternate cost)  [#1]
-   4: Activate Street Wraith from hand (Draw)
-   5: Activate Street Wraith from hand (Draw)
+   4: Activate Street Wraith from hand (Draw)  [#0]
+   5: Activate Street Wraith from hand (Draw)  [#0]
    6: Tap Undercity Sewers for (U)
    7: Tap Undercity Sewers for (B)
   >> A/A: 1 (Cast Force of Will (alternate cost))
@@ -2933,8 +2933,8 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
    3: Tap Undercity Sewers for (U)
    4: Tap Undercity Sewers for (B)
   >> A/A: 0 (Pass priority)
@@ -2959,8 +2959,8 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
    3: Tap Undercity Sewers for (U)
    4: Tap Undercity Sewers for (B)
   >> A/A: 0 (Pass priority)
@@ -2985,8 +2985,8 @@
   Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Destroy fizzles
@@ -3008,8 +3008,8 @@
   Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -3070,8 +3070,8 @@
   Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 157 ---
@@ -3110,7 +3110,7 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Windswept Heath (ChangeZone)
+   1: Activate Windswept Heath (ChangeZone)  [#0]
   >> B/B: 1 (Activate Windswept Heath (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -3133,8 +3133,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -3182,8 +3182,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 162 ---
@@ -3201,8 +3201,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3222,8 +3222,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3243,8 +3243,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3265,8 +3265,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 166 ---
@@ -3284,8 +3284,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 167 ---
@@ -3303,8 +3303,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 168 ---
@@ -3322,8 +3322,8 @@
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 11 (Player A) --------
@@ -3345,8 +3345,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Underground Sea
@@ -3365,8 +3365,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 171 ---
@@ -3384,8 +3384,8 @@
   Actions:
    0: Pass priority
    1: Play Underground Sea
-   2: Activate Street Wraith from hand (Draw)
-   3: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Underground Sea)
 --- Narrative ---
   Player A played Underground Sea
@@ -3405,8 +3405,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 173 ---
@@ -3424,8 +3424,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3445,8 +3445,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3466,8 +3466,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3488,8 +3488,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 177 ---
@@ -3507,8 +3507,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 178 ---
@@ -3526,8 +3526,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 179 ---
@@ -3545,8 +3545,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 12 (Player B) --------
@@ -3568,7 +3568,7 @@
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 181 ---
@@ -3585,8 +3585,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Plains
@@ -3605,7 +3605,7 @@
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Edge of Autumn, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 183 ---
@@ -3622,8 +3622,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 184 ---
@@ -3642,7 +3642,7 @@
    0: Pass priority
    1: Play Plains
    2: Play Windswept Heath
-   3: Activate Knight of the Reliquary (ChangeZone)
+   3: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 1 (Play Plains)
 --- Narrative ---
   Player B played Plains
@@ -3662,7 +3662,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 186 ---
@@ -3703,8 +3703,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -3761,8 +3761,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 190 ---
@@ -3780,8 +3780,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -3801,8 +3801,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -3822,8 +3822,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -3844,8 +3844,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 194 ---
@@ -3863,8 +3863,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 195 ---
@@ -3882,8 +3882,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 196 ---
@@ -3901,8 +3901,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 13 (Player A) --------
@@ -3924,8 +3924,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Ponder
@@ -3944,8 +3944,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 199 ---
@@ -3963,8 +3963,8 @@
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
-   2: Activate Street Wraith from hand (Draw)
-   3: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -3985,8 +3985,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RearrangeTopOfLibrary)
@@ -4073,8 +4073,8 @@
   Actions:
    0: Pass priority
    1: Play Polluted Delta
-   2: Activate Street Wraith from hand (Draw)
-   3: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Play Polluted Delta)
 --- Narrative ---
   Player A played Polluted Delta
@@ -4095,9 +4095,9 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)
-   2: Activate Street Wraith from hand (Draw)
-   3: Activate Street Wraith from hand (Draw)
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Polluted Delta (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -4121,8 +4121,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -4168,8 +4168,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 209 ---
@@ -4187,8 +4187,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -4208,8 +4208,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -4229,8 +4229,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -4251,8 +4251,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 213 ---
@@ -4270,8 +4270,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 214 ---
@@ -4289,8 +4289,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 215 ---
@@ -4308,8 +4308,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 14 (Player B) --------
@@ -4331,7 +4331,7 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 217 ---
@@ -4348,8 +4348,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Noble Hierarch
@@ -4368,7 +4368,7 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 219 ---
@@ -4385,8 +4385,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 220 ---
@@ -4405,7 +4405,7 @@
    0: Pass priority
    1: Play Windswept Heath
    2: Cast Noble Hierarch  [#0]
-   3: Activate Knight of the Reliquary (ChangeZone)
+   3: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 2 (Cast Noble Hierarch)
 --- Narrative ---
   Player B activated Forest for 1(G)
@@ -4426,7 +4426,7 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 222 ---
@@ -4466,8 +4466,8 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -4524,7 +4524,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Horizon Canopy (Draw)
+   1: Activate Horizon Canopy (Draw)  [#1]
   >> B/B: 1 (Activate Horizon Canopy (Draw))
 --- Narrative ---
   Player B activated Gaea's Cradle for 1(G)
@@ -4547,8 +4547,8 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
@@ -4570,8 +4570,8 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Noble Hierarch enters the battlefield
@@ -4611,7 +4611,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Windswept Heath (ChangeZone)
+   1: Activate Windswept Heath (ChangeZone)  [#0]
   >> B/B: 1 (Activate Windswept Heath (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -4634,8 +4634,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -4705,8 +4705,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Knight of the Reliquary enters the battlefield
@@ -4727,8 +4727,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 235 ---
@@ -4746,8 +4746,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -4767,8 +4767,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -4788,8 +4788,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -4810,8 +4810,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 239 ---
@@ -4829,8 +4829,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 240 ---
@@ -4848,8 +4848,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 241 ---
@@ -4867,8 +4867,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 15 (Player A) --------
@@ -4890,8 +4890,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Thoughtseize
@@ -4910,8 +4910,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 244 ---
@@ -4929,8 +4929,8 @@
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
-   2: Activate Street Wraith from hand (Draw)
-   3: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
   Choose target for Thoughtseize:
@@ -4972,8 +4972,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Discard)
@@ -4996,8 +4996,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 248 ---
@@ -5014,8 +5014,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
@@ -5034,8 +5034,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No attackers — skipping declare blockers.
@@ -5054,8 +5054,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -5075,8 +5075,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 252 ---
@@ -5093,8 +5093,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 253 ---
@@ -5111,8 +5111,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 254 ---
@@ -5129,8 +5129,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 16 (Player B) --------
@@ -5152,8 +5152,8 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 256 ---
@@ -5170,8 +5170,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player B draws Wooded Foothills
@@ -5190,8 +5190,8 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Thoughtseize, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 258 ---
@@ -5208,8 +5208,8 @@
   Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 259 ---
@@ -5227,8 +5227,8 @@
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
-   2: Activate Knight of the Reliquary (ChangeZone)
-   3: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   3: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 1 (Play Wooded Foothills)
 --- Narrative ---
   Player B played Wooded Foothills
@@ -5248,9 +5248,9 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
-   3: Activate Wooded Foothills (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   3: Activate Wooded Foothills (ChangeZone)  [#0]
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 261 ---
@@ -5290,8 +5290,8 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Wooded Foothills (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Wooded Foothills (ChangeZone)  [#0]
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 263 ---
@@ -5331,7 +5331,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wooded Foothills (ChangeZone)
+   1: Activate Wooded Foothills (ChangeZone)  [#0]
   >> B/B: 1 (Activate Wooded Foothills (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -5354,8 +5354,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -5401,8 +5401,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -5455,8 +5455,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -5507,8 +5507,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 272 ---
@@ -5526,8 +5526,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Declare Attackers (Player B) ---
@@ -5591,8 +5591,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ExaltedBonus)
@@ -5613,8 +5613,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to block.
@@ -5634,8 +5634,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
@@ -5657,8 +5657,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 279 ---
@@ -5676,8 +5676,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 280 ---
@@ -5695,8 +5695,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 281 ---
@@ -5714,8 +5714,8 @@
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 17 (Player A) --------
@@ -5737,8 +5737,8 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Player A draws Lotus Petal
@@ -5757,8 +5757,8 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 284 ---
@@ -5776,8 +5776,8 @@
   Actions:
    0: Pass priority
    1: Cast Lotus Petal  [#0]
-   2: Activate Street Wraith from hand (Draw)
-   3: Activate Street Wraith from hand (Draw)
+   2: Activate Street Wraith from hand (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Lotus Petal)
 --- Narrative ---
   Player A casts Lotus Petal
@@ -5797,8 +5797,8 @@
   Opp revealed: Forest, Wooded Foothills, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Karakas, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Lotus Petal enters the battlefield
@@ -5819,8 +5819,8 @@
    0: Pass priority
    1: Cast Doomsday  [#0]
    2: Cast Doomsday  [#0]
-   3: Activate Street Wraith from hand (Draw)
-   4: Activate Street Wraith from hand (Draw)
+   3: Activate Street Wraith from hand (Draw)  [#0]
+   4: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Doomsday)
 --- Narrative ---
   Player A activated Swamp for 1(B)
@@ -5845,8 +5845,8 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -6374,8 +6374,8 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
-   2: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Street Wraith from hand (Draw))
 --- Narrative ---
   Player A pays 2 life
@@ -6398,7 +6398,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Activate Street Wraith from hand (Draw))
 --- Narrative ---
   Player A pays 2 life
@@ -6430,8 +6430,8 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player B draws Life from the Loam
@@ -6450,8 +6450,8 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 301 ---
@@ -6469,8 +6469,8 @@
   Actions:
    0: Pass priority
    1: Cast Life from the Loam  [#0]
-   2: Activate Knight of the Reliquary (ChangeZone)
-   3: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   3: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 1 (Cast Life from the Loam)
 --- Narrative ---
   Choose target for Life from the Loam:
@@ -6522,8 +6522,8 @@
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
-   2: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
+   2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 304 ---
@@ -6563,7 +6563,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)
+   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
 
 --- Decision 306 ---
@@ -6634,7 +6634,7 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -6714,7 +6714,7 @@
   Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:

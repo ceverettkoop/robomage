@@ -171,8 +171,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)
-   2: Activate Edge of Autumn from hand (Draw)
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 2 (Activate Edge of Autumn from hand (Draw))
 
 --- Decision 9 ---
@@ -566,7 +566,7 @@
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
-   2: Activate Polluted Delta (ChangeZone)
+   2: Activate Polluted Delta (ChangeZone)  [#0]
   >> B/B: 2 (Activate Polluted Delta (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -1035,7 +1035,7 @@
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
-   2: Activate Verdant Catacombs (ChangeZone)
+   2: Activate Verdant Catacombs (ChangeZone)  [#0]
   >> B/B: 2 (Activate Verdant Catacombs (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -3624,7 +3624,7 @@
   Opp revealed: Collector Ouphe, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 1 (Activate Street Wraith from hand (Draw))
 --- Narrative ---
   Player B pays 2 life
@@ -3647,7 +3647,7 @@
   Opp revealed: Collector Ouphe, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)
+   1: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 1 (Activate Street Wraith from hand (Draw))
 --- Narrative ---
   Player B pays 2 life

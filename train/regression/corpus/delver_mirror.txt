@@ -85,7 +85,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Misty Rainforest (ChangeZone)
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
   >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -328,7 +328,7 @@
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)
+   1: Activate Polluted Delta (ChangeZone)  [#0]
   >> B/B: 1 (Activate Polluted Delta (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -810,7 +810,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Flooded Strand (ChangeZone)
+   1: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 1 (Activate Flooded Strand (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -1042,7 +1042,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
   >> A/A: 1 (Activate Scalding Tarn (ChangeZone))
 --- Narrative ---
   Player A pays 1 life
@@ -1373,7 +1373,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Wasteland (Destroy)
+   1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
@@ -1558,7 +1558,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
   >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -2087,7 +2087,7 @@
    0: Pass priority
    1: Cast Murktide Regent  [#0]
    2: Cast Cori-Steel Cutter  [#0]
-   3: Equip Cori-Steel Cutter
+   3: Equip Cori-Steel Cutter  [#32]
   >> B/B: 1 (Cast Murktide Regent)
 --- Narrative ---
   Choose how many cards to exile via Delve (4-5):

@@ -175,7 +175,7 @@
    1: Play Polluted Delta
    2: Play Volcanic Island
    3: Play Scalding Tarn
-   4: Activate Mishra's Bauble (PeekAndReveal)
+   4: Activate Mishra's Bauble (PeekAndReveal)  [#0]
   >> B/B: 1 (Play Polluted Delta)
 --- Narrative ---
   Player B played Polluted Delta
@@ -191,8 +191,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Mishra's Bauble (PeekAndReveal)
-   2: Activate Polluted Delta (ChangeZone)
+   1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
+   2: Activate Polluted Delta (ChangeZone)  [#0]
   >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
   Choose target for Mishra's Bauble:
@@ -229,7 +229,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)
+   1: Activate Polluted Delta (ChangeZone)  [#0]
   >> B/B: 1 (Activate Polluted Delta (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -547,7 +547,7 @@
    3: Play Volcanic Island
    4: Play Scalding Tarn
    5: Play Thundering Falls
-   6: Activate Mishra's Bauble (PeekAndReveal)
+   6: Activate Mishra's Bauble (PeekAndReveal)  [#0]
   >> B/B: 1 (Play Island)
 --- Narrative ---
   Player B played Island
@@ -566,7 +566,7 @@
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
-   2: Activate Mishra's Bauble (PeekAndReveal)
+   2: Activate Mishra's Bauble (PeekAndReveal)  [#0]
   >> B/B: 1 (Cast Ponder)
 --- Narrative ---
   Player B activated Island for 1(U)
@@ -586,7 +586,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Mishra's Bauble (PeekAndReveal)
+   1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
   >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
   Choose target for Mishra's Bauble:
@@ -1219,7 +1219,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
   >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
 --- Narrative ---
   Player B pays 1 life
@@ -1326,7 +1326,7 @@
    2: Cast Noble Hierarch  [#0]
    3: Cast Thalia, Guardian of Thraben  [#0]
    4: Cast Thalia, Guardian of Thraben  [#0]
-   5: Activate Keen-Eyed Curator (ChangeZone)
+   5: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> A/A: 2 (Cast Noble Hierarch)
 --- Narrative ---
   Player A activated Karakas for 1(W)
@@ -1364,7 +1364,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Activate Keen-Eyed Curator (ChangeZone)
+   1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
@@ -1450,7 +1450,7 @@
    0: Pass priority
    1: Play Thundering Falls
    2: Cast Cori-Steel Cutter  [#0]
-   3: Equip Cori-Steel Cutter
+   3: Equip Cori-Steel Cutter  [#32]
   >> B/B: 2 (Cast Cori-Steel Cutter)
 --- Narrative ---
   Player B activated Mountain for 1(R)
@@ -1539,8 +1539,8 @@
   Actions:
    0: Pass priority
    1: Play Thundering Falls
-   2: Equip Cori-Steel Cutter
-   3: Equip Cori-Steel Cutter
+   2: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#32]
   >> B/B: 1 (Play Thundering Falls)
 --- Narrative ---
   Player B played Thundering Falls
@@ -1585,8 +1585,8 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter
-   2: Equip Cori-Steel Cutter
+   1: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#32]
   >> B/B: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Player B activated Volcanic Island for 1(R)
