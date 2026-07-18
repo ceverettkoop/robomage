@@ -1,5 +1,9 @@
 TODO:
 
+overlord of the balemurk opponent choice confirm is revealed card in hand information
+
+overlord of the balemurk time counter should be a trigger on stack
+
 FEED AZ BACK INTO PPO:
 Aistill AZ's policy into PPO (search-improved actions taught to the fast net), and let PPO keep learning its own value via RL. 
 Don't try to move the value across — the two critics are answering different questions.

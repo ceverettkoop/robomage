@@ -48,7 +48,8 @@ from env import (
     _PB_LIFE, _PB_HAND_CT, _LIBRARY_CTX_START, _REVEALED_START,
     _SELF_LIVE_LIB_START, _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
     _DECKLIST_SLOT_SIZE)
-from _enums import N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS
+from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
+                    DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY)
 from opponents import make_controller
 
 # Card-id decode: sentinel (empty/unknown) -> -1; a real id -> [0, N_CARD_TYPES).
@@ -168,8 +169,10 @@ def _zone_block_offsets(start):
 # ── The invariant checks (all read `state` = obs[:STATE_SIZE]) ─────────────────
 
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
-                   deck_block_by_seat):
-    """Assert every observation invariant for one decision. Raises on violation."""
+                   deck_block_by_seat, num_choices=None):
+    """Assert every observation invariant for one decision. Raises on violation.
+    `num_choices` (when known) additionally enables the per-menu activation-
+    ordinal uniqueness check (11)."""
     state = obs[:STATE_SIZE]
     seat = "A" if priority_is_a else "B"
 
@@ -346,6 +349,33 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
             _fail(decision_idx, seat, "action.option_ordinal", i, v,
                   f"option_ordinal {ordv} out of range [-1,{OPTION_ORDINAL_MAX}]")
 
+    # (11) Same-permanent activations are distinguishable. Every
+    # ACTIVATE_ABILITY action carries option_ordinal >= 0 (the ability's index
+    # in its source's ability list; synthesised equip/unattach use 32/33), and
+    # two activations referencing the SAME entity slot never share an ordinal —
+    # this is the encoding that lets the policy tell a planeswalker's loyalty
+    # abilities apart (they are identical in every other action feature).
+    if num_choices:
+        cats = decode.action_categories(obs, num_choices)
+        slots = decode.action_slot_refs(obs, num_choices)
+        ords = decode.action_ordinals(obs, num_choices)
+        seen_by_slot = {}
+        for i in range(num_choices):
+            if int(cats[i]) != CAT_ACTIVATE_ABILITY:
+                continue
+            o = int(ords[i])
+            if o < 0:
+                _fail(decision_idx, seat, "action.option_ordinal", i, o,
+                      "ACTIVATE_ABILITY action without an ability ordinal")
+            slot = int(slots[i])
+            if slot < 0:
+                continue          # no referenced entity slot (hand/gy source)
+            if o in seen_by_slot.setdefault(slot, set()):
+                _fail(decision_idx, seat, "action.option_ordinal", i, o,
+                      f"duplicate ability ordinal {o} on entity slot {slot} — "
+                      "same-permanent activations are indistinguishable")
+            seen_by_slot[slot].add(o)
+
 
 # ── Game driving ──────────────────────────────────────────────────────────────
 
@@ -386,7 +416,7 @@ def run_matchup(deck_a, deck_b, seed, companion_by_seat=None, max_decisions=None
                         * ACTION_CATEGORY_MAX).astype(int)
         is_pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
         check_decision(d.index, d.obs, d.priority_is_a, companion_by_seat,
-                       is_pregame, deck_block_by_seat)
+                       is_pregame, deck_block_by_seat, num_choices=d.num_choices)
         checked[0] += 1
 
     try:
@@ -422,6 +452,43 @@ _MATCHUPS = [
 ]
 
 
+def check_walker_activation_ordinals():
+    """Guaranteed coverage for invariant (11): stage a planeswalker with
+    multiple loyalty abilities (Jace, the Mind Sculptor) on the battlefield and
+    assert its activation menu offers >= 2 same-entity ACTIVATE_ABILITY actions
+    with DISTINCT ordinals >= 0 — the scripted matchups above only exercise the
+    check when such a menu happens to occur. Auto-passes to the first main
+    phase (deterministic); returns the number of loyalty actions verified."""
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Jace the Mind Sculptor", bo3=False)
+    try:
+        env.reset(options={"engine_seed": 3})
+        for _ in range(120):
+            num = env._num_choices
+            obs = env._obs
+            cats = decode.action_categories(obs, num)
+            slots = decode.action_slot_refs(obs, num)
+            ords = decode.action_ordinals(obs, num)
+            by_slot = {}
+            for i in range(num):
+                if int(cats[i]) == CAT_ACTIVATE_ABILITY and int(slots[i]) >= 0:
+                    by_slot.setdefault(int(slots[i]), []).append(int(ords[i]))
+            for slot, olist in by_slot.items():
+                if len(olist) >= 2:
+                    if any(o < 0 for o in olist):
+                        raise InvariantError(
+                            f"loyalty activation without ordinal: {olist}")
+                    if len(set(olist)) != len(olist):
+                        raise InvariantError(
+                            f"duplicate loyalty-ability ordinals: {olist}")
+                    return len(olist)
+            env.step(0)
+        raise InvariantError(
+            "staged Jace never offered >= 2 loyalty activations in 120 decisions")
+    finally:
+        env.close()
+
+
 def main():
     yorion_deck = _write_yorion80_deck()
     matchups = list(_MATCHUPS) + [
@@ -441,6 +508,14 @@ def main():
         comp_note = f" [companion: {companions}]" if companions else ""
         print(f"ok    {label}: {n} decisions checked{comp_note}", flush=True)
         total += n
+
+    try:
+        n_loyal = check_walker_activation_ordinals()
+    except InvariantError as e:
+        print(f"FAIL  walker activation ordinals\n  {e}", flush=True)
+        return 1
+    print(f"ok    walker activation ordinals: {n_loyal} distinct loyalty "
+          "activations on one Jace", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)

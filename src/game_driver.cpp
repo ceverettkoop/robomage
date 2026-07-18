@@ -70,6 +70,12 @@ bool bo3_mode = false;
 // Machine mode writes no decision log unless --log-decisions is passed (training
 // runs millions of episodes). CLI/interactive games always log — it's their save-game.
 bool log_decisions_flag = false;
+// --broadcast-steps: at every forced auto-pass (a priority window whose only
+// legal action is pass), emit a passive BSTATE frame — the BQUERY payload with
+// no stdin read — so an observing front end can render each step instead of
+// fast-forwarding to the next real decision. Consumes no input and records
+// nothing, so replays, action history, and search mirrors are unaffected.
+bool broadcast_steps_mode = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;
@@ -247,6 +253,17 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
 
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
         if (legal_actions.size() == 1) {
+            // --broadcast-steps: surface this forced pass to the machine driver as
+            // a passive BSTATE frame (no stdin read, nothing recorded). Suppressed
+            // while a search is simulating (snapshot live) or unwinding a restore —
+            // those lines are hypothetical and must not reach the observer.
+            if (machine_mode && broadcast_steps_mode && !search_restore_pending()
+                && !search_any_snapshot_live()) {
+                Query q;
+                populate_gamestate(&gs, viewer);
+                populate_query(&q, legal_actions);
+                cli_emit_machine_bstate(&q, &gs);
+            }
             cur_game.pass_priority();
             if (!machine_mode) populate_gamestate(&gs, viewer);
             continue;

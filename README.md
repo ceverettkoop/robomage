@@ -14,6 +14,7 @@ train/.venv/bin/pip install --upgrade pip
 train/.venv/bin/pip install numpy gymnasium                     # minimum: test harness / env only
 train/.venv/bin/pip install stable-baselines3 sb3-contrib shap  # full RL training + analysis
 train/.venv/bin/pip install -r train/requirements-tui.txt       # textual, needed by ./tui.sh
+train/.venv/bin/pip install -r train/requirements-gui.txt       # PySide6, optional: desktop GUI board
 ```
 `stable-baselines3` pulls in PyTorch, technically not required for play vs scripted (dumb) agents built into the engine, or for self-play.
 
@@ -137,8 +138,18 @@ checkpoint instead.
 ## Play against model
 
 ```bash
-train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck)   # TUI game board (default); the generalist (gen) pilots --model-deck
+train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck)          # TUI game board (default); the generalist (gen) pilots --model-deck
+train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck) --gui    # PySide6 desktop board (needs requirements-gui.txt)
+train/.venv/bin/python train/gui_game.py                                              # GUI launcher — pick decks/opponent/format/analysis in a dialog
 ```
+
+The GUI has an optional **analysis window** (launcher checkbox, or `--gui --analysis`; F9
+toggles in-game): live MCTS evaluation of your current decision on a separate engine copy —
+a per-action table (prior / visits / Q as win%) that updates while the search runs, a branch
+value chart with per-world spread, and a scrubber that fast-forwards along a line's principal
+variation showing the expected future positions. An off-by-default reveal toggle extends the
+same analysis to the opponent's decisions (this shows hidden information). Evaluator defaults
+to `az:gen` (falls back to a PPO warm-start); `uniform` works without torch.
 
 ## Run N games and analyze them (interactive)
 

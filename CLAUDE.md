@@ -21,7 +21,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Add similar shared accessors (next to these) when a new entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`)
-- TUI is the only front end; the raylib GUI front end was removed
+- Two interactive front ends, both Python, both sitting on the shared driver in
+  `train/game_driver.py`: the Textual TUI (`train/tui_game.py`) and the PySide6 GUI
+  (`train/gui_game.py`, with its analysis window in `train/gui_analysis.py`). There is NO C++
+  front end (the old raylib GUI was removed); the engine is always a `--machine` subprocess.
 - Uses clang-format configuration in `.clang-format`
 - DO NOT MODIFY CARD SCRIPTS
 - When given a long list of tasks or bugs to fix, do them one at a time (unless it is sensible to batch some)
@@ -57,9 +60,11 @@ this version current if a newer Comprehensive Rules release supersedes it.
 - **Clean build artifacts**: `make clean`
 - **Build for release**: `make BUILD=RELEASE`
 
-**The TUI is the only front end** — the deprecated raylib GUI has been removed from the tree
-entirely; there is no `GUI=TRUE` build option anymore. (`make HEADLESS=TRUE` is still accepted
-as a redundant no-op for backward compatibility.)
+**The engine build is always headless** — the front ends (Textual TUI, PySide6 GUI) are pure
+Python and drive `bin/robomage` over machine-mode stdio, so there is no front-end build option.
+The deprecated C++ raylib GUI was removed entirely; there is no `GUI=TRUE` build option.
+(`make HEADLESS=TRUE` is still accepted as a redundant no-op for backward compatibility.
+PySide6 is an optional Python extra: `pip install -r train/requirements-gui.txt`.)
 
 The compiled binary is output to `bin/robomage`.
 
@@ -682,6 +687,45 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 
 **Two perspective flags** worth knowing without opening the source: in the state vector, one flag marks whether the priority player is the active player (perspective-relative) and another marks whether "self" is Player A (absolute); AND-ing their agreement recovers `active_is_a`. See `src/machine_io.h` for their exact indices.
 
+### Interactive front ends: TUI, GUI, and the analysis window
+
+Both boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a
+worker thread reporting `StateUpdate`s to a sink; `build_session` assembles env + opponent
+controller). The engine is always a `--machine` subprocess; the opponent controller is any
+`opponents.make_controller` spec (scripted tiers, `gen`, `az:`/`azraw:`/`mcts:` wrappers).
+
+- **TUI board**: `train/play.py --human-deck X --model-deck Y` (default), or via `./tui.sh`.
+- **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_game.py` with no args for
+  the launcher dialog (deck/opponent/seat/format pickers + search and analysis settings,
+  persisted to `~/.robomage/gui_launcher.json`). Falls back to the TUI if PySide6 is missing.
+- **Headless smokes** (no display; used for sanity checks): `QT_QPA_PLATFORM=offscreen
+  ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1`
+  to force the analysis window on (uniform evaluator, torch-free) and fail unless a live
+  analysis run delivered stats.
+
+**The analysis window** (`train/gui_analysis.py`, GUI only; enable via the launcher checkbox or
+`play.py --gui --analysis`; F9 toggles, F5 analyzes, Shift+F5 stops): live MCTS evaluation of
+the current decision, chess-engine style. It runs `mcts.IncrementalSearch` — a chunked,
+cancellable, resumable search bit-identical to `run_search` for the same world seeds, which
+holds its root snapshot open so `pv()`/`walk()` can browse afterwards — on a **detached
+analysis engine** (`SearchRoboMageEnv.spawn_detached_mirror`): a caller-owned engine copy that
+is *never* registered in the live env's mirror pool and is kept in lockstep lazily by replaying
+the primary's action-history delta (so the live game never blocks, and the analysis engine may
+lag and only ever replays forward). Displays: per-action table (prior / visits / visit% / Q as
+win%), a branch value chart (bold mean per top branch + thin per-world lines for the
+determinization spread, always in the human's perspective), and a PV scrubber that walks a
+branch's principal variation on the analysis engine and renders each hypothetical future board
+(`MiniBoard`, reusing `CardWidget`). Evaluator is selectable (default `az:gen` — AZ checkpoint
+else PPO warm-start via `opponents._load_az_evaluator`; also `mcts:gen`, `uniform`).
+Constraints: only loop-safe decisions (priority / attackers / blockers / cleanup discard /
+sideboard) can be search roots — mid-resolution prompts grey out; opponent-decision analysis
+sits behind an explicit reveal toggle (it exposes hidden information), where a search opponent's
+own per-decision `SearchResult` is surfaced for free via the `SearchController.on_result` hook
+and other opponents are analyzed retrospectively on the analysis engine. The Qt-free session
+core lives in `train/analysis_session.py`; regression tests in `train/test_analysis_session.py`
+run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make check`):
+`train/.venv/bin/python train/ci_check.py --tier analysis`.
+
 ### Key files
 
 - `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper. Lazily re-exports `scripted_action` for back-compat callers; the real rule-based agent logic lives in `train/scripted_agent.py`.
@@ -692,7 +736,19 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 - `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
 - `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates games for a matchup, and inspects play (card importance, SHAP, value swings, regret, entropy, calibration, an interactive REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a GUI window) with terminal sparkline/bar fallbacks. The model is the one generalist (`gen`, an explicit `.zip`/`.pt` path, or `az:gen`/`azraw:gen`) and encodes **no deck**, so both the model's deck and the opponent's deck must be given explicitly with `--deck-a`/`--deck-b` for any model seat (a scripted opponent defaults to a mirror of `--deck-a`). (The older offline `.rmrec` recording subsystem and `train.py --record` were removed.)
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
-- `train/play.py` — interactive human-vs-model play
+- `train/play.py` — interactive human-vs-model play (text mode, `--tui`, `--gui`, `--analysis`)
+- `train/game_driver.py` — front-end-agnostic play loop + `build_session`; `StateUpdate` carries
+  an obs COPY plus `search_safe`/`history_len` for the analysis window
+- `train/tui_game.py` / `train/gui_game.py` — the Textual and PySide6 boards over that driver
+- `train/gui_analysis.py` — the analysis window (worker thread, live MCTS table, branch chart,
+  PV scrubber + MiniBoard)
+- `train/analysis_session.py` — Qt-free analysis core: `AnalysisSession` (detached engine,
+  delta-replay lockstep, chunked analyze/pv/walk), `AnalysisConfig`, `load_analysis_evaluator`
+- `train/search_env.py` — `SearchRoboMageEnv` (snapshot protocol client, mirror pool,
+  `spawn_detached_mirror`)
+- `train/mcts.py` — determinized PUCT search: `run_search`/`run_search_parallel` (now also
+  reporting per-action `q`, `w_sum`, per-world `world_values`) and `IncrementalSearch`
+- `train/test_analysis_session.py` — analysis-core regression (opt-in ci tier `analysis`)
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)
 - `train/fuzz_campaign.py` — batch fuzzing driver for the league fuzz campaigns: runs N scripted

@@ -39,6 +39,12 @@ _STEP_UPKEEP_IDX = _STEP_ABBR.index("UPK")
 # can briefly observe it before the game moves on. Tweak freely.
 OPP_ACTION_OBSERVE_DELAY = 0.5
 
+# Dwell per game step when rendering passive BSTATE frames (a step_pacing
+# session): each time the step one-hot advances, hold the frame this long so the
+# human can see the game move through its steps instead of fast-forwarding to
+# the next decision. Tweak freely.
+STEP_OBSERVE_DELAY = 0.2
+
 # Controller-word substitution used when decoding an OPPONENT-perspective obs
 # (the opponent holds priority, so the state vector's "self" is them). Swapping
 # the labels keeps stack entries / announced targets worded from the human's
@@ -265,6 +271,12 @@ def _pass_index(actions):
     return None
 
 
+def _frame_step_idx(obs):
+    """Index of the current game step within the step one-hot of `obs`."""
+    return int(np.argmax(
+        obs[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))
+
+
 def _autopass_should_stop(obs):
     """True once autopass reaches an UPKEEP step — its stop mark.
 
@@ -302,6 +314,10 @@ class StateUpdate:
     perm_token_names: object = None
     search_safe: object = None
     history_len: int = 0
+    # A passive --broadcast-steps BSTATE frame: board display only — not a real
+    # decision, so front ends must not feed it to the analysis window or treat
+    # it as a menu/prompt change beyond clearing stale actions.
+    passive: bool = False
 
 
 @dataclass
@@ -378,6 +394,9 @@ class GameDriver:
         # every optional window until the next UPKEEP step, stopping early for any
         # mandatory decision.
         self._autopass = False
+        # Step one-hot index of the last frame posted to the sink (real or
+        # passive) — the passive-frame pacer dwells only when it advances.
+        self._last_step_idx = None
 
     # ----- the loop (worker thread) -----
 
@@ -386,6 +405,7 @@ class GameDriver:
         try:
             obs, _ = env.reset()
             self._sink.on_log(env.flush_lines())
+            self._emit_passive_frames()
             done = False
             opp_queried = True   # nothing to mask before the first decision
             while not done:
@@ -429,6 +449,7 @@ class GameDriver:
                                 self._sink.on_opp_thinking(False)
                 opp_queried = opp_turn
 
+                self._last_step_idx = _frame_step_idx(obs)
                 self._sink.on_state(StateUpdate(
                     obs.copy(), num,
                     actions if human_must_act else [],
@@ -490,6 +511,11 @@ class GameDriver:
                 if observed and not done:
                     time.sleep(OPP_ACTION_OBSERVE_DELAY)
 
+                # Render any forced-pass BSTATE frames the engine emitted while
+                # fast-forwarding to the next decision (broadcast_steps env only),
+                # dwelling briefly per step so the human sees the progression.
+                self._emit_passive_frames()
+
             self._sink.on_game_over(self._winner_text())
         except EOFError:
             if self._quitting:
@@ -503,6 +529,26 @@ class GameDriver:
                 return
             self._sink.on_log([f"[red]driver error: {exc!r}[/red]"])
             self._sink.on_game_over(self._winner_text())
+
+    def _emit_passive_frames(self) -> None:
+        """Render any queued passive BSTATE frames (only a broadcast_steps env
+        produces them), dwelling STEP_OBSERVE_DELAY whenever the step one-hot
+        advances so the human watches the game move through its steps instead
+        of it fast-forwarding to the next decision."""
+        drain = getattr(self._env, "drain_passive_frames", None)
+        if drain is None:
+            return
+        for frame_obs, ctrs, toks in drain():
+            if self._quitting:
+                return
+            step_idx = _frame_step_idx(frame_obs)
+            opp_persp = (frame_obs[_SELF_IS_A_IDX] > 0.5) == self._opp_is_a
+            self._sink.on_state(StateUpdate(
+                frame_obs, 1, [], human_turn=False, opp_perspective=opp_persp,
+                perm_counters=ctrs, perm_token_names=toks, passive=True))
+            if step_idx != self._last_step_idx:
+                self._last_step_idx = step_idx
+                time.sleep(STEP_OBSERVE_DELAY)
 
     # ----- input / control (called from the front end's UI thread) -----
 
@@ -623,7 +669,7 @@ class Session:
 
 def build_session(binary_path, model_path, human_player=None,
                   human_deck="delver", model_deck="delver", bo3=True,
-                  analysis=False):
+                  analysis=False, step_pacing=False):
     """Assemble the engine env, opponent controller, and seat/clock/pace plumbing
     for one session (front-end-agnostic). Returns a Session.
 
@@ -634,7 +680,10 @@ def build_session(binary_path, model_path, human_player=None,
     best-of-three match — with sideboarding between games — in a single engine
     process; pass ``bo3=False`` for a single game. `analysis=True` forces the
     search-capable env even for a non-search opponent, so the analysis window
-    can snapshot/replay the session (harmless when unused).
+    can snapshot/replay the session (harmless when unused). `step_pacing=True`
+    runs the engine with --broadcast-steps so the driver renders every game
+    step (passive BSTATE frames, ~0.2s dwell per step) instead of
+    fast-forwarding between decisions — the GUI turns this on.
     """
     from opponents import make_controller, is_scripted_spec
 
@@ -668,7 +717,7 @@ def build_session(binary_path, model_path, human_player=None,
 
         env_cls = TuiSearchEnv
     env = env_cls(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
-                  log_viewer=human_seat, bo3=bo3)
+                  log_viewer=human_seat, bo3=bo3, broadcast_steps=step_pacing)
     bind_env = getattr(ctrl, "bind_env", None)
     if bind_env is not None:
         bind_env(env)

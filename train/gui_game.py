@@ -124,6 +124,7 @@ QLabel#oppInfo  { color: #e05555; padding: 2px 4px; }
 QLabel#selfInfo { color: #33d17a; padding: 2px 4px; }
 QLabel#graveyards { color: #9a9aa2; padding: 2px 4px; }
 QLabel#exile { color: #9a9aa2; padding: 2px 4px; }
+QLabel#knownHand { color: #9a9aa2; padding: 2px 4px; }
 QLabel#prompt {
     font-weight: bold; background: #24242e; color: #f0f0f4; padding: 4px 6px;
     border: 1px solid #2a2a33;
@@ -916,6 +917,23 @@ class ExilePanel(_CollapsiblePanel):
         self._text.setText(text)
 
 
+class KnownHandPanel(_CollapsiblePanel):
+    """Opponent-hand cards whose identity the human currently KNOWS — the
+    engine's belief state (revealed by Thoughtseize-style discard looks,
+    tutors, bounces, ...), mirrored from the obs known-opp-hand block. The
+    engine clears a slot when that card leaves their hand or hides again
+    (shuffle), so this always reflects live knowledge, not history."""
+
+    def __init__(self, parent=None):
+        self._text = QLabel()
+        self._text.setObjectName("knownHand")
+        self._text.setWordWrap(True)
+        super().__init__("Known opp hand", self._text, parent)
+
+    def set_cards(self, names):
+        self._text.setText(", ".join(names) if names else "—")
+
+
 class GameWindow(QMainWindow):
     """The Qt game board. Owns the widget tree, the DriverBridge, and the
     GameDriver; renders each StateUpdate and delivers the human's picks back."""
@@ -1103,18 +1121,22 @@ class GameWindow(QMainWindow):
         self._log = self._log_panel.text
         self._gy_panel = GraveyardPanel()
         self._exile_panel = ExilePanel()
+        self._known_panel = KnownHandPanel()
 
-        # Right-hand panel: graveyards and exile (collapsible, off-board info)
-        # stacked above the log, with the action menu at the bottom.
+        # Right-hand panel: graveyards, exile, and known-opp-hand (collapsible,
+        # off-board info) stacked above the log, with the action menu at the
+        # bottom.
         self._right = QSplitter(Qt.Vertical)
         self._right.addWidget(self._gy_panel)
         self._right.addWidget(self._exile_panel)
+        self._right.addWidget(self._known_panel)
         self._right.addWidget(self._log_panel)
         self._right.addWidget(self._menu)
         self._right.setStretchFactor(0, 0)
         self._right.setStretchFactor(1, 0)
-        self._right.setStretchFactor(2, 3)
-        self._right.setStretchFactor(3, 2)
+        self._right.setStretchFactor(2, 0)
+        self._right.setStretchFactor(3, 3)
+        self._right.setStretchFactor(4, 2)
 
         # Horizontal splitter: board | sidebar panel. Kept on the window so the
         # >/< shortcuts can nudge the right panel's width.
@@ -1180,6 +1202,11 @@ class GameWindow(QMainWindow):
         self._exile_panel.set_text(
             f"Your exile: {', '.join(gs.get('self_exile', [])) or '—'}\n"
             f"Opp exile:  {', '.join(gs.get('opp_exile', [])) or '—'}")
+        # The known-opp-hand block is viewer-relative: a mirrored (opponent-
+        # perspective) frame's block is what THEY know about YOUR hand, so only
+        # own-perspective frames update the panel (mirrors the hand-row rule).
+        if not mirrored:
+            self._known_panel.set_cards(gs.get("opp_known_hand", []))
 
         # A fresh menu/board: drop any stale hover so cross-highlights don't
         # linger onto the newly-rebuilt widgets, and close the oracle popup (its
@@ -1213,12 +1240,17 @@ class GameWindow(QMainWindow):
             if u.actions:
                 self._menu.setCurrentRow(0)
             self._prompt.setText(prompt_text(obs, u.num_choices, gs))
+        elif u.passive:
+            # A --broadcast-steps frame: the board/phase strip just advanced a
+            # step with no one to act; the driver paces these ~0.2s apart.
+            self._prompt.setText("Playing through steps…")
         elif self._driver._autopass:
             self._prompt.setText("Autopass — passing to next upkeep...")
         else:
             self._prompt.setText(f"{self._opp_label} is thinking...")
 
-        if self._analysis is not None:
+        # Passive frames are display-only, not decisions — never analysis roots.
+        if self._analysis is not None and not u.passive:
             self._analysis.on_decision(u)
 
         self._smoke_seen += 1
@@ -2210,7 +2242,7 @@ def run(binary_path, model_path, human_player=None,
     analysis_cfg = _analysis_cfg_from({} if analysis else None)
     session = build_session(binary_path, model_path, human_player=human_player,
                             human_deck=human_deck, model_deck=model_deck, bo3=bo3,
-                            analysis=analysis_cfg is not None)
+                            analysis=analysis_cfg is not None, step_pacing=True)
     session.analysis_cfg = analysis_cfg
     return _run_session(session)
 
@@ -2230,7 +2262,7 @@ def run_launcher(binary_path=None):
         session = build_session(
             opts["binary"], opts["model_path"], human_player=opts["human_player"],
             human_deck=opts["human_deck"], model_deck=opts["model_deck"],
-            bo3=opts["bo3"], analysis=analysis_cfg is not None)
+            bo3=opts["bo3"], analysis=analysis_cfg is not None, step_pacing=True)
         session.analysis_cfg = analysis_cfg
     except Exception as exc:                              # noqa: BLE001
         QMessageBox.critical(None, "Could not start game", str(exc))

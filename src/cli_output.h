@@ -43,5 +43,6 @@ bool resolve_narrative_viewer(Zone::Ownership* owner);
 
 // Machine query emitter: BQUERY header line + binary payload (called only in machine mode)
 void cli_emit_machine_query(const Query* q, const GameState* gs);
+void cli_emit_machine_bstate(const Query* q, const GameState* gs);
 
 #endif /* CLI_OUTPUT_H */

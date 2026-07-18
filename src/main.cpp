@@ -227,6 +227,10 @@ int main(int argc, char const *argv[]) {
             narrative_mode = true;
         } else if (std::string(argv[i]) == "--log-decisions") {
             log_decisions_flag = true;
+        } else if (std::string(argv[i]) == "--broadcast-steps") {
+            // Passive BSTATE frames at forced auto-pass windows (machine mode
+            // observers only; no stdin response expected, nothing recorded).
+            broadcast_steps_mode = true;
         } else if (std::string(argv[i]) == "--bo3") {
             bo3_mode = true;
         } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {

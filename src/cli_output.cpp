@@ -16,6 +16,10 @@
 // an empty string when the player has neither. Display only.
 static void format_player_resources(const PlayerState& ps, char* buf, size_t buf_len);
 
+// Shared body of cli_emit_machine_query / cli_emit_machine_bstate: prints the
+// `header` line ("BQUERY:" / "BSTATE:") then the fixed binary payload.
+static void emit_machine_frame(const char* header, const Query* q, const GameState* gs);
+
 // ── Utility ───────────────────────────────────────────────────────────────────
 
 const char* step_to_string(Step in_step) {
@@ -106,6 +110,18 @@ void game_log_redacted(Zone::Ownership owner, const char* fmt, ...) {
 // ── Machine query emitter ─────────────────────────────────────────────────────
 
 void cli_emit_machine_query(const Query* q, const GameState* gs) {
+    emit_machine_frame("BQUERY:", q, gs);
+}
+
+// Passive state broadcast (--broadcast-steps): the identical payload under a
+// "BSTATE:" header. The engine expects NO stdin response to this frame — it is
+// display-only, emitted at forced auto-pass windows so observers can watch the
+// game move through steps.
+void cli_emit_machine_bstate(const Query* q, const GameState* gs) {
+    emit_machine_frame("BSTATE:", q, gs);
+}
+
+static void emit_machine_frame(const char* header, const Query* q, const GameState* gs) {
     const auto& state_vec = serialize_state(gs);
 
     // Text header line: "BQUERY: N STATE_SIZE MAX_ACTIONS\n"
@@ -114,7 +130,7 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
     // layout change without regenerated Python constants fails loudly instead of
     // silently misframing the binary payload.
     // Followed immediately by binary payload (no text parsing needed on Python side).
-    printf("BQUERY: %d %d %d\n", q->num_choices, STATE_SIZE, MAX_ACTIONS);
+    printf("%s %d %d %d\n", header, q->num_choices, STATE_SIZE, MAX_ACTIONS);
 
     // Binary state vector (STATE_SIZE float32s)
     fwrite(state_vec.data(), sizeof(float), static_cast<size_t>(STATE_SIZE), stdout);
@@ -214,6 +230,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --replay <logfile>  Replay a previously logged game (self-contained: seed,\n");
     printf("                      flags and decks come from the log's RMLOG v2 header)\n");
     printf("  --machine           Machine mode: emit BQUERY lines for AI input\n");
+    printf("  --broadcast-steps   In machine mode, also emit passive BSTATE frames at\n");
+    printf("                      forced auto-pass windows (no response expected)\n");
     printf("  --log-decisions     Write the decision log in machine mode (off by default\n");
     printf("                      there; CLI/interactive games always log)\n");
     printf("  --bo3               Best-of-three match mode\n");

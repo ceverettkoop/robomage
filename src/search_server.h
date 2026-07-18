@@ -50,6 +50,11 @@ extern unsigned int g_sim_seed_salt;
 void search_set_loop_safe(bool safe);
 bool search_loop_safe();
 
+// True while any snapshot slot is live — i.e. a search is (potentially)
+// simulating hypothetical lines. Used to suppress --broadcast-steps BSTATE
+// frames during simulation.
+bool search_any_snapshot_live();
+
 // Cooperative-unwind state (see above). search_unwind_choice() consumes one
 // unwind step and fatals past a runaway cap.
 bool search_restore_pending();

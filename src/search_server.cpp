@@ -93,6 +93,10 @@ static bool any_slot_live() {
     return false;
 }
 
+bool search_any_snapshot_live() {
+    return any_slot_live();
+}
+
 // Read one stdin line for the search protocol; EOF here is always fatal (the
 // driver owns the process and must not vanish mid-search).
 static bool read_command_line(char *buf, size_t len) {
