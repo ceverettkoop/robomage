@@ -646,6 +646,7 @@
   Stack: Daze (spell, opponent) -> Swords to Plowshares (self, slot 97) -> Swords to Plowshares (spell, self) -> Dragon's Rage Channeler (opponent, slot 48)
   Self GY: Once Upon a Time
   Opp GY:  Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -672,6 +673,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Actions:
    0: Pass priority
@@ -695,6 +697,7 @@
   Pending: Talon Gates of Madara (self)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
@@ -715,6 +718,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
@@ -733,6 +737,7 @@
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mountain (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
@@ -757,6 +762,7 @@
   Pending: Green Sun's Zenith (self)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   Extras: self_lands_played=1
   Actions:
@@ -1025,6 +1031,7 @@
   Stack: Daze (spell, opponent) -> Keen-Eyed Curator (self, slot 97) -> Keen-Eyed Curator (spell, self)
   Self GY: Dryad Arbor, Swords to Plowshares, Once Upon a Time
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   Extras: self_lands_played=1, opp_revolt
   Actions:

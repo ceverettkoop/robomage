@@ -340,6 +340,45 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         pending.push_back(pt);
     }
 
+    // Impending (CR 702.175e): "At the beginning of your end step, remove a time counter from
+    // [each impending permanent you control]." This is a genuine triggered ability — one per
+    // impending permanent — so it is produced here from the END_STEP_BEGAN event and placed on
+    // the stack (players get priority, opponents can respond), NOT applied as an immediate
+    // step side effect. When the last time counter is removed on resolution the permanent
+    // becomes a creature on the next state-based pass (the impending suppression in
+    // apply_permanent_components is gated on TIME > 0). General over any Impending card.
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::END_STEP_BEGAN || !ev.HasParam(Params::PLAYER)) continue;
+        Entity end_step_player = ev.GetParam<Entity>(Params::PLAYER);
+        Zone::Ownership ctrl = (end_step_player == game.player_a_entity) ? Zone::PLAYER_A
+                             : (end_step_player == game.player_b_entity) ? Zone::PLAYER_B
+                                                                         : Zone::UNKNOWN;
+        if (ctrl == Zone::UNKNOWN) continue;
+        for (auto entity : mEntities) {
+            if (!is_battlefield_permanent(entity, ctrl)) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            // Only impending permanents that still have an impending time counter to shed.
+            if (!perm.entered_via_impending) continue;
+            if (get_counters(entity, "TIME") <= 0) continue;
+
+            Ability shed_ab;
+            shed_ab.ability_type = Ability::TRIGGERED;
+            shed_ab.category = "RemoveCounter";  // reuses effect_remove_counter (Defined$ Self)
+            shed_ab.source = entity;             // remove_counter falls back to source (target == 0)
+            shed_ab.controller = ctrl;
+            shed_ab.params = CounterParams{"TIME", 1};
+
+            PendingTrigger pt;
+            pt.ab = shed_ab;
+            pt.controller = ctrl;
+            pt.source = entity;
+            pt.label = perm.name + " (impending: remove a time counter)";
+            pt.log_line = perm.name + " triggers: remove a time counter (impending).";
+            pt.needs_target = false;
+            pending.push_back(pt);
+        }
+    }
+
     if (!events.empty()) {
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;

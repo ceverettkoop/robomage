@@ -450,6 +450,7 @@
   Self BF:  Talon Gates of Madara
   Stack: Daze (spell, opponent) -> Once Upon a Time (self, slot 97) -> Once Upon a Time (spell, self)
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Known opp hand: Island
   Opp revealed: Polluted Delta, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: opp_revolt
   Actions:
@@ -467,6 +468,7 @@
   Self BF:  Talon Gates of Madara (T)
   Stack: Daze (spell, opponent) -> Once Upon a Time (self, slot 97) -> Once Upon a Time (spell, self)
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Known opp hand: Island
   Opp revealed: Polluted Delta, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: opp_revolt
   Actions:
@@ -487,6 +489,7 @@
   Stack: Once Upon a Time (spell, self)
   Pending: Once Upon a Time (self)
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Known opp hand: Island
   Opp revealed: Polluted Delta, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: opp_revolt
   Actions:

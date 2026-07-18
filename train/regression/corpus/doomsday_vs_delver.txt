@@ -986,7 +986,7 @@
   Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1006,7 +1006,7 @@
   Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1023,7 +1023,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1039,7 +1039,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1057,7 +1057,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1075,7 +1075,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1094,7 +1094,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1110,7 +1110,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1126,7 +1126,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1142,7 +1142,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -1163,7 +1163,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority
@@ -1180,7 +1180,7 @@
   Self BF:  Island (T)
   Self GY: Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Known opp hand: Ponder, Scalding Tarn
+  Known opp hand: Ponder, Island, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   Actions:
    0: Pass priority

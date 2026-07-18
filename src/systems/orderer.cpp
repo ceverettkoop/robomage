@@ -251,6 +251,18 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // flag again if the destination is a revealed hidden zone.
     target_zone.identity_known = false;
 
+    // A card moving from a PUBLIC zone into hand is watched moving by both players,
+    // so its specific identity stays known to the opponent even though the hand is a
+    // hidden zone (e.g. Overlord of the Balemurk returning a creature card from the
+    // graveyard to hand, or bouncing a permanent to its owner's hand). Keep that
+    // belief so the observation carries the exact opponent-hand card. A draw
+    // (LIBRARY→HAND) is a hidden move and is intentionally excluded.
+    if (destination == Zone::HAND &&
+        (origin == Zone::BATTLEFIELD || origin == Zone::STACK ||
+         origin == Zone::GRAVEYARD || origin == Zone::EXILE)) {
+        target_zone.identity_known = true;
+    }
+
     // Match-scoped reveal tracking: any card entering a PUBLIC zone becomes known
     // to both players, so accumulate it in the owner's revealed multi-hot. This
     // single chokepoint covers casts (→STACK), ETB (→BATTLEFIELD), and
