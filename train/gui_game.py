@@ -528,7 +528,7 @@ class CardRow(QScrollArea):
         self._layout = QHBoxLayout(self._inner)
         self._layout.setContentsMargins(4, 2, 4, 2)
         self._layout.setSpacing(4)
-        self._layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self._layout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.setWidget(self._inner)
         if land:
             # Land rows sit on a slightly lighter background (mirrors the TUI's
@@ -844,6 +844,10 @@ class GameWindow(QMainWindow):
             bo3=session.bo3, sink=self._bridge,
             clock_fn=session.clock_fn, pace_idle=session.pace_idle)
 
+        # App-wide filter so the arrow-keys→action-pane hop works from any
+        # focused widget (log, scroll rows, ...), not just the window itself.
+        QApplication.instance().installEventFilter(self)
+
         QShortcut(QKeySequence("Ctrl+Q"), self, activated=self.close)
         # >/< nudge the board/log division (parity with the TUI's resize_log).
         QShortcut(QKeySequence(Qt.Key_Greater), self,
@@ -1091,6 +1095,15 @@ class GameWindow(QMainWindow):
         # of the list's built-in typeahead; Enter still fires itemActivated. The
         # menu viewport's Leave clears the menu-row->card cross-highlight.
         et = event.type()
+        # Any arrow key, wherever focus is, jumps keyboard focus to the action
+        # pane (installed app-wide); once the pane has focus the list handles
+        # arrows natively for row navigation.
+        if (et == event.Type.KeyPress
+                and event.key() in (Qt.Key_Up, Qt.Key_Down,
+                                    Qt.Key_Left, Qt.Key_Right)
+                and not self._menu.hasFocus()):
+            self._menu.setFocus(Qt.ShortcutFocusReason)
+            return True
         if obj is self._menu:
             if et == event.Type.KeyPress:
                 if self._oracle_key(event, True):
