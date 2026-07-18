@@ -45,6 +45,15 @@ extern Game cur_game;
 // (CR 608.2c). Forward-declared per CLAUDE.md.
 static void bind_sub_target(const Ability &parent, Ability &sub);
 
+// The subability-chaining loop shared by resolve() phases 5 and 7: resolves
+// parent.subabilities[next_sub..] in order, each as a persisted FrameLevel via
+// resolve_child in a suspendable context (the per-sub CR 608.2c binding runs
+// once, at push time) or as today's by-value blocking recursion otherwise.
+// next_sub is the caller's persisted cursor (++ on each completed sub).
+// Forward-declared per CLAUDE.md.
+static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer> orderer,
+                                        FrameCtx &ctx, int &next_sub);
+
 // The "unless they discard N cards" flavor of run_unless_loop (CR 701.8), suspendable via
 // FrameCtx. Forward-declared per CLAUDE.md.
 static bool run_discard_unless(size_t count, Zone::Ownership controller,
@@ -1372,6 +1381,36 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
     // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
 }
 
+// See forward declaration at top of file. The bind closure holds the exact
+// per-sub setup the old inline loop ran on its by-value copy (source stamp,
+// CR 608.2c target binding, controller stamp, in that order); resolve_child
+// applies it ONCE to the pushed copy and never on resume, so a suspended sub
+// keeps its in-flight state even if earlier siblings mutated the parent.
+static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer> orderer,
+                                        FrameCtx &ctx, int &next_sub) {
+    for (; next_sub < static_cast<int>(parent.subabilities.size()); ++next_sub) {
+        const Ability &sub_template = parent.subabilities[static_cast<size_t>(next_sub)];
+        if (ctx.can_suspend()) {
+            Ability *pp = &parent;
+            auto bind = [pp](Ability &sub) {
+                sub.source = pp->source;
+                bind_sub_target(*pp, sub);  // CR 608.2c — Defined$-driven (see helper)
+                sub.controller = pp->controller;
+            };
+            if (ctx.resolve_child(sub_template, FrameLevel::SUB, next_sub, -1, bind, orderer) ==
+                ResolveStatus::SUSPENDED)
+                return ResolveStatus::SUSPENDED;
+        } else {
+            Ability sub_ab = sub_template;
+            sub_ab.source = parent.source;
+            bind_sub_target(parent, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
+            sub_ab.controller = parent.controller;
+            sub_ab.resolve(orderer);
+        }
+    }
+    return ResolveStatus::DONE;
+}
+
 // Detail suffix for the "Resolving ability (category: ...)" log line. Ability::amount is
 // only what the effect actually uses for some categories, so a blanket ", amount: N" was
 // often a meaningless 0 or an un-evaluated base. Policy: Pump shows its effective +A/+D
@@ -1485,10 +1524,13 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
 // resolves — which run every phase in one pass, in EXACTLY the pre-refactor
 // order (pure control-flow restructure; the never-suspending path is
 // behavior-identical). Phases: 0 restore-remembered + OptionalDecider y/n;
-// 1 reflexive sac; 2 one-shot gates/prune/log/gift (skipped on resume so prune
-// logs never duplicate); 3 condition gates; 4 handler dispatch; 5 subability
-// chaining (next_sub-driven; subs still resolve through the blocking shim this
-// batch); 6 NameCard clear + DONE.
+// 1 reflexive sac; 2 one-shot gates/prune/log (skipped on resume so prune logs
+// never duplicate) + the gift loop (each gift a persisted GIFT FrameLevel via
+// resolve_child); 3 condition gates (evaluated once — failure routes to phase
+// 7); 4 handler dispatch; 5 subability chaining (next_sub-driven; each sub a
+// persisted SUB FrameLevel via resolve_child in a suspendable context);
+// 6 NameCard clear + DONE; 7 the condition-failed sub chain (no NameCard
+// clear, matching the old early return).
 ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
     BlockingRememberedScope remembered_scope(!ctx.is_root());
     int local_phase = 0;
@@ -1562,75 +1604,99 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         phase = 2;
     }
     if (phase == 2) {
-        // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
-        // longer true the ability is removed from the stack and does nothing — not even its
-        // subabilities fire (unlike a ConditionCheckSVar gate).
-        if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
-            game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
-            return ResolveStatus::DONE;
-        }
-        // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
-        // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
-        // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
-        // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
-        // the mana resolves, so the gate still reads 0 here for a legitimate fire).
-        if (!stored_svar_gate_name.empty() &&
-            !stored_svar_gate_passes(source, stored_svar_gate_name, stored_svar_gate_compare)) {
-            game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
-            return ResolveStatus::DONE;
-        }
-        // Pre-resolve target validity check (CR 608.2b). A Pump that reaches resolution with no
-        // pre-chosen target selects its own target inside the handler (an immediate-trigger
-        // sub-ability — see effects::pump / effect_immediate_trigger.cpp), so only that case is
-        // exempt; a Pump whose target was chosen at cast/trigger placement is verified like any
-        // other targeted effect and fizzles if the target became illegal (it does NOT retarget).
-        bool pump_selects_own_target = (category == "Pump" && target == 0 && targets.empty());
-        if (valid_tgts != "N_A" && !pump_selects_own_target) {
-            if (!is_target_valid()) {
-                fizzle(orderer);
-                return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+        // The one-shot gates/prune/log section runs exactly once: a re-entry at
+        // phase 2 (ctx.resuming() — a suspension inside the gift loop below
+        // parked a query and the latch is still unconsumed) skips straight to
+        // the gift loop, whose persisted next_sub resumes the suspended child.
+        // Nothing here asks, so phase 2 with resuming() true always means a
+        // gift suspension; the gates all passed on first entry.
+        if (!ctx.resuming()) {
+            // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
+            // longer true the ability is removed from the stack and does nothing — not even its
+            // subabilities fire (unlike a ConditionCheckSVar gate).
+            if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
+                game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
+                return ResolveStatus::DONE;
             }
-            // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
-            // resolves, affecting only the still-legal targets (a spell that left the stack, a
-            // permanent that left the battlefield or gained protection, ...). Prune the illegal
-            // ones here so every effect handler downstream sees legal targets only; the all-illegal
-            // case was already countered by the is_target_valid gate above.
-            if (!targets.empty()) {
-                for (auto it = targets.begin(); it != targets.end();) {
-                    if (!is_legal_target(*it, controller)) {
-                        std::string tname = entity_name(*it);
-                        game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
-                        it = targets.erase(it);
-                    } else {
-                        ++it;
-                    }
+            // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
+            // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
+            // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
+            // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
+            // the mana resolves, so the gate still reads 0 here for a legitimate fire).
+            if (!stored_svar_gate_name.empty() &&
+                !stored_svar_gate_passes(source, stored_svar_gate_name, stored_svar_gate_compare)) {
+                game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
+                return ResolveStatus::DONE;
+            }
+            // Pre-resolve target validity check (CR 608.2b). A Pump that reaches resolution with no
+            // pre-chosen target selects its own target inside the handler (an immediate-trigger
+            // sub-ability — see effects::pump / effect_immediate_trigger.cpp), so only that case is
+            // exempt; a Pump whose target was chosen at cast/trigger placement is verified like any
+            // other targeted effect and fizzles if the target became illegal (it does NOT retarget).
+            bool pump_selects_own_target = (category == "Pump" && target == 0 && targets.empty());
+            if (valid_tgts != "N_A" && !pump_selects_own_target) {
+                if (!is_target_valid()) {
+                    fizzle(orderer);
+                    return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
                 }
-                target = targets.empty() ? 0 : targets[0];
+                // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
+                // resolves, affecting only the still-legal targets (a spell that left the stack, a
+                // permanent that left the battlefield or gained protection, ...). Prune the illegal
+                // ones here so every effect handler downstream sees legal targets only; the all-illegal
+                // case was already countered by the is_target_valid gate above.
+                if (!targets.empty()) {
+                    for (auto it = targets.begin(); it != targets.end();) {
+                        if (!is_legal_target(*it, controller)) {
+                            std::string tname = entity_name(*it);
+                            game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
+                            it = targets.erase(it);
+                        } else {
+                            ++it;
+                        }
+                    }
+                    target = targets.empty() ? 0 : targets[0];
+                }
             }
-        }
-        // RememberTargets/RememberObjects: stash the target(s) so chained
-        // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
-        if (remember_targeted) {
-            cur_game.remembered_entities.clear();
-            if (!targets.empty())
-                for (auto t : targets) cur_game.remembered_entities.push_back(t);
-            else if (target != 0)
-                cur_game.remembered_entities.push_back(target);
-        }
-        game_log("Resolving ability (category: %s%s)\n", category.c_str(),
-                 resolving_log_detail(*this, orderer).c_str());
+            // RememberTargets/RememberObjects: stash the target(s) so chained
+            // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
+            if (remember_targeted) {
+                cur_game.remembered_entities.clear();
+                if (!targets.empty())
+                    for (auto t : targets) cur_game.remembered_entities.push_back(t);
+                else if (target != 0)
+                    cur_game.remembered_entities.push_back(target);
+            }
+            game_log("Resolving ability (category: %s%s)\n", category.c_str(),
+                     resolving_log_detail(*this, orderer).c_str());
+            next_sub = 0;  // gift-loop cursor (fresh levels start at 0; explicit for clarity)
+        }  // end of the one-shot (non-resuming) section
 
         // Gift (CR 702.176c): if this spell promised its gift, the promised opponent receives the gift
         // BEFORE the spell's other effects. The gift effect(s) are carried on the primary (spell)
         // ability; run them first when Spell::gift_promised is set on the source spell. The token's
         // TokenOwner$ Promised routes it to the opponent of this ability's controller (effects::token).
+        // Each gift resolves as a persisted GIFT FrameLevel (next_sub is the loop cursor — free
+        // until phase 4 resets it for the phase 5 sub chain) so a prompt inside a gift suspends.
         if (!gift_abilities.empty() && source != 0 &&
             global_coordinator.entity_has_component<Spell>(source) &&
             global_coordinator.GetComponent<Spell>(source).gift_promised) {
-            for (Ability gift : gift_abilities) {
-                gift.source = source;
-                gift.controller = controller;
-                gift.resolve(orderer);
+            for (; next_sub < static_cast<int>(gift_abilities.size()); ++next_sub) {
+                const Ability &gift_template = gift_abilities[static_cast<size_t>(next_sub)];
+                if (ctx.can_suspend()) {
+                    Ability *self = this;
+                    auto bind = [self](Ability &g) {
+                        g.source = self->source;
+                        g.controller = self->controller;
+                    };
+                    if (ctx.resolve_child(gift_template, FrameLevel::GIFT, next_sub, -1, bind,
+                                          orderer) == ResolveStatus::SUSPENDED)
+                        return ResolveStatus::SUSPENDED;
+                } else {
+                    Ability gift = gift_template;
+                    gift.source = source;
+                    gift.controller = controller;
+                    gift.resolve(orderer);
+                }
             }
         }
         phase = 3;
@@ -1662,15 +1728,17 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                                global_coordinator.GetComponent<Player>(pe).has_city_blessing;
         }
         if (!condition_passed) {
-            for (auto sub_ab : this->subabilities) {
-                sub_ab.source = this->source;
-                bind_sub_target(*this, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
-                sub_ab.controller = this->controller;
-                sub_ab.resolve(orderer);
-            }
-            return ResolveStatus::DONE;
+            // Condition-failed body: skip the handler but still chain the
+            // subabilities, then finish WITHOUT the phase-6 NameCard clear
+            // (matching the pre-refactor early return). Routed to its own
+            // phase (7) so a suspension inside a chained sub resumes there —
+            // never re-evaluating the condition gates above, which could read
+            // state an earlier sub mutated and diverge.
+            next_sub = 0;
+            phase = 7;
+        } else {
+            phase = 4;
         }
-        phase = 4;
     }
     if (phase == 4) {
         // Table-driven dispatch: every effect category resolves through its handler
@@ -1688,14 +1756,16 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         phase = (hres == HandlerResult::DONE_RUN_SUBS) ? 5 : 6;
     }
     if (phase == 5) {
-        for (; next_sub < static_cast<int>(this->subabilities.size()); ++next_sub) {
-            Ability sub_ab = this->subabilities[static_cast<size_t>(next_sub)];
-            sub_ab.source = this->source;
-            bind_sub_target(*this, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
-            sub_ab.controller = this->controller;
-            sub_ab.resolve(orderer);
-        }
+        if (chain_subabilities(*this, orderer, ctx, next_sub) == ResolveStatus::SUSPENDED)
+            return ResolveStatus::SUSPENDED;
         phase = 6;
+    }
+    if (phase == 7) {
+        // Condition-failed sub chain (routed from phase 3): same loop, but no
+        // phase-6 NameCard clear afterward — today's early-return behavior.
+        if (chain_subabilities(*this, orderer, ctx, next_sub) == ResolveStatus::SUSPENDED)
+            return ResolveStatus::SUSPENDED;
+        return ResolveStatus::DONE;
     }
     // Phase 6: clear the named card once the whole spell/ability has finished resolving, so it
     // doesn't leak into an unrelated later Card.NamedCard check (CR 201.4 — the name is

@@ -12,9 +12,9 @@
 extern Game cur_game;
 extern Coordinator global_coordinator;
 
-FrameCtx FrameCtx::root() { return FrameCtx(true); }
+FrameCtx FrameCtx::root() { return FrameCtx(true, 0); }
 
-FrameCtx FrameCtx::blocking() { return FrameCtx(false); }
+FrameCtx FrameCtx::blocking() { return FrameCtx(false, 0); }
 
 bool FrameCtx::can_suspend() const {
     // Blocking contexts never suspend. Root contexts can, but only once the
@@ -27,9 +27,10 @@ bool FrameCtx::can_suspend() const {
 bool FrameCtx::resuming() const { return can_suspend() && cur_game.pending_query.active; }
 
 FrameLevel &FrameCtx::current_level() {
-    if (!root_mode || !cur_game.resolution.active || cur_game.resolution.levels.empty())
-        fatal_error("FrameCtx: no active resolution frame level");
-    return cur_game.resolution.levels.back();
+    if (!root_mode || !cur_game.resolution.active ||
+        depth_ >= cur_game.resolution.levels.size())
+        fatal_error("FrameCtx: no active resolution frame level at this depth");
+    return cur_game.resolution.levels[depth_];
 }
 
 int FrameCtx::ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source) {
@@ -133,16 +134,67 @@ void pq_arm_sbe(uint64_t key, std::vector<LegalAction> menu, Zone::Ownership cho
 }
 
 ResolveStatus FrameCtx::resolve_child(const Ability &child_template, FrameLevel::ChildKind kind,
-                                      int child_index, int iter_index, void (*bind)(Ability &child),
+                                      int child_index, int iter_index,
+                                      const std::function<void(Ability &child)> &bind,
                                       std::shared_ptr<Orderer> orderer) {
-    (void)child_template;
-    (void)kind;
-    (void)child_index;
-    (void)iter_index;
-    (void)bind;
-    (void)orderer;
-    fatal_error("FrameCtx::resolve_child not implemented (container batches)");
+    if (!can_suspend())
+        fatal_error("FrameCtx::resolve_child in a non-suspendable context — "
+                    "blocking callers keep direct recursion through the blocking shim");
+    ResolutionFrame &fr = cur_game.resolution;
+    const size_t child_depth = depth_ + 1;
+    if (fr.levels.size() < child_depth)
+        fatal_error("resolve_child: parent level missing from the resolution frame");
+    if (fr.levels.size() == child_depth) {
+        // First entry: push the persisted in-flight copy and bind it ONCE from
+        // the parent's CURRENT state. A resume never re-binds (risk R3):
+        // earlier children may have mutated the parent state the bind reads,
+        // so re-binding would diverge from the suspended in-flight copy.
+        FrameLevel lv;
+        lv.kind = kind;
+        lv.child_index = child_index;
+        lv.iter_index = iter_index;
+        lv.work = child_template;
+        fr.levels.push_back(std::move(lv));
+        bind(fr.levels.back().work);
+    } else {
+        // Resume: the level at depth+1 must be THIS child. Every container
+        // persists its loop progress (next_sub, CharmRt/RepeatRt/ImmediateRt
+        // indices), so the resumed caller re-derives the identical call; a
+        // mismatch means the resume path diverged from the suspended one.
+        const FrameLevel &deeper = fr.levels[child_depth];
+        if (deeper.kind != kind || deeper.child_index != child_index ||
+            deeper.iter_index != iter_index)
+            fatal_error("resolve_child resume mismatch: persisted child (kind " +
+                        std::to_string(deeper.kind) + ", idx " +
+                        std::to_string(deeper.child_index) + ", iter " +
+                        std::to_string(deeper.iter_index) + ") vs re-derived (kind " +
+                        std::to_string(kind) + ", idx " + std::to_string(child_index) +
+                        ", iter " + std::to_string(iter_index) + ")");
+    }
+    FrameCtx child_ctx(true, child_depth);
+    ResolveStatus st = fr.levels[child_depth].work.resolve(orderer, child_ctx);
+    if (st == ResolveStatus::DONE) {
+        // The completed child must be the deepest level (its own children pop
+        // before it returns DONE).
+        if (fr.levels.size() != child_depth + 1)
+            fatal_error("resolve_child: child completed with orphaned deeper levels");
+        fr.levels.pop_back();
+    }
+    return st;
 }
+
+// ── RESOLUTION-tag target asker (Batch 8) ───────────────────────────────────
+// One target pick through the suspension machinery: consume-or-park via
+// FrameCtx::ask on the AMBIENT seat (the call site already seated the chooser,
+// so the ask's repoint/restore is a no-op — the asker itself never moves
+// priority, per the TargetAsker contract).
+
+int ResolutionTargetAsker::ask(const std::vector<LegalAction> &menu, Entity decision_source) {
+    Zone::Ownership seat = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    return ctx.ask(menu, seat, decision_source);
+}
+
+bool ResolutionTargetAsker::resuming() const { return ctx.resuming(); }
 
 static void pin_all(const std::vector<Entity> &entities, std::set<Entity> &pins) {
     for (auto e : entities)
@@ -171,6 +223,13 @@ static void pin_effect_runtime(const EffectRuntime &rt, std::set<Entity> &pins) 
     } else if (const auto *sy = std::get_if<SylvanRt>(&rt)) {
         pin_all(sy->drawn_in_hand, pins);
         pin_all(sy->chosen, pins);
+    } else if (const auto *rp = std::get_if<RepeatRt>(&rt)) {
+        // The outer remembered set repeat_each will restore at completion — it
+        // may reference cards a determinize would otherwise resample (mirrors
+        // the cur_game.remembered_entities pin below). CharmRt/ImmediateRt
+        // hold no entity state of their own: in-flight mode/sub targets live
+        // on the persisted parent work / child levels (pinned generically).
+        pin_all(rp->saved_remembered, pins);
     }
 }
 

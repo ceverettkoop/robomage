@@ -218,7 +218,17 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
 
     size_t prev_turn = (size_t)-1;
     g_in_main_loop = true;
-    while (!cur_game.ended || search_intercept_game_end()) {
+    // Loop while the game is live — or while a suspended resolution / parked
+    // query is still in flight even though the game is already decided: a
+    // resolving effect can end the game mid-resolution (Orderer::draw sets
+    // `ended` the instant a player draws from an empty library) and then park
+    // a later prompt of the SAME resolution (Brainstorm's put-back after the
+    // fatal draw). The old blocking prompt ran to completion under the
+    // already-decided game; the suspended form must too — the pending branch
+    // emits it, the resume finishes the resolution, and the in-body `ended`
+    // checks then break with the frame cleared (satisfying the guard below).
+    while (!cur_game.ended || cur_game.pending_query.active || cur_game.resolution.active ||
+           search_intercept_game_end()) {
         // A RESTORE that arrived mid-decision unwound to here; apply it before
         // anything reads game state, so this iteration re-derives (and re-emits)
         // the restored decision. (Applies GAME-scoped restores only.)

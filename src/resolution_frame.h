@@ -1,6 +1,8 @@
 #ifndef RESOLUTION_FRAME_H
 #define RESOLUTION_FRAME_H
 
+#include <deque>
+#include <functional>
 #include <memory>
 #include <set>
 #include <string>
@@ -125,10 +127,6 @@ struct ChangeZoneSearchRt {
 struct ChangeZoneRememberedRt {
     int picked = 0;               // picks completed so far (bounds the cap)
 };
-using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
-                                   SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
-                                   ChangeZoneRememberedRt>;
-
 // ── Shared target-selection sub-machine (Batch 5) ───────────────────────────
 // Suspension-aware form of select_target/select_single_target
 // (run_target_select, action_processor.cpp): the dynamic TargetMin$/TargetMax$
@@ -136,16 +134,52 @@ using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, Di
 // is re-derived on every pick as build_valid_targets(ability) minus the
 // already-chosen targets (byte-identical to the blocking erase-chosen pool —
 // nothing mutates between picks). Embedded BY VALUE as a member field of each
-// host rt/state struct (trigger placement now; cast announce and
-// resolution-time select_target in later batches) — NEVER its own EffectRuntime
-// alternative: FrameCtx::rt<RT>() switches the variant on first access, so a
-// separate alternative would dangle the host's rt reference (Batch 4 finding).
+// host rt/state struct (trigger placement, the Batch 8 container rts below;
+// cast announce in later batches) — NEVER its own EffectRuntime alternative:
+// FrameCtx::rt<RT>() switches the variant on first access, so a separate
+// alternative would dangle the host's rt reference (Batch 4 finding).
 struct TargetSelectRT {
     bool active = false;     // bounds stamped; a pick is in flight
     int effective_min = 0;   // resolved TargetMin$ (dynamic stamping done once)
     int effective_max = 0;   // resolved TargetMax$
     int picked = 0;          // multi-target picks completed so far
 };
+
+// ── Batch 8: container effects (nested resolves as persisted FrameLevels) ───
+// These rts persist a CONTAINER handler's own loop progress; the children they
+// drive resolve as persisted deeper FrameLevels via FrameCtx::resolve_child
+// (each child's in-flight state lives in ITS level, never here). The shared
+// TargetSelectRT machines are member fields per the Batch 4 finding (a variant
+// alternative of their own would dangle the host's rt reference).
+struct CharmRt {
+    // Announced path (modes + targets chosen at cast): next charm_chosen
+    // position to resolve.
+    int announced_idx = 0;
+    // Resolution-time fallback (a charm that reached the stack unannounced):
+    bool init = false;            // "(modes were not announced...)" log printed; taken sized
+    std::vector<char> taken;      // CR 601.2b: a mode can be chosen only once
+    int pick = 0;                 // mode picks completed
+    int chosen_idx = -1;          // mode chosen for the CURRENT pick (-1 = ask pending)
+    bool targets_done = false;    // current pick's target selection completed
+    TargetSelectRT tsel;          // current mode's in-flight target selection
+};
+struct RepeatRt {
+    bool init = false;            // saved_remembered captured
+    bool player_setup = false;    // current player's remembered-set swap done
+    int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
+    int sub_idx = 0;              // next RepeatSubAbility for the current player
+    std::vector<Entity> saved_remembered;  // outer remembered set to restore at completion
+};
+struct ImmediateRt {
+    bool init = false;            // fire condition + optional energy cost resolved
+    bool fire = false;            // reflexive effect fires (condition met, cost paid)
+    int sub_idx = 0;              // next Execute/Cleanup sub-ability
+    bool tsel_done = false;       // current sub's target selection completed
+    TargetSelectRT tsel;          // current sub's in-flight target selection
+};
+using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
+                                   SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
+                                   ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating
@@ -199,7 +233,11 @@ struct TriggerPlacementRT {
 // One level of the persisted resolve() continuation: the ROOT is the stack
 // object's own ability; nested levels hold the BY-VALUE in-flight copy of a
 // child (sub-abilities resolve as copies today, so the frame must own the copy
-// — resuming must NOT re-bind from mutated parent state).
+// — resuming must NOT re-bind from mutated parent state). Levels are stored in
+// a deque, NOT a vector: a parent resolve holds live references into its level
+// (phase/next_sub/rt — and for nested parents `this` IS levels[d].work) across
+// resolve_child's push of the child level, and deque push_back/pop_back never
+// invalidate references to other elements.
 struct FrameLevel {
     enum ChildKind { ROOT, SUB, GIFT, CHARM_MODE, REPEAT_SUB, IMMEDIATE };
     ChildKind kind = ROOT;
@@ -224,7 +262,7 @@ struct ResolutionFrame {
     std::vector<Entity> saved_remembered;  // remembered set to restore on completion
                                            // (saved+cleared by frame_enter, restored by
                                            // frame_finish in stack_manager.cpp)
-    std::vector<FrameLevel> levels;
+    std::deque<FrameLevel> levels;
 };
 
 // Handler-facing context threaded through resolve()/effect handlers. root()
@@ -250,19 +288,31 @@ class FrameCtx {
         // SUSPENDED mutating nothing — check decision_suspended() to tell a
         // suspension apart from a CLI flag value).
         int ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source);
-        // The active level of the persisted frame (the ROOT level this batch).
-        // The phase-tagged resolve() persists its resume point (phase/next_sub)
-        // here. Only valid when can_suspend() — fatal otherwise.
+        // THIS ctx's level of the persisted frame (levels[depth] — the ROOT at
+        // depth 0, a resolve_child copy at depth > 0). The phase-tagged
+        // resolve() persists its resume point (phase/next_sub) here. Only
+        // valid when can_suspend() — fatal otherwise.
         FrameLevel &level() { return current_level(); }
-        // Drive a nested resolve as a persisted FrameLevel: first entry copies
-        // `child_template` and binds it via `bind`; a resume re-enters the
-        // persisted copy WITHOUT re-binding. (Placeholder until the container
-        // batches — nothing calls it suspendably yet.)
+        // Drive a nested resolve as a persisted FrameLevel at depth+1. First
+        // entry (no level exists at depth+1): push a fresh FrameLevel holding
+        // a COPY of `child_template`, then apply `bind` ONCE to that copy
+        // (source/controller stamps, sub-target inheritance) while the parent
+        // state it reads is current. Resume (a level already exists at
+        // depth+1): it must match (kind, child_index, iter_index) — the
+        // caller's persisted progress re-derives the same call — and the
+        // PERSISTED copy is re-entered WITHOUT re-copying or re-binding
+        // (risk R3: re-binding would re-read parent state mutated by earlier
+        // children and diverge); any mismatch is fatal. The level is popped
+        // when the child's resolve returns DONE; SUSPENDED propagates with the
+        // level left in place. Only legal when can_suspend() — blocking
+        // contexts keep today's direct recursion through the blocking shim.
         ResolveStatus resolve_child(const Ability &child_template, FrameLevel::ChildKind kind,
                                     int child_index, int iter_index,
-                                    void (*bind)(Ability &child), std::shared_ptr<Orderer> orderer);
-        // The active level's handler runtime state, default-constructing (and
-        // switching the variant) on first access.
+                                    const std::function<void(Ability &child)> &bind,
+                                    std::shared_ptr<Orderer> orderer);
+        // This level's handler runtime state, default-constructing (and
+        // switching the variant) on first access. Binds strictly to
+        // levels[depth], so a parent's rt and a child's rt never share a slot.
         template <class RT>
         RT &rt() {
             FrameLevel &lv = current_level();
@@ -271,9 +321,27 @@ class FrameCtx {
         }
 
     private:
-        explicit FrameCtx(bool is_root) : root_mode(is_root) {}
+        FrameCtx(bool is_root, size_t depth) : root_mode(is_root), depth_(depth) {}
         FrameLevel &current_level();  // fatal_error outside an armed root frame
         bool root_mode = false;
+        size_t depth_ = 0;  // which FrameLevel this ctx binds to (root() = 0)
+};
+
+// TargetAsker with the RESOLUTION family tag (Batch 8): the suspendable form
+// of a resolution-time select_target (charm's fallback mode targeting,
+// immediate_trigger's per-sub selection). Delegates each pick straight to
+// FrameCtx::ask — consume-or-park with tag RESOLUTION — asking on the AMBIENT
+// seat, so it never repoints priority itself (Batch 5 finding: the call site
+// seats the chooser, exactly as blocking select_target expects; during a root
+// resolution the seat is already the resolving controller).
+class ResolutionTargetAsker final : public TargetAsker {
+    public:
+        explicit ResolutionTargetAsker(FrameCtx &ctx) : ctx(ctx) {}
+        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override;
+        bool resuming() const override;
+
+    private:
+        FrameCtx &ctx;
 };
 
 // Entities a suspended decision references, which determinization must pin in

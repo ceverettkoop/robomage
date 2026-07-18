@@ -1588,6 +1588,181 @@ def test_yorion_blink_roundtrip():
                 pass
 
 
+# ── Batch 8: nested resolves (sub-abilities, charm modes) as roots ────────────
+
+def test_subability_roundtrip():
+    """Batch 8 (nested resolves): prompts INSIDE a chained sub-ability — a
+    persisted SUB FrameLevel under the root resolve — are loop-top pending
+    decisions. Cloak and Dagger, Entwined's ETB trigger chain (TrigRevealHand
+    -> DBPump -> DBChangeZone) reaches two consecutive new roots while the
+    trigger is mid-resolution: the DBPump sub's own target pick (2-option
+    SELECT_TARGET: the opponent's Grizzly Bears / no creature) and the
+    DBChangeZone sub's remembered-exile pick (the Batch 7 live-menu loop,
+    reachable only as a sub-ability — 4 options: two revealed hand cards, the
+    chosen creature, decline). At each root: SNAPSHOT re-emits exactly, a
+    divergent pick (the next menu option — no creature / a different exile)
+    then RESTORE returns byte-identically, and the resumed real line stays
+    byte-identical to a no-snapshot control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("cloak_pq_a", "1 Cloak and Dagger Entwined\n29 Plains\n"),
+        ("cloak_pq_b", "1 Grizzly Bears\n1 Lightning Bolt\n28 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/cloak_pq_a", "--deck-b", "temp/cloak_pq_b",
+             "--no-shuffle",
+             "--battlefield-a", "Plains,Swamp,Swamp",
+             "--battlefield-b", "Grizzly Bears"]
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, extra)
+        # The DBPump pick is the first 2-option all-SELECT_TARGET menu (the
+        # earlier trigger-placement opponent pick is a 1-option menu).
+        pump_idx = None
+        for i, (nc, pl, _s) in enumerate(control):
+            if nc == 2 and bool((_query_cats(pl)[:nc] == CAT_SELECT_TARGET).all()):
+                pump_idx = i
+                break
+        if pump_idx is None:
+            raise ProtocolError("no 2-option SELECT_TARGET decision in the "
+                                "control line — the DBPump sub's own target "
+                                "pick should surface as one")
+        exile_idx = _first_cat_index(control, CAT_CHOOSE_CARD)
+        if exile_idx is None:
+            raise ProtocolError("no CHOOSE_CARD decision in the control line — "
+                                "the remembered-exile pick should surface as one")
+        if exile_idx != pump_idx + 1:
+            raise ProtocolError(f"exile pick at {exile_idx} does not immediately "
+                                f"follow the pump pick at {pump_idx} — the sub "
+                                "chain should re-arm consecutively")
+        if control[exile_idx][0] != 4:
+            raise ProtocolError(f"exile menu has {control[exile_idx][0]} options, "
+                                "expected 4 (2 hand cards + creature + decline)")
+        for name, i in (("pump-target", pump_idx), ("remembered-exile", exile_idx)):
+            if not control[i][2]:
+                raise ProtocolError(f"{name} decision reports safe=0 — it should "
+                                    "be a loop-top pending decision now")
+
+        eng = Engine(seed, extra=extra)
+        cur = eng.read()
+        excursions = 0
+        for idx in range(len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"subability alignment at decision {idx}")
+            if idx in (pump_idx, exile_idx):
+                snap_nc, snap_pl = cur.nc, cur.payload
+                q = eng.snapshot(0)
+                _assert_same_query(q, snap_pl, snap_nc,
+                                   f"subability post-SNAPSHOT re-emit at {idx}")
+                # Divergent excursion: the next menu option (no creature / a
+                # different exile), then a scrambled continuation.
+                dq = q
+                for i in range(8):
+                    a = (choices[idx] + 1) % dq.nc if i == 0 else _diverge(i, dq.nc)
+                    dq = eng.play(a)
+                    if dq.kind != "q":
+                        break
+                rq = eng.restore(0)
+                _assert_same_query(rq, snap_pl, snap_nc,
+                                   f"subability post-RESTORE re-emit at {idx}")
+                rel = eng.release()
+                _assert_same_query(rel, snap_pl, snap_nc,
+                                   f"subability post-RELEASE re-emit at {idx}")
+                cur = rel
+                excursions += 1
+            cur = eng.play(choices[idx])
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed subability line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        if excursions != 2:
+            raise ProtocolError(f"expected 2 subability excursions, ran {excursions}")
+        return (f"pump-target @ {pump_idx} (nc=2) and remembered-exile @ "
+                f"{exile_idx} (nc=4) both safe=1, round-trips exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def _record_witherbloom_line(seed, extra, cap=4000):
+    """Control recording for the charm sub-chain test: cast Witherbloom Command
+    at the first opportunity, then script its four announcement picks — mode 1
+    = the mill mode (0), its target = Player A herself (1, so the mill fills
+    A's OWN graveyard for the chained DBReturn), mode 2 = the lose-life mode
+    (0), its target = the opponent (0) — and auto-0 everything else (including
+    the DBReturn graveyard pick this test roots at). Returns (records,
+    choices, outcome) like _record_cast_first_line."""
+    eng = Engine(seed, extra=extra)
+    records, choices = [], []
+    cast_done = False
+    post_cast = []
+    r = eng.read()
+    idx = 0
+    while r.kind == "q" and idx < cap:
+        action = 0
+        if not cast_done:
+            cats = _query_cats(r.payload)[:r.nc]
+            hits = np.nonzero(cats == CAT_CAST_SPELL)[0]
+            if hits.size:
+                action = int(hits[0])
+                cast_done = True
+                post_cast = [0, 1, 0, 0]  # mill mode, self target, lose-life mode, opp target
+        elif post_cast:
+            action = post_cast.pop(0)
+        records.append((r.nc, r.payload, r.safe))
+        choices.append(action)
+        r = eng.play(action)
+        idx += 1
+    outcome = {"kind": r.kind, "returncode": r.returncode, "winner": r.winner}
+    eng.kill()
+    return records, choices, outcome
+
+
+def test_charm_subchain_roundtrip():
+    """Batch 8 (charm containers): a prompt nested TWO levels under the root
+    resolve — inside a sub-ability of an announced charm MODE (root CHARM_MODE
+    level, then a SUB level) — is a loop-top pending decision. Witherbloom
+    Command's mill mode (announced at cast, targeting A herself) chains
+    DBReturn, whose mandatory graveyard pick over the three just-milled lands
+    (Forest / Mountain / Plains — all distinct) surfaces mid-charm-resolution
+    as a 3-option CHOOSE_CARD root: safe=1, SNAPSHOT re-emits exactly,
+    returning a DIFFERENT land must change the next query, RESTORE returns
+    byte-identically, and the resumed line — the second (lose-life) mode then
+    resolving after the pick — matches the control to EOF. (The mode picks
+    themselves happen at CAST time and stay blocking until the cast-family
+    batches.)"""
+    seed = 5
+    deck_paths = _write_decks([
+        ("charm_pq_a", "1 Witherbloom Command\n6 Swamp\n1 Forest\n1 Mountain\n"
+                       "1 Plains\n20 Swamp\n"),
+        ("charm_pq_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/charm_pq_a", "--deck-b", "temp/charm_pq_b",
+             "--no-shuffle",
+             "--battlefield-a", "Swamp,Forest"]
+    try:
+        control, choices, outcome = _record_witherbloom_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_CHOOSE_CARD, 3, "charm-subchain")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "charm-subchain", expect_diverge=True)
+        return (f"CHOOSE_CARD root @ {root_idx} (nc=3, depth-2 nested) safe=1, "
+                f"other land diverges, round-trip exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -2383,6 +2558,8 @@ TESTS = [
     ("etb_name_card_roundtrip", test_etb_name_card_roundtrip),
     ("unless_mana_roundtrip", test_unless_mana_roundtrip),
     ("yorion_blink_roundtrip", test_yorion_blink_roundtrip),
+    ("subability_roundtrip", test_subability_roundtrip),
+    ("charm_subchain_roundtrip", test_charm_subchain_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),
