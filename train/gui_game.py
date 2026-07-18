@@ -67,11 +67,17 @@ _BASE_SCALE = 1.15
 CARD_W = round(80 * _BASE_SCALE)
 CARD_H = round(112 * _BASE_SCALE)
 CARD_RADIUS = 7
-ROW_H = CARD_H + 22          # card + margins + horizontal scrollbar allowance
+# Per-row vertical chrome (contents margins + horizontal scrollbar allowance)
+# baked into ROW_H: a row `h` px tall paints cards `h - ROW_CHROME` px tall. This
+# is what lets a row scale its cards to whatever height the vertical splitter
+# gives it (see CardRow.resizeEvent / CardWidget.set_card_height).
+ROW_CHROME = 22
+MIN_CARD_H = 44             # smallest a card is allowed to shrink to in a row
+ROW_H = CARD_H + ROW_CHROME  # card + margins + horizontal scrollbar allowance
 STACK_THUMB_W = round(46 * _BASE_SCALE)
 STACK_THUMB_H = round(64 * _BASE_SCALE)
 STACK_ROW_H = STACK_THUMB_H + 20
-STACK_EMPTY_H = 22          # auto-collapsed height when the stack is empty
+STACK_EMPTY_H = 22          # collapsed floor the stack pane can be dragged down to
 
 # The hand row is 1.5x the standard row height; hand cards are scaled up to
 # fill it (same aspect ratio, same narrow margin allowance as ROW_H) rather
@@ -216,6 +222,21 @@ class CardWidget(QWidget):
         card size once (cached in _scaled) so paintEvent never rescales."""
         self._pixmap = pixmap
         self._scaled = None                  # invalidate cached scale
+        self.update()
+
+    def set_card_height(self, portrait_h):
+        """Rescale the card to a target *portrait* height (keeping aspect ratio),
+        then repaint. Called by CardRow when the row is resized in the vertical
+        splitter so the cards grow/shrink to fill their panel instead of sitting
+        in blank space. All paint metrics derive from _scale, so this is enough."""
+        new_h = max(1, int(portrait_h))
+        new_w = max(1, round(new_h * CARD_W / CARD_H))
+        if (new_w, new_h) == (self._card_w, self._card_h):
+            return
+        self._card_w, self._card_h = new_w, new_h
+        self._scale = self._card_w / CARD_W
+        self._scaled = None                  # invalidate cached art scale
+        self.setFixedSize(self.sizeHint())
         self.update()
 
     def set_highlight(self, kind):
@@ -539,12 +560,22 @@ def _stack_item_label(e):
 # ── Fixed-height, horizontal-only card row ────────────────────────────────────
 
 class CardRow(QScrollArea):
-    """A single board row: a horizontal-only scroll area of fixed height. Cards
-    are fixed size, so a crowded row just scrolls sideways."""
+    """A single board row: a horizontal-only scroll area whose height is driven by
+    the enclosing vertical splitter. `preferred` is the row's initial height (used
+    to seed the splitter); it never fixes the height. When the splitter resizes the
+    row, resizeEvent rescales the row's cards to fill the new height, so dragging a
+    panel taller means bigger cards (and shorter means smaller), not blank space. A
+    crowded row still scrolls sideways since cards keep their aspect ratio."""
 
-    def __init__(self, height=ROW_H, *, land=False):
+    def __init__(self, height=ROW_H, *, land=False, min_height=None):
         super().__init__()
-        self.setFixedHeight(height)
+        self.preferred = height
+        # No setFixedHeight: the splitter owns the height. Keep a floor so a row
+        # can't be dragged smaller than a legible card (the stack row passes a
+        # lower floor so it can be collapsed to a thin strip).
+        self.setMinimumHeight(min_height
+                              if min_height is not None else MIN_CARD_H + ROW_CHROME)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Ignored)
         self.setWidgetResizable(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -560,6 +591,29 @@ class CardRow(QScrollArea):
             self.setStyleSheet(
                 "QScrollArea, QScrollArea > QWidget, QWidget { background: #16161c; }")
 
+    def sizeHint(self):
+        hint = super().sizeHint()
+        hint.setHeight(self.preferred)
+        return hint
+
+    def _card_target_h(self):
+        """Portrait card height that fills the current row height."""
+        return max(MIN_CARD_H, self.height() - ROW_CHROME)
+
+    def _rescale_cards(self):
+        """Push the current row height into every scalable card in the row."""
+        h = self._card_target_h()
+        for i in range(self._layout.count()):
+            w = self._layout.itemAt(i).widget()
+            if hasattr(w, "set_card_height"):
+                w.set_card_height(h)
+
+    def resizeEvent(self, event):
+        # Fires on window resize and on every splitter-handle drag; keep the cards
+        # sized to the row so panels "adjust themselves accordingly".
+        super().resizeEvent(event)
+        self._rescale_cards()
+
     def set_cards(self, widgets):
         """Replace the row's contents with `widgets` (list of card/thumb/label)."""
         while self._layout.count():
@@ -570,6 +624,7 @@ class CardRow(QScrollArea):
                 w.deleteLater()
         for w in widgets:
             self._layout.addWidget(w)
+        self._rescale_cards()
 
 
 # ── Phase strip ───────────────────────────────────────────────────────────────
@@ -940,26 +995,44 @@ class GameWindow(QMainWindow):
         self._opp_info.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         v.addWidget(self._opp_info)
 
+        # The six card rows live in a vertical splitter so the human can drag the
+        # dividers to re-apportion board space (e.g. give the hand more room, or
+        # collapse the stack). Each row scales its cards to the height it's given,
+        # so the panels "adjust themselves accordingly" as the handles move. The
+        # phase strip and the YOU/OPPONENT info lines stay outside the splitter —
+        # they're single-line labels, not resizable panels.
         # Opponent's rows are flipped (lands on top, permanents below) so the two
         # players' non-land rows sit adjacent across the stack.
         self._opp_lands = CardRow(land=True)
         self._opp_perms = CardRow()
-        v.addWidget(self._opp_lands)
-        v.addWidget(self._opp_perms)
-
-        self._stack_row = CardRow(height=STACK_ROW_H)
-        v.addWidget(self._stack_row)
-
+        # Stack row gets a low floor so it can be dragged down to a thin strip when
+        # the stack is empty (which it usually is).
+        self._stack_row = CardRow(height=STACK_ROW_H, min_height=STACK_EMPTY_H)
         # Self: permanents on top, lands below — mirror of the opponent so the
         # non-land rows are the ones adjacent to the stack.
         self._self_perms = CardRow()
         self._self_lands = CardRow(land=True)
-        v.addWidget(self._self_perms)
-        v.addWidget(self._self_lands)
-
         self._hand_row = CardRow(height=HAND_ROW_H)
         self._hand_row.setObjectName("handRow")
-        v.addWidget(self._hand_row)
+
+        self._board_split = QSplitter(Qt.Vertical)
+        self._board_split.setObjectName("boardSplit")
+        self._board_split.setChildrenCollapsible(False)
+        self._board_rows = (self._opp_lands, self._opp_perms, self._stack_row,
+                            self._self_perms, self._self_lands, self._hand_row)
+        for row in self._board_rows:
+            self._board_split.addWidget(row)
+        self._board_split.setSizes([r.preferred for r in self._board_rows])
+        v.addWidget(self._board_split, 1)
+
+        # Stack-pane auto-collapse: an empty stack shrinks to a thin strip and
+        # pops back to the human's last divider position when something's cast.
+        # _stack_expanded_h remembers that position; splitterMoved keeps it in
+        # sync whenever the human drags the stack while it's expanded.
+        self._stack_idx = self._board_rows.index(self._stack_row)
+        self._stack_collapsed = False
+        self._stack_expanded_h = STACK_ROW_H
+        self._board_split.splitterMoved.connect(self._on_board_split_moved)
 
         self._self_info = QLabel()
         self._self_info.setObjectName("selfInfo")
@@ -1283,14 +1356,46 @@ class GameWindow(QMainWindow):
     def _append_log(self, text):
         self._log.appendPlainText(text)
 
+    def _on_board_split_moved(self, pos, index):
+        """Track the human's stack-divider position while the stack is expanded, so
+        the next auto-restore returns to exactly where they left it."""
+        if not self._stack_collapsed:
+            self._stack_expanded_h = self._board_split.sizes()[self._stack_idx]
+
+    def _set_stack_collapsed(self, collapsed):
+        """Collapse the stack pane to a thin strip (empty stack) or restore it to
+        the human's remembered height (something on the stack). The freed/reclaimed
+        space is traded with the self-permanents pane directly below it, so the
+        rest of the board layout is left untouched."""
+        if collapsed == self._stack_collapsed:
+            return
+        self._stack_collapsed = collapsed
+        split = self._board_split
+        sizes = split.sizes()
+        i = self._stack_idx
+        j = i + 1                            # self-perms pane below the stack
+        floor_j = self._board_rows[j].minimumHeight()
+        target = STACK_EMPTY_H if collapsed else self._stack_expanded_h
+        # Never starve the neighbour below its own minimum.
+        target = max(STACK_EMPTY_H, min(target, sizes[i] + sizes[j] - floor_j))
+        delta = target - sizes[i]
+        if delta == 0:
+            return
+        sizes[i] += delta
+        sizes[j] -= delta
+        split.setSizes(sizes)
+
     def _rebuild_stack(self, stack, mirrored):
+        # The stack row's height is owned by the vertical board splitter now, so we
+        # only swap its contents here (no setFixedHeight — that would lock the pane
+        # and override the human's drag). An empty stack auto-collapses the pane;
+        # anything on the stack restores it to the human's last divider position.
+        self._set_stack_collapsed(not stack)
         if not stack:
-            self._stack_row.setFixedHeight(STACK_EMPTY_H)
             label = QLabel("Stack: (empty)")
             label.setStyleSheet("color: #6a6a72;")
             self._stack_row.set_cards([label])
             return
-        self._stack_row.setFixedHeight(STACK_ROW_H)
         widgets = []
         for e in stack:
             w = StackItemWidget(e, stack_target_refs(e, mirrored))
