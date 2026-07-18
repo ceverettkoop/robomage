@@ -27,7 +27,7 @@ namespace effects {
 // simplification). The player is ValidTgts$ Player (ab.target); absent a target the
 // source's controller scries. After scrying, any SubAbility$ chains with the same target
 // (Kozilek's Command: "scries X, then draws a card" — DBDraw with Defined$ ParentTarget).
-bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     Zone::Ownership owner;
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
@@ -40,12 +40,12 @@ bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
     size_t num = ab.amount;
     if (!ab.dynamic_amount_expr.empty())
         num = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
-    if (num == 0) return true;
+    if (num == 0) return HandlerResult::DONE_RUN_SUBS;
 
     std::vector<Entity> lib = orderer->get_library_top(owner, num);
     if (lib.empty()) {
         game_log("%s's library is empty — nothing to scry.\n", player_name(owner).c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     game_log("%s scries %zu.\n", player_name(owner).c_str(), lib.size());
@@ -69,7 +69,7 @@ bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("%s puts a card on the bottom of their library.\n", player_name(owner).c_str());
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

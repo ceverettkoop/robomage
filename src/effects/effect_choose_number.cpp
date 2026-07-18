@@ -18,7 +18,7 @@ namespace effects {
 // choose to pay). The pick is stored in cur_game.chosen_number so a chained sub-ability can
 // read it via Count$ChosenNumber (here the DestroyAll's mana-value bound Y and its
 // PayEnergy<Y> unless-cost). General over any "choose a number up to N" effect.
-bool choose_number(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     int max = 0;
     if (!ab.dynamic_amount_expr.empty())
@@ -45,7 +45,7 @@ bool choose_number(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (choice > max) choice = max;
     cur_game.chosen_number = choice;
     game_log("%s chooses %d.\n", player_name(ab.controller).c_str(), choice);
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Max$ — the SVar (resolved at parse time to a runtime Count$ expression) bounding the choice;

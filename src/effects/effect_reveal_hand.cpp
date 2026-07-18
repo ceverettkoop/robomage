@@ -24,10 +24,10 @@ namespace effects {
 // belief state (mark_card_revealed) so the chooser of a chained selection (e.g. a Chooser$ You
 // ChangeZone) sees the actual cards. This effect moves nothing on its own; the subsequent
 // sub-ability acts on the now-public hand.
-bool reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Whose hand: the targeted Player entity (ValidTgts$ Opponent/Player). With no player target
     // the effect has nothing to reveal, so fall through (chaining subabilities) as a no-op.
-    if (!global_coordinator.entity_has_component<Player>(ab.target)) return true;
+    if (!global_coordinator.entity_has_component<Player>(ab.target)) return HandlerResult::DONE_RUN_SUBS;
     Zone::Ownership hand_owner =
         (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
 
@@ -41,7 +41,7 @@ bool reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     if (hand.empty()) {
         game_log("%s reveals their hand: it is empty.\n", player_name(hand_owner).c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     game_log("%s reveals their hand:\n", player_name(hand_owner).c_str());
@@ -52,7 +52,7 @@ bool reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer) {
         mark_card_revealed(e, hand_owner);
         if (ab.remember_revealed) cur_game.remembered_entities.push_back(e);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

@@ -79,6 +79,11 @@ extern MatchContext g_match_ctx;
 // name->entity map pointing at torn-down prototype entities).
 extern uint64_t g_card_db_generation;
 
+// True while play_single_game's decision loop is running. Gates blocking
+// fallbacks for prompts that fire with no loop top to suspend to (pregame SBE
+// on preplaced permanents).
+bool in_main_loop();
+
 struct EcsSystems {
     std::shared_ptr<Orderer> orderer;
     std::shared_ptr<StateManager> state_manager;

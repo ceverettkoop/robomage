@@ -19,7 +19,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Draw 2, then for each card drawn this turn still in hand, choose: pay 4 life or put on top
     Zone::Ownership ctrl = ab.controller;
@@ -87,7 +87,7 @@ bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("%s puts %s on top of library\n", player_name(ctrl).c_str(), cd.name.c_str());
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

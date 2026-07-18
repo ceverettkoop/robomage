@@ -33,16 +33,16 @@ namespace effects {
 // departure from the battlefield TO the graveyard or exile ("when it dies or is exiled");
 // it fires once and returns the card to the battlefield tapped. A bounce to hand or a shuffle
 // into the library does NOT fire it — the trigger expires unfired (the object is gone).
-bool earthbend(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     Entity tgt = ab.target;
     // Target must still be a land on the battlefield at resolution (CR 608.2b re-check).
-    if (tgt == 0 || !is_battlefield_permanent(tgt)) return true;
+    if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
     bool is_land = false;
     for (const auto &t : perm.types)
         if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
-    if (!is_land) return true;
+    if (!is_land) return HandlerResult::DONE_RUN_SUBS;
 
     int n = static_cast<int>(ab.amount);
     if (n <= 0) n = 1;
@@ -92,7 +92,7 @@ bool earthbend(Ability &ab, std::shared_ptr<Orderer> orderer) {
     dt.fire_dest_zones = {Zone::GRAVEYARD, Zone::EXILE};
     cur_game.delayed_triggers.push_back(dt);
 
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

@@ -26,7 +26,7 @@ namespace effects {
 // cleanup. The target's legality (an artifact card in the controller's own graveyard) is
 // already enforced when the ability is put on the stack and re-verified at resolution;
 // here we only grant the permission for a target that is still in a graveyard.
-bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
 
     // Emblem (CR 114): an AB$ Effect | StaticAbilities$ <SVar> | Duration$ Permanent creates a
@@ -41,7 +41,7 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
         emblem.statics = ab.effect_emblem_statics;
         cur_game.emblems.push_back(std::move(emblem));
         game_log("%s gets an emblem.\n", player_name(ab.controller).c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // DB$ Effect | Triggers$ <SVar> — register a transient until-end-of-turn floating triggered
@@ -63,7 +63,7 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         game_log("A floating triggered ability is created%s.\n",
                  until_next_turn ? " until your next turn" : " until end of turn");
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // DB$ Effect | StaticAbilities$ <SVar(MayPlay+MayPlayWithoutManaCost, AffectedZone$ Exile)>
@@ -91,7 +91,7 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
                      player_name(ab.controller).c_str(),
                      global_coordinator.GetComponent<CardData>(card).name.c_str());
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // DB$ Effect | StaticAbilities$ Unblockable | RememberObjects$ Self — a transient
@@ -110,7 +110,7 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                  : "Creature";
             game_log("%s can't be blocked this turn.\n", nm);
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // DB$ Effect | ReplacementEffects$ <CantHappen Counter on Spell.YouCtrl> (Veil of Summer:
@@ -121,19 +121,19 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (ab.effect_spells_uncounterable_this_turn) {
         cur_game.cant_counter_spells_of.insert(ab.controller);
         game_log("Spells %s controls can't be countered this turn.\n", player_name(ab.controller).c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     Entity tgt = ab.target;
-    if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) return true;
-    if (global_coordinator.GetComponent<Zone>(tgt).location != Zone::GRAVEYARD) return true;
+    if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) return HandlerResult::DONE_RUN_SUBS;
+    if (global_coordinator.GetComponent<Zone>(tgt).location != Zone::GRAVEYARD) return HandlerResult::DONE_RUN_SUBS;
 
     cur_game.may_cast_this_turn.insert(tgt);
 
     std::string tname = global_coordinator.entity_has_component<CardData>(tgt)
         ? global_coordinator.GetComponent<CardData>(tgt).name : "card";
     game_log("%s may be cast from the graveyard this turn\n", tname.c_str());
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

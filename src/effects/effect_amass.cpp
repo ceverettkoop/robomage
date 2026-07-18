@@ -24,7 +24,7 @@ namespace effects {
 // on it and it becomes the amassed creature type in addition to its other types.
 // If you control no Army, first create a 0/0 black Army creature token of the
 // amassed type, then put the counters on it.
-bool amass(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     int n = static_cast<int>(ab.amount);
     const AmassParams *ap = std::get_if<AmassParams>(&ab.params);
     std::string subtype = (ap && !ap->subtype.empty()) ? ap->subtype : "Orc";
@@ -48,7 +48,7 @@ bool amass(Ability &ab, std::shared_ptr<Orderer> orderer) {
         Token tok = parse_token_script("b_0_0_" + lc + "_army");
         if (tok.name.empty()) {
             game_log("Amass: no token script for '%s' army.\n", subtype.c_str());
-            return true;
+            return HandlerResult::DONE_RUN_SUBS;
         }
         army = global_coordinator.CreateEntity();
         global_coordinator.AddComponent(army, Zone(Zone::HAND, ctrl, ctrl));
@@ -68,7 +68,7 @@ bool amass(Ability &ab, std::shared_ptr<Orderer> orderer) {
         game_log("Amass %s %d: %s Army is now %u/%u.\n", subtype.c_str(), n,
                  player_name(ctrl).c_str(), cr.power, cr.toughness);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_amass(Ability &ab, const std::string &key, const std::string &value) {

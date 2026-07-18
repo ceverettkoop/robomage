@@ -42,6 +42,8 @@ typedef enum Step {
 
 #include "../ecs/entity.h"
 #include "../components/ability.h"
+#include "../pending_query.h"
+#include "../resolution_frame.h"
 #include "colors.h"
 
 struct Deck;
@@ -224,6 +226,12 @@ struct Game {
         // are announced before the spell moves there (CR 601.2b/c). Managed exclusively via
         // PendingDecisionScope; 0 = no ability-driven choice pending.
         Entity pending_decision_source = 0;
+        // Suspension framework (see pending_query.h / resolution_frame.h): a
+        // mid-flow decision parked for the main loop to emit, and the persisted
+        // resolve() continuation it belongs to. Value members so a cur_game
+        // copy (snapshot_save) covers the whole suspended state for free.
+        PendingQuery pending_query;
+        ResolutionFrame resolution;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
@@ -337,6 +345,11 @@ struct PendingDecisionScope {
     }
     ~PendingDecisionScope() { cur_game.pending_decision_source = prev_source; }
 };
+
+// True while a suspended decision is parked for the main loop to emit (see
+// pending_query.h). Later batches gate cooperative early-returns on it
+// (`if (decision_suspended()) return;` in suspendable callees).
+inline bool decision_suspended() { return cur_game.pending_query.active; }
 
 #endif // __cplusplus
 

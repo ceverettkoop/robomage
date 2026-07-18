@@ -9,7 +9,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-bool multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     // Double all P1P1 counters on target creature
     Entity tgt = (ab.target != 0) ? ab.target : ab.source;
@@ -21,7 +21,7 @@ bool multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("MultiplyCounter: doubled +1/+1 counters on creature (now %u/%u).\n", cr.power, cr.toughness);
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

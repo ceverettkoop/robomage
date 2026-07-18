@@ -118,12 +118,14 @@ static bool search_reveals_card(const Ability &ab) {
     return from_hidden && specific_type;
 }
 
-bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Same-name search/move (Surgical Extraction, Infernal Tutor, Secret Salvage, Pack
     // Hunt, ...): ChangeType$ Remembered.sameName / Targeted.sameName.
     if (ab.change_type.find("sameName") != std::string::npos)
-        return change_zone_same_name(ab, orderer, /*force_all=*/false);
+        return change_zone_same_name(ab, orderer, /*force_all=*/false)
+                   ? HandlerResult::DONE_RUN_SUBS
+                   : HandlerResult::DONE_NO_SUBS;
 
     // The owning/searching player for this ChangeZone. Normally the source's Zone.owner, but
     // the source may have ceased to exist by the time the ability resolves (CR 608.2g/h): a
@@ -152,7 +154,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         Zone::Ownership tc =
             ab.target != 0 ? last_known_controller(ab.target)  // CR 608.2g/h, robust to post-move reads
                            : Zone::UNKNOWN;
-        if (tc == Zone::UNKNOWN) return true;  // no targeted object → no defined player; still chain subs
+        if (tc == Zone::UNKNOWN) return HandlerResult::DONE_RUN_SUBS;  // no targeted object → no defined player; still chain subs
         owner = tc;
     }
 
@@ -237,7 +239,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Defined$ Self — move the source card directly (e.g. Talon Gates putting itself onto battlefield from hand)
@@ -254,7 +256,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", sname.c_str(), dest_str);
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Defined$ Remembered with a bounded/optional selection (Cloak and Dagger's DBChangeZone:
@@ -317,7 +319,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 register_exile_until_host_leaves(ab.source, chosen, card_origin);
         }
         cur_game.player_a_has_priority = prev_priority;
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Defined$ Remembered — move the remembered card(s) directly. Ajani's exile-and-
@@ -354,7 +356,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", nm.c_str(), dest_str);
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // A ChangeZone leaving the battlefield with no target and no search filter operates
@@ -372,7 +374,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", nm.c_str(), dest_str);
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Non-targeted player-driven battlefield multi-select (Yorion, Sky Nomad's blink: "exile any
@@ -417,7 +419,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
         }
         cur_game.player_a_has_priority = prev_priority;
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith). The number to move is
@@ -516,7 +518,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
     }
     cur_game.player_a_has_priority = prev_priority;
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Owns the zone-movement param keys shared by the ChangeZone family (ChangeZone

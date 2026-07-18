@@ -106,6 +106,12 @@ MatchContext g_match_ctx;
 // tell a card_db.clear()+reload happened across the rollback (see game_driver.h).
 uint64_t g_card_db_generation = 0;
 
+// True while play_single_game's decision loop is running. Later batches gate
+// blocking fallbacks on it: a prompt fired OUTSIDE the loop (pregame SBE on
+// preplaced permanents) has no loop top to suspend to, so it must block inline.
+static bool g_in_main_loop = false;
+bool in_main_loop() { return g_in_main_loop; }
+
 EcsSystems init_ecs() {
     card_db.clear();
     ++g_card_db_generation;
@@ -211,6 +217,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     cur_game.player_a_has_priority = player_a_goes_first;
 
     size_t prev_turn = (size_t)-1;
+    g_in_main_loop = true;
     while (!cur_game.ended || search_intercept_game_end()) {
         // A RESTORE that arrived mid-decision unwound to here; apply it before
         // anything reads game state, so this iteration re-derives (and re-emits)
@@ -221,7 +228,39 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // dispatcher apply it (its loop top) and re-enter the restored stage. The
         // returned winner is ignored — the dispatcher checks the pending restore
         // before reading it.
-        if (search_match_restore_pending()) return cur_game.winner;
+        if (search_match_restore_pending()) {
+            g_in_main_loop = false;
+            return cur_game.winner;
+        }
+        // A suspended decision (pending_query.h) is emitted here — the FIRST
+        // thing each iteration, before the turn header and before turn-based
+        // actions / mandatory choices / SBE run (a suspended trigger placement
+        // or combat sub-prompt must not let combat damage run underneath it).
+        // The stored menu is re-emitted verbatim; loop-safe, so SNAPSHOT/
+        // DETERMINIZE are legal here. (Unreachable until a site suspends.)
+        if (cur_game.pending_query.active) {
+            PendingQuery &pq = cur_game.pending_query;
+            if (!pq.answered) {
+                if (cur_game.player_a_has_priority != pq.chooser_is_a)
+                    fatal_error("pending query: priority is not at the chooser");
+                PendingDecisionScope pending(pq.decision_source);
+                search_set_loop_safe(true);
+                int choice = InputLogger::instance().get_input(pq.menu);
+                search_set_loop_safe(false);
+                // A RESTORE latched during the query unwound it: loop back
+                // WITHOUT storing the answer so the restored state re-emits.
+                if (search_restore_pending() || search_match_restore_pending()) continue;
+                pq.answer = choice;
+                pq.answered = true;
+            }
+            // Dispatch the latched answer back to the suspended flow. Each tag's
+            // resume path lands with its conversion batch.
+            switch (pq.tag) {
+                default:
+                    fatal_error("pending query dispatch not implemented for tag " +
+                                std::to_string(static_cast<int>(pq.tag)));
+            }
+        }
         if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
             cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
             prev_turn = cur_game.turn;
@@ -284,6 +323,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         search_set_loop_safe(false);
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
+    g_in_main_loop = false;
     return cur_game.winner;
 }
 

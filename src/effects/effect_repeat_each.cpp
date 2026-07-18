@@ -22,8 +22,8 @@ namespace effects {
 // The card's effect ("deals damage to each player ... they control") is one simultaneous
 // event in MTG; here it is dealt player-by-player, which is observationally identical for a
 // one-shot instant since no player can respond between the two amounts.
-bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    if (ab.repeat_players.empty() || ab.subabilities.empty()) return false;
+HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    if (ab.repeat_players.empty() || ab.subabilities.empty()) return HandlerResult::DONE_NO_SUBS;
 
     Zone::Ownership active = cur_game.player_a_active ? Zone::PLAYER_A : Zone::PLAYER_B;
     Zone::Ownership nonactive = (active == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
@@ -44,7 +44,7 @@ bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
     }
     cur_game.remembered_entities = saved_remembered;
-    return false;  // sub-abilities already resolved per-player; suppress default chaining
+    return HandlerResult::DONE_NO_SUBS;  // sub-abilities already resolved per-player; suppress default chaining
 }
 
 }  // namespace effects

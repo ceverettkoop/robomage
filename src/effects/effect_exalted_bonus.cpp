@@ -12,7 +12,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-bool exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     if (ab.target != 0 && global_coordinator.entity_has_component<Creature>(ab.target)) {
         auto &cr = global_coordinator.GetComponent<Creature>(ab.target);
@@ -31,7 +31,7 @@ bool exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer) {
         game_log("Exalted (%s): %s gets +%zu/+%zu until end of turn.\n", src_name.c_str(), tgt_name.c_str(),
             ab.amount, ab.amount);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

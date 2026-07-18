@@ -13,12 +13,55 @@
 #include "../components/zone.h"
 #include "../cli_output.h"
 #include "../ecs/coordinator.h"
+#include "../error.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
+#include "../resolution_frame.h"
 #include "../saga.h"
 #include "orderer.h"
 
 extern Game cur_game;
+
+// Arm (first entry) or re-enter (resume after suspension) the persisted
+// resolution frame for the stack object about to resolve. Forward-declared per
+// CLAUDE.md; see definitions below.
+static void frame_enter(Entity top_entity, const Ability &ab, bool count_triggered);
+static void frame_finish();
+
+// First entry: save the incoming priority, count a triggered ability's
+// resolution once (Count$ResolvedThisTurn — guarded by counted_resolution so a
+// resume never recounts), push the ROOT level, and repoint priority at the
+// resolving controller exactly as the old locals did. Re-entry: verify the
+// scanned top is still the suspended object and change nothing.
+static void frame_enter(Entity top_entity, const Ability &ab, bool count_triggered) {
+    ResolutionFrame &fr = cur_game.resolution;
+    if (fr.active) {
+        if (fr.stack_entity != top_entity)
+            fatal_error("resolution frame resume: top of stack is not the suspended object");
+        return;
+    }
+    fr = ResolutionFrame{};
+    fr.active = true;
+    fr.stack_entity = top_entity;
+    fr.prev_priority = cur_game.player_a_has_priority;
+    if (count_triggered && ab.ability_type == Ability::TRIGGERED) {
+        cur_game.ability_resolution_counts[ab.source]++;
+        fr.counted_resolution = true;
+    }
+    FrameLevel root;
+    root.kind = FrameLevel::ROOT;
+    fr.levels.push_back(root);
+    cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
+}
+
+// Completion epilogue shared by both resolve sites: restore the pre-resolution
+// priority and clear the frame. The caller then runs its existing
+// component-removal / zone-move / saga / DestroyEntity code unchanged.
+static void frame_finish() {
+    ResolutionFrame &fr = cur_game.resolution;
+    cur_game.player_a_has_priority = fr.prev_priority;
+    fr = ResolutionFrame{};
+}
 
 void StackManager::init() {
     Signature signature;
@@ -119,10 +162,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 cur_game.x_paid = static_cast<size_t>(global_coordinator.GetComponent<Spell>(top_entity).x_paid);
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
-                bool prev_priority = cur_game.player_a_has_priority;
-                cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
-                ab.resolve(orderer);
-                cur_game.player_a_has_priority = prev_priority;
+                frame_enter(top_entity, ab, /*count_triggered=*/false);
+                // On suspension leave EVERYTHING in place (frame armed, spell on
+                // the stack, priority at the chooser) — the next advance_step
+                // re-enters here as the resume path. (Unreachable this batch.)
+                if (ab.resolve(orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
+                frame_finish();
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
             // A COPY of a spell (CR 707.10c) is not a card: once it resolves it ceases to exist
@@ -151,13 +196,11 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     // CASE FOR ABILITY ON STACK; not spell
     else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
         auto &ability = global_coordinator.GetComponent<Ability>(top_entity);
-        // Track resolution count for Count$ResolvedThisTurn (Scythecat Cub)
-        if (ability.ability_type == Ability::TRIGGERED)
-            cur_game.ability_resolution_counts[ability.source]++;
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (ability.controller == Zone::PLAYER_A);
-        ability.resolve(orderer);
-        cur_game.player_a_has_priority = prev_priority;
+        // Count$ResolvedThisTurn tracking (Scythecat Cub) happens inside
+        // frame_enter's first-entry block so a resume never recounts.
+        frame_enter(top_entity, ability, /*count_triggered=*/true);
+        if (ability.resolve(orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
+        frame_finish();
 
         // CR 714.4: a Saga chapter ability has now left the stack — release the sacrifice gate so a
         // completed Saga can be sacrificed on the next state-based check.

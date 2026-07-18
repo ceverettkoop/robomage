@@ -24,7 +24,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Look at top N cards, player picks one matching filter, rest go to bottom.
     // When the ability targets a player (Fateseal, e.g. Jace +2), the dug library is
@@ -189,7 +189,7 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
     game_log("%s puts %zu card(s) on the %s of their library.\n", player_name(dig_owner).c_str(),
              remaining.size(), rest_on_bottom ? "bottom" : "top");
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {

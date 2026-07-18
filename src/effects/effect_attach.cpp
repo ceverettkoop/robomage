@@ -16,7 +16,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool attach(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     // Equip the source equipment to the remembered entity
     Entity equip_entity = ab.source;
@@ -58,7 +58,7 @@ bool attach(Ability &ab, std::shared_ptr<Orderer> orderer) {
         game_log("Equipment attached.\n");
     }
 attach_done:;
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

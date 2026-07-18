@@ -24,7 +24,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     const PeekParams *pp = std::get_if<PeekParams>(&ab.params);
     if (pp && pp->no_reveal) {
@@ -48,13 +48,13 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
             }
         }
         // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Delver of Secrets: peek own library top, optionally reveal
     if (!global_coordinator.entity_has_component<Permanent>(ab.source)) {
         game_log("%s fizzles\n", ab.category.c_str());
-        return false;
+        return HandlerResult::DONE_NO_SUBS;
     }
     auto &src_perm = global_coordinator.GetComponent<Permanent>(ab.source);
     Entity top_card = 0;
@@ -69,7 +69,7 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     if (top_card == 0) {
         game_log("Library is empty — nothing to peek.\n");
-        return false;
+        return HandlerResult::DONE_NO_SUBS;
     }
     auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
     game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
@@ -98,7 +98,7 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
             }
         }
     }
-    return false;  // transform logic handled inline; skip subabilities loop
+    return HandlerResult::DONE_NO_SUBS;  // transform logic handled inline; skip subabilities loop
 }
 
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value) {

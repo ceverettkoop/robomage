@@ -97,13 +97,13 @@ static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool u
              until_next_turn ? " until their next turn" : " until end of turn");
 }
 
-bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     (void)orderer;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
     // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
     // subabilities do the work — don't re-pick a battlefield creature here.
-    if (ab.target_in_graveyard) return true;
+    if (ab.target_in_graveyard) return HandlerResult::DONE_RUN_SUBS;
 
     // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
     // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
@@ -113,7 +113,7 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
         int pump_att = 0, pump_def = 0;
         resolve_pump_amounts(pp, ab.controller, orderer, ab.target, pump_att, pump_def);
         apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // KW$ Hexproof:Card.<Color> (Veil of Summer): the Pump's job is to grant "hexproof from
@@ -124,13 +124,13 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
         const PumpParams *hp = std::get_if<PumpParams>(&ab.params);
         if (hp && !hp->grant_hexproof_from_colors.empty()) {
             grant_hexproof_from_colors(ab.controller, hp->grant_hexproof_from_colors);
-            return true;
+            return HandlerResult::DONE_RUN_SUBS;
         }
         // KW$ Protection from everything | Defined$ You (The One Ring): a player-scoped grant for
         // the controller, NOT a single-target creature pump. Register it and skip target selection.
         if (hp && hp->grant_protection_from_everything) {
             grant_player_protection_from_everything(ab.controller, ab.duration_until_your_next_turn);
-            return true;
+            return HandlerResult::DONE_RUN_SUBS;
         }
     }
 
@@ -207,7 +207,7 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     int pump_att = 0, pump_def = 0;
     resolve_pump_amounts(pp, ctrl, orderer, ab.target, pump_att, pump_def);
     apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Parse a NumAtt$/NumDef$ value that is either a literal integer (e.g. "2", "-1")

@@ -20,7 +20,7 @@ namespace effects {
 // on each first; the lethal-damage state-based action then destroys any creature with
 // lethal damage marked (respecting Indestructible). Mirrors destroy_all/sacrifice_all in
 // structure, but marks damage rather than moving the permanent itself.
-bool damage_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult damage_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     size_t dmg = ab.amount;
     std::vector<Entity> targets;
     for (auto e : orderer->mEntities)
@@ -33,7 +33,7 @@ bool damage_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
                      global_coordinator.GetComponent<Permanent>(e).name.c_str());
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

@@ -33,7 +33,7 @@ bool target_color_condition_met(const Ability &ab, Entity target) {
     return global_coordinator.GetComponent<ColorIdentity>(target).colors.count(required) > 0;
 }
 
-bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     if (global_coordinator.entity_has_component<Zone>(ab.target)) {
         auto &tz = global_coordinator.GetComponent<Zone>(ab.target);
         if (tz.location == Zone::STACK) {
@@ -128,7 +128,7 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
     } else {
         game_log("Counter fizzles (target no longer on the stack)\n");
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

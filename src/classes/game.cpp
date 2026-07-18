@@ -101,6 +101,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
     if (ready_to_resolve() || cur_step == UNTAP) {
         if (!stack_manager->is_empty() && cur_step != UNTAP) {
             stack_manager->resolve_top(orderer);
+            // A suspended resolution parked its decision for the loop top:
+            // LEAVE the pass flags set, so the next iteration's advance_step
+            // naturally re-enters resolve_top — the resume path. (Unreachable
+            // until a handler is flipped suspendable.)
+            if (resolution.active) return true;
             // reset pass tracking when something has resolved
             a_has_passed = false;
             b_has_passed = false;

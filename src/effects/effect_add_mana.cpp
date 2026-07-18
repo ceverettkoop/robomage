@@ -13,7 +13,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult add_mana(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Non-mana-ability that adds mana on resolution (Dark Ritual, Lion's Eye Diamond)
     Zone::Ownership mana_controller = ab.controller;
@@ -28,7 +28,7 @@ bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // mana) and add nothing.
     if (mana_amount == 0) {
         game_log("%s adds no mana.\n", player_name(mana_controller).c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
     Colors mana_color = ab.color;
     if (!ab.mana_choices.empty()) {
@@ -49,7 +49,7 @@ bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
     ::add_mana(mana_controller, mana_color, mana_amount);
     game_log("%s adds %zu{%s}\n", player_name(mana_controller).c_str(), mana_amount, mana_symbol(mana_color).c_str());
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_add_mana(Ability &ab, const std::string &key, const std::string &value) {

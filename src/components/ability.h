@@ -13,6 +13,12 @@
 #include <vector>
 
 class Orderer;
+// Suspension framework (resolution_frame.h; included by resolve() callers, not
+// here — resolution_frame.h needs the complete Ability, so this header only
+// forward-declares). A scoped enum and a class are both fine as incomplete
+// types in the declarations below.
+enum class ResolveStatus;
+class FrameCtx;
 
 struct Ability{
 
@@ -674,7 +680,11 @@ struct Ability{
     // at resolution).
     std::vector<int> charm_chosen;
 
-    void resolve(std::shared_ptr<Orderer> orderer);
+    // Resolution entry point. Only StackManager::resolve_top passes
+    // FrameCtx::root() (the suspendable path); every other caller uses the
+    // transitional blocking shim below, which resolves inline exactly as before.
+    ResolveStatus resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx);
+    void resolve(std::shared_ptr<Orderer> orderer);  // blocking shim (discards the status)
     bool identical_activated_ability(const Ability& other);
     // Single source of truth for target legality. Returns true if `cand` is a legal
     // target for this ability when controlled by `caster`. Used both to enumerate

@@ -13,7 +13,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool lose_life(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult lose_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     Zone::Ownership lose_controller = ab.controller;
     // Defined$ TriggeredActivator — the player who caused the trigger (the caster of the
     // triggering spell) loses the life, not the source's controller. Bound at trigger-fire
@@ -42,7 +42,7 @@ bool lose_life(Ability &ab, std::shared_ptr<Orderer> orderer) {
     player.life_total -= static_cast<int32_t>(lose_amount);
     game_log(
         "%s loses %zu life (now at %d)\n", player_name(loser).c_str(), lose_amount, player.life_total);
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

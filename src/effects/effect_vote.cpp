@@ -39,7 +39,7 @@ namespace effects {
 // this ability's subabilities, exiles it via the standard change_zone resolution. Returning true
 // chains that subability. If no permanent matches the filter (the opponent controls no nonland
 // permanents), the spell still resolves and does nothing.
-bool vote(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Translate Forge's "YouDontCtrl" (a permanent you don't control) into the evaluator's
     // OppCtrl, exactly as Ability::is_legal_target does, so "Permanent.nonLand+YouDontCtrl"
@@ -65,7 +65,7 @@ bool vote(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     if (candidates.empty()) {
         game_log("Will of the Council: no eligible permanent to vote for; nothing is exiled.\n");
-        return true;  // still resolves; chain subs (DBExile finds nothing remembered)
+        return HandlerResult::DONE_RUN_SUBS;  // still resolves; chain subs (DBExile finds nothing remembered)
     }
 
     // Present the controller (the voter) the choice over the eligible permanents. This is a
@@ -90,7 +90,7 @@ bool vote(Ability &ab, std::shared_ptr<Orderer> orderer) {
     cur_game.remembered_entities.push_back(chosen);
     game_log("%s votes for %s.\n", player_name(ab.controller).c_str(),
              global_coordinator.GetComponent<Permanent>(chosen).name.c_str());
-    return true;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)
+    return HandlerResult::DONE_RUN_SUBS;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)
 }
 
 }  // namespace effects

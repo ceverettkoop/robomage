@@ -8,7 +8,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-bool phases(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult phases(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     // Phase out target permanent
     if (ab.target != 0 && global_coordinator.entity_has_component<Permanent>(ab.target)) {
@@ -16,7 +16,7 @@ bool phases(Ability &ab, std::shared_ptr<Orderer> orderer) {
         tgt_perm.is_phased_out = true;
         game_log("%s phases out\n", tgt_perm.name.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

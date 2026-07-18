@@ -17,7 +17,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool mill(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult mill(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Move top N cards from target player's library to graveyard. A targeted mill
     // ("Target player mills three cards" — Witherbloom Command) mills the chosen
     // player; otherwise the effect's controller mills (Defined$ You / self-mill).
@@ -30,7 +30,7 @@ bool mill(Ability &ab, std::shared_ptr<Orderer> orderer) {
         cur_game.remembered_entities.clear();
         for (auto e : milled) cur_game.remembered_entities.push_back(e);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_mill(Ability &ab, const std::string &key, const std::string &value) {

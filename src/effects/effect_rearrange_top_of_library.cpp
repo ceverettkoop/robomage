@@ -17,7 +17,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
 
@@ -77,7 +77,7 @@ bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("%s shuffles their library.\n", player_name(owner).c_str());
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

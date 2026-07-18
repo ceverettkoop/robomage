@@ -19,13 +19,13 @@ namespace effects {
 
 // PutCounterAll (Ajani's +2): put CounterNum counters of CounterType on every permanent
 // matching the ValidCards$ filter (e.g. a +1/+1 counter on each Cat you control).
-bool put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
     std::string ctype = (cp && !cp->type.empty()) ? cp->type : "P1P1";
     int n = cp ? cp->count : 1;
     const std::string ctype2 = cp ? cp->type2 : "";
     const int n2 = cp ? cp->count2 : 0;
-    if (n <= 0 && ctype2.empty()) return true;
+    if (n <= 0 && ctype2.empty()) return HandlerResult::DONE_RUN_SUBS;
 
     std::vector<Entity> targets;
     // ValidCards$ Creature.targetedBy — "each creature targeted by [the parent ability]".
@@ -52,7 +52,7 @@ bool put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("Put %d %s counter(s) on %s.\n", n2, ctype2.c_str(), nm);
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

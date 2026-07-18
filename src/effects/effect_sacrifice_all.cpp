@@ -20,7 +20,7 @@ namespace effects {
 // permanent matching the ValidCards$ filter is sacrificed by its controller. The filter
 // (e.g. "Permanent.nonLand+OppCtrl+nonChosenCard") already excludes the kept permanents
 // via nonChosenCard, which reads cur_game.chosen_cards.
-bool sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     std::vector<Entity> to_sac;
     for (auto e : orderer->mEntities)
         if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
@@ -32,7 +32,7 @@ bool sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         orderer->add_to_zone(false, e, Zone::GRAVEYARD);
         game_log("%s sacrifices %s.\n", player_name(owner).c_str(), nm.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

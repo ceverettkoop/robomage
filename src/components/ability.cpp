@@ -1381,7 +1381,15 @@ struct RememberedResolutionScope {
 };
 }  // namespace
 
+// Transitional blocking shim: every non-stack caller (sub-ability recursion, the
+// gift loop, charm's chosen modes, repeat_each, immediate/delayed triggers, the
+// mana-system riders) resolves inline exactly as before. A blocking ctx can
+// never suspend, so the discarded status is always DONE.
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
+    (void)resolve(orderer, FrameCtx::blocking());
+}
+
+ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
     RememberedResolutionScope remembered_scope;
     // Leaves-the-battlefield ability whose body references the cards its source had exiled
     // (Skyclave Apparition's TrigToken): restore those entities into the remembered set before
@@ -1410,7 +1418,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         cur_game.player_a_has_priority = prev_priority;
         if (yc == 0) {
             game_log("%s declines the optional triggered ability.\n", player_name(controller).c_str());
-            return;
+            return ResolveStatus::DONE;
         }
     }
     // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost on a TRIGGERED ability (The
@@ -1439,7 +1447,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         cur_game.player_a_has_priority = prev_priority;
         if (yc == 0) {
             game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
-            return;
+            return ResolveStatus::DONE;
         }
         orderer->add_to_zone(false, source, Zone::GRAVEYARD);
         game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
@@ -1449,7 +1457,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // subabilities fire (unlike a ConditionCheckSVar gate).
     if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
         game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
-        return;
+        return ResolveStatus::DONE;
     }
     // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
     // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
@@ -1459,7 +1467,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (!stored_svar_gate_name.empty() &&
         !stored_svar_gate_passes(source, stored_svar_gate_name, stored_svar_gate_compare)) {
         game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
-        return;
+        return ResolveStatus::DONE;
     }
     // Pre-resolve target validity check (CR 608.2b). A Pump that reaches resolution with no
     // pre-chosen target selects its own target inside the handler (an immediate-trigger
@@ -1470,7 +1478,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (valid_tgts != "N_A" && !pump_selects_own_target) {
         if (!is_target_valid()) {
             fizzle(orderer);
-            return;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+            return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
         }
         // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
         // resolves, affecting only the still-legal targets (a spell that left the stack, a
@@ -1548,7 +1556,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             sub_ab.controller = this->controller;
             sub_ab.resolve(orderer);
         }
-        return;
+        return ResolveStatus::DONE;
     }
 
     // Table-driven dispatch: every effect category resolves through its handler
@@ -1556,7 +1564,12 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // resolve-time handler (e.g. "Equip", handled at activation) — those simply
     // chain subabilities, matching the legacy chain's fall-through behavior.
     effects::EffectHandler handler = effects::handler_for(effect_kind_from_string(category));
-    bool run_subs = handler ? handler(*this, orderer) : true;
+    HandlerResult hres = handler ? handler(*this, orderer, ctx) : HandlerResult::DONE_RUN_SUBS;
+    // A suspended handler parked its decision; propagate WITHOUT chaining subs
+    // or clearing the named card — the re-entry finishes both. (Unreachable
+    // until a handler is flipped suspendable.)
+    if (hres == HandlerResult::SUSPENDED) return ResolveStatus::SUSPENDED;
+    bool run_subs = (hres == HandlerResult::DONE_RUN_SUBS);
 
     // Chain subabilities unless the handler opted out (Charm/WinsGame and the
     // non-peek PeekAndReveal path return false to handle their own resolution).
@@ -1574,6 +1587,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // (ability_type SPELL parent vs. its DB$ children) are resolved within this call.
     if (effect_kind_from_string(category) == EffectKind::NameCard)
         cur_game.named_card.clear();
+    return ResolveStatus::DONE;
 }
 
 

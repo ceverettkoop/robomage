@@ -35,14 +35,14 @@ namespace effects {
 //
 // ValidSA$ Spell (play_valid_sa_spell): only a card castable as a nonland spell may be played
 // this way; a land (or a card with no SPELL ability) gets no permission and stays exiled.
-bool play(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Resolve the card to play (Defined$ Remembered).
     Entity card = 0;
     if (ab.defined_remembered && !cur_game.remembered_entities.empty())
         card = cur_game.remembered_entities[0];
     else
         card = ab.target;  // fallback: a directly-defined/targeted card
-    if (card == 0 || !global_coordinator.entity_has_component<CardData>(card)) return true;
+    if (card == 0 || !global_coordinator.entity_has_component<CardData>(card)) return HandlerResult::DONE_RUN_SUBS;
 
     auto &cd = global_coordinator.GetComponent<CardData>(card);
 
@@ -50,7 +50,7 @@ bool play(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // nonland card is cast as a spell (CR 601.1) — instants/sorceries via their SP$ ability,
     // permanents (creatures, artifacts, ...) cast directly onto the stack — so the gate is
     // simply "not a land". Lands can't be cast (601.1), so a land remembered here does nothing.
-    if (ab.play_valid_sa_spell && is_land_card(cd)) return true;
+    if (ab.play_valid_sa_spell && is_land_card(cd)) return HandlerResult::DONE_RUN_SUBS;
 
     // Resolve the alternative cost amount. "ConvertedManaCost" = the card's mana value (the
     // number of mana symbols in its printed cost); otherwise a literal. X spells count X as 0
@@ -73,7 +73,7 @@ bool play(Ability &ab, std::shared_ptr<Orderer> orderer) {
     const char *res = (perm.resource == Game::ImpulseCastPermission::LIFE) ? "life" : "energy";
     game_log("%s may cast %s this turn by paying %d %s rather than its mana cost.\n",
              player_name(ab.controller).c_str(), cd.name.c_str(), amount, res);
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_play(Ability &ab, const std::string &key, const std::string &value) {

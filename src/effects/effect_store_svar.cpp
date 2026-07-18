@@ -22,13 +22,13 @@ namespace effects {
 // No-op when the source is not a battlefield permanent — e.g. the ChangesZone Battlefield→Any
 // reset, whose Permanent has already been destroyed by the time it would resolve (the store
 // resets naturally because a fresh Permanent on re-entry starts with an empty stored_svars map).
-bool store_svar(Ability &ab, std::shared_ptr<Orderer> /*orderer*/) {
-    if (ab.stored_svar_set_name.empty()) return true;
+HandlerResult store_svar(Ability &ab, std::shared_ptr<Orderer> /*orderer*/, FrameCtx &ctx) {
+    if (ab.stored_svar_set_name.empty()) return HandlerResult::DONE_RUN_SUBS;
     if (ab.source != 0 && global_coordinator.entity_has_component<Permanent>(ab.source)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(ab.source);
         perm.stored_svars[ab.stored_svar_set_name] = ab.stored_svar_set_value;
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_store_svar(Ability &ab, const std::string &key, const std::string &value) {

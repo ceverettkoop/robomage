@@ -25,7 +25,7 @@ namespace effects {
 // When you do, [Execute]" ability (CR 603.2c, Guide of Souls). The cost is offered only when
 // the controller can actually pay it; on accept the cost is paid and the Execute chain runs,
 // on decline (or when it can't be paid) the reflexive effect is skipped.
-bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     bool fire = ab.condition_present.empty();
     if (!fire) {
         for (auto e : orderer->mEntities) {
@@ -70,7 +70,7 @@ bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
             select_target(sub, orderer, ab.controller);
         sub.resolve(orderer);
     }
-    return false;
+    return HandlerResult::DONE_NO_SUBS;
 }
 
 }  // namespace effects

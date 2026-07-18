@@ -24,7 +24,7 @@
 
 extern Coordinator global_coordinator;
 
-bool effects::storm(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult effects::storm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // The Storm triggered ability is a separate object on the stack, independent of the spell
     // that created it (CR 113.7a / 702.40a). It still makes its copies even if that spell has
     // already left the stack — e.g. it was countered (Daze) before this trigger resolved. The
@@ -32,8 +32,8 @@ bool effects::storm(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // stack, else it rebuilds the copies from the spell's last-known copiable characteristics
     // (which survive on the card entity in the graveyard). CR 707.10.2: the copies are created
     // on the stack even though the original is gone.
-    if (ab.source == 0) return true;
+    if (ab.source == 0) return HandlerResult::DONE_RUN_SUBS;
     if (ab.amount > 0)
         copy_spell_on_stack(ab.source, static_cast<int>(ab.amount), ab.controller, orderer);
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }

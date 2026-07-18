@@ -51,7 +51,7 @@ static bool discard_filter_matches(Entity e, const std::string &discard_valid) {
     return true;
 }
 
-bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Target player reveals hand, then either the controller picks ONE matching card
     // (RevealYouChoose — Thoughtseize/Duress) or all matching cards are discarded
@@ -76,7 +76,7 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (count > hand.size()) count = hand.size();
         if (count == 0) {
             game_log("No cards to discard at random.\n");
-            return true;
+            return HandlerResult::DONE_RUN_SUBS;
         }
         // stable_shuffle, not std::shuffle: platform-stable given the seed
         // (see stable_rng.h).
@@ -89,7 +89,7 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
             mark_card_revealed(chosen, tgt_owner);
             orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     game_log("%s reveals their hand:\n", player_name(tgt_owner).c_str());
@@ -117,7 +117,7 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
             }
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     if (valid.empty()) {
@@ -140,7 +140,7 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
         orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
         cur_game.player_a_has_priority = prev_priority;
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_discard(Ability &ab, const std::string &key, const std::string &value) {

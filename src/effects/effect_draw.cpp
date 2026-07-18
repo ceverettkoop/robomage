@@ -10,7 +10,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-bool draw(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // "Target player draws" (e.g. Deep Analysis) draws for the chosen target
     // player; otherwise the effect's controller (source owner) draws.
     Zone::Ownership owner;
@@ -33,7 +33,7 @@ bool draw(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (!ab.dynamic_amount_expr.empty())
         count = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target, ab.source);
     orderer->draw(owner, count);
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

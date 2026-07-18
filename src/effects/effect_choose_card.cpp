@@ -23,7 +23,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     // ChooseEach (Ajani -4): each opponent keeps one of their nonland permanents of each
     // listed type; the kept permanents go into cur_game.chosen_cards and a SubAbility$
@@ -73,7 +73,7 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
                      global_coordinator.GetComponent<Permanent>(kept).name.c_str());
         }
         cur_game.player_a_has_priority = prev_priority;
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Dauthi Voidwalker: choose an exiled card owned by opponent with a void counter,
@@ -151,7 +151,7 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
     } else {
         game_log("No exiled cards with void counters to choose.\n");
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

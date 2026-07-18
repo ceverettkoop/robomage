@@ -18,13 +18,13 @@ namespace effects {
 
 // Parses a token script string of the form "<color>_<power>_<toughness>_<name>[_<kw1>...]"
 // e.g. "w_1_1_monk_prowess"
-bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     const TokenParams *tp = std::get_if<TokenParams>(&ab.params);
     std::string script = tp ? tp->script : "";
     Token tok = parse_token_script(script);
     if (tok.name.empty()) {
         game_log("resolve_token: failed to parse token script '%s'\n", script.c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     Zone::Ownership ctrl = source_controller(ab.source);
@@ -38,9 +38,9 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // sub-ability, so read its last-known controller. With no target chosen (the "up to one"
     // destroy hit nothing), no token is created — the "if you do" gate.
     if (tp && tp->owner_is_targeted_controller) {
-        if (ab.target == 0) return true;  // no permanent destroyed → no token
+        if (ab.target == 0) return HandlerResult::DONE_RUN_SUBS;  // no permanent destroyed → no token
         Zone::Ownership tc = last_known_controller(ab.target);
-        if (tc == Zone::UNKNOWN) return true;
+        if (tc == Zone::UNKNOWN) return HandlerResult::DONE_RUN_SUBS;
         ctrl = tc;
     }
     // TokenOwner$ RememberedOwner (Skyclave Apparition): the token is owned and controlled by
@@ -89,7 +89,7 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
         cur_game.remembered_entities.push_back(tok_entity);
         game_log("Token created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // DB$ Investigate (CR 701.x / 122): "investigate" = create a Clue token — a colorless
@@ -98,12 +98,12 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
 // SVar via dynamic_amount_expr makes it N) by delegating to the shared token() machinery
 // with the Clue token script. Reuses token() so the Clue's activated draw ability,
 // artifact type, and permanent bootstrap all flow through the one token-creation path.
-bool investigate(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult investigate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Clue tokens default to a single token; an explicit Amount$/Num$ (or a dynamic count
     // expr) makes more. Route the count through token() unchanged (it reads ab.amount /
     // ab.dynamic_amount_expr), only ensuring the Clue script is set.
     effect_params<TokenParams>(ab).script = "c_a_clue_draw";
-    return token(ab, orderer);
+    return token(ab, orderer, ctx);
 }
 
 bool parse_token(Ability &ab, const std::string &key, const std::string &value) {

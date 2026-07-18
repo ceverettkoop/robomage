@@ -26,7 +26,7 @@ namespace effects {
 // The two per-card options share the same card entity, so they must differ by category to be
 // distinguishable to the semantic action resolver (like scry's keep/bottom): on-top =
 // TOP_LIBRARY, into-graveyard = CHOOSE_CARD (a library -> graveyard non-library zone change).
-bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     Zone::Ownership controller;
     if (global_coordinator.entity_has_component<Permanent>(ab.source)) {
@@ -38,12 +38,12 @@ bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer) {
     size_t num = ab.amount;
     if (!ab.dynamic_amount_expr.empty())
         num = evaluate_dynamic_amount(ab.dynamic_amount_expr, controller, orderer, ab.target);
-    if (num == 0) return true;  // CR 701.25c: surveil 0 is no event
+    if (num == 0) return HandlerResult::DONE_RUN_SUBS;  // CR 701.25c: surveil 0 is no event
 
     std::vector<Entity> looked = orderer->get_library_top(controller, num);
     if (looked.empty()) {
         game_log("%s's library is empty — nothing to surveil.\n", player_name(controller).c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     game_log("%s surveils %zu.\n", player_name(controller).c_str(), looked.size());
@@ -99,7 +99,7 @@ bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer) {
     for (size_t i = to_top.size(); i-- > 0;) {
         orderer->add_to_zone(false, to_top[i], Zone::LIBRARY);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

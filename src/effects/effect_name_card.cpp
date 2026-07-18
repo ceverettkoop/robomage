@@ -40,7 +40,7 @@ static std::string prompt_name_card(Zone::Ownership chooser, const std::vector<s
 // build_name_card_choices() helper (also used by Disruptor Flute in state_manager_statics.cpp)
 // builds that menu; the ValidCards$ filter (Card.nonLand / Land / …) is passed through and
 // applied by the unified matcher inside the builder.
-bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Defined$ You + ValidCards$ Land (Petrified Hamlet's ETB "choose a land card name"):
     // the SOURCE's controller names a land card. The choice persists for the source's
@@ -71,7 +71,7 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("%s names no card (no eligible card to name).\n", player_name(chooser).c_str());
         else
             game_log("%s names card: %s\n", player_name(chooser).c_str(), chosen.c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // The card name is being chosen for the benefit of the chained discard, which targets a
@@ -93,12 +93,12 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
         cur_game.named_card = "";
         game_log("%s names no card (no eligible card to name).\n",
                  player_name(ab.controller).c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     cur_game.named_card = prompt_name_card(ab.controller, names, name_choices);
     game_log("%s names card: %s\n", player_name(ab.controller).c_str(), cur_game.named_card.c_str());
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // See forward declaration at top of file.

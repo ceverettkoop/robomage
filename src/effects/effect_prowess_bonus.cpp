@@ -8,7 +8,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-bool prowess_bonus(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult prowess_bonus(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     if (global_coordinator.entity_has_component<Creature>(ab.source)) {
         auto &cr = global_coordinator.GetComponent<Creature>(ab.source);
@@ -16,7 +16,7 @@ bool prowess_bonus(Ability &ab, std::shared_ptr<Orderer> orderer) {
         recompute_pt(cr);
         game_log("Prowess: creature gets +%zu/+%zu until end of turn.\n", ab.amount, ab.amount);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

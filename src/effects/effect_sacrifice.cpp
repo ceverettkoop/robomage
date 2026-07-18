@@ -92,7 +92,7 @@ static Entity sacrifice_self(const Ability &ab, std::shared_ptr<Orderer> orderer
     return src;
 }
 
-bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // RememberSacrificed resets the remembered set to exactly what is sacrificed here, so a
     // downstream ConditionDefined$ Remembered gate sees 0 (declined) or 1 (sacrificed).
     if (ab.remember_sacrificed) cur_game.remembered_entities.clear();
@@ -105,14 +105,14 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
         game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
                  ab.unless_generic_cost);
         if (!run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, UnlessPayKind::ENERGY))
-            return true;  // paid — nothing is sacrificed
+            return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is sacrificed
     }
 
     // No SacValid$ filter and not an edict ⇒ self-sacrifice (sacrifice CARDNAME), CR 701.16.
     if (ab.sac_valid.empty() && !ab.defined_each_opponent) {
         Entity sacked = sacrifice_self(ab, orderer);
         if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Defined$ Opponent — edict: each opponent sacrifices on their own. CR 109.5 / 102.1: in a
@@ -130,7 +130,7 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
             if (sacked == 0) break;
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     for (size_t i = 0; i < ab.sac_count; ++i) {
@@ -138,7 +138,7 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
         if (sacked == 0) break;
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

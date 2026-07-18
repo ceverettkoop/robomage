@@ -26,7 +26,7 @@ static uint32_t phase_string_to_event(const std::string &phase) {
     return Events::UPKEEP_BEGAN;  // default
 }
 
-bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     Zone::Ownership owner = source_controller(ab.source);
     Entity owner_entity = get_player_entity(owner);
@@ -72,7 +72,7 @@ bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
         // nothing, so do NOT register the delayed return at all. Registering it anyway
         // made the return fire on whatever the global remembered set held at end of turn
         // (a phantom "<unknown>" entering the battlefield, falsely firing ETB watchers).
-        if (cur_game.remembered_entities.empty()) return false;
+        if (cur_game.remembered_entities.empty()) return HandlerResult::DONE_NO_SUBS;
         dt.remembered_objects = cur_game.remembered_entities;
         fire_ab.restore_remembered_exiled_with = cur_game.remembered_entities;
     }
@@ -98,7 +98,7 @@ bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // the Execute$ ability (and any trailing cleanup) is deferred onto the delayed trigger to
     // run when it fires later, not now (CR 603.7a). Chaining them here would resolve the return
     // immediately instead of at the scheduled phase.
-    return false;
+    return HandlerResult::DONE_NO_SUBS;
 }
 
 bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::string &value) {
