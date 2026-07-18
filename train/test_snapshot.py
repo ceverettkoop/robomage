@@ -47,7 +47,8 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from _enums import (STATE_SIZE, MAX_ACTIONS,
-                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE)
+                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
+                    CAT_ATTACK_TARGET, CAT_BLOCK_TARGET)
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
@@ -241,11 +242,11 @@ def _assert_same_query(got, want_payload, want_nc, ctx):
 
 # ── control-line recording ────────────────────────────────────────────────────
 
-def record_line(seed, policy, cap=4000):
+def record_line(seed, policy, cap=4000, extra=()):
     """Play one full game with `policy(idx, nc) -> action` and no snapshotting;
     return (records, outcome). records[i] = (nc, payload, safe). outcome is a
     dict {kind, returncode, winner} at real EOF (games never draw here)."""
-    eng = Engine(seed)
+    eng = Engine(seed, extra=extra)
     records = []
     r = eng.read()
     idx = 0
@@ -336,6 +337,124 @@ def test_round_trip():
     if excursions != 3:
         raise ProtocolError(f"expected 3 snapshot excursions, ran {excursions}")
     return f"{n} decisions, 3 excursions, outcome={outcome['winner']!r}"
+
+
+def _write_combat_decks():
+    """Lands-only stacked decks for the combat sub-prompt roots test. The combat
+    board comes from --battlefield presets: A attacks with a Grizzly Bears into
+    B's Jace, the Mind Sculptor + Grizzly Bears, so A's declare-attackers reaches
+    a real attack-target choice (player + planeswalker, 2 options) and B's
+    declare-blockers reaches the block-target prompt (always asked, here with 1
+    legal attacker). Lands-only libraries deck the game out under auto-0."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    paths = []
+    for name, land in (("combat_pq_a", "Mountain"), ("combat_pq_b", "Forest")):
+        p = os.path.join(d, f"{name}.dk")
+        with open(p, "w") as f:
+            f.write(f"30 {land}\n")
+        paths.append(p)
+    return paths
+
+
+_COMBAT_EXTRA = ["--deck-a", "temp/combat_pq_a", "--deck-b", "temp/combat_pq_b",
+                 "--no-shuffle",
+                 "--battlefield-a", "Grizzly Bears",
+                 "--battlefield-b", "Jace the Mind Sculptor,Grizzly Bears"]
+
+
+def _first_cat_index(control, cat):
+    """Index of the first control decision whose menu contains category `cat`."""
+    for i, (nc, pl, _safe) in enumerate(control):
+        if bool((_query_cats(pl)[:nc] == cat).any()):
+            return i
+    return None
+
+
+def test_combat_target_roundtrip():
+    """Batch 1 (snapshot-safe combat): the attack-target and block-target
+    sub-prompts are loop-top pending decisions — both report safe=1 and are
+    valid SNAPSHOT/RESTORE roots. At each root: SNAPSHOT re-emits exactly, a
+    divergent line (the other attack target / a scrambled continuation) then
+    RESTORE returns byte-identically, and the resumed real line stays
+    byte-identical to a no-snapshot control run with the same outcome. Also
+    pins the pre-collapse conventions: the attack-target menu has 2 options
+    (defending player + planeswalker; a single-target board never prompts) and
+    the block-target menu is emitted even at size 1 (no pre-collapse exists)."""
+    seed = 5
+    deck_paths = _write_combat_decks()
+    try:
+        control, outcome = record_line(seed, _auto0, extra=_COMBAT_EXTRA)
+        atk_idx = _first_cat_index(control, CAT_ATTACK_TARGET)
+        blk_idx = _first_cat_index(control, CAT_BLOCK_TARGET)
+        if atk_idx is None:
+            raise ProtocolError("no attack-target decision in the control line — "
+                                "the planeswalker board should force one")
+        if blk_idx is None:
+            raise ProtocolError("no block-target decision in the control line — "
+                                "a declared blocker always prompts")
+        if not (atk_idx < blk_idx):
+            raise ProtocolError(f"attack-target ({atk_idx}) should precede "
+                                f"block-target ({blk_idx})")
+        if control[atk_idx][0] != 2:
+            raise ProtocolError(f"attack-target menu has {control[atk_idx][0]} "
+                                "options, expected 2 (player + planeswalker)")
+        if control[blk_idx][0] != 1:
+            raise ProtocolError(f"block-target menu has {control[blk_idx][0]} "
+                                "options, expected the un-collapsed size-1 menu")
+        for name, i in (("attack-target", atk_idx), ("block-target", blk_idx)):
+            if not control[i][2]:
+                raise ProtocolError(f"{name} decision reports safe=0 — it should "
+                                    "be a loop-top pending decision now")
+
+        eng = Engine(seed, extra=_COMBAT_EXTRA)
+        cur = eng.read()
+        excursions = 0
+        for idx in range(len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"combat alignment at decision {idx}")
+            if idx in (atk_idx, blk_idx):
+                snap_nc, snap_pl = cur.nc, cur.payload
+                q = eng.snapshot(0)
+                _assert_same_query(q, snap_pl, snap_nc,
+                                   f"combat post-SNAPSHOT re-emit at {idx}")
+                # Divergent excursion: last menu option first (at the attack
+                # root that is the planeswalker, not the control's player
+                # choice), then a scrambled continuation.
+                dq = q
+                for i in range(8):
+                    dq = eng.play(dq.nc - 1 if i == 0 else _diverge(i, dq.nc))
+                    if dq.kind != "q":
+                        break
+                rq = eng.restore(0)
+                _assert_same_query(rq, snap_pl, snap_nc,
+                                   f"combat post-RESTORE re-emit at {idx}")
+                rel = eng.release()
+                _assert_same_query(rel, snap_pl, snap_nc,
+                                   f"combat post-RELEASE re-emit at {idx}")
+                cur = rel
+                excursions += 1
+            cur = eng.play(_auto0(idx, cur.nc))
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed combat line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        if excursions != 2:
+            raise ProtocolError(f"expected 2 combat excursions, ran {excursions}")
+        return (f"attack-target @ {atk_idx} (nc=2) and block-target @ {blk_idx} "
+                f"(nc=1) both safe=1, round-trips exact, outcome="
+                f"{outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
 
 
 def test_rng_isolation():
@@ -1121,6 +1240,7 @@ def test_perf():
 
 TESTS = [
     ("round_trip", test_round_trip),
+    ("combat_target_roundtrip", test_combat_target_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

@@ -18,6 +18,12 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
 // Handle the current mandatory choice (declare attackers, blockers, etc.)
 void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 
+// Loop-top dispatcher entry for a parked combat target sub-prompt (PendingQuery
+// tags ATTACK_TARGET / BLOCK_TARGET): commits the latched answer onto the
+// creature persisted in Game::pending_attacker / pending_blocker and clears the
+// pending query. Called from the main loop's pending-query branch.
+void resume_combat_target_choice(Game& game);
+
 // T3.10: true if some attacker this combat-damage step needs its controller to divide damage
 // among 2+ blockers it cannot all kill (and hasn't already been asked). When true, the combat
 // step requests ASSIGN_COMBAT_DAMAGE_CHOICE before dealing damage.

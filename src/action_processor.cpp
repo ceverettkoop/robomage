@@ -44,6 +44,11 @@ static std::vector<Entity> build_valid_targets(
 static void pay_alternate_cost(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer,
     const CardData &card_data, Entity spell_entity, Zone zone);
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
+static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
+                                     std::vector<LegalAction> &&menu, bool chooser_is_a,
+                                     Entity chosen_creature);
+static void resume_attack_target(Game &game);
+static void resume_block_target(Game &game);
 static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype);
 static std::string landwalk_subtype(const std::string &kw);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
@@ -762,9 +767,87 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     }
 }
 
+// Park a combat target sub-prompt (attack target / block target) as a loop-top
+// pending decision (pending_query.h). The chosen-but-uncommitted creature is
+// persisted in pending_attacker/pending_blocker; the main loop emits the stored
+// menu loop-safely (a legal SNAPSHOT/DETERMINIZE root) and dispatches the answer
+// to resume_attack_target/resume_block_target. Priority already sits with the
+// chooser at both call sites (advance_step seats the active player for declare
+// attackers; declare_blockers repoints to the defender at entry), so the caller
+// passes the live chooser and nothing needs restoring on resume.
+static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
+                                     std::vector<LegalAction> &&menu, bool chooser_is_a,
+                                     Entity chosen_creature) {
+    if (tag == PendingQuery::ATTACK_TARGET)
+        game.pending_attacker = chosen_creature;
+    else
+        game.pending_blocker = chosen_creature;
+    PendingQuery &pq = game.pending_query;
+    pq.tag = tag;
+    pq.menu = std::move(menu);
+    pq.chooser_is_a = chooser_is_a;
+    // Byte-compat: today's inline sub-prompt runs with pending_decision_source
+    // == 0 (no PendingDecisionScope wraps it), and the replay corpus decodes
+    // that state field into a "Pending:" transcript line — a nonzero source
+    // here drifts the corpus. Keep 0; enriching the observation with the
+    // chosen creature is a deliberate (corpus re-record) change for later.
+    pq.decision_source = 0;
+    pq.answered = false;
+    pq.answer = -1;
+    pq.active = true;
+}
+
+// Commit a parked attack-target answer: exactly the post-get_input code the
+// inline sub-prompt ran (attack flag + target + narrative). Declaration events
+// (CREATURE_ATTACKED / ATTACKERS_DECLARED / exalted) still fire at confirm time
+// in declare_attackers, from the is_attacking flags. The next loop iteration
+// re-derives DECLARE_ATTACKERS_CHOICE (attackers_declared is still false) and
+// re-enters declare_attackers to continue the declaration.
+static void resume_attack_target(Game &game) {
+    PendingQuery &pq = game.pending_query;
+    Entity chosen_attacker = game.pending_attacker;
+    auto &cr = global_coordinator.GetComponent<Creature>(chosen_attacker);
+    cr.is_attacking = true;
+    cr.attack_target = pq.menu[static_cast<size_t>(pq.answer)].source_entity;
+    game_log("%s attacking %s.\n", entity_name(chosen_attacker).c_str(),
+        target_display_name(game, cr.attack_target).c_str());
+    game.pending_attacker = 0;
+    pq = PendingQuery{};
+}
+
+// Commit a parked block-target answer: the post-get_input code of the inline
+// sub-prompt (block flag + target + attacker's is_blocked + narrative). Menace
+// legality is still resolved at confirm time (release_illegal_menace_blockers).
+static void resume_block_target(Game &game) {
+    PendingQuery &pq = game.pending_query;
+    Entity chosen = game.pending_blocker;
+    auto &cr = global_coordinator.GetComponent<Creature>(chosen);
+    cr.is_blocking = true;
+    cr.blocking_target = pq.menu[static_cast<size_t>(pq.answer)].source_entity;
+    // Mark the attacker as blocked. It stays blocked for the rest of combat even if this
+    // (and every other) blocker later leaves combat (509.1h), so it assigns no damage to
+    // the player unless it has trample.
+    if (global_coordinator.entity_has_component<Creature>(cr.blocking_target))
+        global_coordinator.GetComponent<Creature>(cr.blocking_target).is_blocked = true;
+    game_log("%s blocking %s.\n", entity_name(chosen).c_str(),
+        entity_name(cr.blocking_target).c_str());
+    game.pending_blocker = 0;
+    pq = PendingQuery{};
+}
+
+// Loop-top dispatcher entry (game_driver.cpp) for both combat target tags.
+void resume_combat_target_choice(Game &game) {
+    if (game.pending_query.tag == PendingQuery::ATTACK_TARGET)
+        resume_attack_target(game);
+    else
+        resume_block_target(game);
+}
+
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity defending_entity = game.player_a_turn ? game.player_b_entity : game.player_a_entity;
+    if (game.pending_attacker != 0)
+        fatal_error("declare_attackers entered with an attack-target sub-prompt parked");
 
     // Collect eligible attackers with stable indices
     std::vector<Entity> eligible;
@@ -852,8 +935,9 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
         // Loop-safe: partial declarations live entirely in Creature components,
         // so a restored snapshot re-derives this same menu. The attack-target
-        // sub-prompt below is NOT safe -- the chosen attacker is only committed
-        // after the target is picked.
+        // sub-prompt below is loop-safe too: it is parked as a pending query
+        // (the chosen attacker persisted in Game::pending_attacker) and emitted
+        // at the main-loop top.
         search_set_loop_safe(true);
         int creature_choice = InputLogger::instance().get_input(atk_actions);
         search_set_loop_safe(false);
@@ -882,13 +966,18 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         // Only prompt for a target when there is a real choice (the defending
         // player plus at least one planeswalker). With just the defending player
         // the target is forced, so skip the decision and auto-assign it.
-        int target_choice = 0;
         if (tgt_actions.size() > 1) {
             game_log("Select target for %s:\n", chosen_name.c_str());
-            target_choice = InputLogger::instance().get_input(tgt_actions);
+            // Park the sub-prompt as a loop-top pending decision (loop-safe
+            // search root); the resume commits the attack and the next
+            // iteration re-enters this declaration. Nothing else is touched —
+            // attackers_declared stays false, pending_choice re-derives.
+            park_combat_target_query(game, PendingQuery::ATTACK_TARGET,
+                std::move(tgt_actions), game.player_a_turn, chosen_attacker);
+            return;
         }
         cr.is_attacking = true;
-        cr.attack_target = tgt_actions[static_cast<size_t>(target_choice)].source_entity;
+        cr.attack_target = tgt_actions[0].source_entity;
         game_log("%s attacking %s.\n", chosen_name.c_str(),
             target_display_name(game, cr.attack_target).c_str());
     }
@@ -1043,6 +1132,8 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership defending_player = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
     // defending player declares blockers — priority must be theirs for the input routing to work correctly
     game.player_a_has_priority = !game.player_a_turn;
+    if (game.pending_blocker != 0)
+        fatal_error("declare_blockers entered with a block-target sub-prompt parked");
 
     // Collect attackers
     std::vector<Entity> attackers;
@@ -1121,7 +1212,9 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             blk_actions.push_back(confirm);
         }
         // Loop-safe like the attacker selection: committed blocks live in
-        // Creature components; the block-target sub-prompt below is not safe.
+        // Creature components; the block-target sub-prompt below is parked as a
+        // loop-top pending query (chosen blocker in Game::pending_blocker), so
+        // it is loop-safe too.
         search_set_loop_safe(true);
         int blocker_choice = InputLogger::instance().get_input(blk_actions);
         search_set_loop_safe(false);
@@ -1138,7 +1231,6 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
 
         Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
-        auto &cr = global_coordinator.GetComponent<Creature>(chosen);
         std::string chosen_name = entity_name(chosen);
 
         auto legal_attackers = determine_blockable_attackers(chosen, attackers);
@@ -1152,15 +1244,13 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             la.category = ActionCategory::BLOCK_TARGET;
             blk_tgt_actions.push_back(la);
         }
-        int attacker_choice = InputLogger::instance().get_input(blk_tgt_actions);
-        cr.is_blocking = true;
-        cr.blocking_target = blk_tgt_actions[static_cast<size_t>(attacker_choice)].source_entity;
-        // Mark the attacker as blocked. It stays blocked for the rest of combat even if this
-        // (and every other) blocker later leaves combat (509.1h), so it assigns no damage to
-        // the player unless it has trample.
-        if (global_coordinator.entity_has_component<Creature>(cr.blocking_target))
-            global_coordinator.GetComponent<Creature>(cr.blocking_target).is_blocked = true;
-        game_log("%s blocking %s.\n", chosen_name.c_str(), entity_name(cr.blocking_target).c_str());
+        // Always park (no size-1 pre-collapse exists here — this prompt fires
+        // even with a single legal attacker, and the loop-top emitter never
+        // collapses single-entry menus). The resume commits the block; the next
+        // iteration re-derives DECLARE_BLOCKERS_CHOICE and re-enters here.
+        park_combat_target_query(game, PendingQuery::BLOCK_TARGET,
+            std::move(blk_tgt_actions), !game.player_a_turn, chosen);
+        return;
     }
 
     game_log("\nBlockers declared:\n");

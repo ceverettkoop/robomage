@@ -256,6 +256,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             // Dispatch the latched answer back to the suspended flow. Each tag's
             // resume path lands with its conversion batch.
             switch (pq.tag) {
+                case PendingQuery::ATTACK_TARGET:
+                case PendingQuery::BLOCK_TARGET:
+                    resume_combat_target_choice(cur_game);
+                    break;
                 default:
                     fatal_error("pending query dispatch not implemented for tag " +
                                 std::to_string(static_cast<int>(pq.tag)));

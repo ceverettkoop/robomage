@@ -232,6 +232,13 @@ struct Game {
         // copy (snapshot_save) covers the whole suspended state for free.
         PendingQuery pending_query;
         ResolutionFrame resolution;
+        // Combat sub-prompt suspension state (pending_query tags ATTACK_TARGET /
+        // BLOCK_TARGET): the creature whose target sub-prompt is currently parked.
+        // Set when declare_attackers/declare_blockers suspends on the target menu,
+        // consumed and cleared by the loop-top resume. Value members so a snapshot
+        // covers the parked selection. 0 = no sub-prompt parked.
+        Entity pending_attacker = 0;
+        Entity pending_blocker = 0;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
