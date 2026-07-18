@@ -290,6 +290,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Stack: Daze (spell, opponent) -> Mishra's Bauble (self, slot 97) -> Mishra's Bauble (spell, self)
   Opp GY:  Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: opp_revolt
   Actions:
@@ -305,6 +306,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self GY: Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: opp_revolt
   Actions:
@@ -324,6 +326,7 @@
   Self BF:  Polluted Delta
   Self GY: Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -346,6 +349,7 @@
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -368,6 +372,7 @@
   Self BF:  Island
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -388,6 +393,7 @@
   Stack: Brainstorm (spell, self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -412,6 +418,7 @@
   Pending: Brainstorm (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -439,6 +446,7 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
   Known top: Delver of Secrets, ?, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -595,6 +603,7 @@
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
   Known top: Delver of Secrets, ?, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: opp_revolt
   Actions:
@@ -612,6 +621,7 @@
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
   Known top: Delver of Secrets, ?, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: opp_revolt
   Actions:
@@ -631,6 +641,7 @@
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Ponder, Misty Rainforest
   Known top: Delver of Secrets, ?, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_revolt, opp_revolt
   Actions:
@@ -652,6 +663,7 @@
   Self GY: Daze, Ponder, Misty Rainforest
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Unholy Heat, ?, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Brainstorm, Mishra's Bauble
   Extras: self_revolt, opp_revolt
   Actions:
@@ -673,6 +685,7 @@
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
   Known top: Delver of Secrets, ?, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_revolt, opp_revolt
   Actions:
@@ -693,6 +706,7 @@
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
   Known top: Delver of Secrets, ?, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_revolt, opp_revolt
   Actions:
@@ -710,6 +724,7 @@
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
   Known top: Murktide Regent, Dragon's Rage Channeler, Delver of Secrets, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_revolt, opp_revolt
   Actions:
@@ -728,6 +743,7 @@
   Self GY: Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
   Known top: Dragon's Rage Channeler, Delver of Secrets, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_revolt, opp_revolt
   Actions:

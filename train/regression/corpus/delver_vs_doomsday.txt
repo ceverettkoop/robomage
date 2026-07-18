@@ -265,6 +265,7 @@
   Stack: Daze (spell, opponent) -> Force of Will (self, slot 97) -> Force of Will (spell, self) -> Ponder (opponent, slot 98) -> Ponder (spell, opponent)
   Opp GY:  Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -351,6 +352,7 @@
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Actions:
    0: Pass priority
@@ -370,6 +372,7 @@
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
@@ -387,6 +390,7 @@
   Self GY: Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1
   Actions:
@@ -406,6 +410,7 @@
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -425,6 +430,7 @@
   Self GY: Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -450,6 +456,7 @@
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -470,6 +477,7 @@
   Self GY: Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -488,6 +496,7 @@
   Opp GY:  Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
   Known top: Dark Ritual, Daze, Doomsday, ?, ?
+  Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -959,6 +968,7 @@
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
+  Known opp hand: Underground Sea
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -976,6 +986,7 @@
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
+  Known opp hand: Underground Sea
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -996,6 +1007,7 @@
   Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
+  Known opp hand: Underground Sea
   Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -1019,6 +1031,7 @@
   Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
   Known top: Doomsday, ?, ?, ?, ?
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -1046,6 +1059,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Actions:
    0: Pass priority
@@ -1065,6 +1079,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
@@ -1083,6 +1098,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
@@ -1103,6 +1119,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
@@ -1123,6 +1140,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
@@ -1144,6 +1162,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
@@ -1162,6 +1181,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
@@ -1180,6 +1200,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
@@ -1198,6 +1219,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: self_lands_played=1
   Actions:
@@ -1261,6 +1283,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
@@ -1303,6 +1326,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Actions:
    0: Pass priority
@@ -1324,6 +1348,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_revolt
   Actions:
@@ -1344,6 +1369,7 @@
   Self GY: Daze, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Lightning Bolt, Daze, Scalding Tarn, Ponder, Daze, Misty Rainforest
   Self exile: Personal Tutor
+  Known opp hand: Island
   Opp revealed: Mountain, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Unholy Heat
   Extras: opp_revolt
   Actions:
