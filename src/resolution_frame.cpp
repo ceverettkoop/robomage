@@ -160,6 +160,20 @@ std::set<Entity> collect_pending_pins() {
                 if (t != 0) pins.insert(t);
         }
     }
+    // A suspended trigger placement: the queued-but-not-yet-offered triggers'
+    // sources and any already-bound targets (the parked menu's pins cover only
+    // the currently offered choices; the rest of the queue is what the resumed
+    // placement will 603.3d-check, target, and push).
+    const TriggerPlacementRT &tp = cur_game.trigger_placement;
+    if (tp.active) {
+        for (const auto &pt : tp.queue) {
+            if (pt.source != 0) pins.insert(pt.source);
+            if (pt.ab.source != 0) pins.insert(pt.ab.source);
+            if (pt.ab.target != 0) pins.insert(pt.ab.target);
+            for (auto t : pt.ab.targets)
+                if (t != 0) pins.insert(t);
+        }
+    }
     // The remembered set: a suspended resolution's accumulated Remembered$
     // references (Doomsday piles, RememberChanged) must survive a determinize.
     for (auto e : cur_game.remembered_entities)

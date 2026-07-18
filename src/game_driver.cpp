@@ -289,6 +289,27 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // exactly as the single-call flow did.
                     if (cur_game.pending_query.active) continue;
                     break;
+                case PendingQuery::TRIGGER_PLACE:
+                    resume_trigger_placement(cur_game, sys.orderer);
+                    // The resume may park the NEXT placement decision (the next
+                    // ordering pick, or a trigger target): loop back so the
+                    // pending branch emits it before anything (turn-based
+                    // actions, SBE) runs underneath it. When the placement
+                    // completes instead, fall through to the normal flow — the
+                    // suspended state_based_effects call returned early
+                    // mid-contract, and re-running it from the top is a provable
+                    // no-op: process_turn_based_actions is idempotent per step
+                    // (flag-guarded), the SBA fixpoint re-applies nothing (state
+                    // unchanged but for the stack), and the trigger re-scan
+                    // drains only the placement's own push_ability_onto_stack
+                    // zone-change events, which no trigger matches — the same
+                    // (empty) yield today's next SBE call gets from them.
+                    if (cur_game.pending_query.active) {
+                        if (cur_game.pending_query.answered)
+                            fatal_error("trigger placement resume did not consume its latched answer");
+                        continue;
+                    }
+                    break;
                 case PendingQuery::RESOLUTION: {
                     // Re-enter the suspended resolution DIRECTLY via advance_step,
                     // skipping turn-based actions / mandatory choices / SBE — SBAs
@@ -338,6 +359,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 if (!search_intercept_game_end()) break;
                 continue;
             }
+            // A trigger placement suspended inside state_based_effects: loop
+            // back so the pending branch emits the parked decision before
+            // advance_step (or anything else) runs underneath it.
+            if (decision_suspended()) continue;
             if (cur_game.advance_step(sys.stack_manager, sys.orderer)) {
                 continue;
             }
@@ -352,6 +377,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             if (!search_intercept_game_end()) break;
             continue;
         }
+        // A trigger placement suspended inside the post-advance SBE: loop back
+        // so the pending branch emits the parked decision before priority is
+        // offered on a half-placed batch.
+        if (decision_suspended()) continue;
 
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
         if (legal_actions.size() == 1) {

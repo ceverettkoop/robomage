@@ -35,7 +35,8 @@ static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const 
                                       ActionCategory category);
 static void pay_secondary_activation_costs(
     const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
-static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
+static int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
+                                bool allow_done, TargetAsker &asker);
 static std::string chosen_targets_display(const Ability &ab);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
@@ -1421,15 +1422,22 @@ static size_t spell_xpaid_target_cap(const CardData &card_data, Entity spell_ent
     return cap;
 }
 
-static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
-                                  bool allow_done) {
-    PendingDecisionScope pending_scope(ability.source);
+// One target pick through `asker` (the shared machine's single-decision step).
+// Returns the chosen index, or a negative value when the ask parked a pending
+// query (the caller suspends; a resumed re-entry rebuilds the identical menu
+// and the asker consumes the latched answer). The pending-decision context is
+// the asking source, exactly the PendingDecisionScope the blocking path held.
+static int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
+                                bool allow_done, TargetAsker &asker) {
     // Name the spell/ability asking for the target so the prompt is meaningful
     // before it resolves — otherwise the log only reveals what it was after the
-    // target is chosen and the object goes on the stack.
-    std::string src_name = ability.source != 0 ? entity_name(ability.source)
-                                                : std::string("this ability");
-    game_log("Choose target for %s:\n", src_name.c_str());
+    // target is chosen and the object goes on the stack. Arm-time only: a
+    // resume already printed it when the query was armed.
+    if (!asker.resuming()) {
+        std::string src_name = ability.source != 0 ? entity_name(ability.source)
+                                                   : std::string("this ability");
+        game_log("Choose target for %s:\n", src_name.c_str());
+    }
     std::vector<LegalAction> tgt_actions;
     if (ability.target_min == 0 || allow_done) {
         std::string label = allow_done ? "Done selecting targets" : "No target";
@@ -1462,66 +1470,107 @@ static void select_single_target(Ability &ability, const std::vector<Entity> &va
                     " (ValidTgts$ " + ability.valid_tgts + ") — a targeted spell/ability with no "
                     "legal target was offered/forced (CR 601.2c violated upstream).");
     }
-    int choice = InputLogger::instance().get_input(tgt_actions);
+    int choice = asker.ask(tgt_actions, ability.source);
+    if (choice < 0 && decision_suspended()) return choice;
     ability.target = tgt_actions[static_cast<size_t>(choice)].source_entity;
     game_log("Targeting choice %d\n", choice);
+    return choice;
 }
 
-void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
-    // Resolve dynamic target counts up front (CR 601.2b: anything they depend on — X, the gift
-    // promise — is already decided). Count$xPaid reads the X paid; a non-xPaid count-SVar
-    // (Into the Flood Maw: Count$PromisedGift) is evaluated here. Stamp the results onto
-    // target_min/target_max so resolution (is_target_valid) sees the same bounds.
-    int effective_max = ability.target_max;
-    if (ability.target_max_from_xpaid)
-        effective_max = static_cast<int>(cur_game.x_paid);
-    else if (!ability.target_max_count_expr.empty())
-        effective_max = static_cast<int>(evaluate_dynamic_amount(
-            ability.target_max_count_expr, priority_player, orderer, 0, ability.source));
-    int effective_min = ability.target_min;
-    if (ability.target_min_from_xpaid)
-        effective_min = static_cast<int>(cur_game.x_paid);
-    else if (!ability.target_min_count_expr.empty())
-        effective_min = static_cast<int>(evaluate_dynamic_amount(
-            ability.target_min_count_expr, priority_player, orderer, 0, ability.source));
-    ability.target_min = effective_min;
-    ability.target_max = effective_max;
+TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker &asker,
+                               std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    if (!rt.active) {
+        // Resolve dynamic target counts up front (CR 601.2b: anything they depend on — X, the gift
+        // promise — is already decided). Count$xPaid reads the X paid; a non-xPaid count-SVar
+        // (Into the Flood Maw: Count$PromisedGift) is evaluated here. Stamp the results onto
+        // target_min/target_max so resolution (is_target_valid) sees the same bounds. Stamped
+        // ONCE — a resume re-enters with rt.active set and never re-evaluates.
+        int effective_max = ability.target_max;
+        if (ability.target_max_from_xpaid)
+            effective_max = static_cast<int>(cur_game.x_paid);
+        else if (!ability.target_max_count_expr.empty())
+            effective_max = static_cast<int>(evaluate_dynamic_amount(
+                ability.target_max_count_expr, priority_player, orderer, 0, ability.source));
+        int effective_min = ability.target_min;
+        if (ability.target_min_from_xpaid)
+            effective_min = static_cast<int>(cur_game.x_paid);
+        else if (!ability.target_min_count_expr.empty())
+            effective_min = static_cast<int>(evaluate_dynamic_amount(
+                ability.target_min_count_expr, priority_player, orderer, 0, ability.source));
+        ability.target_min = effective_min;
+        ability.target_max = effective_max;
 
-    // Zero targets (Into the Flood Maw's unused mode when the gift promise switched the count to
-    // 0): the ability targets nothing and does nothing on resolution. Choose no target.
-    if (effective_max <= 0) {
-        ability.target = 0;
-        ability.targets.clear();
-        return;
+        // Zero targets (Into the Flood Maw's unused mode when the gift promise switched the count
+        // to 0): the ability targets nothing and does nothing on resolution. Choose no target.
+        if (effective_max <= 0) {
+            ability.target = 0;
+            ability.targets.clear();
+            return TargetStatus::DONE;
+        }
+
+        rt.active = true;
+        rt.effective_min = effective_min;
+        rt.effective_max = effective_max;
+        rt.picked = 0;
+        if (effective_max > 1) ability.targets.clear();
     }
 
-    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
-
-    if (effective_max <= 1) {
-        select_single_target(ability, valid_targets, false);
-        return;
+    if (rt.effective_max <= 1) {
+        std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
+        if (select_single_target(ability, valid_targets, false, asker) < 0)
+            return TargetStatus::SUSPENDED;
+        rt = TargetSelectRT{};
+        return TargetStatus::DONE;
     }
 
     // Multi-target selection loop
-    ability.targets.clear();
     // "Up to X target ..." (Kozilek's Command): the cap is the X paid at cast time. When the
     // minimum is ALSO X (TargetMin$ X = TargetMax$ X), this becomes "exactly X target ..."
     // (Candelabra of Tawnos, Hide on the Ceiling): the loop neither offers "Done" nor stops
     // before X targets have been chosen, and clamps at X. X (x_paid) was chosen before targets
-    // (CR 601.2b), so it is known here.
-    for (int i = 0; i < effective_max; i++) {
+    // (CR 601.2b), so it is known here. The candidate pool is re-derived each pick as
+    // build_valid_targets minus the already-chosen targets — byte-identical to the former
+    // erase-chosen running pool, since nothing mutates between picks, and re-derivable on a
+    // resume for free.
+    for (int i = rt.picked; i < rt.effective_max; i++) {
+        std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
+        for (Entity chosen : ability.targets)
+            valid_targets.erase(
+                std::remove(valid_targets.begin(), valid_targets.end(), chosen),
+                valid_targets.end());
         if (valid_targets.empty()) break;
-        bool can_stop = (i >= effective_min);
-        select_single_target(ability, valid_targets, can_stop);
+        bool can_stop = (i >= rt.effective_min);
+        if (select_single_target(ability, valid_targets, can_stop, asker) < 0)
+            return TargetStatus::SUSPENDED;
         if (ability.target == 0) break;  // chose "Done" or "No target"
         ability.targets.push_back(ability.target);
-        // Remove chosen target from pool
-        valid_targets.erase(
-            std::remove(valid_targets.begin(), valid_targets.end(), ability.target),
-            valid_targets.end());
+        rt.picked = i + 1;
     }
     // Set primary target to first chosen (for backward compat)
     if (!ability.targets.empty()) ability.target = ability.targets[0];
+    rt = TargetSelectRT{};
+    return TargetStatus::DONE;
+}
+
+namespace {
+// Blocking asker — exactly the pre-suspension select_target convention: expose
+// the asking source as the pending-decision context and read one choice inline
+// (the caller has already seated priority at the choosing player; no repoint).
+class BlockingTargetAsker final : public TargetAsker {
+    public:
+        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
+            PendingDecisionScope pending_scope(decision_source);
+            return InputLogger::instance().get_input(menu);
+        }
+        bool resuming() const override { return false; }
+};
+}  // namespace
+
+void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    BlockingTargetAsker asker;
+    TargetSelectRT rt;
+    if (run_target_select(ability, rt, asker, orderer, priority_player) != TargetStatus::DONE)
+        fatal_error("blocking select_target suspended — a blocking asker can never park a query");
 }
 
 // Can this charm mode be legally chosen right now (CR 601.2b/c)? A mode is unchoosable only

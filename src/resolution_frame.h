@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -112,6 +113,73 @@ struct ChangeZoneSearchRt {
 };
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
                                    SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt>;
+
+// ── Shared target-selection sub-machine (Batch 5) ───────────────────────────
+// Suspension-aware form of select_target/select_single_target
+// (run_target_select, action_processor.cpp): the dynamic TargetMin$/TargetMax$
+// bounds are stamped ONCE at entry, then one ask per pick; the candidate pool
+// is re-derived on every pick as build_valid_targets(ability) minus the
+// already-chosen targets (byte-identical to the blocking erase-chosen pool —
+// nothing mutates between picks). Embedded BY VALUE as a member field of each
+// host rt/state struct (trigger placement now; cast announce and
+// resolution-time select_target in later batches) — NEVER its own EffectRuntime
+// alternative: FrameCtx::rt<RT>() switches the variant on first access, so a
+// separate alternative would dangle the host's rt reference (Batch 4 finding).
+struct TargetSelectRT {
+    bool active = false;     // bounds stamped; a pick is in flight
+    int effective_min = 0;   // resolved TargetMin$ (dynamic stamping done once)
+    int effective_max = 0;   // resolved TargetMax$
+    int picked = 0;          // multi-target picks completed so far
+};
+
+// What one run_target_select call reports: the ability's targets are fully
+// chosen, or an ask parked a pending query (caller returns/suspends, mutating
+// nothing further; re-enter with the same rt to resume at the parked pick).
+enum class TargetStatus { DONE, SUSPENDED };
+
+// The one-decision primitive run_target_select asks through, so the SAME
+// machine serves every family: an implementation either reads the choice
+// inline (blocking — today's select_target behavior) or arms
+// cur_game.pending_query with its family's tag and reports suspension by
+// returning a negative value. resuming() is true when re-entering with a
+// latched answer pending — the next ask consumes it, and arm-time side effects
+// (the "Choose target for ..." log) already ran, so they are guarded on it.
+class TargetAsker {
+    public:
+        virtual ~TargetAsker() = default;
+        // Returns the chosen index, or a negative value when the query was
+        // parked (the caller distinguishes a real suspension from a CLI flag
+        // via decision_suspended()).
+        virtual int ask(const std::vector<LegalAction> &menu, Entity decision_source) = 0;
+        virtual bool resuming() const = 0;
+};
+
+// ── Trigger placement (Batch 5) ─────────────────────────────────────────────
+// One collected trigger waiting to be put on the stack (the persisted form of
+// state_manager_triggers.cpp's PendingTrigger; Ability is a pure value type).
+struct PendingTriggerRT {
+    Ability ab;                 // fully prepared (source / controller / event-derived fields set)
+    Zone::Ownership controller; // whose trigger this is (drives APNAP partitioning)
+    Entity source = 0;          // source permanent (for logging)
+    std::string label;          // choice label when its controller orders simultaneous triggers
+    std::string log_line;       // narrative line emitted when it is placed on the stack
+    bool needs_target = false;  // select a target at placement time if it still has legal targets
+};
+
+// The whole persisted APNAP placement (CR 603.3b): armed by place_triggers_apnap
+// when a batch of triggers is collected, driven to completion by
+// resume_trigger_placement (synchronously when nothing prompts; across main-loop
+// iterations via TRIGGER_PLACE pending queries otherwise). The queue is the
+// APNAP-flattened order — active player's group first, collection order within
+// groups — and the current group is the leading run sharing queue.front()'s
+// controller. Game value member, so a snapshot covers the parked placement.
+struct TriggerPlacementRT {
+    bool active = false;
+    std::vector<PendingTriggerRT> queue;
+    bool saved_priority = false;   // player_a_has_priority to restore at completion
+    bool target_in_flight = false; // queue.front() is mid-target-selection (tsel live)
+    TargetSelectRT tsel;           // the front trigger's in-flight target selection
+};
 
 // One level of the persisted resolve() continuation: the ROOT is the stack
 // object's own ability; nested levels hold the BY-VALUE in-flight copy of a

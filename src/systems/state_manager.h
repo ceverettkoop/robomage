@@ -103,6 +103,16 @@ ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_
 ManaValue effective_base_cost(const CardData &card_data,
                               Zone::Ownership caster = Zone::UNKNOWN);
 
+// Drive the persisted APNAP trigger placement (Game::trigger_placement) to
+// completion: each ordering pick / trigger target selection is parked as a
+// loop-top pending decision (PendingQuery tag TRIGGER_PLACE) instead of
+// blocking on get_input, so a batch of simultaneous triggers spreads over
+// several main-loop iterations. Called synchronously by place_triggers_apnap
+// when a batch is collected, and by the main loop's TRIGGER_PLACE dispatch
+// with a latched answer. On completion restores the pre-placement priority
+// and clears Game::lk_battlefield_types (the 603.10 look-back snapshots).
+void resume_trigger_placement(Game& game, std::shared_ptr<Orderer> orderer);
+
 class StateManager : public System {
 
 public:

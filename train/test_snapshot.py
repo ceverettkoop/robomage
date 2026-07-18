@@ -50,7 +50,7 @@ from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
                     CAT_ATTACK_TARGET, CAT_BLOCK_TARGET, CAT_ASSIGN_DAMAGE,
                     CAT_OTHER_CHOICE, CAT_CAST_SPELL, CAT_TOP_LIBRARY,
-                    CAT_BOTTOM_DECK_CARD)
+                    CAT_BOTTOM_DECK_CARD, CAT_ORDER_TRIGGERS, CAT_SELECT_TARGET)
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
@@ -944,6 +944,238 @@ def test_pool_determinize_pin():
                 pass
 
 
+def _write_trigger_decks():
+    """Lands-only stacked decks for the trigger-placement roots test (Batch 5).
+    A's battlefield preset holds Delver of Secrets + Aether Vial: BOTH fire an
+    upkeep trigger at A's first upkeep, so A's 603.3b ordering choice reaches a
+    real 2-option ORDER_TRIGGERS decision (two DISTINCT triggers, so the two
+    orders are observably different lines — the engine prompts for identical
+    duplicates too, but those diverge invisibly). Lands-only libraries deck the
+    game out under auto-0."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    paths = []
+    for name, land in (("trig_pq_a", "Mountain"), ("trig_pq_b", "Forest")):
+        p = os.path.join(d, f"{name}.dk")
+        with open(p, "w") as f:
+            f.write(f"30 {land}\n")
+        paths.append(p)
+    return paths
+
+
+_TRIGGER_EXTRA = ["--deck-a", "temp/trig_pq_a", "--deck-b", "temp/trig_pq_b",
+                  "--no-shuffle",
+                  "--battlefield-a", "Delver of Secrets,Aether Vial"]
+
+
+def test_trigger_order_roundtrip():
+    """Batch 5 (trigger placement): the CR 603.3b trigger-ordering prompt is a
+    loop-top pending decision (tag TRIGGER_PLACE) — it reports safe=1 and is a
+    valid SNAPSHOT/RESTORE root. Two distinct simultaneous upkeep triggers
+    (Delver of Secrets + Aether Vial, one controller) reach a 2-option
+    ORDER_TRIGGERS decision at A's first upkeep. At the root: SNAPSHOT
+    re-emits exactly; a divergent line picks the OTHER order and its very next
+    query must differ from the control's (the stack order — hence resolution
+    order — observably changed); RESTORE returns byte-identically; the resumed
+    real line stays byte-identical to a no-snapshot control run with the same
+    outcome."""
+    seed = 5
+    deck_paths = _write_trigger_decks()
+    try:
+        control, outcome = record_line(seed, _auto0, extra=_TRIGGER_EXTRA)
+        root_idx = _first_cat_index(control, CAT_ORDER_TRIGGERS)
+        if root_idx is None:
+            raise ProtocolError("no ORDER_TRIGGERS decision in the control line "
+                                "— the Delver+Vial board should force one at "
+                                "A's first upkeep")
+        nc, pl, safe = control[root_idx]
+        if nc != 2:
+            raise ProtocolError(f"ordering menu has {nc} options, expected 2 "
+                                "(Delver trigger + Vial trigger)")
+        if not safe:
+            raise ProtocolError("ordering decision reports safe=0 — it should "
+                                "be a loop-top pending decision now")
+        if root_idx + 1 >= len(control):
+            raise ProtocolError("control line ends at the ordering root")
+
+        eng = Engine(seed, extra=_TRIGGER_EXTRA)
+        cur = eng.read()
+        for idx in range(root_idx):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"trigger alignment at decision {idx}")
+            cur = eng.play(_auto0(idx, cur.nc))
+        _assert_same_query(cur, pl, nc, "trigger ordering root alignment")
+        q = eng.snapshot(0)
+        _assert_same_query(q, pl, nc, "trigger post-SNAPSHOT re-emit")
+
+        # Divergent excursion: the OTHER order (choice 1). The next query must
+        # differ from the control's next — the other trigger is now on top of
+        # the stack, so the resolution order visibly changed.
+        dq = eng.play(1)
+        if dq.kind != "q":
+            eng.kill()
+            raise ProtocolError("divergent order ended the game immediately")
+        if _first_diff(dq.payload, control[root_idx + 1][1]) is None:
+            eng.kill()
+            raise ProtocolError("picking the other trigger order produced a "
+                                "byte-identical next query — the ordering "
+                                "choice had no observable effect")
+        for i in range(1, 8):
+            dq = eng.play(_diverge(i, dq.nc))
+            if dq.kind != "q":
+                break
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl, nc, "trigger post-RESTORE re-emit")
+        rel = eng.release()
+        _assert_same_query(rel, pl, nc, "trigger post-RELEASE re-emit")
+        cur = rel
+        for idx in range(root_idx, len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"trigger resumed alignment at decision {idx}")
+            cur = eng.play(_auto0(idx, cur.nc))
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed trigger line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        return (f"ORDER_TRIGGERS root @ {root_idx} (nc=2) safe=1, other order "
+                f"diverges, round-trip exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def _write_trigger_target_decks():
+    """Stacked decks for the trigger target-selection root. With --no-shuffle
+    A's opening hand is Flickerwisp + 6 Plains; a 3-Plains battlefield preset
+    pays its {1}{W}{W}, so a cast-first policy casts Flickerwisp on A's first
+    turn. Its ETB trigger ("exile another target permanent") chooses its target
+    at PLACEMENT time (CR 603.3d window) — a 3-option SELECT_TARGET menu over
+    the preset Plains, now a loop-top pending decision."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    pa = os.path.join(d, "trig_tgt_a.dk")
+    with open(pa, "w") as f:
+        f.write("1 Flickerwisp\n29 Plains\n")
+    pb = os.path.join(d, "trig_tgt_b.dk")
+    with open(pb, "w") as f:
+        f.write("30 Forest\n")
+    return [pa, pb]
+
+
+_TRIGGER_TGT_EXTRA = ["--deck-a", "temp/trig_tgt_a", "--deck-b", "temp/trig_tgt_b",
+                      "--no-shuffle",
+                      "--battlefield-a", "Plains,Plains,Plains"]
+
+
+def _record_cast_first_line(seed, extra, cap=4000):
+    """Control recording for the trigger-target test: the FIRST decision whose
+    menu offers a CAST_SPELL action casts it (Flickerwisp — the only spell in
+    the deck), every other decision auto-0s. Returns (records, choices,
+    outcome) with records[i] = (nc, payload, safe) and choices[i] the action
+    played, so the round-trip replay can follow the identical line."""
+    eng = Engine(seed, extra=extra)
+    records, choices = [], []
+    cast_done = False
+    r = eng.read()
+    idx = 0
+    while r.kind == "q" and idx < cap:
+        action = 0
+        if not cast_done:
+            cats = _query_cats(r.payload)[:r.nc]
+            hits = np.nonzero(cats == CAT_CAST_SPELL)[0]
+            if hits.size:
+                action = int(hits[0])
+                cast_done = True
+        records.append((r.nc, r.payload, r.safe))
+        choices.append(action)
+        r = eng.play(action)
+        idx += 1
+    outcome = {"kind": r.kind, "returncode": r.returncode, "winner": r.winner}
+    eng.kill()
+    return records, choices, outcome
+
+
+def test_trigger_target_roundtrip():
+    """Batch 5 (trigger placement targets): a triggered ability's placement-time
+    target selection (CR 603.3d) — Flickerwisp's ETB "exile another target
+    permanent" — is a loop-top pending decision (tag TRIGGER_PLACE, shared
+    TargetSelectRT machine): it reports safe=1 and is a valid SNAPSHOT/RESTORE
+    root. At the root (a 3-option all-SELECT_TARGET menu over the preset
+    Plains): SNAPSHOT re-emits exactly; a divergent line (another Plains, then
+    a scrambled continuation) then RESTORE returns byte-identically; the
+    resumed real line stays byte-identical to the control with the same
+    outcome."""
+    seed = 5
+    deck_paths = _write_trigger_target_decks()
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, _TRIGGER_TGT_EXTRA)
+        root_idx = _first_cat_index(control, CAT_SELECT_TARGET)
+        if root_idx is None:
+            raise ProtocolError("no SELECT_TARGET decision in the control line "
+                                "— Flickerwisp's ETB trigger should force one")
+        nc, pl, safe = control[root_idx]
+        if nc != 3:
+            raise ProtocolError(f"trigger target menu has {nc} options, "
+                                "expected the 3 preset Plains")
+        cats = _query_cats(pl)
+        if not bool((cats[:nc] == CAT_SELECT_TARGET).all()):
+            raise ProtocolError(f"trigger target categories {cats[:nc]} are not "
+                                f"all SELECT_TARGET ({CAT_SELECT_TARGET})")
+        if not safe:
+            raise ProtocolError("trigger target decision reports safe=0 — it "
+                                "should be a loop-top pending decision now")
+
+        eng = Engine(seed, extra=_TRIGGER_TGT_EXTRA)
+        cur = eng.read()
+        for idx in range(root_idx):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"trigger-target alignment at decision {idx}")
+            cur = eng.play(choices[idx])
+        _assert_same_query(cur, pl, nc, "trigger target root alignment")
+        q = eng.snapshot(0)
+        _assert_same_query(q, pl, nc, "trigger-target post-SNAPSHOT re-emit")
+        # Divergent excursion: exile a different Plains, then scramble.
+        dq = q
+        for i in range(8):
+            dq = eng.play(dq.nc - 1 if i == 0 else _diverge(i, dq.nc))
+            if dq.kind != "q":
+                break
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl, nc, "trigger-target post-RESTORE re-emit")
+        rel = eng.release()
+        _assert_same_query(rel, pl, nc, "trigger-target post-RELEASE re-emit")
+        cur = rel
+        for idx in range(root_idx, len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"trigger-target resumed alignment at decision {idx}")
+            cur = eng.play(choices[idx])
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed trigger-target line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        return (f"trigger target root @ {root_idx} (nc=3) safe=1, round-trip "
+                f"exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -1732,6 +1964,8 @@ TESTS = [
     ("resolution_single_roundtrip", test_resolution_single_roundtrip),
     ("pool_loop_roundtrip", test_pool_loop_roundtrip),
     ("pool_determinize_pin", test_pool_determinize_pin),
+    ("trigger_order_roundtrip", test_trigger_order_roundtrip),
+    ("trigger_target_roundtrip", test_trigger_target_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

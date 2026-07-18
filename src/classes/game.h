@@ -255,6 +255,14 @@ struct Game {
             Entity last_assigned = 0;
         };
         PendingDamageAssign pending_damage;
+        // Trigger-placement suspension state (pending_query tag TRIGGER_PLACE):
+        // the APNAP-flattened queue of collected triggers still to be put on
+        // the stack, plus the front trigger's in-flight target selection. Set
+        // by place_triggers_apnap, driven by resume_trigger_placement, cleared
+        // at placement completion (which also restores saved_priority and
+        // clears lk_battlefield_types). Value member so a snapshot covers the
+        // parked placement. See resolution_frame.h.
+        TriggerPlacementRT trigger_placement;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/

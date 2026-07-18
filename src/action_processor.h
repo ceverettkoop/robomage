@@ -65,6 +65,16 @@ Ability cast_gate_probe(const Ability& tmpl, Entity card_entity, Zone::Ownership
 // Caller must ensure has_legal_targets() is true before calling.
 void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 
+// Suspension-aware form of select_target (the shared target sub-machine; see
+// TargetSelectRT / TargetAsker in resolution_frame.h). One call per resume:
+// stamps the dynamic min/max bounds once (rt.active), then asks one pick at a
+// time through `asker`; SUSPENDED means an ask parked a pending query — the
+// caller returns without further mutation and re-enters with the SAME rt when
+// the answer is latched. select_target is this machine run with a blocking
+// asker; the caller must have seated priority at the choosing player.
+TargetStatus run_target_select(Ability& ability, TargetSelectRT& rt, TargetAsker& asker,
+                               std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
+
 // CR 601.2b/c: announce ALL of a spell's cast-time choices on its (already source/controller-
 // stamped) primary spell ability — modal mode(s) (recorded in Ability::charm_chosen, each
 // chosen mode's targets stored on its charm_choices entry), then the primary target, then each
