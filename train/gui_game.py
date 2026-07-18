@@ -31,7 +31,9 @@ before quitting. Pair it with ``QT_QPA_PLATFORM=offscreen`` for a display-less r
 """
 
 import html
+import json
 import os
+import sys
 import threading
 import time
 
@@ -43,7 +45,9 @@ from PySide6.QtGui import (QColor, QFont, QPainter, QPen, QBrush, QPixmap,
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                                QVBoxLayout, QHBoxLayout, QScrollArea, QSplitter,
                                QListWidget, QListWidgetItem, QPlainTextEdit,
-                               QToolButton, QSizePolicy)
+                               QToolButton, QSizePolicy, QDialog, QComboBox,
+                               QFormLayout, QDialogButtonBox, QMessageBox,
+                               QGroupBox, QSpinBox, QDoubleSpinBox)
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 import decode
@@ -147,6 +151,25 @@ QSplitter::handle:vertical { height: 3px; }
 /* Oracle-text popup (frameless, always-on-top): amber-bordered dark panel. */
 QWidget#oraclePopup { background: #16161c; border: 1px solid #d8a12a; }
 QWidget#oraclePopup QLabel { background: transparent; border: none; color: #d8d8d8; }
+/* Launcher (intro screen). */
+QLabel#launcherTitle { font-size: 22px; font-weight: bold; color: #f0f0f4; }
+QLabel#launcherSubtitle { color: #9a9aa2; padding-bottom: 4px; }
+QGroupBox {
+    border: 1px solid #2a2a33; margin-top: 10px; padding: 8px;
+}
+QGroupBox::title { subcontrol-origin: margin; left: 8px; padding: 0 4px; color: #b8b8c0; }
+QComboBox {
+    border: 1px solid #2a2a33; background: #0c0c10; color: #d8d8d8; padding: 3px 6px;
+}
+QComboBox QAbstractItemView {
+    background: #0c0c10; color: #d8d8d8;
+    selection-background-color: #d8a12a; selection-color: #101014;
+}
+QPushButton {
+    border: 1px solid #2a2a33; background: #24242e; color: #f0f0f4; padding: 5px 12px;
+}
+QPushButton:hover { background: #2f2f3a; }
+QPushButton:default { border: 1px solid #d8a12a; }
 """
 
 
@@ -1651,7 +1674,367 @@ def _smoke_n_from_env():
         return 1
 
 
+# ── Launcher (intro screen) ───────────────────────────────────────────────────
+
+# Where the launcher remembers the last-used options so they autofill next time.
+_LAUNCHER_CONFIG = os.path.join(
+    os.path.expanduser("~"), ".robomage", "gui_launcher.json")
+
+# Opponent presets offered in the launcher's editable combo. The value is the
+# raw spec passed straight through to build_session (== play.py's --model): "gen"
+# is the one generalist model, "scripted*" the rule-based tiers, "az:/azraw:/
+# mcts:" the search wrappers. The combo stays editable so a checkpoint path or a
+# spec with knobs (e.g. "az:gen?sims=200") can be typed in.
+_OPPONENT_PRESETS = [
+    ("Generalist model (gen)", "gen"),
+    ("Scripted — hard (heuristic)", "scripted:hard"),
+    ("Scripted — easy (greedy)", "scripted:easy"),
+    ("Scripted — random", "scripted:random"),
+    ("MCTS search (az:gen)", "az:gen"),
+    ("Raw AZ policy (azraw:gen)", "azraw:gen"),
+]
+
+# Deck subfolders hidden from the launcher dropdowns (mirrors tui.py's scan).
+_DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
+
+
+def _scan_decks():
+    """All .dk deck stems under bin/resources/decks/ (recursive), decks/-relative
+    (e.g. 'delver', 'league/ur_delver'). Mirrors tui.py._scan_decks so the GUI
+    launcher offers the same decks the TUI form does, without importing textual."""
+    from cli_spec import REPO_ROOT
+    decks_dir = os.path.join(REPO_ROOT, "bin", "resources", "decks")
+    out = []
+    for root, dirs, files in os.walk(decks_dir):
+        dirs[:] = sorted(d for d in dirs if d not in _DECK_SCAN_EXCLUDE)
+        rel_dir = os.path.relpath(root, decks_dir).replace(os.sep, "/")
+        for fname in files:
+            if fname.endswith(".dk"):
+                stem = os.path.splitext(fname)[0]
+                out.append(stem if rel_dir == "." else f"{rel_dir}/{stem}")
+    return sorted(out, key=lambda rel: (rel.count("/"), rel))
+
+
+def _load_launcher_config():
+    try:
+        with open(_LAUNCHER_CONFIG, encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_launcher_config(cfg):
+    try:
+        os.makedirs(os.path.dirname(_LAUNCHER_CONFIG), exist_ok=True)
+        with open(_LAUNCHER_CONFIG, "w", encoding="utf-8") as f:
+            json.dump(cfg, f, indent=2)
+    except OSError:
+        pass                                 # persistence is best-effort
+
+
+class LauncherDialog(QDialog):
+    """Intro screen shown when the GUI is launched with no game arguments.
+
+    Exposes the same game-running knobs as the TUI play form — the human's deck,
+    the opponent's deck, the opponent controller, which seat the human takes, and
+    the match format — and seeds every field from the last session's choices
+    (persisted to ~/.robomage/gui_launcher.json). On Start it hands a plain options
+    dict back to run_launcher, which assembles the session and shows the board."""
+
+    def __init__(self, binary_path, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("RoboMage — New Game")
+        self.setModal(True)
+        self._binary = binary_path
+        cfg = _load_launcher_config()
+        decks = _scan_decks()
+
+        form = QFormLayout()
+        form.setSpacing(8)
+
+        self._human_deck = self._deck_combo(decks, cfg.get("human_deck", "delver"))
+        self._model_deck = self._deck_combo(decks, cfg.get("model_deck", "delver"))
+        form.addRow("Your deck", self._human_deck)
+        form.addRow("Opponent deck", self._model_deck)
+
+        self._opponent = QComboBox()
+        self._opponent.setEditable(True)
+        for label, spec in _OPPONENT_PRESETS:
+            self._opponent.addItem(label, spec)
+        self._set_opponent(cfg.get("opponent", "gen"))
+        self._opponent.setToolTip(
+            "Opponent controller: 'gen' (the generalist model), a scripted tier, "
+            "an az:/azraw:/mcts: search spec, or an explicit checkpoint path.")
+        form.addRow("Opponent", self._opponent)
+
+        self._player = QComboBox()
+        for label in ("Random", "A (you go first)", "B (opponent first)"):
+            self._player.addItem(label)
+        self._player.setCurrentIndex(
+            {"": 0, "A": 1, "B": 2}.get(cfg.get("player", ""), 0))
+        form.addRow("You play as", self._player)
+
+        self._format = QComboBox()
+        self._format.addItem("Best of three (with sideboarding)", True)
+        self._format.addItem("Single game", False)
+        self._format.setCurrentIndex(0 if cfg.get("bo3", True) else 1)
+        form.addRow("Match format", self._format)
+
+        box = QGroupBox("Game setup")
+        box.setLayout(form)
+
+        self._search_box = self._build_search_box(cfg)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Start game")
+        buttons.accepted.connect(self._on_accept)
+        buttons.rejected.connect(self.reject)
+
+        layout = QVBoxLayout(self)
+        title = QLabel("RoboMage")
+        title.setObjectName("launcherTitle")
+        subtitle = QLabel("Choose your matchup, then Start game.")
+        subtitle.setObjectName("launcherSubtitle")
+        layout.addWidget(title)
+        layout.addWidget(subtitle)
+        layout.addWidget(box)
+        layout.addWidget(self._search_box)
+        layout.addWidget(buttons)
+        self.setMinimumWidth(460)
+        self._options = None
+
+        # The search knobs are only meaningful for an az:/mcts: search opponent —
+        # show that group only then, and re-check whenever the opponent changes.
+        self._opponent.currentTextChanged.connect(self._update_search_visibility)
+        self._update_search_visibility()
+
+    def _build_search_box(self, cfg):
+        """The az:/mcts:-only search-tuning group (hidden for other opponents).
+        Each field's '(default)' sentinel (a spinbox at its minimum) means 'omit
+        the knob'; set values are appended to the spec query the same way
+        play.py's --sims/--worlds/--think-time/--search-procs/--match-clock do."""
+        form = QFormLayout()
+        form.setSpacing(8)
+        self._sims = self._int_field(
+            cfg.get("sims"), "MCTS simulations per decision (more = stronger, slower).")
+        self._worlds = self._int_field(
+            cfg.get("worlds"), "Determinized worlds per decision (sims split across them).")
+        self._think_time = self._float_field(
+            cfg.get("think_time"), "Wall-clock seconds per decision — runs as many "
+            "sims as fit in this budget (overrides the sims terminator).")
+        self._search_procs = self._int_field(
+            cfg.get("search_procs"), "Engine processes to fan the worlds across "
+            "(world-parallel search; default 1).")
+        self._match_clock = self._float_field(
+            cfg.get("match_clock"), "Whole-match thinking bank in seconds (chess "
+            "clock; 1500 = 25 min for a bo3). Each decision draws a variable budget.")
+        self._paced = QComboBox()
+        self._paced.addItem("Default (on with a time/clock budget)", None)
+        self._paced.addItem("On — mask response-timing tells", True)
+        self._paced.addItem("Off — instant obvious decisions", False)
+        self._paced.setCurrentIndex(
+            {None: 0, True: 1, False: 2}.get(cfg.get("paced"), 0))
+        form.addRow("Simulations", self._sims)
+        form.addRow("Worlds", self._worlds)
+        form.addRow("Think time (s)", self._think_time)
+        form.addRow("Search procs", self._search_procs)
+        form.addRow("Match clock (s)", self._match_clock)
+        form.addRow("Paced responses", self._paced)
+        box = QGroupBox("Search opponent settings")
+        box.setLayout(form)
+        return box
+
+    @staticmethod
+    def _int_field(value, tooltip):
+        sb = QSpinBox()
+        sb.setRange(0, 1_000_000)            # 0 == minimum == "(default)" sentinel
+        sb.setSpecialValueText("(default)")
+        sb.setValue(int(value) if value else 0)
+        sb.setToolTip(tooltip)
+        return sb
+
+    @staticmethod
+    def _float_field(value, tooltip):
+        sb = QDoubleSpinBox()
+        sb.setRange(0.0, 100_000.0)          # 0.0 == minimum == "(default)" sentinel
+        sb.setDecimals(1)
+        sb.setSingleStep(0.5)
+        sb.setSpecialValueText("(default)")
+        sb.setValue(float(value) if value else 0.0)
+        sb.setToolTip(tooltip)
+        return sb
+
+    @staticmethod
+    def _spin_value(sb):
+        """A spinbox's value, or None when it's parked on its '(default)' sentinel."""
+        return sb.value() if sb.value() != sb.minimum() else None
+
+    def _update_search_visibility(self, *_):
+        self._search_box.setVisible(self._is_search_spec(self._opponent_spec()))
+        self.adjustSize()
+
+    @staticmethod
+    def _is_search_spec(spec):
+        # az:/mcts: run a tree search (knobs apply); azraw: is the raw policy (no
+        # search), so it — like scripted/gen — hides the search group.
+        return (spec or "").strip().lower().startswith(("az:", "mcts:"))
+
+    @staticmethod
+    def _deck_combo(decks, current):
+        combo = QComboBox()
+        combo.setEditable(True)
+        combo.addItems(decks)
+        # Keep the remembered value even if it isn't a scanned stem (e.g. a
+        # hand-typed temp deck) by setting the edit text directly.
+        idx = combo.findText(current)
+        if idx >= 0:
+            combo.setCurrentIndex(idx)
+        else:
+            combo.setEditText(current)
+        return combo
+
+    def _set_opponent(self, spec):
+        idx = self._opponent.findData(spec)
+        if idx >= 0:
+            self._opponent.setCurrentIndex(idx)
+        else:
+            self._opponent.setEditText(spec)
+
+    def _opponent_spec(self):
+        """The opponent spec: a preset's data when the visible text still matches
+        that preset's label, else the raw typed text."""
+        idx = self._opponent.currentIndex()
+        if idx >= 0 and self._opponent.itemText(idx) == self._opponent.currentText():
+            return self._opponent.itemData(idx)
+        return self._opponent.currentText().strip()
+
+    def _search_knobs(self):
+        """(key, value) query pairs for the set search fields (empty ones omitted).
+        Keys match the spec query grammar make_controller parses (time=/procs=/…),
+        mirroring how play.py appends --think-time/--search-procs/etc."""
+        sims = self._spin_value(self._sims)
+        worlds = self._spin_value(self._worlds)
+        time_val = self._spin_value(self._think_time)
+        procs = self._spin_value(self._search_procs)
+        clock = self._spin_value(self._match_clock)
+        pairs = [("sims", sims), ("worlds", worlds), ("time", time_val),
+                 ("procs", procs), ("clock", clock)]
+        pairs = [(k, v) for k, v in pairs if v is not None]
+        # Paced: explicit On/Off wins; on Default, mirror play.py and turn pacing
+        # on whenever the opponent has a variable time budget (think-time/clock).
+        paced = self._paced.currentData()
+        has_variable_budget = time_val is not None or clock is not None
+        if paced is False:
+            pairs.append(("paced", 0))
+        elif paced is True or (paced is None and has_variable_budget):
+            pairs.append(("paced", 1))
+        return pairs
+
+    @staticmethod
+    def _with_query(spec, pairs):
+        """Append `pairs` to a controller spec's ?k=v&… query (later keys win in
+        make_controller's parser, so appending is always safe)."""
+        if not pairs:
+            return spec
+        sep = "&" if "?" in spec else "?"
+        return spec + sep + "&".join(f"{k}={v}" for k, v in pairs)
+
+    def _on_accept(self):
+        human_deck = self._human_deck.currentText().strip()
+        model_deck = self._model_deck.currentText().strip()
+        opponent = self._opponent_spec()
+        if not human_deck or not model_deck:
+            QMessageBox.warning(self, "Missing deck",
+                                "Pick a deck for both you and the opponent.")
+            return
+        if not opponent:
+            QMessageBox.warning(self, "Missing opponent",
+                                "Pick or type an opponent.")
+            return
+        # A search opponent carries its tuning knobs in the spec query; other
+        # opponents ignore the (hidden) fields entirely.
+        spec = opponent
+        if self._is_search_spec(opponent):
+            spec = self._with_query(opponent, self._search_knobs())
+        # Resolve the generalist up front so a missing checkpoint fails on the
+        # launcher (with a clear message) rather than deep in build_session.
+        try:
+            model_path = _resolve_opponent_spec(spec)
+        except Exception as exc:                          # noqa: BLE001
+            QMessageBox.critical(self, "Opponent unavailable", str(exc))
+            return
+
+        player = {0: None, 1: "A", 2: "B"}[self._player.currentIndex()]
+        bo3 = bool(self._format.currentData())
+        self._options = dict(binary=self._binary, model_path=model_path,
+                             human_player=player, human_deck=human_deck,
+                             model_deck=model_deck, bo3=bo3)
+        # Persist the BASE opponent + individual knobs (not the composed spec) so
+        # the fields autofill cleanly next session without double-appending.
+        _save_launcher_config(dict(
+            human_deck=human_deck, model_deck=model_deck, opponent=opponent,
+            player=player or "", bo3=bo3,
+            sims=self._spin_value(self._sims), worlds=self._spin_value(self._worlds),
+            think_time=self._spin_value(self._think_time),
+            search_procs=self._spin_value(self._search_procs),
+            match_clock=self._spin_value(self._match_clock),
+            paced=self._paced.currentData()))
+        self.accept()
+
+    def options(self):
+        return self._options
+
+
+def _resolve_opponent_spec(spec):
+    """Turn the launcher's opponent spec into the model_path build_session wants.
+
+    Scripted / search / play specs pass straight through (build_session +
+    make_controller understand them). A model spec ('gen' or an explicit path) is
+    resolved and existence-checked here so a missing generalist checkpoint is
+    reported cleanly instead of crashing later in _load_model."""
+    from opponents import is_scripted_spec, resolve_checkpoint
+    s = spec.strip()
+    low = s.lower()
+    if is_scripted_spec(s) or low.startswith(("az:", "azraw:", "mcts:",
+                                              "play:", "actions:", "human",
+                                              "auto")):
+        return s
+    path = resolve_checkpoint(s)             # 'gen' -> newest gen snapshot path
+    if not path or not os.path.exists(path):
+        raise ValueError(
+            f"No checkpoint found for opponent {s!r}. Train the generalist first "
+            f"(train/train.py train --deck <deck> --opponent <opp>), pick a "
+            f"scripted opponent, or type an explicit .zip path.")
+    return path
+
+
 # ── Entry point (called by play.py --gui) ─────────────────────────────────────
+
+def _ensure_app():
+    """The styled shared QApplication (created once)."""
+    app = QApplication.instance() or QApplication([])
+    font = QFont("JetBrains Mono")
+    font.setStyleHint(QFont.StyleHint.Monospace)
+    font.setFamilies(["JetBrains Mono", "DejaVu Sans Mono", "monospace"])
+    app.setFont(font)
+    app.setStyleSheet(_QSS)
+    return app
+
+
+def _run_session(session):
+    """Show the board for an assembled session and run the Qt loop to completion."""
+    window = GameWindow(session)
+    try:
+        window.show()
+        window.start()
+        _ensure_app().exec()
+    finally:
+        # The front end owns closing the env (the driver leaves it open).
+        session.env.close()
+    return 0
+
 
 def run(binary_path, model_path, human_player=None,
         human_deck="delver", model_deck="delver", bo3=True):
@@ -1659,21 +2042,34 @@ def run(binary_path, model_path, human_player=None,
     `model_path` of None/"scripted" ⇒ rule-based opponent; any
     opponents.make_controller spec works; `bo3` (default True) plays a
     best-of-three match with sideboarding in one engine process."""
+    _ensure_app()
     session = build_session(binary_path, model_path, human_player=human_player,
                             human_deck=human_deck, model_deck=model_deck, bo3=bo3)
-    app = QApplication.instance() or QApplication([])
-    font = QFont("JetBrains Mono")
-    font.setStyleHint(QFont.StyleHint.Monospace)
-    font.setFamilies(["JetBrains Mono", "DejaVu Sans Mono", "monospace"])
-    app.setFont(font)
-    app.setStyleSheet(_QSS)
+    return _run_session(session)
 
-    window = GameWindow(session)
+
+def run_launcher(binary_path=None):
+    """Show the intro screen, then launch the game the human configured. Returns 0
+    on a clean exit (including Cancel). This is the no-arguments entry point."""
+    from cli_spec import BINARY
+    binary_path = binary_path or BINARY
+    _ensure_app()
+    dialog = LauncherDialog(binary_path)
+    if dialog.exec() != QDialog.DialogCode.Accepted:
+        return 0
+    opts = dialog.options()
     try:
-        window.show()
-        window.start()
-        app.exec()
-    finally:
-        # The front end owns closing the env (the driver leaves it open).
-        session.env.close()
-    return 0
+        session = build_session(
+            opts["binary"], opts["model_path"], human_player=opts["human_player"],
+            human_deck=opts["human_deck"], model_deck=opts["model_deck"],
+            bo3=opts["bo3"])
+    except Exception as exc:                              # noqa: BLE001
+        QMessageBox.critical(None, "Could not start game", str(exc))
+        return 1
+    return _run_session(session)
+
+
+if __name__ == "__main__":
+    # Run with no game arguments -> the intro/launcher screen. (play.py --gui is
+    # the flagged entry point that skips the launcher and starts a game directly.)
+    sys.exit(run_launcher())
