@@ -157,14 +157,21 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         owner = tc;
     }
 
-    // DefinedPlayer$ Targeted with a chosen PLAYER target (Thought-Knot Seer: the sub-ability's
-    // target is the opponent the parent RevealHand targeted, bound by bind_sub_target). The
-    // searched/owning zone is that targeted player's, so a Hand search picks from THEIR hand. The
-    // targeted-move branch below is skipped because this sub-ability carries no target of its own
-    // (ValidTgts$ N_A); the bound ab.target is only used to name the searched player here.
-    if (ab.defined == "Targeted" && ab.target != 0 &&
-        global_coordinator.entity_has_component<Player>(ab.target)) {
-        owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    // DefinedPlayer$ Targeted — the searched/owning zone belongs to the chain's targeted PLAYER,
+    // so a Hand search picks from THEIR hand. Usually that player is this sub-ability's own bound
+    // target (Thought-Knot Seer: bind_sub_target inherited the opponent the parent RevealHand
+    // targeted). When an intervening sub retargeted a CARD instead (Cloak and Dagger, Entwined:
+    // DBPump chose the opponent's creature, so this sub inherited that creature), the player is
+    // read from targeted_player — the nearest player target up the chain, propagated by
+    // bind_sub_target the same way Forge walks ancestors. The targeted-move branch below is
+    // skipped in both cases because this sub-ability carries no target of its own (ValidTgts$
+    // N_A); the bound target/targeted_player only name the searched player here.
+    if (ab.defined == "Targeted") {
+        Entity ptgt = (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
+                          ? ab.target
+                          : ab.targeted_player;
+        if (ptgt != 0 && global_coordinator.entity_has_component<Player>(ptgt))
+            owner = (ptgt == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     }
 
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
@@ -490,15 +497,22 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
     }
 
+    // The chain's targeted CARD, for a ChangeType `targetedBy` filter alternative (Cloak and
+    // Dagger, Entwined: the DBPump-chosen creature). A player-entity target names the searched
+    // player above, not a card, so it is excluded here.
+    Entity chain_target =
+        (ab.target != 0 && !global_coordinator.entity_has_component<Player>(ab.target)) ? ab.target
+                                                                                        : 0;
+
     for (; rt.iter < rt.num_to_move; rt.iter++) {
         bool suspended = false;
         Entity chosen = 0;
         if (multi_zone) {
             chosen = search_multi_zone(orderer, owner, ab.origins, ab.change_type, ab.mandatory, ab.destination,
-                reveal, fctx, ab.source, suspended);
+                reveal, fctx, ab.source, suspended, chain_target);
         } else {
             chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination,
-                reveal, rt.cmc_bound, ab.change_type_cmc_op, fctx, ab.source, suspended);
+                reveal, rt.cmc_bound, ab.change_type_cmc_op, fctx, ab.source, suspended, chain_target);
         }
         // Suspended: the seat stays persisted at the chooser (the parked query
         // holds it); rt.prev_priority is restored by the completion epilogue.
@@ -513,12 +527,18 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (chosen != 0) {
             auto &chosen_cd = global_coordinator.GetComponent<CardData>(chosen);
             auto &chosen_zone = global_coordinator.GetComponent<Zone>(chosen);
+            // Pre-move origin, for a Duration$ UntilHostLeavesPlay exile's linked return.
+            Zone::ZoneValue chosen_origin = chosen_zone.location;
             Zone::ZoneValue landed = change_zone_move(orderer, chosen, ab.destination);
             if (landed == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(chosen);
                 if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(chosen);
             }
+            // Duration$ UntilHostLeavesPlay on a search-based exile (Cloak and Dagger,
+            // Entwined): register the linked return, like the targeted branch above.
+            if (ab.duration_until_host_leaves && landed == Zone::EXILE)
+                register_exile_until_host_leaves(ab.source, chosen, chosen_origin);
             if (ab.remember_changed) {
                 cur_game.remembered_entities.push_back(chosen);
             }

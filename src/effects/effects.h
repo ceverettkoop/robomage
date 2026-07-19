@@ -245,14 +245,16 @@ size_t evaluate_dynamic_amount(
 // context — the calling handler's ab.source); if the ask suspends, `suspended`
 // is set and 0 is returned mutating nothing — the caller must propagate
 // SUSPENDED. The candidate scan and menu rebuild identically on resume.
+// `chain_target` is the resolving chain's card target for a ChangeType `targetedBy` filter
+// alternative (Cloak and Dagger, Entwined); 0 = none.
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     Zone::ZoneValue zone, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination, bool reveal, int cmc_bound, const std::string &cmc_op,
-    FrameCtx &ctx, Entity decision_source, bool &suspended);
+    FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target = 0);
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination, bool reveal,
-    FrameCtx &ctx, Entity decision_source, bool &suspended);
+    FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target = 0);
 // The unless-cost payment kind for run_unless_loop: pay {N} generic mana (default), pay N life
 // (Ward—Pay life, CR 702.21), discard N card(s) from hand (Reality Smasher, CR 701.8), or pay N
 // energy ({E}, CR 122.1c — Static Prison's "unless you pay {E}"). Returns true if the prevented

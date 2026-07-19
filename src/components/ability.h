@@ -225,6 +225,13 @@ struct Ability{
     // resolution can read the script's stated intent (CR 608.2c) instead of relying on a blanket
     // N_A sentinel; the specific bools remain authoritative for their effects.
     std::string defined = "";
+    // The nearest PLAYER target up the resolving sub-ability chain, bound by bind_sub_target as
+    // chains push (CR 608.2c). A sub whose own inherited target is a CARD can still resolve
+    // DefinedPlayer$ Targeted to the player an outer ability targeted — Cloak and Dagger,
+    // Entwined: TrigRevealHand targets the opponent, DBPump retargets their creature, yet
+    // DBChangeZone's searched player is still that opponent (Forge walks ancestors the same
+    // way). 0 = no player target anywhere up the chain.
+    Entity targeted_player = 0;
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     // Chooser$ You — for a search/move ChangeZone over a player's hidden zone, the SELECTION is
     // made by the ability's controller, not the searched zone's owner. Thought-Knot Seer: the

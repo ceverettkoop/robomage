@@ -232,6 +232,10 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "Other")        return ctx.source == 0 || v.entity != ctx.source;
     if (q == "Self")         return ctx.source != 0 && v.entity == ctx.source;
     if (q == "nonChosenCard") return !cur_game.chosen_cards.count(v.entity);
+    // targetedBy — the object IS the card the resolving ability chain targeted (Cloak and
+    // Dagger, Entwined's exile filter alternative "Card.targetedBy" matches exactly the
+    // creature its DBPump sub chose). Fails closed when no chain target is in context.
+    if (q == "targetedBy")   return ctx.chain_target != 0 && v.entity == ctx.chain_target;
     if (q == "YouCtrl")      return !v.on_battlefield || v.controller == ctx.controller;
     if (q == "OppCtrl")      return !v.on_battlefield || v.controller != ctx.controller;
     // "ControlledBy TriggeredDefendingPlayer" (Forge): the object is controlled by the defending
@@ -320,6 +324,22 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
             kw += q[i];
         }
         return v.entity != 0 && permanent_has_keyword(v.entity, kw.c_str());
+    }
+    // inZone<Zone> — the object currently sits in the named zone. A multi-zone search filter
+    // uses it to restrict ONE OR-alternative to a single origin (Cloak and Dagger, Entwined's
+    // "Card.nonLand+inZoneHand": only the hand alternative takes any nonland card; the
+    // battlefield alternative is the targetedBy creature). Read from the live Zone component;
+    // a bare CardData view (entity 0) fails closed.
+    if (q.rfind("inZone", 0) == 0 && q.size() > 6) {
+        if (v.entity == 0 || !global_coordinator.entity_has_component<Zone>(v.entity)) return false;
+        Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(v.entity).location;
+        const std::string zn = q.substr(6);
+        return (zn == "Hand" && loc == Zone::HAND) ||
+               (zn == "Battlefield" && loc == Zone::BATTLEFIELD) ||
+               (zn == "Library" && loc == Zone::LIBRARY) ||
+               (zn == "Graveyard" && loc == Zone::GRAVEYARD) ||
+               (zn == "Exile" && loc == Zone::EXILE) ||
+               (zn == "Stack" && loc == Zone::STACK);
     }
     // "ManaCostN" — the object's mana value equals exactly N (Urza's Saga's chapter III tutor:
     // Artifact.ManaCost0 / Artifact.ManaCost1 = an artifact with mana cost {0} or {1}). Distinct
