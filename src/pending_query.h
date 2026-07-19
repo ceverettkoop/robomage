@@ -58,9 +58,10 @@ struct PendingQuery {
 
 // Which SBE prompt site computed a key (folded into the key itself).
 enum class SbeSite : uint32_t {
-    LEGEND_KEEP = 1,      // 704.5j keep choice (context: hash of the conflicting name)
-    ETB_CHOOSE_TYPE = 2,  // ETB choose-a-creature-type (context: the entering entity)
-    ETB_NAME_CARD = 3,    // ETB name-a-card (context: the entering entity)
+    LEGEND_KEEP = 1,       // 704.5j keep choice (context: hash of the conflicting name)
+    ETB_CHOOSE_TYPE = 2,   // ETB choose-a-creature-type (context: the entering entity)
+    ETB_NAME_CARD = 3,     // ETB name-a-card (context: the entering entity)
+    ETB_TAPPED_LIFE = 4,   // "enters tapped unless you pay N life" y/n (context: the entering entity)
 };
 
 uint64_t pq_key(SbeSite site, bool chooser_is_a, uint64_t context, size_t menu_size);

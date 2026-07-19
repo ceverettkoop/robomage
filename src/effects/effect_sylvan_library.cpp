@@ -33,8 +33,13 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     SylvanRt local_rt;
     SylvanRt &rt = ctx.can_suspend() ? ctx.rt<SylvanRt>() : local_rt;
     if (!rt.init) {
-        // Draw 2 cards
-        orderer->draw(ctrl, 2);
+        // Draw 2 cards — each offering the dredge draw-replacement through ctx
+        // (suspendable; rt.draws_done persists the batch progress). The dredge
+        // ask arms with the ambient pending-decision source, which is
+        // ab.source here (the handler-wide scope above), exactly what the
+        // blocking prompt inside Orderer::draw saw.
+        if (!draw_n_with_replacements(ctx, orderer, ctrl, rt.draws_done, 2))
+            return HandlerResult::SUSPENDED;
         game_log("%s draws 2 cards (Sylvan Library)\n", player_name(ctrl).c_str());
 
         // Get cards drawn this turn that are still in hand

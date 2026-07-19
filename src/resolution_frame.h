@@ -84,6 +84,7 @@ struct RearrangeRt {
 };
 struct SylvanRt {
     bool init = false;            // draw-2 + drawn-in-hand scan done
+    size_t draws_done = 0;        // draw-2 progress (a dredge question may suspend mid-batch)
     std::vector<Entity> drawn_in_hand;  // choose-from candidates; pinned
     std::vector<Entity> chosen;         // the (up to) 2 chosen cards; pinned
     size_t to_choose = 0;         // how many to choose (resolved once)
@@ -201,10 +202,22 @@ struct CopySpellRT {
     size_t mode_pos = 0;      // next work.charm_chosen position to retarget (phase 2)
     TargetSelectRT tsel;      // the in-flight pick (member field per the Batch 4 finding)
 };
+// ── Batch 14: resolution-time draws (effects::draw) ─────────────────────────
+// The drawing player, the resolved draw count (a dynamic NumCards$ is
+// evaluated ONCE — never re-evaluated after dredge mills mutate the counted
+// state), and completed draws, so a resume re-enters the parked dredge
+// question mid-batch. Holds no entities — the parked dredge menu's graveyard
+// cards are covered by the generic menu pins.
+struct DrawRt {
+    bool init = false;
+    Zone::Ownership owner = Zone::PLAYER_A;
+    size_t total = 0;
+    size_t done = 0;
+};
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
                                    SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
-                                   CopySpellRT>;
+                                   CopySpellRT, DrawRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating

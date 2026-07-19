@@ -530,6 +530,23 @@ struct Game {
             bool oh_any_ran = false;
         };
         PregameState pregame;
+        // Turn-based draw suspension state (pending_query tag TURN_DRAW): the
+        // draw step's draw batch with the dredge draw-replacement question
+        // (CR 702.52a) parked as a loop-top decision. advance_step's
+        // UPKEEP→DRAW case arms it and calls resume_pending_draws; while a
+        // dredge question is parked the step-change epilogue is deferred
+        // (pass flags stay true, mana pools un-emptied — exactly the state
+        // the blocking prompt read) and the loop-top TURN_DRAW dispatch runs
+        // it via finish_suspended_turn_draw once the batch completes. Value
+        // member so a snapshot covers the parked batch. active == true only
+        // while draws remain (or a dredge query is parked); cleared when the
+        // batch completes or the game ends mid-batch.
+        struct PendingDrawRT {
+            bool active = false;
+            Zone::Ownership player = Zone::UNKNOWN;
+            int remaining = 0;
+        };
+        PendingDrawRT pending_draw;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
@@ -624,6 +641,11 @@ struct Game {
         bool is_mandatory_choice_pending() const;
         void generate_players(const Deck &deck_a, const Deck &deck_b);
         bool advance_step(std::shared_ptr<class StackManager> stack_manager, std::shared_ptr<class Orderer> orderer);
+        // The step-change epilogue advance_step deferred when the turn-based
+        // draw suspended on a dredge question: seat priority with the active
+        // player, reset pass tracking, empty the mana pools. Called by the
+        // loop-top TURN_DRAW dispatch once resume_pending_draws completes.
+        void finish_suspended_turn_draw();
         void pass_priority();
         void take_action();  // resets last_player_passed since an action was taken
 
@@ -648,6 +670,13 @@ struct PendingDecisionScope {
 // pending_query.h). Later batches gate cooperative early-returns on it
 // (`if (decision_suspended()) return;` in suspendable callees).
 inline bool decision_suspended() { return cur_game.pending_query.active; }
+
+// Drive the turn-based draw batch (Game::pending_draw): consume a latched
+// TURN_DRAW answer if one is parked, then draw / dredge one card at a time
+// until the batch completes or the next dredge question arms a fresh query
+// (tag TURN_DRAW). Called synchronously by advance_step's UPKEEP→DRAW case
+// (promptless when no dredge applies) and by the loop-top TURN_DRAW dispatch.
+void resume_pending_draws(Game &game, std::shared_ptr<class Orderer> orderer);
 
 #endif // __cplusplus
 

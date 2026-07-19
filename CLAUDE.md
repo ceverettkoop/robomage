@@ -717,8 +717,9 @@ determinization spread, always in the human's perspective), and a PV scrubber th
 branch's principal variation on the analysis engine and renders each hypothetical future board
 (`MiniBoard`, reusing `CardWidget`). Evaluator is selectable (default `az:gen` — AZ checkpoint
 else PPO warm-start via `opponents._load_az_evaluator`; also `mcts:gen`, `uniform`).
-Constraints: only loop-safe decisions (priority / attackers / blockers / cleanup discard /
-sideboard) can be search roots — mid-resolution prompts grey out; opponent-decision analysis
+Constraints: since the snapshot-safe conversion (branch `snapshot_safe`) every decision kind is
+loop-safe and a legal search root — the greyed-out state remains only for the documented
+residual `safe=0` prompts (see docs/alphazero_status.md's safe-window section); opponent-decision analysis
 sits behind an explicit reveal toggle (it exposes hidden information), where a search opponent's
 own per-decision `SearchResult` is surfaced for free via the `SearchController.on_result` hook
 and other opponents are analyzed retrospectively on the analysis engine. The Qt-free session

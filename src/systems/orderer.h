@@ -47,6 +47,16 @@ public:
     // fire_draw_event=false suppresses the PLAYER_DREW_CARD trigger event (used for
     // opening-hand and mulligan draws, which are not "draws" that trigger abilities).
     void draw(Zone::Ownership player, size_t ct, bool fire_draw_event = true);
+    // The post-replacement half of a single draw: move the top library card to hand
+    // (or set the decked-out loss on an empty library), with the draw logs and the
+    // PLAYER_DREW_CARD event. Called directly by the suspendable draw loops
+    // (resume_pending_draws, effects::draw_n_with_replacements) once the dredge
+    // question is settled; draw_one routes through it after its blocking dispatch.
+    void perform_draw(Zone::Ownership player, bool fire_draw_event = true);
+    // Apply a chosen dredge (CR 702.52a): mill `mill_ct`, return `source` from the
+    // graveyard to hand, and log — the replaced draw's outcome. Shared by the
+    // blocking draw_one path and the suspendable draw loops.
+    void apply_dredge(Zone::Ownership player, Entity source, int mill_ct);
     // Move the top `ct` cards of a player's library to their graveyard. Returns the
     // milled entities in mill order (top first).
     std::vector<Entity> mill(Zone::Ownership player, size_t ct);

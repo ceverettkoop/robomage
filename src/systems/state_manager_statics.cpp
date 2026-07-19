@@ -613,6 +613,14 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     rev.entity = entity;
                     rev.affected_player = zone.controller;  // 616.1: the permanent's controller chooses
                     replacement::dispatch(rev);
+                    // The tapped-unless-life y/n parked a pending decision
+                    // (SBE_LATCHED, same contract as the choose-type site
+                    // below): suspend mid-apply BEFORE the Permanent is
+                    // created — nothing about this entity has been mutated,
+                    // so the resumed pass re-reaches it, re-dispatches, and
+                    // consumes the latch at the same ask.
+                    if (cur_game.pending_query.active && !cur_game.pending_query.answered)
+                        return;
                     perm.is_tapped = rev.enters_tapped;
                     etb_p1p1 = rev.etb_p1p1;
                     etb_counter_type = rev.etb_counter_type;

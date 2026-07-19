@@ -54,7 +54,8 @@ from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_PLAY_LAND, CAT_KEEP_LEGEND, CAT_CHOOSE_TYPE,
                     CAT_NAME_CARD, CAT_PAY_UNLESS, CAT_CHOOSE_CARD,
                     CAT_CHOOSE_X, CAT_PAYING_COSTS, CAT_CHOOSE_MODE,
-                    CAT_ACTIVATE_ABILITY, CAT_KEEP_HAND, CAT_MULLIGAN)
+                    CAT_ACTIVATE_ABILITY, CAT_KEEP_HAND, CAT_MULLIGAN,
+                    CAT_CHOOSE_REPLACEMENT)
 from card_costs import _VOCAB_NAMES
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
@@ -713,6 +714,120 @@ def test_resolution_single_roundtrip():
         eng.kill()
         return (f"peek/reveal root @ {root_idx} (nc=2) safe=1, round-trip exact, "
                 f"pinned Bolt revealed in world, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def _write_dredge_decks():
+    """Stacked decks for the dredge draw-replacement test (Batch 14). Life from
+    the Loam (Dredge 3, the one dredge card in vocab) is preset in A's
+    graveyard, so EVERY turn-based draw of A's offers the 2-option
+    draw-or-dredge menu (CR 702.52a) — now a TURN_DRAW loop-top pending
+    decision instead of a blocking prompt inside advance_step. All-land decks
+    keep the auto-0 control line trivial (draw normally every time; the game
+    ends by deck-out)."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    pa = os.path.join(d, "dredge_pq_a.dk")
+    with open(pa, "w") as f:
+        f.write("30 Mountain\n")
+    pb = os.path.join(d, "dredge_pq_b.dk")
+    with open(pb, "w") as f:
+        f.write("30 Forest\n")
+    return [pa, pb]
+
+
+_DREDGE_EXTRA = ["--deck-a", "temp/dredge_pq_a", "--deck-b", "temp/dredge_pq_b",
+                 "--no-shuffle", "--narrative",
+                 "--graveyard-a", "Life from the Loam"]
+
+
+def test_dredge_roundtrip():
+    """Batch 14 (turn-based draw suspension): the dredge draw-replacement
+    question at A's draw step — armed by resume_pending_draws inside
+    advance_step's UPKEEP→DRAW case — is a loop-top pending decision (tag
+    TURN_DRAW): it reports safe=1 and is a valid SNAPSHOT/RESTORE root. At the
+    first such root: SNAPSHOT re-emits exactly; a divergent line (Dredge
+    instead of the control's draw — milling 3 and returning Loam to hand) then
+    RESTORE returns byte-identically; a DETERMINIZE at the root succeeds, the
+    re-emitted query is unchanged, and playing 'Dredge' inside that world still
+    dredges Life from the Loam (the graveyard is public and the parked menu's
+    card pinned); the resumed real line stays byte-identical to a no-snapshot
+    control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_dredge_decks()
+    try:
+        control, outcome = record_line(seed, _auto0, extra=_DREDGE_EXTRA)
+        root_idx = _first_cat_index(control, CAT_CHOOSE_REPLACEMENT)
+        if root_idx is None:
+            raise ProtocolError("no CHOOSE_REPLACEMENT decision in the control line")
+        nc, pl, safe = control[root_idx]
+        if nc != 2:
+            raise ProtocolError(f"dredge decision has {nc} options, expected the "
+                                "2-option draw-or-dredge menu")
+        if not safe:
+            raise ProtocolError("dredge decision reports safe=0 — it should be a "
+                                "loop-top TURN_DRAW pending decision")
+
+        eng = Engine(seed, extra=_DREDGE_EXTRA)
+        cur = eng.read()
+        for idx in range(root_idx):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"dredge alignment at decision {idx}")
+            cur = eng.play(_auto0(idx, cur.nc))
+        _assert_same_query(cur, pl, nc, "dredge root alignment")
+        if not cur.safe:
+            eng.kill()
+            raise ProtocolError("dredge prompt reports safe=0 — it should be a "
+                                "loop-top TURN_DRAW pending decision now")
+        q = eng.snapshot(0)
+        _assert_same_query(q, pl, nc, "dredge post-SNAPSHOT re-emit")
+
+        # Divergent excursion: Dredge (choice 1 — mill 3, Loam to hand, no
+        # draw), then a scrambled continuation.
+        dq = q
+        for i in range(8):
+            dq = eng.play(1 if i == 0 else _diverge(i, dq.nc))
+            if dq.kind != "q":
+                break
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl, nc, "dredge post-RESTORE re-emit")
+
+        # Determinize smoke: the graveyard is public (never resampled) and the
+        # parked menu's Loam is pinned, so a 'Dredge' inside the sampled world
+        # must still resolve against it.
+        dq = eng.determinize(3)
+        _assert_same_query(dq, pl, nc, "dredge post-DETERMINIZE re-emit")
+        wq = eng.play(1)  # Dredge
+        if not wq.note_has(b"dredges Life from the Loam"):
+            eng.kill()
+            raise ProtocolError("determinized world did not dredge Life from the "
+                                "Loam — the parked dredge menu no longer resolves")
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl, nc, "dredge post-world RESTORE re-emit")
+
+        rel = eng.release()
+        _assert_same_query(rel, pl, nc, "dredge post-RELEASE re-emit")
+        cur = rel
+        for idx in range(root_idx, len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"dredge resumed alignment at decision {idx}")
+            cur = eng.play(_auto0(idx, cur.nc))
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed dredge line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        return (f"dredge root @ {root_idx} (nc=2) safe=1, round-trip exact, "
+                f"world dredge resolves, outcome={outcome['winner']!r}")
     finally:
         for p in deck_paths:
             try:
@@ -3174,6 +3289,88 @@ def test_sideboard_world_variation():
                 pass
 
 
+PROMPT_SITE_WHITELIST = {
+    # Every `get_input(` occurrence in src/**/*.cpp, classified (Batch 14 audit;
+    # see the snapshot-safe plan). A count change means a prompt was added or
+    # removed OUTSIDE the suspension framework: route new decisions through
+    # FrameCtx::ask / a pending-query family (pending_query.h) so they stay
+    # loop-top snapshot-safe, then update this table with the classification.
+    #
+    # (a) loop-top / loop-safe emitters:
+    #   game_driver.cpp: pending-query emitter, priority decision, pregame_ask,
+    #     sideboard IN, sideboard OUT (5)
+    #   action_processor.cpp: declare-attackers select, declare-blockers
+    #     select, cleanup discard (3 of its 6)
+    # (b) interactive-only (machine mode auto-resolves; never a search root):
+    #   action_processor.cpp: hybrid-pip interactive branch (1 of 6)
+    #   mana_system.cpp: interactive mana payment (1)
+    # (c) blocking fallbacks / blocking-shim residuals:
+    #   resolution_frame.cpp: FrameCtx::ask blocking path — serves every
+    #     non-suspendable resolve (opening-hand abilities, mana-ability
+    #     SubAbility riders, pregame SBE, effect_choose_card mini-cast) (1)
+    #   action_processor.cpp: BlockingTargetAsker + blocking
+    #     announce_charm_modes — reachable only via effect_choose_card's
+    #     cast-from-exile mini-cast (2 of 6)
+    #   state_manager.cpp / state_manager_statics.cpp /
+    #     state_manager_triggers.cpp: outside-main-loop fallbacks (legend keep,
+    #     ETB choose-type, ETB name-card, trigger ordering) — defensive,
+    #     believed unreachable since the Batch 13 pregame gate (1 + 2 + 1)
+    # (d) documented residual blocking prompts:
+    #   input_logger.cpp: get_input definition + request_optional_yesno, whose
+    #     sole remaining caller is the outside-main-loop BLOCKING FALLBACK of
+    #     the "enters tapped unless you pay N life" replacement (the in-loop
+    #     path rides SBE_LATCHED — see replacement_effects.cpp apply_one) (2)
+    #   systems/replacement_effects.cpp: choose_one 616.1 multi-replacement
+    #     (counted by choose_one_prompt_count; residual note at the site) +
+    #     dispatch_draw's blocking form (now reachable only from pregame
+    #     mulligan/opening draws, where the graveyard is empty — the prompt
+    #     cannot fire) (2)
+    "input_logger.cpp": 2,
+    "game_driver.cpp": 5,
+    "resolution_frame.cpp": 1,
+    "action_processor.cpp": 6,
+    "mana_system.cpp": 1,
+    os.path.join("systems", "replacement_effects.cpp"): 2,
+    os.path.join("systems", "state_manager.cpp"): 1,
+    os.path.join("systems", "state_manager_statics.cpp"): 2,
+    os.path.join("systems", "state_manager_triggers.cpp"): 1,
+}
+
+
+def test_prompt_site_guard():
+    """Batch 14 close-out guard: every `get_input(` call site in src/ is one of
+    the audited, classified prompt sites above. A future prompt added outside
+    the suspension framework (a new blocking mid-flow get_input) changes a
+    file's count and fails here with a pointer to the framework — keeping the
+    every-decision-snapshot-safe invariant from silently eroding."""
+    src = os.path.normpath(os.path.join(BIN_DIR, "..", "src"))
+    found = {}
+    for root, _dirs, files in os.walk(src):
+        for fn in files:
+            if not fn.endswith(".cpp"):
+                continue
+            path = os.path.join(root, fn)
+            rel = os.path.relpath(path, src)
+            with open(path, "r", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+            n = text.count("get_input(")
+            if n:
+                found[rel] = n
+    if found != PROMPT_SITE_WHITELIST:
+        added = {k: v for k, v in found.items()
+                 if PROMPT_SITE_WHITELIST.get(k) != v}
+        removed = {k: v for k, v in PROMPT_SITE_WHITELIST.items()
+                   if found.get(k) != v}
+        raise ProtocolError(
+            "get_input call-site audit mismatch (see PROMPT_SITE_WHITELIST in "
+            "test_snapshot.py and the snapshot-safe plan): a new prompt must go "
+            "through the suspension framework (FrameCtx::ask or a pending-query "
+            f"family), not a blocking get_input. found-vs-whitelist deltas: "
+            f"found={added!r} whitelist={removed!r}")
+    total = sum(found.values())
+    return f"{total} get_input occurrences across {len(found)} files, all classified"
+
+
 def test_perf():
     """Time SNAPSHOT+RESTORE pairs at one decision. Reported for CI logs; WARNs
     (does not fail) above a lenient debug-build threshold — the sub-ms bar is a
@@ -3213,6 +3410,7 @@ TESTS = [
     ("combat_target_roundtrip", test_combat_target_roundtrip),
     ("damage_assign_roundtrip", test_damage_assign_roundtrip),
     ("resolution_single_roundtrip", test_resolution_single_roundtrip),
+    ("dredge_roundtrip", test_dredge_roundtrip),
     ("pool_loop_roundtrip", test_pool_loop_roundtrip),
     ("pool_determinize_pin", test_pool_determinize_pin),
     ("trigger_order_roundtrip", test_trigger_order_roundtrip),
@@ -3244,6 +3442,7 @@ TESTS = [
     ("sideboard_search_roundtrip", test_sideboard_search_roundtrip),
     ("sideboard_sim_result", test_sideboard_sim_result),
     ("sideboard_world_variation", test_sideboard_world_variation),
+    ("prompt_site_guard", test_prompt_site_guard),
     ("perf", test_perf),
 ]
 

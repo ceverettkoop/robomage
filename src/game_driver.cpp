@@ -320,6 +320,18 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                         continue;
                     }
                     break;
+                case PendingQuery::TURN_DRAW:
+                    resume_pending_draws(cur_game, sys.orderer);
+                    // The resume may arm the NEXT draw's dredge question (a
+                    // multi-card batch): loop back so the pending branch emits
+                    // it before anything runs underneath the half-drawn batch.
+                    // When the batch completes, run the step-change epilogue
+                    // advance_step deferred at suspension, then fall through
+                    // to the normal flow — exactly the next loop iteration
+                    // after today's blocking advance_step returned true.
+                    if (cur_game.pending_query.active) continue;
+                    cur_game.finish_suspended_turn_draw();
+                    break;
                 case PendingQuery::SBE_LATCHED:
                     // No site resume call — leave the ANSWERED query latched and
                     // fall into the normal flow below. process_turn_based_actions
@@ -459,9 +471,12 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // pending_activation are active only while their query is parked or their
     // run_*_flow is on the stack, never at loop exit. A live pregame stage is
     // equally impossible here — the loop condition keeps running the gate (even
-    // under an ended game) until the stage machine reaches DONE.
+    // under an ended game) until the stage machine reaches DONE. Likewise a
+    // turn-draw batch: pending_draw is active only while its query is parked or
+    // resume_pending_draws is on the stack (an ended game mid-batch clears it).
     if (cur_game.resolution.active || cur_game.pending_query.active ||
         cur_game.pending_cast.active || cur_game.pending_activation.active ||
+        cur_game.pending_draw.active ||
         cur_game.pregame.stage != Game::PregameState::DONE)
         fatal_error("game ended with a suspended resolution/pending query still parked");
     g_in_main_loop = false;

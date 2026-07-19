@@ -33,6 +33,17 @@ EffectHandler handler_for(EffectKind kind);
 // Per-effect handlers (defined one per src/effects/effect_*.cpp).
 HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// Draw `total` cards for `owner` one at a time, offering the dredge
+// draw-replacement (CR 702.52a) before each draw through `ctx` (suspendable).
+// `done` is the caller's persisted progress counter (a field of its frame rt),
+// so a resume re-enters the parked dredge question mid-batch. Returns false
+// when a dredge ask suspended (the caller returns SUSPENDED mutating nothing);
+// true when every remaining draw completed (or the game ended mid-batch,
+// mirroring Orderer::draw's per-draw ended bail). Blocking contexts prompt
+// inline, byte-identical to Orderer::draw. Shared by effects::draw and
+// sylvan_library's draw-2. Defined in effect_draw.cpp.
+bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
+                              Zone::Ownership owner, size_t &done, size_t total);
 HandlerResult gain_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult lose_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult mill(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);

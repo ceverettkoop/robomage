@@ -13,6 +13,7 @@
 #include "../ecs/entity.h"
 #include "../ecs/events.h"
 #include "../effects/effects.h"
+#include "../error.h"
 #include "../game_queries.h"
 #include "../mana_system.h"
 #include "../saga.h"
@@ -206,9 +207,23 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
                     // first turn first player skips draw!
                     if (turn == 0 && player_a_turn == true) break;
-                    // PLAYER_DREW_CARD is fired per-card inside Orderer::draw_one
+                    // PLAYER_DREW_CARD is fired per-card inside the draw batch
                     // (with the first-card-in-draw-step flag), so no emit here.
-                    orderer->draw(active_player, 1);
+                    // The turn-based draw runs as a resumable batch (pending_query
+                    // tag TURN_DRAW): a dredge draw-replacement question (CR
+                    // 702.52a) parks as a loop-top decision instead of blocking.
+                    pending_draw.active = true;
+                    pending_draw.player = active_player;
+                    pending_draw.remaining = 1;
+                    resume_pending_draws(*this, orderer);
+                    // A dredge question parked the draw: return with the pass
+                    // flags left true and the post-switch epilogue below DEFERRED
+                    // — the parked query must be emitted against exactly the
+                    // state the blocking prompt read (priority at the drawer,
+                    // pass flags set, mana pools not yet emptied). The loop-top
+                    // TURN_DRAW dispatch runs the epilogue via
+                    // finish_suspended_turn_draw once the batch completes.
+                    if (pending_draw.active) return true;
                     break;
                 case DRAW:
                     cur_step = FIRST_MAIN;
@@ -479,4 +494,76 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 
 bool Game::is_mandatory_choice_pending() const {
     return pending_choice != NONE;
+}
+
+void Game::finish_suspended_turn_draw() {
+    // Exactly the post-switch epilogue for a priority-bearing step (cur_step
+    // is DRAW here, never UNTAP/CLEANUP): active player gets priority, pass
+    // tracking resets, mana pools empty across the step change.
+    player_a_has_priority = player_a_turn;
+    a_has_passed = false;
+    b_has_passed = false;
+    empty_mana_pool(Zone::PLAYER_A);
+    empty_mana_pool(Zone::PLAYER_B);
+}
+
+void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
+    Game::PendingDrawRT &pd = game.pending_draw;
+    while (pd.active) {
+        // A latched TURN_DRAW answer from the previous arm: apply it first —
+        // draw normally (option 0) or one dredge — restoring the pre-arm
+        // priority seat exactly as the blocking prompt's post-get_input
+        // restore did.
+        if (game.pending_query.active) {
+            PendingQuery &pq = game.pending_query;
+            if (pq.tag != PendingQuery::TURN_DRAW || !pq.answered)
+                fatal_error("resume_pending_draws: foreign or unanswered pending query parked");
+            std::vector<replacement::DrawReplacementOption> opts;
+            std::vector<LegalAction> menu =
+                replacement::collect_draw_replacements(pd.player, &opts);
+            // Purity tripwire: nothing runs between suspend and resume, so the
+            // re-derived menu must match the parked one.
+            if (menu.size() != pq.menu.size())
+                fatal_error("resume_pending_draws: menu size changed between arm and resume");
+            int choice = pq.answer;
+            game.player_a_has_priority = pq.prev_priority;
+            pq = PendingQuery{};
+            if (choice == 0)
+                orderer->perform_draw(pd.player);
+            else
+                orderer->apply_dredge(pd.player, opts[static_cast<size_t>(choice) - 1].source,
+                                      opts[static_cast<size_t>(choice) - 1].mill);
+            pd.remaining--;
+            continue;
+        }
+        // Per-draw ended bail, mirroring Orderer::draw's loop guard (a decked
+        // draw ends the game mid-batch).
+        if (pd.remaining <= 0 || game.ended) {
+            pd = Game::PendingDrawRT{};
+            return;
+        }
+        std::vector<replacement::DrawReplacementOption> opts;
+        std::vector<LegalAction> menu = replacement::collect_draw_replacements(pd.player, &opts);
+        if (menu.empty()) {
+            // No dredge applies — the promptless common case, exactly today's
+            // draw_one with an empty replacement dispatch.
+            orderer->perform_draw(pd.player);
+            pd.remaining--;
+            continue;
+        }
+        // Park the dredge question for the loop top (tag TURN_DRAW): persist
+        // priority at the drawing player (the blocking prompt's repoint) and
+        // arm with the ambient pending-decision source (the blocking prompt
+        // ran scope-less — source 0 at a turn-based draw).
+        PendingQuery &pq = game.pending_query;
+        pq = PendingQuery{};
+        pq.tag = PendingQuery::TURN_DRAW;
+        pq.active = true;
+        pq.menu = std::move(menu);
+        pq.chooser_is_a = (pd.player == Zone::PLAYER_A);
+        pq.decision_source = game.pending_decision_source;
+        pq.prev_priority = game.player_a_has_priority;
+        game.player_a_has_priority = pq.chooser_is_a;
+        return;
+    }
 }

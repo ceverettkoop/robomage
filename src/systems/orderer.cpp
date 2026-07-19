@@ -451,17 +451,24 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
         rev.affected_player = player;
         replacement::dispatch(rev);
         if (rev.draw_replaced) {
-            // Mill N, then return the dredge card from graveyard to hand. The dredge card is
-            // in the graveyard (not the library), so milling never touches it.
-            std::string dname = global_coordinator.GetComponent<CardData>(rev.dredge_source).name;
-            mill(player, static_cast<size_t>(rev.dredge_mill));
-            add_to_zone(false, rev.dredge_source, Zone::HAND);
-            game_log("%s dredges %s (milled %d)\n", player_name(player).c_str(), dname.c_str(),
-                     rev.dredge_mill);
+            apply_dredge(player, rev.dredge_source, rev.dredge_mill);
             return;
         }
     }
+    perform_draw(player, fire_draw_event);
+}
 
+void Orderer::apply_dredge(Zone::Ownership player, Entity source, int mill_ct) {
+    // Mill N, then return the dredge card from graveyard to hand. The dredge card is
+    // in the graveyard (not the library), so milling never touches it.
+    std::string dname = global_coordinator.GetComponent<CardData>(source).name;
+    mill(player, static_cast<size_t>(mill_ct));
+    add_to_zone(false, source, Zone::HAND);
+    game_log("%s dredges %s (milled %d)\n", player_name(player).c_str(), dname.c_str(),
+             mill_ct);
+}
+
+void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     // Find the single top card of the player's library.
     Entity top = 0;
     size_t best = 0;

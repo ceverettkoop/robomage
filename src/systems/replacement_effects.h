@@ -1,8 +1,11 @@
 #ifndef REPLACEMENT_EFFECTS_H
 #define REPLACEMENT_EFFECTS_H
 
+#include <cstddef>
 #include <string>
+#include <vector>
 
+#include "../classes/action.h"
 #include "../classes/colors.h"
 #include "../components/zone.h"
 #include "../ecs/entity.h"
@@ -67,6 +70,30 @@ namespace replacement {
 // outcome fields in place. Prompts the affected player to choose one at a time when
 // more than one applies (616.1).
 void dispatch(ReplacementEvent &ev);
+
+// One dredge candidate behind a draw-replacement menu entry (menu index i+1).
+struct DrawReplacementOption {
+    Entity source = 0;  // the dredge card in the graveyard
+    int mill = 0;       // its dredge number (cards to mill)
+};
+
+// Build the dredge draw-replacement menu for a draw by `player` (CR 702.52a):
+// menu[0] is always "Draw a card"; menu[i > 0] corresponds to (*opts)[i - 1].
+// Returns an EMPTY menu when no dredge applies — the promptless common case.
+// Pure ECS reads (graveyard scan + library count), so a suspended prompt
+// re-derives the identical menu on resume. Shared by the blocking
+// dispatch(DRAW_CARD) path, the turn-based draw batch (resume_pending_draws)
+// and the suspendable resolution-time draw loop (effects
+// draw_n_with_replacements).
+std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
+                                                   std::vector<DrawReplacementOption> *opts);
+
+// Diagnostics: how many 616.1 choose-one-of-several-replacements prompts this
+// process has emitted. The choose_one prompt is the one remaining blocking
+// mid-flow prompt family (see the residual note at choose_one in
+// replacement_effects.cpp); this counter quantifies its reachability in any
+// measurement run.
+size_t choose_one_prompt_count();
 }
 
 #endif /* REPLACEMENT_EFFECTS_H */
