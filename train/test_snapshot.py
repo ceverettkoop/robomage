@@ -1993,6 +1993,101 @@ def test_storm_copy_target_roundtrip():
                 pass
 
 
+def test_delve_pick_roundtrip():
+    """Batch 11 (cast deferred payment): the delve count menu and the per-card
+    delve exile picks (CR 702.66, run_cast_flow's DELVE_COUNT / DELVE_PICK
+    steps) are loop-top pending decisions (tag CAST). Murktide Regent
+    ({5}{U}{U}, Delve) from A's opening hand over a 4-Island battlefield preset
+    and a 5-card preset graveyard: the count range is [3..5] (4 Islands cover
+    {U}{U}+2 generic, so at least 3 generic pips must be delved), a 3-option
+    CHOOSE_X menu carrying the spell as source; the control picks 3, reaching
+    three CHOOSE_CARD pick menus of shrinking size (5, then 4, then 3
+    candidates — all above the take-without-prompt threshold). Roots tested:
+    the count menu (divergence NOT asserted on the next payload — the chosen
+    count lives only in the un-serialized pending cast, and any count reaches
+    the same first pick menu) and the first pick (a divergent card exiled must
+    change the next query — different graveyard/exile contents). Both: safe=1,
+    SNAPSHOT re-emits exactly, RESTORE byte-identical, resumed line == control
+    with the same outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("delve_a", "1 Murktide Regent\n29 Island\n"),
+        ("delve_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/delve_a", "--deck-b", "temp/delve_b",
+             "--no-shuffle",
+             "--battlefield-a", "Island,Island,Island,Island",
+             "--graveyard-a",
+             "Lightning Bolt,Ponder,Brainstorm,Unholy Heat,Mishras Bauble"]
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, extra)
+        count_idx = _find_sbe_root(control, CAT_CHOOSE_X, 3, "delve-count")
+        pick_idx = count_idx + 1
+        nc, pl, safe = control[pick_idx]
+        cats = _query_cats(pl)
+        if not bool((cats[:nc] == CAT_CHOOSE_CARD).all()) or nc != 5:
+            raise ProtocolError("decision after the delve count is not the "
+                                "5-candidate CHOOSE_CARD pick menu")
+        if not safe:
+            raise ProtocolError("delve pick reports safe=0 — it should be a "
+                                "loop-top pending decision now")
+        nxt = control[pick_idx + 1]
+        if not bool((_query_cats(nxt[1])[:nxt[0]] == CAT_CHOOSE_CARD).all()) \
+                or nxt[0] != 4:
+            raise ProtocolError("second delve pick menu is not the 4-candidate "
+                                "CHOOSE_CARD menu — the pick loop broke")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, count_idx,
+                           "delve-count", expect_diverge=False)
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, pick_idx,
+                           "delve-pick", expect_diverge=True)
+        return (f"delve CHOOSE_X count root @ {count_idx} (nc=3) and first "
+                f"CHOOSE_CARD pick root @ {pick_idx} (nc=5, then 4) both "
+                f"safe=1, other pick diverges, round-trips exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_alt_pitch_roundtrip():
+    """Batch 11 (cast deferred payment): the alternate-cost pitch pick — Force
+    of Will exiling a blue card from hand as it is cast (run_cast_flow's
+    ALT_PITCH step) — is a loop-top pending decision (tag CAST). A casts a
+    preset-affordable Grizzly Bears; B (landless, so only the alt-cost cast is
+    offered) responds with Force of Will, whose pitch menu offers B's two other
+    blue nonland cards (Brainstorm, Ponder — Islands are not blue cards) as a
+    2-option PAYING_COSTS menu. At the root: safe=1; SNAPSHOT re-emits exactly;
+    the divergent pitch (Ponder instead of the control's Brainstorm) must
+    change the very next query (different card exiled from hand); RESTORE
+    returns byte-identically; the resumed real line stays byte-identical to
+    the control with the same outcome. (This branch pays before targets are
+    chosen — the pre-existing alt-cost order, preserved by the conversion.)"""
+    seed = 5
+    deck_paths = _write_decks([
+        ("alt_pitch_a", "1 Grizzly Bears\n29 Forest\n"),
+        ("alt_pitch_b", "1 Force of Will\n1 Brainstorm\n1 Ponder\n27 Island\n"),
+    ])
+    extra = ["--deck-a", "temp/alt_pitch_a", "--deck-b", "temp/alt_pitch_b",
+             "--no-shuffle",
+             "--battlefield-a", "Forest,Forest"]
+    try:
+        control, choices, outcome = _record_cast_any_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_PAYING_COSTS, 2, "alt-pitch")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "alt-pitch", expect_diverge=True)
+        return (f"alt-cost pitch root @ {root_idx} (nc=2) safe=1, other pitch "
+                f"diverges, round-trip exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -2795,6 +2890,8 @@ TESTS = [
     ("cast_target_roundtrip", test_cast_target_roundtrip),
     ("charm_cast_roundtrip", test_charm_cast_roundtrip),
     ("storm_copy_target_roundtrip", test_storm_copy_target_roundtrip),
+    ("delve_pick_roundtrip", test_delve_pick_roundtrip),
+    ("alt_pitch_roundtrip", test_alt_pitch_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

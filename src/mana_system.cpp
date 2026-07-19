@@ -42,9 +42,6 @@ static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
 static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Entity paid_for);
-static bool is_delve_eligible(Entity e, Zone::Ownership controller);
-static void delve_exile_one(Entity e, Zone::Ownership controller,
-                            std::shared_ptr<Orderer> orderer, ManaValue &remaining);
 static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
 static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
@@ -588,9 +585,9 @@ static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost) {
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from
 // your graveyard rather than pay that mana"); riders that care about the exiled cards'
 // types (Murktide Regent's etbCounter) filter cur_game.delve_exiled themselves. Single
-// source for "what can Delve eat", consumed by both the automatic payer and the
-// interactive prompt.
-static bool is_delve_eligible(Entity e, Zone::Ownership controller) {
+// source for "what can Delve eat", consumed by both the automatic payer and the cast
+// flow's DELVE steps (run_cast_flow, action_processor.cpp). Exported via mana_system.h.
+bool is_delve_eligible(Entity e, Zone::Ownership controller) {
     if (!global_coordinator.entity_has_component<Zone>(e)) return false;
     auto &ez = global_coordinator.GetComponent<Zone>(e);
     if (ez.location != Zone::GRAVEYARD || ez.owner != controller) return false;
@@ -599,9 +596,9 @@ static bool is_delve_eligible(Entity e, Zone::Ownership controller) {
 
 // Pay one generic pip via Delve: exile `e`, record it for the etbCounter count, and
 // drop one GENERIC from `remaining`. Single source for the delve-exile action used by
-// both payment paths.
-static void delve_exile_one(Entity e, Zone::Ownership controller,
-                            std::shared_ptr<Orderer> orderer, ManaValue &remaining) {
+// both payment paths. Exported via mana_system.h.
+void delve_exile_one(Entity e, Zone::Ownership controller,
+                     std::shared_ptr<Orderer> orderer, ManaValue &remaining) {
     auto &ecd = global_coordinator.GetComponent<CardData>(e);
     orderer->add_to_zone(false, e, Zone::EXILE);
     cur_game.delve_exiled.push_back(e);
@@ -1357,78 +1354,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
     return true;
 }
 
-void prompt_delve_exiles(Zone::Ownership controller, ManaValue &cost, Entity paid_for,
-                         std::shared_ptr<Orderer> orderer, bool has_improvise) {
-    size_t eligible_ct = 0;
-    for (auto e : orderer->mEntities)
-        if (is_delve_eligible(e, controller)) eligible_ct++;
-    size_t max_exiles = std::min(eligible_ct, cost.count(GENERIC));
-    if (max_exiles == 0) return;
-
-    // Constrain the offered counts to those the player can actually finish paying: each
-    // exile removes one GENERIC pip, so payability is monotone in the count and the legal
-    // counts form the contiguous range [min_needed .. max_exiles]. min_needed is found with
-    // the shared simulate-mode payer (can_pay_mana, has_delve=false), so the offered menu
-    // and the eventual payment can never disagree — cast legality (which allowed the
-    // maximum delve) guarantees the range is non-empty.
-    ManaValue reduced = cost;
-    size_t min_needed = 0;
-    while (min_needed < max_exiles &&
-           !can_pay_mana(controller, reduced, paid_for, orderer, /*has_delve=*/false,
-                         has_improvise)) {
-        reduced.erase(reduced.find(GENERIC));
-        min_needed++;
-    }
-
-    // Seat both decisions on the casting player.
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
-
-    // Stage 1 — how many cards to exile. Skipped when only one count is legal. The actions
-    // carry the delve spell as their source entity, so the machine protocol emits its card
-    // id (a plain X-cost ladder emits the null sentinel — this is how observers tell the
-    // two CHOOSE_X menus apart).
-    size_t exile_ct = min_needed;
-    if (max_exiles > min_needed) {
-        std::vector<LegalAction> count_menu;
-        for (size_t n = min_needed; n <= max_exiles; n++) {
-            LegalAction la(PASS_PRIORITY, paid_for,
-                           "Exile " + std::to_string(n) + (n == 1 ? " card" : " cards") +
-                               " from graveyard (Delve)");
-            la.category = ActionCategory::CHOOSE_X;
-            la.option_ordinal = static_cast<int>(n);  // the delve exile count
-            la.card_is_public = true;  // the spell being cast is public
-            count_menu.push_back(la);
-        }
-        game_log("Choose how many cards to exile via Delve (%zu-%zu):\n", min_needed,
-                 max_exiles);
-        int choice = InputLogger::instance().get_input(count_menu);
-        exile_ct = min_needed + static_cast<size_t>(choice);
-    }
-
-    // Stage 2 — which cards, one pick at a time; each exile drops that card from the next
-    // menu. When the remaining candidates are all going to be exiled anyway (candidates ==
-    // picks left, including the single-candidate case) there is no real choice, so they are
-    // taken without a prompt.
-    for (size_t i = 0; i < exile_ct; i++) {
-        std::vector<LegalAction> picks;
-        for (auto e : orderer->mEntities) {
-            if (!is_delve_eligible(e, controller)) continue;
-            auto &ecd = global_coordinator.GetComponent<CardData>(e);
-            LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
-            la.category = ActionCategory::CHOOSE_CARD;
-            la.card_is_public = true;  // graveyards are public zones
-            picks.push_back(la);
-        }
-        if (picks.empty()) break;  // defensive: eligibility was counted above
-        int pick = 0;
-        if (picks.size() > exile_ct - i) {
-            game_log("Choose a card to exile via Delve (%zu of %zu):\n", i + 1, exile_ct);
-            pick = InputLogger::instance().get_input(picks);
-        }
-        delve_exile_one(picks[static_cast<size_t>(pick)].source_entity, controller, orderer,
-                        cost);
-    }
-
-    cur_game.player_a_has_priority = prev_priority;
-}
+// (The old blocking prompt_delve_exiles lived here. Batch 11 moved the interactive
+// delve count/pick prompts into run_cast_flow's DELVE_COUNT/DELVE_PICK steps
+// (action_processor.cpp), where they suspend as loop-top pending decisions; the
+// shared primitives is_delve_eligible/delve_exile_one above are what it consumes.)

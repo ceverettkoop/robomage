@@ -274,18 +274,19 @@ struct Game {
         // Batch 10 the announce stages (charm modes + their targets, the
         // primary/sub/aura targets — via the shared TargetSelectRT machine and
         // the CAST-tag asker) and the replicate copy retargeting (CopySpellRT);
-        // the deferred-payment steps still pass through blocking (Batch 11).
+        // Batch 11 the deferred-payment picks (delve count/picks, flashback
+        // sacrifice, escape exile-from-graveyard, alt-cost pitch/return); only
+        // the interactive mana payment and the interactive hybrid pips remain
+        // blocking (machine mode auto-resolves both with zero decisions).
         // active == true from the CAST_SPELL action until the spell reaches
         // the stack (COPY_TARGETS end) or the payment cancel rewinds.
         struct PendingCast {
             // Where the flow resumes. Steps run in today's exact statement
-            // order; unconverted steps pass through synchronously. Values not
-            // yet driven by run_cast_flow are reserved for Batch 11
-            // (delve/deferred payment, alt-cost picks).
+            // order; unconverted steps pass through synchronously.
             enum Step {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
-                ALT_PITCH,        // (Batch 11) alt-cost exile-from-hand picks
-                ALT_RETURN,       // (Batch 11) alt-cost return-to-hand picks
+                ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
+                ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
                 KICKER,           // per-kicker optional-additional-cost y/n
                 REPLICATE,        // repeated replicate-cost y/n loop
                 CHOOSE_X,         // X-cost ladder
@@ -300,12 +301,12 @@ struct Game {
                 SUB_TARGET,       // targeting chained sub-abilities' targets (ends with AddComponent)
                 AURA_TARGET,      // aura enchant target (pc.enchant_ab)
                 ANNOUNCE,         // primary-template setup; dispatches into the announce steps
-                DELVE_COUNT,      // (Batch 11) delve exile count
-                DELVE_PICK,       // (Batch 11) delve exile picks
-                MANA_PAY,         // deferred payment + non-mana pieces (blocking pass-through)
-                DEF_SAC,          // (Batch 11) deferred flashback sacrifice
-                DEF_EXILE_TYPES,  // (Batch 11) escape exile-by-types picks
-                DEF_EXILE_COUNT,  // (Batch 11) escape exile-by-count picks
+                DELVE_COUNT,      // delve exile count menu (CR 702.66)
+                DELVE_PICK,       // delve exile picks, one card at a time
+                MANA_PAY,         // deferred mana payment + life (interactive payer stays blocking)
+                DEF_SAC,          // deferred flashback sacrifice (Cabal Therapy)
+                DEF_EXILE_TYPES,  // escape exile-by-types picks (CR 702.139)
+                DEF_EXILE_COUNT,  // escape exile-by-count picks (Uro)
                 COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
                 FINISH            // spell to stack + cast events; seeds COPY_TARGETS
             };
@@ -387,6 +388,25 @@ struct Game {
             // Replicate copies' retargeting machine (COPY_TARGETS; see
             // CopySpellRT / effect_copy_spell.cpp).
             CopySpellRT copy_rt;
+            // ── Deferred-payment progress (Batch 11) ──
+            // Alt-cost pick loops (Force of Will's pitch, Daze's return):
+            // completed picks. NOTE this branch pays BEFORE targets are chosen
+            // — the pre-existing alt-cost order, kept for byte compatibility.
+            int alt_pitch_done = 0;
+            int alt_return_done = 0;
+            // Delve (CR 702.66): the chosen exile count, completed picks, and
+            // the pre-delve priority seat (the blocking prompt seated both
+            // delve stages on the caster and restored the seat afterwards;
+            // the arm-time repoint persists its prev value here instead).
+            size_t delve_exile_ct = 0;
+            size_t delve_picks_done = 0;
+            bool delve_prev_priority_a = true;
+            // Escape ExileFromGrave progress (CR 702.139): distinct card types
+            // exiled so far (min-types form) / cards exiled so far (Uro's
+            // literal-count form). Candidate lists are re-derived from the
+            // live graveyard at each arm, exactly like the blocking loops.
+            std::set<std::string> escape_exiled_types;
+            int escape_exiled_count = 0;
         };
         PendingCast pending_cast;
 
