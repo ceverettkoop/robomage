@@ -660,8 +660,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                         if (!global_coordinator.entity_has_component<Zone>(ce)) continue;
                         auto &cz = global_coordinator.GetComponent<Zone>(ce);
                         if (cz.location != Zone::BATTLEFIELD) continue;
-                        if (!global_coordinator.entity_has_component<CardData>(ce)) continue;
-                        int cmc = card_mana_value(global_coordinator.GetComponent<CardData>(ce));
+                        // A token creature carries no CardData; a non-copy token has no mana
+                        // cost and therefore mana value 0 (CR 111.7), which is always <= the
+                        // threshold, so it is a valid conditional-destroy target. Mirror
+                        // effect_destroy.cpp, which likewise treats a CardData-less target as
+                        // mana value 0 and destroys it — without this, boards whose only small
+                        // creatures are tokens (e.g. Monk/Orc Army) hid the legal Fatal Push.
+                        int cmc = global_coordinator.entity_has_component<CardData>(ce)
+                                      ? card_mana_value(global_coordinator.GetComponent<CardData>(ce))
+                                      : 0;
                         if (cmc <= threshold) { any_valid = true; break; }
                     }
                     if (!any_valid) tgt_ok = false;
