@@ -691,7 +691,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Comma-separated deck roster to rotate over (default: every deck in "
                  "decks/league/, referenced 'league/<stem>'). Roster ORDER is the "
                  "rotation order. In the TUI, pick multiple with space."),
-        Arg("--rotations", "int", default=1, help="Full passes over the roster"),
+        Arg("--rotations", "int", default=1,
+            help="Full passes over the roster (0 = run indefinitely until "
+                 "interrupted; still resumable via --resume)"),
         Arg("--cycles-per-deck", "int", default=1,
             help="az cycles to run per deck per rotation"),
         Arg("--games", "int", default=50, help="Self-play games per cycle"),
