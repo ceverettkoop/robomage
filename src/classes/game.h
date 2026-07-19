@@ -269,16 +269,19 @@ struct Game {
         // action_processor.cpp). The branch's former locals — the accumulating
         // cost, per-kicker flags, deferred payment pieces, the half-built
         // primary Ability — live here BY VALUE so a cur_game copy covers the
-        // whole in-flight cast. Batch 9 converts the LINEAR prompts (kicker /
+        // whole in-flight cast. Batch 9 converted the LINEAR prompts (kicker /
         // replicate / X ladder / phyrexian pips / life-X / spell-sac / gift);
-        // the announce and deferred-payment steps still pass through blocking
-        // (Batches 10-11). active == true from the CAST_SPELL action until the
-        // spell reaches the stack (FINISH) or the payment cancel rewinds.
+        // Batch 10 the announce stages (charm modes + their targets, the
+        // primary/sub/aura targets — via the shared TargetSelectRT machine and
+        // the CAST-tag asker) and the replicate copy retargeting (CopySpellRT);
+        // the deferred-payment steps still pass through blocking (Batch 11).
+        // active == true from the CAST_SPELL action until the spell reaches
+        // the stack (COPY_TARGETS end) or the payment cancel rewinds.
         struct PendingCast {
             // Where the flow resumes. Steps run in today's exact statement
             // order; unconverted steps pass through synchronously. Values not
-            // yet driven by run_cast_flow are reserved for Batches 10-11
-            // (announce targeting, delve/deferred payment, replicate copies).
+            // yet driven by run_cast_flow are reserved for Batch 11
+            // (delve/deferred payment, alt-cost picks).
             enum Step {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
                 ALT_PITCH,        // (Batch 11) alt-cost exile-from-hand picks
@@ -291,20 +294,20 @@ struct Game {
                 LIFE_X,           // variable life X (Toxic Deluge's PayLife<X>)
                 SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
                 GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
-                CHARM_MODE,       // (Batch 10) modal mode announcement
-                CHARM_TARGET,     // (Batch 10) per-mode target announcement
-                PRIMARY_TARGET,   // (Batch 10) primary spell target
-                SUB_TARGET,       // (Batch 10) targeting sub-ability targets
-                AURA_TARGET,      // (Batch 10) aura enchant target
-                ANNOUNCE,         // modes + targets + aura (blocking pass-through this batch)
+                CHARM_MODE,       // modal mode announcement (one pick per entry, CR 601.2b)
+                CHARM_TARGET,     // the just-picked mode's targets (before the next mode pick)
+                PRIMARY_TARGET,   // primary spell target
+                SUB_TARGET,       // targeting chained sub-abilities' targets (ends with AddComponent)
+                AURA_TARGET,      // aura enchant target (pc.enchant_ab)
+                ANNOUNCE,         // primary-template setup; dispatches into the announce steps
                 DELVE_COUNT,      // (Batch 11) delve exile count
                 DELVE_PICK,       // (Batch 11) delve exile picks
                 MANA_PAY,         // deferred payment + non-mana pieces (blocking pass-through)
                 DEF_SAC,          // (Batch 11) deferred flashback sacrifice
                 DEF_EXILE_TYPES,  // (Batch 11) escape exile-by-types picks
                 DEF_EXILE_COUNT,  // (Batch 11) escape exile-by-count picks
-                COPY_TARGETS,     // (Batch 10) replicate/storm copy retargeting
-                FINISH            // spell to stack + cast events + copies + take_action
+                COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
+                FINISH            // spell to stack + cast events; seeds COPY_TARGETS
             };
             bool active = false;
             Step step = COST;
@@ -358,11 +361,32 @@ struct Game {
             int deferred_exile_min_types = 0;
             int deferred_exile_count = 0;
             // The half-built primary spell ability. The ENTITY's Ability
-            // component is added at the same point as today (right after
-            // announce_spell_targets), so component state at every prompt
-            // matches the blocking flow's exactly.
+            // component is added at the same point as the blocking flow did
+            // (at the end of SUB_TARGET, once every announce target is
+            // chosen), so component state at every prompt matches the blocking
+            // flow's exactly: absent at the announce prompts, present from the
+            // payment steps on.
             Ability ability;
             bool have_ability = false;
+            // ── Announce-stage progress (Batch 10) ──
+            // Charm announcement: completed mode iterations (a mode counts
+            // once its targets are chosen). The picked modes themselves
+            // persist in ability.charm_chosen, which reconstructs the taken[]
+            // menu filter on resume.
+            int charm_picks_done = 0;
+            // Which chained sub-ability's target selection is in flight.
+            size_t sub_idx = 0;
+            // The shared in-flight target pick (charm-mode / primary / sub /
+            // aura — one at a time, reset between). Member field per the
+            // Batch 4 finding (never its own EffectRuntime alternative).
+            TargetSelectRT tsel;
+            // AURA cast (CR 303.4): the transient targeting ability built from
+            // the Enchant filter — a former local of the blocking flow,
+            // persisted so a suspended enchant-target pick resumes it.
+            Ability enchant_ab;
+            // Replicate copies' retargeting machine (COPY_TARGETS; see
+            // CopySpellRT / effect_copy_spell.cpp).
+            CopySpellRT copy_rt;
         };
         PendingCast pending_cast;
 

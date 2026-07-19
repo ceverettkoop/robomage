@@ -33,7 +33,7 @@ struct Spell {
     bool gift_promised = false;
     // A COPY of a spell on the stack (CR 707.10): a copy is not a card. When it resolves (or is
     // countered) it ceases to exist rather than moving to a graveyard/library — the stack
-    // manager destroys it instead of sending it to a zone. Set by copy_spell_on_stack.
+    // manager destroys it instead of sending it to a zone. Set by run_copy_spell.
     bool is_copy = false;
 };
 

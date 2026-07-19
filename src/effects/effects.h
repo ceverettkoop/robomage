@@ -123,7 +123,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
 // K:Storm (CR 702.40): the synthesized self-cast triggered ability resolves here. ab.amount holds
 // the storm count (spells cast before the storm spell this turn, by either player), locked in when
 // the trigger fired. Puts that many copies of the source spell on the stack (each may choose new
-// targets) via the shared copy_spell_on_stack mechanism. See effect_storm.cpp.
+// targets) via the shared run_copy_spell machine (suspendable). See effect_storm.cpp.
 HandlerResult storm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
 // chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability

@@ -201,6 +201,37 @@ static void pin_all(const std::vector<Entity> &entities, std::set<Entity> &pins)
         if (e != 0) pins.insert(e);
 }
 
+// Pin every entity an announced/announcing ability tree references: the
+// primary's source/target(s), each chained sub-ability's target(s), and each
+// charm mode's target(s) (only chosen modes ever hold any). Used for the
+// half-built cast ability, the aura enchant ability, and a spell copy's
+// in-flight work ability.
+static void pin_ability_tree_targets(const Ability &ab, std::set<Entity> &pins) {
+    if (ab.source != 0) pins.insert(ab.source);
+    if (ab.target != 0) pins.insert(ab.target);
+    pin_all(ab.targets, pins);
+    for (const auto &sub : ab.subabilities) {
+        if (sub.target != 0) pins.insert(sub.target);
+        pin_all(sub.targets, pins);
+    }
+    for (const auto &mode : ab.charm_choices) {
+        if (mode.target != 0) pins.insert(mode.target);
+        pin_all(mode.targets, pins);
+    }
+}
+
+// A suspended spell-copy machine (replicate at cast FINISH via
+// pending_cast.copy_rt, storm at resolution via its EffectRuntime): the
+// original whose copiable characteristics the resume re-reads, the partially
+// built copy entity, and any targets already bound onto the in-flight work
+// ability.
+static void pin_copy_spell_rt(const CopySpellRT &rt, std::set<Entity> &pins) {
+    if (!rt.active) return;
+    if (rt.original != 0) pins.insert(rt.original);
+    if (rt.cur_copy != 0) pins.insert(rt.cur_copy);
+    if (rt.have_ability && rt.cur_copy != 0) pin_ability_tree_targets(rt.work, pins);
+}
+
 // pinned_entities() visitor over EffectRuntime: the per-handler pool slices a
 // suspended frozen-pool loop references. A dig pins its WHOLE revealed slice
 // (already-picked cards and the to-bottom remainder alike — the epilogue moves
@@ -230,6 +261,10 @@ static void pin_effect_runtime(const EffectRuntime &rt, std::set<Entity> &pins) 
         // hold no entity state of their own: in-flight mode/sub targets live
         // on the persisted parent work / child levels (pinned generically).
         pin_all(rp->saved_remembered, pins);
+    } else if (const auto *cs = std::get_if<CopySpellRT>(&rt)) {
+        // A suspended storm copy machine: the original, the partially built
+        // copy, and its already-bound targets.
+        pin_copy_spell_rt(*cs, pins);
     }
 }
 
@@ -285,22 +320,19 @@ std::set<Entity> collect_pending_pins() {
     }
     // A suspended cast (tag CAST): the spell being cast — its zone row (hand /
     // graveyard / exile) must survive a world resample so the resumed flow
-    // (and its FINISH move-to-stack) finds it where it left it — plus any
-    // already-announced targets on the half-built ability. This batch's
-    // converted prompts all precede target announcement (have_ability is
-    // false at every suspension) and their menus reference no hidden-zone
-    // entities (the kicker/replicate/gift y/n and X ladders are entity-less;
-    // the spell-sac menu lists battlefield permanents, covered by the menu
-    // pins above) — the spell itself is the one hidden-zone reference.
+    // (and its FINISH move-to-stack) finds it where it left it — plus every
+    // target the announce stages have bound so far: the half-built primary
+    // ability's own/sub/charm-mode targets, the aura enchant target, and the
+    // replicate copy machine's in-flight state (the announce/copy target
+    // menus themselves list only battlefield/stack/player entities, covered
+    // by the generic menu pins above — the spell and its bound targets are
+    // what must additionally hold still).
     const Game::PendingCast &pcst = cur_game.pending_cast;
     if (pcst.active) {
         if (pcst.spell_entity != 0) pins.insert(pcst.spell_entity);
-        if (pcst.have_ability) {
-            if (pcst.ability.source != 0) pins.insert(pcst.ability.source);
-            if (pcst.ability.target != 0) pins.insert(pcst.ability.target);
-            for (auto t : pcst.ability.targets)
-                if (t != 0) pins.insert(t);
-        }
+        if (pcst.have_ability) pin_ability_tree_targets(pcst.ability, pins);
+        if (pcst.enchant_ab.target != 0) pins.insert(pcst.enchant_ab.target);
+        pin_copy_spell_rt(pcst.copy_rt, pins);
     }
     // The remembered set: a suspended resolution's accumulated Remembered$
     // references (Doomsday piles, RememberChanged) must survive a determinize.

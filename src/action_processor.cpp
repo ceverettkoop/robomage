@@ -90,10 +90,17 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   bool promised);
 static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster);
+static std::string charm_mode_desc(const Ability &ability, size_t idx);
+static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
+                                                      std::shared_ptr<Orderer> orderer,
+                                                      Zone::Ownership caster,
+                                                      const std::vector<bool> &taken,
+                                                      std::vector<size_t> &mode_indices);
 static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster);
 static std::vector<LegalAction> optional_yesno_menu(const std::string &prompt);
-static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser);
+static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
+                           Entity decision_source = 0);
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice);
 
@@ -1593,11 +1600,48 @@ static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> or
     return !build_valid_targets(candidate, orderer, caster).empty();
 }
 
+// The display label for one charm mode: its script description, else a positional fallback.
+static std::string charm_mode_desc(const Ability &ability, size_t idx) {
+    return (idx < ability.charm_choice_descriptions.size() &&
+            !ability.charm_choice_descriptions[idx].empty())
+               ? ability.charm_choice_descriptions[idx]
+               : ("Mode " + std::to_string(idx + 1));
+}
+
+// One mode pick's menu (CR 601.2b): the not-yet-taken, currently-choosable modes, with
+// mode_indices mapping action index -> charm_choices index. Pure ECS reads (choosability is
+// re-evaluated per pick), so the suspended CHARM_MODE step re-derives the identical menu on
+// resume. Shared by the blocking announce path (effect_choose_card's mini-cast) and the
+// run_cast_flow CHARM_MODE step.
+static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
+                                                      std::shared_ptr<Orderer> orderer,
+                                                      Zone::Ownership caster,
+                                                      const std::vector<bool> &taken,
+                                                      std::vector<size_t> &mode_indices) {
+    std::vector<LegalAction> mode_actions;
+    mode_indices.clear();
+    for (size_t i = 0; i < ability.charm_choices.size(); i++) {
+        if (taken[i]) continue;  // CR 601.2b: a mode can be chosen only once
+        Ability &candidate = ability.charm_choices[i];
+        candidate.source = ability.source;
+        candidate.controller = caster;
+        if (!charm_mode_choosable(candidate, orderer, caster)) continue;
+        LegalAction la(PASS_PRIORITY, charm_mode_desc(ability, i));
+        la.category = ActionCategory::CHOOSE_MODE;
+        la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
+        mode_actions.push_back(la);
+        mode_indices.push_back(i);
+    }
+    return mode_actions;
+}
+
 // Modal spell announcement (CR 601.2b): as the spell is CAST, its controller chooses
 // CharmNum$ different modes, then each chosen mode's targets (CR 601.2c) — all before any
 // cost is paid and before the opponent gets priority, becoming public information. The picks
 // are recorded in charm_chosen; effects::charm resolves exactly those modes, re-verifying
-// target legality at resolution (CR 608.2b).
+// target legality at resolution (CR 608.2b). BLOCKING form — kept for the cast-from-exile
+// mini-cast (effect_choose_card); the CAST_SPELL action runs the same interleave through the
+// suspendable CHARM_MODE / CHARM_TARGET steps of run_cast_flow.
 static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster) {
     PendingDecisionScope pending_scope(ability.source);
@@ -1607,24 +1651,9 @@ static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orde
 
     for (int pick = 0; pick < to_pick; pick++) {
         game_log("Choose mode:\n");
-        std::vector<LegalAction> mode_actions;
         std::vector<size_t> mode_indices;  // map action index -> charm_choices index
-        for (size_t i = 0; i < ability.charm_choices.size(); i++) {
-            if (taken[i]) continue;  // CR 601.2b: a mode can be chosen only once
-            Ability &candidate = ability.charm_choices[i];
-            candidate.source = ability.source;
-            candidate.controller = caster;
-            if (!charm_mode_choosable(candidate, orderer, caster)) continue;
-            std::string desc =
-                (i < ability.charm_choice_descriptions.size() && !ability.charm_choice_descriptions[i].empty())
-                    ? ability.charm_choice_descriptions[i]
-                    : ("Mode " + std::to_string(i + 1));
-            LegalAction la(PASS_PRIORITY, desc);
-            la.category = ActionCategory::CHOOSE_MODE;
-            la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
-            mode_actions.push_back(la);
-            mode_indices.push_back(i);
-        }
+        std::vector<LegalAction> mode_actions =
+            build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
         if (mode_actions.empty()) {
             // No further legal mode (all taken or none with legal targets). The cast-legality
             // gate (spell_has_castable_targets) requires CharmNum$ choosable modes up front,
@@ -1639,10 +1668,7 @@ static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orde
         ability.charm_chosen.push_back(static_cast<int>(chosen_idx));
         Ability &chosen = ability.charm_choices[chosen_idx];
         game_log("%s chooses mode — %s\n", player_name(caster).c_str(),
-                 (chosen_idx < ability.charm_choice_descriptions.size() &&
-                  !ability.charm_choice_descriptions[chosen_idx].empty())
-                     ? ability.charm_choice_descriptions[chosen_idx].c_str()
-                     : ("Mode " + std::to_string(chosen_idx + 1)).c_str());
+                 charm_mode_desc(ability, chosen_idx).c_str());
         if (chosen.valid_tgts != "N_A") {
             select_target(chosen, orderer, caster);
         }
@@ -1837,20 +1863,59 @@ static std::vector<LegalAction> optional_yesno_menu(const std::string &prompt) {
 // action was chosen at the caster's own priority window and nothing repoints
 // before these prompts — request_optional_yesno's repoint was a no-op here),
 // so like the combat sub-prompts nothing needs saving or restoring on resume.
-// Byte-compat: today's inline cast prompts run with pending_decision_source ==
-// 0 (no PendingDecisionScope wraps the CAST_SPELL branch until targets are
-// announced), and the replay corpus decodes that state field into a "Pending:"
-// transcript line — so every cast-time arm keeps decision_source = 0.
-static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser) {
+// Byte-compat per site: the LINEAR cast prompts run with
+// pending_decision_source == 0 (no PendingDecisionScope wraps the CAST_SPELL
+// branch before the announce stages), so they arm with decision_source = 0
+// (the default); the ANNOUNCE-stage prompts (charm modes and every target
+// pick) ran under PendingDecisionScope(ability.source) in the blocking flow,
+// so they arm with that same per-site source. The replay corpus decodes this
+// state field into a "Pending:" transcript line, so the value is load-bearing.
+static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
+                           Entity decision_source) {
     PendingQuery &pq = game.pending_query;
     pq.tag = PendingQuery::CAST;
     pq.menu = std::move(menu);
     pq.chooser_is_a = (chooser == Zone::PLAYER_A);
-    pq.decision_source = 0;
+    pq.decision_source = decision_source;
     pq.answered = false;
     pq.answer = -1;
     pq.active = true;
 }
+
+namespace {
+// TargetAsker for the cast announce stages (charm-mode / primary / sub-ability
+// / aura targets) and the replicate copy retargeting at FINISH: arms the pick
+// as a loop-top pending decision with the family tag CAST — directly on
+// PendingQuery, since no resolution frame exists at cast time (the
+// TriggerPlaceTargetAsker model) — carrying the asking ability's source as
+// the pending-decision context (the same PendingDecisionScope(ability.source)
+// the blocking select_target held). Priority already sits with the caster at
+// every cast-time prompt, so the asker never repoints the seat (the
+// TargetAsker contract: the caller seats the chooser). The latched answer
+// travels through run_cast_flow's resume_choice, consumed by the first ask
+// the re-entered step reaches — which is exactly the ask that armed it, since
+// arming always returns out of the flow and nothing runs in between.
+class CastTargetAsker final : public TargetAsker {
+    public:
+        CastTargetAsker(Game &game, Zone::Ownership chooser, int &resume_choice)
+            : game(game), chooser(chooser), resume_choice(resume_choice) {}
+        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
+            if (resume_choice >= 0) {
+                int choice = resume_choice;
+                resume_choice = -1;
+                return choice;
+            }
+            arm_cast_query(game, std::vector<LegalAction>(menu), chooser, decision_source);
+            return -1;
+        }
+        bool resuming() const override { return resume_choice >= 0; }
+
+    private:
+        Game &game;
+        Zone::Ownership chooser;
+        int &resume_choice;
+};
+}  // namespace
 
 // Loop-top dispatcher entry (game_driver.cpp) for a parked cast prompt:
 // consume the latched answer and re-enter the flow with it. The resume may arm
@@ -2345,10 +2410,12 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         }
 
         case Game::PendingCast::ANNOUNCE: {
-            // Find the primary spell ability template and copy it onto the entity
+            // Find the primary spell ability template and copy it into pc BY VALUE — the
+            // ENTITY's Ability component is added only once every announce target is chosen
+            // (end of SUB_TARGET), the blocking flow's exact position, so component state at
+            // every announce prompt matches it (absent during announcement, present after).
             for (const auto &ability_template : card_data.abilities) {
                 if (ability_template.ability_type != Ability::SPELL) continue;
-
                 pc.ability = ability_template;
                 pc.ability.source = spell_entity;
                 pc.ability.controller = caster;
@@ -2356,36 +2423,156 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 // it fires at resolution only if the gift was promised (Ability::resolve).
                 if (card_data.has_gift) pc.ability.gift_abilities = card_data.gift_abilities;
                 pc.have_ability = true;
-
-                // Announce cast-time choices (CR 601.2b/c): modal mode(s), the primary
-                // target, and targeting sub-abilities' targets. NOTE on ordering: strict
-                // CR 601.2b announces modes before X, but X was chosen above in the cost
-                // branch — mode choosability can depend on X (Kozilek's Command's
-                // "Creature.cmcLEX" exile mode), and both are the caster's own announcements
-                // made atomically before any opponent priority, so the swap is not
-                // opponent-observable. (Still BLOCKING inside this step — Batch 10.)
-                announce_spell_targets(pc.ability, orderer, caster);
-
-                global_coordinator.AddComponent(spell_entity, pc.ability);
                 break;  // TODO: support spells with multiple abilities
             }
 
+            // Announce cast-time choices (CR 601.2b/c) across the steps below: modal mode(s)
+            // interleaved with their targets (CHARM_MODE/CHARM_TARGET), the primary target
+            // (PRIMARY_TARGET), targeting sub-abilities' targets (SUB_TARGET), and the aura
+            // enchant target (AURA_TARGET) — the same interleave announce_spell_targets runs
+            // for the blocking mini-cast. NOTE on ordering: strict CR 601.2b announces modes
+            // before X, but X was chosen above in the cost branch — mode choosability can
+            // depend on X (Kozilek's Command's "Creature.cmcLEX" exile mode), and both are
+            // the caster's own announcements made atomically before any opponent priority,
+            // so the swap is not opponent-observable.
+            pc.charm_picks_done = 0;
+            pc.sub_idx = 0;
+            pc.tsel = TargetSelectRT{};
+            if (!pc.have_ability)
+                pc.step = Game::PendingCast::AURA_TARGET;
+            else if (!pc.ability.charm_choices.empty())
+                pc.step = Game::PendingCast::CHARM_MODE;
+            else
+                pc.step = Game::PendingCast::PRIMARY_TARGET;
+            break;
+        }
+
+        case Game::PendingCast::CHARM_MODE: {
+            // Modal spell announcement (CR 601.2b): one mode pick per pass; the just-picked
+            // mode's targets are chosen (CHARM_TARGET) before the NEXT mode pick, exactly the
+            // blocking announce_charm_modes interleave. The picked modes persist in
+            // ability.charm_chosen — which also reconstructs the taken[] filter on resume —
+            // and pc.charm_picks_done counts completed iterations.
+            Ability &ability = pc.ability;
+            int to_pick = ability.charm_num < 1 ? 1 : ability.charm_num;
+            if (pc.charm_picks_done >= to_pick) {
+                pc.step = Game::PendingCast::PRIMARY_TARGET;
+                break;
+            }
+            std::vector<bool> taken(ability.charm_choices.size(), false);
+            for (int ci : ability.charm_chosen)
+                if (ci >= 0 && static_cast<size_t>(ci) < taken.size())
+                    taken[static_cast<size_t>(ci)] = true;
+            std::vector<size_t> mode_indices;  // map action index -> charm_choices index
+            if (resume_choice >= 0) {
+                // Apply the latched mode pick against the re-derived (identical) menu.
+                std::vector<LegalAction> mode_actions =
+                    build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
+                size_t chosen_idx = mode_indices[static_cast<size_t>(resume_choice)];
+                resume_choice = -1;
+                ability.charm_chosen.push_back(static_cast<int>(chosen_idx));
+                Ability &chosen = ability.charm_choices[chosen_idx];
+                game_log("%s chooses mode — %s\n", player_name(caster).c_str(),
+                         charm_mode_desc(ability, chosen_idx).c_str());
+                if (chosen.valid_tgts != "N_A") {
+                    pc.tsel = TargetSelectRT{};
+                    pc.step = Game::PendingCast::CHARM_TARGET;
+                } else {
+                    pc.charm_picks_done++;  // no targets — straight to the next mode pick
+                }
+                break;
+            }
+            game_log("Choose mode:\n");
+            std::vector<LegalAction> mode_actions =
+                build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
+            if (mode_actions.empty()) {
+                // No further legal mode (all taken or none with legal targets). The
+                // cast-legality gate (spell_has_castable_targets) requires CharmNum$
+                // choosable modes up front, so this is only reachable when an earlier pick's
+                // target choice changed the board — proceed with the modes picked so far
+                // rather than aborting the cast. Re-evaluated at arm, like the blocking loop.
+                game_log("No further legal mode — %d chosen\n", pc.charm_picks_done);
+                pc.step = Game::PendingCast::PRIMARY_TARGET;
+                break;
+            }
+            arm_cast_query(game, std::move(mode_actions), caster, ability.source);
+            return;
+        }
+
+        case Game::PendingCast::CHARM_TARGET: {
+            // The just-picked mode's targets (CR 601.2c), before the next mode pick.
+            Ability &chosen = pc.ability.charm_choices[
+                static_cast<size_t>(pc.ability.charm_chosen.back())];
+            CastTargetAsker asker(game, caster, resume_choice);
+            if (run_target_select(chosen, pc.tsel, asker, orderer, caster) !=
+                TargetStatus::DONE)
+                return;
+            pc.charm_picks_done++;
+            pc.step = Game::PendingCast::CHARM_MODE;
+            break;
+        }
+
+        case Game::PendingCast::PRIMARY_TARGET: {
+            if (pc.ability.valid_tgts != "N_A") {
+                CastTargetAsker asker(game, caster, resume_choice);
+                if (run_target_select(pc.ability, pc.tsel, asker, orderer, caster) !=
+                    TargetStatus::DONE)
+                    return;
+            }
+            pc.sub_idx = 0;
+            pc.step = Game::PendingCast::SUB_TARGET;
+            break;
+        }
+
+        case Game::PendingCast::SUB_TARGET: {
+            // A spell whose top-level effect doesn't itself target, but whose chained
+            // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal Therapy:
+            // SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$ Player).
+            // Select each targeting sub-ability's target now and store it on the sub-ability
+            // template; resolution preserves it (see Ability::resolve).
+            while (pc.sub_idx < pc.ability.subabilities.size()) {
+                Ability &sub = pc.ability.subabilities[pc.sub_idx];
+                if (sub.valid_tgts != "N_A") {
+                    sub.source = pc.ability.source;
+                    sub.controller = caster;
+                    CastTargetAsker asker(game, caster, resume_choice);
+                    if (run_target_select(sub, pc.tsel, asker, orderer, caster) !=
+                        TargetStatus::DONE)
+                        return;
+                }
+                pc.sub_idx++;
+            }
+            // Announcement complete: add the fully-targeted Ability to the entity — the
+            // blocking flow's exact position (right after announce_spell_targets returned).
+            global_coordinator.AddComponent(spell_entity, pc.ability);
+            pc.step = Game::PendingCast::AURA_TARGET;
+            break;
+        }
+
+        case Game::PendingCast::AURA_TARGET: {
             // AURA cast (CR 303.4 / 601.2c): an Aura with no spell ability of its own still
             // targets the object it will enchant. Build a transient targeting ability from the
             // Enchant filter, choose the target now, and remember it so the resolved permanent
-            // attaches to it (its equipped_to is set when its Permanent is created).
+            // attaches to it (its equipped_to is set when its Permanent is created). The
+            // transient ability persists in pc.enchant_ab; a suspended pick resumes it
+            // (tsel.active guards the one-time construction).
             if (!card_data.enchant_filter.empty() &&
                 !global_coordinator.entity_has_component<Ability>(spell_entity)) {
-                Ability enchant_ab;
-                enchant_ab.source = spell_entity;
-                enchant_ab.controller = caster;
-                enchant_ab.valid_tgts = card_data.enchant_filter;
-                select_target(enchant_ab, orderer, caster);
-                if (enchant_ab.target != 0) {
-                    cur_game.pending_aura_target[spell_entity] = enchant_ab.target;
+                if (!pc.tsel.active) {
+                    pc.enchant_ab = Ability{};
+                    pc.enchant_ab.source = spell_entity;
+                    pc.enchant_ab.controller = caster;
+                    pc.enchant_ab.valid_tgts = card_data.enchant_filter;
+                }
+                CastTargetAsker asker(game, caster, resume_choice);
+                if (run_target_select(pc.enchant_ab, pc.tsel, asker, orderer, caster) !=
+                    TargetStatus::DONE)
+                    return;
+                if (pc.enchant_ab.target != 0) {
+                    cur_game.pending_aura_target[spell_entity] = pc.enchant_ab.target;
                     game_log("%s casts %s enchanting %s\n", player_name(caster).c_str(),
                              card_data.name.c_str(),
-                             target_display_name(cur_game, enchant_ab.target).c_str());
+                             target_display_name(cur_game, pc.enchant_ab.target).c_str());
                 }
             }
             pc.step = Game::PendingCast::MANA_PAY;
@@ -2564,13 +2751,29 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid
             // its replicate cost." The replicate count was recorded on the Spell as the cost
             // was paid; create that many copies of this spell on top of the stack now (the
-            // copies resolve before the original and may choose new targets). General
-            // copy-spell-on-stack mechanism; a copy is not cast, so it replicates nothing.
+            // copies resolve before the original and may choose new targets). Seed the shared
+            // resumable copy machine and hand off to COPY_TARGETS — the copies' target picks
+            // suspend as loop-top pending decisions, and a resume must not re-run this step's
+            // cast events. A copy is not cast, so it replicates nothing.
             if (global_coordinator.entity_has_component<Spell>(spell_entity)) {
                 int rc = global_coordinator.GetComponent<Spell>(spell_entity).replicate_count;
-                if (rc > 0) copy_spell_on_stack(spell_entity, rc, caster, orderer);
+                if (rc > 0) copy_spell_begin(pc.copy_rt, spell_entity, rc, caster);
             }
+            pc.step = Game::PendingCast::COPY_TARGETS;
+            break;
+        }
 
+        case Game::PendingCast::COPY_TARGETS: {
+            // Replicate copies choose their targets (CR 707.12). The machine tolerates a
+            // no-legal-target copy being destroyed mid-loop and resumes with the remaining
+            // count / the partially targeted copy persisted in pc.copy_rt.
+            if (pc.copy_rt.active) {
+                CastTargetAsker asker(game, caster, resume_choice);
+                if (run_copy_spell(pc.copy_rt, asker, orderer) != TargetStatus::DONE)
+                    return;
+            }
+            // take_action stays LAST — after the copies, exactly the blocking order (the
+            // cancel path never reaches here, like the old break).
             game.take_action();
             pc = Game::PendingCast{};
             return;

@@ -91,15 +91,20 @@ TargetStatus run_target_select(Ability& ability, TargetSelectRT& rt, TargetAsker
 void announce_spell_targets(Ability& ability, std::shared_ptr<Orderer> orderer,
                             Zone::Ownership caster);
 
-// General "copy a spell on the stack" routine (CR 707.10 / 707.12). Creates `count` independent
-// copies of the spell entity `original` (which must be a spell currently on the stack) on top of
-// the stack, controlled by `controller`. Each copy is a copy of the spell's characteristics
+// General "copy a spell on the stack" machine (CR 707.10 / 707.12), resumable (Batch 10).
+// Creates `count` independent copies of the spell entity `original` on top of the stack,
+// controlled by `controller`. Each copy is a copy of the spell's characteristics
 // (CardData/color/Ability), is NOT cast (pays no costs, fires no cast triggers), and may CHOOSE
-// NEW TARGETS — each copy re-runs target selection (illegal-by-default copies with no legal
-// target are simply not created). The copies are marked Spell::is_copy so they cease to exist on
-// resolution. Reusable by any copy-spell effect (Replicate, storm, fork). No-op if count <= 0.
-void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
-                         std::shared_ptr<Orderer> orderer);
+// NEW TARGETS — each copy re-runs target selection through `asker` (copies with no legal
+// required target are simply not created). The copies are marked Spell::is_copy so they cease
+// to exist on resolution. Reusable by any copy-spell effect (Replicate drives it at cast
+// FINISH with the CAST-tag asker; Storm at resolution with the ResolutionTargetAsker).
+// copy_spell_begin seeds the rt (left inactive — a no-op run — when count <= 0 or the original
+// has no CardData, the old early-outs); run_copy_spell drives it to DONE or returns SUSPENDED
+// with a copy's target pick parked — re-enter with the SAME rt once the answer is latched (the
+// partially built copy entity and its in-flight ability persist in the rt across suspension).
+void copy_spell_begin(CopySpellRT& rt, Entity original, int count, Zone::Ownership controller);
+TargetStatus run_copy_spell(CopySpellRT& rt, TargetAsker& asker, std::shared_ptr<Orderer> orderer);
 
 // Evaluates ability.condition_present against ability.condition_compare for `controller`.
 // Domain is battlefield permanents matching the filter's type and YouCtrl/OppCtrl qualifier,

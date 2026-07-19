@@ -53,7 +53,7 @@ from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_BOTTOM_DECK_CARD, CAT_ORDER_TRIGGERS, CAT_SELECT_TARGET,
                     CAT_PLAY_LAND, CAT_KEEP_LEGEND, CAT_CHOOSE_TYPE,
                     CAT_NAME_CARD, CAT_PAY_UNLESS, CAT_CHOOSE_CARD,
-                    CAT_CHOOSE_X, CAT_PAYING_COSTS)
+                    CAT_CHOOSE_X, CAT_PAYING_COSTS, CAT_CHOOSE_MODE)
 from card_costs import _VOCAB_NAMES
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
@@ -1846,6 +1846,153 @@ def test_cast_phyrexian_roundtrip():
                 pass
 
 
+def test_cast_target_roundtrip():
+    """Batch 10 (cast announce): the cast-time primary target selection —
+    Lightning Bolt choosing its target as it is cast (CR 601.2c), before any
+    cost is paid — is a loop-top pending decision (tag CAST, the shared
+    TargetSelectRT machine embedded in Game::PendingCast). With --no-shuffle
+    A's opening hand is Lightning Bolt over a 1-Mountain preset and B presets
+    a Grizzly Bears, so a cast-first policy reaches a 3-option SELECT_TARGET
+    menu (the Bears + both players). At the root: safe=1; SNAPSHOT re-emits
+    exactly; a divergent target (the next option) must change the very next
+    query (the spell on the stack carries a different target id); RESTORE
+    returns byte-identically; the resumed real line stays byte-identical to a
+    no-snapshot control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("cast_tgt_a", "1 Lightning Bolt\n29 Mountain\n"),
+        ("cast_tgt_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/cast_tgt_a", "--deck-b", "temp/cast_tgt_b",
+             "--no-shuffle",
+             "--battlefield-a", "Mountain",
+             "--battlefield-b", "Grizzly Bears"]
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_SELECT_TARGET, 3, "cast-target")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "cast-target", expect_diverge=True)
+        return (f"cast SELECT_TARGET root @ {root_idx} (nc=3) safe=1, other "
+                f"target diverges, round-trip exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_charm_cast_roundtrip():
+    """Batch 10 (cast announce): the cast-time modal announcement (CR 601.2b)
+    — Witherbloom Command's mode picks AND the just-picked mode's target pick,
+    interleaved mode -> targets -> mode — are loop-top pending decisions (tag
+    CAST, run_cast_flow's CHARM_MODE / CHARM_TARGET steps). Same scenario as
+    the Batch 8 charm-subchain test (B has no creatures/artifacts, so 2 of the
+    4 modes are choosable): the first CHOOSE_MODE menu has 2 options and the
+    decision immediately after it is the mill mode's 2-option player-target
+    menu. Both are SNAPSHOT/RESTORE roots; both divergent excursions are
+    exercised WITHOUT asserting the immediate next payload — the picked mode
+    and its target live only in the pending cast's half-built ability (not
+    serialized into the observation), and both modes here happen to present an
+    identical 2-option player-target menu next, so the choices only become
+    observable at resolution. Each round-trip resumes byte-identically to the
+    control with the same outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("charm_cast_a", "1 Witherbloom Command\n6 Swamp\n1 Forest\n1 Mountain\n"
+                         "1 Plains\n20 Swamp\n"),
+        ("charm_cast_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/charm_cast_a", "--deck-b", "temp/charm_cast_b",
+             "--no-shuffle",
+             "--battlefield-a", "Swamp,Forest"]
+    try:
+        control, choices, outcome = _record_witherbloom_line(seed, extra)
+        mode_idx = _find_sbe_root(control, CAT_CHOOSE_MODE, 2, "charm-cast mode")
+        tgt_idx = mode_idx + 1
+        nc, pl, safe = control[tgt_idx]
+        cats = _query_cats(pl)
+        if not bool((cats[:nc] == CAT_SELECT_TARGET).all()) or nc != 2:
+            raise ProtocolError("decision after the mode pick is not the mill "
+                                "mode's 2-option target menu — the mode -> "
+                                "targets -> mode interleave broke")
+        if not safe:
+            raise ProtocolError("charm-cast target pick reports safe=0 — it "
+                                "should be a loop-top pending decision now")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, mode_idx,
+                           "charm-cast mode", expect_diverge=False)
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, tgt_idx,
+                           "charm-cast target", expect_diverge=False)
+        return (f"CHOOSE_MODE root @ {mode_idx} (nc=2) and mode-target root @ "
+                f"{tgt_idx} (nc=2) both safe=1, round-trips exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_storm_copy_target_roundtrip():
+    """Batch 10 (spell copies): a storm copy's target selection — chosen by the
+    copy's controller as the Storm trigger RESOLVES (CR 702.40a / 707.12), via
+    the resumable CopySpellRT machine — is a loop-top pending decision (tag
+    RESOLUTION). Counter war: A casts Lightning Bolt (2-option target menu:
+    the players); B answers with Flusterstorm targeting it (1-option menu —
+    Bolt is the only instant/sorcery on the stack); the storm trigger (count 1
+    — the Bolt) resolves and its single copy picks its own target over BOTH
+    spells now on the stack (Bolt + the original Flusterstorm) — the third
+    SELECT_TARGET decision, a 2-option menu. At that root: safe=1; SNAPSHOT
+    re-emits exactly; the divergent target (the other spell) must change the
+    next query (the copy sits on the stack with a different target id);
+    RESTORE returns byte-identically; the resumed real line stays
+    byte-identical to the control with the same outcome. Also proves the
+    partially built copy entity (CardData/Spell, no Zone) survives the
+    suspension in the ECS."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("storm_pq_a", "1 Lightning Bolt\n29 Mountain\n"),
+        ("storm_pq_b", "1 Flusterstorm\n29 Island\n"),
+    ])
+    extra = ["--deck-a", "temp/storm_pq_a", "--deck-b", "temp/storm_pq_b",
+             "--no-shuffle",
+             "--battlefield-a", "Mountain",
+             "--battlefield-b", "Island"]
+    try:
+        control, choices, outcome = _record_cast_any_line(seed, extra)
+        sel = [i for i, (nc, pl, _s) in enumerate(control)
+               if bool((_query_cats(pl)[:nc] == CAT_SELECT_TARGET).all())
+               and nc > 0]
+        if len(sel) < 3:
+            raise ProtocolError(f"expected 3 SELECT_TARGET decisions (Bolt, "
+                                f"Flusterstorm, the storm copy), found {len(sel)}")
+        bolt_idx, fluster_idx, copy_idx = sel[0], sel[1], sel[2]
+        if control[fluster_idx][0] != 1:
+            raise ProtocolError("Flusterstorm's own target menu should have 1 "
+                                f"option, has {control[fluster_idx][0]}")
+        if control[copy_idx][0] != 2:
+            raise ProtocolError("the storm copy's target menu should have 2 "
+                                f"options (both spells on the stack), has "
+                                f"{control[copy_idx][0]}")
+        if not control[copy_idx][2]:
+            raise ProtocolError("storm copy target pick reports safe=0 — it "
+                                "should be a loop-top pending decision now")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, copy_idx,
+                           "storm-copy target", expect_diverge=True)
+        return (f"storm copy target root @ {copy_idx} (nc=2, after Bolt @ "
+                f"{bolt_idx} / Flusterstorm @ {fluster_idx}) safe=1, other "
+                f"spell diverges, round-trip exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -2645,6 +2792,9 @@ TESTS = [
     ("charm_subchain_roundtrip", test_charm_subchain_roundtrip),
     ("cast_x_roundtrip", test_cast_x_roundtrip),
     ("cast_phyrexian_roundtrip", test_cast_phyrexian_roundtrip),
+    ("cast_target_roundtrip", test_cast_target_roundtrip),
+    ("charm_cast_roundtrip", test_charm_cast_roundtrip),
+    ("storm_copy_target_roundtrip", test_storm_copy_target_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

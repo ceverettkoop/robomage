@@ -177,9 +177,34 @@ struct ImmediateRt {
     bool tsel_done = false;       // current sub's target selection completed
     TargetSelectRT tsel;          // current sub's in-flight target selection
 };
+// ── Batch 10: spell copies (CR 707.10 / 707.12) ─────────────────────────────
+// The resumable form of copy-a-spell-on-stack (effect_copy_spell.cpp), shared
+// by Replicate (cast FINISH — embedded in Game::PendingCast, driven with the
+// CAST-tag asker) and Storm (resolution — this struct IS the storm handler's
+// EffectRuntime, driven with the ResolutionTargetAsker). The current copy is
+// built incrementally: the entity (CardData/ColorIdentity/Spell, deliberately
+// NO Zone until placement) persists in the ECS across a suspension, and its
+// in-flight ability lives here BY VALUE until it is complete enough to become
+// the copy's Ability component. The no-legal-target path DESTROYS the copy
+// entity mid-loop before any ask, so cur_copy is dropped (0) in the same
+// stride — a parked pick always references a live copy.
+struct CopySpellRT {
+    bool active = false;
+    Entity original = 0;      // the spell being copied (copiable characteristics re-read here)
+    int remaining = 0;        // copies still to create, INCLUDING the one in flight
+    bool controller_is_a = true;  // who controls (and targets) the copies
+    Entity cur_copy = 0;      // the partially built copy entity (0 = none in flight)
+    Ability work;             // the current copy's in-flight ability (targets accumulate here)
+    bool have_ability = false;    // the original had a resolving ability to copy
+    int phase = 0;            // within the current copy: 0 primary target, 1 subs, 2 charm modes
+    size_t sub_idx = 0;       // next sub-ability to retarget (phase 1)
+    size_t mode_pos = 0;      // next work.charm_chosen position to retarget (phase 2)
+    TargetSelectRT tsel;      // the in-flight pick (member field per the Batch 4 finding)
+};
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
                                    SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
-                                   ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt>;
+                                   ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
+                                   CopySpellRT>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating
