@@ -24,6 +24,14 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 // pending query. Called from the main loop's pending-query branch.
 void resume_combat_target_choice(Game& game);
 
+// Loop-top dispatcher entry for a parked cast-time prompt (PendingQuery tag
+// CAST): consumes the latched answer and re-enters run_cast_flow — the
+// persisted CAST_SPELL state machine in Game::pending_cast. The resume may arm
+// the NEXT cast prompt (the caller must loop back to the pending-query branch
+// while pending_query.active), cancel the cast (payment rewind), or complete it
+// (spell on the stack + game.take_action(), exactly the blocking branch's end).
+void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
+
 // Loop-top dispatcher entry for a parked combat damage-assignment pick
 // (PendingQuery tag DAMAGE_ASSIGN): applies the latched answer to the in-flight
 // attacker persisted in Game::pending_damage, then either arms the next pick's

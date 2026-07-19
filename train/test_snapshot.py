@@ -52,7 +52,8 @@ from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_OTHER_CHOICE, CAT_CAST_SPELL, CAT_TOP_LIBRARY,
                     CAT_BOTTOM_DECK_CARD, CAT_ORDER_TRIGGERS, CAT_SELECT_TARGET,
                     CAT_PLAY_LAND, CAT_KEEP_LEGEND, CAT_CHOOSE_TYPE,
-                    CAT_NAME_CARD, CAT_PAY_UNLESS, CAT_CHOOSE_CARD)
+                    CAT_NAME_CARD, CAT_PAY_UNLESS, CAT_CHOOSE_CARD,
+                    CAT_CHOOSE_X, CAT_PAYING_COSTS)
 from card_costs import _VOCAB_NAMES
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
@@ -1763,6 +1764,88 @@ def test_charm_subchain_roundtrip():
                 pass
 
 
+def test_cast_x_roundtrip():
+    """Batch 9 (cast flow state machine): the cast-time CHOOSE_X ladder is a
+    loop-top pending decision (tag CAST, Game::PendingCast) — it reports
+    safe=1 and is a valid SNAPSHOT/RESTORE root. With --no-shuffle A's opening
+    hand is Chalice of the Void + Mountains and a 2-Mountain battlefield
+    preset pays {X}{X}, so a cast-first policy casts Chalice on A's first turn
+    and reaches the 3-option ladder (X = 0/1/2). At the root: SNAPSHOT
+    re-emits exactly; a divergent X (1 instead of the control's 0) must change
+    the very next query (different mana tapped, Chalice enters with different
+    charge counters); RESTORE returns byte-identically; the resumed real line
+    stays byte-identical to a no-snapshot control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("cast_x_a", "1 Chalice of the Void\n29 Mountain\n"),
+        ("cast_x_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/cast_x_a", "--deck-b", "temp/cast_x_b",
+             "--no-shuffle",
+             "--battlefield-a", "Mountain,Mountain"]
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_CHOOSE_X, 3, "cast-x")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "cast-x", expect_diverge=True)
+        return (f"CHOOSE_X root @ {root_idx} (nc=3) safe=1, other X diverges, "
+                f"round-trip exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_cast_phyrexian_roundtrip():
+    """Batch 9 (cast flow state machine): the per-pip phyrexian
+    colored-mana-or-2-life prompts are loop-top pending decisions (tag CAST).
+    Dismember ({1}{B/P}{B/P}) from A's opening hand over a 3-Swamp battlefield
+    preset (B's preset Grizzly Bears is the target) yields TWO consecutive
+    2-option PAYING_COSTS pips — the second proving the mid-loop resume→re-arm
+    path, with the first pip's 2 life already paid at apply (its state floats
+    show life 18, which only holds if the life payment lands before the next
+    pip's arm). Both are valid SNAPSHOT/RESTORE roots: SNAPSHOT re-emits
+    exactly, the divergent pick (pay {B} instead of the control's 2 life) must
+    change the next query, RESTORE returns byte-identically, and the resumed
+    real line stays byte-identical to the control with the same outcome. (The
+    blocking target prompt that follows still reports safe=0 — Batch 10.)"""
+    seed = 5
+    deck_paths = _write_decks([
+        ("cast_ph_a", "1 Dismember\n29 Swamp\n"),
+        ("cast_ph_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/cast_ph_a", "--deck-b", "temp/cast_ph_b",
+             "--no-shuffle",
+             "--battlefield-a", "Swamp,Swamp,Swamp",
+             "--battlefield-b", "Grizzly Bears"]
+    try:
+        control, choices, outcome = _record_cast_first_line(seed, extra)
+        p1 = _find_sbe_root(control, CAT_PAYING_COSTS, 2, "cast-phyrexian")
+        nxt = control[p1 + 1]
+        if not bool((_query_cats(nxt[1])[:nxt[0]] == CAT_PAYING_COSTS).all()) \
+                or nxt[0] != 2:
+            raise ProtocolError("decision after the first pip is not the second "
+                                "2-option pip — the resume should re-arm")
+        if not nxt[2]:
+            raise ProtocolError("second pip reports safe=0 — it should be a "
+                                "loop-top pending decision now")
+        for root_idx in (p1, p1 + 1):
+            _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                               f"cast-phyrexian pip @ {root_idx}",
+                               expect_diverge=True)
+        return (f"phyrexian pips @ {p1} and @ {p1 + 1} (nc=2, mid-loop) both "
+                f"safe=1, pay-mana diverges, round-trips exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -2560,6 +2643,8 @@ TESTS = [
     ("yorion_blink_roundtrip", test_yorion_blink_roundtrip),
     ("subability_roundtrip", test_subability_roundtrip),
     ("charm_subchain_roundtrip", test_charm_subchain_roundtrip),
+    ("cast_x_roundtrip", test_cast_x_roundtrip),
+    ("cast_phyrexian_roundtrip", test_cast_phyrexian_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

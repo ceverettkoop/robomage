@@ -283,6 +283,25 @@ std::set<Entity> collect_pending_pins() {
                 if (t != 0) pins.insert(t);
         }
     }
+    // A suspended cast (tag CAST): the spell being cast — its zone row (hand /
+    // graveyard / exile) must survive a world resample so the resumed flow
+    // (and its FINISH move-to-stack) finds it where it left it — plus any
+    // already-announced targets on the half-built ability. This batch's
+    // converted prompts all precede target announcement (have_ability is
+    // false at every suspension) and their menus reference no hidden-zone
+    // entities (the kicker/replicate/gift y/n and X ladders are entity-less;
+    // the spell-sac menu lists battlefield permanents, covered by the menu
+    // pins above) — the spell itself is the one hidden-zone reference.
+    const Game::PendingCast &pcst = cur_game.pending_cast;
+    if (pcst.active) {
+        if (pcst.spell_entity != 0) pins.insert(pcst.spell_entity);
+        if (pcst.have_ability) {
+            if (pcst.ability.source != 0) pins.insert(pcst.ability.source);
+            if (pcst.ability.target != 0) pins.insert(pcst.ability.target);
+            for (auto t : pcst.ability.targets)
+                if (t != 0) pins.insert(t);
+        }
+    }
     // The remembered set: a suspended resolution's accumulated Remembered$
     // references (Doomsday piles, RememberChanged) must survive a determinize.
     for (auto e : cur_game.remembered_entities)

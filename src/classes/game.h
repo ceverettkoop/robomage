@@ -42,6 +42,7 @@ typedef enum Step {
 
 #include "../ecs/entity.h"
 #include "../components/ability.h"
+#include "../mana_system.h"
 #include "../pending_query.h"
 #include "../resolution_frame.h"
 #include "colors.h"
@@ -263,6 +264,107 @@ struct Game {
         // clears lk_battlefield_types). Value member so a snapshot covers the
         // parked placement. See resolution_frame.h.
         TriggerPlacementRT trigger_placement;
+        // Cast-time suspension state (pending_query tag CAST): the persisted
+        // state machine of process_action's CAST_SPELL branch (run_cast_flow,
+        // action_processor.cpp). The branch's former locals — the accumulating
+        // cost, per-kicker flags, deferred payment pieces, the half-built
+        // primary Ability — live here BY VALUE so a cur_game copy covers the
+        // whole in-flight cast. Batch 9 converts the LINEAR prompts (kicker /
+        // replicate / X ladder / phyrexian pips / life-X / spell-sac / gift);
+        // the announce and deferred-payment steps still pass through blocking
+        // (Batches 10-11). active == true from the CAST_SPELL action until the
+        // spell reaches the stack (FINISH) or the payment cancel rewinds.
+        struct PendingCast {
+            // Where the flow resumes. Steps run in today's exact statement
+            // order; unconverted steps pass through synchronously. Values not
+            // yet driven by run_cast_flow are reserved for Batches 10-11
+            // (announce targeting, delve/deferred payment, replicate copies).
+            enum Step {
+                COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
+                ALT_PITCH,        // (Batch 11) alt-cost exile-from-hand picks
+                ALT_RETURN,       // (Batch 11) alt-cost return-to-hand picks
+                KICKER,           // per-kicker optional-additional-cost y/n
+                REPLICATE,        // repeated replicate-cost y/n loop
+                CHOOSE_X,         // X-cost ladder
+                HYBRID,           // hybrid pips (machine auto-resolve; interactive stays blocking)
+                PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
+                LIFE_X,           // variable life X (Toxic Deluge's PayLife<X>)
+                SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
+                GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
+                CHARM_MODE,       // (Batch 10) modal mode announcement
+                CHARM_TARGET,     // (Batch 10) per-mode target announcement
+                PRIMARY_TARGET,   // (Batch 10) primary spell target
+                SUB_TARGET,       // (Batch 10) targeting sub-ability targets
+                AURA_TARGET,      // (Batch 10) aura enchant target
+                ANNOUNCE,         // modes + targets + aura (blocking pass-through this batch)
+                DELVE_COUNT,      // (Batch 11) delve exile count
+                DELVE_PICK,       // (Batch 11) delve exile picks
+                MANA_PAY,         // deferred payment + non-mana pieces (blocking pass-through)
+                DEF_SAC,          // (Batch 11) deferred flashback sacrifice
+                DEF_EXILE_TYPES,  // (Batch 11) escape exile-by-types picks
+                DEF_EXILE_COUNT,  // (Batch 11) escape exile-by-count picks
+                COPY_TARGETS,     // (Batch 10) replicate/storm copy retargeting
+                FINISH            // spell to stack + cast events + copies + take_action
+            };
+            bool active = false;
+            Step step = COST;
+            // Cast identity: reconstructs the consumed LegalAction across the
+            // suspension gap.
+            Entity spell_entity = 0;
+            bool caster_is_a = true;
+            bool use_flashback = false;
+            bool use_escape = false;
+            bool use_alt_cost = false;
+            bool use_offspring = false;
+            bool impulse_cast = false;
+            bool cast_back_face = false;
+            // Snapshot of mana state for rewind on payment failure (taken in
+            // process_action before the flow starts, consumed by the MANA_PAY
+            // cancel path).
+            ManaPaymentSnapshot mana_snap;
+            // The regular-cost accumulation (base + offspring/kicker/replicate/
+            // X/hybrid/phyrexian folds), deferred into deferred_mana_cost once
+            // the cost is fully resolved.
+            ManaValue cost_to_pay;
+            // Kicker (CR 702.33): per-kicker "paid?" flags, populated in the regular-cost
+            // branch and copied onto the Spell so linked "if it was kicked with its [N]
+            // kicker" triggers can read them. Empty unless the card has K:Kicker.
+            std::vector<bool> kicked_flags;
+            size_t kicker_idx = 0;     // next kicker pip to offer/apply
+            // Replicate (CR 702.x): how many times the replicate additional cost was paid in
+            // the regular-cost branch. Drives the on-cast copy effect. 0 unless the card
+            // has K:Replicate and the caster chose to pay it.
+            int replicate_count = 0;
+            size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
+            bool gift_promised = false;
+            // CR 601.2 orders target choice (601.2c) BEFORE paying costs (601.2h). The regular
+            // mana payment is therefore captured here and deferred until after targets are chosen.
+            // This matters when the mana is paid by sacrificing a permanent for mana
+            // (Lotus Petal / Lion's Eye Diamond): paying first could remove the spell's only legal
+            // target before it is chosen, crashing on an empty target menu. With the payment
+            // deferred, the target is chosen while the would-be mana source is still on the
+            // battlefield; sacrificing it for mana then merely makes the target illegal, so the
+            // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
+            ManaValue deferred_mana_cost;
+            bool deferred_mana_pending = false;
+            bool deferred_delve = false;
+            bool deferred_improvise = false;
+            // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
+            // exile-from-graveyard) are deferred the same way: targets first (601.2c),
+            // then every cost (601.2g/h). They are paid only after the deferred mana
+            // payment commits, so a cancelled payment never costs life or a creature.
+            int deferred_life_cost = 0;
+            std::string deferred_sac_spec;
+            int deferred_exile_min_types = 0;
+            int deferred_exile_count = 0;
+            // The half-built primary spell ability. The ENTITY's Ability
+            // component is added at the same point as today (right after
+            // announce_spell_targets), so component state at every prompt
+            // matches the blocking flow's exactly.
+            Ability ability;
+            bool have_ability = false;
+        };
+        PendingCast pending_cast;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/

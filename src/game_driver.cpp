@@ -299,6 +299,18 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // exactly as the single-call flow did.
                     if (cur_game.pending_query.active) continue;
                     break;
+                case PendingQuery::CAST:
+                    resume_cast_flow(cur_game, sys.orderer);
+                    // The resume may arm the NEXT cast prompt (the following
+                    // kicker/phyrexian pip, the X ladder, the gift y/n, ...):
+                    // loop back so the pending branch emits it before anything
+                    // (turn-based actions, SBE) runs underneath the half-cast
+                    // spell. When the flow completes (spell on the stack +
+                    // take_action) or cancels (payment rewind), fall through to
+                    // the normal flow — exactly the next loop iteration after
+                    // today's blocking process_action returned.
+                    if (cur_game.pending_query.active) continue;
+                    break;
                 case PendingQuery::TRIGGER_PLACE:
                     resume_trigger_placement(cur_game, sys.orderer);
                     // The resume may park the NEXT placement decision (the next
@@ -442,7 +454,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // A real game end must never strand a suspended resolution (plan risk R7):
     // the winner is decided by state-based effects, which never run while a
     // resolution is parked, so an active frame/query here is a protocol bug.
-    if (cur_game.resolution.active || cur_game.pending_query.active)
+    // Same for a half-finished cast: pending_cast is active only while its
+    // CAST query is parked or run_cast_flow is on the stack, never at loop exit.
+    if (cur_game.resolution.active || cur_game.pending_query.active ||
+        cur_game.pending_cast.active)
         fatal_error("game ended with a suspended resolution/pending query still parked");
     g_in_main_loop = false;
     return cur_game.winner;
