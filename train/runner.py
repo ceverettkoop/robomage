@@ -422,7 +422,9 @@ def run_games(controller_a, controller_b, *,
                               f"{st.get('early_stops', 0)} early stops")
             print(f"  [{lbl}] search effort: {searched} roots "
                   f"({st.get('sb_searched', 0)} sideboard), {st.get('sims', 0)} "
-                  f"sims total, {mean_sims:.0f} mean sims/decision{clock_note}",
+                  f"sims total, {mean_sims:.0f} mean sims/decision, "
+                  f"{st.get('followed', 0)} followed, {st.get('trivial', 0)} "
+                  f"trivial, {st.get('fallback', 0)} fallback{clock_note}",
                   file=stream, flush=True)
 
     return wins, losses, draws

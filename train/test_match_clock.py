@@ -37,39 +37,74 @@ class StubEvaluator:
 def test_allocation_math() -> None:
     clock = MatchClock(1500.0)
 
-    # Fresh 25-min bank, game 1, turn 0: horizon clamps to 120 -> base 12.5s;
-    # no priors -> multiplier 1.0.
+    # Fresh 25-min bank, game 1, turn 0, nothing observed: the horizon is the
+    # match prior — a full game (120) plus 1.5 expected future games — ≈309,
+    # so ~300 decisions share the bank; no priors -> multiplier 1.0.
+    h0 = clock._GAME_DEC_EST + 1.5 * (clock._GAME_DEC_EST + clock._SB_DEC_EST)
     lo, hi = clock.allocate(turn=0, game_number=1, self_wins=0, opp_wins=0,
                             is_sideboard=False, priors=None, num_choices=5)
-    check(abs(hi - 12.5) < 1e-9, f"fresh-bank base: expected 12.5, got {hi}")
+    check(abs(hi - 1500.0 / h0) < 1e-9,
+          f"fresh-bank base: expected {1500.0 / h0:.3f}, got {hi}")
     check(abs(lo - 0.25 * hi) < 1e-9, f"t_lo should be hi/4, got {lo} vs hi {hi}")
 
     # Peaked priors clamp the multiplier low; uniform wide menus clamp it high.
+    base = 1500.0 / h0
     peaked = np.array([0.97, 0.01, 0.01, 0.01])
     _, hi_peak = clock.allocate(turn=0, game_number=1, self_wins=0, opp_wins=0,
                                 is_sideboard=False, priors=peaked, num_choices=4)
-    check(abs(hi_peak - 12.5 * clock._M_LO) < 1e-9,
+    check(abs(hi_peak - base * clock._M_LO) < 1e-9,
           f"peaked multiplier should clamp to {clock._M_LO}, got hi {hi_peak}")
     uniform8 = np.full(8, 1.0 / 8.0)
     _, hi_uni = clock.allocate(turn=0, game_number=1, self_wins=0, opp_wins=0,
                                is_sideboard=False, priors=uniform8, num_choices=8)
-    check(abs(hi_uni - 12.5 * clock._M_HI) < 1e-9,
+    check(abs(hi_uni - base * clock._M_HI) < 1e-9,
           f"uniform-8 multiplier should clamp to {clock._M_HI}, got hi {hi_uni}")
 
-    # Deep in a decided-length game the horizon floors at _HORIZON_LO.
+    # SHORTER-than-prior revision: the match reached game 3 after only 90
+    # decisions (two ~45-decision games), so the per-game estimate shrinks
+    # and each remaining decision gets MORE time than the unrevised prior.
+    fast = MatchClock(1500.0)
+    for g, n in ((1, 45), (2, 45)):
+        for _ in range(n):
+            fast.note_decision(g)
+    fast.note_decision(3)
+    _, hi_fast = fast.allocate(turn=0, game_number=3, self_wins=1, opp_wins=1,
+                               is_sideboard=False, priors=None, num_choices=5)
+    check(hi_fast > 1500.0 / clock._GAME_DEC_EST,
+          f"short-game history should raise per-decision spend: {hi_fast}")
+    check(fast._horizon(0, 3, 1, 1) < clock._GAME_DEC_EST,
+          "game 3 after 90 decisions should expect a shorter-than-prior tail")
+
+    # LONGER-than-prior revision: 250 decisions and still in game 1 — the
+    # observed per-turn rate projects a longer match than the 300 prior, so
+    # per-decision spend shrinks vs an on-pace game at the same turn.
+    slow = MatchClock(1500.0)
+    for _ in range(250):
+        slow.note_decision(1)
+    _, hi_slow = slow.allocate(turn=20, game_number=1, self_wins=0, opp_wins=0,
+                               is_sideboard=False, priors=None, num_choices=5)
+    pace = MatchClock(1500.0)
+    for _ in range(100):
+        pace.note_decision(1)
+    _, hi_pace = pace.allocate(turn=20, game_number=1, self_wins=0, opp_wins=0,
+                               is_sideboard=False, priors=None, num_choices=5)
+    check(hi_slow < hi_pace,
+          f"a hot game should shrink per-decision spend: {hi_slow} vs {hi_pace}")
+    check(slow.decisions + slow._horizon(20, 1, 0, 0) > slow._MATCH_DEC_EST,
+          "250 decisions into game 1 should project past the 300 prior")
+
+    # Deep in the last game the horizon floors at _HORIZON_LO (t_max caps).
     lo, hi = clock.allocate(turn=30, game_number=3, self_wins=1, opp_wins=1,
                             is_sideboard=False, priors=None, num_choices=5)
     check(abs(hi - min(1500.0 / clock._HORIZON_LO, clock.t_max,
                        1500.0 / 4.0)) < 1e-9,
           f"late-game allocation wrong: {hi}")
 
-    # bo1 (game_number 0) has no extra-game term: same horizon as a 1-1 bo3.
-    _, hi_bo1 = clock.allocate(turn=10, game_number=0, self_wins=0, opp_wins=0,
+    # bo1 (game_number 0) budgets a single game: horizon = the per-game prior.
+    _, hi_bo1 = clock.allocate(turn=0, game_number=0, self_wins=0, opp_wins=0,
                                is_sideboard=False, priors=None, num_choices=5)
-    _, hi_g3 = clock.allocate(turn=10, game_number=3, self_wins=1, opp_wins=1,
-                              is_sideboard=False, priors=None, num_choices=5)
-    check(abs(hi_bo1 - hi_g3) < 1e-9,
-          f"bo1 vs 1-1 horizons should match: {hi_bo1} vs {hi_g3}")
+    check(abs(hi_bo1 - 1500.0 / clock._GAME_DEC_EST) < 1e-9,
+          f"fresh bo1 should divide the bank over one game: {hi_bo1}")
 
     # A 0-0 score budgets for more future games than a 1-0 lead.
     _, hi_00 = clock.allocate(turn=5, game_number=1, self_wins=0, opp_wins=0,
@@ -92,15 +127,19 @@ def test_allocation_math() -> None:
     check(abs(hi - small.t_min) < 1e-9,
           f"2s bank should floor at t_min ({small.t_min}), got {hi}")
 
-    # Fischer floor on an empty bank; debit clamps at zero; reset restores.
+    # Fischer floor on an empty bank; debit clamps at zero; reset restores
+    # the bank AND the pace counters.
     small.debit(10.0)
     check(small.remaining == 0.0, f"debit should clamp at 0, got {small.remaining}")
     lo, hi = small.allocate(turn=0, game_number=1, self_wins=0, opp_wins=0,
                             is_sideboard=False, priors=None, num_choices=5)
     check(lo == small.t_min and hi == small.t_min,
           f"empty bank should allocate (t_min, t_min), got ({lo}, {hi})")
+    small.note_decision(1)
     small.reset()
     check(small.remaining == 2.0, f"reset should restore the bank, got {small.remaining}")
+    check(small.decisions == 0 and not small._game_start_dec,
+          "reset should clear the pace counters")
 
     if not FAILURES:
         print("PASS: MatchClock allocation math")
