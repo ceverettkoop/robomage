@@ -74,6 +74,29 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None):
     return obs, pi, z, mask, len(shards)
 
 
+def prune_shards(window: int, data_dir: Optional[str] = None) -> int:
+    """Delete self-play shards that neither the current nor the PREVIOUS
+    training window would read: everything older than the newest ``2*window``
+    shards (by mtime, matching :func:`load_window`'s ordering). Called by
+    :func:`train_az` after each training pass so a long-running az-league
+    (``rotations=0``) doesn't grow ``az_data/gen`` without bound. Returns the
+    number of shards deleted."""
+    keep = 2 * int(window)
+    if keep <= 0:
+        return 0
+    data_dir = data_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
+    shards = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
+                    key=os.path.getmtime)
+    pruned = 0
+    for s in shards[:-keep]:
+        try:
+            os.remove(s)
+            pruned += 1
+        except OSError as exc:
+            print(f"[az-train] WARNING: could not prune shard {s}: {exc}")
+    return pruned
+
+
 # ----------------------------------------------------------------------
 # Net init / resume
 # ----------------------------------------------------------------------
@@ -194,6 +217,10 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
     snap = net.save(az_checkpoint_path(steps, ckpt_dir), steps)
     print(f"[az-train] saved candidate snapshot {snap}")
     print(f"[az-train] loss {first_loss:.4f} -> {last_loss:.4f} over {batches} batches")
+    pruned = prune_shards(window, data_dir)
+    if pruned:
+        print(f"[az-train] pruned {pruned} stale shard(s) older than the last "
+              f"2x{window}-shard window")
     return {"samples": n, "first_loss": first_loss, "last_loss": last_loss,
             "snapshot": snap, "steps": steps}
 
@@ -382,6 +409,10 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
 
 AZ_LEAGUE_STATE_VERSION = 1
 
+# Per-slot result records kept in memory and in the sidecar are capped so an
+# indefinite (rotations=0) run can't grow either without bound.
+_AZ_LEAGUE_MAX_RESULTS = 500
+
 
 def _az_league_state_path(ckpt_dir: str) -> str:
     return os.path.join(ckpt_dir, "_az_league_progress.json")
@@ -431,11 +462,17 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
 
-    The unit of work is one deck cycle; the flat slot list is
-    ``[(rotation, deck, cycle) for rotation, deck, cycle in ...]`` and the sidecar
-    persists the index of the NEXT slot to run. ``resume=True`` restores the
-    roster, budgets, and every knob from the sidecar and continues from that slot
-    (all other flags are ignored on resume, mirroring ``league --resume``)."""
+    The unit of work is one deck cycle; slot ``i`` maps to (rotation, deck,
+    cycle) by index arithmetic and the sidecar persists the index of the NEXT
+    slot to run. ``resume=True`` restores the roster, budgets, and every knob
+    from the sidecar and continues from that slot (all other flags are ignored
+    on resume, mirroring ``league --resume``).
+
+    ``rotations=0`` runs INDEFINITELY: slots keep generating until the process
+    is interrupted. The sidecar still advances after every completed slot, so an
+    interrupted indefinite run resumes with ``--resume`` like a finite one, and
+    each training pass prunes shards outside the last two windows (see
+    :func:`prune_shards`) so ``az_data/gen`` stays bounded."""
     os.makedirs(ckpt_dir, exist_ok=True)
 
     slot_index = 0
@@ -487,9 +524,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     for _d in roster:
         assert_not_reserved_deck(_d)
 
-    slots = [(r, di, c) for r in range(rotations)
-             for di in range(len(roster)) for c in range(cycles_per_deck)]
-    total = len(slots)
+    # rotations == 0 -> indefinite: no materialized slot list; slot i maps to
+    # (rotation, deck, cycle) by index arithmetic and total stays None.
+    per_rotation = len(roster) * cycles_per_deck
+    total = None if rotations == 0 else rotations * per_rotation
 
     base_state = {
         "version": AZ_LEAGUE_STATE_VERSION,
@@ -509,8 +547,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     }
 
     print(f"AZ league roster: {', '.join(roster)}")
-    print(f"  rotations={rotations}  cycles_per_deck={cycles_per_deck}  "
-          f"slots={total}  (starting at slot {slot_index})")
+    rotations_txt = "indefinite" if total is None else str(rotations)
+    total_txt = "unbounded" if total is None else str(total)
+    print(f"  rotations={rotations_txt}  cycles_per_deck={cycles_per_deck}  "
+          f"slots={total_txt}  (starting at slot {slot_index})")
     print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
           f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth}  "
           f"batches={batches} window={window}  "
@@ -524,16 +564,20 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     # Record the starting position so an interruption before the first cycle still
     # leaves a resumable sidecar.
     save_progress(slot_index)
-    if slot_index >= total:
+    if total is not None and slot_index >= total:
         print("[az-league] saved progress is already complete — nothing to resume.")
         return {"roster": roster, "slots": total, "results": results}
 
-    for si in range(slot_index, total):
-        r, di, c = slots[si]
+    si = slot_index
+    while total is None or si < total:
+        r, rem = divmod(si, per_rotation)
+        di, c = divmod(rem, cycles_per_deck)
         deck = roster[di]
         slot_seed = seed + si
+        slot_txt = f"{si + 1}" if total is None else f"{si + 1}/{total}"
+        rot_txt = f"{r + 1}" if total is None else f"{r + 1}/{rotations}"
         print(f"\n{'='*60}")
-        print(f"[az-league slot {si + 1}/{total}] rotation {r + 1}/{rotations}  "
+        print(f"[az-league slot {slot_txt}] rotation {rot_txt}  "
               f"deck={deck}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})")
         print(f"{'='*60}")
         res = az_cycle(deck, games=games, sims=sims, worlds=worlds,
@@ -545,7 +589,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        seed=slot_seed, use_actor=use_actor,
                        mirror_frac=mirror_frac, roster=roster, bo3=bo3)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
-        print(f"[az-league] slot {si + 1}/{total} deck={deck}: "
+        print(f"[az-league] slot {slot_txt} deck={deck}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
               f"train_loss {tr['first_loss']:.3f}->{tr['last_loss']:.3f}  "
               f"gate {ev['wins']}W-{ev['losses']}L-{ev['draws']}D "
@@ -554,7 +598,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         results.append({"slot": si, "deck": deck, "rotation": r, "cycle": c,
                         "samples": gen["samples"], "shards": len(gen["shards"]),
                         "gate_win_rate": ev["win_rate"], "promoted": ev["promoted"]})
+        del results[:-_AZ_LEAGUE_MAX_RESULTS]
         save_progress(si + 1)
+        si += 1
 
     print(f"\n[az-league] complete: {total} slots over {rotations} rotations.")
     return {"roster": roster, "slots": total, "results": results}
@@ -716,7 +762,9 @@ if __name__ == "__main__":
                          "(other flags ignored)")
     lg.add_argument("--decks", default=None,
                     help="Comma-separated roster (default: every decks/league/*.dk)")
-    lg.add_argument("--rotations", type=int, default=1)
+    lg.add_argument("--rotations", type=int, default=1,
+                    help="Full passes over the roster (0 = run indefinitely "
+                         "until interrupted)")
     lg.add_argument("--cycles-per-deck", type=int, default=1)
     lg.add_argument("--games", type=int, default=50)
     lg.add_argument("--sims", type=int, default=64)
