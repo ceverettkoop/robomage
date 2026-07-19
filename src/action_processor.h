@@ -32,6 +32,16 @@ void resume_combat_target_choice(Game& game);
 // (spell on the stack + game.take_action(), exactly the blocking branch's end).
 void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
 
+// Loop-top dispatcher entry for a parked activated-ability prompt (PendingQuery
+// tag ACTIVATION): consumes the latched answer and re-enters
+// run_activation_flow — the persisted ACTIVATE_ABILITY state machine in
+// Game::pending_activation. The resume may arm the NEXT activation prompt (the
+// caller must loop back to the pending-query branch while pending_query.active),
+// cancel the activation (payment rewind), or complete it (mana produced
+// off-stack, or the ability on the stack + game.take_action(), exactly the
+// blocking branch's end).
+void resume_activation_flow(Game& game, std::shared_ptr<Orderer> orderer);
+
 // Loop-top dispatcher entry for a parked combat damage-assignment pick
 // (PendingQuery tag DAMAGE_ASSIGN): applies the latched answer to the in-flight
 // attacker persisted in Game::pending_damage, then either arms the next pick's

@@ -53,7 +53,8 @@ from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_BOTTOM_DECK_CARD, CAT_ORDER_TRIGGERS, CAT_SELECT_TARGET,
                     CAT_PLAY_LAND, CAT_KEEP_LEGEND, CAT_CHOOSE_TYPE,
                     CAT_NAME_CARD, CAT_PAY_UNLESS, CAT_CHOOSE_CARD,
-                    CAT_CHOOSE_X, CAT_PAYING_COSTS, CAT_CHOOSE_MODE)
+                    CAT_CHOOSE_X, CAT_PAYING_COSTS, CAT_CHOOSE_MODE,
+                    CAT_ACTIVATE_ABILITY)
 from card_costs import _VOCAB_NAMES
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
@@ -2088,6 +2089,167 @@ def test_alt_pitch_roundtrip():
                 pass
 
 
+def _record_activation_line(seed, extra, x_pick=None, cap=4000):
+    """Control recording for the activation-family tests: the FIRST decision
+    whose menu offers an ACTIVATE_ABILITY action activates it (the preset
+    permanent's only offered ability), then — when x_pick is given — the first
+    CHOOSE_X menu after it plays that index (the X-activation ladder); every
+    other decision auto-0s. Returns (records, choices, outcome)."""
+    eng = Engine(seed, extra=extra)
+    records, choices = [], []
+    activated = False
+    x_done = x_pick is None
+    r = eng.read()
+    idx = 0
+    while r.kind == "q" and idx < cap:
+        action = 0
+        cats = _query_cats(r.payload)[:r.nc]
+        if not activated:
+            hits = np.nonzero(cats == CAT_ACTIVATE_ABILITY)[0]
+            if hits.size:
+                action = int(hits[0])
+                activated = True
+        elif not x_done and bool((cats == CAT_CHOOSE_X).any()):
+            action = int(x_pick)
+            x_done = True
+        records.append((r.nc, r.payload, r.safe))
+        choices.append(action)
+        r = eng.play(action)
+        idx += 1
+    outcome = {"kind": r.kind, "returncode": r.returncode, "winner": r.winner}
+    eng.kill()
+    return records, choices, outcome
+
+
+def test_activation_target_roundtrip():
+    """Batch 12 (activated abilities): the pre-cost target selection of an
+    activated ability — Wasteland choosing its nonbasic-land target BEFORE the
+    tap/sacrifice cost is paid (CR 602.2b / 601.2c) — is a loop-top pending
+    decision (tag ACTIVATION, the shared TargetSelectRT machine embedded in
+    Game::PendingActivation, armed through the ACTIVATION-tag asker with
+    decision_source = the activating Wasteland). A presets a Wasteland; B
+    presets Tundra and Volcanic Island, so activating the Destroy ability
+    reaches a 3-option SELECT_TARGET menu (B's two duals opponent-first, then
+    Wasteland itself — a nonbasic land is a legal target of its own ability).
+    At the root: safe=1; SNAPSHOT re-emits exactly; a divergent target (the
+    other dual — a different card id on the parked ability) must change the
+    very next query; RESTORE returns byte-identically; the resumed real line
+    stays byte-identical to a no-snapshot control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("act_tgt_a", "30 Mountain\n"),
+        ("act_tgt_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/act_tgt_a", "--deck-b", "temp/act_tgt_b",
+             "--no-shuffle",
+             "--battlefield-a", "Wasteland",
+             "--battlefield-b", "Tundra,Volcanic Island"]
+    try:
+        control, choices, outcome = _record_activation_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_SELECT_TARGET, 3,
+                                  "activation-target")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "activation-target", expect_diverge=True)
+        return (f"activation SELECT_TARGET root @ {root_idx} (nc=3) safe=1, "
+                f"other land diverges, round-trip exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_activation_x_roundtrip():
+    """Batch 12 (activated abilities): the X-activation ladder and the
+    exactly-X target picks that read it — Candelabra of Tawnos's {X}, {T}:
+    Untap X target lands (Cost$ X T, TargetMin/Max$ X) — are loop-top pending
+    decisions (tag ACTIVATION, run_activation_flow's X_LADDER then TARGET
+    steps; the apply sets cur_game.x_paid BEFORE any later cost step runs). A
+    presets Candelabra plus a Mountain and a Volcanic Island (two mana
+    sources), so the ladder offers X=0/1/2 (nc=3) and the control picks X=1,
+    reaching a 2-option exactly-one-land target menu (no Done — the minimum is
+    X). Both are SNAPSHOT/RESTORE roots. The X excursion is exercised WITHOUT
+    asserting the immediate next payload (a divergent X lives only in the
+    pending activation / cur_game.x_paid, not serialized, and X=1 and X=2
+    present an identical first target menu — the charm-mode caveat); the
+    target excursion must diverge (a different land id reaches the stack).
+    Each round-trip resumes byte-identically to the control with the same
+    outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("act_x_a", "30 Mountain\n"),
+        ("act_x_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/act_x_a", "--deck-b", "temp/act_x_b",
+             "--no-shuffle",
+             "--battlefield-a", "Candelabra of Tawnos,Mountain,Volcanic Island"]
+    try:
+        control, choices, outcome = _record_activation_line(seed, extra, x_pick=1)
+        x_idx = _find_sbe_root(control, CAT_CHOOSE_X, 3, "activation-x ladder")
+        tgt_idx = x_idx + 1
+        nc, pl, safe = control[tgt_idx]
+        cats = _query_cats(pl)
+        if not bool((cats[:nc] == CAT_SELECT_TARGET).all()) or nc != 2:
+            raise ProtocolError("decision after the X pick is not the 2-option "
+                                "exactly-X land-target menu — the ladder -> "
+                                "targets order broke")
+        if not safe:
+            raise ProtocolError("activation X target pick reports safe=0 — it "
+                                "should be a loop-top pending decision now")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, x_idx,
+                           "activation-x ladder", expect_diverge=False)
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, tgt_idx,
+                           "activation-x target", expect_diverge=True)
+        return (f"CHOOSE_X root @ {x_idx} (nc=3, X=1) and exactly-X target "
+                f"root @ {tgt_idx} (nc=2) both safe=1, round-trips exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def test_equip_target_roundtrip():
+    """Batch 12 (activated abilities): the equip creature menu — chosen AFTER
+    the equip cost is paid (machine mode auto-pays), from the candidate list
+    frozen BEFORE payment (run_activation_flow's EQUIP_PAY -> EQUIP_TARGET
+    steps) — is a loop-top pending decision (tag ACTIVATION). A presets
+    Cori-Steel Cutter (Equip {1}{R}) with two creatures and two Mountains, so
+    activating Equip auto-taps the Mountains and reaches a 2-option
+    SELECT_TARGET menu (Grizzly Bears [2/2], Soul Warden [1/1]). At the root:
+    safe=1; SNAPSHOT re-emits exactly; the divergent pick (equipping the other
+    creature — a different permanent gains the +1/+1) must change the very
+    next query; RESTORE returns byte-identically; the resumed real line stays
+    byte-identical to a no-snapshot control run with the same outcome."""
+    seed = 5
+    deck_paths = _write_decks([
+        ("equip_pq_a", "30 Mountain\n"),
+        ("equip_pq_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/equip_pq_a", "--deck-b", "temp/equip_pq_b",
+             "--no-shuffle",
+             "--battlefield-a",
+             "Cori-Steel Cutter,Grizzly Bears,Soul Warden,Mountain,Mountain"]
+    try:
+        control, choices, outcome = _record_activation_line(seed, extra)
+        root_idx = _find_sbe_root(control, CAT_SELECT_TARGET, 2, "equip-target")
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "equip-target", expect_diverge=True)
+        return (f"equip SELECT_TARGET root @ {root_idx} (nc=2) safe=1, other "
+                f"creature diverges, round-trip exact, "
+                f"outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -2892,6 +3054,9 @@ TESTS = [
     ("storm_copy_target_roundtrip", test_storm_copy_target_roundtrip),
     ("delve_pick_roundtrip", test_delve_pick_roundtrip),
     ("alt_pitch_roundtrip", test_alt_pitch_roundtrip),
+    ("activation_target_roundtrip", test_activation_target_roundtrip),
+    ("activation_x_roundtrip", test_activation_x_roundtrip),
+    ("equip_target_roundtrip", test_equip_target_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

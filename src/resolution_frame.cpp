@@ -334,6 +334,22 @@ std::set<Entity> collect_pending_pins() {
         if (pcst.enchant_ab.target != 0) pins.insert(pcst.enchant_ab.target);
         pin_copy_spell_rt(pcst.copy_rt, pins);
     }
+    // A suspended activation (tag ACTIVATION): the activating card — its zone
+    // row (battlefield / hand / graveyard for ActivationZone$ paths) must
+    // survive a world resample so the resumed flow finds it where it left it —
+    // plus every target the pre-cost selection has bound so far and the frozen
+    // pre-payment equip/ninjutsu candidates (the parked menu's generic pins
+    // cover only the currently offered choices; a still-unarmed frozen list —
+    // e.g. between EQUIP_PAY and the EQUIP_TARGET arm — is covered here).
+    const Game::PendingActivation &pact = cur_game.pending_activation;
+    if (pact.active) {
+        if (pact.source_entity != 0) pins.insert(pact.source_entity);
+        pin_ability_tree_targets(pact.stack_ab, pins);
+        for (auto e : pact.frozen_choices)
+            if (e != 0) pins.insert(e);
+        for (const auto &la : pact.frozen_menu)
+            if (la.source_entity != 0) pins.insert(la.source_entity);
+    }
     // The remembered set: a suspended resolution's accumulated Remembered$
     // references (Doomsday piles, RememberChanged) must survive a determinize.
     for (auto e : cur_game.remembered_entities)

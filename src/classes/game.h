@@ -409,6 +409,77 @@ struct Game {
             int escape_exiled_count = 0;
         };
         PendingCast pending_cast;
+        // Activated-ability suspension state (pending_query tag ACTIVATION):
+        // the persisted state machine of process_action's ACTIVATE_ABILITY
+        // branch (run_activation_flow, action_processor.cpp). The branch's
+        // former locals — the activated ability, the in-flight targeted copy,
+        // the chosen X, the pre-payment equip/ninjutsu candidate menus — live
+        // here BY VALUE so a cur_game copy covers the whole in-flight
+        // activation. Batch 12 converted every machine-mode prompt in the
+        // family: the equip creature menu, the X-activation and loyalty-X
+        // ladders, the pre-cost target selection (battlefield and hand/
+        // graveyard activation zones), the secondary-cost sacrifice/return
+        // picks, and the ninjutsu return-an-attacker pick. The interactive
+        // mana payment stays blocking (machine mode auto-pays with zero
+        // decisions); every cancel path fully rewinds and clears this.
+        // active == true from the ACTIVATE_ABILITY action until the ability
+        // resolves off-stack (mana ability), reaches the stack, or a payment
+        // cancel rewinds.
+        struct PendingActivation {
+            // Where the flow resumes. Steps run in today's exact statement
+            // order; steps that never prompt pass through synchronously.
+            enum Step {
+                NINJA_PAY,         // ninjutsu mana payment + candidate freeze (sync)
+                NINJA_RETURN,      // ninjutsu return-an-attacker pick
+                ZONE_TARGET,       // hand/graveyard activation: pre-cost target select
+                ZONE_PAY,          // hand/graveyard activation: mana payment (sync)
+                EQUIP_PAY,         // equip: menu freeze + tap + mana payment (sync)
+                EQUIP_TARGET,      // equip: the creature menu (after payment)
+                X_LADDER,          // X activation cost (Candelabra of Tawnos)
+                LOYALTY_X,         // X loyalty cost (Chandra, Flamecaller's [-X])
+                TARGET,            // battlefield pre-cost select_target
+                TAP_PAY,           // tap cost + mana payment (cancel rewind; sync)
+                SECONDARY_PRE,     // loyalty/life/energy/sac-self costs (sync)
+                SECONDARY_SAC,     // type-based sacrifice-cost pick
+                SECONDARY_RETURN,  // return-to-hand-cost pick
+                SECONDARY_POST,    // discard-self / discard-hand costs (sync)
+                FINISH             // mana production, or stack push + take_action
+            };
+            bool active = false;
+            Step step = X_LADDER;
+            // Activation identity: reconstructs the consumed LegalAction
+            // across the suspension gap.
+            Entity source_entity = 0;
+            bool activator_is_a = true;
+            // Hand/graveyard ActivationZone$ path (no Permanent component):
+            // routes FINISH to the zone path's completion (auto-consume to
+            // graveyard + stack push) instead of the battlefield mana/stack
+            // completion.
+            bool zone_path = false;
+            // The activated ability as the consumed LegalAction carried it
+            // (costs are read from here), and the in-flight copy the target
+            // selection writes into (pushed onto the stack at FINISH) — the
+            // branch's former `ability` / `stack_ab` pair.
+            Ability ability;
+            Ability stack_ab;
+            // X chosen at the X_LADDER step (added as generic pips to the
+            // TAP_PAY cost). The loyalty-X choice lives only in
+            // cur_game.x_paid, exactly like the blocking flow.
+            size_t x_activation = 0;
+            // Equip: the creature menu frozen BEFORE the cost is paid (the
+            // blocking flow built it there — paying by sacrificing a source
+            // for mana must not change the offered menu), re-emitted verbatim
+            // at the EQUIP_TARGET arm. Ninjutsu freezes only the candidate
+            // entities (frozen_choices) — its blocking prompt built the menu
+            // labels AFTER payment.
+            std::vector<LegalAction> frozen_menu;
+            std::vector<Entity> frozen_choices;
+            // The shared in-flight target pick (ZONE_TARGET / TARGET). Member
+            // field per the Batch 4 finding (never its own EffectRuntime
+            // alternative).
+            TargetSelectRT tsel;
+        };
+        PendingActivation pending_activation;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
