@@ -244,7 +244,7 @@
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Talon Gates of Madara
-  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Talon Gates of Madara
@@ -1238,7 +1238,7 @@
   Opp:   14 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Brainstorm, Scalding Tarn, Lightning Bolt, Unholy Heat, Ponder, Mishra's Bauble, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time

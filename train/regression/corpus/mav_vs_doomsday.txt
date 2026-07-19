@@ -580,7 +580,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Underground Sea
   Opp BF:   Talon Gates of Madara
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Self GY: Polluted Delta, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Self exile: Ponder
@@ -602,7 +602,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Underground Sea
   Opp BF:   Talon Gates of Madara
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Green Sun's Zenith, Once Upon a Time
@@ -1049,7 +1049,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Swamp | Underground Sea
   Opp BF:   Talon Gates of Madara
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Polluted Delta, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Self exile: Ponder
@@ -1071,7 +1071,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Swamp | Underground Sea
   Opp BF:   Talon Gates of Madara
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Polluted Delta, Thoughtseize, Force of Will, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Green Sun's Zenith, Once Upon a Time

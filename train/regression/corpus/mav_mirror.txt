@@ -957,7 +957,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Collector Ouphe [2/2] (SICK) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Talon Gates of Madara
-  Stack: Windswept Heath (ability, self) [amt=1]
+  Stack: Windswept Heath (ability, self)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Dryad Arbor, Once Upon a Time
@@ -2112,7 +2112,7 @@
   Opp:   5 life | mana: empty | hand count: 6 | lib 45
   Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [8/8] (T) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Wooded Foothills (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
+  Stack: Wooded Foothills (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
   Self GY: Wooded Foothills, Forest, Wasteland, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Gaea's Cradle, Once Upon a Time
   Self exile: Dryad Arbor
@@ -2134,7 +2134,7 @@
   Opp:   5 life | mana: empty | hand count: 6 | lib 45
   Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Keen-Eyed Curator [3/3] | Knight of the Reliquary [8/8] (T) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T) | Wasteland (T)
-  Stack: Wooded Foothills (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
+  Stack: Wooded Foothills (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
   Pending: Wooded Foothills (self)
   Self GY: Wooded Foothills, Forest, Wasteland, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Gaea's Cradle, Once Upon a Time

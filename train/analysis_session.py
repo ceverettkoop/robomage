@@ -72,7 +72,7 @@ class AnalysisConfig:
     worlds: int = 4
     chunk_sims: int = 16     # sims per UI update (~100ms/chunk at ~6ms/sim)
     max_sims: int = 800      # total per run; 0 = run until stopped
-    c_puct: float = 1.5
+    c_puct: float = 2.5
     max_depth: int = 60
     sb_max_depth: int = DEFAULT_SB_MAX_DEPTH  # sideboard roots: game-long horizon
     seed: int = 0            # search rng seed; 0 = fresh entropy per run
