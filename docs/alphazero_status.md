@@ -36,11 +36,34 @@ Protocol, alongside the usual integer action reply:
 | `DETERMINIZE <seed>` | reshuffle hidden zones with a world-local RNG (only at `safe=1`) | `DETERMINIZE_OK` + re-emitted query |
 | `RELEASE` | drop all snapshots / leave the terminal intercept | `RELEASE_OK` (+ query at a live decision) |
 
-Every query is preceded by `SEARCHINFO safe=<0|1>`. Loop-safe (`safe=1`) =
-priority decisions, attacker/blocker SELECT prompts, cleanup discard; the
-attack/block TARGET sub-prompts, combat damage assignment, mid-resolution
-prompts (targets/digs) and mulligans are `safe=0` (snapshot there is a fatal
-error — but simulations traverse them freely; safety only gates the root).
+Every query is preceded by `SEARCHINFO safe=<0|1>`. Since the snapshot-safe
+conversion project (branch `snapshot_safe`, Batches 0-14, completed 2026-07-18)
+**every decision kind is loop-safe**: priority, combat declarations and their
+target sub-prompts, damage assignment, every resolution-time effect prompt
+(targets/digs/scrys/searches/unless-costs/...), trigger placement, SBE prompts
+(legend rule, ETB choices, enters-tapped-unless-life), cast/activation flows
+(modes, targets, X, delve, alt costs), mulligans/pregame, the turn-draw dredge
+replacement, and bo3 sideboarding. Measured scripted-vs-scripted over the nine
+replay-corpus pairings (delver/doomsday/mav, seed 1): **2844/2844 decisions
+safe=1 (100.0%)**; the delver control line in `test_snapshot.py` opens safe=1
+at decision 0 and stays safe for all 148 decisions; a league probe
+(wrb_energy/bw_dnt/ur_delver/gw_maverick/bug pairings, 3 seeds each, 1550
+decisions) is also 100% safe. The documented residual `safe=0` surface (all
+blocking-by-design, quantified in `test_snapshot.py`'s `PROMPT_SITE_WHITELIST`
+audit):
+
+- the 616.1 multi-replacement `choose_one` prompt (needs >= 2 simultaneous
+  replacement effects on one event — e.g. two Leylines of the Void in play;
+  0 occurrences in every measured run; counted at runtime by
+  `replacement::choose_one_prompt_count`);
+- interactive-only prompts machine mode never reaches (interactive mana
+  payment, interactive hybrid pips);
+- the blocking-shim fallbacks for prompts fired outside the main loop
+  (defensive; believed unreachable since the pregame gate) and
+  `effect_choose_card`'s cast-from-exile mini-cast announce path.
+
+(snapshot at a `safe=0` decision is a fatal error — but simulations traverse
+them freely; safety only gates the root).
 If a game ends while a snapshot is live the engine emits `SIM_RESULT: <A|B|DRAW>`
 and blocks for RESTORE/RELEASE instead of exiting.
 
@@ -114,7 +137,8 @@ All Phase C deliverables are on the branch (landed across the WIP commits
   per searched (loop-safe, >1 choice) decision stores `(obs copy, visit-count pi,
   legal mask, mover seat)`; root Dirichlet (eps .25 / alpha 1.0), tau=1 for the
   first 20 moves then argmax; z backfilled ±1 per-mover (0 on draws); unsafe
-  roots fall back to the net's argmax and are NOT stored. Shards pool into
+  roots fall back to the net's argmax and are NOT stored (post snapshot_safe
+  effectively never — every decision kind is a safe root). Shards pool into
   `train/az_data/gen/shard_*.npz` (obs/pi/z/mask) — the exact format the
   Phase D C++ writer reproduces.
 - **`train/az_train.py`** — Adam (wd 1e-4) on
@@ -235,8 +259,9 @@ CI perf probe expects release-build timing). Gate everything with `make check`.
    first (the PPO value head is trained on shaped returns — miscalibration is
    the classic cause of low-sim search underperforming; try 1–3), then `--c`
    (prior-heavier 0.8–1.0), then `--sims` 64→256 / `--worlds` 2→8. Check the
-   printed **safe-fraction** per deck (ur_delver measured 63%): a low value
-   caps attainable lift because unsafe roots fall back to the raw policy.
+   printed **safe-fraction** per deck (ur_delver measured 63% BEFORE the
+   snapshot-safe conversion; ~100% since — see the safe-window section): a low
+   value caps attainable lift because unsafe roots fall back to the raw policy.
 3. **Phase C**: `train.py az --deck <deck>` cycles (selfplay → train → gate),
    mirrors + cross-deck (`--mirror-frac`), sims 100-200, worlds 3-5; watch the
    `az-eval` promotion rate and the losses in `checkpoints/az/gen_az_train.log`.
@@ -629,10 +654,14 @@ as the design intent it was built against:
 
 ## Notes, quirks, known limitations
 
-- The engine's `SEARCHINFO safe=` split means combat SELECT prompts are
-  searchable roots but target sub-prompts fall back to the raw policy at the
-  ROOT only (inside simulations they're ordinary tree nodes). `SearchController.stats`
-  reports the searched/fallback ratio — check it per deck.
+- The `SEARCHINFO safe=` split is effectively closed since the snapshot-safe
+  conversion (branch `snapshot_safe`, 2026-07-18): every decision kind is a
+  searchable root (measured 100% over the corpus matchups + a league probe;
+  residual `safe=0` surface documented in the safe-window section above).
+  `SearchController.stats` still reports the searched/fallback ratio — a
+  nonzero fallback count now indicates one of the documented residuals (or a
+  regression; the `prompt_site_guard` CI test in `test_snapshot.py` walls off
+  new blocking prompts).
 - DETERMINIZE pins both players' known-top-library prefixes and known
   (revealed) opponent hand cards; the opponent's unknown hand + unpinned
   library form one exchange pool. **Post-board (bo3 game 2+) the opponent's

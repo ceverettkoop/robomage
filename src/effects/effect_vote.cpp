@@ -39,8 +39,7 @@ namespace effects {
 // this ability's subabilities, exiles it via the standard change_zone resolution. Returning true
 // chains that subability. If no permanent matches the filter (the opponent controls no nonland
 // permanents), the spell still resolves and does nothing.
-bool vote(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    PendingDecisionScope pending_scope(ab.source);
+HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     // Translate Forge's "YouDontCtrl" (a permanent you don't control) into the evaluator's
     // OppCtrl, exactly as Ability::is_legal_target does, so "Permanent.nonLand+YouDontCtrl"
     // matches the opponent's nonland permanents. The controller is the "you" reference.
@@ -65,14 +64,13 @@ bool vote(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     if (candidates.empty()) {
         game_log("Will of the Council: no eligible permanent to vote for; nothing is exiled.\n");
-        return true;  // still resolves; chain subs (DBExile finds nothing remembered)
+        return HandlerResult::DONE_RUN_SUBS;  // still resolves; chain subs (DBExile finds nothing remembered)
     }
 
     // Present the controller (the voter) the choice over the eligible permanents. This is a
     // CHOOSE_CARD-style decision (not a target), so it works even against hexproof/shroud.
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
-
+    // The candidate scan and menu build above are pure (re-derived identically on resume);
+    // the pre-ask log is arm-only.
     std::vector<LegalAction> picks;
     for (auto e : candidates) {
         const std::string &nm = global_coordinator.GetComponent<Permanent>(e).name;
@@ -82,15 +80,16 @@ bool vote(Ability &ab, std::shared_ptr<Orderer> orderer) {
         picks.push_back(la);
     }
 
-    game_log("%s votes for a permanent to exile:\n", player_name(ab.controller).c_str());
-    int choice = InputLogger::instance().get_input(picks);
-    cur_game.player_a_has_priority = prev_priority;
+    if (!fctx.resuming())
+        game_log("%s votes for a permanent to exile:\n", player_name(ab.controller).c_str());
+    int choice = fctx.ask(std::move(picks), ab.controller, ab.source);
+    if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     Entity chosen = candidates[static_cast<size_t>(choice)];
     cur_game.remembered_entities.push_back(chosen);
     game_log("%s votes for %s.\n", player_name(ab.controller).c_str(),
              global_coordinator.GetComponent<Permanent>(chosen).name.c_str());
-    return true;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)
+    return HandlerResult::DONE_RUN_SUBS;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)
 }
 
 }  // namespace effects

@@ -14,6 +14,7 @@
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_driver.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../svar_eval.h"
@@ -391,12 +392,48 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                 auto &pl = global_coordinator.GetComponent<Player>(pe);
                 std::string prompt = "pay " + std::to_string(c.tapped_unless_life) +
                                      " life so it enters untapped";
-                if (pl.life_total >= c.tapped_unless_life &&
-                    request_optional_yesno(ev.affected_player, prompt)) {
-                    pl.life_total -= c.tapped_unless_life;
-                    game_log("%s pays %d life.\n", player_name(ev.affected_player).c_str(),
-                             c.tapped_unless_life);
-                    break;  // enters untapped
+                if (pl.life_total >= c.tapped_unless_life) {
+                    // Latched-answer site (tag SBE_LATCHED): the y/n is a loop-top
+                    // pending decision. The dispatch runs inside the SBE
+                    // apply_permanent_components pass BEFORE anything about the
+                    // entering permanent is mutated, so on resume the re-run
+                    // re-reaches the same entity, the re-dispatch re-derives this
+                    // same single self-replacement candidate (616.1a admits only
+                    // self-replacements, and no vocab card carries two), and the
+                    // re-ask consumes the latch. The armed menu is byte-identical
+                    // to request_optional_yesno's Decline/Accept pair.
+                    uint64_t key = pq_key(SbeSite::ETB_TAPPED_LIFE,
+                                          ev.affected_player == Zone::PLAYER_A,
+                                          ev.entity, 2);
+                    int choice = -1;
+                    if (!pq_take_latched(key, &choice)) {
+                        if (in_main_loop()) {
+                            std::vector<LegalAction> yn;
+                            LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
+                            decline.category = ActionCategory::OPTIONAL_YESNO;
+                            decline.option_ordinal = 0;  // 0 = decline
+                            yn.push_back(decline);
+                            LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
+                            accept.category = ActionCategory::OPTIONAL_YESNO;
+                            accept.option_ordinal = 1;  // 1 = accept
+                            yn.push_back(accept);
+                            // Park the choice and suspend mid-apply: dispatch()
+                            // and its SBE caller early-return cooperatively
+                            // before the Permanent is created.
+                            pq_arm_sbe(key, std::move(yn), ev.affected_player,
+                                       /*decision_source=*/0);
+                            return;
+                        }
+                        // Blocking fallback for an SBE call outside the main loop
+                        // (defensive only since the Batch 13 pregame gate).
+                        choice = request_optional_yesno(ev.affected_player, prompt) ? 1 : 0;
+                    }
+                    if (choice == 1) {
+                        pl.life_total -= c.tapped_unless_life;
+                        game_log("%s pays %d life.\n", player_name(ev.affected_player).c_str(),
+                                 c.tapped_unless_life);
+                        break;  // enters untapped
+                    }
                 }
             }
             ev.enters_tapped = true;
@@ -444,9 +481,41 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
     }
 }
 
+// Count of 616.1 multi-replacement prompts emitted (exposed via
+// replacement::choose_one_prompt_count for reachability measurement).
+size_t g_choose_one_prompts = 0;
+
 // 616.1: the affected player chooses ONE of several applicable replacement effects.
 // 616.1a gates the choice to self-replacement effects first when any apply. Returns
 // the index into `cands` of the chosen effect.
+//
+// RESIDUAL (snapshot-safe project, Batch 14): this prompt is the one remaining
+// blocking mid-flow decision family. It fires only when >= 2 replacement
+// effects apply to ONE event simultaneously. Reachability against the current
+// vocab/decks:
+//   - MOVE_TO_ZONE -> GRAVEYARD: two EXILE_INSTEAD sources in play at once
+//     (wrb_energy runs 4x Leyline of the Void; doomsday runs 2x Dauthi
+//     Voidwalker). The outcome of every choice is identical (exile the card;
+//     void_countered records no source), only the prompt itself differs.
+//   - MOVE_TO_ZONE -> BATTLEFIELD: two PREVENT_ETB / EXILE_INSTEAD_OF_ETB
+//     sources (wrb_energy runs 2x Containment Priest).
+//   - UNTAP: two SKIP_UNTAP sources matching one permanent (gw_maverick runs
+//     2x Choke; both choices are identical in outcome).
+//   - ENTERS_BATTLEFIELD: needs >= 2 SELF-replacements on one entering card
+//     (616.1a filters non-self out) — no vocab card has two, so unreachable.
+// It was NOT converted because the MOVE_TO_ZONE dispatch fires inside
+// Orderer::add_to_zone, which is called from every family (resolution
+// handlers mid-mutation, SBE death sweeps, cost payments, combat damage) —
+// suspending there requires threading a suspension result through every
+// add_to_zone caller, far beyond a safe end-of-project change. Conversion
+// recipe when wanted: (1) UNTAP context — a PendingUntapRT mini-frame over
+// advance_step's untap loop, exactly like PendingDrawRT; (2) ENTERS/SBE
+// context — SBE_LATCHED (pq_key over the entering entity + menu size);
+// (3) MOVE_TO_ZONE — make add_to_zone return a "suspended" status and convert
+// its callers family by family, starting with the SBE death sweep (latched)
+// and resolution handlers (frame rt), leaving cost-payment moves (already
+// inside PendingCast/PendingActivation flows) last. Until then the prompt
+// blocks inline (safe=0), counted by g_choose_one_prompts.
 size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) {
     // 616.1a — self-replacement effects (614.15) must be chosen before others.
     std::vector<size_t> eligible;
@@ -465,6 +534,7 @@ size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) 
     }
     game_log("%s chooses which replacement effect applies next (%zu applicable).\n",
              player_name(chooser).c_str(), eligible.size());
+    g_choose_one_prompts++;
     // Point priority at the chooser so the query routes/observes/records from
     // their perspective (they may not be the priority holder).
     bool prev_priority = cur_game.player_a_has_priority;
@@ -476,37 +546,16 @@ size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) 
 
 // Dredge (702.52a / 614.1a): an optional, exclusive draw replacement. The drawing
 // player may replace the draw with one dredge from their graveyard, or decline.
+// BLOCKING form, kept for the unconverted draw sites (mulligan redraws, where a
+// dredge card cannot yet be in the graveyard); the turn-based draw and the
+// resolution-time draw handlers ask the same menu through the suspension
+// framework instead (resume_pending_draws / draw_n_with_replacements).
 void dispatch_draw(ReplacementEvent &ev) {
-    size_t lib = library_size(ev.affected_player);
-    std::vector<Candidate> dredges;
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location != Zone::GRAVEYARD || z.owner != ev.affected_player) continue;
-        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        auto &cd = global_coordinator.GetComponent<CardData>(e);
-        if (cd.dredge > 0 && static_cast<size_t>(cd.dredge) <= lib) {
-            Candidate c;
-            c.source = e;
-            c.kind = SELF_TAPPED;  // unused for dredge
-            c.amount = cd.dredge;
-            c.label = "Dredge " + cd.name + " (mill " + std::to_string(cd.dredge) + ")";
-            dredges.push_back(c);
-        }
-    }
-    if (dredges.empty()) return;
+    std::vector<replacement::DrawReplacementOption> opts;
+    std::vector<LegalAction> actions =
+        replacement::collect_draw_replacements(ev.affected_player, &opts);
+    if (actions.empty()) return;
 
-    // Option 0 is always "draw normally" so the default (index 0) keeps the draw.
-    std::vector<LegalAction> actions;
-    LegalAction draw_act(PASS_PRIORITY, std::string("Draw a card"));
-    draw_act.category = ActionCategory::CHOOSE_REPLACEMENT;
-    actions.push_back(draw_act);
-    for (const Candidate &c : dredges) {
-        LegalAction la(PASS_PRIORITY, c.source, c.label);
-        la.category = ActionCategory::CHOOSE_REPLACEMENT;
-        actions.push_back(la);
-    }
     // The drawing player makes the dredge decision — route/observe/record from
     // their perspective, which may differ from the current priority holder (a
     // draw can be forced by an opponent's effect).
@@ -516,15 +565,48 @@ void dispatch_draw(ReplacementEvent &ev) {
     cur_game.player_a_has_priority = prev_priority;
     if (choice == 0) return;  // chose to draw normally
 
-    const Candidate &chosen = dredges[static_cast<size_t>(choice - 1)];
+    const replacement::DrawReplacementOption &chosen = opts[static_cast<size_t>(choice - 1)];
     ev.draw_replaced = true;
     ev.dredge_source = chosen.source;
-    ev.dredge_mill = chosen.amount;
+    ev.dredge_mill = chosen.mill;
 }
 
 }  // namespace
 
 namespace replacement {
+
+std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
+                                                   std::vector<DrawReplacementOption> *opts) {
+    opts->clear();
+    std::vector<LegalAction> actions;
+    size_t lib = library_size(player);
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; e++) {
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location != Zone::GRAVEYARD || z.owner != player) continue;
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        auto &cd = global_coordinator.GetComponent<CardData>(e);
+        if (cd.dredge > 0 && static_cast<size_t>(cd.dredge) <= lib)
+            opts->push_back({e, cd.dredge});
+    }
+    if (opts->empty()) return actions;
+
+    // Option 0 is always "draw normally" so the default (index 0) keeps the draw.
+    LegalAction draw_act(PASS_PRIORITY, std::string("Draw a card"));
+    draw_act.category = ActionCategory::CHOOSE_REPLACEMENT;
+    actions.push_back(draw_act);
+    for (const DrawReplacementOption &o : *opts) {
+        auto &cd = global_coordinator.GetComponent<CardData>(o.source);
+        LegalAction la(PASS_PRIORITY, o.source,
+                       "Dredge " + cd.name + " (mill " + std::to_string(o.mill) + ")");
+        la.category = ActionCategory::CHOOSE_REPLACEMENT;
+        actions.push_back(la);
+    }
+    return actions;
+}
+
+size_t choose_one_prompt_count() { return g_choose_one_prompts; }
 
 void dispatch(ReplacementEvent &ev) {
     if (ev.type == ReplacementEvent::DRAW_CARD) {
@@ -540,6 +622,14 @@ void dispatch(ReplacementEvent &ev) {
         if (cands.empty()) break;
         size_t pick = (cands.size() == 1) ? 0 : choose_one(ev.affected_player, cands);
         apply_one(ev, cands[pick]);
+        // The tapped-unless-life y/n parked a pending decision mid-apply
+        // (SBE_LATCHED): bail without recording anything — the caller discards
+        // `ev`, and the resumed SBE pass re-runs this whole dispatch from
+        // scratch and consumes the latch at the same ask. Gated on the query
+        // being UNANSWERED (the arm we just created): an answered latch still
+        // in flight belongs to a site downstream of a resumed pass and must
+        // not truncate an unrelated dispatch.
+        if (cur_game.pending_query.active && !cur_game.pending_query.answered) return;
         applied.insert({cands[pick].source, cands[pick].index});
     }
 }

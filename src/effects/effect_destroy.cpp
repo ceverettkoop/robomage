@@ -42,13 +42,13 @@ static void destroy_single(Entity tgt, std::shared_ptr<Orderer> orderer) {
     game_log("%s is destroyed\n", name.c_str());
 }
 
-bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Pyroblast/Hydroblast destroy mode: only destroy if the target is the required
     // color. The spell still resolves (doing nothing) against a wrong-color permanent.
     if (!target_color_condition_met(ab, ab.target)) {
         std::string tname = entity_name(ab.target);
         game_log("%s is not the required color — not destroyed\n", tname.c_str());
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Conditional destroy (Fatal Push): check target CMC against threshold
@@ -64,7 +64,7 @@ bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (tgt_cmc > threshold) {
                 std::string tname = entity_name(tgt);
                 game_log("%s has mana value %d (threshold %d) — not destroyed\n", tname.c_str(), tgt_cmc, threshold);
-                return true;
+                return HandlerResult::DONE_RUN_SUBS;
             }
         }
     }
@@ -74,7 +74,7 @@ bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer) {
     } else {
         destroy_single(ab.target, orderer);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -26,9 +27,12 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
+#include "../error.h"
+#include "../game_driver.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../pending_query.h"
 #include "../saga.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
@@ -115,6 +119,15 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     for (;;) {
         // Continuous effects define the game state that SBAs evaluate
         apply_permanent_components(game, orderer);
+        // An ETB choice inside apply_permanent_components parked a loop-top
+        // pending decision (tag SBE_LATCHED): suspend the whole SBE call by
+        // early return (no trigger drain — it stays deferred until the resumed
+        // run's scan). On resume the main loop re-enters state_based_effects
+        // from scratch; already-processed permanents are idempotent no-ops and
+        // the same mid-apply site re-finds the question and consumes the latch.
+        // (An ACTIVE-and-ANSWERED query is that resume in flight — fall
+        // through so the deriving scan below can reach its site.)
+        if (game.pending_query.active && !game.pending_query.answered) return;
         apply_continuous_effects(game);
         update_city_blessing(game);  // 702.131: ascend grants the city's blessing at 10+ permanents
 
@@ -278,15 +291,42 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                         la.category = ActionCategory::KEEP_LEGEND;
                         choices.push_back(la);
                     }
-                    game_log("Legend rule: %s controls %zu copies of %s; choose one to keep.\n",
-                             player_name(owner).c_str(), grp.second.size(), grp.first.c_str());
-                    // The controller of the duplicates chooses which to keep; point
-                    // priority at them so the query routes/observes/records from their
-                    // perspective (SBAs run regardless of who currently holds priority).
-                    bool prev_priority = game.player_a_has_priority;
-                    game.player_a_has_priority = (owner == Zone::PLAYER_A);
-                    int keep = InputLogger::instance().get_input(choices);
-                    game.player_a_has_priority = prev_priority;
+                    // Latched-answer site (tag SBE_LATCHED): the keep choice is a
+                    // loop-top pending decision. Re-finding is deterministic — the
+                    // legend check is the LAST check in the pass body, so suspending
+                    // here ≡ end-of-pass: on resume the re-run's earlier checks are
+                    // silent no-ops on the frozen state, legend_order re-derives from
+                    // the unchanged player_a_turn, the name-sorted by_name map yields
+                    // the same first conflict, and legend_applied still limits the
+                    // pass to that one conflict — so the key (owner + conflicting
+                    // name + menu size) provably re-derives.
+                    uint64_t key = pq_key(SbeSite::LEGEND_KEEP, owner == Zone::PLAYER_A,
+                                          std::hash<std::string>{}(grp.first), choices.size());
+                    int keep = -1;
+                    if (!pq_take_latched(key, &keep)) {
+                        game_log("Legend rule: %s controls %zu copies of %s; choose one to keep.\n",
+                                 player_name(owner).c_str(), grp.second.size(), grp.first.c_str());
+                        if (in_main_loop()) {
+                            // Park the choice (priority persisted at the chooser) and
+                            // suspend the whole SBE call — early return WITHOUT
+                            // check_triggered_abilities, deferring the pass's event
+                            // drain to the resumed run (the drain must stay inside
+                            // the trigger scan).
+                            pq_arm_sbe(key, std::move(choices), owner, /*decision_source=*/0);
+                            return;
+                        }
+                        // Blocking fallback for an SBE call outside the main loop.
+                        // Since the pregame gate (Batch 13) even the preplaced-preset
+                        // SBE pass runs inside the loop, so this is defensive only.
+                        // The controller of the duplicates chooses which to keep;
+                        // point priority at them so the query routes/observes/records
+                        // from their perspective (SBAs run regardless of who
+                        // currently holds priority).
+                        bool prev_priority = game.player_a_has_priority;
+                        game.player_a_has_priority = (owner == Zone::PLAYER_A);
+                        keep = InputLogger::instance().get_input(choices);
+                        game.player_a_has_priority = prev_priority;
+                    }
                     Entity kept = grp.second[static_cast<size_t>(keep)];
                     for (auto e : grp.second) {
                         if (e == kept) continue;
@@ -302,6 +342,14 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
         if (!any_applied) break;
     }
+
+    // Latched-answer tripwire: a re-run entered with an answered SBE_LATCHED
+    // query must have consumed it at the site that armed it (pass 1 re-derives
+    // the question — the state is frozen while the answer is latched). Settling
+    // without consuming means the re-run failed to re-find the question.
+    if (game.pending_query.active && game.pending_query.answered &&
+        game.pending_query.tag == PendingQuery::SBE_LATCHED)
+        fatal_error("SBE re-run did not re-derive the latched question");
 
     // SBA loop settled; triggered abilities go on the stack (rule 704.3)
     check_triggered_abilities(game, orderer);

@@ -9,7 +9,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool wins_game(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult wins_game(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     // Alternative win condition (Thassa's Oracle). condition_passed is checked in
     // resolve()'s prologue; reaching here means the player wins.
@@ -22,7 +22,7 @@ bool wins_game(Ability &ab, std::shared_ptr<Orderer> orderer) {
     game_log("%s wins the game!\n", player_name(winner).c_str());
     cur_game.ended = true;
     cur_game.winner = static_cast<int>(winner);
-    return false;  // original returned early — skip the standard subability loop
+    return HandlerResult::DONE_NO_SUBS;  // original returned early — skip the standard subability loop
 }
 
 }  // namespace effects

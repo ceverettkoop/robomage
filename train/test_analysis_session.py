@@ -387,12 +387,21 @@ def test_opp_result_hook():
             env.reset(options={"engine_seed": SEED})
             ctrl.bind_env(env)
 
-            # An UNSAFE decision (the opening mulligan) falls back — no hook.
-            if env.last_search_safe:
-                raise AnalysisTestError("expected the first decision unsafe")
+            # Since the snapshot-safe conversion (branch snapshot_safe) every
+            # decision in this scenario reports safe=1 — the opening mulligan
+            # included — so no naturally-unsafe decision exists to exercise the
+            # controller's fallback branch. Force the flag off for one decision
+            # (the controller reads env.last_search_safe; the next engine query
+            # rewrites it) to keep the "fallback never fires the hook" contract
+            # covered.
+            if not env.last_search_safe:
+                raise AnalysisTestError("expected the opening decision safe=1 "
+                                        "(snapshot-safe conversion)")
+            env.last_search_safe = False
             ctrl.choose(env._obs, env._num_choices)
             if captured:
                 raise AnalysisTestError("hook fired on a fallback decision")
+            env.last_search_safe = True
 
             _drive_to_safe(env)
             chosen = ctrl.choose(env._obs, env._num_choices)

@@ -82,11 +82,11 @@ void apply_animate_creature_bootstrap(Entity e) {
 // extension points for a later land-animation card (set base P/T, grant keywords, add a
 // Creature component) are wired through the same animate_* fields and are no-ops until a card
 // populates them.
-bool animate(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Defined$ Self (The Fantasticar: "have CARDNAME become an artifact creature") animates the
     // ability's own source; otherwise animate the chosen/inherited target (Guide of Souls).
     Entity tgt = ab.defined_self ? ab.source : ab.target;
-    if (tgt == 0 || !is_battlefield_permanent(tgt)) return true;
+    if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
 
     // Duration (CR 613.7 + 514.2). Three variants:
@@ -201,7 +201,7 @@ bool animate(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("%s gains an activated ability.\n", perm.name.c_str());
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Lapse every "until your next turn" Animate (Karn, the Great Creator +1) created by

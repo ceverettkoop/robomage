@@ -17,7 +17,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-bool gain_life(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult gain_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     // Swords to Plowshares: gain life goes to the exiled creature's controller, read via
     // last-known info since the creature was exiled earlier this resolution (CR 608.2g/h).
@@ -41,7 +41,7 @@ bool gain_life(Ability &ab, std::shared_ptr<Orderer> orderer) {
     auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
     game_log(
         "%s gains %zu life (now at %d)\n", player_name(gain_controller).c_str(), gain_amount, player.life_total);
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

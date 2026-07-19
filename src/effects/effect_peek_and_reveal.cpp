@@ -24,8 +24,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    PendingDecisionScope pending_scope(ab.source);
+HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     const PeekParams *pp = std::get_if<PeekParams>(&ab.params);
     if (pp && pp->no_reveal) {
         // Look at the top N cards of the target player's library privately, no reveal choice.
@@ -48,13 +47,13 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
             }
         }
         // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Delver of Secrets: peek own library top, optionally reveal
     if (!global_coordinator.entity_has_component<Permanent>(ab.source)) {
         game_log("%s fizzles\n", ab.category.c_str());
-        return false;
+        return HandlerResult::DONE_NO_SUBS;
     }
     auto &src_perm = global_coordinator.GetComponent<Permanent>(ab.source);
     Entity top_card = 0;
@@ -69,15 +68,22 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     if (top_card == 0) {
         game_log("Library is empty — nothing to peek.\n");
-        return false;
+        return HandlerResult::DONE_NO_SUBS;
     }
     auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
-    game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
+    // Arm-only peek line: the resume rebuilds the same menu (the top card is
+    // pinned against determinize by collect_pending_pins) without re-logging.
+    if (!ctx.resuming())
+        game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
     std::vector<LegalAction> reveal_actions = {
         LegalAction(PASS_PRIORITY, top_card, std::string("Don't reveal")),
         LegalAction(PASS_PRIORITY, top_card, std::string("Reveal")),
     };
-    int reveal_choice = InputLogger::instance().get_input(reveal_actions);
+    // The old inline get_input ran without a priority repoint — ambient priority
+    // is the resolving controller here — so seating the ask on ab.controller is
+    // a no-op swap, byte-identical to today.
+    int reveal_choice = ctx.ask(std::move(reveal_actions), ab.controller, ab.source);
+    if (reveal_choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     if (reveal_choice == 1) {
         game_log("Revealed: %s\n", top_cd.name.c_str());
@@ -98,7 +104,7 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
             }
         }
     }
-    return false;  // transform logic handled inline; skip subabilities loop
+    return HandlerResult::DONE_NO_SUBS;  // transform logic handled inline; skip subabilities loop
 }
 
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value) {

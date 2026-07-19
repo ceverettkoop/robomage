@@ -19,7 +19,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Destroy all permanents matching the filter (e.g. Meltdown: "Artifact.cmcLEX")
     std::string filter = ab.valid_cards_filter;
     bool filter_artifact = filter.find("Artifact") != std::string::npos;
@@ -43,7 +43,7 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
             bool paid = pay_energy(pl, n);  // n <= 0 is a trivially-payable no-op (returns true)
             if (n > 0)
                 game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), n);
-            if (!paid) return true;  // couldn't pay -> nothing is destroyed
+            if (!paid) return HandlerResult::DONE_RUN_SUBS;  // couldn't pay -> nothing is destroyed
         } else {
             // Non-switched genuine "destroy each X unless its controller pays {E}": the payment is
             // per-permanent by EACH affected permanent's controller, and paying PREVENTS that
@@ -100,7 +100,7 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         orderer->add_to_zone(false, e, Zone::GRAVEYARD);
         game_log("%s is destroyed\n", ename.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_destroy_all(Ability &ab, const std::string &key, const std::string &value) {

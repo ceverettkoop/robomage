@@ -27,7 +27,7 @@ namespace effects {
 // simplification). The player is ValidTgts$ Player (ab.target); absent a target the
 // source's controller scries. After scrying, any SubAbility$ chains with the same target
 // (Kozilek's Command: "scries X, then draws a card" — DBDraw with Defined$ ParentTarget).
-bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     Zone::Ownership owner;
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
@@ -37,23 +37,36 @@ bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
     else
         owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
 
-    size_t num = ab.amount;
-    if (!ab.dynamic_amount_expr.empty())
-        num = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
-    if (num == 0) return true;
+    // The looked-at slice is frozen once into the frame rt (pinned against
+    // determinize by pinned_entities()); the per-card loop index persists so a
+    // resume re-enters the suspended keep/bottom decision. Bottom moves happen
+    // per answer, exactly as before.
+    ScryRt local_rt;
+    ScryRt &rt = ctx.can_suspend() ? ctx.rt<ScryRt>() : local_rt;
+    if (!rt.init) {
+        size_t num = ab.amount;
+        if (!ab.dynamic_amount_expr.empty())
+            num = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
+        if (num == 0) return HandlerResult::DONE_RUN_SUBS;
 
-    std::vector<Entity> lib = orderer->get_library_top(owner, num);
-    if (lib.empty()) {
-        game_log("%s's library is empty — nothing to scry.\n", player_name(owner).c_str());
-        return true;
+        rt.lib = orderer->get_library_top(owner, num);
+        if (rt.lib.empty()) {
+            game_log("%s's library is empty — nothing to scry.\n", player_name(owner).c_str());
+            return HandlerResult::DONE_RUN_SUBS;
+        }
+        game_log("%s scries %zu.\n", player_name(owner).c_str(), rt.lib.size());
+        rt.init = true;
     }
 
-    game_log("%s scries %zu.\n", player_name(owner).c_str(), lib.size());
     // Decide top-to-bottom per card. Bottomed cards move to the library bottom; cards left
     // on top stay in place (their distance_from_top compacts as bottomed cards leave).
-    for (Entity card : lib) {
+    for (; rt.idx < rt.lib.size(); ++rt.idx) {
+        Entity card = rt.lib[rt.idx];
         auto &cd = global_coordinator.GetComponent<CardData>(card);
-        game_log_private(owner, "Scry: top card is %s\n", cd.name.c_str());
+        // Arm-only per-card look line: a resume consumes the parked answer for
+        // this card without re-logging.
+        if (!ctx.resuming())
+            game_log_private(owner, "Scry: top card is %s\n", cd.name.c_str());
         std::vector<LegalAction> scry_actions = {
             LegalAction(PASS_PRIORITY, card, std::string("Keep on top")),
             LegalAction(PASS_PRIORITY, card, std::string("Put on bottom")),
@@ -63,13 +76,16 @@ bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
         // keys on category + card): keep = TOP_LIBRARY, bottom = BOTTOM_DECK_CARD.
         scry_actions[0].category = ActionCategory::TOP_LIBRARY;
         scry_actions[1].category = ActionCategory::BOTTOM_DECK_CARD;
-        int choice = InputLogger::instance().get_input(scry_actions);
+        // No priority repoint existed here — the resolving seat is ab.controller,
+        // so seating the ask there is a no-op swap.
+        int choice = ctx.ask(std::move(scry_actions), ab.controller, ab.source);
+        if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (choice == 1) {
             orderer->add_to_zone(true, card, Zone::LIBRARY);
             game_log("%s puts a card on the bottom of their library.\n", player_name(owner).c_str());
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

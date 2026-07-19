@@ -24,7 +24,7 @@ namespace effects {
 // controller scoping and the full qualifier grammar (subtypes, colors, P/T, …) come for free,
 // and the per-creature application reuses apply_pump_to_creature so the EOT bucket / keyword /
 // logging logic is identical to single-target Pump.
-bool pump_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult pump_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
 
     std::vector<Entity> targets;
@@ -35,7 +35,7 @@ bool pump_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
     if (targets.empty()) {
         game_log("PumpAll: no matching creatures.\n");
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
     // NumAtt$/NumDef$ count-SVars are evaluated per-creature (the magnitude can depend on the
     // permanent in flexible filters); for a static +N/+N this is a constant across the loop.
@@ -44,7 +44,7 @@ bool pump_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         resolve_pump_amounts(pp, ab.controller, orderer, e, pump_att, pump_def);
         apply_pump_to_creature(e, pump_att, pump_def, pp);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

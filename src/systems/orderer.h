@@ -47,22 +47,25 @@ public:
     // fire_draw_event=false suppresses the PLAYER_DREW_CARD trigger event (used for
     // opening-hand and mulligan draws, which are not "draws" that trigger abilities).
     void draw(Zone::Ownership player, size_t ct, bool fire_draw_event = true);
+    // The post-replacement half of a single draw: move the top library card to hand
+    // (or set the decked-out loss on an empty library), with the draw logs and the
+    // PLAYER_DREW_CARD event. Called directly by the suspendable draw loops
+    // (resume_pending_draws, effects::draw_n_with_replacements) once the dredge
+    // question is settled; draw_one routes through it after its blocking dispatch.
+    void perform_draw(Zone::Ownership player, bool fire_draw_event = true);
+    // Apply a chosen dredge (CR 702.52a): mill `mill_ct`, return `source` from the
+    // graveyard to hand, and log — the replaced draw's outcome. Shared by the
+    // blocking draw_one path and the suspendable draw loops.
+    void apply_dredge(Zone::Ownership player, Entity source, int mill_ct);
     // Move the top `ct` cards of a player's library to their graveyard. Returns the
     // milled entities in mill order (top first).
     std::vector<Entity> mill(Zone::Ownership player, size_t ct);
     std::vector<Entity> get_graveyard(Zone::Ownership owner);
     std::vector<Entity> get_stack();
-    // CR 103.5: keep/mulligan decisions are announced in turn order each round,
-    // starting player first (matters in bo3 games 2-3 where B may be on the play).
-    void do_london_mulligan(bool player_a_goes_first);
-    // CR 103.6/103.6b opening-hand actions: after mulligans resolve (each player has kept and
-    // bottomed), each player in APNAP order — starting player first — may run the
-    // MayEffectFromOpeningHand ability of each such card in their kept hand (Leyline of the
-    // Void: begin the game with it on the battlefield). Each offer is an OPTIONAL_YESNO
-    // decision seated on the deciding player. Returns true if any ability ran, so the caller
-    // can re-run state-based effects and a card put onto the battlefield gets its Permanent
-    // component before the first turn begins.
-    bool do_opening_hand_actions(bool player_a_goes_first);
+    // NOTE: the London mulligan and CR 103.6b opening-hand decision loops live in
+    // game_driver.cpp's pregame gate (run_pregame_step) — loop-top, snapshot-safe
+    // decisions driven by PregameState. Only the zone operations they use
+    // (get_hand / add_to_zone / shuffle_library / draw) belong to the Orderer.
     std::vector<Entity> place_on_battlefield(const std::vector<std::string> &card_names,
                                              Zone::Ownership owner);
     // Test-harness helper: start cards already in a player's graveyard (mirrors

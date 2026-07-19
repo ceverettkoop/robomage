@@ -19,7 +19,7 @@ namespace effects {
 // (nonLand, subtypes, colors, …) come for free — general over any "untap all <filter>" effect,
 // not special-cased to Paradox Engine. ab.valid_cards_filter is populated by parse_destroy_all
 // (the shared ValidCards$ hook).
-bool untap_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult untap_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     MatchCtx ctx{ab.controller, ab.source};
     for (auto e : orderer->mEntities) {
         if (!is_battlefield_permanent(e)) continue;
@@ -29,7 +29,7 @@ bool untap_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         perm.is_tapped = false;
         game_log("%s untaps\n", perm.name.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

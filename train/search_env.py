@@ -46,7 +46,8 @@ from typing import NamedTuple, Optional
 
 import numpy as np
 
-from env import NarrativeEnv, RoboMageEnv
+from env import (NarrativeEnv, RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX,
+                 _SELF_IS_A_IDX)
 
 
 class SimQuery(NamedTuple):
@@ -72,8 +73,11 @@ class SearchRoboMageEnv(RoboMageEnv):
         super().__init__(*args, **kwargs)
         # Mirror pool (interactive world-parallel search). The action history is
         # recorded unconditionally (tiny) so a mirror created mid-game can be
-        # fast-forwarded to the current decision by replay.
+        # fast-forwarded to the current decision by replay. _action_meta runs
+        # parallel to it with (actor_is_a, category) per real step, read from
+        # the pre-step obs — tree-following gates on it (opponents.py).
         self._action_history: list[int] = []
+        self._action_meta: list[tuple[bool, int]] = []
         self._mirrors: list["SearchRoboMageEnv"] = []
         self._mirror_pool_disabled = False
 
@@ -89,16 +93,25 @@ class SearchRoboMageEnv(RoboMageEnv):
         # A new episode invalidates any mirrors (stale seed/state) and re-arms
         # the pool for this env.
         self._action_history = []
+        self._action_meta = []
         self._close_mirrors()
         self._mirror_pool_disabled = False
         return obs, info
 
     def step(self, action: int):
+        # Actor seat + action category of this real step, read from the
+        # PRE-step obs (the decision this action answers).
+        a = int(action)
+        actor_is_a = bool(self._obs[_SELF_IS_A_IDX] > 0.5)
+        cat = -1
+        if 0 <= a < self._num_choices:
+            cat = int(round(float(self._obs[STATE_SIZE + a]) * ACTION_CATEGORY_MAX))
         result = super().step(action)
         # Record the PRE-remap env-index action (the same value step() consumed,
         # before its own confirm-slot remap): replaying it into a mirror
         # re-derives the identical remap, so the mirror stays byte-identical.
-        self._action_history.append(int(action))
+        self._action_history.append(a)
+        self._action_meta.append((actor_is_a, cat))
         if self._mirrors and not self._mirror_pool_disabled:
             self._forward_to_mirrors(int(action))
         return result

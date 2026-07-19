@@ -17,17 +17,19 @@ extern Game cur_game;
 
 namespace effects {
 
-bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Same-name move-all (e.g. Extirpate's ExileYard): ChangeType$ Remembered.sameName.
     if (ab.change_type.find("sameName") != std::string::npos)
-        return change_zone_same_name(ab, orderer, /*force_all=*/true);
+        return change_zone_same_name(ab, orderer, /*force_all=*/true)
+                   ? HandlerResult::DONE_RUN_SUBS
+                   : HandlerResult::DONE_NO_SUBS;
 
     // A targeted ability resolved with no target chosen (e.g. Endurance's "up to
     // one target player", TargetMin$ 0) affects no one — do nothing rather than
     // falling back to the controller's own zones. Untargeted ChangeZoneAll
     // (valid_tgts "N_A", e.g. Doomsday) still operates on the controller below.
     if (ab.valid_tgts != "N_A" && ab.target == 0 && ab.targets.empty())
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
 
     Zone::Ownership owner = ab.controller;
     // If this targets a player (e.g. Endurance: "target player puts the cards
@@ -130,7 +132,7 @@ bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         orderer->shuffle_library(owner);
         game_log("%s shuffles their library.\n", player_name(owner).c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

@@ -27,11 +27,13 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
+#include "../game_driver.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../name_card_choices.h"
 #include "../parse.h"
+#include "../pending_query.h"
 #include "../saga.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
@@ -611,6 +613,14 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     rev.entity = entity;
                     rev.affected_player = zone.controller;  // 616.1: the permanent's controller chooses
                     replacement::dispatch(rev);
+                    // The tapped-unless-life y/n parked a pending decision
+                    // (SBE_LATCHED, same contract as the choose-type site
+                    // below): suspend mid-apply BEFORE the Permanent is
+                    // created — nothing about this entity has been mutated,
+                    // so the resumed pass re-reaches it, re-dispatches, and
+                    // consumes the latch at the same ask.
+                    if (cur_game.pending_query.active && !cur_game.pending_query.answered)
+                        return;
                     perm.is_tapped = rev.enters_tapped;
                     etb_p1p1 = rev.etb_p1p1;
                     etb_counter_type = rev.etb_counter_type;
@@ -891,11 +901,37 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         type_choices.push_back(la);
                     }
 
-                    bool prev_priority = cur_game.player_a_has_priority;
-                    cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
-                    game_log("Choose a creature type for %s:\n", perm_ref.name.c_str());
-                    int choice = InputLogger::instance().get_input(type_choices);
-                    cur_game.player_a_has_priority = prev_priority;
+                    // Latched-answer site (tag SBE_LATCHED): the type choice is a
+                    // loop-top pending decision. Re-finding is deterministic — the
+                    // suspension freezes the state mid-apply, and on resume the
+                    // re-run of apply_permanent_components reaches this same entity
+                    // (mEntities order is stable, earlier permanents are idempotent
+                    // no-ops) with chosen_type still empty, rebuilding the identical
+                    // menu (subtypes/freq derive from the frozen ECS).
+                    uint64_t key = pq_key(SbeSite::ETB_CHOOSE_TYPE,
+                                          perm_ref.controller == Zone::PLAYER_A,
+                                          entity, type_choices.size());
+                    int choice = -1;
+                    if (!pq_take_latched(key, &choice)) {
+                        game_log("Choose a creature type for %s:\n", perm_ref.name.c_str());
+                        if (in_main_loop()) {
+                            // Park the choice (priority persisted at the chooser) and
+                            // suspend mid-apply: the caller chain (this function, then
+                            // state_based_effects) early-returns cooperatively.
+                            pq_arm_sbe(key, std::move(type_choices), perm_ref.controller,
+                                       /*decision_source=*/0);
+                            return;
+                        }
+                        // Blocking fallback for an SBE call outside the main loop.
+                        // Since the pregame gate (Batch 13) even the preplaced-preset
+                        // SBE pass runs inside the loop (a preplaced Cavern's choice
+                        // rides SBE_LATCHED through the gate), so this is defensive
+                        // only.
+                        bool prev_priority = cur_game.player_a_has_priority;
+                        cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
+                        choice = InputLogger::instance().get_input(type_choices);
+                        cur_game.player_a_has_priority = prev_priority;
+                    }
                     perm_ref.chosen_type = subtype_names[order[static_cast<size_t>(choice)]];
                     game_log("%s chose creature type: %s\n",
                              player_name(perm_ref.controller).c_str(), perm_ref.chosen_type.c_str());
@@ -918,11 +954,29 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     std::vector<LegalAction> name_choices =
                         build_name_card_choices(mEntities, opp, /*valid_filter=*/"", names);
                     if (!name_choices.empty()) {
-                        bool prev_priority = cur_game.player_a_has_priority;
-                        cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
-                        game_log("Choose a card name for %s:\n", perm_ref.name.c_str());
-                        int choice = InputLogger::instance().get_input(name_choices);
-                        cur_game.player_a_has_priority = prev_priority;
+                        // Latched-answer site (tag SBE_LATCHED), same re-derivation
+                        // contract as the choose-type site above: the resumed
+                        // apply_permanent_components re-reaches this entity with
+                        // chosen_name still empty and rebuilds the identical menu
+                        // (the opponent's deck contents are frozen).
+                        uint64_t key = pq_key(SbeSite::ETB_NAME_CARD,
+                                              perm_ref.controller == Zone::PLAYER_A,
+                                              entity, name_choices.size());
+                        int choice = -1;
+                        if (!pq_take_latched(key, &choice)) {
+                            game_log("Choose a card name for %s:\n", perm_ref.name.c_str());
+                            if (in_main_loop()) {
+                                pq_arm_sbe(key, std::move(name_choices), perm_ref.controller,
+                                           /*decision_source=*/0);
+                                return;
+                            }
+                            // Blocking fallback for an SBE call outside the main
+                            // loop (defensive only since the Batch 13 pregame gate).
+                            bool prev_priority = cur_game.player_a_has_priority;
+                            cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
+                            choice = InputLogger::instance().get_input(name_choices);
+                            cur_game.player_a_has_priority = prev_priority;
+                        }
                         perm_ref.chosen_name = names[static_cast<size_t>(choice)];
                         game_log("%s names card: %s\n",
                                  player_name(perm_ref.controller).c_str(), perm_ref.chosen_name.c_str());

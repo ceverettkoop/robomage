@@ -18,6 +18,38 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
 // Handle the current mandatory choice (declare attackers, blockers, etc.)
 void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 
+// Loop-top dispatcher entry for a parked combat target sub-prompt (PendingQuery
+// tags ATTACK_TARGET / BLOCK_TARGET): commits the latched answer onto the
+// creature persisted in Game::pending_attacker / pending_blocker and clears the
+// pending query. Called from the main loop's pending-query branch.
+void resume_combat_target_choice(Game& game);
+
+// Loop-top dispatcher entry for a parked cast-time prompt (PendingQuery tag
+// CAST): consumes the latched answer and re-enters run_cast_flow — the
+// persisted CAST_SPELL state machine in Game::pending_cast. The resume may arm
+// the NEXT cast prompt (the caller must loop back to the pending-query branch
+// while pending_query.active), cancel the cast (payment rewind), or complete it
+// (spell on the stack + game.take_action(), exactly the blocking branch's end).
+void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
+
+// Loop-top dispatcher entry for a parked activated-ability prompt (PendingQuery
+// tag ACTIVATION): consumes the latched answer and re-enters
+// run_activation_flow — the persisted ACTIVATE_ABILITY state machine in
+// Game::pending_activation. The resume may arm the NEXT activation prompt (the
+// caller must loop back to the pending-query branch while pending_query.active),
+// cancel the activation (payment rewind), or complete it (mana produced
+// off-stack, or the ability on the stack + game.take_action(), exactly the
+// blocking branch's end).
+void resume_activation_flow(Game& game, std::shared_ptr<Orderer> orderer);
+
+// Loop-top dispatcher entry for a parked combat damage-assignment pick
+// (PendingQuery tag DAMAGE_ASSIGN): applies the latched answer to the in-flight
+// attacker persisted in Game::pending_damage, then either arms the next pick's
+// query (same or next attacker — the caller must loop back to the pending-query
+// branch when pending_query.active is still set) or completes the assignment,
+// after which process_turn_based_actions proceeds to deal_combat_damage.
+void resume_damage_assignment(Game& game, std::shared_ptr<Orderer> orderer);
+
 // T3.10: true if some attacker this combat-damage step needs its controller to divide damage
 // among 2+ blockers it cannot all kill (and hasn't already been asked). When true, the combat
 // step requests ASSIGN_COMBAT_DAMAGE_CHOICE before dealing damage.
@@ -51,6 +83,16 @@ Ability cast_gate_probe(const Ability& tmpl, Entity card_entity, Zone::Ownership
 // Caller must ensure has_legal_targets() is true before calling.
 void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 
+// Suspension-aware form of select_target (the shared target sub-machine; see
+// TargetSelectRT / TargetAsker in resolution_frame.h). One call per resume:
+// stamps the dynamic min/max bounds once (rt.active), then asks one pick at a
+// time through `asker`; SUSPENDED means an ask parked a pending query — the
+// caller returns without further mutation and re-enters with the SAME rt when
+// the answer is latched. select_target is this machine run with a blocking
+// asker; the caller must have seated priority at the choosing player.
+TargetStatus run_target_select(Ability& ability, TargetSelectRT& rt, TargetAsker& asker,
+                               std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
+
 // CR 601.2b/c: announce ALL of a spell's cast-time choices on its (already source/controller-
 // stamped) primary spell ability — modal mode(s) (recorded in Ability::charm_chosen, each
 // chosen mode's targets stored on its charm_choices entry), then the primary target, then each
@@ -59,15 +101,20 @@ void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Own
 void announce_spell_targets(Ability& ability, std::shared_ptr<Orderer> orderer,
                             Zone::Ownership caster);
 
-// General "copy a spell on the stack" routine (CR 707.10 / 707.12). Creates `count` independent
-// copies of the spell entity `original` (which must be a spell currently on the stack) on top of
-// the stack, controlled by `controller`. Each copy is a copy of the spell's characteristics
+// General "copy a spell on the stack" machine (CR 707.10 / 707.12), resumable (Batch 10).
+// Creates `count` independent copies of the spell entity `original` on top of the stack,
+// controlled by `controller`. Each copy is a copy of the spell's characteristics
 // (CardData/color/Ability), is NOT cast (pays no costs, fires no cast triggers), and may CHOOSE
-// NEW TARGETS — each copy re-runs target selection (illegal-by-default copies with no legal
-// target are simply not created). The copies are marked Spell::is_copy so they cease to exist on
-// resolution. Reusable by any copy-spell effect (Replicate, storm, fork). No-op if count <= 0.
-void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
-                         std::shared_ptr<Orderer> orderer);
+// NEW TARGETS — each copy re-runs target selection through `asker` (copies with no legal
+// required target are simply not created). The copies are marked Spell::is_copy so they cease
+// to exist on resolution. Reusable by any copy-spell effect (Replicate drives it at cast
+// FINISH with the CAST-tag asker; Storm at resolution with the ResolutionTargetAsker).
+// copy_spell_begin seeds the rt (left inactive — a no-op run — when count <= 0 or the original
+// has no CardData, the old early-outs); run_copy_spell drives it to DONE or returns SUSPENDED
+// with a copy's target pick parked — re-enter with the SAME rt once the answer is latched (the
+// partially built copy entity and its in-flight ability persist in the rt across suspension).
+void copy_spell_begin(CopySpellRT& rt, Entity original, int count, Zone::Ownership controller);
+TargetStatus run_copy_spell(CopySpellRT& rt, TargetAsker& asker, std::shared_ptr<Orderer> orderer);
 
 // Evaluates ability.condition_present against ability.condition_compare for `controller`.
 // Domain is battlefield permanents matching the filter's type and YouCtrl/OppCtrl qualifier,

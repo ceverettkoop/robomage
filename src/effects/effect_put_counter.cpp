@@ -37,30 +37,30 @@ static bool apply_monstrosity(Ability &ab) {
     return true;
 }
 
-bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Monstrosity$ (CR 701.37): set the monstrous designation + fire the event first, then fall
     // through to place the N +1/+1 counters on the source via the normal counter path below. If
     // already monstrous, the ability does nothing at all.
-    if (ab.is_monstrosity && !apply_monstrosity(ab)) return true;
+    if (ab.is_monstrosity && !apply_monstrosity(ab)) return HandlerResult::DONE_RUN_SUBS;
     // Defined$ You — the counters go on the controlling PLAYER, not a permanent (CR 122.1c:
     // a player can have counters too, e.g. energy {E}, poison, experience). Guide of Souls'
     // "get {E}" puts an ENERGY counter on the source's controller.
     if (ab.defined_you) {
         const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
-        if (!cp || cp->type.empty()) return true;
+        if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
         // A dynamic CounterNum$ (Wrath of the Skies: CounterNum$ X, X = Count$xPaid → the
         // player gets X {E}) is evaluated at resolution; otherwise use the static count.
         int n = cp->count;
         if (!cp->count_expr.empty())
             n = static_cast<int>(evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
-        if (n <= 0) return true;
+        if (n <= 0) return HandlerResult::DONE_RUN_SUBS;
         Entity ctrl_entity =
             (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
         auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
         int total = pl.add_counters(cp->type, n);
         game_log("%s gets %d %s counter(s) (now %d).\n", player_name(ab.controller).c_str(),
                  n, cp->type.c_str(), total);
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
     (void)orderer;
     // Use target if set (e.g. from a Pump parent), otherwise put counters on source
@@ -70,7 +70,7 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // an artifact) just accrues the typed counter in its counter map.
     Entity counter_tgt =
         (ab.target != 0 && global_coordinator.entity_has_component<Permanent>(ab.target)) ? ab.target : ab.source;
-    if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) return true;
+    if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) return HandlerResult::DONE_RUN_SUBS;
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
     if (cp && !cp->type.empty()) {
         // A dynamic CounterNum$ (count_expr, e.g. CounterNum$ X = Count$xPaid) is evaluated at
@@ -103,7 +103,7 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("Put %d %s counter(s) on %s.\n", cp->count2, cp->type2.c_str(), nm);
         }
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value) {

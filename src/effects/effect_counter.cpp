@@ -33,7 +33,7 @@ bool target_color_condition_met(const Ability &ab, Entity target) {
     return global_coordinator.GetComponent<ColorIdentity>(target).colors.count(required) > 0;
 }
 
-bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     if (global_coordinator.entity_has_component<Zone>(ab.target)) {
         auto &tz = global_coordinator.GetComponent<Zone>(ab.target);
         if (tz.location == Zone::STACK) {
@@ -59,14 +59,21 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 UnlessPayKind kind = ab.unless_cost_is_discard ? UnlessPayKind::DISCARD
                                    : ab.unless_cost_is_life     ? UnlessPayKind::LIFE
                                                                 : UnlessPayKind::MANA;
-                if (kind == UnlessPayKind::DISCARD)
-                    game_log("%s may discard %zu card%s to save %s:\n", player_name(payer).c_str(),
-                             ab.unless_generic_cost, ab.unless_generic_cost == 1 ? "" : "s", tname.c_str());
-                else if (kind == UnlessPayKind::LIFE)
-                    game_log("%s's controller may pay %zu life to save it:\n", tname.c_str(), ab.unless_generic_cost);
-                else
-                    game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
-                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target, kind);
+                // Arm-only log: a resume re-enters the suspended unless prompt
+                // without re-announcing it.
+                if (!ctx.resuming()) {
+                    if (kind == UnlessPayKind::DISCARD)
+                        game_log("%s may discard %zu card%s to save %s:\n", player_name(payer).c_str(),
+                                 ab.unless_generic_cost, ab.unless_generic_cost == 1 ? "" : "s", tname.c_str());
+                    else if (kind == UnlessPayKind::LIFE)
+                        game_log("%s's controller may pay %zu life to save it:\n", tname.c_str(), ab.unless_generic_cost);
+                    else
+                        game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
+                }
+                bool suspended = false;
+                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target,
+                                             ctx, suspended, kind);
+                if (suspended) return HandlerResult::SUSPENDED;
             }
 
             // Can't be countered check — either a cast-time stamp (Cavern of Souls / a "this spell
@@ -128,7 +135,7 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
     } else {
         game_log("Counter fizzles (target no longer on the stack)\n");
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

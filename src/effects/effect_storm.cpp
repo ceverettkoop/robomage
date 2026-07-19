@@ -17,23 +17,37 @@
 
 #include "effects.h"
 
-#include "../action_processor.h"   // copy_spell_on_stack
+#include "../action_processor.h"   // copy_spell_begin / run_copy_spell
 #include "../components/spell.h"
 #include "../ecs/coordinator.h"
+#include "../resolution_frame.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
 
-bool effects::storm(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult effects::storm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // The Storm triggered ability is a separate object on the stack, independent of the spell
     // that created it (CR 113.7a / 702.40a). It still makes its copies even if that spell has
     // already left the stack — e.g. it was countered (Daze) before this trigger resolved. The
-    // shared copy routine handles both cases: it copies the live spell if it's still on the
+    // shared copy machine handles both cases: it copies the live spell if it's still on the
     // stack, else it rebuilds the copies from the spell's last-known copiable characteristics
     // (which survive on the card entity in the graveyard). CR 707.10.2: the copies are created
     // on the stack even though the original is gone.
-    if (ab.source == 0) return true;
-    if (ab.amount > 0)
-        copy_spell_on_stack(ab.source, static_cast<int>(ab.amount), ab.controller, orderer);
-    return true;
+    //
+    // Resumable (Batch 10): the machine's progress persists as this handler's EffectRuntime
+    // (CopySpellRT — its own rt, with the shared tsel a member field per the Batch 4 finding),
+    // so a copy's target pick suspends as a loop-top pending decision through the
+    // ResolutionTargetAsker (tag RESOLUTION — storm runs under a resolution frame).
+    if (ab.source == 0) return HandlerResult::DONE_RUN_SUBS;
+    if (ab.amount <= 0) return HandlerResult::DONE_RUN_SUBS;
+    CopySpellRT local_rt;
+    CopySpellRT &rt = ctx.can_suspend() ? ctx.rt<CopySpellRT>() : local_rt;
+    if (!rt.active) {
+        copy_spell_begin(rt, ab.source, static_cast<int>(ab.amount), ab.controller);
+        if (!rt.active) return HandlerResult::DONE_RUN_SUBS;  // nothing to copy (no CardData)
+    }
+    ResolutionTargetAsker asker(ctx);
+    if (run_copy_spell(rt, asker, orderer) != TargetStatus::DONE)
+        return HandlerResult::SUSPENDED;
+    return HandlerResult::DONE_RUN_SUBS;
 }

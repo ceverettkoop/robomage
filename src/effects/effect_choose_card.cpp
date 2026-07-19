@@ -23,8 +23,7 @@ extern Game cur_game;
 
 namespace effects {
 
-bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    PendingDecisionScope pending_scope(ab.source);
+HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // ChooseEach (Ajani -4): each opponent keeps one of their nonland permanents of each
     // listed type; the kept permanents go into cur_game.chosen_cards and a SubAbility$
     // SacrificeAll then sacrifices the rest (ValidCards$ ...+nonChosenCard).
@@ -44,9 +43,14 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
             tp = amp + 1;
         }
 
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (opp == Zone::PLAYER_A);
-        for (const auto &type : types) {
+        // One ask per type — the loop index persists in the frame rt so a
+        // resume re-enters the suspended type's pick (its candidate pool
+        // rebuilds identically; already-answered types were applied at
+        // consume time and are skipped by the persisted index).
+        ChooseCardRt local_rt;
+        ChooseCardRt &rt = ctx.can_suspend() ? ctx.rt<ChooseCardRt>() : local_rt;
+        for (; rt.type_idx < types.size(); ++rt.type_idx) {
+            const auto &type = types[rt.type_idx];
             std::vector<Entity> cands;
             for (auto e : orderer->mEntities) {
                 if (!is_battlefield_permanent(e, opp)) continue;
@@ -65,15 +69,16 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 la.card_is_public = true;
                 picks.push_back(la);
             }
-            game_log("%s chooses a %s to keep:\n", player_name(opp).c_str(), type.c_str());
-            int choice = InputLogger::instance().get_input(picks);
+            if (!ctx.resuming())
+                game_log("%s chooses a %s to keep:\n", player_name(opp).c_str(), type.c_str());
+            int choice = ctx.ask(std::move(picks), opp, ab.source);
+            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             Entity kept = cands[static_cast<size_t>(choice)];
             cur_game.chosen_cards.insert(kept);
             game_log("%s keeps %s.\n", player_name(opp).c_str(),
                      global_coordinator.GetComponent<Permanent>(kept).name.c_str());
         }
-        cur_game.player_a_has_priority = prev_priority;
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Dauthi Voidwalker: choose an exiled card owned by opponent with a void counter,
@@ -101,8 +106,16 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
             pick_actions.push_back(la);
         }
 
-        game_log("Choose an exiled card with a void counter:\n");
-        int choice = InputLogger::instance().get_input(pick_actions);
+        if (!ctx.resuming())
+            game_log("Choose an exiled card with a void counter:\n");
+        // The pick ran with priority already at the controller (no explicit
+        // repoint today), so seating the ask on ab.controller is a no-op swap.
+        int choice = ctx.ask(std::move(pick_actions), ab.controller, ab.source);
+        if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+        // Post-choice work ran under the handler-wide PendingDecisionScope
+        // before the conversion; re-establish it here so the nested cast-time
+        // target prompts inside announce_spell_targets still observe ab.source.
+        PendingDecisionScope pending_scope(ab.source);
         Entity chosen = choices[static_cast<size_t>(choice)];
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         cur_game.void_countered.erase(chosen);
@@ -151,7 +164,7 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
     } else {
         game_log("No exiled cards with void counters to choose.\n");
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

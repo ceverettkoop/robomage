@@ -308,6 +308,103 @@ def _ref_desc(state, ref):
     return name if name is not None else f"slot {ref}"
 
 
+def entity_ref_features(state, ref):
+    """The referenced slot's full serialized feature block, or None.
+
+    Perm refs return the PERM_SLOT_SIZE-float slot; stack refs the
+    STACK_SLOT_SIZE-float slot. Two refs whose blocks are float-identical are
+    indistinguishable to any obs consumer — the basis of
+    `menu_is_interchangeable`'s copy-collapse."""
+    if ref < 0:
+        return None
+    if ref < _PERM_SLOTS:                      # self permanent slot
+        base = _SELF_PERM_START + ref * PERM_SLOT_SIZE
+        return state[base: base + PERM_SLOT_SIZE]
+    if ref < 2 * _PERM_SLOTS:                  # opp permanent slot
+        base = _OPP_PERM_START + (ref - _PERM_SLOTS) * PERM_SLOT_SIZE
+        return state[base: base + PERM_SLOT_SIZE]
+    if ref < N_ENTITY_REF_SLOTS:               # stack slot
+        base = _STACK_START + (ref - 2 * _PERM_SLOTS) * STACK_SLOT_SIZE
+        return state[base: base + STACK_SLOT_SIZE]
+    return None
+
+
+# Every in-state entity-ref field: the four per-perm-slot ref fields (both
+# sides) and each stack announced-target sub-slot's ref. Enumerated once so
+# state_ref_targets is a single fancy-index read.
+_STACK_TGT_REF_OFF = 3  # sub-slot order: present, is_player, ctrl_is_self, slot_ref, card id
+
+
+def _build_state_ref_field_idx():
+    idx = []
+    for start in (_SELF_PERM_START, _OPP_PERM_START):
+        for s in range(_PERM_SLOTS):
+            base = start + s * PERM_SLOT_SIZE
+            idx.extend((base + _OFF_ATTACHED_TO, base + _OFF_ATTACHED_BY,
+                        base + _OFF_ATTACK_TGT, base + _OFF_BLOCKING_TGT))
+    for s in range(_STACK_SLOTS):
+        tgt0 = _STACK_START + s * STACK_SLOT_SIZE + _STACK_TGT_START
+        idx.extend(tgt0 + t * _STACK_TGT_FIELDS + _STACK_TGT_REF_OFF
+                   for t in range(_STACK_TGT_SLOTS))
+    return np.asarray(idx, dtype=np.intp)
+
+
+_STATE_REF_FIELD_IDX = _build_state_ref_field_idx()
+
+
+def state_ref_targets(state):
+    """The set of entity-slot indices some in-state ref field points at
+    (attachments, attack/blocking targets, announced stack targets)."""
+    refs = np.round(np.asarray(state)[_STATE_REF_FIELD_IDX]
+                    * N_ENTITY_REF_SLOTS).astype(int) - 1
+    return set(refs[refs >= 0].tolist())
+
+
+def hidden_info_fingerprint(state):
+    """Per-side multisets of the card identities currently visible to the
+    viewer — the "what hidden information has been revealed" fingerprint tree
+    reuse compares between a search and a later decision.
+
+    Returns ``(self_counts, opp_counts)``, int arrays of length N_CARD_TYPES.
+    Self counts cover hand, permanents, graveyard, exile, own stack objects
+    and the known-top-of-library ids; opp counts cover their permanents,
+    graveyard, exile, stack objects and the known-opponent-hand ids. A card
+    moving BETWEEN visible zones conserves its count (cast from hand, die to
+    graveyard, draw a known top card), so a count exceeding an earlier
+    fingerprint's means an identity became newly visible since — a draw, a
+    play from a hidden hand, a mill, a tutor/scry reveal. Token permanents
+    are excluded: the shared TOKEN sentinel id carries no hidden identity and
+    tokens appear along fully public lines."""
+    self_counts = np.zeros(N_CARD_TYPES, dtype=np.int32)
+    opp_counts = np.zeros(N_CARD_TYPES, dtype=np.int32)
+
+    def _add(counts, base, n, stride):
+        for i in range(n):
+            idx = _slot_card_idx(state, base + i * stride)
+            if 0 <= idx < N_CARD_TYPES and idx != _TOKEN_IDX:
+                counts[idx] += 1
+
+    _add(self_counts, _HAND_START, MAX_HAND_SLOTS, _HAND_SLOT_SIZE)
+    _add(self_counts, _SELF_PERM_START + _OFF_CARD_ID, _PERM_SLOTS,
+         PERM_SLOT_SIZE)
+    _add(self_counts, _GY_START, MAX_GY_SLOTS, GY_SLOT_SIZE)
+    _add(self_counts, _EXILE_START, MAX_GY_SLOTS, GY_SLOT_SIZE)
+    _add(self_counts, _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
+         _KNOWN_TOP_LIB_SLOT_SIZE)
+    _add(opp_counts, _OPP_PERM_START + _OFF_CARD_ID, _PERM_SLOTS,
+         PERM_SLOT_SIZE)
+    _add(opp_counts, _OPP_GY_START, MAX_GY_SLOTS, GY_SLOT_SIZE)
+    _add(opp_counts, _OPP_EXILE_START, MAX_GY_SLOTS, GY_SLOT_SIZE)
+    _add(opp_counts, _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
+         _OPP_KNOWN_HAND_SLOT_SIZE)
+    for i in range(_STACK_SLOTS):
+        base = _STACK_START + i * STACK_SLOT_SIZE
+        idx = _slot_card_idx(state, base + 1)  # card id; sentinel = empty slot
+        if 0 <= idx < N_CARD_TYPES and idx != _TOKEN_IDX:
+            (self_counts if state[base] > 0.5 else opp_counts)[idx] += 1
+    return self_counts, opp_counts
+
+
 # Border colors by MTG color, for TUI card rendering. Black renders as a muted
 # purple-grey (pure black is invisible on a dark terminal); a colorless nonland
 # card is brown, per the color-identity display. A mana-producing land is painted
@@ -1070,6 +1167,54 @@ def is_bottom(cats):
 
 def is_search(cats):
     return len(cats) > 0 and all(c == 19 for c in cats)
+
+
+def menu_is_interchangeable(obs, num_choices):
+    """True when every legal action in the menu is the same choice, so any of
+    them (take the first) is as good as a searched/evaluated pick.
+
+    The common shapes: four "Play Mountain" from a hand of duplicates, N
+    identical untapped basics offered as mana taps, duplicate copies in a
+    search/dig/bottom prompt, or targeting one of several serialized-identical
+    permanents. A single-choice menu is trivially interchangeable.
+
+    Actions collapse only when everything the obs contract can distinguish is
+    equal: category, card id, controller, zone_ref and option ordinal — and
+    the card id must be a REAL vocab id (text-only prompts, whose options an
+    ordinal or description distinguishes, never collapse; CAT_OTHER_CHOICE is
+    excluded outright for the same reason). Entity-referencing actions must
+    point at pairwise-distinct slots whose serialized feature blocks are
+    float-identical AND at which no other in-state ref field points — an
+    announced stack target or an attachment on one of two otherwise identical
+    permanents makes the choice real."""
+    n = int(num_choices)
+    if n <= 1:
+        return True
+    cats = action_categories(obs, n)
+    if not np.all(cats == cats[0]) or int(cats[0]) == CAT_OTHER_CHOICE:
+        return False
+    ids = action_card_ids(obs)[:n]
+    if int(round(float(ids[0]) * N_CARD_TYPES)) < 0 or not np.all(ids == ids[0]):
+        return False
+    ctrl = action_ctrls(obs)[:n]
+    if not np.all(ctrl == ctrl[0]):
+        return False
+    zones = action_zone_refs(obs, n)
+    if not np.all(zones == zones[0]):
+        return False
+    ords = action_ordinals(obs, n)
+    if not np.all(ords == ords[0]):
+        return False
+    refs = action_slot_refs(obs, n)
+    if np.all(refs == -1):
+        return True
+    if np.any(refs < 0) or len(set(refs.tolist())) != n:
+        return False                      # mixed or same-entity actions: real choices
+    state = obs[:STATE_SIZE]
+    blocks = [entity_ref_features(state, int(r)) for r in refs]
+    if any(b is None or not np.array_equal(b, blocks[0]) for b in blocks):
+        return False
+    return not (state_ref_targets(state) & {int(r) for r in refs})
 
 
 # ── Formatting helpers ────────────────────────────────────────────────────────

@@ -122,6 +122,11 @@ class SearchResult:
     #                                           recompute q exactly)
     world_values: Optional[np.ndarray] = None  # (worlds,) per-world root value
     #                                            ΣW/ΣN (0 for an unvisited world)
+    roots: Optional[list] = None              # per-world root _Node trees, world
+    #                                           order. Kept alive for tree reuse
+    #                                           (SearchController follows the
+    #                                           real game down these trees while
+    #                                           it matches the searched line).
 
     def best_action(self) -> int:
         return int(np.argmax(self.visits))
@@ -345,6 +350,7 @@ def run_search(
         q=np.where(visit_totals > 0, w_totals / np.maximum(visit_totals, 1), 0.0),
         w_sum=w_totals,
         world_values=world_values,
+        roots=roots,
     )
 
 
@@ -506,6 +512,7 @@ def run_search_parallel(
         q=np.where(visits > 0, w_sum / np.maximum(visits, 1), 0.0),
         w_sum=w_sum,
         world_values=np.concatenate([r.world_values for r in results]),
+        roots=[root for r in results for root in (r.roots or [])],
     )
 
 

@@ -23,10 +23,12 @@ namespace effects {
 // player making the choice and the controller of the permanent being sacrificed — this is what
 // makes an edict an edict (CR 701.16 + 701.16a: to sacrifice a permanent, the player who
 // controls it chooses which one). `optional` lets them decline (Optional$ True). Returns the
-// chosen entity, or 0 if nothing was sacrificed (no legal permanent, or declined).
-static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer,
-                            bool optional, std::shared_ptr<Orderer> orderer) {
-    PendingDecisionScope pending_scope(ab.source);
+// chosen entity, or 0 if nothing was sacrificed (no legal permanent, or declined). If the pick
+// suspended (parked for the loop top), sets `suspended` and returns 0 mutating nothing — the
+// candidate scan and menu rebuild identically on resume.
+static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool optional,
+                            std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended) {
+    suspended = false;
     std::vector<Entity> candidates;
     for (auto e : orderer->mEntities) {
         if (!is_battlefield_permanent(e, sacrificer)) continue;
@@ -53,13 +55,13 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer,
     }
     // CR 701.16a: the SACRIFICER chooses which permanent to sacrifice, and they need not be
     // the player holding priority (Sheoldred's Edict: the caster holds priority while the
-    // opponent picks). The input/BQUERY seat follows cur_game.player_a_has_priority, so
-    // temporarily seat the query on the sacrificer and restore afterwards (same pattern as
-    // place_triggers_apnap / request_optional_yesno).
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (sacrificer == Zone::PLAYER_A);
-    int choice = InputLogger::instance().get_input(choices);
-    cur_game.player_a_has_priority = prev_priority;
+    // opponent picks). The ask seats the query on the sacrificer (persisting priority there
+    // when it suspends) and restores afterwards, exactly as the old inline swap did.
+    int choice = ctx.ask(choices, sacrificer, ab.source);
+    if (choice < 0 && decision_suspended()) {
+        suspended = true;
+        return 0;
+    }
     Entity chosen = choices[static_cast<size_t>(choice)].source_entity;
     if (chosen == 0) {
         game_log("%s declines to sacrifice.\n", player_name(sacrificer).c_str());
@@ -92,27 +94,41 @@ static Entity sacrifice_self(const Ability &ab, std::shared_ptr<Orderer> orderer
     return src;
 }
 
-bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    // RememberSacrificed resets the remembered set to exactly what is sacrificed here, so a
-    // downstream ConditionDefined$ Remembered gate sees 0 (declined) or 1 (sacrificed).
-    if (ab.remember_sacrificed) cur_game.remembered_entities.clear();
+HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    // Non-repeatable preamble (the remembered reset would erase an already-
+    // sacrificed entity, and the unless-energy loop would re-prompt) runs once;
+    // the persisted rt skips it on resume.
+    SacrificeRt local_rt;
+    SacrificeRt &rt = ctx.can_suspend() ? ctx.rt<SacrificeRt>() : local_rt;
+    if (!rt.pre_done) {
+        // RememberSacrificed resets the remembered set to exactly what is sacrificed here, so a
+        // downstream ConditionDefined$ Remembered gate sees 0 (declined) or 1 (sacrificed).
+        if (ab.remember_sacrificed) cur_game.remembered_entities.clear();
 
-    // UnlessCost$ PayEnergy<N> (Static Prison: "sacrifice CARDNAME unless you pay {E}"). The payer
-    // (UnlessPayer$ You ⇒ the controller) may pay N energy to prevent the sacrifice; run_unless_loop
-    // returns false when paid (don't sacrifice) and true when declined / unaffordable (sacrifice).
-    if (ab.unless_cost_is_energy) {
-        Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
-        game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
-                 ab.unless_generic_cost);
-        if (!run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, UnlessPayKind::ENERGY))
-            return true;  // paid — nothing is sacrificed
+        // UnlessCost$ PayEnergy<N> (Static Prison: "sacrifice CARDNAME unless you pay {E}"). The payer
+        // (UnlessPayer$ You ⇒ the controller) may pay N energy to prevent the sacrifice; run_unless_loop
+        // returns false when paid (don't sacrifice) and true when declined / unaffordable (sacrifice).
+        // The yes-no may suspend (checked before the return value); the arm-only announcement is
+        // resuming-guarded so a resume never re-logs it.
+        if (ab.unless_cost_is_energy) {
+            Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
+            if (!ctx.resuming())
+                game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
+                         ab.unless_generic_cost);
+            bool suspended = false;
+            bool unpaid = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source,
+                                          ctx, suspended, UnlessPayKind::ENERGY);
+            if (suspended) return HandlerResult::SUSPENDED;
+            if (!unpaid) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is sacrificed
+        }
+        rt.pre_done = true;
     }
 
     // No SacValid$ filter and not an edict ⇒ self-sacrifice (sacrifice CARDNAME), CR 701.16.
     if (ab.sac_valid.empty() && !ab.defined_each_opponent) {
         Entity sacked = sacrifice_self(ab, orderer);
         if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Defined$ Opponent — edict: each opponent sacrifices on their own. CR 109.5 / 102.1: in a
@@ -124,21 +140,26 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
         // sac_count > 1: the sacrificer chooses and sacrifices that many permanents, one at a
         // time (Annihilator N, CR 702.85b). Each iteration re-gathers candidates, so the choices
         // shrink as permanents leave; sacrifice_one returns 0 when none remain, so a player who
-        // controls fewer than sac_count permanents simply sacrifices all they have.
-        for (size_t i = 0; i < ab.sac_count; ++i) {
-            Entity sacked = sacrifice_one(ab, opp, /*optional=*/false, orderer);
+        // controls fewer than sac_count permanents simply sacrifices all they have. The
+        // iteration index persists in rt so a resume re-enters the suspended pick.
+        for (; rt.iter < ab.sac_count; ++rt.iter) {
+            bool suspended = false;
+            Entity sacked = sacrifice_one(ab, opp, /*optional=*/false, orderer, ctx, suspended);
+            if (suspended) return HandlerResult::SUSPENDED;
             if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
             if (sacked == 0) break;
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
-    for (size_t i = 0; i < ab.sac_count; ++i) {
-        Entity sacked = sacrifice_one(ab, ab.controller, ab.optional_choice, orderer);
+    for (; rt.iter < ab.sac_count; ++rt.iter) {
+        bool suspended = false;
+        Entity sacked = sacrifice_one(ab, ab.controller, ab.optional_choice, orderer, ctx, suspended);
+        if (suspended) return HandlerResult::SUSPENDED;
         if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
         if (sacked == 0) break;
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

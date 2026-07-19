@@ -42,6 +42,9 @@ typedef enum Step {
 
 #include "../ecs/entity.h"
 #include "../components/ability.h"
+#include "../mana_system.h"
+#include "../pending_query.h"
+#include "../resolution_frame.h"
 #include "colors.h"
 
 struct Deck;
@@ -224,6 +227,326 @@ struct Game {
         // are announced before the spell moves there (CR 601.2b/c). Managed exclusively via
         // PendingDecisionScope; 0 = no ability-driven choice pending.
         Entity pending_decision_source = 0;
+        // Suspension framework (see pending_query.h / resolution_frame.h): a
+        // mid-flow decision parked for the main loop to emit, and the persisted
+        // resolve() continuation it belongs to. Value members so a cur_game
+        // copy (snapshot_save) covers the whole suspended state for free.
+        PendingQuery pending_query;
+        ResolutionFrame resolution;
+        // Combat sub-prompt suspension state (pending_query tags ATTACK_TARGET /
+        // BLOCK_TARGET): the creature whose target sub-prompt is currently parked.
+        // Set when declare_attackers/declare_blockers suspends on the target menu,
+        // consumed and cleared by the loop-top resume. Value members so a snapshot
+        // covers the parked selection. 0 = no sub-prompt parked.
+        Entity pending_attacker = 0;
+        Entity pending_blocker = 0;
+        // Combat damage-assignment suspension state (pending_query tag
+        // DAMAGE_ASSIGN): the attacker whose lethal-order division is mid-prompt,
+        // plus the former inner-loop locals of assign_combat_damage (remaining
+        // power to assign, blockers not yet assigned lethal, last blocker picked
+        // — the 510.1a leftover-dump target). Value member so a snapshot covers
+        // the in-flight division. active == true iff a DAMAGE_ASSIGN query is
+        // parked; completed attackers are tracked by their (possibly partial)
+        // combat_damage_assignment map entries, the outer scan's re-entrancy guard.
+        struct PendingDamageAssign {
+            bool active = false;
+            Entity attacker = 0;
+            uint32_t remaining = 0;
+            std::vector<Entity> pool;  // blockers not yet assigned lethal
+            Entity last_assigned = 0;
+        };
+        PendingDamageAssign pending_damage;
+        // Trigger-placement suspension state (pending_query tag TRIGGER_PLACE):
+        // the APNAP-flattened queue of collected triggers still to be put on
+        // the stack, plus the front trigger's in-flight target selection. Set
+        // by place_triggers_apnap, driven by resume_trigger_placement, cleared
+        // at placement completion (which also restores saved_priority and
+        // clears lk_battlefield_types). Value member so a snapshot covers the
+        // parked placement. See resolution_frame.h.
+        TriggerPlacementRT trigger_placement;
+        // Cast-time suspension state (pending_query tag CAST): the persisted
+        // state machine of process_action's CAST_SPELL branch (run_cast_flow,
+        // action_processor.cpp). The branch's former locals — the accumulating
+        // cost, per-kicker flags, deferred payment pieces, the half-built
+        // primary Ability — live here BY VALUE so a cur_game copy covers the
+        // whole in-flight cast. Batch 9 converted the LINEAR prompts (kicker /
+        // replicate / X ladder / phyrexian pips / life-X / spell-sac / gift);
+        // Batch 10 the announce stages (charm modes + their targets, the
+        // primary/sub/aura targets — via the shared TargetSelectRT machine and
+        // the CAST-tag asker) and the replicate copy retargeting (CopySpellRT);
+        // Batch 11 the deferred-payment picks (delve count/picks, flashback
+        // sacrifice, escape exile-from-graveyard, alt-cost pitch/return); only
+        // the interactive mana payment and the interactive hybrid pips remain
+        // blocking (machine mode auto-resolves both with zero decisions).
+        // active == true from the CAST_SPELL action until the spell reaches
+        // the stack (COPY_TARGETS end) or the payment cancel rewinds.
+        struct PendingCast {
+            // Where the flow resumes. Steps run in today's exact statement
+            // order; unconverted steps pass through synchronously.
+            enum Step {
+                COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
+                ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
+                ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
+                KICKER,           // per-kicker optional-additional-cost y/n
+                REPLICATE,        // repeated replicate-cost y/n loop
+                CHOOSE_X,         // X-cost ladder
+                HYBRID,           // hybrid pips (machine auto-resolve; interactive stays blocking)
+                PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
+                LIFE_X,           // variable life X (Toxic Deluge's PayLife<X>)
+                SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
+                GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
+                CHARM_MODE,       // modal mode announcement (one pick per entry, CR 601.2b)
+                CHARM_TARGET,     // the just-picked mode's targets (before the next mode pick)
+                PRIMARY_TARGET,   // primary spell target
+                SUB_TARGET,       // targeting chained sub-abilities' targets (ends with AddComponent)
+                AURA_TARGET,      // aura enchant target (pc.enchant_ab)
+                ANNOUNCE,         // primary-template setup; dispatches into the announce steps
+                DELVE_COUNT,      // delve exile count menu (CR 702.66)
+                DELVE_PICK,       // delve exile picks, one card at a time
+                MANA_PAY,         // deferred mana payment + life (interactive payer stays blocking)
+                DEF_SAC,          // deferred flashback sacrifice (Cabal Therapy)
+                DEF_EXILE_TYPES,  // escape exile-by-types picks (CR 702.139)
+                DEF_EXILE_COUNT,  // escape exile-by-count picks (Uro)
+                COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
+                FINISH            // spell to stack + cast events; seeds COPY_TARGETS
+            };
+            bool active = false;
+            Step step = COST;
+            // Cast identity: reconstructs the consumed LegalAction across the
+            // suspension gap.
+            Entity spell_entity = 0;
+            bool caster_is_a = true;
+            bool use_flashback = false;
+            bool use_escape = false;
+            bool use_alt_cost = false;
+            bool use_offspring = false;
+            bool impulse_cast = false;
+            bool cast_back_face = false;
+            // Snapshot of mana state for rewind on payment failure (taken in
+            // process_action before the flow starts, consumed by the MANA_PAY
+            // cancel path).
+            ManaPaymentSnapshot mana_snap;
+            // The regular-cost accumulation (base + offspring/kicker/replicate/
+            // X/hybrid/phyrexian folds), deferred into deferred_mana_cost once
+            // the cost is fully resolved.
+            ManaValue cost_to_pay;
+            // Kicker (CR 702.33): per-kicker "paid?" flags, populated in the regular-cost
+            // branch and copied onto the Spell so linked "if it was kicked with its [N]
+            // kicker" triggers can read them. Empty unless the card has K:Kicker.
+            std::vector<bool> kicked_flags;
+            size_t kicker_idx = 0;     // next kicker pip to offer/apply
+            // Replicate (CR 702.x): how many times the replicate additional cost was paid in
+            // the regular-cost branch. Drives the on-cast copy effect. 0 unless the card
+            // has K:Replicate and the caster chose to pay it.
+            int replicate_count = 0;
+            size_t phyrexian_idx = 0;  // next phyrexian pip to offer/apply
+            bool gift_promised = false;
+            // CR 601.2 orders target choice (601.2c) BEFORE paying costs (601.2h). The regular
+            // mana payment is therefore captured here and deferred until after targets are chosen.
+            // This matters when the mana is paid by sacrificing a permanent for mana
+            // (Lotus Petal / Lion's Eye Diamond): paying first could remove the spell's only legal
+            // target before it is chosen, crashing on an empty target menu. With the payment
+            // deferred, the target is chosen while the would-be mana source is still on the
+            // battlefield; sacrificing it for mana then merely makes the target illegal, so the
+            // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
+            ManaValue deferred_mana_cost;
+            bool deferred_mana_pending = false;
+            bool deferred_delve = false;
+            bool deferred_improvise = false;
+            // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
+            // exile-from-graveyard) are deferred the same way: targets first (601.2c),
+            // then every cost (601.2g/h). They are paid only after the deferred mana
+            // payment commits, so a cancelled payment never costs life or a creature.
+            int deferred_life_cost = 0;
+            std::string deferred_sac_spec;
+            int deferred_exile_min_types = 0;
+            int deferred_exile_count = 0;
+            // The half-built primary spell ability. The ENTITY's Ability
+            // component is added at the same point as the blocking flow did
+            // (at the end of SUB_TARGET, once every announce target is
+            // chosen), so component state at every prompt matches the blocking
+            // flow's exactly: absent at the announce prompts, present from the
+            // payment steps on.
+            Ability ability;
+            bool have_ability = false;
+            // ── Announce-stage progress (Batch 10) ──
+            // Charm announcement: completed mode iterations (a mode counts
+            // once its targets are chosen). The picked modes themselves
+            // persist in ability.charm_chosen, which reconstructs the taken[]
+            // menu filter on resume.
+            int charm_picks_done = 0;
+            // Which chained sub-ability's target selection is in flight.
+            size_t sub_idx = 0;
+            // The shared in-flight target pick (charm-mode / primary / sub /
+            // aura — one at a time, reset between). Member field per the
+            // Batch 4 finding (never its own EffectRuntime alternative).
+            TargetSelectRT tsel;
+            // AURA cast (CR 303.4): the transient targeting ability built from
+            // the Enchant filter — a former local of the blocking flow,
+            // persisted so a suspended enchant-target pick resumes it.
+            Ability enchant_ab;
+            // Replicate copies' retargeting machine (COPY_TARGETS; see
+            // CopySpellRT / effect_copy_spell.cpp).
+            CopySpellRT copy_rt;
+            // ── Deferred-payment progress (Batch 11) ──
+            // Alt-cost pick loops (Force of Will's pitch, Daze's return):
+            // completed picks. NOTE this branch pays BEFORE targets are chosen
+            // — the pre-existing alt-cost order, kept for byte compatibility.
+            int alt_pitch_done = 0;
+            int alt_return_done = 0;
+            // Delve (CR 702.66): the chosen exile count, completed picks, and
+            // the pre-delve priority seat (the blocking prompt seated both
+            // delve stages on the caster and restored the seat afterwards;
+            // the arm-time repoint persists its prev value here instead).
+            size_t delve_exile_ct = 0;
+            size_t delve_picks_done = 0;
+            bool delve_prev_priority_a = true;
+            // Escape ExileFromGrave progress (CR 702.139): distinct card types
+            // exiled so far (min-types form) / cards exiled so far (Uro's
+            // literal-count form). Candidate lists are re-derived from the
+            // live graveyard at each arm, exactly like the blocking loops.
+            std::set<std::string> escape_exiled_types;
+            int escape_exiled_count = 0;
+        };
+        PendingCast pending_cast;
+        // Activated-ability suspension state (pending_query tag ACTIVATION):
+        // the persisted state machine of process_action's ACTIVATE_ABILITY
+        // branch (run_activation_flow, action_processor.cpp). The branch's
+        // former locals — the activated ability, the in-flight targeted copy,
+        // the chosen X, the pre-payment equip/ninjutsu candidate menus — live
+        // here BY VALUE so a cur_game copy covers the whole in-flight
+        // activation. Batch 12 converted every machine-mode prompt in the
+        // family: the equip creature menu, the X-activation and loyalty-X
+        // ladders, the pre-cost target selection (battlefield and hand/
+        // graveyard activation zones), the secondary-cost sacrifice/return
+        // picks, and the ninjutsu return-an-attacker pick. The interactive
+        // mana payment stays blocking (machine mode auto-pays with zero
+        // decisions); every cancel path fully rewinds and clears this.
+        // active == true from the ACTIVATE_ABILITY action until the ability
+        // resolves off-stack (mana ability), reaches the stack, or a payment
+        // cancel rewinds.
+        struct PendingActivation {
+            // Where the flow resumes. Steps run in today's exact statement
+            // order; steps that never prompt pass through synchronously.
+            enum Step {
+                NINJA_PAY,         // ninjutsu mana payment + candidate freeze (sync)
+                NINJA_RETURN,      // ninjutsu return-an-attacker pick
+                ZONE_TARGET,       // hand/graveyard activation: pre-cost target select
+                ZONE_PAY,          // hand/graveyard activation: mana payment (sync)
+                EQUIP_PAY,         // equip: menu freeze + tap + mana payment (sync)
+                EQUIP_TARGET,      // equip: the creature menu (after payment)
+                X_LADDER,          // X activation cost (Candelabra of Tawnos)
+                LOYALTY_X,         // X loyalty cost (Chandra, Flamecaller's [-X])
+                TARGET,            // battlefield pre-cost select_target
+                TAP_PAY,           // tap cost + mana payment (cancel rewind; sync)
+                SECONDARY_PRE,     // loyalty/life/energy/sac-self costs (sync)
+                SECONDARY_SAC,     // type-based sacrifice-cost pick
+                SECONDARY_RETURN,  // return-to-hand-cost pick
+                SECONDARY_POST,    // discard-self / discard-hand costs (sync)
+                FINISH             // mana production, or stack push + take_action
+            };
+            bool active = false;
+            Step step = X_LADDER;
+            // Activation identity: reconstructs the consumed LegalAction
+            // across the suspension gap.
+            Entity source_entity = 0;
+            bool activator_is_a = true;
+            // Hand/graveyard ActivationZone$ path (no Permanent component):
+            // routes FINISH to the zone path's completion (auto-consume to
+            // graveyard + stack push) instead of the battlefield mana/stack
+            // completion.
+            bool zone_path = false;
+            // The activated ability as the consumed LegalAction carried it
+            // (costs are read from here), and the in-flight copy the target
+            // selection writes into (pushed onto the stack at FINISH) — the
+            // branch's former `ability` / `stack_ab` pair.
+            Ability ability;
+            Ability stack_ab;
+            // X chosen at the X_LADDER step (added as generic pips to the
+            // TAP_PAY cost). The loyalty-X choice lives only in
+            // cur_game.x_paid, exactly like the blocking flow.
+            size_t x_activation = 0;
+            // Equip: the creature menu frozen BEFORE the cost is paid (the
+            // blocking flow built it there — paying by sacrificing a source
+            // for mana must not change the offered menu), re-emitted verbatim
+            // at the EQUIP_TARGET arm. Ninjutsu freezes only the candidate
+            // entities (frozen_choices) — its blocking prompt built the menu
+            // labels AFTER payment.
+            std::vector<LegalAction> frozen_menu;
+            std::vector<Entity> frozen_choices;
+            // The shared in-flight target pick (ZONE_TARGET / TARGET). Member
+            // field per the Batch 4 finding (never its own EffectRuntime
+            // alternative).
+            TargetSelectRT tsel;
+        };
+        PendingActivation pending_activation;
+        // Pre-game phase state (Family F): mulligans and CR 103.6b opening-hand
+        // actions run as loop-top decisions driven by the main loop's pregame
+        // gate (run_pregame_step, game_driver.cpp) instead of a synchronous
+        // pre-loop block. All stage/progress state lives here BY VALUE so a
+        // cur_game copy (snapshot_save) covers the whole in-flight pregame —
+        // a RESTORE targeting a keep/mulligan or bottoming root re-derives the
+        // decision at the gate even after the real line progressed into the
+        // main game (only a main-loop gate can bounce control back there).
+        struct PregameState {
+            enum Stage {
+                MULL_DECIDE,      // one keep/mulligan decision per gate call (CR 103.4/103.5)
+                MULL_BOTTOM,      // one London bottoming pick per gate call (CR 103.4a)
+                FIAT_SETUP,       // promptless: test-harness presets, companions, preplaced SBE
+                OPENING_ACTIONS,  // CR 103.6b opening-hand y/n offers, one per gate call
+                DONE              // pregame over
+            };
+            // Default DONE: a mid-game snapshot restores as non-pregame (and
+            // pre-existing snapshots/back-compat states never re-enter the
+            // gate). play_single_game initializes it to MULL_DECIDE at game
+            // start.
+            Stage stage = DONE;
+            bool a_goes_first = true;
+            bool a_kept = false;
+            bool b_kept = false;
+            int mulls_a = 0;
+            int mulls_b = 0;
+            // CR 103.5 round bookkeeping: whether the seat deciding first this
+            // round has already had its keep/mulligan decision this round.
+            bool first_seat_decided_this_round = false;
+            // MULL_BOTTOM: whose kept hand is being bottomed, and how many
+            // cards remain to bottom.
+            Zone::Ownership bottoming_owner = Zone::UNKNOWN;
+            int bottom_remaining = 0;
+            // FIAT_SETUP: presets/companions already placed (a resumed setup
+            // must never re-place), and the preplaced battlefield entities
+            // awaiting their summoning-sickness clear once the SBE pass
+            // settles (cleared after use so the resume path is idempotent).
+            bool fiat_placed = false;
+            std::vector<Entity> preplaced;
+            // OPENING_ACTIONS iteration state: which player (0/1 in play
+            // order), the up-front snapshot of their kept hand (CR 103.5 —
+            // no new card can join the opening hand mid-phase), and the next
+            // hand card to consider.
+            int oh_player_idx = 0;
+            bool oh_hand_init = false;
+            std::vector<Entity> oh_hand;
+            size_t oh_card_idx = 0;
+            bool oh_any_ran = false;
+        };
+        PregameState pregame;
+        // Turn-based draw suspension state (pending_query tag TURN_DRAW): the
+        // draw step's draw batch with the dredge draw-replacement question
+        // (CR 702.52a) parked as a loop-top decision. advance_step's
+        // UPKEEP→DRAW case arms it and calls resume_pending_draws; while a
+        // dredge question is parked the step-change epilogue is deferred
+        // (pass flags stay true, mana pools un-emptied — exactly the state
+        // the blocking prompt read) and the loop-top TURN_DRAW dispatch runs
+        // it via finish_suspended_turn_draw once the batch completes. Value
+        // member so a snapshot covers the parked batch. active == true only
+        // while draws remain (or a dredge query is parked); cleared when the
+        // batch completes or the game ends mid-batch.
+        struct PendingDrawRT {
+            bool active = false;
+            Zone::Ownership player = Zone::UNKNOWN;
+            int remaining = 0;
+        };
+        PendingDrawRT pending_draw;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
@@ -318,6 +641,11 @@ struct Game {
         bool is_mandatory_choice_pending() const;
         void generate_players(const Deck &deck_a, const Deck &deck_b);
         bool advance_step(std::shared_ptr<class StackManager> stack_manager, std::shared_ptr<class Orderer> orderer);
+        // The step-change epilogue advance_step deferred when the turn-based
+        // draw suspended on a dredge question: seat priority with the active
+        // player, reset pass tracking, empty the mana pools. Called by the
+        // loop-top TURN_DRAW dispatch once resume_pending_draws completes.
+        void finish_suspended_turn_draw();
         void pass_priority();
         void take_action();  // resets last_player_passed since an action was taken
 
@@ -337,6 +665,18 @@ struct PendingDecisionScope {
     }
     ~PendingDecisionScope() { cur_game.pending_decision_source = prev_source; }
 };
+
+// True while a suspended decision is parked for the main loop to emit (see
+// pending_query.h). Later batches gate cooperative early-returns on it
+// (`if (decision_suspended()) return;` in suspendable callees).
+inline bool decision_suspended() { return cur_game.pending_query.active; }
+
+// Drive the turn-based draw batch (Game::pending_draw): consume a latched
+// TURN_DRAW answer if one is parked, then draw / dredge one card at a time
+// until the batch completes or the next dredge question arms a fresh query
+// (tag TURN_DRAW). Called synchronously by advance_step's UPKEEP→DRAW case
+// (promptless when no dredge applies) and by the loop-top TURN_DRAW dispatch.
+void resume_pending_draws(Game &game, std::shared_ptr<class Orderer> orderer);
 
 #endif // __cplusplus
 

@@ -30,7 +30,7 @@ namespace effects {
 //     generality; Shadowspear exercises only the removal direction).
 // The ValidCards$ filter is matched through permanent_matches_filter so YouCtrl/OppCtrl controller
 // scoping and the full qualifier grammar come for free. Cleared at the cleanup step (514.2).
-bool animate_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult animate_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     MatchCtx ctx{ab.controller, ab.source};
     int affected = 0;
     for (auto e : orderer->mEntities) {
@@ -60,7 +60,7 @@ bool animate_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
             list += (i ? ", " : "") + ab.remove_keywords[i];
         game_log("%d permanent(s) lose %s until end of turn.\n", affected, list.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Parse hook for AB$ AnimateAll. Claims RemoveKeywords$ (the removal list) and, when the ability

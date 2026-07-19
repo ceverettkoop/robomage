@@ -103,35 +103,29 @@ without this, or it will self-destruct on resolution.
   (reported as DRAW) on comma-named cards. Workaround: pass comma-free names (name_to_uid strips
   punctuation, so the same card loads). The underlying assert is unfixed.
 
-## AlphaZero / search — unsafe-root coverage
+## AlphaZero / search — unsafe-root coverage (DONE 2026-07-18, branch snapshot_safe)
 
-The search safe window covers exactly ONE call site: the main-loop priority decision
-(`game_driver.cpp` `search_set_loop_safe(true)` around the loop-top `get_input`). Every other
-prompt is an unsafe root: search cannot START there (SNAPSHOT/DETERMINIZE fatal-error), the
-SearchController falls back to raw policy argmax, and AZ self-play stores NO training sample —
-the policy head never gets visit-distribution targets at those decisions (~9% of decisions at
-the measured ~91% safe fraction). Unsafe decisions ARE still traversed as interior tree nodes
-inside simulations; only rooting is blocked.
+COMPLETE: the snapshot-safe conversion project (Batches 0-14) made **every decision kind a
+searchable root**. Every former mid-resolution/mid-flow prompt — combat declarations and
+target sub-prompts, damage assignment, every resolution-time effect prompt (targets, digs,
+scrys, searches, discard/sacrifice, unless-costs, ...), trigger placement, SBE prompts
+(legend rule, ETB choices, enters-tapped-unless-life), the whole cast/activation flows
+(modes, targets, X ladders, delve, alt costs), mulligans/pregame, and the turn-draw dredge
+replacement — now suspends as a loop-top pending decision (`src/pending_query.h` /
+`src/resolution_frame.h`), reports `SEARCHINFO safe=1`, and round-trips
+SNAPSHOT/DETERMINIZE/RESTORE byte-identically (CI `snapshot` tier, 38 tests). Measured
+scripted-vs-scripted: 2844/2844 decisions safe over the nine corpus pairings, 100% on a
+15-hundred-decision league probe, 148/148 on the delver control line. bo3 sideboarding was
+already searchable (Phase 2, 2026-07-13).
 
-- **Extend the safe window to mandatory choices — the high-value fix.** Declare attackers,
-  declare blockers, cleanup discard, and trigger-ordering prompts run at the LOOP TOP
-  (`is_mandatory_choice_pending` → `proc_mandatory_choice`, before the safe window) — unlike
-  nested prompts they are re-derived each loop iteration from cur_game + ECS, so a restore
-  landing at the loop top plausibly re-derives the same prompt. If so, marking them loop-safe
-  puts COMBAT DECLARATIONS under MCTS and into the AZ training data (today the net's combat
-  policy is shaped only by PPO warm-start + value backup, never by search CE targets). Must be
-  proven by the snapshot round-trip CI test before trusting it (check
-  `process_turn_based_actions` idempotence on the restored path).
-- Nested mid-resolution prompts (targets/modes at cast, mana payment, search/dig/scry picks,
-  discard/sacrifice, unless-costs, etc.) are architecturally unsafe — they live halfway down a
-  live C++ call stack that a game-state snapshot cannot rebuild. Making those searchable means
-  either resolution-state serialization or moving the choices to the loop top (cf. the deferred
-  modal-at-cast refactor); not worth it piecemeal.
-- bo3 sideboarding is now a SEARCHABLE root (Phase 2, DONE 2026-07-13): a MATCH-scoped snapshot
-  survives the per-game wipe, so the sideboard decision is searched on the next game's horizon
-  and stored as an AZ training sample (next-game z) on both the Python and C++ actor backends.
-  See docs/alphazero_status.md "Phase 2 — learned sideboarding". Mulligans remain unsafe roots
-  (low training value, fine as fallbacks).
+Residual `safe=0` surface (documented + guarded by `test_snapshot.py`'s
+`PROMPT_SITE_WHITELIST` audit test, which fails CI if a new blocking `get_input` appears):
+the 616.1 multi-replacement `choose_one` prompt (needs two simultaneous replacement effects
+on one event, e.g. two Leylines of the Void in play; 0 occurrences measured; counted by
+`replacement::choose_one_prompt_count`; conversion recipe at the site), interactive-only
+prompts machine mode never reaches (mana payment, hybrid pips), the defensive
+outside-main-loop blocking fallbacks, and `effect_choose_card`'s cast-from-exile mini-cast
+announce path. See docs/alphazero_status.md's safe-window section for the full list.
 
 ## Engine robustness
 

@@ -31,19 +31,25 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix,
-                                      ActionCategory category);
-static void pay_secondary_activation_costs(
-    const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
-static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
+static std::vector<LegalAction> permanent_choice_menu(const std::vector<Entity> &choices,
+                                                      const char *verb, const char *suffix,
+                                                      ActionCategory category);
+static int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
+                                bool allow_done, TargetAsker &asker);
 static std::string chosen_targets_display(const Ability &ab);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
-static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
+static void run_activation_flow(Game::PendingActivation &pa, Game &game,
+                                std::shared_ptr<Orderer> orderer, int resume_choice);
 static std::vector<Entity> build_valid_targets(
     const Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
-static void pay_alternate_cost(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer,
-    const CardData &card_data, Entity spell_entity, Zone zone);
+static void pay_alternate_cost(Game &game, std::shared_ptr<Orderer> orderer,
+    const CardData &card_data, Entity spell_entity, Zone::Ownership caster);
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
+static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
+                                     std::vector<LegalAction> &&menu, bool chooser_is_a,
+                                     Entity chosen_creature);
+static void resume_attack_target(Game &game);
+static void resume_block_target(Game &game);
 static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype);
 static std::string landwalk_subtype(const std::string &kw);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
@@ -52,6 +58,9 @@ static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
+static bool arm_damage_assign_query(Game &game);
+static void finish_pending_attacker(Game &game);
+static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 // One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
 // amount, or a life amount when is_life) the targeting player must pay or have the spell/
@@ -69,28 +78,42 @@ static void fire_became_target_events(Entity targeting_entity, Zone::Ownership c
                                       const std::vector<Entity> &targets);
 static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
                                  const Ability &targeting_ab, std::shared_ptr<Orderer> orderer);
-static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
-                               std::shared_ptr<Orderer> orderer);
-static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
-                                      std::shared_ptr<Orderer> orderer);
-static void pay_exile_from_grave_count_cost(Zone::Ownership caster, int count, Entity spell_entity,
-                                            std::shared_ptr<Orderer> orderer);
+static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity spell_entity,
+                                                  std::shared_ptr<Orderer> orderer);
 static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary);
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
                                   bool promised);
 static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster);
+static std::string charm_mode_desc(const Ability &ability, size_t idx);
+static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
+                                                      std::shared_ptr<Orderer> orderer,
+                                                      Zone::Ownership caster,
+                                                      const std::vector<bool> &taken,
+                                                      std::vector<size_t> &mode_indices);
 static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster);
+static std::vector<LegalAction> optional_yesno_menu(const std::string &prompt);
+static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
+                           Zone::Ownership chooser, Entity decision_source = 0);
+static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
+                           Entity decision_source = 0);
+static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
+                          int resume_choice);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
 
-// Present the player a menu of permanents and return the chosen entity. `verb`
-// and `suffix` frame the label, e.g. ("Sacrifice ", "") or ("Return ", " to hand").
-static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix,
-                                      ActionCategory category) {
+// Build the menu of permanents for a choose-one cost pick. `verb` and `suffix`
+// frame the label, e.g. ("Sacrifice ", "") or ("Return ", " to hand"). menu[i]
+// carries choices[i] as its source_entity, so a latched answer indexes straight
+// back into the candidate list. (The menu-building half of the old blocking
+// prompt_permanent_choice — the get_input half is now a parked ACTIVATION
+// pending decision at each of its former call sites.)
+static std::vector<LegalAction> permanent_choice_menu(const std::vector<Entity> &choices,
+                                                      const char *verb, const char *suffix,
+                                                      ActionCategory category) {
     std::vector<LegalAction> menu;
     for (auto e : choices) {
         std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
@@ -98,229 +121,29 @@ static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const 
         la.category = category;
         menu.push_back(la);
     }
-    int choice = InputLogger::instance().get_input(menu);
-    return menu[static_cast<size_t>(choice)].source_entity;
+    return menu;
 }
 
-// Pay a "sacrifice a <spec>" cost: prompt the caster to choose one of their matching
-// permanents and move it to the graveyard. Shared by the flashback alternate cost
-// (CR 702.34, e.g. Cabal Therapy) and the spell's additional cast cost
-// (CR 601.2f, e.g. Natural Order). Cast legality already guaranteed a matching
-// permanent exists; the empty-choices guard is a defensive no-op.
-static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
-                               std::shared_ptr<Orderer> orderer) {
-    std::vector<Entity> choices =
-        controlled_permanents_matching(caster, spec, orderer->mEntities, spell_entity);
-    if (choices.empty()) return;
-    Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "", ActionCategory::SACRIFICE_PERMANENT);
-    std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
-    orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
-    game_log("%s sacrifices %s\n", player_name(caster).c_str(), sac_name.c_str());
-}
-
-// Pay an Escape ExileFromGrave additional cost (CR 702.139 / 601.2f): exile any number of
-// OTHER cards from the caster's graveyard until the exiled set collectively has at least
-// `min_types` distinct card types (CR 205.2). Presented as a choice loop over the caster's
-// other graveyard cards; the loop is mandatory (no "done" option) until the constraint is
-// met, after which casting proceeds. Cast legality already guaranteed enough types exist.
-static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
-                                      std::shared_ptr<Orderer> orderer) {
-    if (min_types <= 0) return;
-    std::set<std::string> exiled_types;
-    while (static_cast<int>(exiled_types.size()) < min_types) {
-        // Gather the caster's remaining other graveyard cards as choices.
-        std::vector<Entity> choices;
-        for (auto e : orderer->mEntities) {
-            if (e == spell_entity) continue;
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::GRAVEYARD || z.owner != caster) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            choices.push_back(e);
-        }
-        if (choices.empty()) break;  // defensive: legality guaranteed enough cards
-        std::vector<LegalAction> menu;
-        for (auto e : choices) {
-            std::string nm = global_coordinator.GetComponent<CardData>(e).name;
-            LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
-            la.category = ActionCategory::EXILE_FROM_YARD;
-            menu.push_back(la);
-        }
-        int choice = InputLogger::instance().get_input(menu);
-        Entity to_exile = menu[static_cast<size_t>(choice)].source_entity;
-        auto &cd = global_coordinator.GetComponent<CardData>(to_exile);
-        for (auto &t : cd.types)
-            if (t.kind == TYPE) exiled_types.insert(t.name);
-        std::string ename = cd.name;
-        orderer->add_to_zone(false, to_exile, Zone::EXILE);
-        game_log("%s exiles %s from their graveyard\n", player_name(caster).c_str(), ename.c_str());
+// Candidate menu for one Escape ExileFromGrave pick (CR 702.139 / 601.2f): the caster's
+// remaining OTHER graveyard cards, in mEntities order. Re-derived from the live graveyard
+// at each arm of the DEF_EXILE_TYPES / DEF_EXILE_COUNT steps (each exile drops that card
+// from the next menu), exactly the per-iteration rebuild the old blocking loops did.
+// menu[i].source_entity is the candidate, so the resumed apply indexes straight into it.
+static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity spell_entity,
+                                                  std::shared_ptr<Orderer> orderer) {
+    std::vector<LegalAction> menu;
+    for (auto e : orderer->mEntities) {
+        if (e == spell_entity) continue;
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location != Zone::GRAVEYARD || z.owner != caster) continue;
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        std::string nm = global_coordinator.GetComponent<CardData>(e).name;
+        LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
+        la.category = ActionCategory::EXILE_FROM_YARD;
+        menu.push_back(la);
     }
-}
-
-// Pay an Escape ExileFromGrave additional cost in its literal-count form (CR 702.139 / 601.2f):
-// exile exactly `count` OTHER cards from the caster's graveyard (Uro: "Exile five other cards
-// from your graveyard"). Presented as a mandatory choice loop over the caster's other graveyard
-// cards; no "done" option until `count` cards are exiled. Cast legality already guaranteed
-// enough cards exist.
-static void pay_exile_from_grave_count_cost(Zone::Ownership caster, int count, Entity spell_entity,
-                                            std::shared_ptr<Orderer> orderer) {
-    if (count <= 0) return;
-    int exiled = 0;
-    while (exiled < count) {
-        // Gather the caster's remaining other graveyard cards as choices.
-        std::vector<Entity> choices;
-        for (auto e : orderer->mEntities) {
-            if (e == spell_entity) continue;
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::GRAVEYARD || z.owner != caster) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            choices.push_back(e);
-        }
-        if (choices.empty()) break;  // defensive: legality guaranteed enough cards
-        std::vector<LegalAction> menu;
-        for (auto e : choices) {
-            std::string nm = global_coordinator.GetComponent<CardData>(e).name;
-            LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
-            la.category = ActionCategory::EXILE_FROM_YARD;
-            menu.push_back(la);
-        }
-        int choice = InputLogger::instance().get_input(menu);
-        Entity to_exile = menu[static_cast<size_t>(choice)].source_entity;
-        std::string ename = global_coordinator.GetComponent<CardData>(to_exile).name;
-        orderer->add_to_zone(false, to_exile, Zone::EXILE);
-        game_log("%s exiles %s from their graveyard\n", player_name(caster).c_str(), ename.c_str());
-        exiled++;
-    }
-}
-
-// Pay the non-mana, non-tap activation costs shared by hand- and battlefield-
-// activated abilities (life, sacrifice, return-to-hand, discard). Targets, tap,
-// and mana are paid by the caller (those gate activation / can be cancelled);
-// these costs cannot fail once legality has passed.
-static void pay_secondary_activation_costs(
-    const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer) {
-    // Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source
-    // planeswalker, and mark the per-permanent once-per-turn gate (606.3). The ability still
-    // goes on the stack and resolves later; the loyalty change is the cost, paid now.
-    if (ability.is_loyalty_ability && global_coordinator.entity_has_component<Permanent>(source)) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(source);
-        // An X loyalty cost (Chandra, Flamecaller's [-X]) removes/adds the X chosen at activation
-        // (cur_game.x_paid); loyalty_cost carries only the sign. A fixed cost uses loyalty_cost as-is.
-        int loyalty_delta = ability.loyalty_cost_is_x
-            ? (ability.loyalty_cost < 0 ? -static_cast<int>(cur_game.x_paid)
-                                        :  static_cast<int>(cur_game.x_paid))
-            : ability.loyalty_cost;
-        int loyalty = add_counters(source, "LOYALTY", loyalty_delta);
-        perm.loyalty_ability_activated_this_turn = true;
-        game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
-                 entity_name(source).c_str(), loyalty_delta, loyalty);
-    }
-    // Life cost
-    if (ability.life_cost > 0) {
-        auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(controller));
-        activating_player.life_total -= ability.life_cost;
-        game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
-    }
-    // Energy cost (PayEnergy<N>, CR 122.1c): affordability is gated in determine_legal_actions,
-    // so the {E} is available to spend here.
-    if (ability.energy_cost > 0) {
-        auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(controller));
-        pay_energy(activating_player, ability.energy_cost);
-        game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.energy_cost);
-    }
-    // Sacrifice self: move to graveyard; apply_permanent_components SBA removes Permanent next pass
-    if (ability.sac_self) {
-        std::string sname = entity_name(source);
-        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
-        game_log("%s sacrifices %s\n", player_name(controller).c_str(), sname.c_str());
-    }
-    // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary)
-    if (!ability.sac_cost_spec.empty()) {
-        std::vector<Entity> choices =
-            controlled_permanents_matching(controller, ability.sac_cost_spec, orderer->mEntities, source);
-        if (!choices.empty()) {
-            Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "", ActionCategory::SACRIFICE_PERMANENT);
-            std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
-            orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
-            game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
-        }
-    }
-    // Return-to-hand cost (Scryb Ranger: return a Forest to hand)
-    if (!ability.return_cost_type.empty()) {
-        std::vector<Entity> choices =
-            controlled_permanents_matching(controller, ability.return_cost_type, orderer->mEntities);
-        if (!choices.empty()) {
-            Entity to_ret = prompt_permanent_choice(choices, "Return ", " to hand", ActionCategory::RETURN_PERMANENT);
-            std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
-            orderer->add_to_zone(false, to_ret, Zone::HAND);
-            game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
-        }
-    }
-    // Discard self from hand cost (Faerie Macabre)
-    if (ability.discard_self_cost) {
-        std::string cname = global_coordinator.entity_has_component<CardData>(source)
-            ? global_coordinator.GetComponent<CardData>(source).name : "card";
-        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
-        game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
-    }
-    // Discard hand cost (Lion's Eye Diamond)
-    if (ability.discard_hand_cost) {
-        for (auto card : orderer->get_hand(controller)) {
-            std::string cname = global_coordinator.entity_has_component<CardData>(card)
-                ? global_coordinator.GetComponent<CardData>(card).name : "card";
-            orderer->add_to_zone(false, card, Zone::GRAVEYARD);
-            game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
-        }
-    }
-}
-
-// Ninjutsu (CR 702.49e): the bespoke cost-and-effect of a K:Ninjutsu activation. The source
-// card is in its owner's hand. Pay the ninjutsu mana cost and return one unblocked attacker the
-// activator controls to its owner's hand, then put the source card onto the battlefield tapped
-// and attacking the defender that returned attacker had been attacking. Legality (declare-blockers
-// step + an unblocked attacker exists + mana affordable) is gated in determine_legal_actions.
-static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
-    Entity ninja = action.source_entity;
-    const Ability &ability = action.ability;
-    if (!global_coordinator.entity_has_component<Zone>(ninja)) return;
-    Zone::Ownership ctrl = global_coordinator.GetComponent<Zone>(ninja).owner;
-
-    std::vector<Entity> choices = unblocked_attackers(orderer->mEntities, ctrl);
-    if (choices.empty()) {
-        game_log("No unblocked attacker to return for ninjutsu.\n");
-        return;
-    }
-
-    // Pay the ninjutsu mana cost first (cancellable). The return-an-attacker cost cannot fail
-    // once an unblocked attacker exists, so it is paid after the mana commit.
-    ManaValue cost = effective_activation_mana_cost(ability, ctrl, orderer);
-    if (!cost.empty()) {
-        auto mana_snap = snapshot_mana_state(ctrl, orderer);
-        if (!prompt_mana_payment(ctrl, cost, ninja, orderer)) {
-            restore_mana_state(ctrl, mana_snap, orderer);
-            cur_game.payment_fail_counts[ninja]++;
-            game_log("Payment cancelled.\n");
-            return;
-        }
-    }
-
-    // Return the chosen unblocked attacker to its owner's hand (the ninjutsu cost).
-    Entity returned = prompt_permanent_choice(choices, "Return ", " to hand (ninjutsu)",
-                                              ActionCategory::RETURN_PERMANENT);
-    Entity attack_target = global_coordinator.GetComponent<Creature>(returned).attack_target;
-    std::string ret_name = entity_name(returned);
-    orderer->add_to_zone(false, returned, Zone::HAND);
-    game_log("%s returns %s to hand (ninjutsu)\n", player_name(ctrl).c_str(), ret_name.c_str());
-
-    // Put the ninja onto the battlefield from hand, tapped and attacking the same defender.
-    cur_game.pending_enters_tapped.insert(ninja);
-    if (attack_target != 0) cur_game.pending_enters_attacking[ninja] = attack_target;
-    std::string ninja_name = entity_name(ninja);
-    orderer->add_to_zone(false, ninja, Zone::BATTLEFIELD);
-    game_log("%s puts %s onto the battlefield tapped and attacking (ninjutsu)\n",
-             player_name(ctrl).c_str(), ninja_name.c_str());
-    game.take_action();
+    return menu;
 }
 
 // Every chosen target of an ability, joined for the activation announcement. Targets are
@@ -342,67 +165,49 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     Entity permanent_entity = action.source_entity;
     const Ability &ability = action.ability;
 
+    // Initialize the persisted activation state machine (Game::PendingActivation) from the
+    // consumed LegalAction and hand control to run_activation_flow — the extracted
+    // ACTIVATE_ABILITY body. The branch's former locals (the ability, the targeted
+    // stack_ab copy, the chosen X, the pre-payment equip/ninjutsu candidate lists) live
+    // in pa; converted prompts suspend as loop-top pending decisions (tag ACTIVATION)
+    // that the main loop emits and resume_activation_flow re-enters with the answer.
+    Game::PendingActivation &pa = game.pending_activation;
+    if (pa.active) fatal_error("ACTIVATE_ABILITY with an activation flow already in flight");
+
     // Ninjutsu (CR 702.49): bespoke cost (return an unblocked attacker) and effect (enter tapped
-    // and attacking) — handled separately from the generic hand-activated-ability path.
+    // and attacking) — its own step pair (NINJA_PAY / NINJA_RETURN), separate from the generic
+    // hand-activated-ability path.
     if (ability.is_ninjutsu) {
-        process_ninjutsu(action, game, orderer);
+        if (!global_coordinator.entity_has_component<Zone>(permanent_entity)) return;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Zone>(permanent_entity).owner;
+        pa = Game::PendingActivation{};
+        pa.active = true;
+        pa.step = Game::PendingActivation::NINJA_PAY;
+        pa.source_entity = permanent_entity;
+        pa.activator_is_a = (ctrl == Zone::PLAYER_A);
+        pa.ability = ability;
+        pa.stack_ab = ability;
+        run_activation_flow(pa, game, orderer, -1);
         return;
     }
 
     // ActivationZone$ Hand / Graveyard: card activated from a non-battlefield zone (no Permanent
     // component) — e.g. Cycling/Talon Gates from hand, or Unearth (CR 702.84) from the graveyard.
-    // Same flow: select targets, pay the cost, push the ability onto the stack. A Defined$ Self
-    // ability (Unearth's ChangeZone) relocates the card itself, so the auto-consume below is skipped.
+    // Same flow: select targets, pay the cost, push the ability onto the stack (the ZONE_TARGET /
+    // ZONE_PAY steps, converging on the shared SECONDARY chain).
     if ((ability.activation_zone == Zone::HAND || ability.activation_zone == Zone::GRAVEYARD) &&
         !global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(permanent_entity);
         Zone::Ownership ctrl = card_zone.owner;
-        Ability stack_ab = ability;
-
-        // Select targets before paying costs
-        if (stack_ab.valid_tgts != "N_A") {
-            select_target(stack_ab, orderer, ctrl);
-        }
-        // Pay mana cost (after ReduceCost$, e.g. Eiganjo's Channel cheaper per legendary creature)
-        ManaValue from_hand_cost = effective_activation_mana_cost(ability, ctrl, orderer);
-        if (!from_hand_cost.empty()) {
-            auto mana_snap = snapshot_mana_state(ctrl, orderer);
-            if (!prompt_mana_payment(ctrl, from_hand_cost, permanent_entity, orderer)) {
-                restore_mana_state(ctrl, mana_snap, orderer);
-                cur_game.payment_fail_counts[permanent_entity]++;
-                game_log("Payment cancelled.\n");
-                return;
-            }
-        }
-        // Pay remaining costs (life, sacrifice, return-to-hand, discard)
-        pay_secondary_activation_costs(ability, permanent_entity, ctrl, orderer);
-        // Auto-consume the activated card to the graveyard, unless the ability relocates
-        // it itself (Defined$ Self) or it was already discarded as an explicit cost
-        // (discard_self_cost, paid above) — guarding against a double move.
-        if (!ability.defined_self && !ability.discard_self_cost) {
-            orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
-        }
-
-        // Create standalone ability entity on the stack
-        stack_ab.source = permanent_entity;
-        stack_ab.controller = ctrl;
-        Entity ability_stack_entity = orderer->push_ability_onto_stack(stack_ab, ctrl);
-
-        // Ward (702.21) + BecomesTarget (CR 603.2c) apply to hand/graveyard-activated abilities
-        // too — CR 702.21b triggers on ANY spell or ability an opponent controls that targets
-        // the warded permanent. (Graveyard/non-battlefield targets are filtered inside the hooks.)
-        fire_targeting_hooks(ability_stack_entity, ctrl, stack_ab, orderer);
-
-        auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
-        const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
-        if (stack_ab.target != 0) {
-            std::string tgt_names = chosen_targets_display(stack_ab);
-            game_log("%s activates %s from %s targeting %s\n",
-                player_name(ctrl).c_str(), cd.name.c_str(), from_zone, tgt_names.c_str());
-        } else {
-            game_log("%s activates %s from %s\n", player_name(ctrl).c_str(), cd.name.c_str(), from_zone);
-        }
-        game.take_action();
+        pa = Game::PendingActivation{};
+        pa.active = true;
+        pa.step = Game::PendingActivation::ZONE_TARGET;
+        pa.source_entity = permanent_entity;
+        pa.activator_is_a = (ctrl == Zone::PLAYER_A);
+        pa.zone_path = true;
+        pa.ability = ability;
+        pa.stack_ab = ability;
+        run_activation_flow(pa, game, orderer, -1);
         return;
     }
 
@@ -416,65 +221,26 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         return;
     }
 
-    // InstantSpeed$ AddMana abilities (e.g. LED) are mana abilities too: they resolve off-stack.
-    // The instant-speed timing restriction is enforced upstream (offered only at priority).
-    bool is_mana_ability = ability_is_mana(ability);
-    Ability stack_ab = ability;  // not used for mana ability
-
-    // EQUIP: special activated ability — attach equipment to a creature
+    // EQUIP: special activated ability — attach equipment to a creature (EQUIP_PAY freezes the
+    // creature menu and pays; EQUIP_TARGET suspends on the menu).
     if (ability.category == "Equip") {
-        // Present list of creatures controlled by the equipment owner
-        std::vector<LegalAction> equip_targets;
-        for (auto e : orderer->mEntities) {
-            if (e == permanent_entity) continue;  // can't attach to itself (CR 301.5c / reconfigure)
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-            auto &ep = global_coordinator.GetComponent<Permanent>(e);
-            if (ep.controller != controller) continue;
-            std::string ename = ep.name;
-            auto &ecr = global_coordinator.GetComponent<Creature>(e);
-            LegalAction la(
-                PASS_PRIORITY, e, ename + " [" + std::to_string(ecr.power) + "/" + std::to_string(ecr.toughness) + "]");
-            la.category = ActionCategory::SELECT_TARGET;
-            equip_targets.push_back(la);
-        }
-        if (equip_targets.empty()) {
-            game_log("No valid creatures to equip.\n");
-            return;
-        }
-        // Pay equip cost
-        if (ability.tap_cost) permanent.is_tapped = true;
-        ManaValue equip_cost = effective_activation_mana_cost(ability, controller, orderer);
-        if (!equip_cost.empty()) {
-            auto mana_snap = snapshot_mana_state(controller, orderer);
-            if (!prompt_mana_payment(controller, equip_cost, permanent_entity, orderer)) {
-                restore_mana_state(controller, mana_snap, orderer);
-                if (ability.tap_cost) permanent.is_tapped = false;
-                cur_game.payment_fail_counts[permanent_entity]++;
-                game_log("Payment cancelled.\n");
-                return;
-            }
-        }
-
-        game_log("Choose creature to equip:\n");
-        int choice = InputLogger::instance().get_input(equip_targets);
-        Entity target_creature = equip_targets[static_cast<size_t>(choice)].source_entity;
-
-        // Detach from previous creature if any
-        if (permanent.equipped_to != 0 && global_coordinator.entity_has_component<Permanent>(permanent.equipped_to)) {
-            global_coordinator.GetComponent<Permanent>(permanent.equipped_to).equipped_by = 0;
-        }
-        permanent.equipped_to = target_creature;
-        global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = permanent_entity;
-        std::string tname = global_coordinator.GetComponent<Permanent>(target_creature).name;
-        game_log("%s equipped to %s.\n", permanent.name.c_str(), tname.c_str());
-        game.take_action();
+        pa = Game::PendingActivation{};
+        pa.active = true;
+        pa.step = Game::PendingActivation::EQUIP_PAY;
+        pa.source_entity = permanent_entity;
+        pa.activator_is_a = (controller == Zone::PLAYER_A);
+        pa.ability = ability;
+        pa.stack_ab = ability;
+        run_activation_flow(pa, game, orderer, -1);
         return;
     }
 
     // UNATTACH: Reconfigure (CR 702.151) — pay the cost to detach this equipment from the creature
     // it is attached to. Clears the attach link; the continuous-effects pass restores its
-    // creature-ness (a reconfigured permanent isn't a creature only while attached).
+    // creature-ness (a reconfigured permanent isn't a creature only while attached). No menu
+    // prompt exists here — the only interactive read is the mana payment, which machine mode
+    // auto-resolves with zero decisions — so this path stays synchronous (deliberately
+    // unconverted, like the interactive payer itself).
     if (ability.category == "Unattach") {
         if (permanent.equipped_to == 0) {
             game_log("%s is not attached.\n", permanent.name.c_str());
@@ -499,115 +265,16 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         return;
     }
 
-    // X ACTIVATION COST (Candelabra of Tawnos: Cost$ X T): X is part of the activation cost,
-    // chosen during announcement BEFORE targets (CR 602.2b/601.2b) so an exactly-X / up-to-X
-    // target count can read it. Prompt for X (bounded by the mana available beyond the rest of
-    // the cost), record it as x_paid, and add X generic to the mana cost paid below.
-    size_t x_activation = 0;
-    if (!is_mana_ability && ability.activation_has_x) {
-        // Name the ability making this X choice so the observation identifies it (the
-        // ability isn't on the stack yet — X is chosen during announcement). Mirrors the
-        // PendingDecisionScope select_single_target uses for the target prompt below.
-        PendingDecisionScope pending_scope(ability.source);
-        ManaValue base_cost = effective_activation_mana_cost(ability, controller, orderer);
-        size_t max_x = max_available_mana(controller, base_cost, orderer);
-        game_log("Choose X value (0-%zu):\n", max_x);
-        std::vector<LegalAction> x_actions;
-        for (size_t xv = 0; xv <= max_x; xv++) {
-            LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
-            la.category = ActionCategory::CHOOSE_X;
-            la.option_ordinal = static_cast<int>(xv);  // the chosen X value
-            x_actions.push_back(la);
-        }
-        int x_choice = InputLogger::instance().get_input(x_actions);
-        x_activation = static_cast<size_t>(x_choice);
-        cur_game.x_paid = x_activation;
-        game_log("%s chooses X = %zu\n", player_name(controller).c_str(), x_activation);
-    }
-
-    // X LOYALTY COST (Chandra, Flamecaller's [-X]): choose X at announcement, bounded by the
-    // planeswalker's current loyalty for a minus cost (you can't remove more than it has, 606.5).
-    // Recorded as x_paid so the cost (pay_secondary_activation_costs) and the effect's Count$xPaid
-    // (NumDmg$ X) both read it. This is a loyalty cost, not mana — it never touches activate_cost.
-    if (ability.loyalty_cost_is_x) {
-        int max_x = (ability.loyalty_cost < 0) ? get_counters(permanent_entity, "LOYALTY") : 99;
-        if (max_x < 0) max_x = 0;
-        game_log("Choose X value (0-%d):\n", max_x);
-        std::vector<LegalAction> x_actions;
-        for (int xv = 0; xv <= max_x; xv++) {
-            LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
-            la.category = ActionCategory::CHOOSE_X;
-            la.option_ordinal = static_cast<int>(xv);  // the chosen X value
-            x_actions.push_back(la);
-        }
-        int x_choice = InputLogger::instance().get_input(x_actions);
-        cur_game.x_paid = static_cast<size_t>(x_choice);
-        game_log("%s chooses X = %d\n", player_name(controller).c_str(), x_choice);
-    }
-
-    // SELECT TARGETS BEFORE PAYING COSTS
-    if (!is_mana_ability) {
-        if (stack_ab.valid_tgts != "N_A") {
-            select_target(stack_ab, orderer, controller);
-        }
-    }
-    // Tap cost
-    if (ability.tap_cost) {
-        permanent.is_tapped = true;
-    }
-    // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only). For an X-cost ability the
-    // chosen X is added as generic mana on top of the base cost.
-    ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
-    for (size_t i = 0; i < x_activation; i++) activate_cost.insert(GENERIC);
-    if (!activate_cost.empty()) {
-        auto mana_snap = snapshot_mana_state(controller, orderer);
-        if (!prompt_mana_payment(controller, activate_cost, permanent_entity, orderer)) {
-            restore_mana_state(controller, mana_snap, orderer);
-            if (ability.tap_cost) permanent.is_tapped = false;
-            cur_game.payment_fail_counts[permanent_entity]++;
-            game_log("Payment cancelled.\n");
-            return;
-        }
-    }
-    // Pay remaining costs (life, sacrifice, return-to-hand, discard).
-    // life_cost legality is gated upstream in can_afford_alt / determine_legal_actions.
-    pay_secondary_activation_costs(ability, permanent_entity, controller, orderer);
-    // MANA ABILITY
-    if (is_mana_ability) {
-        // Costs were already paid above: tap at the generic tap-cost step, activation mana
-        // via prompt_mana_payment, life/sacrifice/discard via pay_secondary_activation_costs.
-        // The shared production core handles the rest: amount eval (dynamic amounts like
-        // Gaea's Cradle / Urza's Workshop), ProduceMana replacement, pool insert, TapsForMana
-        // triggers, uncounterability flag, narrative, SubAbility$ riders (Ancient Tomb's
-        // damage), and the activation counter.
-        auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(controller));
-        produce_mana_from_ability(permanent_entity, ability, controller, orderer, pl.mana,
-                                  /*commit=*/true, ManaLogStyle::TAPPED_AMOUNT);
-        // priority does not pass
-    } else {  // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
-        // puts on stack; we have targets from earlier
-        stack_ab.source = permanent_entity;
-        stack_ab.controller = controller;
-        Entity ability_stack_entity = orderer->push_ability_onto_stack(stack_ab, controller);
-
-        // Ward (702.21) + Mode$ BecomesTarget (CR 603.2c): abilities fire these too; the
-        // per-trigger ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out
-        // ability sources for BecomesTarget.
-        fire_targeting_hooks(ability_stack_entity, controller, stack_ab, orderer);
-
-        if (stack_ab.target != 0) {
-            std::string tgt_names = chosen_targets_display(stack_ab);
-            game_log("%s's %s ability targeting %s is on the stack\n",
-                player_name(controller).c_str(), permanent.name.c_str(), tgt_names.c_str());
-        } else {
-            game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), permanent.name.c_str());
-        }
-        game.take_action();
-
-        // Increment activation counter for limited abilities (e.g. Scryb Ranger)
-        increment_activation_count(permanent, ability);
-        // if target remains legal checked at resolution
-    }
+    // Generic battlefield activation (mana abilities included — they skip the X ladder and
+    // target steps inside the flow and resolve off-stack at FINISH).
+    pa = Game::PendingActivation{};
+    pa.active = true;
+    pa.step = Game::PendingActivation::X_LADDER;
+    pa.source_entity = permanent_entity;
+    pa.activator_is_a = (controller == Zone::PLAYER_A);
+    pa.ability = ability;
+    pa.stack_ab = ability;  // not used for mana ability
+    run_activation_flow(pa, game, orderer, -1);
 }
 
 //  Build the list of legal targets for an ability.
@@ -686,9 +353,13 @@ static std::vector<Entity> build_valid_targets(
 }
 
 // TODO MAKE THIS GENERAL
-static void pay_alternate_cost(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer,
-    const CardData &card_data, Entity spell_entity, Zone zone) {
-    Zone::Ownership caster = zone.owner;
+// The mana + life portion of an alternate cast cost. The pick loops (pitch a card from
+// hand, return a permanent to hand) are the suspendable ALT_PITCH / ALT_RETURN steps of
+// run_cast_flow, entered right after this returns — same payment order as before
+// (mana, life, pitch, return). NOTE the whole alt-cost branch pays BEFORE targets are
+// chosen — the pre-existing order, kept for byte compatibility.
+static void pay_alternate_cost(Game &game, std::shared_ptr<Orderer> orderer,
+    const CardData &card_data, Entity spell_entity, Zone::Ownership caster) {
     Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
     auto &player = global_coordinator.GetComponent<Player>(caster_entity);
 
@@ -715,56 +386,89 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
         player.life_total -= card_data.alt_cost.life_cost;
         game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
     }
-    // pitch cards — exile a card of the required color from hand
-    Colors pitch_color = card_data.alt_cost.exile_from_hand_color;
-    for (int i = 0; i < card_data.alt_cost.exile_from_hand_count; i++) {
-        std::vector<LegalAction> exile_actions;
-        for (auto e : orderer->get_hand(caster)) {
-            if (e == spell_entity) continue;
-            if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
-            if (pitch_color != NO_COLOR && !global_coordinator.GetComponent<ColorIdentity>(e).colors.count(pitch_color)) continue;
-            LegalAction la(PASS_PRIORITY, e, "Exile " + global_coordinator.GetComponent<CardData>(e).name);
-            la.category = ActionCategory::PAYING_COSTS;
-            exile_actions.push_back(la);
-        }
-        int choice = InputLogger::instance().get_input(exile_actions);
-        Entity exiled = exile_actions[static_cast<size_t>(choice)].source_entity;
-        game_log("%s exiles %s\n", player_name(caster).c_str(),
-            global_coordinator.GetComponent<CardData>(exiled).name.c_str());
-        orderer->add_to_zone(false, exiled, Zone::EXILE);
-    }
-    // Is generalizable by type? I think
-    for (int i = 0; i < card_data.alt_cost.return_to_hand_count; i++) {
-        std::vector<LegalAction> rth_actions;
-        const std::string &type = card_data.alt_cost.return_to_hand_type;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            auto &eperm = global_coordinator.GetComponent<Permanent>(e);
-            if (eperm.controller != caster) continue;
-            bool matches = false;
-            // can be subtype, type or supertype
-            for (auto &t : eperm.types) {
-                if (t.name == type) {
-                    matches = true;
-                    break;
-                }
-            }
-            if (!matches) continue;
-            LegalAction la(PASS_PRIORITY, e, "Return " + eperm.name);
-            la.category = ActionCategory::RETURN_PERMANENT;
-            rth_actions.push_back(la);
-        }
-        int choice = InputLogger::instance().get_input(rth_actions);
-        Entity returned = rth_actions[static_cast<size_t>(choice)].source_entity;
-        game_log("%s returns %s to hand\n", player_name(caster).c_str(),
-            global_coordinator.GetComponent<Permanent>(returned).name.c_str());
-        orderer->add_to_zone(false, returned, Zone::HAND);
-    }
+}
+
+// Park a combat target sub-prompt (attack target / block target) as a loop-top
+// pending decision (pending_query.h). The chosen-but-uncommitted creature is
+// persisted in pending_attacker/pending_blocker; the main loop emits the stored
+// menu loop-safely (a legal SNAPSHOT/DETERMINIZE root) and dispatches the answer
+// to resume_attack_target/resume_block_target. Priority already sits with the
+// chooser at both call sites (advance_step seats the active player for declare
+// attackers; declare_blockers repoints to the defender at entry), so the caller
+// passes the live chooser and nothing needs restoring on resume.
+static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
+                                     std::vector<LegalAction> &&menu, bool chooser_is_a,
+                                     Entity chosen_creature) {
+    if (tag == PendingQuery::ATTACK_TARGET)
+        game.pending_attacker = chosen_creature;
+    else
+        game.pending_blocker = chosen_creature;
+    PendingQuery &pq = game.pending_query;
+    pq.tag = tag;
+    pq.menu = std::move(menu);
+    pq.chooser_is_a = chooser_is_a;
+    // Byte-compat: today's inline sub-prompt runs with pending_decision_source
+    // == 0 (no PendingDecisionScope wraps it), and the replay corpus decodes
+    // that state field into a "Pending:" transcript line — a nonzero source
+    // here drifts the corpus. Keep 0; enriching the observation with the
+    // chosen creature is a deliberate (corpus re-record) change for later.
+    pq.decision_source = 0;
+    pq.answered = false;
+    pq.answer = -1;
+    pq.active = true;
+}
+
+// Commit a parked attack-target answer: exactly the post-get_input code the
+// inline sub-prompt ran (attack flag + target + narrative). Declaration events
+// (CREATURE_ATTACKED / ATTACKERS_DECLARED / exalted) still fire at confirm time
+// in declare_attackers, from the is_attacking flags. The next loop iteration
+// re-derives DECLARE_ATTACKERS_CHOICE (attackers_declared is still false) and
+// re-enters declare_attackers to continue the declaration.
+static void resume_attack_target(Game &game) {
+    PendingQuery &pq = game.pending_query;
+    Entity chosen_attacker = game.pending_attacker;
+    auto &cr = global_coordinator.GetComponent<Creature>(chosen_attacker);
+    cr.is_attacking = true;
+    cr.attack_target = pq.menu[static_cast<size_t>(pq.answer)].source_entity;
+    game_log("%s attacking %s.\n", entity_name(chosen_attacker).c_str(),
+        target_display_name(game, cr.attack_target).c_str());
+    game.pending_attacker = 0;
+    pq = PendingQuery{};
+}
+
+// Commit a parked block-target answer: the post-get_input code of the inline
+// sub-prompt (block flag + target + attacker's is_blocked + narrative). Menace
+// legality is still resolved at confirm time (release_illegal_menace_blockers).
+static void resume_block_target(Game &game) {
+    PendingQuery &pq = game.pending_query;
+    Entity chosen = game.pending_blocker;
+    auto &cr = global_coordinator.GetComponent<Creature>(chosen);
+    cr.is_blocking = true;
+    cr.blocking_target = pq.menu[static_cast<size_t>(pq.answer)].source_entity;
+    // Mark the attacker as blocked. It stays blocked for the rest of combat even if this
+    // (and every other) blocker later leaves combat (509.1h), so it assigns no damage to
+    // the player unless it has trample.
+    if (global_coordinator.entity_has_component<Creature>(cr.blocking_target))
+        global_coordinator.GetComponent<Creature>(cr.blocking_target).is_blocked = true;
+    game_log("%s blocking %s.\n", entity_name(chosen).c_str(),
+        entity_name(cr.blocking_target).c_str());
+    game.pending_blocker = 0;
+    pq = PendingQuery{};
+}
+
+// Loop-top dispatcher entry (game_driver.cpp) for both combat target tags.
+void resume_combat_target_choice(Game &game) {
+    if (game.pending_query.tag == PendingQuery::ATTACK_TARGET)
+        resume_attack_target(game);
+    else
+        resume_block_target(game);
 }
 
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity defending_entity = game.player_a_turn ? game.player_b_entity : game.player_a_entity;
+    if (game.pending_attacker != 0)
+        fatal_error("declare_attackers entered with an attack-target sub-prompt parked");
 
     // Collect eligible attackers with stable indices
     std::vector<Entity> eligible;
@@ -852,8 +556,9 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
         // Loop-safe: partial declarations live entirely in Creature components,
         // so a restored snapshot re-derives this same menu. The attack-target
-        // sub-prompt below is NOT safe -- the chosen attacker is only committed
-        // after the target is picked.
+        // sub-prompt below is loop-safe too: it is parked as a pending query
+        // (the chosen attacker persisted in Game::pending_attacker) and emitted
+        // at the main-loop top.
         search_set_loop_safe(true);
         int creature_choice = InputLogger::instance().get_input(atk_actions);
         search_set_loop_safe(false);
@@ -882,13 +587,18 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         // Only prompt for a target when there is a real choice (the defending
         // player plus at least one planeswalker). With just the defending player
         // the target is forced, so skip the decision and auto-assign it.
-        int target_choice = 0;
         if (tgt_actions.size() > 1) {
             game_log("Select target for %s:\n", chosen_name.c_str());
-            target_choice = InputLogger::instance().get_input(tgt_actions);
+            // Park the sub-prompt as a loop-top pending decision (loop-safe
+            // search root); the resume commits the attack and the next
+            // iteration re-enters this declaration. Nothing else is touched —
+            // attackers_declared stays false, pending_choice re-derives.
+            park_combat_target_query(game, PendingQuery::ATTACK_TARGET,
+                std::move(tgt_actions), game.player_a_turn, chosen_attacker);
+            return;
         }
         cr.is_attacking = true;
-        cr.attack_target = tgt_actions[static_cast<size_t>(target_choice)].source_entity;
+        cr.attack_target = tgt_actions[0].source_entity;
         game_log("%s attacking %s.\n", chosen_name.c_str(),
             target_display_name(game, cr.attack_target).c_str());
     }
@@ -1043,6 +753,8 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership defending_player = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
     // defending player declares blockers — priority must be theirs for the input routing to work correctly
     game.player_a_has_priority = !game.player_a_turn;
+    if (game.pending_blocker != 0)
+        fatal_error("declare_blockers entered with a block-target sub-prompt parked");
 
     // Collect attackers
     std::vector<Entity> attackers;
@@ -1121,7 +833,9 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             blk_actions.push_back(confirm);
         }
         // Loop-safe like the attacker selection: committed blocks live in
-        // Creature components; the block-target sub-prompt below is not safe.
+        // Creature components; the block-target sub-prompt below is parked as a
+        // loop-top pending query (chosen blocker in Game::pending_blocker), so
+        // it is loop-safe too.
         search_set_loop_safe(true);
         int blocker_choice = InputLogger::instance().get_input(blk_actions);
         search_set_loop_safe(false);
@@ -1138,7 +852,6 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
 
         Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
-        auto &cr = global_coordinator.GetComponent<Creature>(chosen);
         std::string chosen_name = entity_name(chosen);
 
         auto legal_attackers = determine_blockable_attackers(chosen, attackers);
@@ -1152,15 +865,13 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             la.category = ActionCategory::BLOCK_TARGET;
             blk_tgt_actions.push_back(la);
         }
-        int attacker_choice = InputLogger::instance().get_input(blk_tgt_actions);
-        cr.is_blocking = true;
-        cr.blocking_target = blk_tgt_actions[static_cast<size_t>(attacker_choice)].source_entity;
-        // Mark the attacker as blocked. It stays blocked for the rest of combat even if this
-        // (and every other) blocker later leaves combat (509.1h), so it assigns no damage to
-        // the player unless it has trample.
-        if (global_coordinator.entity_has_component<Creature>(cr.blocking_target))
-            global_coordinator.GetComponent<Creature>(cr.blocking_target).is_blocked = true;
-        game_log("%s blocking %s.\n", chosen_name.c_str(), entity_name(cr.blocking_target).c_str());
+        // Always park (no size-1 pre-collapse exists here — this prompt fires
+        // even with a single legal attacker, and the loop-top emitter never
+        // collapses single-entry menus). The resume commits the block; the next
+        // iteration re-derives DECLARE_BLOCKERS_CHOICE and re-enters here.
+        park_combat_target_query(game, PendingQuery::BLOCK_TARGET,
+            std::move(blk_tgt_actions), !game.player_a_turn, chosen);
+        return;
     }
 
     game_log("\nBlockers declared:\n");
@@ -1328,15 +1039,22 @@ static size_t spell_xpaid_target_cap(const CardData &card_data, Entity spell_ent
     return cap;
 }
 
-static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
-                                  bool allow_done) {
-    PendingDecisionScope pending_scope(ability.source);
+// One target pick through `asker` (the shared machine's single-decision step).
+// Returns the chosen index, or a negative value when the ask parked a pending
+// query (the caller suspends; a resumed re-entry rebuilds the identical menu
+// and the asker consumes the latched answer). The pending-decision context is
+// the asking source, exactly the PendingDecisionScope the blocking path held.
+static int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
+                                bool allow_done, TargetAsker &asker) {
     // Name the spell/ability asking for the target so the prompt is meaningful
     // before it resolves — otherwise the log only reveals what it was after the
-    // target is chosen and the object goes on the stack.
-    std::string src_name = ability.source != 0 ? entity_name(ability.source)
-                                                : std::string("this ability");
-    game_log("Choose target for %s:\n", src_name.c_str());
+    // target is chosen and the object goes on the stack. Arm-time only: a
+    // resume already printed it when the query was armed.
+    if (!asker.resuming()) {
+        std::string src_name = ability.source != 0 ? entity_name(ability.source)
+                                                   : std::string("this ability");
+        game_log("Choose target for %s:\n", src_name.c_str());
+    }
     std::vector<LegalAction> tgt_actions;
     if (ability.target_min == 0 || allow_done) {
         std::string label = allow_done ? "Done selecting targets" : "No target";
@@ -1369,66 +1087,107 @@ static void select_single_target(Ability &ability, const std::vector<Entity> &va
                     " (ValidTgts$ " + ability.valid_tgts + ") — a targeted spell/ability with no "
                     "legal target was offered/forced (CR 601.2c violated upstream).");
     }
-    int choice = InputLogger::instance().get_input(tgt_actions);
+    int choice = asker.ask(tgt_actions, ability.source);
+    if (choice < 0 && decision_suspended()) return choice;
     ability.target = tgt_actions[static_cast<size_t>(choice)].source_entity;
     game_log("Targeting choice %d\n", choice);
+    return choice;
 }
 
-void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
-    // Resolve dynamic target counts up front (CR 601.2b: anything they depend on — X, the gift
-    // promise — is already decided). Count$xPaid reads the X paid; a non-xPaid count-SVar
-    // (Into the Flood Maw: Count$PromisedGift) is evaluated here. Stamp the results onto
-    // target_min/target_max so resolution (is_target_valid) sees the same bounds.
-    int effective_max = ability.target_max;
-    if (ability.target_max_from_xpaid)
-        effective_max = static_cast<int>(cur_game.x_paid);
-    else if (!ability.target_max_count_expr.empty())
-        effective_max = static_cast<int>(evaluate_dynamic_amount(
-            ability.target_max_count_expr, priority_player, orderer, 0, ability.source));
-    int effective_min = ability.target_min;
-    if (ability.target_min_from_xpaid)
-        effective_min = static_cast<int>(cur_game.x_paid);
-    else if (!ability.target_min_count_expr.empty())
-        effective_min = static_cast<int>(evaluate_dynamic_amount(
-            ability.target_min_count_expr, priority_player, orderer, 0, ability.source));
-    ability.target_min = effective_min;
-    ability.target_max = effective_max;
+TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker &asker,
+                               std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    if (!rt.active) {
+        // Resolve dynamic target counts up front (CR 601.2b: anything they depend on — X, the gift
+        // promise — is already decided). Count$xPaid reads the X paid; a non-xPaid count-SVar
+        // (Into the Flood Maw: Count$PromisedGift) is evaluated here. Stamp the results onto
+        // target_min/target_max so resolution (is_target_valid) sees the same bounds. Stamped
+        // ONCE — a resume re-enters with rt.active set and never re-evaluates.
+        int effective_max = ability.target_max;
+        if (ability.target_max_from_xpaid)
+            effective_max = static_cast<int>(cur_game.x_paid);
+        else if (!ability.target_max_count_expr.empty())
+            effective_max = static_cast<int>(evaluate_dynamic_amount(
+                ability.target_max_count_expr, priority_player, orderer, 0, ability.source));
+        int effective_min = ability.target_min;
+        if (ability.target_min_from_xpaid)
+            effective_min = static_cast<int>(cur_game.x_paid);
+        else if (!ability.target_min_count_expr.empty())
+            effective_min = static_cast<int>(evaluate_dynamic_amount(
+                ability.target_min_count_expr, priority_player, orderer, 0, ability.source));
+        ability.target_min = effective_min;
+        ability.target_max = effective_max;
 
-    // Zero targets (Into the Flood Maw's unused mode when the gift promise switched the count to
-    // 0): the ability targets nothing and does nothing on resolution. Choose no target.
-    if (effective_max <= 0) {
-        ability.target = 0;
-        ability.targets.clear();
-        return;
+        // Zero targets (Into the Flood Maw's unused mode when the gift promise switched the count
+        // to 0): the ability targets nothing and does nothing on resolution. Choose no target.
+        if (effective_max <= 0) {
+            ability.target = 0;
+            ability.targets.clear();
+            return TargetStatus::DONE;
+        }
+
+        rt.active = true;
+        rt.effective_min = effective_min;
+        rt.effective_max = effective_max;
+        rt.picked = 0;
+        if (effective_max > 1) ability.targets.clear();
     }
 
-    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
-
-    if (effective_max <= 1) {
-        select_single_target(ability, valid_targets, false);
-        return;
+    if (rt.effective_max <= 1) {
+        std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
+        if (select_single_target(ability, valid_targets, false, asker) < 0)
+            return TargetStatus::SUSPENDED;
+        rt = TargetSelectRT{};
+        return TargetStatus::DONE;
     }
 
     // Multi-target selection loop
-    ability.targets.clear();
     // "Up to X target ..." (Kozilek's Command): the cap is the X paid at cast time. When the
     // minimum is ALSO X (TargetMin$ X = TargetMax$ X), this becomes "exactly X target ..."
     // (Candelabra of Tawnos, Hide on the Ceiling): the loop neither offers "Done" nor stops
     // before X targets have been chosen, and clamps at X. X (x_paid) was chosen before targets
-    // (CR 601.2b), so it is known here.
-    for (int i = 0; i < effective_max; i++) {
+    // (CR 601.2b), so it is known here. The candidate pool is re-derived each pick as
+    // build_valid_targets minus the already-chosen targets — byte-identical to the former
+    // erase-chosen running pool, since nothing mutates between picks, and re-derivable on a
+    // resume for free.
+    for (int i = rt.picked; i < rt.effective_max; i++) {
+        std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
+        for (Entity chosen : ability.targets)
+            valid_targets.erase(
+                std::remove(valid_targets.begin(), valid_targets.end(), chosen),
+                valid_targets.end());
         if (valid_targets.empty()) break;
-        bool can_stop = (i >= effective_min);
-        select_single_target(ability, valid_targets, can_stop);
+        bool can_stop = (i >= rt.effective_min);
+        if (select_single_target(ability, valid_targets, can_stop, asker) < 0)
+            return TargetStatus::SUSPENDED;
         if (ability.target == 0) break;  // chose "Done" or "No target"
         ability.targets.push_back(ability.target);
-        // Remove chosen target from pool
-        valid_targets.erase(
-            std::remove(valid_targets.begin(), valid_targets.end(), ability.target),
-            valid_targets.end());
+        rt.picked = i + 1;
     }
     // Set primary target to first chosen (for backward compat)
     if (!ability.targets.empty()) ability.target = ability.targets[0];
+    rt = TargetSelectRT{};
+    return TargetStatus::DONE;
+}
+
+namespace {
+// Blocking asker — exactly the pre-suspension select_target convention: expose
+// the asking source as the pending-decision context and read one choice inline
+// (the caller has already seated priority at the choosing player; no repoint).
+class BlockingTargetAsker final : public TargetAsker {
+    public:
+        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
+            PendingDecisionScope pending_scope(decision_source);
+            return InputLogger::instance().get_input(menu);
+        }
+        bool resuming() const override { return false; }
+};
+}  // namespace
+
+void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    BlockingTargetAsker asker;
+    TargetSelectRT rt;
+    if (run_target_select(ability, rt, asker, orderer, priority_player) != TargetStatus::DONE)
+        fatal_error("blocking select_target suspended — a blocking asker can never park a query");
 }
 
 // Can this charm mode be legally chosen right now (CR 601.2b/c)? A mode is unchoosable only
@@ -1448,11 +1207,48 @@ static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> or
     return !build_valid_targets(candidate, orderer, caster).empty();
 }
 
+// The display label for one charm mode: its script description, else a positional fallback.
+static std::string charm_mode_desc(const Ability &ability, size_t idx) {
+    return (idx < ability.charm_choice_descriptions.size() &&
+            !ability.charm_choice_descriptions[idx].empty())
+               ? ability.charm_choice_descriptions[idx]
+               : ("Mode " + std::to_string(idx + 1));
+}
+
+// One mode pick's menu (CR 601.2b): the not-yet-taken, currently-choosable modes, with
+// mode_indices mapping action index -> charm_choices index. Pure ECS reads (choosability is
+// re-evaluated per pick), so the suspended CHARM_MODE step re-derives the identical menu on
+// resume. Shared by the blocking announce path (effect_choose_card's mini-cast) and the
+// run_cast_flow CHARM_MODE step.
+static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
+                                                      std::shared_ptr<Orderer> orderer,
+                                                      Zone::Ownership caster,
+                                                      const std::vector<bool> &taken,
+                                                      std::vector<size_t> &mode_indices) {
+    std::vector<LegalAction> mode_actions;
+    mode_indices.clear();
+    for (size_t i = 0; i < ability.charm_choices.size(); i++) {
+        if (taken[i]) continue;  // CR 601.2b: a mode can be chosen only once
+        Ability &candidate = ability.charm_choices[i];
+        candidate.source = ability.source;
+        candidate.controller = caster;
+        if (!charm_mode_choosable(candidate, orderer, caster)) continue;
+        LegalAction la(PASS_PRIORITY, charm_mode_desc(ability, i));
+        la.category = ActionCategory::CHOOSE_MODE;
+        la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
+        mode_actions.push_back(la);
+        mode_indices.push_back(i);
+    }
+    return mode_actions;
+}
+
 // Modal spell announcement (CR 601.2b): as the spell is CAST, its controller chooses
 // CharmNum$ different modes, then each chosen mode's targets (CR 601.2c) — all before any
 // cost is paid and before the opponent gets priority, becoming public information. The picks
 // are recorded in charm_chosen; effects::charm resolves exactly those modes, re-verifying
-// target legality at resolution (CR 608.2b).
+// target legality at resolution (CR 608.2b). BLOCKING form — kept for the cast-from-exile
+// mini-cast (effect_choose_card); the CAST_SPELL action runs the same interleave through the
+// suspendable CHARM_MODE / CHARM_TARGET steps of run_cast_flow.
 static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster) {
     PendingDecisionScope pending_scope(ability.source);
@@ -1462,24 +1258,9 @@ static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orde
 
     for (int pick = 0; pick < to_pick; pick++) {
         game_log("Choose mode:\n");
-        std::vector<LegalAction> mode_actions;
         std::vector<size_t> mode_indices;  // map action index -> charm_choices index
-        for (size_t i = 0; i < ability.charm_choices.size(); i++) {
-            if (taken[i]) continue;  // CR 601.2b: a mode can be chosen only once
-            Ability &candidate = ability.charm_choices[i];
-            candidate.source = ability.source;
-            candidate.controller = caster;
-            if (!charm_mode_choosable(candidate, orderer, caster)) continue;
-            std::string desc =
-                (i < ability.charm_choice_descriptions.size() && !ability.charm_choice_descriptions[i].empty())
-                    ? ability.charm_choice_descriptions[i]
-                    : ("Mode " + std::to_string(i + 1));
-            LegalAction la(PASS_PRIORITY, desc);
-            la.category = ActionCategory::CHOOSE_MODE;
-            la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
-            mode_actions.push_back(la);
-            mode_indices.push_back(i);
-        }
+        std::vector<LegalAction> mode_actions =
+            build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
         if (mode_actions.empty()) {
             // No further legal mode (all taken or none with legal targets). The cast-legality
             // gate (spell_has_castable_targets) requires CharmNum$ choosable modes up front,
@@ -1494,10 +1275,7 @@ static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orde
         ability.charm_chosen.push_back(static_cast<int>(chosen_idx));
         Ability &chosen = ability.charm_choices[chosen_idx];
         game_log("%s chooses mode — %s\n", player_name(caster).c_str(),
-                 (chosen_idx < ability.charm_choice_descriptions.size() &&
-                  !ability.charm_choice_descriptions[chosen_idx].empty())
-                     ? ability.charm_choice_descriptions[chosen_idx].c_str()
-                     : ("Mode " + std::to_string(chosen_idx + 1)).c_str());
+                 charm_mode_desc(ability, chosen_idx).c_str());
         if (chosen.valid_tgts != "N_A") {
             select_target(chosen, orderer, caster);
         }
@@ -1655,6 +1433,1783 @@ static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership contro
     fire_became_target_events(targeting_entity, controller, tgts);
 }
 
+// ── The cast flow as a resumable state machine (Batch 9) ─────────────────────
+//
+// process_action's CAST_SPELL branch, extracted statement-for-statement into a
+// persisted state machine (Game::PendingCast) so its LINEAR prompts — kicker /
+// replicate y/n, the X ladder, phyrexian pips, variable-life X, the spell's own
+// sacrifice cost, and the gift promise — suspend as loop-top pending decisions
+// (pending_query tag CAST) instead of blocking mid-frame. Each converted prompt
+// is an arm/apply pair: the arm builds EXACTLY the menu the blocking call asked
+// with (pre-prompt narrative included) and returns out of the flow; the loop-top
+// emitter reads the answer and resume_cast_flow re-enters with it latched. The
+// announce stages (charm modes, select_target, aura) and the deferred payment
+// (delve, mana, sac/exile, alt pitch/return) still pass through BLOCKING inside
+// their steps, exactly as today — Batches 10-11 convert them.
+
+// Build the exact two-option menu request_optional_yesno presents (Decline
+// first, Accept second, OPTIONAL_YESNO ordinals 0/1), so a converted cast-time
+// y/n prompt arms the byte-identical menu the blocking helper asked with.
+// (request_optional_yesno itself stays blocking — Batch 8 finding g — so the
+// cast prompts build their own menus here.)
+static std::vector<LegalAction> optional_yesno_menu(const std::string &prompt) {
+    std::vector<LegalAction> yn;
+    LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
+    decline.category = ActionCategory::OPTIONAL_YESNO;
+    decline.option_ordinal = 0;  // 0 = decline
+    yn.push_back(decline);
+    LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
+    accept.category = ActionCategory::OPTIONAL_YESNO;
+    accept.option_ordinal = 1;  // 1 = accept
+    yn.push_back(accept);
+    return yn;
+}
+
+// Park a cast-time prompt (tag CAST) for the main loop to emit. Priority
+// already sits with the caster at every cast-time prompt (the CAST_SPELL
+// action was chosen at the caster's own priority window and nothing repoints
+// before these prompts — request_optional_yesno's repoint was a no-op here),
+// so like the combat sub-prompts nothing needs saving or restoring on resume.
+// Byte-compat per site: the LINEAR cast prompts run with
+// pending_decision_source == 0 (no PendingDecisionScope wraps the CAST_SPELL
+// branch before the announce stages), so they arm with decision_source = 0
+// (the default); the ANNOUNCE-stage prompts (charm modes and every target
+// pick) ran under PendingDecisionScope(ability.source) in the blocking flow,
+// so they arm with that same per-site source. The replay corpus decodes this
+// state field into a "Pending:" transcript line, so the value is load-bearing.
+static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
+                           Zone::Ownership chooser, Entity decision_source) {
+    PendingQuery &pq = game.pending_query;
+    pq.tag = tag;
+    pq.menu = std::move(menu);
+    pq.chooser_is_a = (chooser == Zone::PLAYER_A);
+    pq.decision_source = decision_source;
+    pq.answered = false;
+    pq.answer = -1;
+    pq.active = true;
+}
+
+static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
+                           Entity decision_source) {
+    arm_flow_query(game, PendingQuery::CAST, std::move(menu), chooser, decision_source);
+}
+
+namespace {
+// TargetAsker for the cast announce stages (charm-mode / primary / sub-ability
+// / aura targets), the replicate copy retargeting at FINISH, and the
+// activation-time target selection (tag ACTIVATION): arms the pick as a
+// loop-top pending decision with the constructing flow's family tag — directly
+// on PendingQuery, since no resolution frame exists at cast/activation time
+// (the TriggerPlaceTargetAsker model) — carrying the asking ability's source
+// as the pending-decision context (the same PendingDecisionScope(ability.source)
+// the blocking select_target held). Priority already sits with the caster/
+// activator at every such prompt, so the asker never repoints the seat (the
+// TargetAsker contract: the caller seats the chooser). The latched answer
+// travels through the flow's resume_choice, consumed by the first ask the
+// re-entered step reaches — which is exactly the ask that armed it, since
+// arming always returns out of the flow and nothing runs in between.
+class FlowTargetAsker final : public TargetAsker {
+    public:
+        FlowTargetAsker(Game &game, Zone::Ownership chooser, int &resume_choice,
+                        PendingQuery::Tag tag = PendingQuery::CAST)
+            : game(game), chooser(chooser), resume_choice(resume_choice), tag(tag) {}
+        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
+            if (resume_choice >= 0) {
+                int choice = resume_choice;
+                resume_choice = -1;
+                return choice;
+            }
+            arm_flow_query(game, tag, std::vector<LegalAction>(menu), chooser, decision_source);
+            return -1;
+        }
+        bool resuming() const override { return resume_choice >= 0; }
+
+    private:
+        Game &game;
+        Zone::Ownership chooser;
+        int &resume_choice;
+        PendingQuery::Tag tag;
+};
+}  // namespace
+
+// Loop-top dispatcher entry (game_driver.cpp) for a parked cast prompt:
+// consume the latched answer and re-enter the flow with it. The resume may arm
+// the NEXT cast prompt (the caller loops back to the pending branch) or run
+// the flow to completion/cancellation.
+void resume_cast_flow(Game &game, std::shared_ptr<Orderer> orderer) {
+    PendingQuery &pq = game.pending_query;
+    if (!game.pending_cast.active || pq.tag != PendingQuery::CAST || !pq.answered)
+        fatal_error("resume_cast_flow without a parked cast query");
+    int answer = pq.answer;
+    pq = PendingQuery{};
+    run_cast_flow(game.pending_cast, game, orderer, answer);
+}
+
+// Loop-top dispatcher entry (game_driver.cpp) for a parked activation prompt:
+// consume the latched answer and re-enter the flow with it. The resume may arm
+// the NEXT activation prompt (the caller loops back to the pending branch) or
+// run the flow to completion/cancellation.
+void resume_activation_flow(Game &game, std::shared_ptr<Orderer> orderer) {
+    PendingQuery &pq = game.pending_query;
+    if (!game.pending_activation.active || pq.tag != PendingQuery::ACTIVATION || !pq.answered)
+        fatal_error("resume_activation_flow without a parked activation query");
+    int answer = pq.answer;
+    pq = PendingQuery{};
+    run_activation_flow(game.pending_activation, game, orderer, answer);
+}
+
+// Drive the persisted activation to its next prompt, cancellation, or
+// completion. resume_choice < 0 = fresh entry from process_activate_ability;
+// >= 0 = the latched answer for the prompt pa.step armed. Every statement keeps
+// the blocking branch's exact order; a converted step distinguishes arm from
+// apply by whether a latched answer is pending (the arm always returns, so
+// re-entry lands on the very step that armed it, and its arm-time gates/menus
+// re-derive identically — nothing runs between arm and resume). The interactive
+// mana payment is the only prompt left blocking (a deliberate non-conversion —
+// machine mode auto-pays with zero decisions), so every payment step is
+// synchronous here; its cancel path fully rewinds (mana restore, untap, fail
+// count) and clears pa, exactly the blocking early-return.
+//
+// Byte-compat per site (the corpus decodes pending_decision_source into a
+// "Pending:" transcript line, so each prompt arms with TODAY's ambient value):
+// the X_LADDER ladder ran under PendingDecisionScope(ability.source) and arms
+// with that source; the target selections (ZONE_TARGET / TARGET) pass
+// ability.source through the asker exactly as the blocking select_target's
+// scope did; the loyalty-X ladder, the equip creature menu, the secondary
+// sacrifice/return picks, and the ninjutsu return pick all ran source-less
+// (no scope) and arm with 0.
+static void run_activation_flow(Game::PendingActivation &pa, Game &game,
+                                std::shared_ptr<Orderer> orderer, int resume_choice) {
+    Entity permanent_entity = pa.source_entity;
+    const Ability &ability = pa.ability;
+    Zone::Ownership controller = pa.activator_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
+    // InstantSpeed$ AddMana abilities (e.g. LED) are mana abilities too: they resolve off-stack.
+    // The instant-speed timing restriction is enforced upstream (offered only at priority).
+    bool is_mana_ability = ability_is_mana(ability);
+
+    for (;;) switch (pa.step) {
+        case Game::PendingActivation::NINJA_PAY: {
+            // Ninjutsu (CR 702.49e): the source card is in its owner's hand. Pay the ninjutsu
+            // mana cost and return one unblocked attacker the activator controls to its owner's
+            // hand, then put the source card onto the battlefield tapped and attacking the
+            // defender that returned attacker had been attacking. Legality (declare-blockers
+            // step + an unblocked attacker exists + mana affordable) is gated in
+            // determine_legal_actions. The candidate list is frozen BEFORE the payment (the
+            // blocking flow computed it there), the pick suspends after.
+            std::vector<Entity> choices = unblocked_attackers(orderer->mEntities, controller);
+            if (choices.empty()) {
+                game_log("No unblocked attacker to return for ninjutsu.\n");
+                pa = Game::PendingActivation{};
+                return;
+            }
+
+            // Pay the ninjutsu mana cost first (cancellable). The return-an-attacker cost
+            // cannot fail once an unblocked attacker exists, so it is paid after the mana
+            // commit.
+            ManaValue cost = effective_activation_mana_cost(ability, controller, orderer);
+            if (!cost.empty()) {
+                auto mana_snap = snapshot_mana_state(controller, orderer);
+                if (!prompt_mana_payment(controller, cost, permanent_entity, orderer)) {
+                    restore_mana_state(controller, mana_snap, orderer);
+                    cur_game.payment_fail_counts[permanent_entity]++;
+                    game_log("Payment cancelled.\n");
+                    pa = Game::PendingActivation{};
+                    return;
+                }
+            }
+            pa.frozen_choices = std::move(choices);
+            pa.step = Game::PendingActivation::NINJA_RETURN;
+            break;
+        }
+
+        case Game::PendingActivation::NINJA_RETURN: {
+            // Return the chosen unblocked attacker to its owner's hand (the ninjutsu cost).
+            // The menu labels are built at arm time (the blocking prompt built them after
+            // the payment) from the pre-payment candidate list.
+            if (resume_choice < 0) {
+                arm_flow_query(game, PendingQuery::ACTIVATION,
+                               permanent_choice_menu(pa.frozen_choices, "Return ",
+                                                     " to hand (ninjutsu)",
+                                                     ActionCategory::RETURN_PERMANENT),
+                               controller);
+                return;
+            }
+            Entity returned = pa.frozen_choices[static_cast<size_t>(resume_choice)];
+            resume_choice = -1;
+            Entity attack_target = global_coordinator.GetComponent<Creature>(returned).attack_target;
+            std::string ret_name = entity_name(returned);
+            orderer->add_to_zone(false, returned, Zone::HAND);
+            game_log("%s returns %s to hand (ninjutsu)\n", player_name(controller).c_str(),
+                     ret_name.c_str());
+
+            // Put the ninja onto the battlefield from hand, tapped and attacking the same
+            // defender.
+            cur_game.pending_enters_tapped.insert(permanent_entity);
+            if (attack_target != 0) cur_game.pending_enters_attacking[permanent_entity] = attack_target;
+            std::string ninja_name = entity_name(permanent_entity);
+            orderer->add_to_zone(false, permanent_entity, Zone::BATTLEFIELD);
+            game_log("%s puts %s onto the battlefield tapped and attacking (ninjutsu)\n",
+                     player_name(controller).c_str(), ninja_name.c_str());
+            game.take_action();
+            pa = Game::PendingActivation{};
+            return;
+        }
+
+        case Game::PendingActivation::ZONE_TARGET: {
+            // Select targets before paying costs
+            if (pa.stack_ab.valid_tgts != "N_A") {
+                FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION);
+                if (run_target_select(pa.stack_ab, pa.tsel, asker, orderer, controller) !=
+                    TargetStatus::DONE)
+                    return;
+            }
+            pa.step = Game::PendingActivation::ZONE_PAY;
+            break;
+        }
+
+        case Game::PendingActivation::ZONE_PAY: {
+            // Pay mana cost (after ReduceCost$, e.g. Eiganjo's Channel cheaper per legendary
+            // creature)
+            ManaValue from_hand_cost = effective_activation_mana_cost(ability, controller, orderer);
+            if (!from_hand_cost.empty()) {
+                auto mana_snap = snapshot_mana_state(controller, orderer);
+                if (!prompt_mana_payment(controller, from_hand_cost, permanent_entity, orderer)) {
+                    restore_mana_state(controller, mana_snap, orderer);
+                    cur_game.payment_fail_counts[permanent_entity]++;
+                    game_log("Payment cancelled.\n");
+                    pa = Game::PendingActivation{};
+                    return;
+                }
+            }
+            // Pay remaining costs (life, sacrifice, return-to-hand, discard)
+            pa.step = Game::PendingActivation::SECONDARY_PRE;
+            break;
+        }
+
+        case Game::PendingActivation::EQUIP_PAY: {
+            auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
+            // Present list of creatures controlled by the equipment owner — frozen BEFORE the
+            // cost is paid (the blocking flow built the menu here, then prompted with that
+            // exact menu after the payment; a payment made by sacrificing a source for mana
+            // must not change the offered menu or its P/T labels).
+            std::vector<LegalAction> equip_targets;
+            for (auto e : orderer->mEntities) {
+                if (e == permanent_entity) continue;  // can't attach to itself (CR 301.5c / reconfigure)
+                if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+                if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+                auto &ep = global_coordinator.GetComponent<Permanent>(e);
+                if (ep.controller != controller) continue;
+                std::string ename = ep.name;
+                auto &ecr = global_coordinator.GetComponent<Creature>(e);
+                LegalAction la(
+                    PASS_PRIORITY, e, ename + " [" + std::to_string(ecr.power) + "/" + std::to_string(ecr.toughness) + "]");
+                la.category = ActionCategory::SELECT_TARGET;
+                equip_targets.push_back(la);
+            }
+            if (equip_targets.empty()) {
+                game_log("No valid creatures to equip.\n");
+                pa = Game::PendingActivation{};
+                return;
+            }
+            // Pay equip cost
+            if (ability.tap_cost) permanent.is_tapped = true;
+            ManaValue equip_cost = effective_activation_mana_cost(ability, controller, orderer);
+            if (!equip_cost.empty()) {
+                auto mana_snap = snapshot_mana_state(controller, orderer);
+                if (!prompt_mana_payment(controller, equip_cost, permanent_entity, orderer)) {
+                    restore_mana_state(controller, mana_snap, orderer);
+                    if (ability.tap_cost) permanent.is_tapped = false;
+                    cur_game.payment_fail_counts[permanent_entity]++;
+                    game_log("Payment cancelled.\n");
+                    pa = Game::PendingActivation{};
+                    return;
+                }
+            }
+            pa.frozen_menu = std::move(equip_targets);
+            pa.step = Game::PendingActivation::EQUIP_TARGET;
+            break;
+        }
+
+        case Game::PendingActivation::EQUIP_TARGET: {
+            if (resume_choice < 0) {
+                game_log("Choose creature to equip:\n");
+                arm_flow_query(game, PendingQuery::ACTIVATION,
+                               std::vector<LegalAction>(pa.frozen_menu), controller);
+                return;
+            }
+            Entity target_creature = pa.frozen_menu[static_cast<size_t>(resume_choice)].source_entity;
+            resume_choice = -1;
+            auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
+
+            // Detach from previous creature if any
+            if (permanent.equipped_to != 0 && global_coordinator.entity_has_component<Permanent>(permanent.equipped_to)) {
+                global_coordinator.GetComponent<Permanent>(permanent.equipped_to).equipped_by = 0;
+            }
+            permanent.equipped_to = target_creature;
+            global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = permanent_entity;
+            std::string tname = global_coordinator.GetComponent<Permanent>(target_creature).name;
+            game_log("%s equipped to %s.\n", permanent.name.c_str(), tname.c_str());
+            game.take_action();
+            pa = Game::PendingActivation{};
+            return;
+        }
+
+        case Game::PendingActivation::X_LADDER: {
+            // X ACTIVATION COST (Candelabra of Tawnos: Cost$ X T): X is part of the activation
+            // cost, chosen during announcement BEFORE targets (CR 602.2b/601.2b) so an
+            // exactly-X / up-to-X target count can read it. Prompt for X (bounded by the mana
+            // available beyond the rest of the cost), record it as x_paid, and add X generic
+            // to the mana cost paid at TAP_PAY. Arms with decision_source = ability.source —
+            // the PendingDecisionScope the blocking prompt held, naming the ability making
+            // this X choice (it isn't on the stack yet — X is chosen during announcement).
+            if (!is_mana_ability && ability.activation_has_x) {
+                if (resume_choice >= 0) {
+                    pa.x_activation = static_cast<size_t>(resume_choice);
+                    resume_choice = -1;
+                    cur_game.x_paid = pa.x_activation;
+                    game_log("%s chooses X = %zu\n", player_name(controller).c_str(),
+                             pa.x_activation);
+                } else {
+                    ManaValue base_cost = effective_activation_mana_cost(ability, controller, orderer);
+                    size_t max_x = max_available_mana(controller, base_cost, orderer);
+                    game_log("Choose X value (0-%zu):\n", max_x);
+                    std::vector<LegalAction> x_actions;
+                    for (size_t xv = 0; xv <= max_x; xv++) {
+                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        la.category = ActionCategory::CHOOSE_X;
+                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
+                        x_actions.push_back(la);
+                    }
+                    arm_flow_query(game, PendingQuery::ACTIVATION, std::move(x_actions),
+                                   controller, ability.source);
+                    return;
+                }
+            }
+            pa.step = Game::PendingActivation::LOYALTY_X;
+            break;
+        }
+
+        case Game::PendingActivation::LOYALTY_X: {
+            // X LOYALTY COST (Chandra, Flamecaller's [-X]): choose X at announcement, bounded
+            // by the planeswalker's current loyalty for a minus cost (you can't remove more
+            // than it has, 606.5). Recorded as x_paid — set at APPLY, before the SECONDARY
+            // steps run — so the loyalty cost (SECONDARY_PRE) and the effect's Count$xPaid
+            // (NumDmg$ X) both read it. This is a loyalty cost, not mana — it never touches
+            // the TAP_PAY cost. Ran source-less in the blocking flow (no scope), so it arms
+            // with decision_source = 0.
+            if (ability.loyalty_cost_is_x) {
+                if (resume_choice >= 0) {
+                    int x_choice = resume_choice;
+                    resume_choice = -1;
+                    cur_game.x_paid = static_cast<size_t>(x_choice);
+                    game_log("%s chooses X = %d\n", player_name(controller).c_str(), x_choice);
+                } else {
+                    int max_x = (ability.loyalty_cost < 0) ? get_counters(permanent_entity, "LOYALTY") : 99;
+                    if (max_x < 0) max_x = 0;
+                    game_log("Choose X value (0-%d):\n", max_x);
+                    std::vector<LegalAction> x_actions;
+                    for (int xv = 0; xv <= max_x; xv++) {
+                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        la.category = ActionCategory::CHOOSE_X;
+                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
+                        x_actions.push_back(la);
+                    }
+                    arm_flow_query(game, PendingQuery::ACTIVATION, std::move(x_actions),
+                                   controller);
+                    return;
+                }
+            }
+            pa.step = Game::PendingActivation::TARGET;
+            break;
+        }
+
+        case Game::PendingActivation::TARGET: {
+            // SELECT TARGETS BEFORE PAYING COSTS
+            if (!is_mana_ability && pa.stack_ab.valid_tgts != "N_A") {
+                FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION);
+                if (run_target_select(pa.stack_ab, pa.tsel, asker, orderer, controller) !=
+                    TargetStatus::DONE)
+                    return;
+            }
+            pa.step = Game::PendingActivation::TAP_PAY;
+            break;
+        }
+
+        case Game::PendingActivation::TAP_PAY: {
+            auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
+            // Tap cost
+            if (ability.tap_cost) {
+                permanent.is_tapped = true;
+            }
+            // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only). For an X-cost
+            // ability the chosen X is added as generic mana on top of the base cost.
+            ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
+            for (size_t i = 0; i < pa.x_activation; i++) activate_cost.insert(GENERIC);
+            if (!activate_cost.empty()) {
+                auto mana_snap = snapshot_mana_state(controller, orderer);
+                if (!prompt_mana_payment(controller, activate_cost, permanent_entity, orderer)) {
+                    restore_mana_state(controller, mana_snap, orderer);
+                    if (ability.tap_cost) permanent.is_tapped = false;
+                    cur_game.payment_fail_counts[permanent_entity]++;
+                    game_log("Payment cancelled.\n");
+                    pa = Game::PendingActivation{};
+                    return;
+                }
+            }
+            // Pay remaining costs (life, sacrifice, return-to-hand, discard).
+            // life_cost legality is gated upstream in can_afford_alt / determine_legal_actions.
+            pa.step = Game::PendingActivation::SECONDARY_PRE;
+            break;
+        }
+
+        case Game::PendingActivation::SECONDARY_PRE: {
+            // The non-mana, non-tap activation costs shared by hand- and battlefield-activated
+            // abilities (the head of the old pay_secondary_activation_costs — everything
+            // before its first pick). These costs cannot fail once legality has passed.
+            // Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source
+            // planeswalker, and mark the per-permanent once-per-turn gate (606.3). The ability
+            // still goes on the stack and resolves later; the loyalty change is the cost, paid
+            // now.
+            if (ability.is_loyalty_ability &&
+                global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
+                auto &perm = global_coordinator.GetComponent<Permanent>(permanent_entity);
+                // An X loyalty cost (Chandra, Flamecaller's [-X]) removes/adds the X chosen at
+                // activation (cur_game.x_paid); loyalty_cost carries only the sign. A fixed
+                // cost uses loyalty_cost as-is.
+                int loyalty_delta = ability.loyalty_cost_is_x
+                    ? (ability.loyalty_cost < 0 ? -static_cast<int>(cur_game.x_paid)
+                                                :  static_cast<int>(cur_game.x_paid))
+                    : ability.loyalty_cost;
+                int loyalty = add_counters(permanent_entity, "LOYALTY", loyalty_delta);
+                perm.loyalty_ability_activated_this_turn = true;
+                game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
+                         entity_name(permanent_entity).c_str(), loyalty_delta, loyalty);
+            }
+            // Life cost
+            if (ability.life_cost > 0) {
+                auto &activating_player =
+                    global_coordinator.GetComponent<Player>(get_player_entity(controller));
+                activating_player.life_total -= ability.life_cost;
+                game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
+            }
+            // Energy cost (PayEnergy<N>, CR 122.1c): affordability is gated in
+            // determine_legal_actions, so the {E} is available to spend here.
+            if (ability.energy_cost > 0) {
+                auto &activating_player =
+                    global_coordinator.GetComponent<Player>(get_player_entity(controller));
+                pay_energy(activating_player, ability.energy_cost);
+                game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.energy_cost);
+            }
+            // Sacrifice self: move to graveyard; apply_permanent_components SBA removes
+            // Permanent next pass
+            if (ability.sac_self) {
+                std::string sname = entity_name(permanent_entity);
+                orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
+                game_log("%s sacrifices %s\n", player_name(controller).c_str(), sname.c_str());
+            }
+            pa.step = Game::PendingActivation::SECONDARY_SAC;
+            break;
+        }
+
+        case Game::PendingActivation::SECONDARY_SAC: {
+            // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary). The
+            // exact pool/menu the old blocking prompt_permanent_choice built, armed as a
+            // pending decision instead; the pool re-derives identically at apply — nothing
+            // runs between arm and resume.
+            if (!ability.sac_cost_spec.empty()) {
+                std::vector<Entity> choices = controlled_permanents_matching(
+                    controller, ability.sac_cost_spec, orderer->mEntities, permanent_entity);
+                if (!choices.empty()) {
+                    if (resume_choice >= 0) {
+                        Entity to_sac = choices[static_cast<size_t>(resume_choice)];
+                        resume_choice = -1;
+                        std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+                        orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+                        game_log("%s sacrifices %s\n", player_name(controller).c_str(),
+                                 sac_name.c_str());
+                    } else {
+                        arm_flow_query(game, PendingQuery::ACTIVATION,
+                                       permanent_choice_menu(choices, "Sacrifice ", "",
+                                                             ActionCategory::SACRIFICE_PERMANENT),
+                                       controller);
+                        return;
+                    }
+                }
+            }
+            pa.step = Game::PendingActivation::SECONDARY_RETURN;
+            break;
+        }
+
+        case Game::PendingActivation::SECONDARY_RETURN: {
+            // Return-to-hand cost (Scryb Ranger: return a Forest to hand) — same arm/apply
+            // convention as the sacrifice pick above.
+            if (!ability.return_cost_type.empty()) {
+                std::vector<Entity> choices = controlled_permanents_matching(
+                    controller, ability.return_cost_type, orderer->mEntities);
+                if (!choices.empty()) {
+                    if (resume_choice >= 0) {
+                        Entity to_ret = choices[static_cast<size_t>(resume_choice)];
+                        resume_choice = -1;
+                        std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
+                        orderer->add_to_zone(false, to_ret, Zone::HAND);
+                        game_log("%s returns %s to hand\n", player_name(controller).c_str(),
+                                 ret_name.c_str());
+                    } else {
+                        arm_flow_query(game, PendingQuery::ACTIVATION,
+                                       permanent_choice_menu(choices, "Return ", " to hand",
+                                                             ActionCategory::RETURN_PERMANENT),
+                                       controller);
+                        return;
+                    }
+                }
+            }
+            pa.step = Game::PendingActivation::SECONDARY_POST;
+            break;
+        }
+
+        case Game::PendingActivation::SECONDARY_POST: {
+            // Discard self from hand cost (Faerie Macabre)
+            if (ability.discard_self_cost) {
+                std::string cname = global_coordinator.entity_has_component<CardData>(permanent_entity)
+                    ? global_coordinator.GetComponent<CardData>(permanent_entity).name : "card";
+                orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
+                game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
+            }
+            // Discard hand cost (Lion's Eye Diamond)
+            if (ability.discard_hand_cost) {
+                for (auto card : orderer->get_hand(controller)) {
+                    std::string cname = global_coordinator.entity_has_component<CardData>(card)
+                        ? global_coordinator.GetComponent<CardData>(card).name : "card";
+                    orderer->add_to_zone(false, card, Zone::GRAVEYARD);
+                    game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
+                }
+            }
+            pa.step = Game::PendingActivation::FINISH;
+            break;
+        }
+
+        case Game::PendingActivation::FINISH: {
+            if (pa.zone_path) {
+                // Auto-consume the activated card to the graveyard, unless the ability
+                // relocates it itself (Defined$ Self) or it was already discarded as an
+                // explicit cost (discard_self_cost, paid above) — guarding against a double
+                // move.
+                if (!ability.defined_self && !ability.discard_self_cost) {
+                    orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
+                }
+
+                // Create standalone ability entity on the stack
+                pa.stack_ab.source = permanent_entity;
+                pa.stack_ab.controller = controller;
+                Entity ability_stack_entity = orderer->push_ability_onto_stack(pa.stack_ab, controller);
+
+                // Ward (702.21) + BecomesTarget (CR 603.2c) apply to hand/graveyard-activated
+                // abilities too — CR 702.21b triggers on ANY spell or ability an opponent
+                // controls that targets the warded permanent. (Graveyard/non-battlefield
+                // targets are filtered inside the hooks.)
+                fire_targeting_hooks(ability_stack_entity, controller, pa.stack_ab, orderer);
+
+                auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
+                const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
+                if (pa.stack_ab.target != 0) {
+                    std::string tgt_names = chosen_targets_display(pa.stack_ab);
+                    game_log("%s activates %s from %s targeting %s\n",
+                        player_name(controller).c_str(), cd.name.c_str(), from_zone, tgt_names.c_str());
+                } else {
+                    game_log("%s activates %s from %s\n", player_name(controller).c_str(),
+                             cd.name.c_str(), from_zone);
+                }
+                game.take_action();
+                pa = Game::PendingActivation{};
+                return;
+            }
+            // MANA ABILITY
+            if (is_mana_ability) {
+                // Costs were already paid above: tap at the generic tap-cost step, activation
+                // mana via prompt_mana_payment, life/sacrifice/discard via the SECONDARY
+                // steps. The shared production core handles the rest: amount eval (dynamic
+                // amounts like Gaea's Cradle / Urza's Workshop), ProduceMana replacement, pool
+                // insert, TapsForMana triggers, uncounterability flag, narrative, SubAbility$
+                // riders (Ancient Tomb's damage), and the activation counter.
+                auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+                produce_mana_from_ability(permanent_entity, ability, controller, orderer, pl.mana,
+                                          /*commit=*/true, ManaLogStyle::TAPPED_AMOUNT);
+                // priority does not pass
+                pa = Game::PendingActivation{};
+                return;
+            }
+            // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
+            // puts on stack; we have targets from earlier
+            auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
+            pa.stack_ab.source = permanent_entity;
+            pa.stack_ab.controller = controller;
+            Entity ability_stack_entity = orderer->push_ability_onto_stack(pa.stack_ab, controller);
+
+            // Ward (702.21) + Mode$ BecomesTarget (CR 603.2c): abilities fire these too; the
+            // per-trigger ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out
+            // ability sources for BecomesTarget.
+            fire_targeting_hooks(ability_stack_entity, controller, pa.stack_ab, orderer);
+
+            if (pa.stack_ab.target != 0) {
+                std::string tgt_names = chosen_targets_display(pa.stack_ab);
+                game_log("%s's %s ability targeting %s is on the stack\n",
+                    player_name(controller).c_str(), permanent.name.c_str(), tgt_names.c_str());
+            } else {
+                game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(),
+                         permanent.name.c_str());
+            }
+            game.take_action();
+
+            // Increment activation counter for limited abilities (e.g. Scryb Ranger)
+            increment_activation_count(permanent, ability);
+            // if target remains legal checked at resolution
+            pa = Game::PendingActivation{};
+            return;
+        }
+
+        default:
+            fatal_error("run_activation_flow reached an unimplemented step " +
+                        std::to_string(static_cast<int>(pa.step)));
+    }
+}
+
+// Drive the persisted cast to its next prompt, cancellation, or completion.
+// resume_choice < 0 = fresh entry from process_action; >= 0 = the latched
+// answer for the prompt pc.step armed. Every statement keeps the blocking
+// branch's exact order; a converted step distinguishes arm from apply by
+// whether a latched answer is pending (the arm always returns, so re-entry
+// with an answer lands on the very step/pip that armed it, and its
+// arm-time gates/menus re-derive identically — nothing runs between arm and
+// resume). Machine-mode auto-resolve paths (the hybrid branch, the deferred
+// mana auto-payment) keep their inline calls; the interactive mana payment and
+// interactive hybrid pips are the only prompts left blocking (deliberate
+// non-conversions — machine mode resolves both with zero decisions).
+static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
+                          int resume_choice) {
+    Entity spell_entity = pc.spell_entity;
+    auto &front_data = global_coordinator.GetComponent<CardData>(spell_entity);
+    // Modal DFC cast as its NONLAND back face (CR 712.8): the spell has only the
+    // BACK face's characteristics — same view the setup in process_action used.
+    const CardData &card_data = (pc.cast_back_face && front_data.backside)
+                                    ? *front_data.backside : front_data;
+    Zone::Ownership caster = pc.caster_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
+
+    for (;;) switch (pc.step) {
+        case Game::PendingCast::COST: {
+            // FLASHBACK COST — determined here (601.2f), but PAID after targets are
+            // chosen (601.2c before 601.2g/h; see the deferred_* fields). Paying
+            // the sacrifice first leaked information and changed the board before the
+            // target was locked in (Cabal Therapy: Flashback—Sacrifice a creature).
+            if (pc.use_flashback) {
+                // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
+                // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
+                pc.deferred_mana_cost =
+                    floored_alt_mana_cost(card_data, card_data.flashback_mana_cost, caster);
+                pc.deferred_mana_pending = true;
+                pc.deferred_life_cost = card_data.flashback_alt_cost.life_cost;
+                // Flashback sacrifice cost: the cast is only offered when a matching
+                // permanent exists (cast legality), so there is always something to
+                // sacrifice when the deferred payment runs.
+                pc.deferred_sac_spec = card_data.flashback_alt_cost.sac_cost_spec;
+                pc.step = Game::PendingCast::GIFT;
+
+            // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
+            // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
+            // cards covering >=N card types). The exile is a cost, paid as the spell is cast —
+            // after targets are chosen, like every other cost (601.2c before 601.2g/h).
+            } else if (pc.use_escape) {
+                // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
+                pc.deferred_mana_cost =
+                    floored_alt_mana_cost(card_data, card_data.escape_mana_cost, caster);
+                pc.deferred_mana_pending = true;
+                pc.deferred_life_cost = card_data.escape_alt_cost.life_cost;
+                pc.deferred_exile_min_types = card_data.escape_alt_cost.exile_grave_min_types;
+                pc.deferred_exile_count = card_data.escape_alt_cost.exile_grave_count;
+                pc.step = Game::PendingCast::GIFT;
+
+            // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
+            // permission, paying its alternative RESOURCE cost (energy or life) instead of any
+            // mana (CR 707 / 118.9). The permission carries the resolved amount. Consumed here
+            // so it can't be reused. X spells cast this way count X = 0 (no X prompt).
+            } else if (pc.impulse_cast) {
+                Entity caster_entity = (caster == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &player = global_coordinator.GetComponent<Player>(caster_entity);
+                auto it = cur_game.impulse_cast_permission.find(spell_entity);
+                if (it != cur_game.impulse_cast_permission.end()) {
+                    const auto &grant = it->second;
+                    if (grant.resource == Game::ImpulseCastPermission::FREE) {
+                        // Ugin -11: cast without paying its mana cost (CR 118.9). No cost paid.
+                        game_log("%s casts %s without paying its mana cost\n",
+                                 player_name(caster).c_str(), card_data.name.c_str());
+                    } else if (grant.resource == Game::ImpulseCastPermission::ENERGY) {
+                        pay_energy(player, grant.amount);
+                        game_log("%s pays %d energy\n", player_name(caster).c_str(), grant.amount);
+                    } else {
+                        player.life_total -= grant.amount;
+                        game_log("%s pays %d life\n", player_name(caster).c_str(), grant.amount);
+                    }
+                    cur_game.impulse_cast_permission.erase(it);
+                }
+                if (card_data.has_x_cost) cur_game.x_paid = 0;
+
+                // Cost-increase / SetCost-floor statics apply to alternative costs too
+                // (CR 118.9d / 601.2f): the impulse/free cast substitutes a {0} mana cost, but
+                // an active Trinisphere floor pads it up to its minimum ({3}) and Thalia adds
+                // its surcharge — paid ON TOP of the resource cost (energy/life) that was just
+                // paid. Deferred until after targets like every other cost. Empty (no floor /
+                // increase applies) leaves the cast free of mana, exactly as before.
+                ManaValue floor_mana = floored_alt_mana_cost(card_data, ManaValue{}, caster);
+                if (!floor_mana.empty()) {
+                    pc.deferred_mana_cost = floor_mana;
+                    pc.deferred_mana_pending = true;
+                }
+                pc.step = Game::PendingCast::GIFT;
+
+            // ALTERNATE COST — mana + life paid here; the pitch/return pick
+            // loops are the suspendable ALT_PITCH / ALT_RETURN steps next.
+            } else if (pc.use_alt_cost) {
+                pay_alternate_cost(game, orderer, card_data, spell_entity, caster);
+                pc.step = Game::PendingCast::ALT_PITCH;
+
+            } else {  // REGULAR COST + DELVE
+                // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
+                // caster passed so Affinity for artifacts reduces the generic cost (702.41).
+                pc.cost_to_pay = effective_base_cost(card_data, caster);
+
+                // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
+                if (pc.use_offspring)
+                    for (Colors c : card_data.offspring_cost) pc.cost_to_pay.insert(c);
+
+                if (!card_data.kicker_costs.empty())
+                    pc.kicked_flags.assign(card_data.kicker_costs.size(), false);
+                pc.step = Game::PendingCast::KICKER;
+            }
+            break;
+        }
+
+        case Game::PendingCast::ALT_PITCH: {
+            // Alt-cost pitch (Force of Will: "exile a blue card from your hand"): one pick
+            // per required card, the menu re-derived from the live hand each pass (an
+            // earlier pick drops that card from the next menu). pc.alt_pitch_done counts
+            // completed picks. Note the whole alt-cost branch pays BEFORE targets are
+            // chosen — the pre-existing order, kept for byte compatibility.
+            Colors pitch_color = card_data.alt_cost.exile_from_hand_color;
+            while (pc.alt_pitch_done < card_data.alt_cost.exile_from_hand_count) {
+                std::vector<LegalAction> exile_actions;
+                for (auto e : orderer->get_hand(caster)) {
+                    if (e == spell_entity) continue;
+                    if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
+                    if (pitch_color != NO_COLOR &&
+                        !global_coordinator.GetComponent<ColorIdentity>(e).colors.count(pitch_color))
+                        continue;
+                    LegalAction la(PASS_PRIORITY, e,
+                                   "Exile " + global_coordinator.GetComponent<CardData>(e).name);
+                    la.category = ActionCategory::PAYING_COSTS;
+                    exile_actions.push_back(la);
+                }
+                if (resume_choice >= 0) {
+                    Entity exiled = exile_actions[static_cast<size_t>(resume_choice)].source_entity;
+                    resume_choice = -1;
+                    game_log("%s exiles %s\n", player_name(caster).c_str(),
+                             global_coordinator.GetComponent<CardData>(exiled).name.c_str());
+                    orderer->add_to_zone(false, exiled, Zone::EXILE);
+                    pc.alt_pitch_done++;
+                    continue;
+                }
+                arm_cast_query(game, std::move(exile_actions), caster);
+                return;
+            }
+            pc.step = Game::PendingCast::ALT_RETURN;
+            break;
+        }
+
+        case Game::PendingCast::ALT_RETURN: {
+            // Alt-cost return-to-hand (Daze: "return an Island you control to its owner's
+            // hand"): one pick per required permanent, menu re-derived from the live
+            // battlefield each pass. pc.alt_return_done counts completed picks.
+            while (pc.alt_return_done < card_data.alt_cost.return_to_hand_count) {
+                std::vector<LegalAction> rth_actions;
+                const std::string &type = card_data.alt_cost.return_to_hand_type;
+                for (auto e : orderer->mEntities) {
+                    if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+                    auto &eperm = global_coordinator.GetComponent<Permanent>(e);
+                    if (eperm.controller != caster) continue;
+                    bool matches = false;
+                    // can be subtype, type or supertype
+                    for (auto &t : eperm.types) {
+                        if (t.name == type) {
+                            matches = true;
+                            break;
+                        }
+                    }
+                    if (!matches) continue;
+                    LegalAction la(PASS_PRIORITY, e, "Return " + eperm.name);
+                    la.category = ActionCategory::RETURN_PERMANENT;
+                    rth_actions.push_back(la);
+                }
+                if (resume_choice >= 0) {
+                    Entity returned = rth_actions[static_cast<size_t>(resume_choice)].source_entity;
+                    resume_choice = -1;
+                    game_log("%s returns %s to hand\n", player_name(caster).c_str(),
+                             global_coordinator.GetComponent<Permanent>(returned).name.c_str());
+                    orderer->add_to_zone(false, returned, Zone::HAND);
+                    pc.alt_return_done++;
+                    continue;
+                }
+                arm_cast_query(game, std::move(rth_actions), caster);
+                return;
+            }
+            pc.step = Game::PendingCast::GIFT;
+            break;
+        }
+
+        case Game::PendingCast::KICKER: {
+            // KICKER (CR 702.33 / 601.2b): each kicker is an OPTIONAL ADDITIONAL cost
+            // declared as the spell is cast. Offer one yes/no per kicker (only when its
+            // extra mana is still affordable on top of everything chosen so far); an
+            // accepted kicker's mana is folded into cost_to_pay and recorded in
+            // kicked_flags so the spell becomes "kicked with its Nth kicker". General over
+            // any number of independent kicker costs (multikicker-ready data model).
+            while (pc.kicker_idx < card_data.kicker_costs.size()) {
+                size_t ki = pc.kicker_idx;
+                ManaValue with_kicker = pc.cost_to_pay;
+                for (Colors c : card_data.kicker_costs[ki]) with_kicker.insert(c);
+                if (!resolve_hybrid_cost(caster, with_kicker, card_data.hybrid_mana,
+                                         spell_entity, orderer, card_data.has_delve,
+                                         card_data.has_improvise)) {
+                    pc.kicker_idx++;
+                    continue;
+                }
+                if (resume_choice >= 0) {
+                    // Apply the latched y/n for THIS pip (the arm below returned on it).
+                    if (resume_choice == 1) {
+                        pc.cost_to_pay = with_kicker;
+                        pc.kicked_flags[ki] = true;
+                        game_log("%s pays the kicker %zu cost for %s\n",
+                                 player_name(caster).c_str(), ki + 1, card_data.name.c_str());
+                    }
+                    resume_choice = -1;
+                    pc.kicker_idx++;
+                    continue;
+                }
+                std::string prompt = "pay kicker " + std::to_string(ki + 1) +
+                    " for " + card_data.name;
+                arm_cast_query(game, optional_yesno_menu(prompt), caster);
+                return;
+            }
+            pc.step = Game::PendingCast::REPLICATE;
+            break;
+        }
+
+        case Game::PendingCast::REPLICATE: {
+            // REPLICATE (CR 702.x / 601.2b): an OPTIONAL ADDITIONAL cost that may be paid
+            // ANY NUMBER OF TIMES as the spell is cast. Offer a repeated yes/no — each "yes"
+            // folds another replicate cost's mana into cost_to_pay and bumps the replicate
+            // count — stopping once the next payment is unaffordable or declined. The count
+            // drives the on-cast copy effect (Spell::replicate_count).
+            if (card_data.has_replicate) {
+                while (true) {
+                    ManaValue with_replicate = pc.cost_to_pay;
+                    for (Colors c : card_data.replicate_cost) with_replicate.insert(c);
+                    if (!resolve_hybrid_cost(caster, with_replicate, card_data.hybrid_mana,
+                                             spell_entity, orderer, card_data.has_delve,
+                                             card_data.has_improvise))
+                        break;
+                    if (resume_choice >= 0) {
+                        bool accepted = (resume_choice == 1);
+                        resume_choice = -1;
+                        if (!accepted) break;
+                        pc.cost_to_pay = with_replicate;
+                        pc.replicate_count++;
+                        game_log("%s pays the replicate cost for %s (%d)\n",
+                                 player_name(caster).c_str(), card_data.name.c_str(),
+                                 pc.replicate_count);
+                        continue;
+                    }
+                    std::string prompt = "pay replicate cost for " + card_data.name +
+                        " (paid " + std::to_string(pc.replicate_count) + ")";
+                    arm_cast_query(game, optional_yesno_menu(prompt), caster);
+                    return;
+                }
+            }
+            pc.step = Game::PendingCast::CHOOSE_X;
+            break;
+        }
+
+        case Game::PendingCast::CHOOSE_X: {
+            // X-COST: prompt player to choose X value, add X generic to cost
+            if (card_data.has_x_cost) {
+                if (resume_choice >= 0) {
+                    size_t x_val = static_cast<size_t>(resume_choice);
+                    resume_choice = -1;
+                    cur_game.x_paid = x_val;
+                    for (size_t i = 0; i < x_val; i++) pc.cost_to_pay.insert(GENERIC);
+                    game_log("%s chooses X = %zu\n", player_name(caster).c_str(), x_val);
+                } else {
+                    size_t max_x = max_available_mana(caster, pc.cost_to_pay, orderer);
+                    // For a spell whose required target count IS X (Hide on the Ceiling), X can't
+                    // exceed the number of legal targets (CR 601.2c) — clamp so the agent can't
+                    // pick an X that leaves a mandatory target choice with too few candidates.
+                    max_x = std::min(max_x,
+                                     spell_xpaid_target_cap(card_data, spell_entity, caster, orderer));
+
+                    game_log("Choose X value (0-%zu):\n", max_x);
+                    std::vector<LegalAction> x_actions;
+                    for (size_t xv = 0; xv <= max_x; xv++) {
+                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        la.category = ActionCategory::CHOOSE_X;
+                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
+                        x_actions.push_back(la);
+                    }
+                    arm_cast_query(game, std::move(x_actions), caster);
+                    return;
+                }
+            }
+            pc.step = Game::PendingCast::HYBRID;
+            break;
+        }
+
+        case Game::PendingCast::HYBRID: {
+            // HYBRID mana (CR 107.4): resolve each {W/U} / {2/W} pip to one concrete payment
+            // before the colored/generic payment runs below. Machine/auto mode picks the first
+            // payable assignment (shared with the cast-legality gate via resolve_hybrid_cost);
+            // interactive mode prompts the player per pip, like the Phyrexian block below.
+            // (Machine mode auto-resolves with ZERO decisions; the interactive per-pip menu is
+            // a deliberate blocking non-conversion — snapshots can't be requested in CLI play.)
+            if (!card_data.hybrid_mana.empty()) {
+                if (InputLogger::instance().is_machine_schedule()) {
+                    ManaValue resolved;
+                    if (resolve_hybrid_cost(caster, pc.cost_to_pay, card_data.hybrid_mana,
+                                            spell_entity, orderer, card_data.has_delve,
+                                            card_data.has_improvise, &resolved)) {
+                        pc.cost_to_pay = resolved;
+                    } else {
+                        // No payable assignment: add the colored option (else the generic
+                        // alternative) so payment fails cleanly through the normal path.
+                        for (const auto &pip : card_data.hybrid_mana) {
+                            if (!pip.colors.empty()) pc.cost_to_pay.insert(pip.colors.front());
+                            else for (int i = 0; i < pip.generic_alt; i++)
+                                pc.cost_to_pay.insert(GENERIC);
+                        }
+                    }
+                } else {
+                    for (const auto &pip : card_data.hybrid_mana) {
+                        std::vector<LegalAction> hybrid_actions;
+                        for (Colors c : pip.colors) {
+                            LegalAction a(PASS_PRIORITY,
+                                std::string("Pay {") + mana_symbol_str(c) + "}");
+                            a.category = ActionCategory::PAYING_COSTS;
+                            hybrid_actions.push_back(a);
+                        }
+                        if (pip.generic_alt > 0) {
+                            LegalAction a(PASS_PRIORITY,
+                                "Pay {" + std::to_string(pip.generic_alt) + "} generic");
+                            a.category = ActionCategory::PAYING_COSTS;
+                            hybrid_actions.push_back(a);
+                        }
+                        int hc = InputLogger::instance().get_input(hybrid_actions);
+                        size_t uc = static_cast<size_t>(hc);
+                        if (uc < pip.colors.size()) {
+                            pc.cost_to_pay.insert(pip.colors[uc]);
+                        } else {
+                            for (int i = 0; i < pip.generic_alt; i++)
+                                pc.cost_to_pay.insert(GENERIC);
+                        }
+                    }
+                }
+            }
+            pc.step = Game::PendingCast::PHYREXIAN_PIP;
+            break;
+        }
+
+        case Game::PendingCast::PHYREXIAN_PIP: {
+            // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life
+            if (!card_data.phyrexian_mana.empty()) {
+                Entity caster_entity = (caster == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
+                while (pc.phyrexian_idx < card_data.phyrexian_mana.size()) {
+                    Colors phyrex_color = card_data.phyrexian_mana[pc.phyrexian_idx];
+                    std::string color_name = mana_symbol_str(phyrex_color);
+                    // CR 119.4 / 118.3: a player can't pay 2 life they don't have. Only offer
+                    // the life option when life >= 2 (paying down to exactly 0 is legal — they
+                    // die to SBAs afterward). Re-checked per pip against the running life total,
+                    // since an earlier pip's life payment lowers what's left for the next.
+                    // (The life is paid at APPLY below, so the NEXT pip's arm re-derives
+                    // can_pay_life against the updated total, exactly like the inline loop;
+                    // between THIS pip's arm and its apply nothing runs, so the recompute at
+                    // apply matches the armed menu's option layout.)
+                    bool can_pay_life = phyrex_player.life_total >= 2;
+                    if (resume_choice >= 0) {
+                        int phyrex_choice = resume_choice;
+                        resume_choice = -1;
+                        // The life option occupies index 0 only when it was offered; with it
+                        // suppressed the sole option is "Pay {color}", so fall through to mana.
+                        if (can_pay_life && phyrex_choice == 0) {
+                            phyrex_player.life_total -= 2;
+                            game_log("%s pays 2 life\n", player_name(caster).c_str());
+                        } else {
+                            pc.cost_to_pay.insert(phyrex_color);
+                        }
+                        pc.phyrexian_idx++;
+                        continue;
+                    }
+                    std::vector<LegalAction> phyrex_actions;
+                    if (can_pay_life) {
+                        LegalAction pay_life(PASS_PRIORITY,
+                            "Pay 2 life (instead of {" + color_name + "})");
+                        pay_life.category = ActionCategory::PAYING_COSTS;
+                        pay_life.option_ordinal = 0;  // Phyrexian pip: 0 = pay life
+                        phyrex_actions.push_back(pay_life);
+                    }
+                    LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
+                    pay_mana.category = ActionCategory::PAYING_COSTS;
+                    pay_mana.option_ordinal = 1;  // Phyrexian pip: 1 = pay mana
+                    phyrex_actions.push_back(pay_mana);
+                    arm_cast_query(game, std::move(phyrex_actions), caster);
+                    return;
+                }
+            }
+
+            // Defer the actual mana payment until after targets are chosen (CR 601.2c before
+            // 601.2g/h — see the deferred_mana_* fields), so a sacrifice-for-mana source spent
+            // here can't remove a spell's only legal target before it is chosen. The cost is
+            // fully resolved (base + offspring/kicker/replicate/X/hybrid/phyrexian), so the
+            // deferred payment is a pure spend with no target-dependent choices left.
+            // Untargeted spells take the same path — their (empty) target step makes "pay
+            // after targets" identical to paying now, so a single unified order serves every
+            // cast.
+            pc.deferred_mana_cost = pc.cost_to_pay;
+            pc.deferred_delve = card_data.has_delve;
+            pc.deferred_improvise = card_data.has_improvise;
+            pc.deferred_mana_pending = true;
+            pc.step = Game::PendingCast::LIFE_X;
+            break;
+        }
+
+        case Game::PendingCast::LIFE_X: {
+            // VARIABLE LIFE X-COST (Toxic Deluge: "As an additional cost, pay X life").
+            // The life paid IS the spell's X (Count$xPaid). Choose X (0..life — CR 119.4
+            // lets a player pay up to their whole life total), set x_paid, and pay it. Done
+            // after the mana payment commits so a cancelled mana payment doesn't lose life.
+            // X is still chosen before targets are selected below (CR 601.2b).
+            if (spell_has_variable_life_cost(card_data)) {
+                Entity caster_entity = (caster == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &life_player = global_coordinator.GetComponent<Player>(caster_entity);
+                if (resume_choice >= 0) {
+                    size_t x_val = static_cast<size_t>(resume_choice);
+                    resume_choice = -1;
+                    cur_game.x_paid = x_val;
+                    life_player.life_total -= static_cast<int>(x_val);
+                    game_log("%s pays %zu life (X = %zu)\n", player_name(caster).c_str(),
+                             x_val, x_val);
+                } else {
+                    size_t max_x = static_cast<size_t>(std::max(0, life_player.life_total));
+                    game_log("Choose X value (0-%zu):\n", max_x);
+                    std::vector<LegalAction> x_actions;
+                    for (size_t xv = 0; xv <= max_x; xv++) {
+                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        la.category = ActionCategory::CHOOSE_X;
+                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
+                        x_actions.push_back(la);
+                    }
+                    arm_cast_query(game, std::move(x_actions), caster);
+                    return;
+                }
+            }
+            pc.step = Game::PendingCast::SPELL_SAC;
+            break;
+        }
+
+        case Game::PendingCast::SPELL_SAC: {
+            // ADDITIONAL SACRIFICE COST on the spell itself (CR 601.2f / 118.x):
+            // Natural Order — "As an additional cost to cast this spell, sacrifice a
+            // green creature." Paid here as part of casting (before the spell is on the
+            // stack), using the same SACRIFICE_PERMANENT choice activated abilities use.
+            // Cast legality already guaranteed a matching permanent exists. General to
+            // any spell whose SPELL ability Cost$ carries a Sac<...> token; flashback /
+            // alternate casts pay their own sac cost in their own branch above.
+            std::string spell_sac_spec = spell_additional_sac_spec(card_data);
+            if (!spell_sac_spec.empty()) {
+                // The exact pool/menu pay_sacrifice_cost's prompt_permanent_choice built,
+                // armed as a pending decision instead. The pool re-derives identically at
+                // apply — nothing runs between arm and resume.
+                std::vector<Entity> choices = controlled_permanents_matching(
+                    caster, spell_sac_spec, orderer->mEntities, spell_entity);
+                if (!choices.empty()) {
+                    if (resume_choice >= 0) {
+                        Entity to_sac = choices[static_cast<size_t>(resume_choice)];
+                        resume_choice = -1;
+                        std::string sac_name =
+                            global_coordinator.GetComponent<Permanent>(to_sac).name;
+                        orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+                        game_log("%s sacrifices %s\n", player_name(caster).c_str(),
+                                 sac_name.c_str());
+                    } else {
+                        std::vector<LegalAction> menu;
+                        for (auto e : choices) {
+                            std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
+                            LegalAction la(PASS_PRIORITY, e, std::string("Sacrifice ") + nm);
+                            la.category = ActionCategory::SACRIFICE_PERMANENT;
+                            menu.push_back(la);
+                        }
+                        arm_cast_query(game, std::move(menu), caster);
+                        return;
+                    }
+                }
+            }
+            pc.step = Game::PendingCast::GIFT;
+            break;
+        }
+
+        case Game::PendingCast::GIFT: {
+            // GIFT (CR 702.176b): as the spell is cast, its controller MAY promise the gift to an
+            // opponent. The promise is not a cost — it is decided here (before targets are chosen,
+            // CR 601.2c) and it both (a) switches a Count$PromisedGift-driven effect via the
+            // pending flag while targets are selected and (b) makes the opponent receive the gift
+            // on resolution (see Spell::gift_promised / Ability::resolve). Optional yes/no.
+            if (card_data.has_gift) {
+                if (resume_choice >= 0) {
+                    bool accepted = (resume_choice == 1);
+                    resume_choice = -1;
+                    if (accepted) {
+                        pc.gift_promised = true;
+                        game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
+                                 player_name(caster == Zone::PLAYER_A ? Zone::PLAYER_B
+                                                                      : Zone::PLAYER_A).c_str());
+                    }
+                } else {
+                    std::string gname = card_data.gift_description.empty()
+                                            ? std::string("the gift") : card_data.gift_description;
+                    // CR 601.2c / 702.176b: the gift promise switches which target the spell requires
+                    // (Into the Flood Maw: a creature when declined, a nonland permanent when promised).
+                    // If the not-promised mode has no legal target — e.g. the opponent controls no
+                    // (targetable) creature — declining is not a legal way to cast the spell, so don't
+                    // offer the yes/no: force the promise rather than dropping into a zero-target mode
+                    // that fizzles. The cast was only legal because the promised mode is satisfiable.
+                    // Mirror case: if the PROMISED mode has no legal target — e.g. the opponent's
+                    // only creature is Dryad Arbor, a Land Creature, so "nonland permanent" is empty
+                    // while "creature" is not — promising is not a legal way to cast the spell
+                    // either, so don't offer the yes/no at all (the cast was only legal because the
+                    // not-promised mode is satisfiable).
+                    bool must_promise = false;
+                    bool can_promise = true;
+                    for (const auto &t : card_data.abilities) {
+                        if (t.ability_type != Ability::SPELL) continue;
+                        // Probe with the real spell source/controller so a mode's target legality
+                        // (protection from this spell's color, OppCtrl) matches select_target below —
+                        // otherwise can_promise/must_promise can green-light a mode whose only target
+                        // is protected (Scryb Ranger vs blue Into the Flood Maw), then select_target
+                        // finds zero targets and aborts (CR 601.2c / 702.16e).
+                        Ability probe = cast_gate_probe(t, spell_entity, caster);
+                        std::vector<const Ability *> targeting = spell_targeting_abilities(probe);
+                        if (!targeting.empty()) {
+                            must_promise = !gift_mode_satisfiable(targeting, orderer, caster, false);
+                            can_promise = gift_mode_satisfiable(targeting, orderer, caster, true);
+                        }
+                        break;
+                    }
+                    if (must_promise) {
+                        // Forced promise: today's short-circuit never prompted here, so
+                        // advance without arming — zero decisions, exactly as before.
+                        pc.gift_promised = true;
+                        game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
+                                 player_name(caster == Zone::PLAYER_A ? Zone::PLAYER_B
+                                                                      : Zone::PLAYER_A).c_str());
+                    } else if (can_promise) {
+                        arm_cast_query(game,
+                                       optional_yesno_menu("promise " + gname + " to your opponent"),
+                                       caster);
+                        return;
+                    }
+                }
+            }
+            cur_game.pending_gift_promised = pc.gift_promised;
+            pc.step = Game::PendingCast::ANNOUNCE;
+            break;
+        }
+
+        case Game::PendingCast::ANNOUNCE: {
+            // Find the primary spell ability template and copy it into pc BY VALUE — the
+            // ENTITY's Ability component is added only once every announce target is chosen
+            // (end of SUB_TARGET), the blocking flow's exact position, so component state at
+            // every announce prompt matches it (absent during announcement, present after).
+            for (const auto &ability_template : card_data.abilities) {
+                if (ability_template.ability_type != Ability::SPELL) continue;
+                pc.ability = ability_template;
+                pc.ability.source = spell_entity;
+                pc.ability.controller = caster;
+                // Carry the Gift keyword's gift effect onto the resolving spell's primary ability;
+                // it fires at resolution only if the gift was promised (Ability::resolve).
+                if (card_data.has_gift) pc.ability.gift_abilities = card_data.gift_abilities;
+                pc.have_ability = true;
+                break;  // TODO: support spells with multiple abilities
+            }
+
+            // Announce cast-time choices (CR 601.2b/c) across the steps below: modal mode(s)
+            // interleaved with their targets (CHARM_MODE/CHARM_TARGET), the primary target
+            // (PRIMARY_TARGET), targeting sub-abilities' targets (SUB_TARGET), and the aura
+            // enchant target (AURA_TARGET) — the same interleave announce_spell_targets runs
+            // for the blocking mini-cast. NOTE on ordering: strict CR 601.2b announces modes
+            // before X, but X was chosen above in the cost branch — mode choosability can
+            // depend on X (Kozilek's Command's "Creature.cmcLEX" exile mode), and both are
+            // the caster's own announcements made atomically before any opponent priority,
+            // so the swap is not opponent-observable.
+            pc.charm_picks_done = 0;
+            pc.sub_idx = 0;
+            pc.tsel = TargetSelectRT{};
+            if (!pc.have_ability)
+                pc.step = Game::PendingCast::AURA_TARGET;
+            else if (!pc.ability.charm_choices.empty())
+                pc.step = Game::PendingCast::CHARM_MODE;
+            else
+                pc.step = Game::PendingCast::PRIMARY_TARGET;
+            break;
+        }
+
+        case Game::PendingCast::CHARM_MODE: {
+            // Modal spell announcement (CR 601.2b): one mode pick per pass; the just-picked
+            // mode's targets are chosen (CHARM_TARGET) before the NEXT mode pick, exactly the
+            // blocking announce_charm_modes interleave. The picked modes persist in
+            // ability.charm_chosen — which also reconstructs the taken[] filter on resume —
+            // and pc.charm_picks_done counts completed iterations.
+            Ability &ability = pc.ability;
+            int to_pick = ability.charm_num < 1 ? 1 : ability.charm_num;
+            if (pc.charm_picks_done >= to_pick) {
+                pc.step = Game::PendingCast::PRIMARY_TARGET;
+                break;
+            }
+            std::vector<bool> taken(ability.charm_choices.size(), false);
+            for (int ci : ability.charm_chosen)
+                if (ci >= 0 && static_cast<size_t>(ci) < taken.size())
+                    taken[static_cast<size_t>(ci)] = true;
+            std::vector<size_t> mode_indices;  // map action index -> charm_choices index
+            if (resume_choice >= 0) {
+                // Apply the latched mode pick against the re-derived (identical) menu.
+                std::vector<LegalAction> mode_actions =
+                    build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
+                size_t chosen_idx = mode_indices[static_cast<size_t>(resume_choice)];
+                resume_choice = -1;
+                ability.charm_chosen.push_back(static_cast<int>(chosen_idx));
+                Ability &chosen = ability.charm_choices[chosen_idx];
+                game_log("%s chooses mode — %s\n", player_name(caster).c_str(),
+                         charm_mode_desc(ability, chosen_idx).c_str());
+                if (chosen.valid_tgts != "N_A") {
+                    pc.tsel = TargetSelectRT{};
+                    pc.step = Game::PendingCast::CHARM_TARGET;
+                } else {
+                    pc.charm_picks_done++;  // no targets — straight to the next mode pick
+                }
+                break;
+            }
+            game_log("Choose mode:\n");
+            std::vector<LegalAction> mode_actions =
+                build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
+            if (mode_actions.empty()) {
+                // No further legal mode (all taken or none with legal targets). The
+                // cast-legality gate (spell_has_castable_targets) requires CharmNum$
+                // choosable modes up front, so this is only reachable when an earlier pick's
+                // target choice changed the board — proceed with the modes picked so far
+                // rather than aborting the cast. Re-evaluated at arm, like the blocking loop.
+                game_log("No further legal mode — %d chosen\n", pc.charm_picks_done);
+                pc.step = Game::PendingCast::PRIMARY_TARGET;
+                break;
+            }
+            arm_cast_query(game, std::move(mode_actions), caster, ability.source);
+            return;
+        }
+
+        case Game::PendingCast::CHARM_TARGET: {
+            // The just-picked mode's targets (CR 601.2c), before the next mode pick.
+            Ability &chosen = pc.ability.charm_choices[
+                static_cast<size_t>(pc.ability.charm_chosen.back())];
+            FlowTargetAsker asker(game, caster, resume_choice);
+            if (run_target_select(chosen, pc.tsel, asker, orderer, caster) !=
+                TargetStatus::DONE)
+                return;
+            pc.charm_picks_done++;
+            pc.step = Game::PendingCast::CHARM_MODE;
+            break;
+        }
+
+        case Game::PendingCast::PRIMARY_TARGET: {
+            if (pc.ability.valid_tgts != "N_A") {
+                FlowTargetAsker asker(game, caster, resume_choice);
+                if (run_target_select(pc.ability, pc.tsel, asker, orderer, caster) !=
+                    TargetStatus::DONE)
+                    return;
+            }
+            pc.sub_idx = 0;
+            pc.step = Game::PendingCast::SUB_TARGET;
+            break;
+        }
+
+        case Game::PendingCast::SUB_TARGET: {
+            // A spell whose top-level effect doesn't itself target, but whose chained
+            // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal Therapy:
+            // SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$ Player).
+            // Select each targeting sub-ability's target now and store it on the sub-ability
+            // template; resolution preserves it (see Ability::resolve).
+            while (pc.sub_idx < pc.ability.subabilities.size()) {
+                Ability &sub = pc.ability.subabilities[pc.sub_idx];
+                if (sub.valid_tgts != "N_A") {
+                    sub.source = pc.ability.source;
+                    sub.controller = caster;
+                    FlowTargetAsker asker(game, caster, resume_choice);
+                    if (run_target_select(sub, pc.tsel, asker, orderer, caster) !=
+                        TargetStatus::DONE)
+                        return;
+                }
+                pc.sub_idx++;
+            }
+            // Announcement complete: add the fully-targeted Ability to the entity — the
+            // blocking flow's exact position (right after announce_spell_targets returned).
+            global_coordinator.AddComponent(spell_entity, pc.ability);
+            pc.step = Game::PendingCast::AURA_TARGET;
+            break;
+        }
+
+        case Game::PendingCast::AURA_TARGET: {
+            // AURA cast (CR 303.4 / 601.2c): an Aura with no spell ability of its own still
+            // targets the object it will enchant. Build a transient targeting ability from the
+            // Enchant filter, choose the target now, and remember it so the resolved permanent
+            // attaches to it (its equipped_to is set when its Permanent is created). The
+            // transient ability persists in pc.enchant_ab; a suspended pick resumes it
+            // (tsel.active guards the one-time construction).
+            if (!card_data.enchant_filter.empty() &&
+                !global_coordinator.entity_has_component<Ability>(spell_entity)) {
+                if (!pc.tsel.active) {
+                    pc.enchant_ab = Ability{};
+                    pc.enchant_ab.source = spell_entity;
+                    pc.enchant_ab.controller = caster;
+                    pc.enchant_ab.valid_tgts = card_data.enchant_filter;
+                }
+                FlowTargetAsker asker(game, caster, resume_choice);
+                if (run_target_select(pc.enchant_ab, pc.tsel, asker, orderer, caster) !=
+                    TargetStatus::DONE)
+                    return;
+                if (pc.enchant_ab.target != 0) {
+                    cur_game.pending_aura_target[spell_entity] = pc.enchant_ab.target;
+                    game_log("%s casts %s enchanting %s\n", player_name(caster).c_str(),
+                             card_data.name.c_str(),
+                             target_display_name(cur_game, pc.enchant_ab.target).c_str());
+                }
+            }
+            pc.step = Game::PendingCast::DELVE_COUNT;
+            break;
+        }
+
+        case Game::PendingCast::DELVE_COUNT: {
+            // Delve (CR 702.66 / 601.2h): the caster chooses how many graveyard cards to
+            // exile and which ones, one pick at a time; each exile pays one generic pip of
+            // the deferred cost. Runs after targets are locked in (601.2c), like every
+            // other cost. The remainder is then paid WITHOUT delve — the count menu is
+            // constrained to counts whose remaining cost is payable. Stage 1 here: the
+            // count menu. The count range [min_needed .. max_exiles] is computed at arm
+            // and re-derived identically at apply (nothing runs between arm and resume):
+            // each exile removes one GENERIC pip, so payability is monotone in the count
+            // and the legal counts form a contiguous range; min_needed is found with the
+            // shared simulate-mode payer (can_pay_mana, has_delve=false), so the offered
+            // menu and the eventual payment can never disagree — cast legality (which
+            // allowed the maximum delve) guarantees the range is non-empty.
+            if (!pc.deferred_mana_pending || !pc.deferred_delve) {
+                pc.step = Game::PendingCast::MANA_PAY;
+                break;
+            }
+            size_t eligible_ct = 0;
+            for (auto e : orderer->mEntities)
+                if (is_delve_eligible(e, caster)) eligible_ct++;
+            size_t max_exiles = std::min(eligible_ct, pc.deferred_mana_cost.count(GENERIC));
+            if (max_exiles == 0) {
+                pc.step = Game::PendingCast::MANA_PAY;
+                break;
+            }
+            ManaValue reduced = pc.deferred_mana_cost;
+            size_t min_needed = 0;
+            while (min_needed < max_exiles &&
+                   !can_pay_mana(caster, reduced, spell_entity, orderer, /*has_delve=*/false,
+                                 pc.deferred_improvise)) {
+                reduced.erase(reduced.find(GENERIC));
+                min_needed++;
+            }
+            if (resume_choice >= 0) {
+                // Apply the latched count against the re-derived (identical) range.
+                pc.delve_exile_ct = min_needed + static_cast<size_t>(resume_choice);
+                resume_choice = -1;
+                pc.step = Game::PendingCast::DELVE_PICK;
+                break;
+            }
+            // Seat both delve stages on the casting player — the blocking prompt's
+            // save/repoint/restore becomes arm-time persistence: the prev seat lives in
+            // pc and DELVE_PICK's completion restores it.
+            pc.delve_prev_priority_a = cur_game.player_a_has_priority;
+            cur_game.player_a_has_priority = (caster == Zone::PLAYER_A);
+            // The count prompt is skipped when only one count is legal (the pre-collapse
+            // condition, re-derived at arm). The actions carry the delve spell as their
+            // source entity, so the machine protocol emits its card id (a plain X-cost
+            // ladder emits the null sentinel — this is how observers tell the two
+            // CHOOSE_X menus apart).
+            if (max_exiles > min_needed) {
+                std::vector<LegalAction> count_menu;
+                for (size_t n = min_needed; n <= max_exiles; n++) {
+                    LegalAction la(PASS_PRIORITY, spell_entity,
+                                   "Exile " + std::to_string(n) + (n == 1 ? " card" : " cards") +
+                                       " from graveyard (Delve)");
+                    la.category = ActionCategory::CHOOSE_X;
+                    la.option_ordinal = static_cast<int>(n);  // the delve exile count
+                    la.card_is_public = true;  // the spell being cast is public
+                    count_menu.push_back(la);
+                }
+                game_log("Choose how many cards to exile via Delve (%zu-%zu):\n", min_needed,
+                         max_exiles);
+                arm_cast_query(game, std::move(count_menu), caster);
+                return;
+            }
+            pc.delve_exile_ct = min_needed;
+            pc.step = Game::PendingCast::DELVE_PICK;
+            break;
+        }
+
+        case Game::PendingCast::DELVE_PICK: {
+            // Delve stage 2 — which cards, one pick at a time; the candidate menu is
+            // re-derived from the live graveyard each pass (each exile drops that card
+            // from the next menu). When the remaining candidates are all going to be
+            // exiled anyway (candidates <= picks left, including the single-candidate
+            // case) there is no real choice, so they are taken without a prompt — the
+            // pre-collapse condition, re-checked per pick at arm. delve_exile_one mutates
+            // pc.deferred_mana_cost IN PLACE (one GENERIC pip per exile) and records the
+            // card in cur_game.delve_exiled; a cancelled payment's restore_mana_state
+            // returns the exiles via its snapshot.
+            while (pc.delve_picks_done < pc.delve_exile_ct) {
+                std::vector<LegalAction> picks;
+                for (auto e : orderer->mEntities) {
+                    if (!is_delve_eligible(e, caster)) continue;
+                    auto &ecd = global_coordinator.GetComponent<CardData>(e);
+                    LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
+                    la.category = ActionCategory::CHOOSE_CARD;
+                    la.card_is_public = true;  // graveyards are public zones
+                    picks.push_back(la);
+                }
+                if (picks.empty()) break;  // defensive: eligibility was counted above
+                if (picks.size() > pc.delve_exile_ct - pc.delve_picks_done) {
+                    if (resume_choice >= 0) {
+                        size_t pick = static_cast<size_t>(resume_choice);
+                        resume_choice = -1;
+                        delve_exile_one(picks[pick].source_entity, caster, orderer,
+                                        pc.deferred_mana_cost);
+                        pc.delve_picks_done++;
+                        continue;
+                    }
+                    game_log("Choose a card to exile via Delve (%zu of %zu):\n",
+                             pc.delve_picks_done + 1, pc.delve_exile_ct);
+                    arm_cast_query(game, std::move(picks), caster);
+                    return;
+                }
+                delve_exile_one(picks[0].source_entity, caster, orderer, pc.deferred_mana_cost);
+                pc.delve_picks_done++;
+            }
+            // Restore the pre-delve seat (persisted at DELVE_COUNT's arm).
+            cur_game.player_a_has_priority = pc.delve_prev_priority_a;
+            pc.step = Game::PendingCast::MANA_PAY;
+            break;
+        }
+
+        case Game::PendingCast::MANA_PAY: {
+            // Pay the deferred regular mana cost now that targets are locked in (CR 601.2h, after
+            // the 601.2c target choice above; the delve exiles already removed their generic pips
+            // in the DELVE steps). A sacrifice-for-mana source spent here may make a chosen
+            // target illegal — the spell then fizzles at resolution rather than ever being
+            // offered/forced with no legal target. (The interactive payment stays BLOCKING
+            // inside this step — a deliberate non-conversion; machine mode auto-pays with zero
+            // decisions.)
+            if (pc.deferred_mana_pending) {
+                if (!prompt_mana_payment(caster, pc.deferred_mana_cost, spell_entity, orderer,
+                                         /*has_delve=*/false, pc.deferred_improvise)) {
+                    // Payment cancelled (interactive only — machine mode pre-verifies
+                    // affordability). Targets were already chosen but the spell never reached the
+                    // stack, so rewind the half-finished cast: drop the targeting Ability / aura
+                    // link, clear the pending gift flag, restore mana, and bump payment_fail_counts
+                    // so the offer gate stops re-offering it (no scripted-agent payment loop).
+                    // The parked cast state is cleared with it — the flow is over.
+                    if (global_coordinator.entity_has_component<Ability>(spell_entity))
+                        global_coordinator.RemoveComponent<Ability>(spell_entity);
+                    cur_game.pending_aura_target.erase(spell_entity);
+                    cur_game.pending_gift_promised = false;
+                    restore_mana_state(caster, pc.mana_snap, orderer);
+                    cur_game.payment_fail_counts[spell_entity]++;
+                    game_log("Payment cancelled.\n");
+                    pc = Game::PendingCast{};
+                    return;
+                }
+            }
+
+            // Pay the deferred non-mana cost pieces (flashback life here; the flashback
+            // sacrifice and escape exile-from-graveyard picks are the DEF_* steps that
+            // follow) now that targets are locked in and the mana payment committed
+            // (CR 601.2g/h after the 601.2c target choice). Sacrificing there may make a
+            // chosen target illegal — the spell then fizzles at resolution (CR 608.2b),
+            // matching paper rules.
+            if (pc.deferred_life_cost > 0) {
+                auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
+                player.life_total -= pc.deferred_life_cost;
+                game_log("%s pays %d life\n", player_name(caster).c_str(), pc.deferred_life_cost);
+            }
+            pc.step = Game::PendingCast::DEF_SAC;
+            break;
+        }
+
+        case Game::PendingCast::DEF_SAC: {
+            // Deferred "sacrifice a <spec>" cost — the flashback alternate cost's
+            // sacrifice (CR 702.34, Cabal Therapy). The exact pool/menu the old blocking
+            // pay_sacrifice_cost built (via prompt_permanent_choice), armed as a pending
+            // decision instead; the pool re-derives identically at apply. Cast legality
+            // already guaranteed a matching permanent exists; the empty-choices guard is
+            // a defensive no-op.
+            if (!pc.deferred_sac_spec.empty()) {
+                std::vector<Entity> choices = controlled_permanents_matching(
+                    caster, pc.deferred_sac_spec, orderer->mEntities, spell_entity);
+                if (!choices.empty()) {
+                    if (resume_choice >= 0) {
+                        Entity to_sac = choices[static_cast<size_t>(resume_choice)];
+                        resume_choice = -1;
+                        std::string sac_name =
+                            global_coordinator.GetComponent<Permanent>(to_sac).name;
+                        orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+                        game_log("%s sacrifices %s\n", player_name(caster).c_str(),
+                                 sac_name.c_str());
+                    } else {
+                        std::vector<LegalAction> menu;
+                        for (auto e : choices) {
+                            std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
+                            LegalAction la(PASS_PRIORITY, e, std::string("Sacrifice ") + nm);
+                            la.category = ActionCategory::SACRIFICE_PERMANENT;
+                            menu.push_back(la);
+                        }
+                        arm_cast_query(game, std::move(menu), caster);
+                        return;
+                    }
+                }
+            }
+            pc.step = Game::PendingCast::DEF_EXILE_TYPES;
+            break;
+        }
+
+        case Game::PendingCast::DEF_EXILE_TYPES: {
+            // Deferred Escape ExileFromGrave cost (CR 702.139 / 601.2f): exile any number
+            // of OTHER cards from the caster's graveyard until the exiled set collectively
+            // has at least min_types distinct card types (CR 205.2). One pick per pass, the
+            // candidate menu re-derived from the live graveyard at each arm; the loop is
+            // mandatory (no "done" option) until the constraint — tracked across
+            // suspensions in pc.escape_exiled_types — is met. Cast legality already
+            // guaranteed enough types exist.
+            if (pc.deferred_exile_min_types > 0) {
+                while (static_cast<int>(pc.escape_exiled_types.size()) <
+                       pc.deferred_exile_min_types) {
+                    std::vector<LegalAction> menu =
+                        escape_exile_menu(caster, spell_entity, orderer);
+                    if (menu.empty()) break;  // defensive: legality guaranteed enough cards
+                    if (resume_choice >= 0) {
+                        Entity to_exile = menu[static_cast<size_t>(resume_choice)].source_entity;
+                        resume_choice = -1;
+                        auto &cd = global_coordinator.GetComponent<CardData>(to_exile);
+                        for (auto &t : cd.types)
+                            if (t.kind == TYPE) pc.escape_exiled_types.insert(t.name);
+                        std::string ename = cd.name;
+                        orderer->add_to_zone(false, to_exile, Zone::EXILE);
+                        game_log("%s exiles %s from their graveyard\n",
+                                 player_name(caster).c_str(), ename.c_str());
+                        continue;
+                    }
+                    arm_cast_query(game, std::move(menu), caster);
+                    return;
+                }
+            }
+            pc.step = Game::PendingCast::DEF_EXILE_COUNT;
+            break;
+        }
+
+        case Game::PendingCast::DEF_EXILE_COUNT: {
+            // Deferred Escape ExileFromGrave cost in its literal-count form (CR 702.139 /
+            // 601.2f): exile exactly `count` OTHER cards from the caster's graveyard (Uro:
+            // "Exile five other cards from your graveyard"). One mandatory pick per pass
+            // (no "done" option) until pc.escape_exiled_count reaches the count; the menu
+            // re-derives from the live graveyard at each arm. Cast legality already
+            // guaranteed enough cards exist.
+            if (pc.deferred_exile_count > 0) {
+                while (pc.escape_exiled_count < pc.deferred_exile_count) {
+                    std::vector<LegalAction> menu =
+                        escape_exile_menu(caster, spell_entity, orderer);
+                    if (menu.empty()) break;  // defensive: legality guaranteed enough cards
+                    if (resume_choice >= 0) {
+                        Entity to_exile = menu[static_cast<size_t>(resume_choice)].source_entity;
+                        resume_choice = -1;
+                        std::string ename =
+                            global_coordinator.GetComponent<CardData>(to_exile).name;
+                        orderer->add_to_zone(false, to_exile, Zone::EXILE);
+                        game_log("%s exiles %s from their graveyard\n",
+                                 player_name(caster).c_str(), ename.c_str());
+                        pc.escape_exiled_count++;
+                        continue;
+                    }
+                    arm_cast_query(game, std::move(menu), caster);
+                    return;
+                }
+            }
+            pc.step = Game::PendingCast::FINISH;
+            break;
+        }
+
+        case Game::PendingCast::FINISH: {
+            // Log cast with target if applicable
+            if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
+                Entity tgt = global_coordinator.GetComponent<Ability>(spell_entity).target;
+                if (tgt != 0) {
+                    std::string tgt_name = target_display_name(cur_game, tgt);
+                    game_log("%s casts %s targeting %s\n", player_name(caster).c_str(),
+                        card_data.name.c_str(), tgt_name.c_str());
+                } else {
+                    game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
+                }
+            } else {
+                game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
+            }
+
+            // Add Spell component — present only while the entity is on the stack
+            Spell spell;
+            spell.caster = caster;
+            spell.cast_with_flashback = pc.use_flashback;
+            spell.cast_with_evoke = pc.use_alt_cost && card_data.alt_cost.is_evoke;
+            spell.cast_with_escape = pc.use_escape;
+            spell.cast_with_offspring = pc.use_offspring;
+            spell.cast_with_impending = pc.use_alt_cost && card_data.alt_cost.is_impending;
+            spell.kicked = pc.kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
+            spell.replicate_count = pc.replicate_count;  // # of replicate payments (0 if none/no Replicate)
+            spell.gift_promised = pc.gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution
+            cur_game.pending_gift_promised = false;  // consume the cast-time pending flag (targets chosen)
+            // Record the X value paid so an "enters with X counters" replacement can read
+            // it (Chalice of the Void: enters with X charge counters) and so the resolving
+            // spell's Count$xPaid amount reads the right X (StackManager restores x_paid from
+            // this). cur_game.x_paid is global and may be overwritten by a later cast before this
+            // spell resolves. A variable-life X spell (Toxic Deluge) has no mana X, so also key
+            // off its PayLife<X> cost.
+            if (card_data.has_x_cost || spell_has_variable_life_cost(card_data))
+                spell.x_paid = static_cast<int>(cur_game.x_paid);
+            if (cur_game.pending_cant_be_countered) {
+                spell.cant_be_countered = true;
+                cur_game.pending_cant_be_countered = false;
+            }
+            // Check card's own replacement effects for "can't be countered" (Long Goodbye).
+            // Only the SELF form ("This spell can't be countered") stamps the spell at cast;
+            // the battlefield form (Hexing Squelcher's "Spells you control can't be countered")
+            // is a continuous static consulted at counter-resolution time, not a cast-time stamp.
+            for (const auto &r : card_data.replacement_effects) {
+                if (r.kind == Effect::Replacement::CANT_BE_COUNTERED && !r.from_battlefield) {
+                    spell.cant_be_countered = true;
+                    break;
+                }
+            }
+            global_coordinator.AddComponent(spell_entity, spell);
+
+            // Fire NONCREATURE_SPELL_CAST event for non-creature spells
+            {
+                bool is_creature_spell = false;
+                for (const auto &t : card_data.types)
+                    if (t.kind == TYPE && t.name == "Creature") {
+                        is_creature_spell = true;
+                        break;
+                    }
+                if (!is_creature_spell) {
+                    Event cast_ev(Events::NONCREATURE_SPELL_CAST);
+                    Entity caster_entity =
+                        (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    cast_ev.SetParam(Params::ENTITY, spell_entity);
+                    cast_ev.SetParam(Params::PLAYER, caster_entity);
+                    global_coordinator.SendEvent(cast_ev);
+                }
+            }
+
+            // Move to stack
+            orderer->add_to_zone(false, spell_entity, Zone::STACK);  // Top of stack
+
+            // Track spells cast and fire SPELL_CAST event
+            {
+                Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
+                caster_player.spells_cast_this_turn++;
+                caster_player.spells_cast_this_game++;
+                // Track noncreature spells for Deafening Silence, and instant/sorcery
+                // spells for Arclight Phoenix's "cast three or more instant and sorcery
+                // spells this turn" count.
+                bool spell_is_creature = false;
+                bool spell_is_instant_or_sorcery = false;
+                for (auto &t : card_data.types)
+                    if (t.kind == TYPE) {
+                        if (t.name == "Creature") spell_is_creature = true;
+                        if (t.name == "Instant" || t.name == "Sorcery") spell_is_instant_or_sorcery = true;
+                    }
+                if (!spell_is_creature) caster_player.noncreature_spells_cast_this_turn++;
+                if (spell_is_instant_or_sorcery) caster_player.instant_sorcery_spells_cast_this_turn++;
+                // Record the spell's colors so a "an opponent has cast a <color> spell this turn"
+                // condition (Veil of Summer's Count$ThisTurnCast_Card.OppCtrl+Blue/Black) can be
+                // evaluated. The spell entity carries the card's ColorIdentity.
+                if (global_coordinator.entity_has_component<ColorIdentity>(spell_entity))
+                    for (Colors c : global_coordinator.GetComponent<ColorIdentity>(spell_entity).colors)
+                        caster_player.spell_colors_cast_this_turn.insert(c);
+                Event spell_event(Events::SPELL_CAST);
+                spell_event.SetParam(Params::PLAYER, caster_entity);
+                spell_event.SetParam(Params::ENTITY, spell_entity);
+                global_coordinator.SendEvent(spell_event);
+            }
+
+            // Ward (702.21): an opponent's permanent this spell targets may counter it. The
+            // spell is already on the stack, so the Ward trigger pushed here lands above it and
+            // resolves first. Read the chosen target(s) off the spell's Ability component.
+            if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
+                auto &spell_ab = global_coordinator.GetComponent<Ability>(spell_entity);
+                // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
+                // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
+                fire_targeting_hooks(spell_entity, caster, spell_ab, orderer);
+            }
+
+            // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid
+            // its replicate cost." The replicate count was recorded on the Spell as the cost
+            // was paid; create that many copies of this spell on top of the stack now (the
+            // copies resolve before the original and may choose new targets). Seed the shared
+            // resumable copy machine and hand off to COPY_TARGETS — the copies' target picks
+            // suspend as loop-top pending decisions, and a resume must not re-run this step's
+            // cast events. A copy is not cast, so it replicates nothing.
+            if (global_coordinator.entity_has_component<Spell>(spell_entity)) {
+                int rc = global_coordinator.GetComponent<Spell>(spell_entity).replicate_count;
+                if (rc > 0) copy_spell_begin(pc.copy_rt, spell_entity, rc, caster);
+            }
+            pc.step = Game::PendingCast::COPY_TARGETS;
+            break;
+        }
+
+        case Game::PendingCast::COPY_TARGETS: {
+            // Replicate copies choose their targets (CR 707.12). The machine tolerates a
+            // no-legal-target copy being destroyed mid-loop and resumes with the remaining
+            // count / the partially targeted copy persisted in pc.copy_rt.
+            if (pc.copy_rt.active) {
+                FlowTargetAsker asker(game, caster, resume_choice);
+                if (run_copy_spell(pc.copy_rt, asker, orderer) != TargetStatus::DONE)
+                    return;
+            }
+            // take_action stays LAST — after the copies, exactly the blocking order (the
+            // cancel path never reaches here, like the old break).
+            game.take_action();
+            pc = Game::PendingCast{};
+            return;
+        }
+
+        default:
+            fatal_error("run_cast_flow reached an unimplemented step " +
+                        std::to_string(static_cast<int>(pc.step)));
+    }
+}
+
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     switch (action.type) {
         case PASS_PRIORITY:
@@ -1763,581 +3318,26 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // Snapshot mana state for rewind on payment failure
             auto mana_snap = snapshot_mana_state(caster, orderer);
 
-            // Kicker (CR 702.33): per-kicker "paid?" flags, populated in the regular-cost
-            // branch below and copied onto the Spell so linked "if it was kicked with its [N]
-            // kicker" triggers can read them. Empty unless the card has K:Kicker.
-            std::vector<bool> kicked_flags;
-
-            // Replicate (CR 702.x): how many times the replicate additional cost was paid in
-            // the regular-cost branch below. Drives the on-cast copy effect. 0 unless the card
-            // has K:Replicate and the caster chose to pay it.
-            int replicate_count = 0;
-
-            // CR 601.2 orders target choice (601.2c) BEFORE paying costs (601.2h). The regular
-            // mana payment is therefore captured here and deferred until after targets are chosen
-            // (below). This matters when the mana is paid by sacrificing a permanent for mana
-            // (Lotus Petal / Lion's Eye Diamond): paying first could remove the spell's only legal
-            // target before it is chosen, crashing on an empty target menu. With the payment
-            // deferred, the target is chosen while the would-be mana source is still on the
-            // battlefield; sacrificing it for mana then merely makes the target illegal, so the
-            // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
-            ManaValue deferred_mana_cost;
-            bool deferred_mana_pending = false;
-            bool deferred_delve = false, deferred_improvise = false;
-            // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
-            // exile-from-graveyard) are deferred the same way: targets first (601.2c),
-            // then every cost (601.2g/h). They are paid only after the deferred mana
-            // payment commits, so a cancelled payment never costs life or a creature.
-            int deferred_life_cost = 0;
-            std::string deferred_sac_spec;
-            int deferred_exile_min_types = 0, deferred_exile_count = 0;
-
-            // FLASHBACK COST — determined here (601.2f), but PAID after targets are
-            // chosen (601.2c before 601.2g/h; see the deferred_* block below). Paying
-            // the sacrifice first leaked information and changed the board before the
-            // target was locked in (Cabal Therapy: Flashback—Sacrifice a creature).
-            if (action.use_flashback) {
-                // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
-                // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost, caster);
-                deferred_mana_pending = true;
-                deferred_life_cost = card_data.flashback_alt_cost.life_cost;
-                // Flashback sacrifice cost: the cast is only offered when a matching
-                // permanent exists (cast legality), so there is always something to
-                // sacrifice when the deferred payment runs.
-                deferred_sac_spec = card_data.flashback_alt_cost.sac_cost_spec;
-
-            // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
-            // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
-            // cards covering ≥N card types). The exile is a cost, paid as the spell is cast —
-            // after targets are chosen, like every other cost (601.2c before 601.2g/h).
-            } else if (action.use_escape) {
-                // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.escape_mana_cost, caster);
-                deferred_mana_pending = true;
-                deferred_life_cost = card_data.escape_alt_cost.life_cost;
-                deferred_exile_min_types = card_data.escape_alt_cost.exile_grave_min_types;
-                deferred_exile_count = card_data.escape_alt_cost.exile_grave_count;
-
-            // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
-            // permission, paying its alternative RESOURCE cost (energy or life) instead of any
-            // mana (CR 707 / 118.9). The permission carries the resolved amount. Consumed here
-            // so it can't be reused. X spells cast this way count X = 0 (no X prompt).
-            } else if (action.impulse_cast) {
-                Entity caster_entity = (caster == Zone::PLAYER_A)
-                    ? cur_game.player_a_entity : cur_game.player_b_entity;
-                auto &player = global_coordinator.GetComponent<Player>(caster_entity);
-                auto it = cur_game.impulse_cast_permission.find(spell_entity);
-                if (it != cur_game.impulse_cast_permission.end()) {
-                    const auto &grant = it->second;
-                    if (grant.resource == Game::ImpulseCastPermission::FREE) {
-                        // Ugin -11: cast without paying its mana cost (CR 118.9). No cost paid.
-                        game_log("%s casts %s without paying its mana cost\n",
-                                 player_name(caster).c_str(), card_data.name.c_str());
-                    } else if (grant.resource == Game::ImpulseCastPermission::ENERGY) {
-                        pay_energy(player, grant.amount);
-                        game_log("%s pays %d energy\n", player_name(caster).c_str(), grant.amount);
-                    } else {
-                        player.life_total -= grant.amount;
-                        game_log("%s pays %d life\n", player_name(caster).c_str(), grant.amount);
-                    }
-                    cur_game.impulse_cast_permission.erase(it);
-                }
-                if (card_data.has_x_cost) cur_game.x_paid = 0;
-
-                // Cost-increase / SetCost-floor statics apply to alternative costs too
-                // (CR 118.9d / 601.2f): the impulse/free cast substitutes a {0} mana cost, but
-                // an active Trinisphere floor pads it up to its minimum ({3}) and Thalia adds
-                // its surcharge — paid ON TOP of the resource cost (energy/life) that was just
-                // paid. Deferred until after targets like every other cost. Empty (no floor /
-                // increase applies) leaves the cast free of mana, exactly as before.
-                ManaValue floor_mana = floored_alt_mana_cost(card_data, ManaValue{}, caster);
-                if (!floor_mana.empty()) {
-                    deferred_mana_cost = floor_mana;
-                    deferred_mana_pending = true;
-                }
-
-            // ALTERNATE COST
-            } else if (action.use_alt_cost) {
-                pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
-
-            } else {  // REGULAR COST + DELVE
-                // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
-                // caster passed so Affinity for artifacts reduces the generic cost (702.41).
-                ManaValue cost_to_pay = effective_base_cost(card_data, caster);
-
-                // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
-                if (action.use_offspring)
-                    for (Colors c : card_data.offspring_cost) cost_to_pay.insert(c);
-
-                // KICKER (CR 702.33 / 601.2b): each kicker is an OPTIONAL ADDITIONAL cost
-                // declared as the spell is cast. Offer one yes/no per kicker (only when its
-                // extra mana is still affordable on top of everything chosen so far); an
-                // accepted kicker's mana is folded into cost_to_pay and recorded in
-                // kicked_flags so the spell becomes "kicked with its Nth kicker". General over
-                // any number of independent kicker costs (multikicker-ready data model).
-                if (!card_data.kicker_costs.empty()) {
-                    kicked_flags.assign(card_data.kicker_costs.size(), false);
-                    for (size_t ki = 0; ki < card_data.kicker_costs.size(); ki++) {
-                        ManaValue with_kicker = cost_to_pay;
-                        for (Colors c : card_data.kicker_costs[ki]) with_kicker.insert(c);
-                        if (!resolve_hybrid_cost(caster, with_kicker, card_data.hybrid_mana,
-                                                 spell_entity, orderer, card_data.has_delve,
-                                                 card_data.has_improvise))
-                            continue;
-                        std::string prompt = "pay kicker " + std::to_string(ki + 1) +
-                            " for " + card_data.name;
-                        if (request_optional_yesno(caster, prompt)) {
-                            cost_to_pay = with_kicker;
-                            kicked_flags[ki] = true;
-                            game_log("%s pays the kicker %zu cost for %s\n",
-                                     player_name(caster).c_str(), ki + 1, card_data.name.c_str());
-                        }
-                    }
-                }
-
-                // REPLICATE (CR 702.x / 601.2b): an OPTIONAL ADDITIONAL cost that may be paid
-                // ANY NUMBER OF TIMES as the spell is cast. Offer a repeated yes/no — each "yes"
-                // folds another replicate cost's mana into cost_to_pay and bumps the replicate
-                // count — stopping once the next payment is unaffordable or declined. The count
-                // drives the on-cast copy effect (Spell::replicate_count). Reuses the same
-                // request_optional_yesno / can_pay_mana infra the kicker loop uses.
-                if (card_data.has_replicate) {
-                    while (true) {
-                        ManaValue with_replicate = cost_to_pay;
-                        for (Colors c : card_data.replicate_cost) with_replicate.insert(c);
-                        if (!resolve_hybrid_cost(caster, with_replicate, card_data.hybrid_mana,
-                                                 spell_entity, orderer, card_data.has_delve,
-                                                 card_data.has_improvise))
-                            break;
-                        std::string prompt = "pay replicate cost for " + card_data.name +
-                            " (paid " + std::to_string(replicate_count) + ")";
-                        if (!request_optional_yesno(caster, prompt)) break;
-                        cost_to_pay = with_replicate;
-                        replicate_count++;
-                        game_log("%s pays the replicate cost for %s (%d)\n",
-                                 player_name(caster).c_str(), card_data.name.c_str(),
-                                 replicate_count);
-                    }
-                }
-
-                // X-COST: prompt player to choose X value, add X generic to cost
-                if (card_data.has_x_cost) {
-                    size_t max_x = max_available_mana(caster, cost_to_pay, orderer);
-                    // For a spell whose required target count IS X (Hide on the Ceiling), X can't
-                    // exceed the number of legal targets (CR 601.2c) — clamp so the agent can't
-                    // pick an X that leaves a mandatory target choice with too few candidates.
-                    max_x = std::min(max_x,
-                                     spell_xpaid_target_cap(card_data, spell_entity, caster, orderer));
-
-                    game_log("Choose X value (0-%zu):\n", max_x);
-                    std::vector<LegalAction> x_actions;
-                    for (size_t xv = 0; xv <= max_x; xv++) {
-                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
-                        la.category = ActionCategory::CHOOSE_X;
-                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
-                        x_actions.push_back(la);
-                    }
-                    int x_choice = InputLogger::instance().get_input(x_actions);
-                    size_t x_val = static_cast<size_t>(x_choice);
-                    cur_game.x_paid = x_val;
-                    for (size_t i = 0; i < x_val; i++) cost_to_pay.insert(GENERIC);
-                    game_log("%s chooses X = %zu\n", player_name(caster).c_str(), x_val);
-                }
-
-                // HYBRID mana (CR 107.4): resolve each {W/U} / {2/W} pip to one concrete payment
-                // before the colored/generic payment runs below. Machine/auto mode picks the first
-                // payable assignment (shared with the cast-legality gate via resolve_hybrid_cost);
-                // interactive mode prompts the player per pip, like the Phyrexian block below.
-                if (!card_data.hybrid_mana.empty()) {
-                    if (InputLogger::instance().is_machine_schedule()) {
-                        ManaValue resolved;
-                        if (resolve_hybrid_cost(caster, cost_to_pay, card_data.hybrid_mana,
-                                                spell_entity, orderer, card_data.has_delve,
-                                                card_data.has_improvise, &resolved)) {
-                            cost_to_pay = resolved;
-                        } else {
-                            // No payable assignment: add the colored option (else the generic
-                            // alternative) so payment fails cleanly through the normal path.
-                            for (const auto &pip : card_data.hybrid_mana) {
-                                if (!pip.colors.empty()) cost_to_pay.insert(pip.colors.front());
-                                else for (int i = 0; i < pip.generic_alt; i++)
-                                    cost_to_pay.insert(GENERIC);
-                            }
-                        }
-                    } else {
-                        for (const auto &pip : card_data.hybrid_mana) {
-                            std::vector<LegalAction> hybrid_actions;
-                            for (Colors c : pip.colors) {
-                                LegalAction a(PASS_PRIORITY,
-                                    std::string("Pay {") + mana_symbol_str(c) + "}");
-                                a.category = ActionCategory::PAYING_COSTS;
-                                hybrid_actions.push_back(a);
-                            }
-                            if (pip.generic_alt > 0) {
-                                LegalAction a(PASS_PRIORITY,
-                                    "Pay {" + std::to_string(pip.generic_alt) + "} generic");
-                                a.category = ActionCategory::PAYING_COSTS;
-                                hybrid_actions.push_back(a);
-                            }
-                            int hc = InputLogger::instance().get_input(hybrid_actions);
-                            size_t uc = static_cast<size_t>(hc);
-                            if (uc < pip.colors.size()) {
-                                cost_to_pay.insert(pip.colors[uc]);
-                            } else {
-                                for (int i = 0; i < pip.generic_alt; i++)
-                                    cost_to_pay.insert(GENERIC);
-                            }
-                        }
-                    }
-                }
-
-                // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life
-                if (!card_data.phyrexian_mana.empty()) {
-                    Entity caster_entity = (caster == Zone::PLAYER_A)
-                        ? cur_game.player_a_entity : cur_game.player_b_entity;
-                    auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
-                    for (Colors phyrex_color : card_data.phyrexian_mana) {
-                        std::string color_name = mana_symbol_str(phyrex_color);
-                        std::vector<LegalAction> phyrex_actions;
-                        // CR 119.4 / 118.3: a player can't pay 2 life they don't have. Only offer
-                        // the life option when life >= 2 (paying down to exactly 0 is legal — they
-                        // die to SBAs afterward). Re-checked per pip against the running life total,
-                        // since an earlier pip's life payment lowers what's left for the next.
-                        bool can_pay_life = phyrex_player.life_total >= 2;
-                        if (can_pay_life) {
-                            LegalAction pay_life(PASS_PRIORITY, "Pay 2 life (instead of {" + color_name + "})");
-                            pay_life.category = ActionCategory::PAYING_COSTS;
-                            pay_life.option_ordinal = 0;  // Phyrexian pip: 0 = pay life
-                            phyrex_actions.push_back(pay_life);
-                        }
-                        LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
-                        pay_mana.category = ActionCategory::PAYING_COSTS;
-                        pay_mana.option_ordinal = 1;  // Phyrexian pip: 1 = pay mana
-                        phyrex_actions.push_back(pay_mana);
-                        int phyrex_choice = InputLogger::instance().get_input(phyrex_actions);
-                        // The life option occupies index 0 only when it was offered; with it
-                        // suppressed the sole option is "Pay {color}", so fall through to mana.
-                        if (can_pay_life && phyrex_choice == 0) {
-                            phyrex_player.life_total -= 2;
-                            game_log("%s pays 2 life\n", player_name(caster).c_str());
-                        } else {
-                            cost_to_pay.insert(phyrex_color);
-                        }
-                    }
-                }
-
-                // Defer the actual mana payment until after targets are chosen (CR 601.2c before
-                // 601.2g/h — see deferred_mana_* above), so a sacrifice-for-mana source spent here
-                // can't remove a spell's only legal target before it is chosen. The cost is fully
-                // resolved (base + offspring/kicker/replicate/X/hybrid/phyrexian), so the deferred
-                // payment is a pure spend with no target-dependent choices left. Untargeted spells
-                // take the same path — their (empty) target step makes "pay after targets"
-                // identical to paying now, so a single unified order serves every cast.
-                deferred_mana_cost = cost_to_pay;
-                deferred_delve = card_data.has_delve;
-                deferred_improvise = card_data.has_improvise;
-                deferred_mana_pending = true;
-
-                // VARIABLE LIFE X-COST (Toxic Deluge: "As an additional cost, pay X life").
-                // The life paid IS the spell's X (Count$xPaid). Choose X (0..life — CR 119.4
-                // lets a player pay up to their whole life total), set x_paid, and pay it. Done
-                // after the mana payment commits so a cancelled mana payment doesn't lose life.
-                // X is still chosen before targets are selected below (CR 601.2b).
-                if (spell_has_variable_life_cost(card_data)) {
-                    Entity caster_entity = (caster == Zone::PLAYER_A)
-                        ? cur_game.player_a_entity : cur_game.player_b_entity;
-                    auto &life_player = global_coordinator.GetComponent<Player>(caster_entity);
-                    size_t max_x = static_cast<size_t>(std::max(0, life_player.life_total));
-                    game_log("Choose X value (0-%zu):\n", max_x);
-                    std::vector<LegalAction> x_actions;
-                    for (size_t xv = 0; xv <= max_x; xv++) {
-                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
-                        la.category = ActionCategory::CHOOSE_X;
-                        la.option_ordinal = static_cast<int>(xv);  // the chosen X value
-                        x_actions.push_back(la);
-                    }
-                    int x_choice = InputLogger::instance().get_input(x_actions);
-                    size_t x_val = static_cast<size_t>(x_choice);
-                    cur_game.x_paid = x_val;
-                    life_player.life_total -= static_cast<int>(x_val);
-                    game_log("%s pays %zu life (X = %zu)\n", player_name(caster).c_str(), x_val, x_val);
-                }
-
-                // ADDITIONAL SACRIFICE COST on the spell itself (CR 601.2f / 118.x):
-                // Natural Order — "As an additional cost to cast this spell, sacrifice a
-                // green creature." Paid here as part of casting (before the spell is on the
-                // stack), using the same SACRIFICE_PERMANENT choice activated abilities use.
-                // Cast legality already guaranteed a matching permanent exists. General to
-                // any spell whose SPELL ability Cost$ carries a Sac<...> token; flashback /
-                // alternate casts pay their own sac cost in their own branch above.
-                std::string spell_sac_spec = spell_additional_sac_spec(card_data);
-                if (!spell_sac_spec.empty()) {
-                    pay_sacrifice_cost(caster, spell_sac_spec, spell_entity, orderer);
-                }
-            }
-
-            // GIFT (CR 702.176b): as the spell is cast, its controller MAY promise the gift to an
-            // opponent. The promise is not a cost — it is decided here (before targets are chosen,
-            // CR 601.2c) and it both (a) switches a Count$PromisedGift-driven effect via the
-            // pending flag while targets are selected and (b) makes the opponent receive the gift
-            // on resolution (see Spell::gift_promised / Ability::resolve). Optional yes/no.
-            bool gift_promised = false;
-            if (card_data.has_gift) {
-                std::string gname = card_data.gift_description.empty()
-                                        ? std::string("the gift") : card_data.gift_description;
-                // CR 601.2c / 702.176b: the gift promise switches which target the spell requires
-                // (Into the Flood Maw: a creature when declined, a nonland permanent when promised).
-                // If the not-promised mode has no legal target — e.g. the opponent controls no
-                // (targetable) creature — declining is not a legal way to cast the spell, so don't
-                // offer the yes/no: force the promise rather than dropping into a zero-target mode
-                // that fizzles. The cast was only legal because the promised mode is satisfiable.
-                // Mirror case: if the PROMISED mode has no legal target — e.g. the opponent's
-                // only creature is Dryad Arbor, a Land Creature, so "nonland permanent" is empty
-                // while "creature" is not — promising is not a legal way to cast the spell
-                // either, so don't offer the yes/no at all (the cast was only legal because the
-                // not-promised mode is satisfiable).
-                bool must_promise = false;
-                bool can_promise = true;
-                for (const auto &t : card_data.abilities) {
-                    if (t.ability_type != Ability::SPELL) continue;
-                    // Probe with the real spell source/controller so a mode's target legality
-                    // (protection from this spell's color, OppCtrl) matches select_target below —
-                    // otherwise can_promise/must_promise can green-light a mode whose only target
-                    // is protected (Scryb Ranger vs blue Into the Flood Maw), then select_target
-                    // finds zero targets and aborts (CR 601.2c / 702.16e).
-                    Ability probe = cast_gate_probe(t, spell_entity, caster);
-                    std::vector<const Ability *> targeting = spell_targeting_abilities(probe);
-                    if (!targeting.empty()) {
-                        must_promise = !gift_mode_satisfiable(targeting, orderer, caster, false);
-                        can_promise = gift_mode_satisfiable(targeting, orderer, caster, true);
-                    }
-                    break;
-                }
-                if (must_promise ||
-                    (can_promise &&
-                     request_optional_yesno(caster, "promise " + gname + " to your opponent"))) {
-                    gift_promised = true;
-                    game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
-                             player_name(caster == Zone::PLAYER_A ? Zone::PLAYER_B
-                                                                  : Zone::PLAYER_A).c_str());
-                }
-            }
-            cur_game.pending_gift_promised = gift_promised;
-
-            // Find the primary spell ability template and copy it onto the entity
-            for (const auto &ability_template : card_data.abilities) {
-                if (ability_template.ability_type != Ability::SPELL) continue;
-
-                Ability ability = ability_template;
-                ability.source = spell_entity;
-                ability.controller = caster;
-                // Carry the Gift keyword's gift effect onto the resolving spell's primary ability;
-                // it fires at resolution only if the gift was promised (Ability::resolve).
-                if (card_data.has_gift) ability.gift_abilities = card_data.gift_abilities;
-
-                // Announce cast-time choices (CR 601.2b/c): modal mode(s), the primary
-                // target, and targeting sub-abilities' targets. NOTE on ordering: strict
-                // CR 601.2b announces modes before X, but X was chosen above in the cost
-                // branch — mode choosability can depend on X (Kozilek's Command's
-                // "Creature.cmcLEX" exile mode), and both are the caster's own announcements
-                // made atomically before any opponent priority, so the swap is not
-                // opponent-observable.
-                announce_spell_targets(ability, orderer, caster);
-
-                global_coordinator.AddComponent(spell_entity, ability);
-                break;  // TODO: support spells with multiple abilities
-            }
-
-            // AURA cast (CR 303.4 / 601.2c): an Aura with no spell ability of its own still
-            // targets the object it will enchant. Build a transient targeting ability from the
-            // Enchant filter, choose the target now, and remember it so the resolved permanent
-            // attaches to it (its equipped_to is set when its Permanent is created).
-            if (!card_data.enchant_filter.empty() &&
-                !global_coordinator.entity_has_component<Ability>(spell_entity)) {
-                Ability enchant_ab;
-                enchant_ab.source = spell_entity;
-                enchant_ab.controller = caster;
-                enchant_ab.valid_tgts = card_data.enchant_filter;
-                select_target(enchant_ab, orderer, caster);
-                if (enchant_ab.target != 0) {
-                    cur_game.pending_aura_target[spell_entity] = enchant_ab.target;
-                    game_log("%s casts %s enchanting %s\n", player_name(caster).c_str(),
-                             card_data.name.c_str(),
-                             target_display_name(cur_game, enchant_ab.target).c_str());
-                }
-            }
-
-            // Pay the deferred regular mana cost now that targets are locked in (CR 601.2h, after
-            // the 601.2c target choice above). A sacrifice-for-mana source spent here may make a
-            // chosen target illegal — the spell then fizzles at resolution rather than ever being
-            // offered/forced with no legal target.
-            if (deferred_mana_pending) {
-                // Delve (CR 702.66 / 601.2h): the caster chooses how many graveyard cards to
-                // exile and which ones, one pick at a time; each exile pays one generic pip of
-                // the deferred cost. Runs after targets are locked in (601.2c), like every
-                // other cost. The remainder is then paid WITHOUT delve — the count menu was
-                // already constrained to counts whose remaining cost is payable.
-                if (deferred_delve)
-                    prompt_delve_exiles(caster, deferred_mana_cost, spell_entity, orderer,
-                                        deferred_improvise);
-                if (!prompt_mana_payment(caster, deferred_mana_cost, spell_entity, orderer,
-                                         /*has_delve=*/false, deferred_improvise)) {
-                    // Payment cancelled (interactive only — machine mode pre-verifies
-                    // affordability). Targets were already chosen but the spell never reached the
-                    // stack, so rewind the half-finished cast: drop the targeting Ability / aura
-                    // link, clear the pending gift flag, restore mana, and bump payment_fail_counts
-                    // so the offer gate stops re-offering it (no scripted-agent payment loop).
-                    if (global_coordinator.entity_has_component<Ability>(spell_entity))
-                        global_coordinator.RemoveComponent<Ability>(spell_entity);
-                    cur_game.pending_aura_target.erase(spell_entity);
-                    cur_game.pending_gift_promised = false;
-                    restore_mana_state(caster, mana_snap, orderer);
-                    cur_game.payment_fail_counts[spell_entity]++;
-                    game_log("Payment cancelled.\n");
-                    break;
-                }
-            }
-
-            // Pay the deferred non-mana cost pieces (flashback life/sacrifice, escape
-            // exile-from-graveyard) now that targets are locked in and the mana payment
-            // committed (CR 601.2g/h after the 601.2c target choice). Sacrificing here may
-            // make a chosen target illegal — the spell then fizzles at resolution
-            // (CR 608.2b), matching paper rules.
-            if (deferred_life_cost > 0) {
-                auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
-                player.life_total -= deferred_life_cost;
-                game_log("%s pays %d life\n", player_name(caster).c_str(), deferred_life_cost);
-            }
-            if (!deferred_sac_spec.empty())
-                pay_sacrifice_cost(caster, deferred_sac_spec, spell_entity, orderer);
-            if (deferred_exile_min_types > 0)
-                pay_exile_from_grave_cost(caster, deferred_exile_min_types, spell_entity, orderer);
-            if (deferred_exile_count > 0)
-                pay_exile_from_grave_count_cost(caster, deferred_exile_count, spell_entity, orderer);
-
-            // Log cast with target if applicable
-            if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
-                Entity tgt = global_coordinator.GetComponent<Ability>(spell_entity).target;
-                if (tgt != 0) {
-                    std::string tgt_name = target_display_name(cur_game, tgt);
-                    game_log("%s casts %s targeting %s\n", player_name(caster).c_str(),
-                        card_data.name.c_str(), tgt_name.c_str());
-                } else {
-                    game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
-                }
-            } else {
-                game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
-            }
-
-            // Add Spell component — present only while the entity is on the stack
-            Spell spell;
-            spell.caster = caster;
-            spell.cast_with_flashback = action.use_flashback;
-            spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
-            spell.cast_with_escape = action.use_escape;
-            spell.cast_with_offspring = action.use_offspring;
-            spell.cast_with_impending = action.use_alt_cost && card_data.alt_cost.is_impending;
-            spell.kicked = kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
-            spell.replicate_count = replicate_count;  // # of replicate payments (0 if none/no Replicate)
-            spell.gift_promised = gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution
-            cur_game.pending_gift_promised = false;  // consume the cast-time pending flag (targets chosen)
-            // Record the X value paid so an "enters with X counters" replacement can read
-            // it (Chalice of the Void: enters with X charge counters) and so the resolving
-            // spell's Count$xPaid amount reads the right X (StackManager restores x_paid from
-            // this). cur_game.x_paid is global and may be overwritten by a later cast before this
-            // spell resolves. A variable-life X spell (Toxic Deluge) has no mana X, so also key
-            // off its PayLife<X> cost.
-            if (card_data.has_x_cost || spell_has_variable_life_cost(card_data))
-                spell.x_paid = static_cast<int>(cur_game.x_paid);
-            if (cur_game.pending_cant_be_countered) {
-                spell.cant_be_countered = true;
-                cur_game.pending_cant_be_countered = false;
-            }
-            // Check card's own replacement effects for "can't be countered" (Long Goodbye).
-            // Only the SELF form ("This spell can't be countered") stamps the spell at cast;
-            // the battlefield form (Hexing Squelcher's "Spells you control can't be countered")
-            // is a continuous static consulted at counter-resolution time, not a cast-time stamp.
-            for (const auto &r : card_data.replacement_effects) {
-                if (r.kind == Effect::Replacement::CANT_BE_COUNTERED && !r.from_battlefield) {
-                    spell.cant_be_countered = true;
-                    break;
-                }
-            }
-            global_coordinator.AddComponent(spell_entity, spell);
-
-            // Fire NONCREATURE_SPELL_CAST event for non-creature spells
-            {
-                bool is_creature_spell = false;
-                for (const auto &t : card_data.types)
-                    if (t.kind == TYPE && t.name == "Creature") {
-                        is_creature_spell = true;
-                        break;
-                    }
-                if (!is_creature_spell) {
-                    Event cast_ev(Events::NONCREATURE_SPELL_CAST);
-                    Entity caster_entity =
-                        (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
-                    cast_ev.SetParam(Params::ENTITY, spell_entity);
-                    cast_ev.SetParam(Params::PLAYER, caster_entity);
-                    global_coordinator.SendEvent(cast_ev);
-                }
-            }
-
-            // Move to stack
-            orderer->add_to_zone(false, spell_entity, Zone::STACK);  // Top of stack
-
-            // Track spells cast and fire SPELL_CAST event
-            {
-                Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
-                auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
-                caster_player.spells_cast_this_turn++;
-                caster_player.spells_cast_this_game++;
-                // Track noncreature spells for Deafening Silence, and instant/sorcery
-                // spells for Arclight Phoenix's "cast three or more instant and sorcery
-                // spells this turn" count.
-                bool spell_is_creature = false;
-                bool spell_is_instant_or_sorcery = false;
-                for (auto &t : card_data.types)
-                    if (t.kind == TYPE) {
-                        if (t.name == "Creature") spell_is_creature = true;
-                        if (t.name == "Instant" || t.name == "Sorcery") spell_is_instant_or_sorcery = true;
-                    }
-                if (!spell_is_creature) caster_player.noncreature_spells_cast_this_turn++;
-                if (spell_is_instant_or_sorcery) caster_player.instant_sorcery_spells_cast_this_turn++;
-                // Record the spell's colors so a "an opponent has cast a <color> spell this turn"
-                // condition (Veil of Summer's Count$ThisTurnCast_Card.OppCtrl+Blue/Black) can be
-                // evaluated. The spell entity carries the card's ColorIdentity.
-                if (global_coordinator.entity_has_component<ColorIdentity>(spell_entity))
-                    for (Colors c : global_coordinator.GetComponent<ColorIdentity>(spell_entity).colors)
-                        caster_player.spell_colors_cast_this_turn.insert(c);
-                Event spell_event(Events::SPELL_CAST);
-                spell_event.SetParam(Params::PLAYER, caster_entity);
-                spell_event.SetParam(Params::ENTITY, spell_entity);
-                global_coordinator.SendEvent(spell_event);
-            }
-
-            // Ward (702.21): an opponent's permanent this spell targets may counter it. The
-            // spell is already on the stack, so the Ward trigger pushed here lands above it and
-            // resolves first. Read the chosen target(s) off the spell's Ability component.
-            if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
-                auto &spell_ab = global_coordinator.GetComponent<Ability>(spell_entity);
-                // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
-                // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
-                fire_targeting_hooks(spell_entity, caster, spell_ab, orderer);
-            }
-
-            // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid
-            // its replicate cost." The replicate count was recorded on the Spell as the cost
-            // was paid; create that many copies of this spell on top of the stack now (the
-            // copies resolve before the original and may choose new targets). General
-            // copy-spell-on-stack mechanism; a copy is not cast, so it replicates nothing.
-            if (global_coordinator.entity_has_component<Spell>(spell_entity)) {
-                int rc = global_coordinator.GetComponent<Spell>(spell_entity).replicate_count;
-                if (rc > 0) copy_spell_on_stack(spell_entity, rc, caster, orderer);
-            }
-
-            game.take_action();
+            // Initialize the persisted cast state machine (Game::PendingCast) from the
+            // consumed LegalAction and hand control to run_cast_flow — the extracted
+            // CAST_SPELL body. The branch's former locals (cost accumulation, kicker
+            // flags, replicate count, deferred payment pieces) live in pc; converted
+            // prompts suspend as loop-top pending decisions (tag CAST) that the main
+            // loop emits and resume_cast_flow re-enters with the latched answer.
+            Game::PendingCast &pc = game.pending_cast;
+            if (pc.active) fatal_error("CAST_SPELL with a cast flow already in flight");
+            pc = Game::PendingCast{};
+            pc.active = true;
+            pc.spell_entity = spell_entity;
+            pc.caster_is_a = (caster == Zone::PLAYER_A);
+            pc.use_flashback = action.use_flashback;
+            pc.use_escape = action.use_escape;
+            pc.use_alt_cost = action.use_alt_cost;
+            pc.use_offspring = action.use_offspring;
+            pc.impulse_cast = action.impulse_cast;
+            pc.cast_back_face = action.cast_back_face;
+            pc.mana_snap = mana_snap;
+            run_cast_flow(pc, game, orderer, -1);
             break;
         }
     }
@@ -2384,71 +3384,144 @@ bool any_attacker_needs_damage_assignment(Game &game, std::shared_ptr<Orderer> o
     return false;
 }
 
+// Build and park the next lethal-order pick for the in-flight attacker
+// (Game::pending_damage) as a loop-top pending decision (tag DAMAGE_ASSIGN):
+// offer only blockers still killable with the remaining damage, plus the Done
+// option — exactly the inner-loop menu the blocking get_input prompted with.
+// Prints the same "--- Assign ... ---" header at arm time (it precedes the menu
+// emission, as it preceded get_input before). Returns false without arming when
+// no blocker is still killable (the inner loop's `offered.empty()` break).
+static bool arm_damage_assign_query(Game &game) {
+    auto &pd = game.pending_damage;
+    std::string attacker_name = entity_name(pd.attacker);
+    std::vector<LegalAction> actions;
+    for (auto b : pd.pool) {
+        uint32_t need = lethal_needed_for_blocker(pd.attacker, b);
+        if (need == 0 || need > pd.remaining) continue;
+        auto &bcr = global_coordinator.GetComponent<Creature>(b);
+        LegalAction la(PASS_PRIORITY, b,
+            entity_name(b) + " [" + std::to_string(bcr.power) + "/" +
+                std::to_string(bcr.toughness) + "] (lethal " + std::to_string(need) + ")");
+        la.category = ActionCategory::ASSIGN_DAMAGE;
+        actions.push_back(la);
+    }
+    if (actions.empty()) return false;  // can't kill any more blockers
+    LegalAction done(PASS_PRIORITY, std::string("Done assigning ") + attacker_name);
+    done.category = ActionCategory::ASSIGN_DAMAGE;
+    actions.push_back(done);
+
+    game_log("\n--- Assign %s's combat damage (%u left) ---\n", attacker_name.c_str(), pd.remaining);
+    PendingQuery &pq = game.pending_query;
+    pq.tag = PendingQuery::DAMAGE_ASSIGN;
+    pq.menu = std::move(actions);
+    // The attacking (active) player divides the damage (510.1c); priority was
+    // seated at them by run_damage_assignment and stays there between arms.
+    pq.chooser_is_a = game.player_a_turn;
+    // Byte-compat: this prompt runs with pending_decision_source == 0 today (no
+    // PendingDecisionScope wraps it), and the corpus decodes that state field —
+    // keep 0 (same convention as the combat target sub-prompts).
+    pq.decision_source = 0;
+    pq.answered = false;
+    pq.answer = -1;
+    pq.active = true;
+    return true;
+}
+
+// Finish the in-flight attacker's division. 510.1a: all the attacker's power
+// must be assigned among its blockers (no trample reaches the player in the
+// prompt case, since power <= total lethal). Pour any leftover onto one blocker
+// — harmless overkill on the last one chosen, or a non-lethal mark on the first
+// blocker if none were killable (last_assigned == 0 implies no pick was made,
+// so the untouched pool still IS the full blocker list).
+static void finish_pending_attacker(Game &game) {
+    auto &pd = game.pending_damage;
+    if (pd.remaining > 0) {
+        Entity dump = pd.last_assigned ? pd.last_assigned : pd.pool.front();
+        game.combat_damage_assignment[pd.attacker][dump] += pd.remaining;
+    }
+    pd = Game::PendingDamageAssign{};
+}
+
 // Prompt the attacking player (rule 510.1c) to pick which blockers receive lethal damage, one
 // at a time, until power runs out. Records the per-blocker assignment in
 // game.combat_damage_assignment for deal_combat_damage() to apply.
-static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer) {
+//
+// Resumable: each pick is parked as a loop-top pending decision (DAMAGE_ASSIGN)
+// instead of blocking on get_input, so the whole multi-attacker division spreads
+// over several main-loop iterations — arm a query, return; the loop top emits it
+// and dispatches the answer back here (resume_choice >= 0), which applies the
+// pick exactly as the inline post-get_input code did and arms the next query
+// (same attacker, or the next one via the outer scan) or completes. In-flight
+// state lives in Game::pending_damage; completed attackers are skipped by their
+// combat_damage_assignment map entries, so the outer scan restarts from the top
+// on every resume and lands on the first undecided attacker.
+static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice) {
     bool first_strike_only = (game.cur_step == FIRST_STRIKE_DAMAGE);
     // The attacking (active) player chooses the division — route input to them.
     game.player_a_has_priority = game.player_a_turn;
-    game.combat_damage_assignment.clear();  // per strike step; survivors re-decide next step
+    auto &pd = game.pending_damage;
 
+    if (resume_choice >= 0) {
+        // Resume: apply the latched answer to the in-flight attacker's division.
+        PendingQuery &pq = game.pending_query;
+        bool is_done = (resume_choice == static_cast<int>(pq.menu.size()) - 1);
+        Entity chosen = is_done ? 0 : pq.menu[static_cast<size_t>(resume_choice)].source_entity;
+        pq = PendingQuery{};
+        if (is_done) {
+            finish_pending_attacker(game);
+        } else {
+            uint32_t need = lethal_needed_for_blocker(pd.attacker, chosen);
+            game.combat_damage_assignment[pd.attacker][chosen] = need;
+            pd.remaining -= need;
+            pd.last_assigned = chosen;
+            pd.pool.erase(std::remove(pd.pool.begin(), pd.pool.end(), chosen), pd.pool.end());
+            game_log("  %s assigns %u (lethal) to %s\n", entity_name(pd.attacker).c_str(), need,
+                     entity_name(chosen).c_str());
+            // Next pick for the same attacker, or its division is finished.
+            if (arm_damage_assign_query(game)) return;
+            finish_pending_attacker(game);
+        }
+    } else {
+        // Fresh entry (per strike step; survivors re-decide next step). The clear
+        // must NOT run on a resume — mid-assignment the map already holds the
+        // completed attackers' divisions (and the in-flight partial one).
+        game.combat_damage_assignment.clear();
+    }
+
+    // Outer scan: first attacker still needing a division starts one. The map
+    // entry (created when the division starts) doubles as the re-entrancy guard,
+    // mirroring any_attacker_needs_damage_assignment().
     for (auto attacker : orderer->mEntities) {
+        if (game.combat_damage_assignment.count(attacker)) continue;
         if (!attacker_needs_assignment(attacker, orderer, first_strike_only)) continue;
         auto &acr = global_coordinator.GetComponent<Creature>(attacker);
-        std::string attacker_name = entity_name(attacker);
-
-        std::vector<Entity> blockers = collect_live_blockers(attacker, orderer);
-        auto &assign = game.combat_damage_assignment[attacker];  // creates the entry (also the guard)
-        uint32_t remaining = acr.power;
-        std::vector<Entity> pool = blockers;  // blockers not yet assigned lethal
-        Entity last_assigned = 0;
-
-        while (true) {
-            // Offer only blockers we can still assign lethal to with the remaining damage.
-            std::vector<LegalAction> actions;
-            std::vector<Entity> offered;
-            for (auto b : pool) {
-                uint32_t need = lethal_needed_for_blocker(attacker, b);
-                if (need == 0 || need > remaining) continue;
-                auto &bcr = global_coordinator.GetComponent<Creature>(b);
-                LegalAction la(PASS_PRIORITY, b,
-                    entity_name(b) + " [" + std::to_string(bcr.power) + "/" +
-                        std::to_string(bcr.toughness) + "] (lethal " + std::to_string(need) + ")");
-                la.category = ActionCategory::ASSIGN_DAMAGE;
-                actions.push_back(la);
-                offered.push_back(b);
-            }
-            if (offered.empty()) break;  // can't kill any more blockers
-            LegalAction done(PASS_PRIORITY, std::string("Done assigning ") + attacker_name);
-            done.category = ActionCategory::ASSIGN_DAMAGE;
-            actions.push_back(done);
-
-            game_log("\n--- Assign %s's combat damage (%u left) ---\n", attacker_name.c_str(), remaining);
-            int choice = InputLogger::instance().get_input(actions);
-            if (choice == static_cast<int>(actions.size()) - 1) break;  // done
-
-            Entity chosen = offered[static_cast<size_t>(choice)];
-            uint32_t need = lethal_needed_for_blocker(attacker, chosen);
-            assign[chosen] = need;
-            remaining -= need;
-            last_assigned = chosen;
-            pool.erase(std::remove(pool.begin(), pool.end(), chosen), pool.end());
-            game_log("  %s assigns %u (lethal) to %s\n", attacker_name.c_str(), need,
-                     entity_name(chosen).c_str());
-        }
-
-        // 510.1a: all the attacker's power must be assigned among its blockers (no trample reaches
-        // the player in the prompt case, since power <= total lethal). Pour any leftover onto one
-        // blocker — harmless overkill on a chosen one, or a non-lethal mark if none were killable.
-        if (remaining > 0) {
-            Entity dump = last_assigned ? last_assigned : blockers.front();
-            assign[dump] += remaining;
-            remaining = 0;
-        }
+        game.combat_damage_assignment[attacker];  // creates the entry (also the guard)
+        pd.active = true;
+        pd.attacker = attacker;
+        pd.remaining = acr.power;
+        pd.pool = collect_live_blockers(attacker, orderer);
+        pd.last_assigned = 0;
+        if (arm_damage_assign_query(game)) return;
+        // No blocker killable even at full power: dump everything, no prompt.
+        finish_pending_attacker(game);
     }
 
     game.pending_choice = NONE;
+}
+
+// proc_mandatory_choice entry: a fresh ASSIGN_COMBAT_DAMAGE_CHOICE derivation.
+static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer) {
+    if (game.pending_damage.active || game.pending_query.active)
+        fatal_error("assign_combat_damage entered with a damage-assignment query parked");
+    run_damage_assignment(game, orderer, -1);
+}
+
+// Loop-top dispatcher entry (game_driver.cpp) for a parked DAMAGE_ASSIGN query.
+void resume_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer) {
+    if (!game.pending_damage.active || game.pending_query.tag != PendingQuery::DAMAGE_ASSIGN
+        || !game.pending_query.answered)
+        fatal_error("resume_damage_assignment without a parked damage-assignment query");
+    run_damage_assignment(game, orderer, game.pending_query.answer);
 }
 
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {

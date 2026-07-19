@@ -172,15 +172,19 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue& cost,
                          Entity paid_for, std::shared_ptr<Orderer> orderer,
                          bool has_delve = false, bool has_improvise = false);
 
-// Interactive Delve (CR 702.66 / 601.2h): the caster first chooses HOW MANY graveyard
-// cards to exile (a CHOOSE_X count menu constrained to counts whose remaining
-// cost is still payable, so any offered pick is safe), then WHICH cards, one CHOOSE_CARD
-// pick at a time (each exile removes that card from the next menu). Exiled cards are
-// recorded in cur_game.delve_exiled (for etbCounter counts, e.g. Murktide Regent) and each
-// exile removes one GENERIC pip from `cost`. Call before prompt_mana_payment and then pay
-// the reduced cost with has_delve=false. No-op when the cost has no generic portion or the
-// graveyard offers nothing to exile.
-void prompt_delve_exiles(Zone::Ownership controller, ManaValue& cost, Entity paid_for,
-                         std::shared_ptr<Orderer> orderer, bool has_improvise = false);
+// True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
+// pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from
+// your graveyard rather than pay that mana"); riders that care about the exiled cards'
+// types (Murktide Regent's etbCounter) filter cur_game.delve_exiled themselves. Single
+// source for "what can Delve eat", consumed by the automatic payer and the cast flow's
+// DELVE_COUNT/DELVE_PICK steps (run_cast_flow), which replaced the old blocking
+// prompt_delve_exiles with loop-top pending decisions.
+bool is_delve_eligible(Entity e, Zone::Ownership controller);
+
+// Pay one generic pip via Delve: exile `e`, record it in cur_game.delve_exiled (for
+// etbCounter counts, e.g. Murktide Regent), and drop one GENERIC from `remaining`.
+// Single source for the delve-exile action used by both payment paths.
+void delve_exile_one(Entity e, Zone::Ownership controller,
+                     std::shared_ptr<Orderer> orderer, ManaValue& remaining);
 
 #endif

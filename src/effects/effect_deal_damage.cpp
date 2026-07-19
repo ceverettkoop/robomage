@@ -22,7 +22,7 @@ namespace effects {
 
 static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg);
 
-bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Delirium-conditional damage (Unholy Heat)
     size_t dmg = ab.amount;
     // Dynamic damage (e.g. Ajani's "damage equal to the number of creatures you control",
@@ -55,7 +55,7 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
             auto &player = global_coordinator.GetComponent<Player>(pe);
             game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
     // Multi-target DealDamage (Prismari Charm: "deals 1 damage to each of one or two targets"):
     // action_processor stores every chosen target in ab.targets (target_max > 1). Deal `dmg` to
@@ -68,7 +68,7 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
     } else {
         deal_damage_to_target(ab, ab.target, dmg);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Deal `dmg` to a single already-chosen target — a player, a planeswalker, or a creature — the

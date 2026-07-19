@@ -45,6 +45,20 @@ extern Game cur_game;
 // (CR 608.2c). Forward-declared per CLAUDE.md.
 static void bind_sub_target(const Ability &parent, Ability &sub);
 
+// The subability-chaining loop shared by resolve() phases 5 and 7: resolves
+// parent.subabilities[next_sub..] in order, each as a persisted FrameLevel via
+// resolve_child in a suspendable context (the per-sub CR 608.2c binding runs
+// once, at push time) or as today's by-value blocking recursion otherwise.
+// next_sub is the caller's persisted cursor (++ on each completed sub).
+// Forward-declared per CLAUDE.md.
+static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer> orderer,
+                                        FrameCtx &ctx, int &next_sub);
+
+// The "unless they discard N cards" flavor of run_unless_loop (CR 701.8), suspendable via
+// FrameCtx. Forward-declared per CLAUDE.md.
+static bool run_discard_unless(size_t count, Zone::Ownership controller,
+                               std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended);
+
 // Category-aware detail suffix for the "Resolving ability" log line. Display-only.
 // Forward-declared per CLAUDE.md.
 static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Orderer> orderer);
@@ -105,7 +119,9 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
 // 0 is a valid entity but will always be player a  so is never correct
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
     const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal,
-    int cmc_bound, const std::string &cmc_op) {
+    int cmc_bound, const std::string &cmc_op,
+    FrameCtx &ctx, Entity decision_source, bool &suspended) {
+    suspended = false;
     //  comma-separated subtypes
     std::vector<std::string> subtypes = split(change_type, ',');
 
@@ -191,10 +207,14 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         return 0;
     }
 
-    if (zone == Zone::LIBRARY) {
-        game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
-    } else {
-        game_log("%s chooses a card from %s %s:\n", player_name(owner).c_str(), player_name(owner).c_str(), zone_name);
+    // Arm-only log: the resume rebuilds the identical menu (the candidates are
+    // covered by the parked menu's determinize pins) without re-logging.
+    if (!ctx.resuming()) {
+        if (zone == Zone::LIBRARY) {
+            game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
+        } else {
+            game_log("%s chooses a card from %s %s:\n", player_name(owner).c_str(), player_name(owner).c_str(), zone_name);
+        }
     }
 
     std::vector<LegalAction> search_actions;
@@ -211,7 +231,15 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         search_actions.push_back(la);
     }
 
-    int choice = InputLogger::instance().get_input(search_actions);
+    // The calling handler has already seated priority on the choosing player
+    // (change_zone's search-seat repoint), so asking on the ambient seat is a
+    // no-op swap — the exact seat today's inline get_input read from.
+    Zone::Ownership chooser = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    int choice = ctx.ask(search_actions, chooser, decision_source);
+    if (choice < 0 && decision_suspended()) {
+        suspended = true;
+        return 0;
+    }
     // Map choice back: if fail-to-find is shown, index 0 = fail-to-find, 1..N = choices
     // If fail-to-find suppressed, index 0..N-1 = choices directly
     if (show_fail_to_find) {
@@ -227,7 +255,9 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
 // Used by Doomsday (Origin$ Graveyard,Library).
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination, bool reveal) {
+    Zone::ZoneValue destination, bool reveal,
+    FrameCtx &ctx, Entity decision_source, bool &suspended) {
+    suspended = false;
     // Collect contents from all zones
     std::vector<Entity> zone_contents;
     for (auto zone : zones) {
@@ -319,7 +349,9 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         if (!zone_list.empty()) zone_list += " and ";
         zone_list += zn;
     }
-    game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_list.c_str());
+    // Arm-only log (see search_zone above).
+    if (!ctx.resuming())
+        game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_list.c_str());
 
     // A library search uses SEARCH_LIBRARY/TOP_LIBRARY; a pick from only non-library
     // zones (e.g. Karn's -2 over Sideboard,Exile) is a CHOOSE_CARD decision.
@@ -347,7 +379,14 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         search_actions.push_back(la);
     }
 
-    int choice = InputLogger::instance().get_input(search_actions);
+    // Seat convention identical to search_zone: the caller already repointed
+    // priority at the choosing player.
+    Zone::Ownership chooser = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    int choice = ctx.ask(search_actions, chooser, decision_source);
+    if (choice < 0 && decision_suspended()) {
+        suspended = true;
+        return 0;
+    }
     if (show_fail_to_find) {
         if (choice >= 1 && choice <= static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice - 1)];
         return 0;
@@ -364,36 +403,53 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 // unless-cost (CR 701.8). Returns true if the cost was NOT paid (they declined or have too few
 // cards), i.e. the spell should be countered. Reusable by any "unless they discard N cards"
 // effect; the chosen cards go to the graveyard (a public zone — record the reveal in the belief
-// state). The caller has already set cur_game.player_a_has_priority to `controller`.
+// state). Asks are seated on `controller` through ctx.ask (which repoints and restores priority
+// around each prompt, reproducing the old caller-side swap). May suspend: `suspended` is set and
+// the return value is meaningless (check it FIRST). The yes/no answer and the discard-count
+// progress persist in the level's UnlessRt; the per-discard menu is intentionally rebuilt from
+// the LIVE hand each ask — between asks the hand only shrinks by the discards themselves.
 static bool run_discard_unless(size_t count, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer) {
-    std::vector<Entity> hand = orderer->get_hand(controller);
-    bool can_pay = hand.size() >= count;  // CR 701.8: must discard the full count or none
+                               std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended) {
+    suspended = false;
+    UnlessRt local_rt;
+    UnlessRt &rt = ctx.can_suspend() ? ctx.rt<UnlessRt>() : local_rt;
 
-    std::vector<LegalAction> actions;
-    size_t pay_idx = actions.size();
-    if (can_pay) {
-        LegalAction pay(PASS_PRIORITY,
-            std::string("Discard ") + std::to_string(count) +
-            (count == 1 ? " card (spell is not countered)" : " cards (spell is not countered)"));
-        pay.category = ActionCategory::PAY_UNLESS;
-        pay.option_ordinal = 1;  // 1 = pay
-        actions.push_back(pay);
-    }
-    size_t decline_idx = actions.size();
-    LegalAction decline(PASS_PRIORITY, std::string("Don't discard (spell is countered)"));
-    decline.category = ActionCategory::PAY_UNLESS;
-    decline.option_ordinal = 0;  // 0 = don't pay
-    actions.push_back(decline);
+    if (!rt.pay_answered) {
+        std::vector<Entity> hand = orderer->get_hand(controller);
+        bool can_pay = hand.size() >= count;  // CR 701.8: must discard the full count or none
 
-    int choice = InputLogger::instance().get_input(actions);
-    if (!can_pay || choice == static_cast<int>(decline_idx)) {
-        (void)pay_idx;
-        return true;  // countered
+        std::vector<LegalAction> actions;
+        size_t pay_idx = actions.size();
+        if (can_pay) {
+            LegalAction pay(PASS_PRIORITY,
+                std::string("Discard ") + std::to_string(count) +
+                (count == 1 ? " card (spell is not countered)" : " cards (spell is not countered)"));
+            pay.category = ActionCategory::PAY_UNLESS;
+            pay.option_ordinal = 1;  // 1 = pay
+            actions.push_back(pay);
+        }
+        size_t decline_idx = actions.size();
+        LegalAction decline(PASS_PRIORITY, std::string("Don't discard (spell is countered)"));
+        decline.category = ActionCategory::PAY_UNLESS;
+        decline.option_ordinal = 0;  // 0 = don't pay
+        actions.push_back(decline);
+
+        // Runs source-less today (no PendingDecisionScope at the old call site),
+        // so the ambient pending-decision value travels through the ask unchanged.
+        int choice = ctx.ask(actions, controller, cur_game.pending_decision_source);
+        if (choice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
+        if (!can_pay || choice == static_cast<int>(decline_idx)) {
+            (void)pay_idx;
+            return true;  // countered
+        }
+        rt.pay_answered = true;
     }
 
     // Pay: the payer chooses `count` distinct cards from hand to discard.
-    for (size_t i = 0; i < count; i++) {
+    for (; rt.discards_done < count; ++rt.discards_done) {
         std::vector<Entity> cur_hand = orderer->get_hand(controller);
         if (cur_hand.empty()) break;
         std::vector<LegalAction> dactions;
@@ -403,7 +459,11 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
             la.category = ActionCategory::DISCARD;
             dactions.push_back(la);
         }
-        int dchoice = InputLogger::instance().get_input(dactions);
+        int dchoice = ctx.ask(dactions, controller, cur_game.pending_decision_source);
+        if (dchoice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
         Entity chosen = dactions[static_cast<size_t>(dchoice)].source_entity;
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         game_log("%s discards %s — spell is not countered\n",
@@ -419,17 +479,19 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // kind: how the unless-cost is paid — {cost} generic mana (default), `cost` life (Ward—Pay N life,
 // CR 702.21), or discard `cost` card(s) (Reality Smasher, CR 701.8). A life payment is only offered
 // when the payer's life total >= cost (CR 119.4 — a player can't pay more life than they have).
+// The target's controller decides whether to pay, not the Daze caster: every kind seats its asks
+// on `controller` through ctx.ask (which repoints and restores priority around the prompt exactly
+// as the old manual swap did) and may suspend — `suspended` is set and the return value is
+// meaningless (check it FIRST). The MANA kind is a live-menu loop (Shape C): its pay/decline menu
+// interleaves per-source tap-for-mana actions rebuilt from live state each pass, so a chosen tap
+// executes at consume time, floats mana, and the loop re-arms the rebuilt menu.
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-    UnlessPayKind kind) {
-    // the target's controller decides whether to pay, not the Daze caster
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+    FrameCtx &ctx, bool &suspended, UnlessPayKind kind) {
+    suspended = false;
 
     if (kind == UnlessPayKind::DISCARD) {
-        bool countered = run_discard_unless(cost, controller, orderer);
-        cur_game.player_a_has_priority = prev_priority;
-        return countered;
+        return run_discard_unless(cost, controller, orderer, ctx, suspended);
     }
 
     if (kind == UnlessPayKind::LIFE) {
@@ -451,8 +513,13 @@ bool run_unless_loop(
         decline.option_ordinal = 0;  // 0 = don't pay
         unless_actions.push_back(decline);
 
-        int choice = InputLogger::instance().get_input(unless_actions);
-        cur_game.player_a_has_priority = prev_priority;
+        // Runs source-less today, so the ambient pending-decision value travels
+        // through the ask unchanged.
+        int choice = ctx.ask(std::move(unless_actions), controller, cur_game.pending_decision_source);
+        if (choice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             payer.life_total -= static_cast<int>(cost);
             game_log("%s pays %zu life — spell is not countered\n",
@@ -485,8 +552,11 @@ bool run_unless_loop(
         decline.option_ordinal = 0;  // 0 = don't pay
         unless_actions.push_back(decline);
 
-        int choice = InputLogger::instance().get_input(unless_actions);
-        cur_game.player_a_has_priority = prev_priority;
+        int choice = ctx.ask(std::move(unless_actions), controller, cur_game.pending_decision_source);
+        if (choice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             pay_energy(payer, static_cast<int>(cost));
             game_log("%s pays %zu energy.\n", player_name(controller).c_str(), cost);
@@ -496,6 +566,16 @@ bool run_unless_loop(
         return true;
     }
 
+    // MANA kind (Daze / Mana Leak / Ward {N}): pay-{N}-unless with tap-for-mana
+    // sub-choices. A live-menu loop (Shape C) with no persisted progress: the
+    // menu is rebuilt from live state every pass — floated mana (Player.mana,
+    // snapshot-covered) changes which cost-bearing sources are offered and
+    // whether "Pay" is affordable — so a resume re-enters, rebuilds the
+    // identical menu, and the ask consumes the latched answer (its size assert
+    // guards drift). A chosen tap action executes its mana ability at consume
+    // time (mana floats), then the loop re-arms the rebuilt menu. Asks are
+    // seated on `controller` through ctx.ask, replacing the old manual seat
+    // swap around the whole loop.
     std::multiset<Colors> cond_cost;
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
@@ -531,17 +611,22 @@ bool run_unless_loop(
             unless_actions.push_back(decline);
         }
 
-        int choice = InputLogger::instance().get_input(unless_actions);
+        // Runs source-less today, so the ambient pending-decision value travels
+        // through the ask unchanged. Passed as an lvalue: the tap branch below
+        // still needs the menu to map the chosen action.
+        int choice = ctx.ask(unless_actions, controller, cur_game.pending_decision_source);
+        if (choice < 0 && decision_suspended()) {
+            suspended = true;
+            return false;
+        }
 
         if (choice == static_cast<int>(decline_idx)) {
-            cur_game.player_a_has_priority = prev_priority;
             return true;
         }
 
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             spend_mana(controller, cond_cost, paid_for);
             game_log("%s pays {%zu} — spell is not countered\n", player_name(controller).c_str(), cost);
-            cur_game.player_a_has_priority = prev_priority;
             return false;
         }
 
@@ -1296,6 +1381,36 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
     // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
 }
 
+// See forward declaration at top of file. The bind closure holds the exact
+// per-sub setup the old inline loop ran on its by-value copy (source stamp,
+// CR 608.2c target binding, controller stamp, in that order); resolve_child
+// applies it ONCE to the pushed copy and never on resume, so a suspended sub
+// keeps its in-flight state even if earlier siblings mutated the parent.
+static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer> orderer,
+                                        FrameCtx &ctx, int &next_sub) {
+    for (; next_sub < static_cast<int>(parent.subabilities.size()); ++next_sub) {
+        const Ability &sub_template = parent.subabilities[static_cast<size_t>(next_sub)];
+        if (ctx.can_suspend()) {
+            Ability *pp = &parent;
+            auto bind = [pp](Ability &sub) {
+                sub.source = pp->source;
+                bind_sub_target(*pp, sub);  // CR 608.2c — Defined$-driven (see helper)
+                sub.controller = pp->controller;
+            };
+            if (ctx.resolve_child(sub_template, FrameLevel::SUB, next_sub, -1, bind, orderer) ==
+                ResolveStatus::SUSPENDED)
+                return ResolveStatus::SUSPENDED;
+        } else {
+            Ability sub_ab = sub_template;
+            sub_ab.source = parent.source;
+            bind_sub_target(parent, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
+            sub_ab.controller = parent.controller;
+            sub_ab.resolve(orderer);
+        }
+    }
+    return ResolveStatus::DONE;
+}
+
 // Detail suffix for the "Resolving ability (category: ...)" log line. Ability::amount is
 // only what the effect actually uses for some categories, so a blanket ", amount: N" was
 // often a meaningless 0 or an un-evaluated base. Policy: Pump shows its effective +A/+D
@@ -1358,222 +1473,307 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
 // trigger). Without scoping, the next RememberChanged effect (Phelia's attack exile) appended to
 // that stale set and its delayed-return trigger snapshotted BOTH cards, returning Skyclave's
 // permanently-exiled target too (CR 603.7c — a delayed trigger references only the objects it was
-// set up over). This RAII guard gives each TOP-LEVEL resolve a clean remembered set and restores
-// the prior contents on the way out; sub-abilities (resolved recursively within the same call)
-// keep sharing the parent's accumulated set, as their chained Remembered$ readers require.
-// Destructors run on every return path under -fno-exceptions, so all early-outs are covered.
+// set up over).
+//
+// The ROOT (stack) resolve's scoping now lives in the persisted resolution frame
+// (frame_enter saves+clears, frame_finish restores — stack_manager.cpp), because a
+// suspension must keep the mid-resolution accumulations rather than unwinding them.
+// This RAII guard covers only the remaining top-level BLOCKING resolves — mana-ability
+// riders (mana_system.cpp), opening-hand abilities (orderer.cpp), and Static$ True
+// off-stack triggers (state_manager_triggers.cpp) — which can never suspend, so
+// destructor unwinding stays safe there. Top-level = blocking depth 0 AND no active
+// resolution frame; nested blocking resolves (a parent's sub-abilities, or any blocking
+// call under an active frame) keep sharing the parent's accumulated set, as their
+// chained Remembered$ readers require. The depth counter tracks only synchronous
+// blocking calls, so it is always 0 at any loop-top decision — never suspended state.
 namespace {
-int g_resolve_depth = 0;
-struct RememberedResolutionScope {
-    bool top_level;
+int g_blocking_resolve_depth = 0;
+struct BlockingRememberedScope {
+    bool participates;
+    bool top_level = false;
     std::vector<Entity> saved;
-    RememberedResolutionScope() : top_level(g_resolve_depth == 0) {
+    explicit BlockingRememberedScope(bool blocking) : participates(blocking) {
+        if (!participates) return;  // root resolves: the frame owns the scoping
+        top_level = (g_blocking_resolve_depth == 0 && !cur_game.resolution.active);
         if (top_level) {
             saved = cur_game.remembered_entities;
             cur_game.remembered_entities.clear();
         }
-        ++g_resolve_depth;
+        ++g_blocking_resolve_depth;
     }
-    ~RememberedResolutionScope() {
-        --g_resolve_depth;
+    ~BlockingRememberedScope() {
+        if (!participates) return;
+        --g_blocking_resolve_depth;
         if (top_level) cur_game.remembered_entities = saved;
     }
 };
 }  // namespace
 
+// Transitional blocking shim: every non-stack caller (sub-ability recursion, the
+// gift loop, charm's chosen modes, repeat_each, immediate/delayed triggers, the
+// mana-system riders) resolves inline exactly as before. A blocking ctx can
+// never suspend, so the discarded status is always DONE.
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
-    RememberedResolutionScope remembered_scope;
-    // Leaves-the-battlefield ability whose body references the cards its source had exiled
-    // (Skyclave Apparition's TrigToken): restore those entities into the remembered set before
-    // any gate or SVar runs, so ConditionPresent$ Card.ExiledWithSource, Remembered$CardManaCost
-    // (token P/T), and TokenOwner$ RememberedOwner all read the exiled card (CR 608.2h). The
-    // exiled_with snapshot was captured at the source's departure into last-known info.
-    if (!restore_remembered_exiled_with.empty()) {
-        cur_game.remembered_entities = restore_remembered_exiled_with;
-    }
+    (void)resolve(orderer, FrameCtx::blocking());
+}
 
-    // OptionalDecider$ You ("you may ..."): the controller may decline the whole
-    // triggered ability as it resolves (Ajani's exile-and-return-transformed).
-    if (trigger_optional) {
-        std::vector<LegalAction> yn;
-        LegalAction decline(PASS_PRIORITY, std::string("Decline"));
-        decline.category = ActionCategory::OPTIONAL_YESNO;
-        decline.option_ordinal = 0;  // 0 = decline
-        yn.push_back(decline);
-        LegalAction accept(PASS_PRIORITY, std::string("Accept"));
-        accept.category = ActionCategory::OPTIONAL_YESNO;
-        accept.option_ordinal = 1;  // 1 = accept
-        yn.push_back(accept);
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
-        int yc = InputLogger::instance().get_input(yn);
-        cur_game.player_a_has_priority = prev_priority;
-        if (yc == 0) {
-            game_log("%s declines the optional triggered ability.\n", player_name(controller).c_str());
-            return;
+// resolve() as a staged machine: the body is a phase-tagged fall-through so a
+// suspension (a converted prompt parking its query for the loop top) can be
+// re-entered at the exact point it left off. The phase lives in the persisted
+// ROOT FrameLevel for a suspendable (root) resolve, or in a local for blocking
+// resolves — which run every phase in one pass, in EXACTLY the pre-refactor
+// order (pure control-flow restructure; the never-suspending path is
+// behavior-identical). Phases: 0 restore-remembered + OptionalDecider y/n;
+// 1 reflexive sac; 2 one-shot gates/prune/log (skipped on resume so prune logs
+// never duplicate) + the gift loop (each gift a persisted GIFT FrameLevel via
+// resolve_child); 3 condition gates (evaluated once — failure routes to phase
+// 7); 4 handler dispatch; 5 subability chaining (next_sub-driven; each sub a
+// persisted SUB FrameLevel via resolve_child in a suspendable context);
+// 6 NameCard clear + DONE; 7 the condition-failed sub chain (no NameCard
+// clear, matching the old early return).
+ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
+    BlockingRememberedScope remembered_scope(!ctx.is_root());
+    int local_phase = 0;
+    int local_next_sub = 0;
+    int &phase = ctx.can_suspend() ? ctx.level().phase : local_phase;
+    int &next_sub = ctx.can_suspend() ? ctx.level().next_sub : local_next_sub;
+
+    if (phase == 0) {
+        // Leaves-the-battlefield ability whose body references the cards its source had exiled
+        // (Skyclave Apparition's TrigToken): restore those entities into the remembered set before
+        // any gate or SVar runs, so ConditionPresent$ Card.ExiledWithSource, Remembered$CardManaCost
+        // (token P/T), and TokenOwner$ RememberedOwner all read the exiled card (CR 608.2h). The
+        // exiled_with snapshot was captured at the source's departure into last-known info.
+        if (!restore_remembered_exiled_with.empty()) {
+            cur_game.remembered_entities = restore_remembered_exiled_with;
         }
-    }
-    // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost on a TRIGGERED ability (The
-    // Fantasticar's fourth-noncreature-spell trigger: Execute AB$ Token | Cost$ Sac<1/CARDNAME>).
-    // Unlike an activated ability — whose sac cost is paid up front at activation — a triggered
-    // ability pays its cost as it resolves (CR 603.2), and the Sac<.../CARDNAME> cost makes the
-    // whole effect optional: prompt the controller, sacrifice the source on accept, and do nothing
-    // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
-    // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
-    if (ability_type == TRIGGERED && sac_self) {
-        std::string sname = global_coordinator.entity_has_component<Permanent>(source)
-                                ? global_coordinator.GetComponent<Permanent>(source).name
-                                : std::string("it");
-        std::vector<LegalAction> yn;
-        LegalAction decline(PASS_PRIORITY, std::string("Decline"));
-        decline.category = ActionCategory::OPTIONAL_YESNO;
-        decline.option_ordinal = 0;  // 0 = decline
-        yn.push_back(decline);
-        LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
-        accept.category = ActionCategory::OPTIONAL_YESNO;
-        accept.option_ordinal = 1;  // 1 = accept
-        yn.push_back(accept);
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
-        int yc = InputLogger::instance().get_input(yn);
-        cur_game.player_a_has_priority = prev_priority;
-        if (yc == 0) {
-            game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
-            return;
+
+        // OptionalDecider$ You ("you may ..."): the controller may decline the whole
+        // triggered ability as it resolves (Ajani's exile-and-return-transformed).
+        if (trigger_optional) {
+            std::vector<LegalAction> yn;
+            LegalAction decline(PASS_PRIORITY, std::string("Decline"));
+            decline.category = ActionCategory::OPTIONAL_YESNO;
+            decline.option_ordinal = 0;  // 0 = decline
+            yn.push_back(decline);
+            LegalAction accept(PASS_PRIORITY, std::string("Accept"));
+            accept.category = ActionCategory::OPTIONAL_YESNO;
+            accept.option_ordinal = 1;  // 1 = accept
+            yn.push_back(accept);
+            // Runs source-less today (no PendingDecisionScope), so the ambient
+            // pending-decision value travels through the ask unchanged.
+            int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
+            if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
+            if (yc == 0) {
+                game_log("%s declines the optional triggered ability.\n", player_name(controller).c_str());
+                return ResolveStatus::DONE;
+            }
         }
-        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
-        game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
+        phase = 1;
     }
-    // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
-    // longer true the ability is removed from the stack and does nothing — not even its
-    // subabilities fire (unlike a ConditionCheckSVar gate).
-    if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
-        game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
-        return;
-    }
-    // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
-    // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
-    // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
-    // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
-    // the mana resolves, so the gate still reads 0 here for a legitimate fire).
-    if (!stored_svar_gate_name.empty() &&
-        !stored_svar_gate_passes(source, stored_svar_gate_name, stored_svar_gate_compare)) {
-        game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
-        return;
-    }
-    // Pre-resolve target validity check (CR 608.2b). A Pump that reaches resolution with no
-    // pre-chosen target selects its own target inside the handler (an immediate-trigger
-    // sub-ability — see effects::pump / effect_immediate_trigger.cpp), so only that case is
-    // exempt; a Pump whose target was chosen at cast/trigger placement is verified like any
-    // other targeted effect and fizzles if the target became illegal (it does NOT retarget).
-    bool pump_selects_own_target = (category == "Pump" && target == 0 && targets.empty());
-    if (valid_tgts != "N_A" && !pump_selects_own_target) {
-        if (!is_target_valid()) {
-            fizzle(orderer);
-            return;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+    if (phase == 1) {
+        // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost on a TRIGGERED ability (The
+        // Fantasticar's fourth-noncreature-spell trigger: Execute AB$ Token | Cost$ Sac<1/CARDNAME>).
+        // Unlike an activated ability — whose sac cost is paid up front at activation — a triggered
+        // ability pays its cost as it resolves (CR 603.2), and the Sac<.../CARDNAME> cost makes the
+        // whole effect optional: prompt the controller, sacrifice the source on accept, and do nothing
+        // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
+        // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
+        if (ability_type == TRIGGERED && sac_self) {
+            std::string sname = global_coordinator.entity_has_component<Permanent>(source)
+                                    ? global_coordinator.GetComponent<Permanent>(source).name
+                                    : std::string("it");
+            std::vector<LegalAction> yn;
+            LegalAction decline(PASS_PRIORITY, std::string("Decline"));
+            decline.category = ActionCategory::OPTIONAL_YESNO;
+            decline.option_ordinal = 0;  // 0 = decline
+            yn.push_back(decline);
+            LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
+            accept.category = ActionCategory::OPTIONAL_YESNO;
+            accept.option_ordinal = 1;  // 1 = accept
+            yn.push_back(accept);
+            int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
+            if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
+            if (yc == 0) {
+                game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
+                return ResolveStatus::DONE;
+            }
+            orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+            game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
         }
-        // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
-        // resolves, affecting only the still-legal targets (a spell that left the stack, a
-        // permanent that left the battlefield or gained protection, ...). Prune the illegal
-        // ones here so every effect handler downstream sees legal targets only; the all-illegal
-        // case was already countered by the is_target_valid gate above.
-        if (!targets.empty()) {
-            for (auto it = targets.begin(); it != targets.end();) {
-                if (!is_legal_target(*it, controller)) {
-                    std::string tname = entity_name(*it);
-                    game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
-                    it = targets.erase(it);
-                } else {
-                    ++it;
+        phase = 2;
+    }
+    if (phase == 2) {
+        // The one-shot gates/prune/log section runs exactly once: a re-entry at
+        // phase 2 (ctx.resuming() — a suspension inside the gift loop below
+        // parked a query and the latch is still unconsumed) skips straight to
+        // the gift loop, whose persisted next_sub resumes the suspended child.
+        // Nothing here asks, so phase 2 with resuming() true always means a
+        // gift suspension; the gates all passed on first entry.
+        if (!ctx.resuming()) {
+            // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
+            // longer true the ability is removed from the stack and does nothing — not even its
+            // subabilities fire (unlike a ConditionCheckSVar gate).
+            if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
+                game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
+                return ResolveStatus::DONE;
+            }
+            // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
+            // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
+            // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
+            // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
+            // the mana resolves, so the gate still reads 0 here for a legitimate fire).
+            if (!stored_svar_gate_name.empty() &&
+                !stored_svar_gate_passes(source, stored_svar_gate_name, stored_svar_gate_compare)) {
+                game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
+                return ResolveStatus::DONE;
+            }
+            // Pre-resolve target validity check (CR 608.2b). A Pump that reaches resolution with no
+            // pre-chosen target selects its own target inside the handler (an immediate-trigger
+            // sub-ability — see effects::pump / effect_immediate_trigger.cpp), so only that case is
+            // exempt; a Pump whose target was chosen at cast/trigger placement is verified like any
+            // other targeted effect and fizzles if the target became illegal (it does NOT retarget).
+            bool pump_selects_own_target = (category == "Pump" && target == 0 && targets.empty());
+            if (valid_tgts != "N_A" && !pump_selects_own_target) {
+                if (!is_target_valid()) {
+                    fizzle(orderer);
+                    return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+                }
+                // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
+                // resolves, affecting only the still-legal targets (a spell that left the stack, a
+                // permanent that left the battlefield or gained protection, ...). Prune the illegal
+                // ones here so every effect handler downstream sees legal targets only; the all-illegal
+                // case was already countered by the is_target_valid gate above.
+                if (!targets.empty()) {
+                    for (auto it = targets.begin(); it != targets.end();) {
+                        if (!is_legal_target(*it, controller)) {
+                            std::string tname = entity_name(*it);
+                            game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
+                            it = targets.erase(it);
+                        } else {
+                            ++it;
+                        }
+                    }
+                    target = targets.empty() ? 0 : targets[0];
                 }
             }
-            target = targets.empty() ? 0 : targets[0];
+            // RememberTargets/RememberObjects: stash the target(s) so chained
+            // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
+            if (remember_targeted) {
+                cur_game.remembered_entities.clear();
+                if (!targets.empty())
+                    for (auto t : targets) cur_game.remembered_entities.push_back(t);
+                else if (target != 0)
+                    cur_game.remembered_entities.push_back(target);
+            }
+            game_log("Resolving ability (category: %s%s)\n", category.c_str(),
+                     resolving_log_detail(*this, orderer).c_str());
+            next_sub = 0;  // gift-loop cursor (fresh levels start at 0; explicit for clarity)
+        }  // end of the one-shot (non-resuming) section
+
+        // Gift (CR 702.176c): if this spell promised its gift, the promised opponent receives the gift
+        // BEFORE the spell's other effects. The gift effect(s) are carried on the primary (spell)
+        // ability; run them first when Spell::gift_promised is set on the source spell. The token's
+        // TokenOwner$ Promised routes it to the opponent of this ability's controller (effects::token).
+        // Each gift resolves as a persisted GIFT FrameLevel (next_sub is the loop cursor — free
+        // until phase 4 resets it for the phase 5 sub chain) so a prompt inside a gift suspends.
+        if (!gift_abilities.empty() && source != 0 &&
+            global_coordinator.entity_has_component<Spell>(source) &&
+            global_coordinator.GetComponent<Spell>(source).gift_promised) {
+            for (; next_sub < static_cast<int>(gift_abilities.size()); ++next_sub) {
+                const Ability &gift_template = gift_abilities[static_cast<size_t>(next_sub)];
+                if (ctx.can_suspend()) {
+                    Ability *self = this;
+                    auto bind = [self](Ability &g) {
+                        g.source = self->source;
+                        g.controller = self->controller;
+                    };
+                    if (ctx.resolve_child(gift_template, FrameLevel::GIFT, next_sub, -1, bind,
+                                          orderer) == ResolveStatus::SUSPENDED)
+                        return ResolveStatus::SUSPENDED;
+                } else {
+                    Ability gift = gift_template;
+                    gift.source = source;
+                    gift.controller = controller;
+                    gift.resolve(orderer);
+                }
+            }
+        }
+        phase = 3;
+    }
+    if (phase == 3) {
+        // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
+        bool condition_passed = true;
+        if (!condition_check_svar.empty()) {
+            int val = evaluate_condition_svar(condition_check_svar, source, controller, orderer);
+            condition_passed =
+                compare_svar(val, condition_svar_compare, condition_compare_svar_expr, source, controller, orderer);
+        }
+        // ConditionDefined$ Remembered gate (Birthing Ritual): the dig only happens if a creature
+        // was sacrificed (remembered count satisfies condition_present/condition_compare). Like the
+        // SVar gate, failure skips this body but still chains subabilities.
+        if (condition_passed && condition_on_remembered)
+            condition_passed = evaluate_present_condition(*this, controller, orderer);
+        // ConditionDefined$ TriggeredCard gate (Amped Raptor): the dig only happens if the card
+        // that triggered this ability was cast from its controller's hand. evaluate_present_condition
+        // reads the property off the source's permanent state. Failure skips this body but still
+        // chains subabilities.
+        if (condition_passed && condition_on_triggered_card)
+            condition_passed = evaluate_present_condition(*this, controller, orderer);
+        // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
+        // controller has the city's blessing (702.131). Failure still chains subabilities.
+        if (condition_passed && condition_city_blessing) {
+            Entity pe = get_player_entity(controller);
+            condition_passed = global_coordinator.entity_has_component<Player>(pe) &&
+                               global_coordinator.GetComponent<Player>(pe).has_city_blessing;
+        }
+        if (!condition_passed) {
+            // Condition-failed body: skip the handler but still chain the
+            // subabilities, then finish WITHOUT the phase-6 NameCard clear
+            // (matching the pre-refactor early return). Routed to its own
+            // phase (7) so a suspension inside a chained sub resumes there —
+            // never re-evaluating the condition gates above, which could read
+            // state an earlier sub mutated and diverge.
+            next_sub = 0;
+            phase = 7;
+        } else {
+            phase = 4;
         }
     }
-    // RememberTargets/RememberObjects: stash the target(s) so chained
-    // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
-    if (remember_targeted) {
-        cur_game.remembered_entities.clear();
-        if (!targets.empty())
-            for (auto t : targets) cur_game.remembered_entities.push_back(t);
-        else if (target != 0)
-            cur_game.remembered_entities.push_back(target);
+    if (phase == 4) {
+        // Table-driven dispatch: every effect category resolves through its handler
+        // in src/effects/. handler_for() returns nullptr only for categories with no
+        // resolve-time handler (e.g. "Equip", handled at activation) — those simply
+        // chain subabilities, matching the legacy chain's fall-through behavior.
+        effects::EffectHandler handler = effects::handler_for(effect_kind_from_string(category));
+        HandlerResult hres = handler ? handler(*this, orderer, ctx) : HandlerResult::DONE_RUN_SUBS;
+        // A suspended handler parked its decision; propagate WITHOUT chaining subs
+        // or clearing the named card — the re-entry finishes both.
+        if (hres == HandlerResult::SUSPENDED) return ResolveStatus::SUSPENDED;
+        next_sub = 0;
+        // Chain subabilities unless the handler opted out (Charm/WinsGame and the
+        // non-peek PeekAndReveal path return DONE_NO_SUBS to handle their own resolution).
+        phase = (hres == HandlerResult::DONE_RUN_SUBS) ? 5 : 6;
     }
-    game_log("Resolving ability (category: %s%s)\n", category.c_str(),
-             resolving_log_detail(*this, orderer).c_str());
-
-    // Gift (CR 702.176c): if this spell promised its gift, the promised opponent receives the gift
-    // BEFORE the spell's other effects. The gift effect(s) are carried on the primary (spell)
-    // ability; run them first when Spell::gift_promised is set on the source spell. The token's
-    // TokenOwner$ Promised routes it to the opponent of this ability's controller (effects::token).
-    if (!gift_abilities.empty() && source != 0 &&
-        global_coordinator.entity_has_component<Spell>(source) &&
-        global_coordinator.GetComponent<Spell>(source).gift_promised) {
-        for (Ability gift : gift_abilities) {
-            gift.source = source;
-            gift.controller = controller;
-            gift.resolve(orderer);
-        }
+    if (phase == 5) {
+        if (chain_subabilities(*this, orderer, ctx, next_sub) == ResolveStatus::SUSPENDED)
+            return ResolveStatus::SUSPENDED;
+        phase = 6;
     }
-
-    // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
-    bool condition_passed = true;
-    if (!condition_check_svar.empty()) {
-        int val = evaluate_condition_svar(condition_check_svar, source, controller, orderer);
-        condition_passed =
-            compare_svar(val, condition_svar_compare, condition_compare_svar_expr, source, controller, orderer);
+    if (phase == 7) {
+        // Condition-failed sub chain (routed from phase 3): same loop, but no
+        // phase-6 NameCard clear afterward — today's early-return behavior.
+        if (chain_subabilities(*this, orderer, ctx, next_sub) == ResolveStatus::SUSPENDED)
+            return ResolveStatus::SUSPENDED;
+        return ResolveStatus::DONE;
     }
-    // ConditionDefined$ Remembered gate (Birthing Ritual): the dig only happens if a creature
-    // was sacrificed (remembered count satisfies condition_present/condition_compare). Like the
-    // SVar gate, failure skips this body but still chains subabilities.
-    if (condition_passed && condition_on_remembered)
-        condition_passed = evaluate_present_condition(*this, controller, orderer);
-    // ConditionDefined$ TriggeredCard gate (Amped Raptor): the dig only happens if the card
-    // that triggered this ability was cast from its controller's hand. evaluate_present_condition
-    // reads the property off the source's permanent state. Failure skips this body but still
-    // chains subabilities.
-    if (condition_passed && condition_on_triggered_card)
-        condition_passed = evaluate_present_condition(*this, controller, orderer);
-    // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
-    // controller has the city's blessing (702.131). Failure still chains subabilities.
-    if (condition_passed && condition_city_blessing) {
-        Entity pe = get_player_entity(controller);
-        condition_passed = global_coordinator.entity_has_component<Player>(pe) &&
-                           global_coordinator.GetComponent<Player>(pe).has_city_blessing;
-    }
-    if (!condition_passed) {
-        for (auto sub_ab : this->subabilities) {
-            sub_ab.source = this->source;
-            bind_sub_target(*this, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
-            sub_ab.controller = this->controller;
-            sub_ab.resolve(orderer);
-        }
-        return;
-    }
-
-    // Table-driven dispatch: every effect category resolves through its handler
-    // in src/effects/. handler_for() returns nullptr only for categories with no
-    // resolve-time handler (e.g. "Equip", handled at activation) — those simply
-    // chain subabilities, matching the legacy chain's fall-through behavior.
-    effects::EffectHandler handler = effects::handler_for(effect_kind_from_string(category));
-    bool run_subs = handler ? handler(*this, orderer) : true;
-
-    // Chain subabilities unless the handler opted out (Charm/WinsGame and the
-    // non-peek PeekAndReveal path return false to handle their own resolution).
-    if (run_subs) {
-        for (auto sub_ab : this->subabilities) {
-            sub_ab.source = this->source;
-            bind_sub_target(*this, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
-            sub_ab.controller = this->controller;
-            sub_ab.resolve(orderer);
-        }
-    }
-    // Clear the named card once the whole spell/ability has finished resolving, so it
+    // Phase 6: clear the named card once the whole spell/ability has finished resolving, so it
     // doesn't leak into an unrelated later Card.NamedCard check (CR 201.4 — the name is
     // chosen for this effect only). Only the top-level resolve clears it; sub-abilities
     // (ability_type SPELL parent vs. its DB$ children) are resolved within this call.
     if (effect_kind_from_string(category) == EffectKind::NameCard)
         cur_game.named_card.clear();
+    return ResolveStatus::DONE;
 }
 
 

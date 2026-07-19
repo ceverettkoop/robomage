@@ -19,8 +19,11 @@ from typing import Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
 
-from env import (MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
+from env import (MAX_ACTIONS, STATE_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
                  _CUR_TURN_IDX, _MATCH_CTX_START)
+from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
+                    CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
+                    CAT_CONFIRM_BLOCKERS)
 from cli_spec import DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH
 from scripted_agent import ScriptedAgent, make_agent
 
@@ -221,12 +224,21 @@ class MatchClock:
     spans a whole match (bo3 or bo1), and each searched decision draws a
     variable ``(min_s, max_s)`` deadline pair from it.
 
-    The allocation is ``remaining / C`` (C = estimated remaining searchable
-    decisions, from the turn number and match score), scaled by a difficulty
-    multiplier derived from the root priors (entropy / top-2 gap / menu width),
-    and clamped to ``[t_min, min(t_max, remaining/4)]``. ``t_min`` behaves like
-    a Fischer increment: it is granted even on an empty bank, so an exhausted
-    clock degrades to fast play rather than stalling. The min deadline arms the
+    The allocation is ``remaining / C``, scaled by a difficulty multiplier
+    derived from the root priors (entropy / top-2 gap / menu width), and
+    clamped to ``[t_min, min(t_max, remaining/4)]``. C is the estimated
+    decisions left on this clock. The estimate starts from a fixed prior — a
+    full bo3 match is assumed to run ``_MATCH_DEC_EST`` (300) decisions for
+    one seat, ~``_GAME_DEC_EST`` (120) per game over ~2.5 expected games —
+    and is REVISED by the match's observed pace, fed one ``note_decision()``
+    per decision faced: completed games revise the per-game estimate (a match
+    that reached game 3 after only 90 decisions now expects short games ahead,
+    so the tail estimate shrinks and per-decision spend grows), and the
+    current game's observed decisions-per-turn rate revises the remainder of
+    this game (250 decisions deep in game 1 projects a longer-than-prior
+    match, so per-decision spend shrinks). ``t_min`` behaves like a Fischer
+    increment: it is granted even on an empty bank, so an exhausted clock
+    degrades to fast play rather than stalling. The min deadline arms the
     in-search stability early-stop (see ``mcts.run_search``), which is what
     actually lets obvious decisions finish cheap and contested ones run long.
 
@@ -234,11 +246,14 @@ class MatchClock:
     """
 
     _TURN_END_EST = 24     # 0-based player-turn by which a game typically ends
-    _DEC_PER_TURN = 2.0    # searched roots per player-turn for one seat
     _MIN_TURNS_LEFT = 4    # horizon floor once past _TURN_END_EST
-    _GAME_DEC_EST = 48     # searched roots in one full future game
-    _SB_DEC_EST = 6        # sideboard roots ahead of each future game
-    _HORIZON_LO, _HORIZON_HI = 8, 120
+    _MATCH_DEC_EST = 300.0                       # prior: decisions in a full bo3 (one seat)
+    _EXP_GAMES = 2.5                             # expected games in a bo3
+    _GAME_DEC_EST = _MATCH_DEC_EST / _EXP_GAMES  # prior per-game decisions (120)
+    _SB_DEC_EST = 6        # sideboard decisions ahead of each future game
+    _PRIOR_GAME_W = 1.0    # completed-game revision: prior worth this many observed games
+    _RATE_PRIOR_W = 8.0    # in-game rate revision: prior worth this many observed turns
+    _HORIZON_LO, _HORIZON_HI = 8, 400
     _M_LO, _M_HI = 0.35, 1.75  # difficulty-multiplier clamp
 
     def __init__(self, bank_s: float, *, t_min: float = 0.5,
@@ -248,18 +263,53 @@ class MatchClock:
         self.t_max = float(t_max)
         self.sb_t_max = float(sb_t_max)
         self.remaining = self.bank
+        self.decisions = 0                   # decisions faced this match (all kinds)
+        self._cur_game: Optional[int] = None
+        self._game_start_dec: list[int] = []  # decision index at each game's first sight
 
     def reset(self) -> None:
         self.remaining = self.bank
+        self.decisions = 0
+        self._cur_game = None
+        self._game_start_dec = []
 
     def debit(self, elapsed_s: float) -> None:
         self.remaining = max(0.0, self.remaining - max(0.0, float(elapsed_s)))
 
+    def note_decision(self, game_number: int) -> None:
+        """Record one decision faced on this clock (searched, fallback or
+        trivial — they all advance the match) and mark the game boundary when
+        ``game_number`` changes. These counters drive the horizon revision."""
+        if game_number != self._cur_game:
+            self._cur_game = game_number
+            self._game_start_dec.append(self.decisions)
+        self.decisions += 1
+
     def _horizon(self, turn: int, game_number: int, self_wins: int,
                  opp_wins: int) -> float:
-        """Estimated searchable decisions left on this clock (one seat)."""
-        turns_left = max(self._TURN_END_EST - max(0, turn), self._MIN_TURNS_LEFT)
-        in_game = self._DEC_PER_TURN * turns_left
+        """Estimated decisions left on this clock (one seat): the fixed match
+        prior revised by the observed per-game length and in-game pace."""
+        cur_start = self._game_start_dec[-1] if self._game_start_dec else 0
+        in_cur = max(0, self.decisions - cur_start)
+        # Completed games revise the per-game estimate: a match that reached
+        # game N cheaply expects its remaining games short too (and vice versa).
+        completed = max(0, game_number - 1)
+        per_game = self._GAME_DEC_EST
+        if completed > 0:
+            observed = cur_start / completed
+            per_game = ((self._PRIOR_GAME_W * self._GAME_DEC_EST
+                         + completed * observed)
+                        / (self._PRIOR_GAME_W + completed))
+        # Rest of the CURRENT game: blend the prior decisions-per-turn rate
+        # with the rate actually observed so far this game, over the turns
+        # left. A game running hot (many decisions early) projects long and
+        # shrinks per-decision spend instead of letting it drain the bank.
+        turn = max(0, turn)
+        turns_left = max(self._TURN_END_EST - turn, self._MIN_TURNS_LEFT)
+        prior_rate = per_game / self._TURN_END_EST
+        rate = ((self._RATE_PRIOR_W * prior_rate + in_cur)
+                / (self._RATE_PRIOR_W + turn))
+        in_game = rate * turns_left
         # Expected FUTURE games: bo1 (game_number 0) and a 1-1 score have none;
         # 0-0 means game 2 is certain and game 3 ~50%; a 1-0 lead ~50% of one.
         if game_number <= 0 or (self_wins >= 1 and opp_wins >= 1):
@@ -268,7 +318,7 @@ class MatchClock:
             extra_games = 1.5
         else:
             extra_games = 0.5
-        horizon = in_game + extra_games * (self._GAME_DEC_EST + self._SB_DEC_EST)
+        horizon = in_game + extra_games * (per_game + self._SB_DEC_EST)
         return min(max(horizon, self._HORIZON_LO), self._HORIZON_HI)
 
     def _difficulty(self, priors, num_choices: int) -> float:
@@ -314,7 +364,17 @@ class SearchController:
     and hands it over via ``bind_env`` (duck-typed, like ``set_deck_names``).
     Decisions where the engine reports ``safe=0`` (mid-resolution prompts,
     mulligans — no snapshot possible) fall back to the evaluator's raw policy;
-    the searched/fallback split is tallied in ``stats``.
+    the searched/fallback split is tallied in ``stats``. Menus whose legal
+    actions are all interchangeable (``decode.menu_is_interchangeable`` —
+    duplicate copies of one choice, including single-choice menus) skip both
+    search and evaluation and answer with the first action instantly, tallied
+    as ``trivial``; under a match clock this spends none of the bank. After a
+    search, the per-world trees are kept: while the real game continues along
+    a line the sims explored, decisions are answered from the stored visit
+    counts (``_try_follow_tree``, tallied as ``followed``) instead of a new
+    search — until the observed game diverges from every world's tree, any
+    hidden information is revealed (``decode.hidden_info_fingerprint``), or
+    the opponent takes an action outside the public-menu-safe categories.
 
     Bo3 SIDEBOARD prompts between games are also loop-safe search roots, but each
     rollout there is heavier (restore re-crosses init_ecs + deck load + shuffle)
@@ -401,6 +461,15 @@ class SearchController:
         self.label = label
         self._rng = np.random.default_rng(rng_seed)
         self._env = None
+        # Tree reuse: the previous search's per-world root nodes, the env
+        # action-history length at search time, and the revealed-info
+        # fingerprint captured then. While the real game walks a line those
+        # trees simulated — and reveals nothing new — decisions are answered
+        # from the stored visit counts instead of a fresh search
+        # (see _try_follow_tree).
+        self._followed_trees = None
+        self._followed_hist_len = 0
+        self._followed_fp = None
         # Optional observer hook: called after every SEARCHED decision with
         # (obs_copy, num_choices, SearchResult, chosen_action). Fires on the
         # caller's (driver) thread; the GUI analysis window uses it to display
@@ -408,14 +477,18 @@ class SearchController:
         # result and never fire it. Hook errors are swallowed — a display hook
         # must never break play.
         self.on_result = None
-        self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0,
-                      "sb_searched": 0, "pool_procs": procs, "early_stops": 0}
+        self.stats = {"searched": 0, "fallback": 0, "trivial": 0, "followed": 0,
+                      "sims": 0, "sim_steps": 0, "sb_searched": 0,
+                      "pool_procs": procs, "early_stops": 0}
         if self._clock is not None:
             self.stats["clock_bank"] = self._clock.bank
             self.stats["clock_remaining"] = self._clock.remaining
 
     def bind_env(self, env) -> None:
         self._env = env
+        self._followed_trees = None
+        self._followed_hist_len = 0
+        self._followed_fp = None
         # bind_env fires once per match (runner.run_games / tui_game.run), so
         # this is the one-bank-per-match reset point.
         if self._clock is not None:
@@ -424,6 +497,10 @@ class SearchController:
 
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         t0 = time.monotonic()
+        if self._clock is not None:
+            # Every decision faced (searched, followed, trivial, fallback)
+            # advances the match pace the clock's horizon is revised from.
+            self._clock.note_decision(int(round(float(obs[_MATCH_CTX_START]) * 3)))
         try:
             return self._choose_impl(obs, num_choices, action_masks,
                                      decoded_actions)
@@ -453,9 +530,125 @@ class SearchController:
         return float(self._rng.uniform(self._PACE_IDLE_MIN_S,
                                        self._PACE_IDLE_MAX_S))
 
+    _FOLLOW_MIN_VISITS = 16  # combined visits a followed node needs to be trusted
+
+    # Opponent action categories whose menus are built from PUBLIC state only
+    # (priority pass, combat declarations and confirms) — the one case where a
+    # raw action index means the same thing in every determinized world's menu.
+    # Any other opponent action either reveals a hidden card (the fingerprint
+    # gate re-searches anyway) or sits in a hand-dependent menu where the same
+    # index can mean different actions across worlds — both force a re-search.
+    _FOLLOW_OPP_SAFE_CATS = frozenset({
+        CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS,
+        CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS})
+
+    def _drop_trees(self) -> None:
+        self._followed_trees = None
+        self._followed_fp = None
+
+    def _try_follow_tree(self, obs, num_choices):
+        """Answer from the previous search's trees while the real game stays on
+        a simulated line, instead of searching again.
+
+        The env action history recorded since that search is walked down every
+        world's tree (tree children are keyed by the same pre-remap env action
+        indices the history records). Two gates run before the walk:
+
+        * every intervening OPPONENT action must be public-menu safe
+          (``_FOLLOW_OPP_SAFE_CATS``, from the env's per-step ``_action_meta``)
+          — own actions were picked from the real menu and are always exact;
+        * no hidden information may have been revealed since the search: the
+          current ``decode.hidden_info_fingerprint`` must not exceed the one
+          captured at search time (a draw, a play from a hidden hand, a mill
+          or a tutor/scry reveal invalidates every world's presuppositions,
+          even a world that happened to guess it right).
+
+        Worlds that never simulated the real line drop out; the survivors'
+        visit counts at the reached node are the answer. Divergence — a gate
+        firing, an unexplored real action, a menu-size or seat mismatch at the
+        reached node, or fewer than ``_FOLLOW_MIN_VISITS`` combined visits —
+        drops the trees and returns None so a fresh search runs. On success
+        the reached nodes become the new follow roots and the fingerprint
+        ratchets to the current one, so a whole expected sequence can be
+        played from one search. Works for ``safe=0`` prompts too (the sims
+        played through those decisions), where a fresh search is impossible
+        and the fallback would otherwise be the raw policy."""
+        from decode import hidden_info_fingerprint
+
+        trees = self._followed_trees
+        if not trees:
+            return None
+        hist = getattr(self._env, "_action_history", None)
+        meta = getattr(self._env, "_action_meta", None)
+        if hist is None or meta is None or len(meta) != len(hist):
+            self._drop_trees()
+            return None
+        delta = hist[self._followed_hist_len:]
+        if not delta:
+            self._drop_trees()
+            return None
+        self_is_a = bool(obs[_SELF_IS_A_IDX] > 0.5)
+        # Gate 1: only public-menu-safe opponent actions may be followed
+        # through (index semantics are world-independent for those alone).
+        for actor_is_a, cat in meta[self._followed_hist_len:]:
+            if actor_is_a != self_is_a and cat not in self._FOLLOW_OPP_SAFE_CATS:
+                self._drop_trees()
+                return None
+        # Gate 2: any newly visible card identity since the search means the
+        # worlds' presuppositions are (partially) falsified — re-search.
+        fp = self._followed_fp
+        cur = hidden_info_fingerprint(obs[:STATE_SIZE])
+        if fp is None or np.any(cur[0] > fp[0]) or np.any(cur[1] > fp[1]):
+            self._drop_trees()
+            return None
+        nodes = []
+        for root in trees:
+            node = root
+            for a in delta:
+                node = node.children.get(int(a))
+                if node is None:
+                    break
+            if (node is not None and node.num_choices == num_choices
+                    and node.self_is_a == self_is_a):
+                nodes.append(node)
+        if not nodes:
+            self._drop_trees()
+            return None
+        visits = np.zeros(num_choices, dtype=np.float64)
+        for n in nodes:
+            visits += n.N
+        if visits.sum() < self._FOLLOW_MIN_VISITS:
+            self._drop_trees()
+            return None
+        self._followed_trees = nodes
+        self._followed_hist_len = len(hist)
+        self._followed_fp = cur  # ratchet: a card that hides re-triggers on re-reveal
+        if self._temperature <= 1e-6:
+            return int(np.argmax(visits))
+        pi = visits ** (1.0 / self._temperature)
+        return int(self._rng.choice(num_choices, p=pi / pi.sum()))
+
     def _choose_impl(self, obs, num_choices, action_masks=None,
                      decoded_actions=None) -> int:
         from mcts import run_search, run_search_parallel
+        from decode import menu_is_interchangeable
+
+        # An interchangeable menu (four "Play Mountain" from a hand of
+        # duplicates, N identical untapped basics to tap) offers the same
+        # choice N times — search or evaluation would only spend wall clock
+        # (and the match-clock bank) telling copies apart. Answer with the
+        # first instantly; paced mode's floor pad still masks the timing.
+        if menu_is_interchangeable(obs, num_choices):
+            self.stats["trivial"] += 1
+            return 0
+
+        # While the game keeps matching the previous search's expected lines,
+        # play on from those trees rather than recalculating (spends none of
+        # the match clock); the first divergence falls through to a search.
+        followed = self._try_follow_tree(obs, num_choices)
+        if followed is not None:
+            self.stats["followed"] += 1
+            return followed
 
         env = self._env
         searchable = (
@@ -521,6 +714,18 @@ class SearchController:
         self.stats["searched"] += 1
         self.stats["sims"] += result.sims_run
         self.stats["sim_steps"] += result.sim_steps
+        # Arm tree-following from this search's per-world trees: the next
+        # decisions are answered from them for as long as the real game walks
+        # a line the sims explored and reveals nothing new (the fingerprint
+        # captured here is the reveal baseline).
+        hist = getattr(env, "_action_history", None)
+        if result.roots and hist is not None:
+            from decode import hidden_info_fingerprint
+            self._followed_trees = result.roots
+            self._followed_hist_len = len(hist)
+            self._followed_fp = hidden_info_fingerprint(obs[:STATE_SIZE])
+        else:
+            self._drop_trees()
         if result.stopped_early:
             self.stats["early_stops"] += 1
         if self._temperature <= 1e-6:

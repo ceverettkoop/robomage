@@ -16,7 +16,6 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../classes/action.h"
-#include "../input_logger.h"
 #include "../game_queries.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
@@ -118,12 +117,14 @@ static bool search_reveals_card(const Ability &ab) {
     return from_hidden && specific_type;
 }
 
-bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Same-name search/move (Surgical Extraction, Infernal Tutor, Secret Salvage, Pack
     // Hunt, ...): ChangeType$ Remembered.sameName / Targeted.sameName.
     if (ab.change_type.find("sameName") != std::string::npos)
-        return change_zone_same_name(ab, orderer, /*force_all=*/false);
+        return change_zone_same_name(ab, orderer, /*force_all=*/false)
+                   ? HandlerResult::DONE_RUN_SUBS
+                   : HandlerResult::DONE_NO_SUBS;
 
     // The owning/searching player for this ChangeZone. Normally the source's Zone.owner, but
     // the source may have ceased to exist by the time the ability resolves (CR 608.2g/h): a
@@ -152,7 +153,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         Zone::Ownership tc =
             ab.target != 0 ? last_known_controller(ab.target)  // CR 608.2g/h, robust to post-move reads
                            : Zone::UNKNOWN;
-        if (tc == Zone::UNKNOWN) return true;  // no targeted object → no defined player; still chain subs
+        if (tc == Zone::UNKNOWN) return HandlerResult::DONE_RUN_SUBS;  // no targeted object → no defined player; still chain subs
         owner = tc;
     }
 
@@ -237,7 +238,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Defined$ Self — move the source card directly (e.g. Talon Gates putting itself onto battlefield from hand)
@@ -254,7 +255,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", sname.c_str(), dest_str);
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Defined$ Remembered with a bounded/optional selection (Cloak and Dagger's DBChangeZone:
@@ -269,9 +270,16 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         int cap = (ab.change_num >= 0) ? ab.change_num
                                        : (ab.amount > 0 ? static_cast<int>(ab.amount) : 1);
         bool optional = ab.optional_choice;
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
-        for (int picked = 0; picked < cap; picked++) {
+        // Live-menu loop (Shape C): only the pick counter persists — the
+        // candidate pool, and hence the menu, is rebuilt from the remembered
+        // set's current zones at every arm AND at every consume (that rebuild
+        // is what maps the latched answer back to an entity; ask's size assert
+        // guards drift). The asks are seated on the controller through
+        // fctx.ask, replacing the old manual seat swap around the whole loop.
+        ChangeZoneRememberedRt local_rt;
+        ChangeZoneRememberedRt &rt =
+            fctx.can_suspend() ? fctx.rt<ChangeZoneRememberedRt>() : local_rt;
+        for (; rt.picked < cap; rt.picked++) {
             // Rebuild the candidate list each pick (a card already moved leaves the eligible zones).
             std::vector<Entity> cands;
             for (auto e : cur_game.remembered_entities) {
@@ -300,11 +308,15 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 none.category = ActionCategory::CHOOSE_CARD;
                 picks.push_back(none);
             }
-            game_log("%s may exile a card until %s leaves the battlefield:\n",
-                player_name(ab.controller).c_str(),
-                global_coordinator.entity_has_component<CardData>(ab.source)
-                    ? global_coordinator.GetComponent<CardData>(ab.source).name.c_str() : "the source");
-            int choice = InputLogger::instance().get_input(picks);
+            // Arm-only pre-ask log: a resume re-enters this same pick with the
+            // announcement already printed at arm time.
+            if (!fctx.resuming())
+                game_log("%s may exile a card until %s leaves the battlefield:\n",
+                    player_name(ab.controller).c_str(),
+                    global_coordinator.entity_has_component<CardData>(ab.source)
+                        ? global_coordinator.GetComponent<CardData>(ab.source).name.c_str() : "the source");
+            int choice = fctx.ask(std::move(picks), ab.controller, ab.source);
+            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             if (choice < 0 || choice >= static_cast<int>(cands.size())) break;  // declined
             Entity chosen = cands[static_cast<size_t>(choice)];
             Zone::ZoneValue card_origin = global_coordinator.GetComponent<Zone>(chosen).location;
@@ -316,8 +328,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (ab.duration_until_host_leaves)
                 register_exile_until_host_leaves(ab.source, chosen, card_origin);
         }
-        cur_game.player_a_has_priority = prev_priority;
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Defined$ Remembered — move the remembered card(s) directly. Ajani's exile-and-
@@ -354,7 +365,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", nm.c_str(), dest_str);
         }
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // A ChangeZone leaving the battlefield with no target and no search filter operates
@@ -372,7 +383,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", nm.c_str(), dest_str);
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Non-targeted player-driven battlefield multi-select (Yorion, Sky Nomad's blink: "exile any
@@ -388,8 +399,14 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         MatchCtx ctx;
         ctx.controller = owner;
         ctx.source = ab.source;
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
+        // Live-menu loop (Shape C) with no persisted progress at all: the
+        // candidate pool is the live battlefield filtered by ChangeType$, so
+        // every pass — arm, consume, and post-pick re-arm alike — re-derives it
+        // from components (each exile removes its pick; the loop runs until
+        // "done" or the pool empties). The consume-side rebuild maps the
+        // latched answer back to an entity; ask's size assert guards drift.
+        // Asks are seated on `owner` (the selecting player) through fctx.ask,
+        // replacing the old manual seat swap around the whole loop.
         while (true) {
             std::vector<Entity> cands;
             for (auto e : battlefield_permanents(orderer->mEntities)) {
@@ -408,7 +425,8 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             LegalAction done(PASS_PRIORITY, "Done (exile no more)");
             done.category = ActionCategory::CHOOSE_CARD;
             picks.push_back(done);
-            int choice = InputLogger::instance().get_input(picks);
+            int choice = fctx.ask(std::move(picks), owner, ab.source);
+            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             if (choice < 0 || choice >= static_cast<int>(cands.size())) break;  // declined / done
             Entity chosen = cands[static_cast<size_t>(choice)];
             std::string cname = object_display_name(chosen);
@@ -416,8 +434,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (ab.remember_changed) cur_game.remembered_entities.push_back(chosen);
             game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
         }
-        cur_game.player_a_has_priority = prev_priority;
-        return true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
 
     // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith). The number to move is
@@ -428,28 +445,44 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // any number" lets the player choose fewer). dynamic_amount_expr is only set when ChangeNum$
     // itself is a count-SVar, so fixed-count fetches (and Green Sun's Zenith, whose X bounds the
     // filter, not the count) are unaffected.
-    size_t num_to_move;
-    if (!ab.dynamic_amount_expr.empty())
-        num_to_move = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, 0);
-    else
-        num_to_move = (ab.amount > 0) ? ab.amount : 1;
     bool multi_zone = ab.origins.size() > 1;
     bool reveal = search_reveals_card(ab);
+
+    // The resolved pick count and dynamic filter bound persist in the frame rt:
+    // earlier picks mutate the state they were counted from (cards moved, the
+    // remembered set grown — Doomsday's ChangeNum$ 5 over a shrinking pool), so
+    // a resume must NOT re-evaluate them. The loop index persists likewise so a
+    // resume re-enters the suspended pick.
+    ChangeZoneSearchRt local_rt;
+    ChangeZoneSearchRt &rt = fctx.can_suspend() ? fctx.rt<ChangeZoneSearchRt>() : local_rt;
+    if (!rt.init) {
+        if (!ab.dynamic_amount_expr.empty())
+            rt.num_to_move = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, 0);
+        else
+            rt.num_to_move = (ab.amount > 0) ? ab.amount : 1;
+        // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
+        // X = charge counters on this Aether Vial). Resolve against the ability's source so
+        // the hand search only offers creatures of the matching mana value (CR 122.1).
+        rt.cmc_bound = -1;
+        if (!ab.change_type_cmc_expr.empty())
+            rt.cmc_bound = evaluate_sa_svar(ab.change_type_cmc_expr, owner, ab.source);
+        rt.prev_priority = cur_game.player_a_has_priority;
+        rt.init = true;
+    }
 
     // Seat the search/pick prompt on the player who actually makes the choice. By default that
     // is the searched zone's owner — normally also the ability's controller, but a DefinedPlayer$
     // TargetedController search (White Orchid Phantom / Erode: the destroyed land's controller
     // may search THEIR library) belongs to that player, not the caster whose trigger is resolving
     // (the resolve seat is the controller's, set in stack_manager). The input/BQUERY seat follows
-    // cur_game.player_a_has_priority, so save/set/restore it around the prompts — the same pattern
-    // as request_optional_yesno and place_triggers_apnap.
+    // cur_game.player_a_has_priority, so set it here and restore rt.prev_priority after the loop
+    // (the set is idempotent on resume: a suspension persisted priority at this same seat).
     //
     // Chooser$ You overrides: the ability's CONTROLLER makes the selection from `owner`'s zone
     // (Thought-Knot Seer: you pick a nonland card from the targeted opponent's revealed hand to
     // exile). The searched cards are public knowledge there (the hand was revealed by the parent
     // RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's identity
     // is shown even into a hidden destination and recorded in the belief state.
-    bool prev_priority = cur_game.player_a_has_priority;
     if (ab.chooser_is_controller) {
         cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
         reveal = true;
@@ -457,22 +490,19 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
     }
 
-    // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
-    // X = charge counters on this Aether Vial). Resolve against the ability's source so
-    // the hand search only offers creatures of the matching mana value (CR 122.1).
-    int cmc_bound = -1;
-    if (!ab.change_type_cmc_expr.empty())
-        cmc_bound = evaluate_sa_svar(ab.change_type_cmc_expr, owner, ab.source);
-
-    for (size_t i = 0; i < num_to_move; i++) {
+    for (; rt.iter < rt.num_to_move; rt.iter++) {
+        bool suspended = false;
         Entity chosen = 0;
         if (multi_zone) {
             chosen = search_multi_zone(orderer, owner, ab.origins, ab.change_type, ab.mandatory, ab.destination,
-                reveal);
+                reveal, fctx, ab.source, suspended);
         } else {
             chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination,
-                reveal, cmc_bound, ab.change_type_cmc_op);
+                reveal, rt.cmc_bound, ab.change_type_cmc_op, fctx, ab.source, suspended);
         }
+        // Suspended: the seat stays persisted at the chooser (the parked query
+        // holds it); rt.prev_priority is restored by the completion epilogue.
+        if (suspended) return HandlerResult::SUSPENDED;
 
         // after we have chosen but before we place it where it goes, if we messed with library shuffle it
         if (ab.origin == Zone::LIBRARY) {
@@ -515,8 +545,8 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             break;
         }
     }
-    cur_game.player_a_has_priority = prev_priority;
-    return true;
+    cur_game.player_a_has_priority = rt.prev_priority;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Owns the zone-movement param keys shared by the ChangeZone family (ChangeZone

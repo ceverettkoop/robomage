@@ -22,7 +22,7 @@ namespace effects {
 // Raptor — an impulse-style exile). RememberFound$ True records the matching card in
 // cur_game.remembered_entities so a chained DB$ Play can cast it. If the library empties first,
 // stop gracefully (nothing is remembered). General over the destinations and the filter.
-bool dig_until(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     Zone::Ownership owner = ab.controller;
     Zone::ZoneValue found_dest = static_cast<Zone::ZoneValue>(ab.dig_until_found_dest);
     Zone::ZoneValue revealed_dest = static_cast<Zone::ZoneValue>(ab.dig_until_revealed_dest);
@@ -56,7 +56,7 @@ bool dig_until(Ability &ab, std::shared_ptr<Orderer> orderer) {
         orderer->add_to_zone(false, card, revealed_dest);
         game_log("%s exiles %s.\n", player_name(owner).c_str(), nm.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 bool parse_dig_until(Ability &ab, const std::string &key, const std::string &value) {

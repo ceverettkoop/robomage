@@ -28,6 +28,8 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
+#include "../error.h"
+#include "../game_driver.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
@@ -36,18 +38,53 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
-namespace {
 // A triggered ability that has fired and is waiting to be put on the stack. We collect every
 // trigger from the current batch of events first, then place them all in APNAP order (603.3b);
 // the old code pushed each trigger the instant it was found (raw entity-ID order), which is not
-// APNAP and gave no player a chance to order their own simultaneous triggers.
-struct PendingTrigger {
-    Ability ab;                 // fully prepared (source / controller / event-derived fields set)
-    Zone::Ownership controller; // whose trigger this is (drives APNAP partitioning)
-    Entity source = 0;          // source permanent (for logging)
-    std::string label;          // choice label when its controller orders simultaneous triggers
-    std::string log_line;       // narrative line emitted when it is placed on the stack
-    bool needs_target = false;  // select a target at placement time if it still has legal targets
+// APNAP and gave no player a chance to order their own simultaneous triggers. The persisted
+// struct lives in resolution_frame.h (Game::trigger_placement holds the flattened queue while
+// a placement decision is parked); this alias keeps the collection code unchanged.
+using PendingTrigger = PendingTriggerRT;
+
+namespace {
+// TargetAsker for trigger-placement target selection (CR 603.3d): arms the
+// pick as a loop-top pending decision with the family tag TRIGGER_PLACE and
+// the trigger's source as the pending-decision context — the same
+// PendingDecisionScope(ability.source) the blocking select_target held.
+// Priority is already seated at the trigger's controller (the placement loop
+// seats it per group), so arm/consume leave the seat unchanged.
+class TriggerPlaceTargetAsker final : public TargetAsker {
+    public:
+        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
+            PendingQuery &pq = cur_game.pending_query;
+            if (pq.active) {
+                // Consume the latched answer for THIS ask. The re-entered
+                // machine must have rebuilt the identical menu (pure builds,
+                // nothing runs between suspend and resume).
+                if (!pq.answered || pq.tag != PendingQuery::TRIGGER_PLACE)
+                    fatal_error("trigger target resume without a latched TRIGGER_PLACE answer");
+                if (pq.menu.size() != menu.size())
+                    fatal_error("trigger target menu size changed between arm and resume (" +
+                                std::to_string(pq.menu.size()) + " vs " +
+                                std::to_string(menu.size()) + ")");
+                int answer = pq.answer;
+                cur_game.player_a_has_priority = pq.prev_priority;
+                pq = PendingQuery{};
+                return answer;
+            }
+            // Suspend: park the query for the main loop to emit.
+            pq = PendingQuery{};
+            pq.tag = PendingQuery::TRIGGER_PLACE;
+            pq.active = true;
+            pq.menu = menu;
+            pq.chooser_is_a = cur_game.player_a_has_priority;
+            pq.decision_source = decision_source;
+            pq.prev_priority = cur_game.player_a_has_priority;
+            return -1;
+        }
+        bool resuming() const override {
+            return cur_game.pending_query.active && cur_game.pending_query.answered;
+        }
 };
 }  // namespace
 
@@ -108,6 +145,12 @@ static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
 // Drains all buffered events since the last call and puts any triggered abilities
 // from battlefield permanents whose trigger condition matches onto the stack.
 void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer> orderer) {
+    // A suspended trigger placement owns the trigger flow: the main loop's
+    // TRIGGER_PLACE dispatch (resume_trigger_placement) drives it to
+    // completion, and this scan must not drain events or collect a second
+    // batch underneath it. (Belt-and-braces — the main loop never reaches a
+    // state_based_effects call while a pending query is parked.)
+    if (game.trigger_placement.active) return;
     auto events = global_coordinator.drain_pending_events();
 
     // Every ability that triggers off this batch of events is collected here first, then placed
@@ -980,10 +1023,12 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     }
 
     place_triggers_apnap(game, orderer, pending);
-
     // Last-known type snapshots are only valid for this batch of leave-the-battlefield
     // events; clear them so a later, unrelated trigger can't match a stale entity id.
-    game.lk_battlefield_types.clear();
+    // The clear happens at placement COMPLETION (resume_trigger_placement, or the
+    // empty-batch early return in place_triggers_apnap) rather than here: a placement
+    // suspended on an ordering/target decision still needs the look-back data intact
+    // when it resumes, and as a Game member it is snapshot-covered while parked.
 }
 
 static std::string trigger_label(const std::string &name, const Ability &ab) {
@@ -997,36 +1042,80 @@ static std::string trigger_label(const std::string &name, const Ability &ab) {
 
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending) {
-    if (pending.empty()) return;
+    if (pending.empty()) {
+        // Nothing fired this batch: the look-back type snapshots are stale the moment the
+        // batch is over (they'd wrongly match a reused entity id in a later batch).
+        game.lk_battlefield_types.clear();
+        return;
+    }
+    if (game.trigger_placement.active)
+        fatal_error("place_triggers_apnap re-entered with a placement already in flight");
 
     Zone::Ownership active = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
     Zone::Ownership apnap[2] = {active,
                                 active == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A};
 
-    for (Zone::Ownership owner : apnap) {
-        // This owner's pending triggers, in the order they were collected.
-        std::vector<size_t> group;
-        for (size_t i = 0; i < pending.size(); i++)
-            if (pending[i].controller == owner) group.push_back(i);
-        if (group.empty()) continue;
+    // Flatten into the persisted APNAP queue — the active player's group first
+    // (so their triggers end up on the bottom and resolve last), collection
+    // order within each group — and drive it. When a placement decision is
+    // needed mid-queue, resume_trigger_placement parks it as a loop-top
+    // pending decision and returns; the main loop dispatches the answer back
+    // into it until the queue empties.
+    TriggerPlacementRT &tp = game.trigger_placement;
+    tp.active = true;
+    tp.saved_priority = cur_game.player_a_has_priority;
+    tp.target_in_flight = false;
+    tp.tsel = TargetSelectRT{};
+    tp.queue.clear();
+    for (Zone::Ownership owner : apnap)
+        for (const auto &pt : pending)
+            if (pt.controller == owner) tp.queue.push_back(pt);
+    resume_trigger_placement(game, orderer);
+}
 
+void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
+    TriggerPlacementRT &tp = game.trigger_placement;
+    if (!tp.active)
+        fatal_error("resume_trigger_placement without an active trigger placement");
+    // Pre-game placements (test-harness preplaced permanents) have no loop top
+    // to park a query at — they block inline exactly as before.
+    bool suspendable = in_main_loop();
+
+    while (!tp.queue.empty()) {
+        Zone::Ownership owner = tp.queue.front().controller;
         // Placement-time decisions (the 603.3b ordering pick and 603.3d target selection)
         // belong to the TRIGGER'S controller, who need not be the player holding priority
         // (e.g. the opponent's draw fired our Orcish Bowmasters). The input/BQUERY seat
-        // follows cur_game.player_a_has_priority, so temporarily seat the queries on the
-        // owner and restore afterwards (same pattern as request_optional_yesno).
-        bool prev_priority = cur_game.player_a_has_priority;
+        // follows cur_game.player_a_has_priority, so seat the queries on the owner;
+        // tp.saved_priority is restored when the whole placement completes.
         cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
+
+        // The current group: the leading run of queue entries sharing the front's controller.
+        size_t group_size = 1;
+        while (group_size < tp.queue.size() && tp.queue[group_size].controller == owner)
+            group_size++;
 
         // 603.3b: the owner puts their simultaneously-triggered abilities on the stack in an
         // order of their choosing. We place one at a time; the first chosen ends up on the
         // bottom of the stack (resolves last). A single trigger needs no choice.
-        while (!group.empty()) {
-            size_t pick = 0;  // position within `group`
-            if (group.size() > 1) {
+        size_t pick = 0;  // position within the group
+        if (!tp.target_in_flight && group_size > 1) {
+            PendingQuery &pq = game.pending_query;
+            if (suspendable && pq.active) {
+                // Consume the latched ordering answer (the queue is untouched between
+                // arm and resume, so the group it indexes is identical).
+                if (!pq.answered || pq.tag != PendingQuery::TRIGGER_PLACE)
+                    fatal_error("trigger ordering resume without a latched TRIGGER_PLACE answer");
+                if (pq.menu.size() != group_size)
+                    fatal_error("trigger ordering menu size changed between arm and resume (" +
+                                std::to_string(pq.menu.size()) + " vs " +
+                                std::to_string(group_size) + ")");
+                pick = static_cast<size_t>(pq.answer);
+                pq = PendingQuery{};
+            } else {
                 std::vector<LegalAction> choices;
-                for (size_t gi : group) {
-                    LegalAction la(PASS_PRIORITY, pending[gi].source, pending[gi].label);
+                for (size_t gi = 0; gi < group_size; gi++) {
+                    LegalAction la(PASS_PRIORITY, tp.queue[gi].source, tp.queue[gi].label);
                     la.category = ActionCategory::ORDER_TRIGGERS;
                     // Menu position disambiguates two triggers that share one source
                     // permanent (same-entity collision).
@@ -1034,28 +1123,69 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                     choices.push_back(la);
                 }
                 game_log("%s orders %zu simultaneous triggers (pick which goes on the stack next).\n",
-                         player_name(owner).c_str(), group.size());
-                pick = static_cast<size_t>(InputLogger::instance().get_input(choices));
+                         player_name(owner).c_str(), group_size);
+                if (!suspendable) {
+                    pick = static_cast<size_t>(InputLogger::instance().get_input(choices));
+                } else {
+                    // Park the ordering pick for the main loop. Byte-compat: this prompt
+                    // runs with pending_decision_source == 0 today (no PendingDecisionScope
+                    // wraps it), and the corpus decodes that state field — arm with 0.
+                    pq = PendingQuery{};
+                    pq.tag = PendingQuery::TRIGGER_PLACE;
+                    pq.menu = std::move(choices);
+                    pq.chooser_is_a = (owner == Zone::PLAYER_A);
+                    pq.decision_source = 0;
+                    pq.prev_priority = cur_game.player_a_has_priority;
+                    pq.answered = false;
+                    pq.answer = -1;
+                    pq.active = true;
+                    return;
+                }
             }
-            PendingTrigger &pt = pending[group[pick]];
-            if (pt.needs_target) {
+        }
+        // Apply the ordering pick: the chosen entry moves to the queue front.
+        if (pick > 0)
+            std::rotate(tp.queue.begin(), tp.queue.begin() + static_cast<ptrdiff_t>(pick),
+                        tp.queue.begin() + static_cast<ptrdiff_t>(pick) + 1);
+
+        PendingTrigger &pt = tp.queue.front();
+        if (pt.needs_target) {
+            if (!tp.target_in_flight) {
                 // CR 603.3d: if no legal choices can be made for a required target as the
                 // triggered ability would go on the stack, the ability is simply removed —
                 // never placed target-less (it would fizzle confusingly, or worse, resolve
                 // against target 0). Optional targeting (target_min 0) always passes.
+                // Checked at placement time exactly as before — nothing can run between
+                // the ordering prompt and this check.
                 if (!has_legal_targets(pt.ab, orderer)) {
                     game_log("%s's trigger is removed - no legal targets (603.3d)\n",
                              entity_name(pt.source).c_str());
-                    group.erase(group.begin() + static_cast<ptrdiff_t>(pick));
+                    tp.queue.erase(tp.queue.begin());
                     continue;
                 }
-                select_target(pt.ab, orderer, pt.controller);
             }
-            orderer->push_ability_onto_stack(pt.ab, pt.controller);
-            game_log("%s\n", pt.log_line.c_str());
-            group.erase(group.begin() + static_cast<ptrdiff_t>(pick));
+            if (!suspendable) {
+                select_target(pt.ab, orderer, pt.controller);
+            } else {
+                if (!tp.target_in_flight) {
+                    tp.target_in_flight = true;
+                    tp.tsel = TargetSelectRT{};
+                }
+                TriggerPlaceTargetAsker asker;
+                if (run_target_select(pt.ab, tp.tsel, asker, orderer, pt.controller) ==
+                    TargetStatus::SUSPENDED)
+                    return;
+                tp.target_in_flight = false;
+            }
         }
-
-        cur_game.player_a_has_priority = prev_priority;
+        orderer->push_ability_onto_stack(pt.ab, pt.controller);
+        game_log("%s\n", pt.log_line.c_str());
+        tp.queue.erase(tp.queue.begin());
     }
+
+    // Placement complete: restore the pre-placement priority seat and retire the
+    // look-back type snapshots for this batch (see check_triggered_abilities).
+    cur_game.player_a_has_priority = tp.saved_priority;
+    tp = TriggerPlacementRT{};
+    game.lk_battlefield_types.clear();
 }

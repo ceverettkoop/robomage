@@ -10,7 +10,7 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
-bool untap(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult untap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     // Untap every chosen target. A single-target Untap uses ab.target; a multi-target Untap
     // (Candelabra of Tawnos: "Untap X target lands") populates ab.targets — untap each. An
@@ -35,7 +35,7 @@ bool untap(Ability &ab, std::shared_ptr<Orderer> orderer) {
         tperm.is_tapped = false;
         game_log("%s untaps\n", tperm.name.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

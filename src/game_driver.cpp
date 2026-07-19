@@ -42,6 +42,18 @@
 // definition so the C++ actor and the Python stdio driver stay in parity.
 static unsigned int match_game_seed(const MatchContext &ctx);
 
+// ── Pregame gate (Family F): mulligans + opening-hand actions as loop-top
+// decisions. One stage step (≤1 decision) per main-loop iteration; all state
+// lives in cur_game.pregame (snapshot-covered), so a RESTORE targeting any
+// pregame decision re-derives it at the gate.
+static void run_pregame_step(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b);
+static void pregame_mull_decide(EcsSystems &sys);
+static void pregame_mull_bottom(EcsSystems &sys);
+static void pregame_fiat_setup(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b);
+static void pregame_opening_actions(EcsSystems &sys);
+static int pregame_ask(std::vector<LegalAction> &actions);
+static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
+
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
 Deck DEFAULT_DECK_ONE;
@@ -106,6 +118,14 @@ MatchContext g_match_ctx;
 // tell a card_db.clear()+reload happened across the rollback (see game_driver.h).
 uint64_t g_card_db_generation = 0;
 
+// True while play_single_game's decision loop is running. Blocking fallbacks
+// gate on it: a prompt fired OUTSIDE the loop has no loop top to suspend to,
+// so it must block inline. Since the pregame gate (Batch 13) the whole pregame
+// — including the preplaced-preset SBE pass — runs INSIDE the loop, so those
+// fallbacks are defensive only.
+static bool g_in_main_loop = false;
+bool in_main_loop() { return g_in_main_loop; }
+
 EcsSystems init_ecs() {
     card_db.clear();
     ++g_card_db_generation;
@@ -155,63 +175,35 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     sys.orderer->generate_libraries(deck_a, deck_b);
 
     // Pre-game section header: mulligans, test-harness fiat setup, and the CR 103.6b
-    // opening-hand actions below all print under PREGAME, before the first turn header.
+    // opening-hand actions all print under PREGAME, before the first turn header.
     cli_print_pregame_header();
     sys.orderer->draw_hands();
-    sys.orderer->do_london_mulligan(player_a_goes_first);
-
-    // place pre-set battlefield permanents
-    std::vector<Entity> preplaced;
-    if (!battlefield_a_cards.empty()) {
-        auto placed = sys.orderer->place_on_battlefield(battlefield_a_cards, Zone::PLAYER_A);
-        preplaced.insert(preplaced.end(), placed.begin(), placed.end());
-    }
-    if (!battlefield_b_cards.empty()) {
-        auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
-        preplaced.insert(preplaced.end(), placed.begin(), placed.end());
-    }
-    // pre-set graveyard cards (test harness): no Permanent/Creature components are
-    // attached, so they are skipped by the summoning-sickness clear below.
-    if (!graveyard_a_cards.empty())
-        sys.orderer->place_in_graveyard(graveyard_a_cards, Zone::PLAYER_A);
-    if (!graveyard_b_cards.empty())
-        sys.orderer->place_in_graveyard(graveyard_b_cards, Zone::PLAYER_B);
-    // pre-set exile / sideboard ("outside the game") cards so zone-change effects
-    // that pull from those zones (e.g. Karn's -2) can be exercised in isolation.
-    if (!exile_a_cards.empty())
-        sys.orderer->place_in_zone(exile_a_cards, Zone::PLAYER_A, Zone::EXILE);
-    if (!exile_b_cards.empty())
-        sys.orderer->place_in_zone(exile_b_cards, Zone::PLAYER_B, Zone::EXILE);
-    if (!sideboard_a_cards.empty())
-        sys.orderer->place_in_zone(sideboard_a_cards, Zone::PLAYER_A, Zone::SIDEBOARD);
-    if (!sideboard_b_cards.empty())
-        sys.orderer->place_in_zone(sideboard_b_cards, Zone::PLAYER_B, Zone::SIDEBOARD);
-    // Companion (CR 702.139): instantiate each player's chosen companion as a sideboard entity (if
-    // not already one) and record it, gated on the starting deck meeting the companion's restriction.
-    setup_companions(deck_a, deck_b, sys.orderer);
-    // run SBE once to attach Permanent/Creature components, then clear summoning sickness
-    if (!preplaced.empty()) {
-        sys.state_manager->state_based_effects(cur_game, sys.orderer);
-        for (auto e : preplaced) {
-            if (global_coordinator.entity_has_component<Permanent>(e)) {
-                global_coordinator.GetComponent<Permanent>(e).has_summoning_sickness = false;
-            }
-        }
-    }
-
-    // CR 103.6: after mulligans resolve (and any test-harness fiat setup above), each player
-    // in APNAP order — starting player first — may take opening-hand actions (CR 103.6b,
-    // Leyline of the Void: begin the game with it on the battlefield). If anything moved,
-    // run state-based effects so a card put onto the battlefield gets its Permanent
-    // component before the first turn begins.
-    if (sys.orderer->do_opening_hand_actions(player_a_goes_first))
-        sys.state_manager->state_based_effects(cur_game, sys.orderer);
-
-    cur_game.player_a_turn = player_a_goes_first;
-    cur_game.player_a_has_priority = player_a_goes_first;
+    // The pregame itself (mulligans → fiat setup → opening-hand actions → the
+    // first-turn seat init) runs as loop-top decisions via the pregame gate in
+    // the main loop below (Family F): initialize the stage machine here; the
+    // first loop iterations drive it to DONE before the first turn header.
+    cur_game.pregame.stage = Game::PregameState::MULL_DECIDE;
+    cur_game.pregame.a_goes_first = player_a_goes_first;
 
     size_t prev_turn = (size_t)-1;
-    while (!cur_game.ended || search_intercept_game_end()) {
+    g_in_main_loop = true;
+    // Loop while the game is live — or while a suspended resolution / parked
+    // query is still in flight even though the game is already decided: a
+    // resolving effect can end the game mid-resolution (Orderer::draw sets
+    // `ended` the instant a player draws from an empty library) and then park
+    // a later prompt of the SAME resolution (Brainstorm's put-back after the
+    // fatal draw). The old blocking prompt ran to completion under the
+    // already-decided game; the suspended form must too — the pending branch
+    // emits it, the resume finishes the resolution, and the in-body `ended`
+    // checks then break with the frame cleared (satisfying the guard below).
+    // Likewise a live pregame stage keeps the loop running even under an
+    // already-decided game (a preset scenario — --life-a 0, a mulligan redraw
+    // off an empty stacked library — can set `ended` mid-pregame): the old
+    // synchronous pregame block always ran to completion regardless, so the
+    // gate-driven one must too.
+    while (!cur_game.ended || cur_game.pending_query.active || cur_game.resolution.active ||
+           cur_game.pregame.stage != Game::PregameState::DONE ||
+           search_intercept_game_end()) {
         // A RESTORE that arrived mid-decision unwound to here; apply it before
         // anything reads game state, so this iteration re-derives (and re-emits)
         // the restored decision. (Applies GAME-scoped restores only.)
@@ -221,35 +213,223 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // dispatcher apply it (its loop top) and re-enter the restored stage. The
         // returned winner is ignored — the dispatcher checks the pending restore
         // before reading it.
-        if (search_match_restore_pending()) return cur_game.winner;
-        if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
-            cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
-            prev_turn = cur_game.turn;
+        if (search_match_restore_pending()) {
+            g_in_main_loop = false;
+            return cur_game.winner;
+        }
+        // Set by the RESOLUTION dispatch below when a resumed resolution ran to
+        // completion inside its direct advance_step call: skip straight to the
+        // post-resolution half of the iteration (the post-advance SBE + legal
+        // actions) — exactly where today's single-call flow stands after
+        // advance_step returns false. Turn-based actions / mandatory choices /
+        // the pre-advance SBE already ran when the resolution first began, and
+        // SBAs never apply mid-resolution.
+        bool resolution_just_completed = false;
+        // A suspended decision (pending_query.h) is emitted here — the FIRST
+        // thing each iteration, before the turn header and before turn-based
+        // actions / mandatory choices / SBE run (a suspended trigger placement
+        // or combat sub-prompt must not let combat damage run underneath it).
+        // The stored menu is re-emitted verbatim; loop-safe, so SNAPSHOT/
+        // DETERMINIZE are legal here.
+        if (cur_game.pending_query.active) {
+            PendingQuery &pq = cur_game.pending_query;
+            if (!pq.answered) {
+                if (cur_game.player_a_has_priority != pq.chooser_is_a)
+                    fatal_error("pending query: priority is not at the chooser");
+                // Reset the pending-decision baseline to the arm-time value (0:
+                // every family arms from a loop-top-driven flow with no ambient
+                // pending decision). A SNAPSHOT at this decision is captured
+                // while the scope below holds pending_decision_source =
+                // pq.decision_source, so a RESTORE re-enters with that value
+                // still set — without the reset the recreated scope would
+                // capture it as its prev and leak it past the answer, desyncing
+                // the restored line's next observation from the natural one
+                // (the same hazard run_sideboard_phase documents). No-op on the
+                // natural line.
+                cur_game.pending_decision_source = 0;
+                PendingDecisionScope pending(pq.decision_source);
+                search_set_loop_safe(true);
+                int choice = InputLogger::instance().get_input(pq.menu);
+                search_set_loop_safe(false);
+                // A RESTORE latched during the query unwound it: loop back
+                // WITHOUT storing the answer so the restored state re-emits.
+                if (search_restore_pending() || search_match_restore_pending()) continue;
+                pq.answer = choice;
+                pq.answered = true;
+            }
+            // Dispatch the latched answer back to the suspended flow. Each tag's
+            // resume path lands with its conversion batch.
+            switch (pq.tag) {
+                case PendingQuery::ATTACK_TARGET:
+                case PendingQuery::BLOCK_TARGET:
+                    resume_combat_target_choice(cur_game);
+                    break;
+                case PendingQuery::DAMAGE_ASSIGN:
+                    resume_damage_assignment(cur_game, sys.orderer);
+                    // The resume may arm the NEXT pick's query (same or next
+                    // attacker): loop back so the pending branch emits it before
+                    // anything (turn-based actions, SBE) runs underneath it. When
+                    // the assignment completes instead, fall through — turn-based
+                    // actions find every attacker decided and deal combat damage,
+                    // exactly as the single-call flow did.
+                    if (cur_game.pending_query.active) continue;
+                    break;
+                case PendingQuery::ACTIVATION:
+                    resume_activation_flow(cur_game, sys.orderer);
+                    // The resume may arm the NEXT activation prompt (the
+                    // loyalty-X ladder after the X ladder, the target after
+                    // the ladders, a secondary-cost pick after the payment):
+                    // loop back so the pending branch emits it before anything
+                    // (turn-based actions, SBE) runs underneath the half-paid
+                    // activation. When the flow completes (mana produced /
+                    // ability on the stack) or cancels (payment rewind), fall
+                    // through to the normal flow — exactly the next loop
+                    // iteration after today's blocking process_action returned.
+                    if (cur_game.pending_query.active) continue;
+                    break;
+                case PendingQuery::CAST:
+                    resume_cast_flow(cur_game, sys.orderer);
+                    // The resume may arm the NEXT cast prompt (the following
+                    // kicker/phyrexian pip, the X ladder, the gift y/n, ...):
+                    // loop back so the pending branch emits it before anything
+                    // (turn-based actions, SBE) runs underneath the half-cast
+                    // spell. When the flow completes (spell on the stack +
+                    // take_action) or cancels (payment rewind), fall through to
+                    // the normal flow — exactly the next loop iteration after
+                    // today's blocking process_action returned.
+                    if (cur_game.pending_query.active) continue;
+                    break;
+                case PendingQuery::TRIGGER_PLACE:
+                    resume_trigger_placement(cur_game, sys.orderer);
+                    // The resume may park the NEXT placement decision (the next
+                    // ordering pick, or a trigger target): loop back so the
+                    // pending branch emits it before anything (turn-based
+                    // actions, SBE) runs underneath it. When the placement
+                    // completes instead, fall through to the normal flow — the
+                    // suspended state_based_effects call returned early
+                    // mid-contract, and re-running it from the top is a provable
+                    // no-op: process_turn_based_actions is idempotent per step
+                    // (flag-guarded), the SBA fixpoint re-applies nothing (state
+                    // unchanged but for the stack), and the trigger re-scan
+                    // drains only the placement's own push_ability_onto_stack
+                    // zone-change events, which no trigger matches — the same
+                    // (empty) yield today's next SBE call gets from them.
+                    if (cur_game.pending_query.active) {
+                        if (cur_game.pending_query.answered)
+                            fatal_error("trigger placement resume did not consume its latched answer");
+                        continue;
+                    }
+                    break;
+                case PendingQuery::TURN_DRAW:
+                    resume_pending_draws(cur_game, sys.orderer);
+                    // The resume may arm the NEXT draw's dredge question (a
+                    // multi-card batch): loop back so the pending branch emits
+                    // it before anything runs underneath the half-drawn batch.
+                    // When the batch completes, run the step-change epilogue
+                    // advance_step deferred at suspension, then fall through
+                    // to the normal flow — exactly the next loop iteration
+                    // after today's blocking advance_step returned true.
+                    if (cur_game.pending_query.active) continue;
+                    cur_game.finish_suspended_turn_draw();
+                    break;
+                case PendingQuery::SBE_LATCHED:
+                    // No site resume call — leave the ANSWERED query latched and
+                    // fall into the normal flow below. process_turn_based_actions
+                    // re-runs idempotently (flag-guarded per step), then
+                    // state_based_effects re-runs from scratch on the frozen
+                    // state: already-applied SBAs are silent no-ops, the deriving
+                    // scan re-finds the identical question (the legend conflict /
+                    // the mid-apply ETB choice), and the site's pq_take_latched
+                    // consumes the answer in place — skipping its arm-time logs,
+                    // which printed at first arrival. Tripwires: pq_take_latched
+                    // fatals on a key mismatch (a different question derived
+                    // first), and state_based_effects fatals if it settles
+                    // without re-deriving the question at all.
+                    break;
+                case PendingQuery::RESOLUTION: {
+                    // Re-enter the suspended resolution DIRECTLY via advance_step,
+                    // skipping turn-based actions / mandatory choices / SBE — SBAs
+                    // don't apply mid-resolution (CR 704.3 timing), and today the
+                    // whole resolution completed inside one advance_step call, so
+                    // nothing may run between its halves. The pass flags are still
+                    // true (left set at suspension), so advance_step re-enters
+                    // resolve_top, the phased resolve skips to the suspended point,
+                    // and the pending ask consumes the latched answer.
+                    bool advanced = cur_game.advance_step(sys.stack_manager, sys.orderer);
+                    // Purity tripwire: a resumed resolution must consume the
+                    // latched answer at the very ask that armed it — a still-
+                    // answered query means the handler diverged on re-entry.
+                    if (cur_game.pending_query.active && cur_game.pending_query.answered)
+                        fatal_error("resolution resume did not consume its latched answer");
+                    // Suspended again (a follow-up ask armed a new query): loop
+                    // back so the pending branch emits it before anything runs.
+                    if (advanced) continue;
+                    // Completed (advance_step reset the pass flags and returned
+                    // false): fall through to the post-resolution half below.
+                    resolution_just_completed = true;
+                    break;
+                }
+                default:
+                    fatal_error("pending query dispatch not implemented for tag " +
+                                std::to_string(static_cast<int>(pq.tag)));
+            }
+        }
+        // Pregame gate (Family F): while the pregame stage machine is live,
+        // each iteration drives exactly one pregame step (at most one decision,
+        // emitted loop-safe inside run_pregame_step) and loops — nothing below
+        // (turn header, turn-based actions, SBE, advance_step) may run until
+        // the pregame completes. Placed AFTER the pending-query branch so a
+        // query armed DURING a pregame stage — a preplaced Cavern's ETB
+        // choose-type riding SBE_LATCHED, a trigger placement parked by the
+        // post-opening-hand SBE — is emitted and dispatched first, with its
+        // fall-through landing back here to resume the interrupted stage.
+        if (cur_game.pregame.stage != Game::PregameState::DONE) {
+            run_pregame_step(sys, deck_a, deck_b);
+            continue;
         }
         Zone::Ownership viewer = (has_human_player)
             ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
             : Zone::UNKNOWN;
 
-        sys.state_manager->process_turn_based_actions(cur_game, sys.orderer);
-        if (cur_game.is_mandatory_choice_pending()) {
-            populate_gamestate(&gs, viewer);
-            proc_mandatory_choice(cur_game, sys.orderer);
-            continue;
-        }
-        sys.state_manager->state_based_effects(cur_game, sys.orderer);
-        if (cur_game.ended) {
-            if (!search_intercept_game_end()) break;
-            continue;
-        }
-        if (cur_game.advance_step(sys.stack_manager, sys.orderer)) {
-            continue;
-        } else {
+        if (!resolution_just_completed) {
+            if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
+                cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
+                prev_turn = cur_game.turn;
+            }
+
+            sys.state_manager->process_turn_based_actions(cur_game, sys.orderer);
+            if (cur_game.is_mandatory_choice_pending()) {
+                populate_gamestate(&gs, viewer);
+                proc_mandatory_choice(cur_game, sys.orderer);
+                continue;
+            }
             sys.state_manager->state_based_effects(cur_game, sys.orderer);
             if (cur_game.ended) {
                 if (!search_intercept_game_end()) break;
                 continue;
             }
+            // A trigger placement suspended inside state_based_effects: loop
+            // back so the pending branch emits the parked decision before
+            // advance_step (or anything else) runs underneath it.
+            if (decision_suspended()) continue;
+            if (cur_game.advance_step(sys.stack_manager, sys.orderer)) {
+                continue;
+            }
         }
+        // Post-advance SBE: something resolved (or nothing advanced) this
+        // iteration — run state-based effects before offering priority. A
+        // resolution completed via the RESOLUTION dispatch lands here directly,
+        // which is exactly where the single-call flow stood after its
+        // advance_step returned false.
+        sys.state_manager->state_based_effects(cur_game, sys.orderer);
+        if (cur_game.ended) {
+            if (!search_intercept_game_end()) break;
+            continue;
+        }
+        // A trigger placement suspended inside the post-advance SBE: loop back
+        // so the pending branch emits the parked decision before priority is
+        // offered on a half-placed batch.
+        if (decision_suspended()) continue;
 
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
         if (legal_actions.size() == 1) {
@@ -284,7 +464,323 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         search_set_loop_safe(false);
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
+    // A real game end must never strand a suspended resolution (plan risk R7):
+    // the winner is decided by state-based effects, which never run while a
+    // resolution is parked, so an active frame/query here is a protocol bug.
+    // Same for a half-finished cast or activation: pending_cast /
+    // pending_activation are active only while their query is parked or their
+    // run_*_flow is on the stack, never at loop exit. A live pregame stage is
+    // equally impossible here — the loop condition keeps running the gate (even
+    // under an ended game) until the stage machine reaches DONE. Likewise a
+    // turn-draw batch: pending_draw is active only while its query is parked or
+    // resume_pending_draws is on the stack (an ended game mid-batch clears it).
+    if (cur_game.resolution.active || cur_game.pending_query.active ||
+        cur_game.pending_cast.active || cur_game.pending_activation.active ||
+        cur_game.pending_draw.active ||
+        cur_game.pregame.stage != Game::PregameState::DONE)
+        fatal_error("game ended with a suspended resolution/pending query still parked");
+    g_in_main_loop = false;
     return cur_game.winner;
+}
+
+// ── Pregame gate stages (Family F) ──────────────────────────────────────────
+
+// Emit one pregame decision from the loop gate. Loop-safe: the decision
+// re-derives from PregameState + the live hands on gate re-entry (the
+// sideboard-style re-derivation property), so SNAPSHOT/DETERMINIZE are legal
+// here. Returns -1 when a RESTORE latched during the query — the caller bails
+// without applying anything so the loop top applies the restore and the gate
+// re-derives (and re-emits) the restored decision.
+static int pregame_ask(std::vector<LegalAction> &actions) {
+    search_set_loop_safe(true);
+    int choice = InputLogger::instance().get_input(actions);
+    search_set_loop_safe(false);
+    if (search_restore_pending() || search_match_restore_pending()) return -1;
+    return choice;
+}
+
+// Keep/mulligan outcomes are public knowledge (both players see them), so
+// log via game_log. On a London-mulligan keep the final hand is 7 minus the
+// number of mulligans taken (the rest get bottomed).
+static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls) {
+    if (kept)
+        game_log("%s keeps a %d-card hand.\n", player_name(owner).c_str(), 7 - mulls);
+    else
+        game_log("%s mulligans.\n", player_name(owner).c_str());
+}
+
+// One keep/mulligan decision (CR 103.4). Seat order replicates the old nested
+// round loop: CR 103.5 announces each round of decisions in turn order,
+// starting player first — that matters in bo3 games 2-3, where the loser of
+// the previous game (possibly B) is on the play; always letting A decide first
+// handed B a systematic information edge in those games.
+static void pregame_mull_decide(EcsSystems &sys) {
+    Game::PregameState &pg = cur_game.pregame;
+    if (pg.a_kept && pg.b_kept) {
+        pg.stage = Game::PregameState::FIAT_SETUP;
+        return;
+    }
+    const Zone::Ownership first = pg.a_goes_first ? Zone::PLAYER_A : Zone::PLAYER_B;
+    const Zone::Ownership second = pg.a_goes_first ? Zone::PLAYER_B : Zone::PLAYER_A;
+    const bool first_kept = (first == Zone::PLAYER_A) ? pg.a_kept : pg.b_kept;
+    const bool second_kept = (second == Zone::PLAYER_A) ? pg.a_kept : pg.b_kept;
+    Zone::Ownership seat;
+    if (!pg.first_seat_decided_this_round && !first_kept) {
+        seat = first;
+    } else if (!second_kept) {
+        seat = second;
+    } else {
+        // Second seat kept in an earlier round and the first seat mulliganed
+        // this round: the round rolls and the first seat decides again.
+        pg.first_seat_decided_this_round = false;
+        seat = first;
+    }
+    bool &kept = (seat == Zone::PLAYER_A) ? pg.a_kept : pg.b_kept;
+    int &mulligans = (seat == Zone::PLAYER_A) ? pg.mulls_a : pg.mulls_b;
+    // Priority seat per the established decide_for convention: A decides with
+    // priority true, B with false — regardless of who goes first.
+    cur_game.player_a_has_priority = (seat == Zone::PLAYER_A);
+    {
+        auto hand_display = sys.orderer->get_hand(seat);
+        game_log_private(seat, "%s hand:\n", player_name(seat).c_str());
+        for (auto card : hand_display) {
+            auto &data = global_coordinator.GetComponent<CardData>(card);
+            game_log_private(seat, "%s\n", data.name.c_str());
+        }
+    }
+    std::vector<LegalAction> mull_actions = {
+        LegalAction(PASS_PRIORITY, std::string("Keep")),
+        LegalAction(PASS_PRIORITY, std::string("Mulligan")),
+    };
+    mull_actions[0].category = ActionCategory::KEEP_HAND;
+    mull_actions[1].category = ActionCategory::MULLIGAN;
+    int choice = pregame_ask(mull_actions);
+    if (choice < 0) return;
+    // Round bookkeeping: deciding as the round's first seat marks the round
+    // half-done; deciding as the second seat completes (rolls) the round.
+    pg.first_seat_decided_this_round = (seat == first);
+    if (choice == 0) {
+        kept = true;
+        log_mull_decision(seat, true, mulligans);
+        if (mulligans > 0) {
+            pg.bottoming_owner = seat;
+            pg.bottom_remaining = mulligans;
+            pg.stage = Game::PregameState::MULL_BOTTOM;
+        }
+    } else {
+        log_mull_decision(seat, false, mulligans);
+        mulligans++;
+        if (mulligans == 7) {
+            kept = true;
+            log_mull_decision(seat, true, mulligans);
+            pg.bottoming_owner = seat;
+            pg.bottom_remaining = mulligans;
+            pg.stage = Game::PregameState::MULL_BOTTOM;
+        } else {
+            if (mulligans >= 3 && InputLogger::instance().is_machine_mode()) {
+                printf("MULLIGAN_PENALTY: %s\n", seat == Zone::PLAYER_A ? "A" : "B");
+                fflush(stdout);
+            }
+            auto hand = sys.orderer->get_hand(seat);
+            for (auto card : hand) {
+                sys.orderer->add_to_zone(false, card, Zone::LIBRARY);
+            }
+            sys.orderer->shuffle_library(seat);
+            sys.orderer->draw(seat, 7, false);
+        }
+    }
+}
+
+// One London bottoming pick (CR 103.4a): the menu is re-derived from the live
+// hand each call, exactly like the old per-iteration rebuild. Priority is
+// already at the bottoming owner (their keep decision seated it).
+static void pregame_mull_bottom(EcsSystems &sys) {
+    Game::PregameState &pg = cur_game.pregame;
+    Zone::Ownership owner = pg.bottoming_owner;
+    auto hand = sys.orderer->get_hand(owner);
+    if (pg.bottom_remaining <= 0 || hand.empty()) {
+        pg.bottom_remaining = 0;
+        pg.stage = Game::PregameState::MULL_DECIDE;
+        return;
+    }
+    game_log("%s: Choose card to put on library bottom (%d remaining):\n",
+             player_name(owner).c_str(), pg.bottom_remaining);
+    std::vector<LegalAction> btm_actions;
+    for (auto card : hand) {
+        auto &cd = global_coordinator.GetComponent<CardData>(card);
+        LegalAction la(PASS_PRIORITY, card, cd.name);
+        la.category = ActionCategory::BOTTOM_DECK_CARD;
+        btm_actions.push_back(la);
+    }
+    int choice = pregame_ask(btm_actions);
+    if (choice < 0) return;
+    sys.orderer->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
+    pg.bottom_remaining--;
+    if (pg.bottom_remaining == 0) pg.stage = Game::PregameState::MULL_DECIDE;
+}
+
+// Promptless fiat setup: test-harness presets, companions, and the preplaced-
+// permanent SBE pass. The gate runs INSIDE the main loop, so a preplaced
+// permanent's ETB choice (Cavern's choose-type, Disruptor Flute's name-a-card)
+// now legitimately suspends via SBE_LATCHED instead of taking the old blocking
+// fallback: this function bails on the parked query, the loop emits it, and
+// the resumed SBE pass re-finds the question and consumes the latched answer
+// (fiat_placed / preplaced.clear() keep the re-entry idempotent).
+static void pregame_fiat_setup(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b) {
+    Game::PregameState &pg = cur_game.pregame;
+    if (!pg.fiat_placed) {
+        // place pre-set battlefield permanents
+        if (!battlefield_a_cards.empty()) {
+            auto placed = sys.orderer->place_on_battlefield(battlefield_a_cards, Zone::PLAYER_A);
+            pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
+        }
+        if (!battlefield_b_cards.empty()) {
+            auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
+            pg.preplaced.insert(pg.preplaced.end(), placed.begin(), placed.end());
+        }
+        // pre-set graveyard cards (test harness): no Permanent/Creature components are
+        // attached, so they are skipped by the summoning-sickness clear below.
+        if (!graveyard_a_cards.empty())
+            sys.orderer->place_in_graveyard(graveyard_a_cards, Zone::PLAYER_A);
+        if (!graveyard_b_cards.empty())
+            sys.orderer->place_in_graveyard(graveyard_b_cards, Zone::PLAYER_B);
+        // pre-set exile / sideboard ("outside the game") cards so zone-change effects
+        // that pull from those zones (e.g. Karn's -2) can be exercised in isolation.
+        if (!exile_a_cards.empty())
+            sys.orderer->place_in_zone(exile_a_cards, Zone::PLAYER_A, Zone::EXILE);
+        if (!exile_b_cards.empty())
+            sys.orderer->place_in_zone(exile_b_cards, Zone::PLAYER_B, Zone::EXILE);
+        if (!sideboard_a_cards.empty())
+            sys.orderer->place_in_zone(sideboard_a_cards, Zone::PLAYER_A, Zone::SIDEBOARD);
+        if (!sideboard_b_cards.empty())
+            sys.orderer->place_in_zone(sideboard_b_cards, Zone::PLAYER_B, Zone::SIDEBOARD);
+        // Companion (CR 702.139): instantiate each player's chosen companion as a sideboard
+        // entity (if not already one) and record it, gated on the starting deck meeting the
+        // companion's restriction.
+        setup_companions(deck_a, deck_b, sys.orderer);
+        pg.fiat_placed = true;
+    }
+    // run SBE once to attach Permanent/Creature components, then clear summoning sickness
+    if (!pg.preplaced.empty()) {
+        sys.state_manager->state_based_effects(cur_game, sys.orderer);
+        if (decision_suspended()) return;
+        for (auto e : pg.preplaced) {
+            if (global_coordinator.entity_has_component<Permanent>(e)) {
+                global_coordinator.GetComponent<Permanent>(e).has_summoning_sickness = false;
+            }
+        }
+        pg.preplaced.clear();
+    }
+    pg.stage = Game::PregameState::OPENING_ACTIONS;
+}
+
+// CR 103.6: after mulligans resolve (and any test-harness fiat setup above), each player
+// in APNAP order — starting player first — may take opening-hand actions (CR 103.6b,
+// Leyline of the Void: begin the game with it on the battlefield). One y/n offer per
+// gate call; when both players are exhausted, run state-based effects if anything moved
+// (so a card put onto the battlefield gets its Permanent component before the first
+// turn begins), then seat the first turn and finish the pregame.
+static void pregame_opening_actions(EcsSystems &sys) {
+    Game::PregameState &pg = cur_game.pregame;
+    const Zone::Ownership order[2] = {pg.a_goes_first ? Zone::PLAYER_A : Zone::PLAYER_B,
+                                      pg.a_goes_first ? Zone::PLAYER_B : Zone::PLAYER_A};
+    while (pg.oh_player_idx < 2) {
+        Zone::Ownership player = order[pg.oh_player_idx];
+        bool is_starting_player = (pg.oh_player_idx == 0);
+        // Snapshot the kept hand up front: a resolved ability moves its card out of the hand,
+        // and no new card can join the opening hand mid-phase (CR 103.5: the opening hand is
+        // the hand kept after mulligan resolution).
+        if (!pg.oh_hand_init) {
+            pg.oh_hand = sys.orderer->get_hand(player);
+            pg.oh_card_idx = 0;
+            pg.oh_hand_init = true;
+        }
+        while (pg.oh_card_idx < pg.oh_hand.size()) {
+            Entity card = pg.oh_hand[pg.oh_card_idx];
+            if (!global_coordinator.entity_has_component<CardData>(card)) {
+                pg.oh_card_idx++;
+                continue;
+            }
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            if (cd.opening_hand_abilities.empty()) {
+                pg.oh_card_idx++;
+                continue;
+            }
+            // :!PlayFirst (Gemstone Caverns): only offered to a player NOT going first.
+            if (cd.opening_hand_not_first && is_starting_player) {
+                pg.oh_card_idx++;
+                continue;
+            }
+            const Ability &first_ab = cd.opening_hand_abilities.front();
+            std::string prompt =
+                (first_ab.category == "ChangeZone" && first_ab.destination == Zone::BATTLEFIELD)
+                    ? "begin the game with " + cd.name + " on the battlefield"
+                    : "use " + cd.name + "'s opening-hand ability";
+            // The y/n is seated on `player` with the request_optional_yesno
+            // convention (priority save/set/restore + the exact same two-option
+            // menu), but emitted through the loop gate so it is loop-safe.
+            std::vector<LegalAction> yn;
+            LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
+            decline.category = ActionCategory::OPTIONAL_YESNO;
+            decline.option_ordinal = 0;  // 0 = decline
+            yn.push_back(decline);
+            LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
+            accept.category = ActionCategory::OPTIONAL_YESNO;
+            accept.option_ordinal = 1;  // 1 = accept
+            yn.push_back(accept);
+            bool prev_priority = cur_game.player_a_has_priority;
+            cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
+            int choice = pregame_ask(yn);
+            if (choice < 0) return;  // restore latched; state is about to be overwritten
+            cur_game.player_a_has_priority = prev_priority;
+            pg.oh_card_idx++;
+            if (choice == 1) {
+                // Same instantiation pattern as gift_abilities in Ability::resolve: copy the
+                // parsed template, wire this card as the source and its holder as controller,
+                // and run it through the normal resolve pipeline so zone-change replacements/
+                // ETB machinery apply.
+                for (Ability ab : cd.opening_hand_abilities) {
+                    ab.source = card;
+                    ab.controller = player;
+                    ab.resolve(sys.orderer);
+                }
+                pg.oh_any_ran = true;
+            }
+            return;  // at most one decision per gate call
+        }
+        pg.oh_player_idx++;
+        pg.oh_hand_init = false;
+    }
+    // Both players exhausted. The post-move SBE may itself park a decision (an
+    // ETB choice or trigger placement of a card put onto the battlefield): bail
+    // and let the resumed pass settle it — the re-entry lands back here with
+    // oh_player_idx already past both players.
+    if (pg.oh_any_ran) {
+        sys.state_manager->state_based_effects(cur_game, sys.orderer);
+        if (decision_suspended()) return;
+    }
+    cur_game.player_a_turn = pg.a_goes_first;
+    cur_game.player_a_has_priority = pg.a_goes_first;
+    pg.stage = Game::PregameState::DONE;
+}
+
+static void run_pregame_step(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b) {
+    switch (cur_game.pregame.stage) {
+        case Game::PregameState::MULL_DECIDE:
+            pregame_mull_decide(sys);
+            break;
+        case Game::PregameState::MULL_BOTTOM:
+            pregame_mull_bottom(sys);
+            break;
+        case Game::PregameState::FIAT_SETUP:
+            pregame_fiat_setup(sys, deck_a, deck_b);
+            break;
+        case Game::PregameState::OPENING_ACTIONS:
+            pregame_opening_actions(sys);
+            break;
+        case Game::PregameState::DONE:
+            break;
+    }
 }
 
 // present sideboard choices to a player via the standard query mechanism.

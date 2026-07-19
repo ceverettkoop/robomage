@@ -26,9 +26,9 @@ namespace effects {
 // Mobilize creature is attacking (508.4a — they are put onto the battlefield attacking, so no
 // new attack is declared and no further "attacks" triggers fire). At the next end step the
 // controller sacrifices exactly the tokens this instance created, via a delayed trigger.
-bool mobilize(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     int n = static_cast<int>(ab.amount);
-    if (n <= 0) return true;
+    if (n <= 0) return HandlerResult::DONE_RUN_SUBS;
 
     Zone::Ownership ctrl = source_controller(ab.source);
 
@@ -60,7 +60,7 @@ bool mobilize(Ability &ab, std::shared_ptr<Orderer> orderer) {
         created.push_back(tok_entity);
     }
 
-    if (created.empty()) return true;
+    if (created.empty()) return HandlerResult::DONE_RUN_SUBS;
     game_log("Mobilize %d: %s creates %zu tapped and attacking 1/1 Warrior(s).\n", n,
              player_name(ctrl).c_str(), created.size());
 
@@ -79,13 +79,13 @@ bool mobilize(Ability &ab, std::shared_ptr<Orderer> orderer) {
     dt.owner_entity = get_player_entity(ctrl);
     dt.fire_on_turn = cur_game.turn;
     cur_game.delayed_triggers.push_back(dt);
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Delayed end-step sacrifice fired by Mobilize. Sacrifices each token in ab.targets that is
 // still on the battlefield (some may already have died/left). Tokens cease to exist when they
 // hit the graveyard, matching "sacrifice them."
-bool sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     for (Entity tok : ab.targets) {
         if (!global_coordinator.entity_has_component<Zone>(tok)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(tok);
@@ -96,7 +96,7 @@ bool sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer) {
         orderer->add_to_zone(false, tok, Zone::GRAVEYARD);
         game_log("Mobilize: %s is sacrificed.\n", name.c_str());
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects

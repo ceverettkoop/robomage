@@ -18,16 +18,16 @@ namespace effects {
 // (Defined$ Self — Moonshadow removes a -1/-1 counter from itself). Removing more counters
 // than are present just removes all of them (122.5 — you can't go below zero). +1/+1 and
 // -1/-1 changes resync the creature's P/T via add_counters.
-bool remove_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
+HandlerResult remove_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     Entity tgt =
         (ab.target != 0 && global_coordinator.entity_has_component<Permanent>(ab.target)) ? ab.target
                                                                                           : ab.source;
-    if (!global_coordinator.entity_has_component<Permanent>(tgt)) return true;
+    if (!global_coordinator.entity_has_component<Permanent>(tgt)) return HandlerResult::DONE_RUN_SUBS;
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
-    if (!cp || cp->type.empty()) return true;
+    if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
     int have = get_counters(tgt, cp->type);
-    if (have <= 0) return true;
+    if (have <= 0) return HandlerResult::DONE_RUN_SUBS;
     int n = (cp->count > 0) ? std::min(cp->count, have) : have;
     add_counters(tgt, cp->type, -n);
     if (global_coordinator.entity_has_component<Creature>(tgt)) {
@@ -39,7 +39,7 @@ bool remove_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                              : "permanent";
         game_log("Removed %d %s counter(s) from %s.\n", n, cp->type.c_str(), nm);
     }
-    return true;
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects
