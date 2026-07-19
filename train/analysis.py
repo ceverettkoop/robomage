@@ -1113,27 +1113,14 @@ def _print_whatif_table(branches):
 
 
 def _action_desc(obs, i):
-    """Human-readable description of legal-action slot i ("CAST (Lightning Bolt)").
-    Tokens render as "Token"; a target choice with no card entity is a player.
-    The action's zone_ref is appended when set ("TARGET (Wasteland @opp bf)"),
-    and its entity-slot ref when set ("TARGET (Wasteland @opp bf @slot48)")."""
-    cat = int(round(obs[STATE_SIZE + i] * ACTION_CATEGORY_MAX))
-    cat_name = _CAT_NAMES.get(cat, str(cat))
-
-    zone = int(round(obs[STATE_SIZE + 3 * MAX_ACTIONS + i] * REF_ZONE_MAX))
-    zone_str = f" @{_REF_NAMES.get(zone, zone)}" if zone > 0 else ""
-    # Entity-slot ref (5th metadata block; -1 = none) disambiguates same-named cards.
-    slot = int(round(obs[STATE_SIZE + 4 * MAX_ACTIONS + i] * N_ENTITY_REF_SLOTS)) - 1
-    if slot >= 0:
-        zone_str += f" @slot{slot}"
-
-    card_raw = obs[STATE_SIZE + MAX_ACTIONS + i]
-    if card_raw < 0:
-        if cat_name in ("TARGET", "ATK_TGT"):
-            return f"{cat_name} (Player{zone_str})"
-        return cat_name
-    cid = int(round(card_raw * N_CARD_TYPES))
-    return f"{cat_name} ({decode.card_index_to_name(cid) or f'card#{cid}'}{zone_str})"
+    """Human-readable description of legal-action slot i, rendered by the
+    shared decoder so it reads exactly like the game transcript's action menu
+    ("Cast Lightning Bolt", "Target Wasteland (opp)"), including the
+    option_ordinal suffix ("[#2]") that distinguishes modal / X-value /
+    top-of-library-depth choices the other metadata can't tell apart."""
+    a = decode.decode_actions_from_obs(obs, i + 1)[i]
+    ordv = a["option_ordinal"]
+    return a["description"] + (f"  [#{ordv}]" if ordv >= 0 else "")
 
 
 def _decode_legal_actions(obs, num_choices, chosen_action):
