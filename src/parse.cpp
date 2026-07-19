@@ -956,7 +956,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // battlefield). The colon field names the SVar holding the effect body (Leyline:
         // DB$ ChangeZone | Defined$ Self | Origin$ Hand | Destination$ Battlefield); an optional
         // !PlayFirst field (Gemstone Caverns) limits the offer to the player NOT going first.
-        // The offer itself happens after mulligans in Orderer::do_opening_hand_actions.
+        // The offer itself happens after mulligans in the pregame gate's
+        // OPENING_ACTIONS stage (game_driver.cpp).
         if (kw_line.rfind("MayEffectFromOpeningHand", 0) == 0) {
             card.keywords.push_back("MayEffectFromOpeningHand");
             std::vector<std::string> parts = split(kw_line, ':');

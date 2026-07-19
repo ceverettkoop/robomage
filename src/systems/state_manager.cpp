@@ -315,11 +315,13 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                             pq_arm_sbe(key, std::move(choices), owner, /*decision_source=*/0);
                             return;
                         }
-                        // Pre-game fallback (preplaced duplicate legends, no loop top
-                        // yet): block inline exactly as before. The controller of the
-                        // duplicates chooses which to keep; point priority at them so
-                        // the query routes/observes/records from their perspective
-                        // (SBAs run regardless of who currently holds priority).
+                        // Blocking fallback for an SBE call outside the main loop.
+                        // Since the pregame gate (Batch 13) even the preplaced-preset
+                        // SBE pass runs inside the loop, so this is defensive only.
+                        // The controller of the duplicates chooses which to keep;
+                        // point priority at them so the query routes/observes/records
+                        // from their perspective (SBAs run regardless of who
+                        // currently holds priority).
                         bool prev_priority = game.player_a_has_priority;
                         game.player_a_has_priority = (owner == Zone::PLAYER_A);
                         keep = InputLogger::instance().get_input(choices);

@@ -480,6 +480,56 @@ struct Game {
             TargetSelectRT tsel;
         };
         PendingActivation pending_activation;
+        // Pre-game phase state (Family F): mulligans and CR 103.6b opening-hand
+        // actions run as loop-top decisions driven by the main loop's pregame
+        // gate (run_pregame_step, game_driver.cpp) instead of a synchronous
+        // pre-loop block. All stage/progress state lives here BY VALUE so a
+        // cur_game copy (snapshot_save) covers the whole in-flight pregame —
+        // a RESTORE targeting a keep/mulligan or bottoming root re-derives the
+        // decision at the gate even after the real line progressed into the
+        // main game (only a main-loop gate can bounce control back there).
+        struct PregameState {
+            enum Stage {
+                MULL_DECIDE,      // one keep/mulligan decision per gate call (CR 103.4/103.5)
+                MULL_BOTTOM,      // one London bottoming pick per gate call (CR 103.4a)
+                FIAT_SETUP,       // promptless: test-harness presets, companions, preplaced SBE
+                OPENING_ACTIONS,  // CR 103.6b opening-hand y/n offers, one per gate call
+                DONE              // pregame over
+            };
+            // Default DONE: a mid-game snapshot restores as non-pregame (and
+            // pre-existing snapshots/back-compat states never re-enter the
+            // gate). play_single_game initializes it to MULL_DECIDE at game
+            // start.
+            Stage stage = DONE;
+            bool a_goes_first = true;
+            bool a_kept = false;
+            bool b_kept = false;
+            int mulls_a = 0;
+            int mulls_b = 0;
+            // CR 103.5 round bookkeeping: whether the seat deciding first this
+            // round has already had its keep/mulligan decision this round.
+            bool first_seat_decided_this_round = false;
+            // MULL_BOTTOM: whose kept hand is being bottomed, and how many
+            // cards remain to bottom.
+            Zone::Ownership bottoming_owner = Zone::UNKNOWN;
+            int bottom_remaining = 0;
+            // FIAT_SETUP: presets/companions already placed (a resumed setup
+            // must never re-place), and the preplaced battlefield entities
+            // awaiting their summoning-sickness clear once the SBE pass
+            // settles (cleared after use so the resume path is idempotent).
+            bool fiat_placed = false;
+            std::vector<Entity> preplaced;
+            // OPENING_ACTIONS iteration state: which player (0/1 in play
+            // order), the up-front snapshot of their kept hand (CR 103.5 —
+            // no new card can join the opening hand mid-phase), and the next
+            // hand card to consider.
+            int oh_player_idx = 0;
+            bool oh_hand_init = false;
+            std::vector<Entity> oh_hand;
+            size_t oh_card_idx = 0;
+            bool oh_any_ran = false;
+        };
+        PregameState pregame;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/

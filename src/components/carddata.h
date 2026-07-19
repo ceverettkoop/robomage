@@ -156,7 +156,8 @@ struct CardData{
     // The named SVar's body is parsed into opening_hand_abilities (Leyline of the Void:
     // DB$ ChangeZone | Defined$ Self | Origin$ Hand | Destination$ Battlefield). After mulligans
     // resolve, players are offered these in APNAP order — starting player first — before the
-    // first turn begins (Orderer::do_opening_hand_actions). An optional !PlayFirst field
+    // first turn begins (the pregame gate's OPENING_ACTIONS stage, game_driver.cpp). An
+    // optional !PlayFirst field
     // (Gemstone Caverns) restricts the offer to a player who is NOT the starting player.
     // Empty for cards without the keyword.
     std::vector<Ability> opening_hand_abilities;

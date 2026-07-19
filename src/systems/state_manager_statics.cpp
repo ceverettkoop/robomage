@@ -914,8 +914,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                                        /*decision_source=*/0);
                             return;
                         }
-                        // Pre-game fallback (preplaced permanent, no loop top yet):
-                        // block inline exactly as before.
+                        // Blocking fallback for an SBE call outside the main loop.
+                        // Since the pregame gate (Batch 13) even the preplaced-preset
+                        // SBE pass runs inside the loop (a preplaced Cavern's choice
+                        // rides SBE_LATCHED through the gate), so this is defensive
+                        // only.
                         bool prev_priority = cur_game.player_a_has_priority;
                         cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
                         choice = InputLogger::instance().get_input(type_choices);
@@ -959,7 +962,8 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                                            /*decision_source=*/0);
                                 return;
                             }
-                            // Pre-game fallback (preplaced permanent): block inline.
+                            // Blocking fallback for an SBE call outside the main
+                            // loop (defensive only since the Batch 13 pregame gate).
                             bool prev_priority = cur_game.player_a_has_priority;
                             cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
                             choice = InputLogger::instance().get_input(name_choices);

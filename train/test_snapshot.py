@@ -54,7 +54,7 @@ from _enums import (STATE_SIZE, MAX_ACTIONS,
                     CAT_PLAY_LAND, CAT_KEEP_LEGEND, CAT_CHOOSE_TYPE,
                     CAT_NAME_CARD, CAT_PAY_UNLESS, CAT_CHOOSE_CARD,
                     CAT_CHOOSE_X, CAT_PAYING_COSTS, CAT_CHOOSE_MODE,
-                    CAT_ACTIVATE_ABILITY)
+                    CAT_ACTIVATE_ABILITY, CAT_KEEP_HAND, CAT_MULLIGAN)
 from card_costs import _VOCAB_NAMES
 from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
@@ -305,15 +305,17 @@ def test_round_trip():
     resumed control line stays byte-identical to a no-snapshot control run with
     the same outcome. Snapshots are taken at decisions 10/30/60 (deferred to the
     next safe decision if one is unsafe). Also asserts the safe marker wiring:
-    safe=0 during the pregame mulligans, safe=1 later."""
+    since the Batch 13 pregame gate the mulligan decisions are loop-top pending
+    decisions too, so the game opens safe=1 from decision 0."""
     seed = 5
     control, outcome = record_line(seed, _mod_policy)
     n = len(control)
 
     safes = [s for (_, _, s) in control]
-    if not (False in safes[:4]):
-        raise ProtocolError("expected an unsafe (safe=0) pregame decision in the "
-                            f"first few decisions; got safe flags {safes[:4]}")
+    if not all(safes[:4]):
+        raise ProtocolError("expected the pregame mulligan decisions to report "
+                            "safe=1 (Batch 13 pregame gate); got safe flags "
+                            f"{safes[:4]}")
     if not (True in safes):
         raise ProtocolError("expected at least one safe=1 decision")
 
@@ -621,9 +623,10 @@ def test_resolution_single_roundtrip():
     """Batch 3 (resolution suspension): a mid-resolution effect prompt — the
     Delver upkeep peek/reveal y/n from effects::peek_and_reveal — is a loop-top
     pending decision: it reports safe=1 and is a valid SNAPSHOT/RESTORE root.
-    It is the FIRST safe decision of the game (upkeep precedes the first
-    main-phase menu; all earlier queries are the safe=0 pregame mulligans), a
-    2-option OTHER_CHOICE menu. At the root: SNAPSHOT re-emits exactly; a
+    It is the first OTHER_CHOICE decision of the game (upkeep precedes the
+    first main-phase menu; the only earlier queries are the pregame mulligans,
+    themselves safe since Batch 13), a 2-option menu. At the root: SNAPSHOT
+    re-emits exactly; a
     divergent line (Reveal instead of the control's Don't-reveal — transforming
     Delver) then RESTORE returns byte-identically; the resumed real line stays
     byte-identical to a no-snapshot control run with the same outcome. Also the
@@ -635,20 +638,23 @@ def test_resolution_single_roundtrip():
     deck_paths = _write_resolution_decks()
     try:
         control, outcome = record_line(seed, _auto0, extra=_RESOLUTION_EXTRA)
-        root_idx = next((i for i, (_, _, s) in enumerate(control) if s), None)
+        root_idx = _first_cat_index(control, CAT_OTHER_CHOICE)
         if root_idx is None:
-            raise ProtocolError("no safe decision in the control line")
+            raise ProtocolError("no OTHER_CHOICE decision in the control line")
         if root_idx == 0:
-            raise ProtocolError("first decision is already safe — expected the "
-                                "safe=0 pregame mulligans first")
-        nc, pl, _safe = control[root_idx]
+            raise ProtocolError("first decision is the peek/reveal — expected "
+                                "the pregame mulligans first")
+        nc, pl, safe = control[root_idx]
         if nc != 2:
-            raise ProtocolError(f"first safe decision has {nc} options, expected "
+            raise ProtocolError(f"peek/reveal decision has {nc} options, expected "
                                 "the 2-option peek/reveal prompt")
         cats = _query_cats(pl)
         if not bool((cats[:nc] == CAT_OTHER_CHOICE).all()):
-            raise ProtocolError(f"first safe decision categories {cats[:nc]} are "
+            raise ProtocolError(f"peek/reveal decision categories {cats[:nc]} are "
                                 f"not the peek/reveal OTHER_CHOICE ({CAT_OTHER_CHOICE})")
+        if not safe:
+            raise ProtocolError("peek/reveal decision reports safe=0 — it should "
+                                "be a loop-top pending decision")
 
         eng = Engine(seed, extra=_RESOLUTION_EXTRA)
         cur = eng.read()
@@ -2250,6 +2256,177 @@ def test_equip_target_roundtrip():
                 pass
 
 
+# ── Batch 13: pregame (mulligans + opening-hand) as loop-top gate decisions ──
+
+def test_mulligan_pregame_roundtrip():
+    """Batch 13 (pregame gate): the keep/mulligan decisions and the London
+    bottoming picks are loop-top pregame decisions (the PregameState gate in
+    the main loop) — they report safe=1 and are valid SNAPSHOT/RESTORE roots.
+    Control line: A mulligans once then keeps (B keeps), so decision 0 is A's
+    first keep/mull root and decision 3 is A's bottoming pick (7-card menu).
+    At the keep/mull root: SNAPSHOT re-emits exactly; a divergent line (keep
+    instead of the control's mulligan — no reshuffle + redraw happens) must
+    observably diverge from the control within a few decisions; a roll-forward
+    simulation then plays PAST the whole pregame into the main game and
+    RESTORE still bounces the main loop back into the pregame gate,
+    re-emitting the mulligan root byte-identically (the property that required
+    a main-loop gate rather than a pre-loop wrapper). At the bottoming root:
+    SNAPSHOT / divergent pick / RESTORE round-trips byte-identically. The
+    resumed real line stays byte-identical to the control run with the same
+    outcome."""
+    seed = 5
+    prefix = [1, 0, 0]  # A mulligans; B keeps; A keeps the redrawn hand
+
+    def policy(idx, nc):
+        return prefix[idx] if idx < len(prefix) else 0
+
+    control, outcome = record_line(seed, policy)
+    nc0, pl0, safe0 = control[0]
+    if nc0 != 2:
+        raise ProtocolError(f"decision 0 has {nc0} options, expected the "
+                            "2-option keep/mulligan menu")
+    cats0 = _query_cats(pl0)[:nc0]
+    if not (cats0[0] == CAT_KEEP_HAND and cats0[1] == CAT_MULLIGAN):
+        raise ProtocolError(f"decision 0 categories {cats0} are not "
+                            "[KEEP_HAND, MULLIGAN]")
+    if not safe0:
+        raise ProtocolError("the first keep/mulligan reports safe=0 — it "
+                            "should be a loop-top pregame decision now")
+    btm_idx = 3  # A mull (0), B keep (1), A keep (2), then the bottoming pick
+    nc3, pl3, safe3 = control[btm_idx]
+    cats3 = _query_cats(pl3)[:nc3]
+    if nc3 != 7 or not bool((cats3 == CAT_BOTTOM_DECK_CARD).all()):
+        raise ProtocolError(f"decision {btm_idx} (nc={nc3}, cats {cats3}) is "
+                            "not the 7-card London bottoming menu")
+    if not safe3:
+        raise ProtocolError("the bottoming pick reports safe=0 — it should be "
+                            "a loop-top pregame decision now")
+
+    eng = Engine(seed)
+    try:
+        cur = eng.read()
+        # Root 1: the first keep/mulligan decision of the game.
+        _assert_same_query(cur, pl0, nc0, "mulligan root alignment")
+        q = eng.snapshot(0)
+        _assert_same_query(q, pl0, nc0, "mulligan post-SNAPSHOT re-emit")
+        # Divergent excursion: KEEP instead of the control's mulligan. The
+        # divergent line must observably differ within a few decisions (the
+        # control's A hand was shuffled back and redrawn; here it never is —
+        # and the recorded action-history category already differs).
+        dq = eng.play(0)
+        diverged = False
+        for i in range(4):
+            if dq.kind != "q":
+                diverged = True
+                break
+            want_nc, want_pl, _ws = control[1 + i]
+            if dq.nc != want_nc or _first_diff(dq.payload, want_pl) is not None:
+                diverged = True
+                break
+            dq = eng.play(policy(1 + i, dq.nc))
+        if not diverged:
+            raise ProtocolError("keeping instead of mulliganing stayed "
+                                "byte-identical to the control for 4 decisions "
+                                "— the mulligan had no observable effect")
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl0, nc0, "mulligan post-RESTORE re-emit")
+        # Roll-forward: keep/keep and auto-0 deep into the MAIN game (well past
+        # the pregame gate), then RESTORE. The latched restore unwinds to the
+        # loop top, which must bounce control back into the pregame gate and
+        # re-derive the mulligan root byte-identically.
+        dq = eng.play(0)
+        for _ in range(40):
+            if dq.kind != "q":
+                break
+            dq = eng.play(0)
+        if dq.kind == "eof":
+            raise ProtocolError("roll-forward simulation exited the process — "
+                                "the game end was not intercepted")
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl0, nc0, "mulligan roll-forward RESTORE re-emit")
+        rel = eng.release()
+        _assert_same_query(rel, pl0, nc0, "mulligan post-RELEASE re-emit")
+        cur = rel
+        # Continue the control line to the bottoming root.
+        for idx in range(btm_idx):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"pregame alignment at decision {idx}")
+            cur = eng.play(policy(idx, cur.nc))
+        # Root 2: the London bottoming pick after the mulligan.
+        _assert_same_query(cur, pl3, nc3, "bottoming root alignment")
+        q = eng.snapshot(0)
+        _assert_same_query(q, pl3, nc3, "bottoming post-SNAPSHOT re-emit")
+        # Divergent excursion: bottom the LAST card instead of the control's
+        # first, then a scrambled continuation. (Duplicates in the hand can
+        # make the divergent successor coincide, so — like the charm-mode
+        # roots — this asserts round-trip identity only.)
+        dq = eng.play(nc3 - 1)
+        for i in range(1, 6):
+            if dq.kind != "q":
+                break
+            dq = eng.play(_diverge(i, dq.nc))
+        rq = eng.restore(0)
+        _assert_same_query(rq, pl3, nc3, "bottoming post-RESTORE re-emit")
+        rel = eng.release()
+        _assert_same_query(rel, pl3, nc3, "bottoming post-RELEASE re-emit")
+        cur = rel
+        for idx in range(btm_idx, len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"mulligan resumed alignment at decision {idx}")
+            cur = eng.play(policy(idx, cur.nc))
+        if cur.kind != "eof" or cur.returncode != 0:
+            raise ProtocolError(f"resumed mulligan line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+    finally:
+        eng.kill()
+    return (f"keep/mull root @ 0 (nc=2) and bottoming root @ {btm_idx} (nc=7) "
+            f"both safe=1, keep-diverges, roll-forward RESTORE re-enters the "
+            f"gate, round-trips exact, outcome={outcome['winner']!r}")
+
+
+def test_pregame_preplaced_etb_roundtrip():
+    """Batch 13 (pregame gate × SBE_LATCHED): a preplaced permanent's ETB
+    choice — a preset Cavern of Souls' choose-a-creature-type, fired by the
+    FIAT_SETUP stage's SBE pass — now rides SBE_LATCHED through the pregame
+    gate instead of the old pre-loop blocking fallback (the gate runs INSIDE
+    the main loop, so in_main_loop() is true during fiat setup): it reports
+    safe=1, sits between the mulligans and the first turn (decision 2, right
+    after both keeps), and is a valid SNAPSHOT/RESTORE root. Round-trip:
+    SNAPSHOT re-emits exactly, a divergent excursion (the other type) then
+    RESTORE returns byte-identically, and the resumed line matches the control
+    to EOF. (The chosen type is not serialized to the observation, so no
+    next-query-differs assertion — same as the cast-Cavern test.)"""
+    seed = 5
+    deck_paths = _write_decks([
+        ("pre_cavern_a", "1 Delver of Secrets\n29 Plains\n"),
+        ("pre_cavern_b", "30 Forest\n"),
+    ])
+    extra = ["--deck-a", "temp/pre_cavern_a", "--deck-b", "temp/pre_cavern_b",
+             "--no-shuffle", "--battlefield-a", "Cavern of Souls"]
+    try:
+        control, outcome = record_line(seed, _auto0, extra=extra)
+        root_idx = _find_sbe_root(control, CAT_CHOOSE_TYPE, 2, "preplaced-etb")
+        if root_idx != 2:
+            raise ProtocolError(f"preplaced Cavern's choose-type root sits at "
+                                f"decision {root_idx}, expected 2 (immediately "
+                                "after the two keep decisions, i.e. during the "
+                                "pregame fiat setup)")
+        choices = [0] * len(control)
+        _run_sbe_roundtrip(seed, extra, control, choices, outcome, root_idx,
+                           "preplaced-etb", expect_diverge=False)
+        return (f"preplaced CHOOSE_TYPE root @ {root_idx} (nc=2, mid-pregame) "
+                f"safe=1, round-trip exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def test_rng_isolation():
     """RESTORE+DETERMINIZE excursions at a safe decision leave the real line
     untouched: after 6 (RESTORE, DETERMINIZE k, descend) cycles and a final
@@ -3057,6 +3234,8 @@ TESTS = [
     ("activation_target_roundtrip", test_activation_target_roundtrip),
     ("activation_x_roundtrip", test_activation_x_roundtrip),
     ("equip_target_roundtrip", test_equip_target_roundtrip),
+    ("mulligan_pregame_roundtrip", test_mulligan_pregame_roundtrip),
+    ("pregame_preplaced_etb_roundtrip", test_pregame_preplaced_etb_roundtrip),
     ("rng_isolation", test_rng_isolation),
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),

@@ -80,8 +80,9 @@ extern MatchContext g_match_ctx;
 extern uint64_t g_card_db_generation;
 
 // True while play_single_game's decision loop is running. Gates blocking
-// fallbacks for prompts that fire with no loop top to suspend to (pregame SBE
-// on preplaced permanents).
+// fallbacks for prompts that fire with no loop top to suspend to. Since the
+// pregame gate (Batch 13) the whole pregame runs inside the loop, so the
+// fallbacks are defensive only.
 bool in_main_loop();
 
 struct EcsSystems {
