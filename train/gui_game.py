@@ -195,8 +195,9 @@ class CardWidget(QWidget):
     a given card name and push a pixmap into it."""
 
     # Left click commits an action for this card; the window resolves it against
-    # the live menu (see GameWindow._on_card_clicked).
-    clicked = Signal(int, str, str)          # card_idx, controller, zone
+    # the live menu (see GameWindow._on_card_clicked). Emits self so the resolver
+    # sees the exact widget (its entity slot), not just the card identity.
+    clicked = Signal(object)
     # Hover in/out — emits self on enter, None on leave. Wired to the
     # action<->card cross-highlighting (the window lights up the menu rows this
     # card feeds) and drives the Q-hold oracle popup's "currently hovered card".
@@ -213,6 +214,10 @@ class CardWidget(QWidget):
         self._card_idx = card_idx
         self._controller = controller        # "self" | "opp"
         self._zone = zone                    # "battlefield" | "hand"
+        # Unified entity-ref slot of a battlefield permanent (decode's perm
+        # "slot", comparable to an action's slot_ref); None for hand cards.
+        # This is what keeps two same-named permanents distinguishable.
+        self._slot = perm.get("slot") if perm else None
         self._icon = icon                    # hand-card type icon, else ""
         self._token_pt = token_pt            # (p, t) for a token, else None
         self._pixmap = None                  # Phase C art (full 'normal'), if set
@@ -291,7 +296,7 @@ class CardWidget(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.clicked.emit(self._card_idx, self._controller, self._zone)
+            self.clicked.emit(self)
         elif event.button() == Qt.RightButton:
             self._on_right_press()           # Phase D: hold to show oracle text
 
@@ -1311,10 +1316,12 @@ class GameWindow(QMainWindow):
         if idx is not None:
             self._submit(int(idx))
 
-    def _on_card_clicked(self, card_idx, controller, zone):
+    def _on_card_clicked(self, widget):
         if not self._awaiting:
             return
-        matches = actions_for_card(self._actions, card_idx, controller, zone)
+        matches = actions_for_card(self._actions, widget._card_idx,
+                                   widget._controller, widget._zone,
+                                   widget._slot)
         if not matches:
             self._append_log(
                 "No legal action for that card - use the numbered list.")
@@ -1585,7 +1592,8 @@ class GameWindow(QMainWindow):
         self._hovered_card = widget
         if self._awaiting:
             idxs = [a["index"] for a in actions_for_card(
-                self._actions, widget._card_idx, widget._controller, widget._zone)]
+                self._actions, widget._card_idx, widget._controller, widget._zone,
+                widget._slot)]
             self._set_menu_highlights(idxs)
 
     def _on_menu_item_entered(self, item):
@@ -1594,14 +1602,22 @@ class GameWindow(QMainWindow):
 
     def _highlight_cards_for_action(self, index):
         """Amber-highlight the card(s) the given action index refers to; a None
-        index (mouse left the list) clears them. Matches on card id, controller,
-        and — when the action carries a zone_ref — the exact board zone, so a
-        hand card never lights up its same-named battlefield twin (mirrors the
-        TUI's _highlight_perms_for_action)."""
+        index (mouse left the list) clears them. An action carrying a slot_ref
+        names ONE exact entity — light up only the widget in that slot, so two
+        same-named permanents never co-highlight. Ref-less actions match on card
+        id, controller, and — when the action carries a zone_ref — the exact
+        board zone, so a hand card never lights up its same-named battlefield
+        twin (mirrors the TUI's _highlight_perms_for_action)."""
         self._clear_action_linked()
         if index is None or not (0 <= index < len(self._actions)):
             return
         a = self._actions[index]
+        ref = a.get("slot_ref", -1)
+        if ref >= 0:
+            for w in self._card_widgets:
+                if w._slot == ref:
+                    w.set_highlight("action_linked")
+            return
         if a["card_idx"] < 0:
             return
         want_ctrl = a["controller"]
@@ -1640,7 +1656,10 @@ class GameWindow(QMainWindow):
     def _highlight_stack_targets(self, refs):
         """Paint a hovered stack object's announced targets red: matching
         battlefield permanent(s), and the YOU/OPPONENT info line for a player
-        target. `refs` are already in the human frame (is_self == YOU)."""
+        target. `refs` are already in the human frame (is_self == YOU). A ref
+        carrying an entity slot pins the exact permanent, so only the actual
+        target lights up among same-named copies; slotless refs keep the
+        card-id + controller match."""
         self._clear_stack_targets()
         for ref in refs:
             if ref["is_player"]:
@@ -1651,9 +1670,13 @@ class GameWindow(QMainWindow):
                 self._stack_target_labels.append(label)
             elif ref["card_idx"] >= 0:
                 want = "self" if ref["is_self"] else "opp"
+                slot = ref.get("slot", -1)
                 for w in self._card_widgets:
-                    if w._card_idx == ref["card_idx"] and w._controller == want:
-                        w.set_highlight("stack_target")
+                    if w._card_idx != ref["card_idx"] or w._controller != want:
+                        continue
+                    if slot >= 0 and w._slot != slot:
+                        continue
+                    w.set_highlight("stack_target")
 
     def _clear_action_linked(self):
         for w in self._card_widgets:

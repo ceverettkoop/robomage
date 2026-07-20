@@ -575,7 +575,8 @@ def decode_step(state):
     return _STEP_NAMES[idx] if idx < len(_STEP_NAMES) else f"Step({idx})"
 
 
-def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_names=None):
+def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_names=None,
+                       slot_base=0):
     """Decode permanent slots into a list of dicts (non-empty only).
 
     `counters` is the per-slot typed-counter summary list the engine emits
@@ -586,7 +587,13 @@ def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_nam
     `token_names` is the per-slot token-name list (env._perm_token_names,
     also narrative-only, slot-aligned). Every token shares the generic
     TOKEN_SENTINEL card id in the state vector, so when a slot names a token
-    its "name" comes from here instead of the generic "Token"."""
+    its "name" comes from here instead of the generic "Token".
+
+    `slot_base` is this side's offset into the unified entity-reference slot
+    space (0 = viewer's own perms, _PERM_SLOTS = opponent's); each dict records
+    `slot` = slot_base + slot index, directly comparable to an action's
+    slot_ref / a stack target's slot, so UIs can match one specific permanent
+    among same-named copies."""
     perms = []
     for i in range(count):
         base = start + i * PERM_SLOT_SIZE
@@ -596,7 +603,7 @@ def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_nam
         name = card_index_to_name(idx)
         if token_names is not None and i < len(token_names) and token_names[i]:
             name = token_names[i]
-        p = {"name": name, "card_idx": idx}
+        p = {"name": name, "card_idx": idx, "slot": slot_base + i}
         if counters is not None and i < len(counters) and counters[i]:
             parts = [c for c in (s.strip() for s in counters[i].split(","))
                      if c and not c.startswith("loyalty:")]
@@ -823,7 +830,8 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "opp_battlefield": _decode_permanents(
             state, _OPP_PERM_START,
             counters=perm_counters[1] if perm_counters else None,
-            token_names=perm_token_names[1] if perm_token_names else None),
+            token_names=perm_token_names[1] if perm_token_names else None,
+            slot_base=_PERM_SLOTS),
         # NOTE: the action-history ring ([4394-4905] in src/machine_io.h — 128
         # entries x 4 floats) is DELIBERATELY not decoded here. It is bulky, only
         # useful for the policy network's temporal context, and never surfaced in

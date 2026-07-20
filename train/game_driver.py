@@ -155,24 +155,32 @@ def action_zone(a):
     return _ZONE_REF_TO_ZONE.get(a.get("zone_ref", 0))
 
 
-def actions_for_card(actions, card_idx, controller, zone):
+def actions_for_card(actions, card_idx, controller, zone, slot=None):
     """Legal actions this card feeds, from the decoded action menu `actions`.
     Prefer a controller-exact match; fall back to card-id alone (some actions
     carry no controller flag). An action whose zone_ref names a DIFFERENT board
     zone is excluded, so a hand card and a same-named battlefield permanent don't
-    cross-match. Mirrors the click resolver so click and hover always agree on
-    the same set."""
+    cross-match. When `slot` is given (the permanent's unified entity-ref slot,
+    decode's perm "slot"), an action carrying a slot_ref matches only if it refs
+    THIS slot — so with multiple same-named permanents each one feeds exactly
+    its own actions; ref-less actions still match by card/controller/zone.
+    Mirrors the click resolver so click and hover always agree on the same set."""
     if card_idx < 0:
         return []
 
     def zone_ok(a):
         az = action_zone(a)
         return az is None or az == zone   # no zone info → don't exclude
+
+    def slot_ok(a):
+        ref = a.get("slot_ref", -1)
+        return slot is None or ref < 0 or ref == slot   # no ref → don't exclude
     want = "own" if controller == "self" else "opp"
     strict = [a for a in actions
-              if a["card_idx"] == card_idx and a["controller"] == want and zone_ok(a)]
+              if a["card_idx"] == card_idx and a["controller"] == want
+              and zone_ok(a) and slot_ok(a)]
     return strict or [a for a in actions
-                      if a["card_idx"] == card_idx and zone_ok(a)]
+                      if a["card_idx"] == card_idx and zone_ok(a) and slot_ok(a)]
 
 
 def stack_target_refs(e, mirrored):
@@ -183,7 +191,8 @@ def stack_target_refs(e, mirrored):
     for t in e.get("target_refs", []):
         refs.append({"is_player": t["is_player"],
                      "is_self": (t["is_self"] != mirrored),
-                     "card_idx": t["card_idx"]})
+                     "card_idx": t["card_idx"],
+                     "slot": t.get("slot", -1)})
     return refs
 
 
