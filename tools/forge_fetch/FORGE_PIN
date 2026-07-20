@@ -1,0 +1,14 @@
+# The Card-Forge/forge commit every script fetch is pinned to (first non-comment
+# line; a full commit SHA). Fresh clones then fetch byte-identical card/token
+# scripts to what the engine was tested against — an upstream master rewrite
+# (e.g. Cloak and Dagger, Entwined, Forge 0704d8f) can only land through a
+# deliberate bump of this file, reviewed against the engine and `make check`.
+#
+# To bump: pick the new Forge SHA, diff the vocab cards' scripts between the old
+# and new ref (GitHub compare API, or raw-fetch both and diff), review/adapt the
+# engine for any mechanism changes, replace the SHA below, delete the changed
+# local scripts so they re-fetch, and run `make check` before committing.
+#
+# Pinned 2026-07-20 ("HOB: 4 cards (#11286)", 2026-07-19 — the ref this clone's
+# scripts were fetched from and the full `make check` suite passed against).
+3c208607edded47cdc41c05e30baca068018272c

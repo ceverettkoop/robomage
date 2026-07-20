@@ -10,6 +10,12 @@ and writes it to `bin/resources/tokenscripts/<name>.txt`.
 This is ADD-ONLY: it never overwrites an existing local script (unless --force),
 honouring the project rule "DO NOT MODIFY CARD SCRIPTS".
 
+Fetches are PINNED to the Forge commit named in FORGE_PIN (next to this script),
+so every clone gets byte-identical scripts to the ones the engine was tested
+against; upstream rewrites land only through a deliberate bump of that file (its
+header holds the bump recipe). Pass --ref to fetch from a different ref, e.g.
+`--ref master` to preview what live Forge serves.
+
 Double-faced cards (DFCs / MDFCs / transform / Rooms): Forge stores these under
 a single COMBINED "<front>_<back>.txt" filename, NOT under the front face alone.
 The engine mirrors this — src/card_db.cpp load_card() resolves "<uid>.txt" first
@@ -59,8 +65,31 @@ RES_BASE = "https://raw.githubusercontent.com/Card-Forge/forge/{branch}/forge-gu
 # any failure degrades gracefully to "NOT FOUND" (hand-authoring).
 API_DIR = ("https://api.github.com/repos/Card-Forge/forge/contents/"
            "forge-gui/res/cardsfolder/{letter}?ref={branch}")
-BRANCHES = ("master", "main")
 USER_AGENT = "robomage-forge-fetch/1.0"
+
+# Ref pinning: FORGE_PIN (next to this script) holds the Forge commit SHA every fetch
+# is pinned to — its first non-comment line — so fresh clones fetch byte-identical
+# scripts to what the engine was tested against, and an upstream rewrite can only land
+# through a deliberate, reviewed bump of that file (see its header for the bump recipe).
+# Without the file (or with --ref) the tool tracks the live branches instead.
+_PIN_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "FORGE_PIN")
+
+
+def _read_pin():
+    """The pinned Forge ref from FORGE_PIN (first non-comment line), or None."""
+    try:
+        with open(_PIN_FILE) as fh:
+            for line in fh:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    return line
+    except OSError:
+        pass
+    return None
+
+
+_PIN = _read_pin()
+BRANCHES = (_PIN,) if _PIN else ("master", "main")
 
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 CARDS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
@@ -303,7 +332,13 @@ def main(argv=None):
                     help="overwrite an existing local script (default: skip)")
     ap.add_argument("--dry-run", action="store_true",
                     help="print the resolved URL/destination without writing")
+    ap.add_argument("--ref", default=None, metavar="REF",
+                    help="fetch from this Forge ref (branch or commit SHA) instead of "
+                         "the FORGE_PIN pin (or live master/main when unpinned)")
     args = ap.parse_args(argv)
+    if args.ref:
+        global BRANCHES
+        BRANCHES = (args.ref,)
 
     missing = 0
     for name in args.cards:
