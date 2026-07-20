@@ -448,7 +448,13 @@ scripts, use the fetch tool below, which is DFC-aware; do not hand-create a `<fr
 card whose combined script already exists.
 
 **Fetching missing scripts — `tools/forge_fetch/fetch_script.py`** pulls card/token scripts from
-the Card-Forge/forge repo (add-only; never overwrites without `--force`). It is the single
+the Card-Forge/forge repo (add-only; never overwrites without `--force`). Fetches are **pinned**
+to the Forge commit in `tools/forge_fetch/FORGE_PIN`, so every clone fetches byte-identical
+scripts to what the engine was tested against — an upstream master rewrite (this broke
+`subability_roundtrip` once, when Forge rewrote Cloak and Dagger, Entwined) can only land
+through a deliberate bump of that file; its header holds the bump recipe (diff the vocab
+cards' scripts old-ref vs new-ref, adapt the engine, re-run `make check`). Pass `--ref master`
+to preview live Forge without unpinning. It is the single
 correct way to provision a missing script:
 - Pass card names: `train/.venv/bin/python tools/forge_fetch/fetch_script.py "Brainstorm" "Tamiyo, Inquisitive Student"`.
   It treats a card as already-present if EITHER `<uid>.txt` OR a verified combined `<uid>_*.txt`

@@ -197,6 +197,11 @@ struct MatchCtx {
     // Creature.powerGTX): the caller resolves X (e.g. the controller's hand size) and supplies
     // it here. INT_MIN = "no X provided", in which case a powerGTX/-style qualifier fails closed.
     int x_bound = INT_MIN;
+    // The CARD object targeted by the resolving ability chain, for the `targetedBy` qualifier
+    // (Cloak and Dagger, Entwined's ChangeType$ Card.targetedBy — "the chosen creature" is
+    // exactly the creature the DBPump sub targeted). 0 = no card target in context, in which
+    // case the qualifier fails closed.
+    Entity chain_target = 0;
 };
 
 bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});

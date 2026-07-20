@@ -105,11 +105,12 @@ bool Ability::identical_activated_ability(const Ability &other) {
 // MatchCtx. All qualifier grammar (colors, Colorless, Basic, P/T, subtypes, cmcLEX, …) now lives
 // in the one shared evaluator.
 static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_bound = -1,
-    const std::string &cmc_op = "", Zone::Ownership you = Zone::UNKNOWN) {
+    const std::string &cmc_op = "", Zone::Ownership you = Zone::UNKNOWN, Entity chain_target = 0) {
     MatchCtx ctx;
     ctx.cmc_bound = cmc_bound;
     ctx.cmc_op = cmc_op;
     ctx.controller = you;  // the "you" reference for YouOwn/YouCtrl/OppOwn/OppCtrl in the filter
+    ctx.chain_target = chain_target;  // the chain's card target for the targetedBy qualifier
     return card_matches_filter(entity, spec, ctx);
 }
 
@@ -120,7 +121,7 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
     const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal,
     int cmc_bound, const std::string &cmc_op,
-    FrameCtx &ctx, Entity decision_source, bool &suspended) {
+    FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target) {
     suspended = false;
     //  comma-separated subtypes
     std::vector<std::string> subtypes = split(change_type, ',');
@@ -165,7 +166,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op, owner)) {
+                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op, owner, chain_target)) {
                         matches = true;
                         break;
                     }
@@ -256,7 +257,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination, bool reveal,
-    FrameCtx &ctx, Entity decision_source, bool &suspended) {
+    FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target) {
     suspended = false;
     // Collect contents from all zones
     std::vector<Entity> zone_contents;
@@ -275,6 +276,11 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
                 auto &z = global_coordinator.GetComponent<Zone>(e);
                 if (z.location == zone && z.owner == owner) zone_contents.push_back(e);
             }
+        } else if (zone == Zone::BATTLEFIELD) {
+            // Origin$ ...,Battlefield (Cloak and Dagger, Entwined: exile the chosen creature OR
+            // a nonland hand card): candidates are the searched player's battlefield permanents.
+            auto bf = battlefield_permanents(orderer->mEntities, owner);
+            zone_contents.insert(zone_contents.end(), bf.begin(), bf.end());
         }
     }
 
@@ -312,7 +318,7 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st, -1, "", owner)) {
+                    if (matches_filter_spec(entity, st, -1, "", owner, chain_target)) {
                         matches = true;
                         break;
                     }
@@ -340,12 +346,13 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     std::string zone_list;
     for (auto zone : zones) {
         if (zone == Zone::LIBRARY) searches_library = true;
-        const char *zn = (zone == Zone::LIBRARY)     ? "library"
-                         : (zone == Zone::GRAVEYARD)  ? "graveyard"
-                         : (zone == Zone::HAND)       ? "hand"
-                         : (zone == Zone::EXILE)      ? "exile"
-                         : (zone == Zone::SIDEBOARD)  ? "sideboard"
-                                                      : "zone";
+        const char *zn = (zone == Zone::LIBRARY)      ? "library"
+                         : (zone == Zone::GRAVEYARD)   ? "graveyard"
+                         : (zone == Zone::HAND)        ? "hand"
+                         : (zone == Zone::EXILE)       ? "exile"
+                         : (zone == Zone::SIDEBOARD)   ? "sideboard"
+                         : (zone == Zone::BATTLEFIELD) ? "battlefield"
+                                                       : "zone";
         if (!zone_list.empty()) zone_list += " and ";
         zone_list += zn;
     }
@@ -368,11 +375,12 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     for (auto entity : choices) {
         auto &cd = global_coordinator.GetComponent<CardData>(entity);
         auto &z = global_coordinator.GetComponent<Zone>(entity);
-        const char *zone_label = (z.location == Zone::GRAVEYARD)  ? " (graveyard)"
-                                 : (z.location == Zone::EXILE)     ? " (exile)"
-                                 : (z.location == Zone::SIDEBOARD) ? " (sideboard)"
-                                 : (z.location == Zone::HAND)      ? " (hand)"
-                                                                   : " (library)";
+        const char *zone_label = (z.location == Zone::GRAVEYARD)    ? " (graveyard)"
+                                 : (z.location == Zone::EXILE)       ? " (exile)"
+                                 : (z.location == Zone::SIDEBOARD)   ? " (sideboard)"
+                                 : (z.location == Zone::HAND)        ? " (hand)"
+                                 : (z.location == Zone::BATTLEFIELD) ? " (battlefield)"
+                                                                     : " (library)";
         LegalAction la(PASS_PRIORITY, entity, cd.name + zone_label);
         la.category = cat;
         la.card_is_public = reveal;
@@ -1373,6 +1381,13 @@ size_t evaluate_dynamic_amount(
 //     overwriting here is behavior-preserving (the old blanket sentinel set ab.target too, but
 //     those handlers return before touching it).
 static void bind_sub_target(const Ability &parent, Ability &sub) {
+    // Propagate the chain's PLAYER target for DefinedPlayer$ Targeted reads — through EVERY
+    // sub, including independently-targeted ones, whose own (card) target must not erase the
+    // outer player target (see Ability::targeted_player).
+    sub.targeted_player = (parent.target != 0 &&
+                           global_coordinator.entity_has_component<Player>(parent.target))
+                              ? parent.target
+                              : parent.targeted_player;
     if (sub.valid_tgts != "N_A") return;  // independently targeted at cast/activation — keep it
     const std::string &d = sub.defined;
     if (d.empty() || d == "Targeted" || d == "ParentTarget" || d == "Parent" ||
