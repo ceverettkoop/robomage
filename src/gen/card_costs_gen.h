@@ -346,7 +346,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 335: Thespian's Stage
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 336: Mox Diamond
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 337: The Tabernacle at Pendrell Vale
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 338: 
+    {0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 338: Prismatic Ending
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.2f},  // 339: Skewer the Critics
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.2f},  // 340: Light Up the Stage
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.1f},  // 341: Roiling Vortex
@@ -1375,7 +1375,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 335: Thespian's Stage
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 336: Mox Diamond
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 337: The Tabernacle at Pendrell Vale
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 338: 
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 338: Prismatic Ending
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 339: Skewer the Critics
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 340: Light Up the Stage
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 341: Roiling Vortex

@@ -1115,6 +1115,12 @@ size_t evaluate_dynamic_amount(
     if (expr.find("xPaid") != std::string::npos) {
         return cur_game.x_paid;
     }
+    // Count$Converge (CR 702.90) — the number of distinct colors of mana spent to cast the spell
+    // currently resolving (Prismatic Ending: the cmcLEY exile threshold). Restored into
+    // cur_game.converge by StackManager from the resolving Spell's colors_spent.
+    if (expr.find("Count$Converge") != std::string::npos) {
+        return cur_game.converge < 0 ? 0 : static_cast<size_t>(cur_game.converge);
+    }
     if (expr.find("Count$InYourLibrary") != std::string::npos ||
         expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {
         size_t lib = orderer->get_library_contents(ctrl).size();

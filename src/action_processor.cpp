@@ -384,7 +384,9 @@ static void pay_alternate_cost(Game &game, std::shared_ptr<Orderer> orderer,
     // Affordability is pre-verified by can_afford_alt (against the same floored cost),
     // so in machine mode this always succeeds.
     if (!alt_mana.empty()) {
-        prompt_mana_payment(caster, alt_mana, spell_entity, orderer);
+        prompt_mana_payment(caster, alt_mana, spell_entity, orderer,
+                            /*has_delve=*/false, /*has_improvise=*/false,
+                            &game.pending_cast.mana_spent_colors);
     }
 
     // life
@@ -2988,7 +2990,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 pc.mana_spent = static_cast<int>(pc.deferred_mana_cost.size());
             if (pc.deferred_mana_pending) {
                 if (!prompt_mana_payment(caster, pc.deferred_mana_cost, spell_entity, orderer,
-                                         /*has_delve=*/false, pc.deferred_improvise)) {
+                                         /*has_delve=*/false, pc.deferred_improvise,
+                                         &pc.mana_spent_colors)) {
                     // Payment cancelled (interactive only — machine mode pre-verifies
                     // affordability). Targets were already chosen but the spell never reached the
                     // stack, so rewind the half-finished cast: drop the targeting Ability / aura
@@ -3150,6 +3153,12 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             spell.replicate_count = pc.replicate_count;  // # of replicate payments (0 if none/no Replicate)
             spell.gift_promised = pc.gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution
             spell.mana_spent = pc.mana_spent;  // total mana paid (CR 106); read by ValidSA$ Spell.ManaSpent triggers
+            // Converge (CR 702.90): the distinct real colors of mana spent (colorless is not a
+            // color). Its size is the Converge count, restored into cur_game.converge at resolution
+            // and read by a Count$Converge bound (Prismatic Ending's cmcLEY exile threshold).
+            for (Colors c : pc.mana_spent_colors)
+                if (c == WHITE || c == BLUE || c == BLACK || c == RED || c == GREEN)
+                    spell.colors_spent.insert(c);
             cur_game.pending_gift_promised = false;  // consume the cast-time pending flag (targets chosen)
             // Record the X value paid so an "enters with X counters" replacement can read
             // it (Chalice of the Void: enters with X charge counters) and so the resolving

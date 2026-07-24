@@ -168,9 +168,12 @@ bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& ba
 // Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
 // On false, caller must restore from snapshot.
 // If has_delve is true, delve exile options are included alongside mana abilities for generic costs.
+// `spent_out` (when non-null) collects the exact colors of mana actually removed from the pool to
+// pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90).
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue& cost,
                          Entity paid_for, std::shared_ptr<Orderer> orderer,
-                         bool has_delve = false, bool has_improvise = false);
+                         bool has_delve = false, bool has_improvise = false,
+                         ManaValue* spent_out = nullptr);
 
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from

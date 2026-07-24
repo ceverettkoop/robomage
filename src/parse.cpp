@@ -2614,6 +2614,10 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                            // the sub-ability path (parse_svar_ability) so a top-level SP$/AB$
                            // ability scales by X too, instead of falling back to the count==1
                            // single-token default.
+                           // Count$Converge (Prismatic Ending) — the distinct colors of mana spent
+                           // to cast the spell, resolved at cast/resolution by evaluate_dynamic_amount
+                           // from cur_game.converge. Used as the cmcLEY exile threshold.
+                           sv.find("Count$Converge") != std::string::npos ||
                            sv.find("xPaid") != std::string::npos) {
                     // Runtime expression — preserve for evaluation at activation/resolve time
                     ability.dynamic_amount_expr = sv;

@@ -1,8 +1,10 @@
 #ifndef SPELL_H
 #define SPELL_H
 
+#include <set>
 #include <vector>
 
+#include "../classes/colors.h"
 #include "zone.h"
 
 // Present only while the entity is on the stack as a spell.
@@ -41,6 +43,11 @@ struct Spell {
     // by a SpellCast trigger's ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no
     // mana was spent"). Shared, general — Lavinia, Azorius Renegade reads the same field.
     int mana_spent = 0;
+    // Converge (CR 702.90): the distinct COLORS of mana actually spent to cast this spell (WHITE..
+    // GREEN; colorless mana is not a color, CR 105.1). Set at cast time from the payment's spent
+    // colors; its size is the Converge count, restored into cur_game.converge at resolution and read
+    // by a Count$Converge amount/condition bound (Prismatic Ending). Empty for a free / no-mana cast.
+    std::set<Colors> colors_spent;
 };
 
 #endif /* SPELL_H */

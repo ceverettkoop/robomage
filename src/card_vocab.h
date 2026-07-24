@@ -256,6 +256,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Thespian's Stage", 335},
     {"The Tabernacle at Pendrell Vale", 337},
     {"Chain Lightning", 326},
+    {"Prismatic Ending", 338},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

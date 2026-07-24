@@ -222,6 +222,12 @@ struct Game {
         Entity monarch_entity = MAX_ENTITIES;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
+        // Converge (CR 702.90): the number of distinct COLORS of mana spent to cast the spell
+        // currently resolving. Restored from the resolving Spell::colors_spent by StackManager
+        // before its ability runs (mirrors x_paid), so a Count$Converge amount/condition bound
+        // (Prismatic Ending's cmcLEY exile threshold) reads this spell's value. 0 for anything not
+        // cast (abilities, copies) or cast with no colored mana.
+        int converge = 0;
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
                                             // permanent leaves the battlefield (CR 608.2h); read by the
                                             // effective_* accessors when the object is no longer in play
@@ -367,6 +373,11 @@ struct Game {
             // copied onto the resulting Spell::mana_spent at FINISH. 0 for a free / no-mana
             // alternative cost. Read by a SpellCast trigger's ValidSA$ Spell.ManaSpent filter.
             int mana_spent = 0;
+            // Converge (CR 702.90): the exact COLORS of mana actually spent to cast this spell,
+            // accumulated by the payment (prompt_mana_payment's spent-sink) as pips leave the pool.
+            // The distinct real colors (WHITE..GREEN) are copied onto Spell::colors_spent at FINISH,
+            // then restored into cur_game.converge at resolution. Empty for a free / no-mana cast.
+            ManaValue mana_spent_colors;
             bool deferred_delve = false;
             bool deferred_improvise = false;
             // Non-mana alternative-cost pieces (flashback life/sacrifice, escape

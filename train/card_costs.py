@@ -344,7 +344,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 335: Thespian's Stage
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 336: Mox Diamond
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 337: The Tabernacle at Pendrell Vale
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 338: 
+    [0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 338: Prismatic Ending
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.2],  # 339: Skewer the Critics
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.2],  # 340: Light Up the Stage
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.1],  # 341: Roiling Vortex
@@ -1375,7 +1375,7 @@ _VOCAB_NAMES = [
     "Thespian's Stage",  # 335
     "Mox Diamond",  # 336
     "The Tabernacle at Pendrell Vale",  # 337
-    "",  # 338
+    "Prismatic Ending",  # 338
     "Skewer the Critics",  # 339
     "Light Up the Stage",  # 340
     "Roiling Vortex",  # 341

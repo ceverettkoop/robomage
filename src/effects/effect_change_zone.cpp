@@ -257,8 +257,28 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         } else if (ab.target != 0) {
             to_move.push_back(ab.target);
         }
+        // ConditionDefined$ Targeted with a dynamic mana-value bound (Prismatic Ending: exile the
+        // target only if its mana value <= Converge, the number of colors of mana spent — cmcLEY,
+        // Y = Count$Converge). CR 702.90 / 608.2b: the gate is enforced HERE at resolution (cast
+        // legality does not gate on condition_on_target), so a target whose MV exceeds the bound is
+        // simply not moved (the spell does nothing to it). General to any targeted ChangeZone whose
+        // ConditionPresent carries a cmcLE<svar> threshold resolved into dynamic_amount_expr.
+        int cmc_threshold = -1;
+        if (ab.condition_on_target && !ab.dynamic_amount_expr.empty() &&
+            ab.condition_present.find("cmcLE") != std::string::npos)
+            cmc_threshold = static_cast<int>(
+                evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target, ab.source));
+
         for (auto tgt : to_move) {
             if (!global_coordinator.entity_has_component<Zone>(tgt)) continue;
+            if (cmc_threshold >= 0 && global_coordinator.entity_has_component<CardData>(tgt)) {
+                int tgt_cmc = card_mana_value(global_coordinator.GetComponent<CardData>(tgt));
+                if (tgt_cmc > cmc_threshold) {
+                    game_log("%s has mana value %d (Converge %d) — not exiled\n",
+                             entity_name(tgt).c_str(), tgt_cmc, cmc_threshold);
+                    continue;
+                }
+            }
             // Pre-move origin zone — captured before the move for a Duration$ UntilHostLeavesPlay
             // exile so the return knows where the card came from (Sheltered by Ghosts / Static
             // Prison target a battlefield permanent: origin BATTLEFIELD).

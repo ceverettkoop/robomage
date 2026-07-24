@@ -167,6 +167,13 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             // (x_paid == 0) — not only when x_paid > 0.
             if (global_coordinator.entity_has_component<Spell>(top_entity))
                 cur_game.x_paid = static_cast<size_t>(global_coordinator.GetComponent<Spell>(top_entity).x_paid);
+            // Restore Converge (CR 702.90) — distinct colors of mana spent to cast this spell — the
+            // same way as x_paid, so a resolving Count$Converge bound (Prismatic Ending's cmcLEY)
+            // reads THIS spell's value. Set for every resolving spell (0 for a no-colored-mana cast)
+            // so a stale value from an unrelated earlier cast is always overwritten.
+            if (global_coordinator.entity_has_component<Spell>(top_entity))
+                cur_game.converge =
+                    static_cast<int>(global_coordinator.GetComponent<Spell>(top_entity).colors_spent.size());
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
                 frame_enter(top_entity, ab, /*count_triggered=*/false);
