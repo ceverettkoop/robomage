@@ -495,7 +495,7 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // executes at consume time, floats mana, and the loop re-arms the rebuilt menu.
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-    FrameCtx &ctx, bool &suspended, UnlessPayKind kind) {
+    FrameCtx &ctx, bool &suspended, UnlessPayKind kind, const ManaValue *cost_pips) {
     suspended = false;
 
     if (kind == UnlessPayKind::DISCARD) {
@@ -584,8 +584,12 @@ bool run_unless_loop(
     // time (mana floats), then the loop re-arms the rebuilt menu. Asks are
     // seated on `controller` through ctx.ask, replacing the old manual seat
     // swap around the whole loop.
+    // Exact colored pips (Chain Lightning: {R}{R}) when supplied; else `cost` generic pips.
     std::multiset<Colors> cond_cost;
-    for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
+    if (cost_pips && !cost_pips->empty())
+        cond_cost = *cost_pips;
+    else
+        for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
     while (true) {
         std::vector<LegalAction> unless_actions = collect_mana_legal_actions(controller, orderer);

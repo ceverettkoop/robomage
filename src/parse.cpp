@@ -1507,8 +1507,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             std::string n = (slash != std::string::npos) ? inner.substr(0, slash) : inner;
             ability.unless_generic_cost = static_cast<size_t>(std::stoi(n));
             ability.unless_cost_is_discard = true;
-        } else {
+        } else if (value.find_first_not_of("0123456789") == std::string::npos) {
             ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
+        } else {
+            // A colored/mixed unless-cost (Chain Lightning: UnlessCost$ R R = {R}{R}). Parse the
+            // exact pips; the pip count drives the >0 gate and logging, the pips drive payment.
+            ability.unless_cost_pips = parse_mana_cost(value);
+            ability.unless_generic_cost = ability.unless_cost_pips.size();
         }
     } else if (key == "UnlessPayer") {
         // UnlessPayer$ You — the controller is the payer of the unless-cost (the only payer we
@@ -1517,10 +1522,21 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // targeted the source (Reality Smasher's opponent), bound at trigger-fire time.
         if (value == "TriggeredSourceSAController")
             ability.unless_payer_is_triggered_source_sa_ctrl = true;
+        // UnlessPayer$ TargetedOrController (Chain Lightning) — the targeted player, or the targeted
+        // permanent's controller; derived from the target at resolution.
+        else if (value == "TargetedOrController")
+            ability.unless_payer_is_targeted_or_controller = true;
     } else if (key == "UnlessSwitched") {
-        // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid"
-        // (Wrath of the Skies: destroy only if the energy was paid).
-        effect_params<DestroyAllParams>(ability).energy_unless_switched = (value == "True");
+        // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid". For a
+        // DestroyAll (Wrath of the Skies: destroy only if the energy was paid) it rides on the
+        // DestroyAll params; for any other effect (Chain Lightning's CopySpellAbility: copy only if
+        // {R}{R} was paid) it rides on the generic unless_switched flag.
+        if (ability.category == "DestroyAll")
+            effect_params<DestroyAllParams>(ability).energy_unless_switched = (value == "True");
+        else
+            ability.unless_switched = (value == "True");
+    } else if (key == "MayChooseTarget") {
+        ability.unless_may_choose_target = (value == "True");
     } else if (key == "LifeAmount") {
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
@@ -1920,7 +1936,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             //   LockTokenScript$ True (Into the Flood Maw) — pin the gifted Fish token's script.
             //   ExileOnMoved$ Battlefield (Manifold Key) — exile the permanent when it moves.
             "Reorder", "TriggerAmount", "RememberOriginalTokens", "LockTokenScript",
-            "ExileOnMoved"
+            "ExileOnMoved",
+            // Controller$ <token> (Chain Lightning's DB$ CopySpellAbility: Controller$
+            // TargetedOrController) — names who controls the resolving sub-ability. The
+            // copy_spell_ability handler derives the copy's controller from UnlessPayer$
+            // TargetedOrController directly, so this is informational here.
+            "Controller"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;

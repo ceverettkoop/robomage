@@ -143,6 +143,11 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
 // the trigger fired. Puts that many copies of the source spell on the stack (each may choose new
 // targets) via the shared run_copy_spell machine (suspendable). See effect_storm.cpp.
 HandlerResult storm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// DB$ CopySpellAbility (Chain Lightning): after the parent spell's effect, the target-or-its-
+// controller may pay an UnlessCost$ ({R}{R}) to copy the parent spell and choose new targets for
+// the copy (UnlessSwitched$ True = copy ONLY IF paid). Reuses run_unless_loop + the shared
+// run_copy_spell machine (suspendable). See effect_copy_spell.cpp. CR 707.10 / 707.12.
+HandlerResult copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
 // chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
 // (here a RevealDiscardAll discard) can reference it.
@@ -269,7 +274,10 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 // DISCARD flow ask through `ctx` and may suspend (`suspended` set, return value meaningless —
 // check it FIRST); the MANA tap-for-mana loop is still a blocking prompt (Shape C, Batch 7).
 enum class UnlessPayKind { MANA, LIFE, DISCARD, ENERGY };
+// `cost_pips` (MANA kind only) overrides the default generic {cost} requirement with exact colored
+// pips (Chain Lightning: {R}{R}); when null/empty the cost is `cost` generic mana as before.
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-                     FrameCtx &ctx, bool &suspended, UnlessPayKind kind = UnlessPayKind::MANA);
+                     FrameCtx &ctx, bool &suspended, UnlessPayKind kind = UnlessPayKind::MANA,
+                     const ManaValue *cost_pips = nullptr);
 
 #endif /* EFFECTS_H */

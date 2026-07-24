@@ -125,6 +125,11 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // per-permanent scratch store (Permanent::stored_svars), read back by a CheckSVar trigger
         // gate. See effect_store_svar.cpp.
         {"StoreSVar", EffectKind::StoreSVar},
+        // DB$ CopySpellAbility (Chain Lightning): after the parent effect, a player may pay an
+        // UnlessCost$ to copy the parent spell (UnlessSwitched$ True = copy only if paid) and may
+        // choose new targets for the copy. Reuses the shared copy-a-spell machine + the unless-cost
+        // payment loop. See effect_copy_spell.cpp. CR 707.10 / 707.12.
+        {"CopySpellAbility", EffectKind::CopySpellAbility},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

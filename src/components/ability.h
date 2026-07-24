@@ -218,6 +218,24 @@ struct Ability{
     // controller. Bound at trigger-fire time into unless_payer (UNKNOWN ⇒ default to the countered
     // spell's controller, as Ward does). General for any "unless its controller pays/discards".
     bool unless_payer_is_triggered_source_sa_ctrl = false;
+    // UnlessPayer$ TargetedOrController (Chain Lightning's copy rider): the payer is the targeted
+    // PLAYER, or — when the parent effect targeted a permanent — that permanent's controller. Derived
+    // at resolution from the (inherited) target, not bound at trigger time. General "then that player
+    // or that permanent's controller may pay ...".
+    bool unless_payer_is_targeted_or_controller = false;
+    // UnlessCost$ with COLORED pips (Chain Lightning: UnlessCost$ R R = {R}{R}). Empty ⇒ the cost is
+    // the generic {unless_generic_cost} count. When non-empty these exact pips are the mana the payer
+    // must produce; unless_generic_cost still holds the pip count for the >0 gate and logging.
+    ManaValue unless_cost_pips;
+    // UnlessSwitched$ True on a NON-DestroyAll effect (Chain Lightning's DB$ CopySpellAbility):
+    // invert the normal "do the effect UNLESS the cost is paid" into "do the effect ONLY IF the cost
+    // is paid" (paying {R}{R} ENABLES the copy). (DestroyAll's switched energy cost rides on
+    // DestroyAllParams::energy_unless_switched instead — see parse.cpp.)
+    bool unless_switched = false;
+    // MayChooseTarget$ True (Chain Lightning): the copy's controller may choose new targets for the
+    // copy. The shared copy machine (effect_copy_spell.cpp) already re-runs target selection for
+    // every copy (CR 707.12), so this flag is informational — recorded for parse fidelity.
+    bool unless_may_choose_target = false;
     Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 

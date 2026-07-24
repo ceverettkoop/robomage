@@ -29,12 +29,16 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
+#include "../components/permanent.h"
+#include "../components/player.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
+#include "../game_queries.h"
 #include "../resolution_frame.h"
 #include "../systems/orderer.h"
+#include "effects.h"
 
 extern Coordinator global_coordinator;
 
@@ -205,4 +209,63 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
     }
     rt = CopySpellRT{};
     return TargetStatus::DONE;
+}
+
+// DB$ CopySpellAbility (Chain Lightning): after the parent spell's effect resolves, a player MAY
+// pay an unless-cost ({R}{R}) to copy the parent spell and choose new targets for the copy.
+// UnlessSwitched$ True means paying ENABLES the copy (copy only if paid), the inverse of the usual
+// "do it unless paid". The payer/copier is UnlessPayer$ TargetedOrController — the targeted PLAYER,
+// or the targeted permanent's controller. General over any "then a player may pay X to copy this
+// spell (and may choose new targets)". CR 707.10 / 707.12.
+//
+// Two suspendable stages share one persisted CopySpellRT: (1) the unless-cost payment loop runs
+// while rt is INACTIVE (a resume re-enters the idempotent Shape-C loop and consumes the latched
+// answer — the copy hasn't begun); (2) copy_spell_begin() activates rt, after which a resume goes
+// straight to run_copy_spell (the pay question is never re-asked).
+HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    CopySpellRT local_rt;
+    CopySpellRT &rt = ctx.can_suspend() ? ctx.rt<CopySpellRT>() : local_rt;
+
+    if (!rt.active) {
+        // Determine the payer/copier. UnlessPayer$ TargetedOrController: the targeted player, or —
+        // when the parent targeted a permanent — that permanent's controller. The target is the
+        // parent effect's target, inherited onto this sub-ability (Defined$ Parent) by bind_sub_target.
+        Zone::Ownership payer = ab.controller;
+        if (ab.unless_payer_is_targeted_or_controller) {
+            Entity tgt = ab.target;
+            if (tgt != 0 && global_coordinator.entity_has_component<Player>(tgt)) {
+                payer = (tgt == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A : Zone::PLAYER_B;
+            } else if (tgt != 0 && global_coordinator.entity_has_component<Permanent>(tgt)) {
+                payer = global_coordinator.GetComponent<Permanent>(tgt).controller;
+            }
+        } else if (ab.unless_payer != Zone::UNKNOWN) {
+            payer = ab.unless_payer;
+        }
+
+        // Offer the optional unless-cost. UnlessSwitched inverts the meaning of "paid".
+        bool do_copy;
+        if (ab.unless_generic_cost > 0) {
+            if (!ctx.resuming())
+                game_log("%s may pay to copy %s:\n", player_name(payer).c_str(),
+                         entity_name(ab.source).c_str());
+            bool suspended = false;
+            bool prevented = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, ctx,
+                                             suspended, UnlessPayKind::MANA, &ab.unless_cost_pips);
+            if (suspended) return HandlerResult::SUSPENDED;
+            bool paid = !prevented;
+            // UnlessSwitched$ True: copy only if paid. Otherwise copy unless paid.
+            do_copy = ab.unless_switched ? paid : prevented;
+        } else {
+            do_copy = true;  // no cost — always copy
+        }
+        if (!do_copy) return HandlerResult::DONE_RUN_SUBS;
+
+        copy_spell_begin(rt, ab.source, 1, payer);
+        if (!rt.active) return HandlerResult::DONE_RUN_SUBS;  // nothing to copy (original gone)
+    }
+
+    ResolutionTargetAsker asker(ctx);
+    if (run_copy_spell(rt, asker, orderer) != TargetStatus::DONE)
+        return HandlerResult::SUSPENDED;
+    return HandlerResult::DONE_RUN_SUBS;
 }

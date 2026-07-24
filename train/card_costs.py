@@ -332,7 +332,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.6],  # 323: Archon of Cruelty
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 324: Blast Zone
     [0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.1],  # 325: Malevolent Rumble
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 326: 
+    [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0],  # 326: Chain Lightning
     [0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0],  # 327: Searing Blood
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 328: Dead
     [0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.4],  # 329: Fireblast
@@ -1363,7 +1363,7 @@ _VOCAB_NAMES = [
     "Archon of Cruelty",  # 323
     "Blast Zone",  # 324
     "Malevolent Rumble",  # 325
-    "",  # 326
+    "Chain Lightning",  # 326
     "Searing Blood",  # 327
     "Dead/Gone",  # 328
     "Fireblast",  # 329

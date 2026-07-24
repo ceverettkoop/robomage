@@ -73,6 +73,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Storm:           return &storm;
         case EffectKind::AddTurn:         return &add_turn;
         case EffectKind::StoreSVar:       return &store_svar;
+        case EffectKind::CopySpellAbility: return &copy_spell_ability;
         default:                          return nullptr;
     }
 }
