@@ -2155,8 +2155,12 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                        sv.find("Count$YourLifeTotal") != std::string::npos ||
                        // Remembered$Valid <filter> — count of remembered (e.g. just-moved by a
                        // RememberChanged$ ChangeZoneAll) cards matching the filter (Canoptek
-                       // Scarab Swarm: TokenAmount$ X, X = Remembered$Valid Land,Artifact).
+                       // Scarab Swarm: TokenAmount$ X, X = Remembered$Valid Land,Artifact). The
+                       // RememberedLKI$ form reads the same remembered set, but populated from a
+                       // RememberLKI$ ChangeZone last-known-info snapshot (Reanimate: LifeAmount$
+                       // X, X = RememberedLKI$CardManaCost = the reanimated creature's mana value).
                        sv.find("Remembered$") != std::string::npos ||
+                       sv.find("RememberedLKI$") != std::string::npos ||
                        // Count$xPaid — amount equals the X paid at cast (Kozilek's Command:
                        // TokenAmount$/ScryNum$/TargetMax$ all = X = Count$xPaid).
                        sv.find("xPaid") != std::string::npos ||

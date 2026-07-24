@@ -1309,8 +1309,14 @@ size_t evaluate_dynamic_amount(
         return count;
     }
     // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
-    // Ritual: X = 1 plus the sacrificed creature's mana value).
-    if (expr.find("Remembered$CardManaCost") != std::string::npos) {
+    // Ritual: X = 1 plus the sacrificed creature's mana value). The RememberedLKI$ variant
+    // reads the same remembered entity, but is populated by a RememberLKI$ ChangeZone that
+    // snapshots the card as last-known info once it has left its origin zone (Reanimate: you
+    // lose life equal to the reanimated creature's mana value — CR 608.2h last-known-info,
+    // since the card left the graveyard as it entered play). Both forms resolve identically
+    // here because the LKI snapshot is pushed to cur_game.remembered_entities all the same.
+    if (expr.find("Remembered$CardManaCost") != std::string::npos ||
+        expr.find("RememberedLKI$CardManaCost") != std::string::npos) {
         int base = 0;
         if (!cur_game.remembered_entities.empty()) {
             Entity r = cur_game.remembered_entities[0];

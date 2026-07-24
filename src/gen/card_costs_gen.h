@@ -310,7 +310,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 299: Tamiyo, Seasoned Scholar
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 300: Tropical Island
     {0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f},  // 301: Carpet of Flowers
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 302: 
+    {0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f},  // 302: Reanimate
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 303: 
     {0.0f, 0.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.4f},  // 304: Griselbrand
     {0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 305: Otherworldly Gaze
@@ -1339,7 +1339,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 299: Tamiyo, Seasoned Scholar
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 300: Tropical Island
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 301: Carpet of Flowers
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 302: 
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 302: Reanimate
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 303: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 304: Griselbrand
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 305: Otherworldly Gaze

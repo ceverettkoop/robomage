@@ -207,6 +207,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Tamiyo, Inquisitive Student", 298}, {"Tamiyo, Seasoned Scholar", 299},
     {"Tropical Island", 300},
     {"Carpet of Flowers", 301},
+    {"Reanimate", 302},
     {"Griselbrand", 304},
     {"Otherworldly Gaze", 305},
     {"Meticulous Archive", 306},

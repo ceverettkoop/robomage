@@ -308,7 +308,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 299: Tamiyo, Seasoned Scholar
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 300: Tropical Island
     [0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0],  # 301: Carpet of Flowers
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 302: 
+    [0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0],  # 302: Reanimate
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 303: 
     [0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.4],  # 304: Griselbrand
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 305: Otherworldly Gaze
@@ -1339,7 +1339,7 @@ _VOCAB_NAMES = [
     "Tamiyo, Seasoned Scholar",  # 299
     "Tropical Island",  # 300
     "Carpet of Flowers",  # 301
-    "",  # 302
+    "Reanimate",  # 302
     "",  # 303
     "Griselbrand",  # 304
     "Otherworldly Gaze",  # 305
