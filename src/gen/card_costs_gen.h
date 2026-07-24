@@ -340,7 +340,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.4f},  // 329: Fireblast
     {0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 330: Geist of Saint Traft
     {0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 331: Echoing Truth
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 332: 
+    {0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.2f},  // 332: Show and Tell
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 333: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 334: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 335: 
@@ -1369,7 +1369,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 329: Fireblast
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 330: Geist of Saint Traft
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 331: Echoing Truth
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 332: 
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 332: Show and Tell
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 333: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 334: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 335: 

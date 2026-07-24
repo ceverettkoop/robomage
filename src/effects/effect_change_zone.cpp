@@ -30,6 +30,8 @@ static bool search_reveals_card(const Ability &ab);
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
                                         Zone::ZoneValue dest);
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
+static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
+                                               FrameCtx &fctx);
 
 // Name an object for a log line / action label without assuming it is a card: a token has a
 // Permanent (and Token) but no CardData, so reading CardData on it crashes. Delegates to the
@@ -117,6 +119,63 @@ static bool search_reveals_card(const Ability &ab) {
     return from_hidden && specific_type;
 }
 
+// Show and Tell family: DefinedPlayer$ Player — EACH player may put one matching card from THEIR
+// OWN hand onto the battlefield, in APNAP order (CR 101.4 / 405.6: active player first). It is a
+// "may" per player (each may decline), and each player chooses privately from their own hand. A
+// card put this way enters under its owner's control (CR 110.2a; no mana is paid — big creatures
+// like Griselbrand simply enter, they are not cast), and its ETB fires via the normal SBA pass.
+// Suspend-safe: only the player index persists (EachPlayerPutRt); each player's candidate menu is
+// re-derived from their live hand every pass (a card already put has left the hand).
+static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
+                                               FrameCtx &fctx) {
+    Zone::Ownership active = cur_game.player_a_active ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership nonactive = (active == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership order[2] = {active, nonactive};
+
+    EachPlayerPutRt local_rt;
+    EachPlayerPutRt &rt = fctx.can_suspend() ? fctx.rt<EachPlayerPutRt>() : local_rt;
+
+    MatchCtx mctx;
+    for (; rt.player_idx < 2; rt.player_idx++) {
+        Zone::Ownership p = order[rt.player_idx];
+        mctx.controller = p;
+        // Candidates: this player's own hand cards matching the ChangeType filter
+        // (Creature,Artifact,Enchantment,Land). Re-derived every pass so a resume rebuilds the
+        // identical menu (and a card already put no longer appears).
+        std::vector<Entity> cands;
+        for (auto e : orderer->get_hand(p)) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            // A hand card is matched by its PRINTED characteristics (card_matches_any), not the
+            // battlefield-permanent matcher — the card is not on the battlefield yet.
+            if (card_matches_any(e, ab.change_type, mctx)) cands.push_back(e);
+        }
+        if (cands.empty()) continue;  // no eligible card — this player puts nothing
+
+        std::vector<LegalAction> picks;
+        for (auto e : cands) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            LegalAction la(PASS_PRIORITY, e, std::string("Put ") + cd.name + " onto the battlefield");
+            la.category = ActionCategory::CHOOSE_CARD;
+            picks.push_back(la);
+        }
+        LegalAction none(PASS_PRIORITY, std::string("Put nothing"));
+        none.category = ActionCategory::CHOOSE_CARD;
+        picks.push_back(none);
+
+        int choice = fctx.ask(std::move(picks), p, ab.source);
+        if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+        if (choice < 0 || choice >= static_cast<int>(cands.size())) continue;  // declined
+        Entity chosen = cands[static_cast<size_t>(choice)];
+        std::string cname = global_coordinator.GetComponent<CardData>(chosen).name;
+        Zone::ZoneValue landed = change_zone_move(orderer, chosen, Zone::BATTLEFIELD);
+        if (landed == Zone::BATTLEFIELD) {
+            global_coordinator.GetComponent<Zone>(chosen).controller = p;  // owner's control (110.2a)
+            game_log("%s puts %s onto the battlefield\n", player_name(p).c_str(), cname.c_str());
+        }
+    }
+    return HandlerResult::DONE_RUN_SUBS;
+}
+
 HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     PendingDecisionScope pending_scope(ab.source);
     // Same-name search/move (Surgical Extraction, Infernal Tutor, Secret Salvage, Pack
@@ -173,6 +232,14 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (ptgt != 0 && global_coordinator.entity_has_component<Player>(ptgt))
             owner = (ptgt == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     }
+
+    // DefinedPlayer$ Player — EACH player may put a matching card from THEIR OWN hand onto the
+    // battlefield (Show and Tell), in APNAP order. Not a search (no filter reveal / library
+    // shuffle) and not a caster-only put: it is a per-player "may". Routed here before the generic
+    // caster-scoped search path below, which would otherwise put only the caster's card.
+    if (ab.defined == "Player" && ab.origin == Zone::HAND && ab.destination == Zone::BATTLEFIELD &&
+        ab.valid_tgts == "N_A")
+        return each_player_put_from_hand(ab, orderer, fctx);
 
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
                            : ab.destination == Zone::LIBRARY   ? "top of library"

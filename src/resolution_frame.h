@@ -223,10 +223,18 @@ struct DrawRt {
     size_t total = 0;
     size_t done = 0;
 };
+// change_zone's DefinedPlayer$ Player put-from-hand (Show and Tell: "Each player MAY put an
+// artifact, creature, enchantment, or land card from their hand onto the battlefield"). Each
+// player decides in APNAP order (CR 101.4 / 405.6, active player first); only the loop index
+// persists across a suspension — the per-player candidate menu is re-derived from that player's
+// live hand every pass (a live-menu loop; the parked menu pins cover the hand cards).
+struct EachPlayerPutRt {
+    int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
+};
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
                                    SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
-                                   CopySpellRT, DrawRt, DiscardRt>;
+                                   CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating
