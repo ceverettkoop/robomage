@@ -16,7 +16,7 @@
 #include "search_server.h"
 
 #ifndef VERSION_NUMBER
-#define VERSION_NUMBER "0.001"
+#define VERSION_NUMBER "0.2"
 #endif
 
 static std::vector<std::string> split_card_list(const std::string &csv);

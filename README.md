@@ -1,10 +1,17 @@
 # robomage
 
-Card game rules engine built for reinforcement learning. Games run are deterministic, based on random seed. Agent (human, scripted or ML model) is presented with finite options for every decision point.
+Magic the Gathering rules engine built for reinforcement learning. Games run are deterministic, based on random seed. Agent (human, scripted or ML model) is presented with finite options for every decision point.
+
+Current agent training workflow is maskable PPO training with SB3 to train a base policy and then refines that model with MCTS training. The latest release will include a training model to play any
+of the decks in bin/resources/decks/league. It may be able to handle other decks with the same or similar cards but note that the engine will require rebuilding for any cards not currently listed in the card-vocab
+and rules engine fidelity is not guaranteed for cards outside of the vocab. todo.md includes open engine correctnes items.
+
+Agent training workflow and rules engine are under active development so things may break frequently.
 
 ## Prereqs
 
-**C++ toolchain** — to build the engine binary (`make`). Engine is C++17 + standard library.
+**C++ toolchain** — to build the engine binary (`make`). Engine is C++17 + standard library. Tested on Mac and Linux 
+would probably work on Windows with mingw but have not tested.
 
 **Python toolchain** — for the RL training stack, the TUI, and the test harness.
 Python 3.10+ (CI is tested on 3.12).
@@ -28,6 +35,40 @@ make BUILD=RELEASE    # optimized
 Card scripts live in `bin/resources/cardsfolder/` and `bin/resources/tokenscripts`. See the card-forge repository for compatible scripts. `tools/forge_fetch/provision_decks.py` will automatically download any missing scripts based on cards listed in card_vocab.h.
 
 The binary is written to `bin/robomage`.
+
+## Quick start — play the v0.2 release
+
+The release tarball is the source tree **plus** the trained models (`gen__final.zip`, the PPO
+generalist, and `az/gen__azfinal.pt`, the AlphaZero net) already in place under
+`train/checkpoints/` — nothing to move after extracting.
+
+```bash
+# grab robomage-0.2.tar.gz from https://github.com/ceverettkoop/robomage/releases/latest
+tar xzf robomage-0.2.tar.gz && cd robomage-0.2
+
+make BUILD=RELEASE                                              # optimized engine -> bin/robomage
+python3 -m venv train/.venv
+train/.venv/bin/pip install --upgrade pip
+train/.venv/bin/pip install numpy gymnasium stable-baselines3 sb3-contrib
+train/.venv/bin/pip install -r train/requirements-gui.txt       # PySide6 desktop board
+
+./gui.sh                                                        # launcher dialog -> Start game
+```
+
+`./gui.sh` opens the launcher with the following defaults:
+
+- **Your deck** `league/bug`, **Opponent deck** `league/ur_delver`, random seat, best-of-three
+- **Opponent** `MCTS search (az:gen)` — the AlphaZero net with MCTS on top, 8 determinized
+  worlds, no per-decision simulation cap, paced off a 1500 s (25 min) whole-match thinking clock
+- **Analysis window** on, evaluating each of your decisions with the same AZ net (4 worlds,
+  2000 sims), which you can toggle in-game with F9
+
+**Use the decks in `bin/resources/decks/league/`** (`bug`, `ur_delver`, `gw_maverick`, `bw_dnt`,
+`wrb_energy`) for both seats.
+
+`azraw:gen` plays the AZ net with no search (fast, weaker); `mcts:gen` runs search over the PPO
+checkpoint instead; `scripted:hard` is the rule-based agent and needs no model at all.
+
 
 ## Running
 
@@ -56,47 +97,29 @@ The ML agent only understands cards listed in `src/card_vocab.h`. The decks in t
 
 ## Training
 
-### Training commands
-
-All commands are run from the repo root, these commands assume a venv with appropriate
-prereqs. `./tui.sh` wraps all of these; use the raw commands below for scripting or options
-the TUI doesn't expose.
-
-`train.py` uses subcommands. Run `train/.venv/bin/python train/train.py -h` to
-list them, or `train.py <subcommand> -h` for a subcommand's options. The `train`
-subcommand is assumed when none is given, so one-liner training works without
-typing `train`.
+All commands run from the repo root with a venv that has the appropriate prereqs. `./tui.sh`
+wraps all of these; use the raw commands below for scripting or options the TUI doesn't expose.
 
 There is **one generalist model** that pilots any deck, saved as `checkpoints/gen__final.zip`
-(plus periodic `gen__v{steps}.zip` snapshots). Every training session continues that same
-checkpoint rather than forging a per-deck or matchup-specific model. The filename encodes **no
-deck**, so the deck a model pilots (and the opponent's deck) always travels as a separate
-explicit parameter; the model spec is `gen`, an explicit `.zip` path, or an `az:gen`/`azraw:gen`
-search wrapper (a bare deck stem is no longer accepted as a model).
+(plus periodic `gen__v{steps}.zip` snapshots). 
+
+**Use `league` (below) to actually train the PPO generalist** — it rotates the roster and pool
+of past snapshots for you. The single-matchup `train`/`sweep` subcommands below are for
+scripting one deck-vs-deck session or inspecting a checkpoint, not the primary training loop.
 
 ```bash
-# Training (the 'train' subcommand is implied when omitted)
-train/.venv/bin/python train/train.py --deck delver --opponent mav                 # train/continue the generalist on delver vs the mav deck
-train/.venv/bin/python train/train.py train --deck delver --opponent mav --load checkpoints/gen__v500000.zip  # resume a specific snapshot
-train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play against frozen generalist snapshots
-train/.venv/bin/python train/train.py --deck delver --opponent mav --fresh         # start the generalist over from scratch
-train/.venv/bin/python train/train.py sweep                                           # train the generalist across all deck matchups in bin/resources/decks
-train/.venv/bin/python train/train.py sweep --deck delver                             # only matchups featuring delver
-
-# Verify a build / inspect a model
-# observe replaces the old diag/watch commands: one command for any {scripted|model} vs {scripted|model} matchup
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav                          # scripted vs scripted, one game
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10                # 10 games + W/L/D summary (env sanity check)
-train/.venv/bin/python train/train.py observe --player-a gen --player-b scripted --deck delver --opponent mav  # watch the generalist play delver
-train/.venv/bin/python train/train.py baseline gen --deck delver                      # win rate vs the scripted agent (deck required)
+train/.venv/bin/python train/train.py --deck delver --opponent mav                 # continue gen on one matchup
+train/.venv/bin/python train/train.py --deck delver --opponent mav --fresh         # start gen over from scratch
+train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10  # sanity-check a build (scripted vs scripted + summary)
+train/.venv/bin/python train/train.py baseline gen --deck delver                   # gen's win rate vs the scripted agent
 ```
 
-### League (PFSP)
+### League (PFSP) — train the PPO generalist
 
-`league` rotates a single learner across a roster of decks, training each against
-a shared pool of frozen snapshots of past versions (prioritised fictitious
-self-play). Snapshots feed the pool over time, so later rotations face stronger
-opponents.
+`league` is the primary way to train `gen__final.zip`: it rotates a single learner across a
+roster of decks, training each against a shared pool of frozen snapshots of past versions
+(prioritised fictitious self-play). Snapshots feed the pool over time, so later rotations face
+stronger opponents.
 
 ```bash
 train/.venv/bin/python train/train.py league                                          # all decks in decks/league/
@@ -104,36 +127,25 @@ train/.venv/bin/python train/train.py league --decks delver,mav --total-timestep
 train/.venv/bin/python train/train.py league --resume                                 # resume an interrupted run
 ```
 
-### AlphaZero (AZ) training
+### AlphaZero (AZ) training — warm-started from PPO
 
-The AZ loop trains a policy/value net on MCTS output instead of PPO gradients:
-self-play games are played with determinized search over engine snapshots
-(`--search-server`), each searched decision's visit counts become a policy
-target, and game outcomes train the value head. There is **one generalist AZ net**
-like the PPO one, saved as `checkpoints/az/gen__azfinal.pt` (the gate-promoted
-incumbent) plus `gen__azv{steps}.pt` candidate snapshots, warm-started
-automatically from the generalist PPO checkpoint. Self-play is mirrors **plus**
-cross-deck: a focus deck faces a mirror with probability `--mirror-frac` (default
-0.25), else a uniform league-roster opponent, and all shards pool into
-`az_data/gen/`. The promotion gate is an aggregate win-rate over a sample of
-roster matchups (per-matchup breakdown printed). The usual pattern is PPO first,
-AZ after it plateaus — see `docs/ppo_az_training.md` for when to switch and
-`docs/alphazero_status.md` for the machinery.
+The AZ loop trains a policy/value net on MCTS output instead of PPO gradients: self-play games
+use determinized search over engine snapshots, each decision's visit counts become a policy
+target, and outcomes train the value head. **AZ always starts from a PPO warm start** — run
+`league` first to build `gen__final.zip`, and the first `az`/`az-train` cycle initializes the
+AZ net (`checkpoints/az/gen__azfinal.pt`) from it automatically; there's no from-scratch AZ path.
+See `docs/ppo_az_training.md` for when to switch from PPO to AZ and `docs/alphazero_status.md`
+for the machinery.
 
 ```bash
 train/.venv/bin/python train/train.py az --deck delver                # one full cycle: self-play -> train -> gate
-train/.venv/bin/python train/train.py az-selfplay --deck delver --games 50 --sims 128 --worlds 4  # generate shards only
-train/.venv/bin/python train/train.py az-train --deck delver          # train a candidate on the pooled shard window
-train/.venv/bin/python train/train.py az-eval --deck delver --candidate gen --promote  # gate candidate vs incumbent
 train/.venv/bin/python train/train.py az-league                       # rotate AZ cycles across decks/league/
-train/.venv/bin/python train/eval_search_gate.py --checkpoint gen --deck delver  # search-vs-raw strength gate
 ```
 
-Self-play uses the C++ actor (`make actor`, needs libtorch) automatically when
-`bin/az_actor` is built, else a pure-Python backend — same shards either way.
-The AZ net plays anywhere a controller spec is accepted: `az:gen?sims=128&worlds=4`
-(with search) or `azraw:gen` (net only); `mcts:gen` runs search over the PPO
-checkpoint instead.
+Self-play uses the C++ actor (`make actor`, needs libtorch) automatically when `bin/az_actor` is
+built, else a pure-Python backend — same shards either way. The AZ net plays anywhere a
+controller spec is accepted: `az:gen?sims=128&worlds=4` (with search) or `azraw:gen` (net only);
+`mcts:gen` runs search over the PPO checkpoint instead.
 
 ## Play against model
 
@@ -141,15 +153,24 @@ checkpoint instead.
 train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck)          # TUI game board (default); the generalist (gen) pilots --model-deck
 train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck) --gui    # PySide6 desktop board (needs requirements-gui.txt)
 train/.venv/bin/python train/gui_game.py                                              # GUI launcher — pick decks/opponent/format/analysis in a dialog
+./gui.sh                                                                              # shortcut for the line above, run from the repo root
 ```
 
-The GUI has an optional **analysis window** (launcher checkbox, or `--gui --analysis`; F9
-toggles in-game): live MCTS evaluation of your current decision on a separate engine copy —
-a per-action table (prior / visits / Q as win%) that updates while the search runs, a branch
-value chart with per-world spread, and a scrubber that fast-forwards along a line's principal
-variation showing the expected future positions. An off-by-default reveal toggle extends the
-same analysis to the opponent's decisions (this shows hidden information). Evaluator defaults
-to `az:gen` (falls back to a PPO warm-start); `uniform` works without torch.
+**`./gui.sh`**, run from the repo root, is the GUI-board equivalent of `./tui.sh` — it launches
+`train/gui_game.py` with no arguments, which opens the launcher dialog (needs
+`requirements-gui.txt`; falls back to the TUI if PySide6 is missing). The launcher's "Game
+setup" group picks your deck, the opponent's deck, the opponent controller (`gen`, a scripted
+tier, or an `az:`/`azraw:`/`mcts:` search spec), which seat you play, and bo3-vs-single-game
+format; choices persist to `~/.robomage/gui_launcher.json` for next time. When the opponent is
+a search spec (`az:`/`mcts:`), a "Search opponent settings" group appears with tuning knobs
+(each defaults to "omit the knob" unless set): simulations per decision, determinized worlds,
+think-time-per-decision (overrides the sims cap with a wall-clock budget), search procs
+(engine processes to fan worlds across), a whole-match thinking clock, and whether to pace
+responses to mask which decisions were easy/hard.
+
+The GUI also has an always-available **analysis window** (launcher's "Analysis window" group,
+or `--gui --analysis`; F9 toggles it in-game): live MCTS evaluation of your current decision on
+a separate, detached engine copy that never blocks the live game. 
 
 ## Run N games and analyze them (interactive)
 
@@ -158,3 +179,19 @@ train/.venv/bin/python train/analysis.py interactive (gen, or a checkpoint path)
 ```
 
 `analysis.py` also has a non-interactive subcommands for a report each — `report`,
+
+### TUI analysis browser
+
+`tui_analysis.py` is a full-screen Textual front end for the same simulated-game analysis:
+pick a game from the sidebar and page through its board states (rendered like the TUI game
+board) one decision at a time, with the model's full policy distribution shown at each step;
+seek by clicking the V(s) histogram docked at the bottom; run any REPL analysis view (summary,
+cardvalue, targeting, swings, regret, entropy, calibration, shap, …) from the sidebar menu; and
+branch a counterfactual `whatif` at the current step (`w` key) to simulate an alternative line.
+
+From `./tui.sh`, pick the **analysis-tui** tool and its **browse** subcommand to fill in the
+same options through the form. To invoke it directly:
+
+```bash
+train/.venv/bin/python train/tui_analysis.py (gen, or a checkpoint path) --opponent (model, or 'scripted') --deck-b (opponent's deck) --n-games 20
+```
