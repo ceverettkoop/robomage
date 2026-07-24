@@ -82,7 +82,23 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
             // enforces it via opponent_sorcery_speed_locked. Skip it in this prohibition scan.
             if (as.sa->only_sorcery_speed) continue;
             if (!as.condition_met) continue;
-            if (caster != as.controller) return true;  // caster is an opponent of the source
+            if (caster != as.controller) {  // caster is an opponent of the source
+                // Lavinia, Azorius Renegade: cmcGT$ Land is a DYNAMIC bound — the opponent can't
+                // cast a spell matching ValidCard$ (noncreature nonland) whose mana value exceeds
+                // the number of lands THEY control (CR 601.3e; the bound is the caster's land
+                // count at cast-legality time). Count via the shared battlefield accessor.
+                if (as.sa->cant_cast_cmc_gt_land) {
+                    MatchCtx ctx;
+                    ctx.controller = caster;  // "you" reference for the ValidCard$ filter
+                    if (!as.sa->cant_cast_filter.empty() &&
+                        !card_matches_filter(card, as.sa->cant_cast_filter, ctx))
+                        continue;  // creature / land spells are unaffected
+                    int land_count = count_battlefield_matching("Land.YouCtrl", caster, 0);
+                    if (card_mana_value(card) > land_count) return true;
+                    continue;
+                }
+                return true;  // blanket opponent lock (Voice of Victory)
+            }
             continue;
         }
         if (as.sa->cant_cast_limit_per_turn > 0) {

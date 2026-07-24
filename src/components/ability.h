@@ -198,6 +198,8 @@ struct Ability{
     bool is_evoke_sacrifice = false;     // synthetic ETB self-trigger from K:Evoke — only fires when the permanent was evoked
     bool is_offspring_token = false;     // synthetic ETB self-trigger from K:Offspring — only fires when the permanent was cast with offspring; creates a 1/1 token copy
     bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
+    bool trigger_valid_player_is_opponent = false;    // true when ValidActivatingPlayer$ Opponent
+                                                      // (Lavinia: only opponent casts fire the trigger)
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     bool shuffle_after = false;          // Shuffle$ True — shuffle the destination library after a ChangeZoneAll move (Emrakul death trigger: shuffle graveyard into library)
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after

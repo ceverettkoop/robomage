@@ -537,6 +537,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     Entity ctrl_entity = get_player_entity(perm.controller);
                     if (event_player != ctrl_entity) continue;
                 }
+                // ValidActivatingPlayer$ Opponent (Lavinia, Azorius Renegade): only fire when the
+                // acting player is an OPPONENT of this source's controller (the event's PLAYER is
+                // the caster on SPELL_CAST). In a two-player game "opponent" = not the controller.
+                if (ab.trigger_valid_player_is_opponent && ev.GetType() != Events::BECAME_TARGET &&
+                    ev.HasParam(Params::PLAYER)) {
+                    Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
+                    Entity ctrl_entity = get_player_entity(perm.controller);
+                    if (event_player == ctrl_entity) continue;
+                }
                 // DisableTriggers check (Doorkeeper Thrull): suppress ETB triggers caused by matching card types
                 if (ev.GetType() == Events::CARD_CHANGED_ZONE &&
                     ev.GetParam<Zone::ZoneValue>(Params::DESTINATION) == Zone::BATTLEFIELD) {

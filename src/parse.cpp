@@ -2939,6 +2939,9 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Graveyard") != std::string::npos) trigger_zone_is_graveyard = true;
         } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
             if (value == "You") valid_player_is_you = true;
+            // ValidActivatingPlayer$ Opponent (Lavinia, Azorius Renegade): the trigger fires only
+            // when an OPPONENT of the source's controller is the acting player.
+            if (value == "Opponent") ability.trigger_valid_player_is_opponent = true;
         } else if (key == "ValidSA") {
             // SpellCast trigger ValidSA$ Spell.ManaSpent <op><n> (Roiling Vortex: "if no mana was
             // spent to cast that spell" = Spell.ManaSpent EQ0). Parse the ManaSpent comparison
@@ -3391,6 +3394,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_attacker_opp_ctrl                = ability.trigger_attacker_opp_ctrl;
                 effect.trigger_attacked_defender_you            = ability.trigger_attacked_defender_you;
                 effect.trigger_valid_player_is_controller       = ability.trigger_valid_player_is_controller;
+                effect.trigger_valid_player_is_opponent         = ability.trigger_valid_player_is_opponent;
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
                 effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
@@ -3605,6 +3609,11 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                     if (value.find("Graveyard") != std::string::npos) sa.cant_cast_from_graveyard = true;
                     if (value.find("Library")   != std::string::npos) sa.cant_cast_from_library   = true;
                 }
+            } else if (key == "cmcGT") {
+                // CantBeCast cmcGT$ Land (Lavinia, Azorius Renegade): a DYNAMIC mana-value bound.
+                // The spell is prohibited when its mana value exceeds the number of lands the
+                // caster controls. Enforced in rules_mod::cast_prohibited on the opponent path.
+                if (sa.category == "CantBeCast" && value == "Land") sa.cant_cast_cmc_gt_land = true;
             } else if (key == "AddHiddenKeyword") {
                 sa.hidden_keyword = value;
             } else if (key == "ValidCause") {

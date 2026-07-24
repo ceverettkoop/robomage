@@ -123,6 +123,12 @@ struct StaticAbility {
     // from these zones (e.g. flashback). Both false = the restriction is zone-agnostic.
     bool cant_cast_from_graveyard = false;
     bool cant_cast_from_library = false;
+    // cmcGT$ Land (Lavinia, Azorius Renegade: "can't cast noncreature spells with mana value
+    // greater than the number of lands that player controls"). A DYNAMIC mana-value bound: the
+    // spell is prohibited when its mana value exceeds the number of lands the CASTER controls,
+    // computed at cast-legality time (not a static numeric bound). Combined with the ValidCard$
+    // filter (Card.nonCreature+nonLand) and Caster$ Opponent on the same static.
+    bool cant_cast_cmc_gt_land = false;
 
     // Type-changing fields (category = "Continuous", layer 4):
     std::string add_type = "";              // AddType$ Mountain — land subtype to set
