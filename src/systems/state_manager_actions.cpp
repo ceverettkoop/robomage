@@ -165,6 +165,15 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
             return false;
     }
 
+    // Sac<N/Type> alt cost (CR 118.9, Fireblast): the caster must control at least N permanents
+    // matching the filter to sacrifice. (Fall through — a floored mana portion is still checked below.)
+    if (alt_cost.sac_cost_count > 0) {
+        if (static_cast<int>(controlled_permanents_matching(priority_player, alt_cost.sac_cost_spec,
+                                                            orderer->mEntities, card_entity).size()) <
+            alt_cost.sac_cost_count)
+            return false;
+    }
+
     // Condition: not your turn (Force of Negation, Force of Vigor)
     if (alt_cost.condition_not_your_turn) {
         bool is_my_turn = (priority_player == Zone::PLAYER_A) ? cur_game.player_a_turn : !cur_game.player_a_turn;

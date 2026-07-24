@@ -292,6 +292,7 @@ struct Game {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
                 ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
                 ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
+                ALT_SAC,          // alt-cost sacrifice picks (Fireblast: sacrifice two Mountains)
                 KICKER,           // per-kicker optional-additional-cost y/n
                 REPLICATE,        // repeated replicate-cost y/n loop
                 CHOOSE_X,         // X-cost ladder
@@ -404,6 +405,7 @@ struct Game {
             // — the pre-existing alt-cost order, kept for byte compatibility.
             int alt_pitch_done = 0;
             int alt_return_done = 0;
+            int alt_sac_done = 0;  // alt-cost Sac<N/Type> sacrifices completed (Fireblast)
             // Delve (CR 702.66): the chosen exile count, completed picks, and
             // the pre-delve priority seat (the blocking prompt seated both
             // delve stages on the caster and restored the seat afterwards;

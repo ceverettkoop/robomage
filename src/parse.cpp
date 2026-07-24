@@ -192,6 +192,23 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
         else if (filter.find("Black") != std::string::npos) ac.exile_from_hand_color = BLACK;
         matched_special = true;
     }
+    // Sac<N/Type> — an ALTERNATIVE casting cost paid by sacrificing N permanents matching Type
+    // (CR 118.9, Fireblast: "sacrifice two Mountains"). Mirrors the Sac token grammar in
+    // parse_activation_cost: the count precedes the first '/', the filter follows it (a trailing
+    // ';'/'/label' is stripped so "2/Mountain" and "1/Forest;Plains/label" both parse).
+    size_t sc = cost_str.find("Sac<");
+    if (sc != std::string::npos) {
+        size_t slash = cost_str.find('/', sc);
+        size_t close = cost_str.find('>', sc);
+        if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
+            ac.sac_cost_count = std::stoi(cost_str.substr(sc + 4, slash - (sc + 4)));
+            std::string spec = cost_str.substr(slash + 1, close - slash - 1);
+            size_t spec_slash = spec.find('/');
+            if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
+            ac.sac_cost_spec = spec;
+            matched_special = true;
+        }
+    }
     size_t rf = cost_str.find("Return<");
     if (rf != std::string::npos) {
         size_t slash = cost_str.find('/', rf);

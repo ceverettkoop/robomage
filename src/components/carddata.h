@@ -42,6 +42,11 @@ struct AltCost {
     // the opponent's Player::life_lost_this_turn; paid via the shared alt-cost path.
     bool is_spectacle = false;
     std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
+    // Sac<N/Type> count of an ALTERNATIVE casting cost (CR 118.9, e.g. Fireblast: "sacrifice two
+    // Mountains rather than pay this spell's mana cost"). sac_cost_spec holds the "Type" filter,
+    // this holds N. 0 = the alt cost has no sacrifice component. (The flashback sac path always
+    // sacrifices exactly one and doesn't read this; it's used only by the alt-cost cast path.)
+    int sac_cost_count = 0;
     // ExileFromGrave<X/<filter>/<label>> — exile any number of OTHER cards from the caster's
     // graveyard as an additional cost (CR 601.2f), constrained so the chosen set collectively
     // has at least `exile_grave_min_types` distinct card types (Escape: Nethergoyf). 0 = no such cost.

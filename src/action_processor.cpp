@@ -2282,6 +2282,40 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 arm_cast_query(game, std::move(rth_actions), caster);
                 return;
             }
+            pc.step = Game::PendingCast::ALT_SAC;
+            break;
+        }
+
+        case Game::PendingCast::ALT_SAC: {
+            // Alt-cost sacrifice (Fireblast: "sacrifice two Mountains rather than pay this
+            // spell's mana cost", CR 118.9): one pick per required permanent, the menu of
+            // matching permanents the caster controls re-derived each pass (an earlier pick has
+            // left the battlefield, so it drops from the next menu). pc.alt_sac_done counts
+            // completed sacrifices. Cast legality (can_afford_alt) already guaranteed enough
+            // matching permanents exist.
+            while (pc.alt_sac_done < card_data.alt_cost.sac_cost_count) {
+                std::vector<Entity> choices = controlled_permanents_matching(
+                    caster, card_data.alt_cost.sac_cost_spec, orderer->mEntities, spell_entity);
+                std::vector<LegalAction> sac_actions;
+                for (auto e : choices) {
+                    std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
+                    LegalAction la(PASS_PRIORITY, e, std::string("Sacrifice ") + nm);
+                    la.category = ActionCategory::SACRIFICE_PERMANENT;
+                    sac_actions.push_back(la);
+                }
+                if (sac_actions.empty()) break;  // defensive: legality guaranteed enough permanents
+                if (resume_choice >= 0) {
+                    Entity to_sac = sac_actions[static_cast<size_t>(resume_choice)].source_entity;
+                    resume_choice = -1;
+                    std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+                    orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+                    game_log("%s sacrifices %s\n", player_name(caster).c_str(), sac_name.c_str());
+                    pc.alt_sac_done++;
+                    continue;
+                }
+                arm_cast_query(game, std::move(sac_actions), caster);
+                return;
+            }
             pc.step = Game::PendingCast::GIFT;
             break;
         }

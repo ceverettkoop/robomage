@@ -231,6 +231,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Archon of Cruelty", 323},
     {"Blast Zone", 324},
     {"Malevolent Rumble", 325},
+    {"Fireblast", 329},
     {"Skewer the Critics", 339},
     {"Light Up the Stage", 340},
     {"Roiling Vortex", 341},
