@@ -584,6 +584,8 @@ struct Ability{
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
     int dig_rest_library_position = -1;  // LibraryPosition2$ — where unchosen cards go: 0 = top, -1 = bottom (default)
+    int dig_rest_destination = -1;   // DestinationZone2$ — ZONE the unchosen remainder goes to
+                                     // (-1 = Library, the default; Zone::GRAVEYARD for Malevolent Rumble)
 
     // DB$ DigUntil (Amped Raptor): exile from the top of the library until a card matches
     // change_valid (Valid$). dig_until_found_dest is where the matching card goes,

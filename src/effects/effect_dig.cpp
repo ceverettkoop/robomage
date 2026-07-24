@@ -95,7 +95,12 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
                     start = dot + 1;
                 }
                 bool type_ok = want_type.empty();
-                if (!type_ok)
+                // "Permanent" is not a printed type name — it's the permanent-card-type class
+                // (CR 110.4a). Malevolent Rumble's ChangeValid$ Permanent matches any permanent
+                // card (artifact/creature/enchantment/land/planeswalker/battle).
+                if (!type_ok && want_type == "Permanent")
+                    type_ok = is_permanent_card(cd);
+                else if (!type_ok)
                     for (auto &t : cd.types)
                         if (t.name == want_type) { type_ok = true; break; }
                 if (type_ok) { card_matches = true; break; }
@@ -207,6 +212,20 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         // Shuffle remaining with game RNG (platform-stable — see stable_rng.h)
         stable_shuffle(remaining, cur_game.gen);
     }
+    // DestinationZone2$ routes the unchosen remainder somewhere other than the library
+    // (Malevolent Rumble: "Put the rest into your graveyard"). Default (-1) stays the library.
+    if (ab.dig_rest_destination >= 0 && ab.dig_rest_destination != Zone::LIBRARY) {
+        Zone::ZoneValue rest_dest = static_cast<Zone::ZoneValue>(ab.dig_rest_destination);
+        for (auto e : remaining) {
+            orderer->add_to_zone(false, e, rest_dest, owner_sees);
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            game_log("%s puts %s into their %s.\n", player_name(dig_owner).c_str(), cd.name.c_str(),
+                     rest_dest == Zone::GRAVEYARD ? "graveyard"
+                     : rest_dest == Zone::EXILE   ? "exile"
+                                                  : "hand");
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
     // Unchosen cards normally go to the bottom; LibraryPosition2$ 0 (Fateseal) keeps
     // them on top instead (i.e. you may bottom the looked-at card, else it stays put).
     bool rest_on_bottom = (ab.dig_rest_library_position != 0);
@@ -233,6 +252,15 @@ bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
         else if (value == "Hand") ab.dig_destination = Zone::HAND;
         else if (value == "Graveyard") ab.dig_destination = Zone::GRAVEYARD;
         else if (value == "Battlefield") ab.dig_destination = Zone::BATTLEFIELD;
+        return true;
+    } else if (key == "DestinationZone2") {
+        // Where the looked-at-but-unchosen remainder goes (default: back to the library).
+        // Malevolent Rumble: Graveyard ("Put the rest into your graveyard").
+        if (value == "Library") ab.dig_rest_destination = Zone::LIBRARY;
+        else if (value == "Hand") ab.dig_rest_destination = Zone::HAND;
+        else if (value == "Graveyard") ab.dig_rest_destination = Zone::GRAVEYARD;
+        else if (value == "Battlefield") ab.dig_rest_destination = Zone::BATTLEFIELD;
+        else if (value == "Exile") ab.dig_rest_destination = Zone::EXILE;
         return true;
     } else if (key == "LibraryPosition") {
         ab.dig_library_position = std::stoi(value);
