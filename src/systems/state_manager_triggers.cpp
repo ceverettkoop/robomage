@@ -142,6 +142,20 @@ static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
     for (auto &c : ab.charm_choices) bind_triggered_activator(c, activator_entity);
 }
 
+// Bind the triggering event's player (Defined$ TriggeredPlayer, e.g. the active player whose
+// upkeep began — Roiling Vortex) onto any ability in the tree that reads it. Sibling of
+// bind_triggered_activator; the DealDamage/etc. effect lives in a DB$ subability under Execute$,
+// so recurse into subabilities/charm_choices. Only abilities flagged defined_triggered_player
+// are touched.
+static void bind_triggered_player(Ability &ab, Entity player_entity) {
+    Zone::Ownership who = (player_entity == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A
+                        : (player_entity == get_player_entity(Zone::PLAYER_B)) ? Zone::PLAYER_B
+                                                                               : Zone::UNKNOWN;
+    if (ab.defined_triggered_player) ab.triggered_player = who;
+    for (auto &sub : ab.subabilities) bind_triggered_player(sub, player_entity);
+    for (auto &c : ab.charm_choices) bind_triggered_player(c, player_entity);
+}
+
 // Drains all buffered events since the last call and puts any triggered abilities
 // from battlefield permanents whose trigger condition matches onto the stack.
 void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -701,6 +715,27 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (!ok) continue;
                 }
 
+                // ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was spent
+                // to cast that spell" = ManaSpent EQ0). Compare the cast spell's recorded
+                // Spell::mana_spent (CR 106/601.2g) to the trigger's bound. The spell is still on
+                // the stack when SPELL_CAST fires, so its Spell component is present.
+                if (!ab.trigger_mana_spent_op.empty() && ev.GetType() == Events::SPELL_CAST) {
+                    if (!ev.HasParam(Params::ENTITY)) continue;
+                    Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+                    if (!global_coordinator.entity_has_component<Spell>(spell_e)) continue;
+                    int spent = global_coordinator.GetComponent<Spell>(spell_e).mana_spent;
+                    int bound = ab.trigger_mana_spent_val;
+                    const std::string &op = ab.trigger_mana_spent_op;
+                    bool ok = (op == "EQ") ? (spent == bound)
+                            : (op == "LE") ? (spent <= bound)
+                            : (op == "GE") ? (spent >= bound)
+                            : (op == "LT") ? (spent <  bound)
+                            : (op == "GT") ? (spent >  bound)
+                            : (op == "NE") ? (spent != bound)
+                            : (spent == bound);
+                    if (!ok) continue;
+                }
+
                 // BECAME_TARGET filters (Reality Smasher): the trigger fires only for the
                 // permanent that became a target (TARGET == this source, i.e. ValidTarget$
                 // Card.Self, already enforced by trigger_only_self against ENTITY below is NOT
@@ -748,8 +783,12 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // Defined$ TriggeredActivator — bind the player who caused the trigger (the
                 // event's PLAYER, e.g. the caster of the noncreature spell) onto this ability
                 // and its subabilities, so the effect (LoseLife etc.) resolves against them.
-                if (ev.HasParam(Params::PLAYER))
+                if (ev.HasParam(Params::PLAYER)) {
                     bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+                    // Defined$ TriggeredPlayer — bind the player whose event fired (e.g. the active
+                    // player whose upkeep began, Roiling Vortex's "each player's upkeep").
+                    bind_triggered_player(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+                }
                 // Defined$ TriggeredDefendingPlayer — bind the defending player of the attack
                 // (Goblin Guide's Dig acts on the DEFENDER's library). CREATURE_ATTACKED carries
                 // PLAYER = the attacker's controller (active player); in a two-player game the
@@ -908,8 +947,10 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // Parity with the battlefield ETB scan: bind Defined$ TriggeredActivator from the
                 // event's player, and apply the 603.4 intervening-if (evaluated now, as the
                 // trigger would go on the stack).
-                if (ev.HasParam(Params::PLAYER))
+                if (ev.HasParam(Params::PLAYER)) {
                     bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+                    bind_triggered_player(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+                }
                 if (trigger_ab.intervening_if &&
                     !evaluate_present_condition(trigger_ab, ctrl, orderer))
                     continue;

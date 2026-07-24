@@ -300,6 +300,12 @@ Zone::Ownership last_known_controller(Entity e);
 //   Defined$ TriggeredActivator -> the player bound when the trigger fired
 Zone::Ownership resolve_defined_player(const Ability &ab);
 
+// True if a turn-long "can't gain life" prohibition (CR 119.x) currently applies to this player
+// (Roiling Vortex's {R} ability, cur_game.cant_gain_life_this_turn). Defined out-of-line in
+// game_queries.cpp (needs cur_game). Consulted by player_gain_life so every life-gain site obeys
+// the prohibition.
+bool player_cant_gain_life(Entity player_entity);
+
 // True if the card has a permanent card type (CR 110.4a: artifact, battle, creature,
 // enchantment, land, planeswalker). Used by ValidCard$ Permanent zone-change filters
 // (Moonshadow: "permanent cards put into your graveyard" excludes instants/sorceries).
@@ -711,6 +717,9 @@ inline bool spell_has_variable_life_cost(const CardData &cd) {
 // Player-component entity. No-op for amount <= 0.
 inline void player_gain_life(Entity player_entity, int32_t amount) {
     if (amount <= 0 || !global_coordinator.entity_has_component<Player>(player_entity)) return;
+    // CR 119.x life-gain prohibition (Roiling Vortex): if this player can't gain life this turn,
+    // the gain is replaced with nothing — no life added and no life_gained_this_turn accrual.
+    if (player_cant_gain_life(player_entity)) return;
     auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     pl.life_total += amount;
     pl.life_gained_this_turn += amount;

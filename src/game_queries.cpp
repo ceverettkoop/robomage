@@ -575,5 +575,14 @@ Zone::Ownership resolve_defined_player(const Ability &ab) {
     if (ab.defined_each_opponent)       return opponent_of(source_controller(ab.source));
     if (ab.defined_targeted_controller) return ab.target != 0 ? last_known_controller(ab.target) : Zone::UNKNOWN;
     if (ab.defined_triggered_activator) return ab.triggered_activator;
+    if (ab.defined_triggered_player)    return ab.triggered_player;
     return Zone::UNKNOWN;
+}
+
+bool player_cant_gain_life(Entity player_entity) {
+    if (cur_game.cant_gain_life_this_turn.empty()) return false;
+    Zone::Ownership who = (player_entity == cur_game.player_a_entity) ? Zone::PLAYER_A
+                        : (player_entity == cur_game.player_b_entity) ? Zone::PLAYER_B
+                                                                      : Zone::UNKNOWN;
+    return who != Zone::UNKNOWN && cur_game.cant_gain_life_this_turn.count(who) > 0;
 }

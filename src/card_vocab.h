@@ -233,6 +233,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Malevolent Rumble", 325},
     {"Skewer the Critics", 339},
     {"Light Up the Stage", 340},
+    {"Roiling Vortex", 341},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

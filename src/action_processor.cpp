@@ -369,6 +369,12 @@ static void pay_alternate_cost(Game &game, std::shared_ptr<Orderer> orderer,
     // floor. The non-mana parts of the cost below are unaffected.
     ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost, caster);
 
+    // Record the mana actually paid by this alternative cost (CR 106/601.2g). A pitch/life alt
+    // cost with no mana component (Force of Will, Daze) leaves this 0, which a ValidSA$
+    // Spell.ManaSpent EQ0 trigger (Roiling Vortex) reads at cast time. The deferred (regular/
+    // flashback/escape/impulse) paths set it at the MANA_PAY step instead.
+    game.pending_cast.mana_spent = static_cast<int>(alt_mana.size());
+
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
     if (card_data.alt_cost.is_free && alt_mana.empty()) {
         game_log("%s casts for free (alternate cost)\n", player_name(caster).c_str());
@@ -2940,6 +2946,12 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // offered/forced with no legal target. (The interactive payment stays BLOCKING
             // inside this step — a deliberate non-conversion; machine mode auto-pays with zero
             // decisions.)
+            // Record the mana actually spent (CR 106/601.2g) for a ValidSA$ Spell.ManaSpent
+            // trigger to read at cast time. The deferred cost's pip count is the total mana paid,
+            // after any delve/improvise reduction already removed pips from it. The alt-cost path
+            // set mana_spent earlier and left deferred_mana_pending false, so it is preserved.
+            if (pc.deferred_mana_pending)
+                pc.mana_spent = static_cast<int>(pc.deferred_mana_cost.size());
             if (pc.deferred_mana_pending) {
                 if (!prompt_mana_payment(caster, pc.deferred_mana_cost, spell_entity, orderer,
                                          /*has_delve=*/false, pc.deferred_improvise)) {
@@ -3103,6 +3115,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             spell.kicked = pc.kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
             spell.replicate_count = pc.replicate_count;  // # of replicate payments (0 if none/no Replicate)
             spell.gift_promised = pc.gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution
+            spell.mana_spent = pc.mana_spent;  // total mana paid (CR 106); read by ValidSA$ Spell.ManaSpent triggers
             cur_game.pending_gift_promised = false;  // consume the cast-time pending flag (targets chosen)
             // Record the X value paid so an "enters with X counters" replacement can read
             // it (Chalice of the Void: enters with X charge counters) and so the resolving

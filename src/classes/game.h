@@ -356,6 +356,11 @@ struct Game {
             // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
             ManaValue deferred_mana_cost;
             bool deferred_mana_pending = false;
+            // Total mana pips actually paid to cast this spell (CR 106/601.2g). Captured from
+            // deferred_mana_cost at the MANA_PAY step (after any delve/improvise reduction) and
+            // copied onto the resulting Spell::mana_spent at FINISH. 0 for a free / no-mana
+            // alternative cost. Read by a SpellCast trigger's ValidSA$ Spell.ManaSpent filter.
+            int mana_spent = 0;
             bool deferred_delve = false;
             bool deferred_improvise = false;
             // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
@@ -560,6 +565,13 @@ struct Game {
         // permanent (the instant is in the graveyard), so it is recorded here and cleared at
         // cleanup. Consulted at counter-resolution time (effects::counter).
         std::set<Zone::Ownership> cant_counter_spells_of;
+        // Turn-long "can't gain life" prohibition (CR 119.x) created by a resolving activated
+        // ability (Roiling Vortex's {R}: AB$ Effect | StaticAbilities$ Mode$ CantGainLife |
+        // ValidPlayer$ Player.Opponent — "your opponents can't gain life this turn"). Each player
+        // in the set has all life gain replaced with nothing until cleanup. A sourceless turn-long
+        // grant (the effect belongs to no permanent), consulted centrally in player_gain_life and
+        // cleared at cleanup. General over any CantGainLife effect.
+        std::set<Zone::Ownership> cant_gain_life_this_turn;
         // Turn-long "hexproof from <color(s)>" grant for a player and the permanents they control
         // (Veil of Summer: "You and permanents you control gain hexproof from blue and from black
         // until end of turn", CR 702.11e). Each entry protects `player` (and any permanent they

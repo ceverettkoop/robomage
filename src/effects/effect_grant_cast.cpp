@@ -154,6 +154,34 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // AB$ Effect | StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> (Roiling Vortex's
+    // {R}: "Your opponents can't gain life this turn."). Register the affected player(s) in the
+    // turn-long can't-gain-life set (CR 119.x); consulted centrally in player_gain_life and cleared
+    // at cleanup. Scope is resolved relative to this effect's controller. A sourceless turn-long
+    // grant, unlike a battlefield static.
+    if (ab.effect_cant_gain_life != Ability::CantGainLifeScope::NONE) {
+        Zone::Ownership me = ab.controller;
+        Zone::Ownership opp = (me == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        switch (ab.effect_cant_gain_life) {
+            case Ability::CantGainLifeScope::OPPONENTS:
+                cur_game.cant_gain_life_this_turn.insert(opp);
+                game_log("%s can't gain life this turn.\n", player_name(opp).c_str());
+                break;
+            case Ability::CantGainLifeScope::YOU:
+                cur_game.cant_gain_life_this_turn.insert(me);
+                game_log("%s can't gain life this turn.\n", player_name(me).c_str());
+                break;
+            case Ability::CantGainLifeScope::ALL:
+                cur_game.cant_gain_life_this_turn.insert(me);
+                cur_game.cant_gain_life_this_turn.insert(opp);
+                game_log("No player can gain life this turn.\n");
+                break;
+            default:
+                break;
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     Entity tgt = ab.target;
     if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) return HandlerResult::DONE_RUN_SUBS;
     if (global_coordinator.GetComponent<Zone>(tgt).location != Zone::GRAVEYARD) return HandlerResult::DONE_RUN_SUBS;

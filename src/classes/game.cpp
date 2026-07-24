@@ -439,6 +439,8 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // "Spells you control can't be countered this turn" + "hexproof from blue and
                     // from black until end of turn") lapse at cleanup (CR 514.2).
                     cant_counter_spells_of.clear();
+                    // "Can't gain life this turn" (Roiling Vortex's {R}) lapses at cleanup (514.2).
+                    cant_gain_life_this_turn.clear();
                     hexproof_from_colors_this_turn.clear();
                     // An "until end of turn" player protection-from-everything grant lapses at
                     // cleanup; an "until your next turn" grant persists (reverted at that player's

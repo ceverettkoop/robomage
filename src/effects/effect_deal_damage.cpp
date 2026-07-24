@@ -52,7 +52,7 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // player captured at trigger-fire time. Without this it would fall to the targeted path
     // with an unset target and trip the "should have fizzled" guard.
     if (ab.defined_you || ab.defined_each_opponent || ab.defined_targeted_controller ||
-        ab.defined_triggered_activator) {
+        ab.defined_triggered_activator || ab.defined_triggered_player) {
         Zone::Ownership who = resolve_defined_player(ab);
         if (who != Zone::UNKNOWN) {
             Entity pe = get_player_entity(who);

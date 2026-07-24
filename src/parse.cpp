@@ -1534,6 +1534,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // attack that fired this trigger (Goblin Guide). Bound at trigger-fire time from the
         // CREATURE_ATTACKED event (the opponent of the attacker's controller in a 2-player game).
         else if (value == "TriggeredDefendingPlayer") ability.defined_triggered_defending_player = true;
+        // Defined$ TriggeredPlayer — the effect acts on the player whose event fired this trigger
+        // (Roiling Vortex: each player's upkeep damages THAT player). The actual player is bound at
+        // trigger-fire time from the event's PLAYER param.
+        else if (value == "TriggeredPlayer") ability.defined_triggered_player = true;
         else if (value == "Self") ability.defined_self = true;
         // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
         // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.
@@ -2604,6 +2608,26 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
             }
         }
 
+        // AB$ Effect | StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> — a
+        // turn-long life-gain prohibition (CR 119.x, Roiling Vortex's {R}: "Your opponents can't
+        // gain life this turn."). Resolve the named static SVar; if it is a CantGainLife mode,
+        // classify its ValidPlayer scope relative to the effect's controller so the GrantCast
+        // handler registers the right player(s). General over any CantGainLife-granting Effect.
+        if (ability.category == "Effect" && !ability.effect_static_ability.empty() &&
+            ability.effect_cant_gain_life == Ability::CantGainLifeScope::NONE) {
+            auto it = svars.find(ability.effect_static_ability);
+            if (it != svars.end() && it->second.find("CantGainLife") != std::string::npos) {
+                const std::string &body = it->second;
+                if (body.find("ValidPlayer$ Player.Opponent") != std::string::npos ||
+                    body.find("ValidPlayer$ Opponent") != std::string::npos)
+                    ability.effect_cant_gain_life = Ability::CantGainLifeScope::OPPONENTS;
+                else if (body.find("ValidPlayer$ You") != std::string::npos)
+                    ability.effect_cant_gain_life = Ability::CantGainLifeScope::YOU;
+                else
+                    ability.effect_cant_gain_life = Ability::CantGainLifeScope::ALL;
+            }
+        }
+
         // AB$ Effect | Triggers$ <SVar>[,<SVar>...] — a transient floating triggered ability
         // hosted on a command-zone Effect (Tamiyo, Seasoned Scholar's +2: "until your next turn,
         // whenever a creature an opponent controls attacks you or a planeswalker you control, it
@@ -2799,6 +2823,32 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Graveyard") != std::string::npos) trigger_zone_is_graveyard = true;
         } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
             if (value == "You") valid_player_is_you = true;
+        } else if (key == "ValidSA") {
+            // SpellCast trigger ValidSA$ Spell.ManaSpent <op><n> (Roiling Vortex: "if no mana was
+            // spent to cast that spell" = Spell.ManaSpent EQ0). Parse the ManaSpent comparison
+            // (op + integer) into the runtime filter; a ".YouCtrl"/".OppCtrl" restriction on the
+            // spell's controller is handled by the ValidActivatingPlayer path. General over any
+            // Spell.ManaSpent-gated SpellCast trigger.
+            size_t mp = value.find("ManaSpent");
+            if (mp != std::string::npos) {
+                size_t p = mp + strlen("ManaSpent");
+                while (p < value.size() && value[p] == ' ') p++;
+                for (const char *op : {"EQ", "NE", "LE", "GE", "LT", "GT"}) {
+                    if (value.compare(p, 2, op) == 0) {
+                        ability.trigger_mana_spent_op = op;
+                        p += 2;
+                        int n = 0;
+                        bool any = false;
+                        while (p < value.size() && isdigit((unsigned char)value[p])) {
+                            n = n * 10 + (value[p++] - '0');
+                            any = true;
+                        }
+                        if (any) ability.trigger_mana_spent_val = n;
+                        break;
+                    }
+                }
+            }
+            if (value.find("YouCtrl") != std::string::npos) valid_player_is_you = true;
         } else if (key == "Origin") {
             if (value == "Battlefield") origin_is_battlefield = true;
             if (value == "Graveyard")   origin_is_graveyard   = true;
@@ -3221,6 +3271,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_kicked_index                     = ability.trigger_kicked_index;
                 effect.trigger_cmc_expr                         = ability.trigger_cmc_expr;
                 effect.trigger_cmc_op                           = ability.trigger_cmc_op;
+                effect.trigger_mana_spent_op                    = ability.trigger_mana_spent_op;
+                effect.trigger_mana_spent_val                   = ability.trigger_mana_spent_val;
                 effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
                 effect.trigger_taps_for_mana_static             = ability.trigger_taps_for_mana_static;
                 effect.trigger_source_must_be_spell             = ability.trigger_source_must_be_spell;

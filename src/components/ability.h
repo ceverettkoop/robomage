@@ -270,6 +270,15 @@ struct Ability{
     // game the defender is the opponent of the attacker's controller (the non-active player).
     // Bound as the ability's target (a player entity) at CREATURE_ATTACKED fire time.
     bool defined_triggered_defending_player = false;
+    // Defined$ TriggeredPlayer — the effect's player is the player whose event fired the trigger
+    // (Roiling Vortex: "at the beginning of EACH player's upkeep, deal 1 damage to THAT player").
+    // A sibling of TriggeredActivator/TriggeredDefendingPlayer: bound at trigger-fire time from the
+    // triggering event's PLAYER param (e.g. the upkeep's active player), captured into
+    // `triggered_player`. General to any effect reading a Defined player off the event's player.
+    bool defined_triggered_player = false;
+    // The player whose event fired this triggered ability. Populated at trigger-fire time when
+    // defined_triggered_player is set (from the event's PLAYER param); UNKNOWN until then.
+    Zone::Ownership triggered_player = Zone::UNKNOWN;
 
     // DB$ Animate (Guide of Souls): the Types$ list (classified into TYPE/SUBTYPE/SUPERTYPE
     // at parse time) to add to the targeted permanent (e.g. "Angel"), and whether the grant
@@ -411,6 +420,14 @@ struct Ability{
     // such filter. The expr is the resolved Count$ expression; op is "EQ"/"LE"/"GE"/...
     std::string trigger_cmc_expr = "";
     std::string trigger_cmc_op = "";
+
+    // SpellCast trigger ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was
+    // spent to cast that spell" = ManaSpent EQ0). The cast spell's recorded Spell::mana_spent
+    // (CR 106/601.2g) is compared to trigger_mana_spent_val with trigger_mana_spent_op
+    // ("EQ"/"NE"/"LE"/"GE"/"LT"/"GT"). Empty op = no such filter. General over any
+    // Spell.ManaSpent-gated SpellCast trigger (shared with Lavinia, Azorius Renegade).
+    std::string trigger_mana_spent_op = "";
+    int trigger_mana_spent_val = 0;
 
     // Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl (Reality Smasher): the trigger fires only
     // when the targeting object is a SPELL controlled by an opponent of the source's controller
@@ -576,6 +593,13 @@ struct Ability{
     // of the turn (a turn-long, sourceless can't-be-countered grant — distinct from Hexing
     // Squelcher's battlefield static).
     bool effect_spells_uncounterable_this_turn = false;
+    // AB$/DB$ Effect | StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> — a turn-long
+    // life-gain prohibition (CR 119.x, Roiling Vortex's {R} ability). The scope names whose life
+    // gain is prohibited relative to the effect's controller. NONE = not a CantGainLife effect.
+    // Set at parse time; the GrantCast handler registers the affected player(s) into
+    // cur_game.cant_gain_life_this_turn at resolution. General over any CantGainLife effect.
+    enum class CantGainLifeScope { NONE, OPPONENTS, YOU, ALL };
+    CantGainLifeScope effect_cant_gain_life = CantGainLifeScope::NONE;
 
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;

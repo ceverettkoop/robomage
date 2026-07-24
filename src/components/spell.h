@@ -35,6 +35,12 @@ struct Spell {
     // countered) it ceases to exist rather than moving to a graveyard/library — the stack
     // manager destroys it instead of sending it to a zone. Set by run_copy_spell.
     bool is_copy = false;
+    // Total mana actually spent to cast this spell (the pip count of the mana cost paid, CR
+    // 106/601.2g). 0 for a spell cast for free or via an alternative cost that pays no mana
+    // (Force of Will's pitch+life, a 0-cost spell). Set at cast time in action_processor and read
+    // by a SpellCast trigger's ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no
+    // mana was spent"). Shared, general — Lavinia, Azorius Renegade reads the same field.
+    int mana_spent = 0;
 };
 
 #endif /* SPELL_H */
