@@ -176,6 +176,10 @@ struct DelayedTriggerParams {
     // ThisTurn$ True: the ChangesZone watch is bounded to the turn it was registered (CR 603.7b —
     // "this turn"); if the watched object has not moved by end of turn the trigger expires unfired.
     bool this_turn = false;
+    // ValidCard$ on a Mode$ ChangesZone delayed trigger names which object's departure fires it.
+    // "Card.Self" (Animate Dead's leaves-the-battlefield sacrifice) watches the trigger's OWN
+    // source; any other value (Searing Blood's IsTriggerRemembered) watches the remembered target.
+    std::string valid_card = "";
 };
 
 #endif /* ABILITY_PARAMS_H */

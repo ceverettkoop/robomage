@@ -2843,6 +2843,10 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.enchant_ab.source = spell_entity;
                     pc.enchant_ab.controller = caster;
                     pc.enchant_ab.valid_tgts = card_data.enchant_filter;
+                    // "Enchant creature card in a graveyard" (Animate Dead): the enchant target is
+                    // a creature card in a graveyard, so the pick searches graveyards (CR 303.4).
+                    pc.enchant_ab.target_in_graveyard =
+                        enchant_targets_graveyard(card_data.enchant_filter);
                 }
                 FlowTargetAsker asker(game, caster, resume_choice);
                 if (run_target_select(pc.enchant_ab, pc.tsel, asker, orderer, caster) !=

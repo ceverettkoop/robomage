@@ -65,14 +65,26 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // fire_on_leave_battlefield watch (reusing the earthbend infrastructure) filtered to the
     // Destination$ zone(s) so only the matching move fires it; ThisTurn$ bounds it to this turn.
     if (dp && dp->mode_changes_zone) {
-        if (cur_game.remembered_entities.empty()) return HandlerResult::DONE_NO_SUBS;
-        Entity watched = cur_game.remembered_entities[0];
+        // Which object's departure fires this? ValidCard$ Card.Self (Animate Dead's
+        // leaves-the-battlefield sacrifice) watches the trigger's own SOURCE; otherwise the
+        // watched object is the remembered target (Searing Blood's IsTriggerRemembered).
+        bool watch_self = dp->valid_card.find("Self") != std::string::npos;
+        Entity watched = watch_self ? ab.source
+                         : (cur_game.remembered_entities.empty() ? 0
+                                                                 : cur_game.remembered_entities[0]);
+        if (watched == 0) return HandlerResult::DONE_NO_SUBS;
+        // RememberObjects$ RememberedLKI (Animate Dead): the fire ability acts on the objects the
+        // preceding RememberChanged$ ChangeZone moved (the reanimated creature) — carry them so
+        // Defined$ DelayTriggerRememberedLKI restores exactly those when the trigger fires later.
+        if (dp->remember_objects_lki && !cur_game.remembered_entities.empty())
+            fire_ab.restore_remembered_exiled_with = cur_game.remembered_entities;
         DelayedTrigger dt;
         dt.ability = fire_ab;
         dt.fire_on = Events::CARD_CHANGED_ZONE;
         dt.owner_entity = owner_entity;
         dt.fire_on_turn = cur_game.turn;
         dt.watch_entity = watched;
+        if (dp->remember_objects_lki) dt.remembered_objects = cur_game.remembered_entities;
         dt.fire_on_leave_battlefield = true;
         // Origin$ Battlefield / Destination$ Graveyard parsed onto this ability by parse_change_zone.
         // The origin is implicit (leave-battlefield watch); the destination becomes the zone filter
@@ -145,10 +157,11 @@ bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::strin
     if (key == "ValidPlayer") { effect_params<DelayedTriggerParams>(ab).valid_player = value; return true; }
     // ThisTurn$ True bounds a ChangesZone watch to its registration turn (CR 603.7b).
     if (key == "ThisTurn") { effect_params<DelayedTriggerParams>(ab).this_turn = (value == "True"); return true; }
-    // ValidCard$ Card.IsTriggerRemembered restates that the watched card is the remembered
-    // (Targeted) object; the watch entity already comes from RememberObjects$ Targeted, so the
-    // filter is informational here. Consume it so it isn't flagged unrecognized.
-    if (key == "ValidCard") return true;
+    // ValidCard$ names which object's departure fires a Mode$ ChangesZone watch. "Card.Self"
+    // (Animate Dead) watches the trigger's own source; "Card.IsTriggerRemembered" (Searing Blood)
+    // restates that the watched card is the remembered (Targeted) object. Stored so the handler
+    // can pick the correct watched entity.
+    if (key == "ValidCard") { effect_params<DelayedTriggerParams>(ab).valid_card = value; return true; }
     return false;
 }
 

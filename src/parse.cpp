@@ -1644,6 +1644,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.chooser_is_controller = (value == "You");
     } else if (key == "Condition" && value == "Blessing") {
         ability.condition_city_blessing = true;  // CopyPermanent gated on the city's blessing
+    } else if (key == "GainControl") {
+        // GainControl$ True on a ChangeZone Destination$ Battlefield: the moved card enters under
+        // the ability controller's control, not its owner's (Animate Dead's reanimation). CR 110.2a.
+        ability.gain_control = (value == "True");
     } else if (key == "RememberTargets") {
         ability.remember_targeted = (value == "True");
     } else if (key == "RememberObjects") {
@@ -1993,7 +1997,14 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // TargetedOrController) — names who controls the resolving sub-ability. The
             // copy_spell_ability handler derives the copy's controller from UnlessPayer$
             // TargetedOrController directly, so this is informational here.
-            "Controller"
+            "Controller",
+            // DB$ Animate | Keywords$ / RemoveKeywords$ (Animate Dead): the keyword swap that
+            // re-anchors the aura's Enchant restriction from "creature card in a graveyard" to
+            // "the creature put onto the battlefield with this" is cosmetic here — the reanimation
+            // + Attach chain already anchors the aura to the returned creature (equipped_to), and
+            // the "unattached aura" state-based action reads that link, not the Enchant filter
+            // string. So the live keyword text is never re-evaluated; ignoring the swap is a no-op.
+            "Keywords", "RemoveKeywords"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;

@@ -130,6 +130,16 @@ inline bool type_set_passes_nontype(const std::string &spec, const std::set<Type
     return true;
 }
 
+// An Aura whose Enchant restriction names "inZoneGraveyard" (K:Enchant:Creature.inZoneGraveyard,
+// Animate Dead) enchants a creature CARD sitting in a graveyard rather than a battlefield
+// permanent (CR 303.4). The aura's cast-time target search must therefore look in graveyards, not
+// on the battlefield: setting Ability::target_in_graveyard routes both build_valid_targets and
+// is_legal_target through their graveyard branches. General over any "enchant a card in a
+// graveyard" aura, keyed on the filter token, not on a specific card.
+inline bool enchant_targets_graveyard(const std::string &enchant_filter) {
+    return enchant_filter.find("inZoneGraveyard") != std::string::npos;
+}
+
 // Unified "characteristic at the time it is read" accessors (CR 608.2h). Each returns the
 // object's effective value: read live from its battlefield components while it is in play
 // (so all applied continuous effects/counters are reflected — and, because every effective-P/T

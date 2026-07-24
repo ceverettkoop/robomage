@@ -654,6 +654,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             Ability enchant_ab;
             enchant_ab.controller = priority_player;
             enchant_ab.valid_tgts = card_data.enchant_filter;
+            // "Enchant creature card in a graveyard" (Animate Dead): search graveyards, not the
+            // battlefield, for a legal enchant target (CR 303.4).
+            enchant_ab.target_in_graveyard = enchant_targets_graveyard(card_data.enchant_filter);
             tgt_ok = has_legal_targets(enchant_ab, orderer);
         }
         // Machine mode only: action-masking optimization — don't offer a conditional-destroy

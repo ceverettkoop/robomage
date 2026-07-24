@@ -335,6 +335,42 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // Defined$ Enchanted — move the object this Aura enchants (CR 303.4 / 608.2c). Animate Dead's
+    // ETB reanimation: the aura was cast "enchanting" a creature card in a graveyard (recorded at
+    // cast in pending_aura_target since the card had no Permanent to attach to), and this trigger
+    // returns THAT card to the battlefield under the aura controller's control (GainControl$) and
+    // remembers it (RememberChanged$) so the chained DB$ Attach re-attaches the aura to it. For a
+    // normal already-attached aura reading "enchanted", fall back to its live attachment link.
+    if (ab.defined == "Enchanted" && ab.source != 0) {
+        Entity enchanted = 0;
+        auto pat = cur_game.pending_aura_target.find(ab.source);
+        if (pat != cur_game.pending_aura_target.end())
+            enchanted = pat->second;
+        else if (global_coordinator.entity_has_component<Permanent>(ab.source))
+            enchanted = global_coordinator.GetComponent<Permanent>(ab.source).equipped_to;
+        if (enchanted != 0 && global_coordinator.entity_has_component<Zone>(enchanted)) {
+            std::string ename = entity_name(enchanted);
+            if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
+                cur_game.pending_enters_tapped.insert(enchanted);
+            Zone::ZoneValue landed = change_zone_move(orderer, enchanted, ab.destination);
+            if (landed == Zone::BATTLEFIELD)
+                // GainControl$ True: the card enters under the aura controller's control (CR 110.2a
+                // / 608.2). Without the gain-control flag it would enter under its owner's control.
+                global_coordinator.GetComponent<Zone>(enchanted).controller =
+                    ab.gain_control ? ab.controller
+                                    : global_coordinator.GetComponent<Zone>(enchanted).owner;
+            if (ab.remember_changed || ab.remember_lki)
+                cur_game.remembered_entities.push_back(enchanted);
+            if (landed == ab.destination)
+                game_log("%s is moved to %s\n", ename.c_str(), dest_str);
+        }
+        // The reanimation is done; drop the pending marker so the "unattached aura" state-based
+        // action resumes governing this aura (the immediately following apply_permanent_components
+        // pass finalizes the DB$ Attach that this chain queues, before that SBA runs).
+        cur_game.pending_aura_target.erase(ab.source);
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     // Defined$ Self — move the source card directly (e.g. Talon Gates putting itself onto battlefield from hand)
     if (ab.defined_self && ab.source != 0) {
         std::string sname = entity_name(ab.source);

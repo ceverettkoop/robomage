@@ -22,9 +22,18 @@ namespace effects {
 // via nonChosenCard, which reads cur_game.chosen_cards.
 HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     std::vector<Entity> to_sac;
-    for (auto e : orderer->mEntities)
-        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
-            to_sac.push_back(e);
+    // Defined$ Remembered / DelayTriggerRememberedLKI (Animate Dead's leaves-the-battlefield
+    // trigger): sacrifice exactly the remembered object(s) — the creature the aura animated,
+    // restored into cur_game.remembered_entities before this ability resolves (CR 603.7a) — rather
+    // than every permanent matching a filter. Only those still on the battlefield are sacrificed.
+    if (ab.defined_remembered) {
+        for (auto e : cur_game.remembered_entities)
+            if (is_battlefield_permanent(e)) to_sac.push_back(e);
+    } else {
+        for (auto e : orderer->mEntities)
+            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
+                to_sac.push_back(e);
+    }
 
     for (auto e : to_sac) {
         const std::string nm = global_coordinator.GetComponent<Permanent>(e).name;

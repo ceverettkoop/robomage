@@ -699,8 +699,16 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                             perm.equipped_to = enchanted;
                             game_log("%s is attached to %s.\n", perm.name.c_str(),
                                      entity_name(enchanted).c_str());
+                            game.pending_aura_target.erase(pat);
                         }
-                        game.pending_aura_target.erase(pat);
+                        // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4):
+                        // its enchant target is a creature card still in a graveyard, so it has no
+                        // Permanent to attach to yet — the aura enters UNATTACHED and its ETB
+                        // trigger reanimates the card and attaches. Leave the pending_aura_target
+                        // entry in place so (a) the trigger's Defined$ Enchanted can find the card
+                        // and (b) the "unattached aura" state-based action skips this aura until the
+                        // reanimation resolves (see state_manager.cpp). The entry is cleared by the
+                        // reanimating ChangeZone (Defined$ Enchanted) once the card is returned.
                     }
                 }
                 global_coordinator.AddComponent(entity, perm);

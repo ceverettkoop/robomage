@@ -212,6 +212,12 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
             const auto &cd = global_coordinator.GetComponent<CardData>(entity);
             if (cd.enchant_filter.empty()) continue;  // not an Aura
+            // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4) awaiting its
+            // ETB reanimation: it entered unattached (its enchant target is still a graveyard card)
+            // and its trigger has not yet returned+attached the creature. Its pending_aura_target
+            // entry is retained (see state_manager_statics.cpp) to mark this window — skip the
+            // unattached-aura check until the reanimation resolves and attaches it.
+            if (game.pending_aura_target.count(entity)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
             Entity enchanted = perm.equipped_to;
             bool illegal = (enchanted == 0) || !is_battlefield_permanent(enchanted);

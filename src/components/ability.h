@@ -163,6 +163,11 @@ struct Ability{
     // its category isn't ChangeZone (e.g. Surgical Extraction's SP$ Pump vehicle). Lets
     // target enumeration offer graveyard cards.
     bool target_in_graveyard = false;
+    // GainControl$ True — a ChangeZone that puts a card onto the battlefield does so under the
+    // ability CONTROLLER's control rather than the card's owner's (CR 110.2a). Animate Dead's
+    // Defined$ Enchanted reanimation: the enchanted creature card enters under the reanimating
+    // player's control even when it came from the opponent's graveyard.
+    bool gain_control = false;
     uint32_t trigger_on = 0;             // EventId that fires this ability; 0 = not event-triggered
     // Additional EventIds this ability also fires on (a phase trigger listing multiple phases,
     // e.g. Carpet of Flowers' Phase$ Main1,Main2 binds FIRST_MAIN_BEGAN here-plus SECOND_MAIN_BEGAN).
