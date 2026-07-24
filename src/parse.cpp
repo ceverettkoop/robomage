@@ -1652,6 +1652,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
                  value == "TriggeredCardLKICopy" || value == "TriggeredCard")
             ability.defined_self = true;
         else if (value == "Self") ability.defined_self = true;
+        // Defined$ ExiledWith — the effect acts on the card this permanent's Saga chapter I
+        // exiled face down, tracked in Permanent::exiled_with on the source (The Creation of
+        // Avacyn chapters II & III). Resolved to that entity at resolution by exiled_with_card().
+        else if (value == "ExiledWith") ability.defined_exiled_with = true;
         // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
         // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.
         else if (value == "You") ability.defined_you = true;
@@ -1820,6 +1824,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // triggering card (Amped Raptor: Card.wasCastFromYourHandByYou), evaluated at
         // resolution against that card's permanent state.
         ability.condition_on_triggered_card = (value == "TriggeredCard");
+        // "ExiledWith" → condition_present is a property check on the card the source Saga exiled
+        // face down (The Creation of Avacyn: lose life / put onto battlefield only if it's a
+        // Creature). Evaluated at resolution against that card's printed characteristics.
+        ability.condition_on_exiled_with = (value == "ExiledWith");
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
     } else if (key == "ValidCards" && ability.category == "NameCard") {
@@ -2333,7 +2341,14 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         }
     }
     // Resolve amount_svar through SVars map (same logic as parse_abilities)
-    if (!sub.amount_svar.empty()) {
+    if (!sub.amount_svar.empty() && sub.amount_svar.find("ExiledWith$") != std::string::npos) {
+        // A DIRECT dynamic expression (not an SVar name): ExiledWith$CardManaCost (The Creation of
+        // Avacyn chapter II — lose life equal to the exiled card's mana value). Preserve it verbatim
+        // for evaluate_dynamic_amount instead of looking it up as an SVar key (which would fail and
+        // silently drop it).
+        sub.dynamic_amount_expr = sub.amount_svar;
+        sub.amount_svar = "";
+    } else if (!sub.amount_svar.empty()) {
         auto it = svars.find(sub.amount_svar);
         if (it != svars.end()) {
             const std::string &sv = it->second;

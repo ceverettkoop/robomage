@@ -70,7 +70,7 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
 }
 
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                          bool top_seen_by_owner) {
+                          bool top_seen_by_owner, bool exile_face_down) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
@@ -264,6 +264,9 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // card is now either public, or a fresh hidden object). Reveal sites set this
     // flag again if the destination is a revealed hidden zone.
     target_zone.identity_known = false;
+    // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
+    // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
+    target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
 
     // A card moving from a PUBLIC zone into hand is watched moving by both players,
     // so its specific identity stays known to the opponent even though the hand is a
@@ -282,8 +285,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // single chokepoint covers casts (→STACK), ETB (→BATTLEFIELD), and
     // deaths/discards (→GRAVEYARD/EXILE). Moves to HAND or within LIBRARY are
     // hidden and intentionally skipped (tutor reveals are marked at their site).
-    if (destination == Zone::BATTLEFIELD || destination == Zone::STACK ||
-        destination == Zone::GRAVEYARD || destination == Zone::EXILE) {
+    // A card exiled FACE DOWN is the exception: entering exile does not make its identity public
+    // (CR 708.2), so it is NOT accumulated into the owner's revealed multi-hot until an effect
+    // turns it face up (the SetState$ TurnFaceUp site marks it revealed then).
+    if ((destination == Zone::BATTLEFIELD || destination == Zone::STACK ||
+         destination == Zone::GRAVEYARD || destination == Zone::EXILE) &&
+        !target_zone.is_face_down) {
         mark_card_revealed(target, target_zone.owner);
     }
 }

@@ -135,6 +135,9 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // counter from the exiled source and, when the last is removed, grants a FREE from_suspend
         // impulse-cast permission (the free cast). See effect_suspend_tick.cpp.
         {"SuspendTick", EffectKind::SuspendTick},
+        // DB$ SetState | Mode$ TurnFaceUp (The Creation of Avacyn chapter II): turn the Defined$
+        // card face up (clear its face-down flag). See effect_set_state.cpp.
+        {"SetState", EffectKind::SetState},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

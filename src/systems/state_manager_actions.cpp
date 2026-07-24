@@ -243,6 +243,22 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // Empty compare means the bare "if you control a <thing>" form → at least one.
     std::string compare = ab.condition_compare.empty() ? "GE1" : ab.condition_compare;
 
+    // ConditionDefined$ ExiledWith (The Creation of Avacyn II & III): the condition is a property
+    // check on the card the source Saga exiled face down — is it a Creature card? Match the card's
+    // PRINTED characteristics against condition_present (card_matches_filter is battlefield-agnostic;
+    // the exiled card sits in exile). Absent card ⇒ 0 matches (condition unmet).
+    if (ab.condition_on_exiled_with) {
+        Entity ew = exiled_with_card(ab.source);
+        int matches = 0;
+        if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew)) {
+            MatchCtx ctx;
+            ctx.controller = caster;
+            ctx.source = ab.source;
+            if (card_matches_filter(ew, ab.condition_present, ctx)) matches = 1;
+        }
+        return compare_svar(matches, compare);
+    }
+
     // ConditionDefined$ Remembered: count remembered cards, not battlefield permanents.
     if (ab.condition_on_remembered) {
         // ConditionPresent$ Card.ExiledWithSource (Skyclave Apparition's TrigToken): only the

@@ -145,9 +145,12 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         }
     }
 
-    // Filter to matching cards; empty change_type means all cards match
+    // Filter to matching cards; empty change_type — or the catch-all "Card" (a bare "search for a
+    // card", The Creation of Avacyn / Demonic Tutor) — means every card matches, mirroring
+    // search_multi_zone. (No card object has a printed TYPE literally named "Card", so without this
+    // the type-name loop below would match nothing and the mandatory search would "fail to find".)
     std::vector<Entity> choices;
-    if (change_type.empty()) {
+    if (change_type.empty() || change_type == "Card") {
         choices = zone_contents;
     } else {
         // Check if any filter spec uses extended syntax (dot/plus qualifiers)
@@ -1293,6 +1296,16 @@ size_t evaluate_dynamic_amount(
         int p = effective_power(target);
         return static_cast<size_t>(p < 0 ? 0 : p);
     }
+    // ExiledWith$CardManaCost — the mana value of the card the source Saga exiled face down (The
+    // Creation of Avacyn chapter II: "you lose life equal to its mana value"). Resolved from the
+    // source's Permanent::exiled_with; an absent/gone card contributes 0.
+    if (expr.find("ExiledWith$CardManaCost") != std::string::npos) {
+        int mv = 0;
+        Entity ew = exiled_with_card(source);
+        if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew))
+            mv = card_mana_value(global_coordinator.GetComponent<CardData>(ew));
+        return static_cast<size_t>(mv < 0 ? 0 : mv);
+    }
     if (expr.find("Targeted$CardManaCost") != std::string::npos) {
         // The target's mana value (CR 202.3 / 107.14). Used by Karn, the Great Creator's +1
         // Animate (Power$/Toughness$ X, X = Targeted$CardManaCost): the animated permanent
@@ -1796,6 +1809,11 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // reads the property off the source's permanent state. Failure skips this body but still
         // chains subabilities.
         if (condition_passed && condition_on_triggered_card)
+            condition_passed = evaluate_present_condition(*this, controller, orderer);
+        // ConditionDefined$ ExiledWith gate (The Creation of Avacyn II & III): the body runs only
+        // if the card the source Saga exiled matches the condition (ConditionPresent$ Creature).
+        // Failure skips this body but still chains subabilities (the noncreature → hand fallthrough).
+        if (condition_passed && condition_on_exiled_with)
             condition_passed = evaluate_present_condition(*this, controller, orderer);
         // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
         // controller has the city's blessing (702.131). Failure still chains subabilities.

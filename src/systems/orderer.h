@@ -20,8 +20,11 @@ public:
     // fateseal-class dig on an OPPONENT's library (Jace +2), where the looker is the controller and
     // the owner must NOT learn the card. When false the owner's known-top cache still shifts down
     // (positions stay honest) but records an UNKNOWN marker at slot 0 instead of the real identity.
+    // exile_face_down (CR 708): when true and destination is EXILE, the card is exiled FACE DOWN —
+    // its Zone::is_face_down flag is set and it is NOT accumulated into the owner's public revealed
+    // multi-hot (its identity stays hidden from the opponent until an effect turns it face up).
     void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                     bool top_seen_by_owner = true);
+                     bool top_seen_by_owner = true, bool exile_face_down = false);
     // Place a freshly-created entity directly on top of the stack (CR 707.10: a spell copy is
     // *created* on the stack, it does not move there from another zone). Adds a STACK Zone owned
     // by `controller`, sets it as the new top (distance_from_top 0, shifting the rest down), and

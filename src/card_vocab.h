@@ -264,6 +264,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Lavinia, Azorius Renegade", 345},
     {"Atraxa, Grand Unifier", 347},
     {"Animate Dead", 348},
+    {"The Creation of Avacyn", 349},
     {"Triumph of Saint Katherine", 350},
 };
 

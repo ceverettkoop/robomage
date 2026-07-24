@@ -499,6 +499,18 @@ inline std::vector<Entity> battlefield_permanents(
 // game_queries.cpp (needs cur_game.delayed_triggers).
 Entity returnable_exiled_card(Entity host);
 
+// The card `source` exiled and still tracks via Permanent::exiled_with — the association a Saga
+// records at chapter I so its later chapters can act on "the card exiled with this" (Defined$
+// ExiledWith / ExiledWith$CardManaCost, The Creation of Avacyn). Returns the most-recently exiled
+// entry that still has a live Zone (skipping any that have since left the game), or 0 if none.
+inline Entity exiled_with_card(Entity source) {
+    if (source == 0 || !global_coordinator.entity_has_component<Permanent>(source)) return 0;
+    const auto &ew = global_coordinator.GetComponent<Permanent>(source).exiled_with;
+    for (auto it = ew.rbegin(); it != ew.rend(); ++it)
+        if (global_coordinator.entity_has_component<Zone>(*it)) return *it;
+    return 0;
+}
+
 // Unblocked attackers controlled by `ctrl` (CR 509.1h): battlefield creatures that are
 // attacking and were not blocked at declare-blockers. Used to gate and pay Ninjutsu
 // (CR 702.49e) — the offer requires one, and activating returns one to hand.

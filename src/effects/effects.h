@@ -210,6 +210,11 @@ HandlerResult store_svar(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
 // paying its mana cost (the third suspend ability). General over any Suspend card. See
 // effect_suspend_tick.cpp.
 HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// DB$ SetState | Mode$ TurnFaceUp | Defined$ ExiledWith (The Creation of Avacyn chapter II):
+// turn the Defined$ card face up by clearing its Zone::is_face_down flag (CR 708.3 / 711.8).
+// Structured so other Mode$ values (e.g. TurnFaceDown, Transform) can be added. See
+// effect_set_state.cpp.
+HandlerResult set_state(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
@@ -243,6 +248,8 @@ bool parse_play(Ability &ab, const std::string &key, const std::string &value);
 bool parse_animate_all(Ability &ab, const std::string &key, const std::string &value);
 // DB$ StoreSVar SVar$/Expression$/Type$ (Carpet of Flowers). See effect_store_svar.cpp.
 bool parse_store_svar(Ability &ab, const std::string &key, const std::string &value);
+// DB$ SetState Mode$ <mode> (The Creation of Avacyn). See effect_set_state.cpp.
+bool parse_set_state(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

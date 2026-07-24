@@ -271,6 +271,21 @@ struct Ability{
     // Default (false) = the zone's owner chooses (the normal tutor case).
     bool chooser_is_controller = false;
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
+    // Defined$ ExiledWith (The Creation of Avacyn chapters II & III): the effect acts on the card
+    // this permanent's Saga chapter I exiled face down — the association is Permanent::exiled_with
+    // on the ability's SOURCE (the Saga). Resolved to that entity by exiled_with_card(source). A
+    // SetState turns it face up (chapter II); a ChangeZone moves it out of exile (chapter III).
+    bool defined_exiled_with = false;
+    // ConditionDefined$ ExiledWith — condition_present/condition_compare are evaluated against the
+    // card the source Saga exiled (is it a Creature?), not board presence. Gated at resolution:
+    // on failure the body is skipped but subabilities still chain (The Creation of Avacyn II & III).
+    bool condition_on_exiled_with = false;
+    // DB$ SetState | Mode$ <mode>: the state transition to apply. "TurnFaceUp" clears the target's
+    // face-down flag (CR 708.3/711.8). Structured so "TurnFaceDown" (and other modes) can be added.
+    std::string set_state_mode = "";
+    // ExileFaceDown$ True on a ChangeZone | Destination$ Exile: the moved card is exiled FACE DOWN
+    // (CR 708). Its Zone::is_face_down flag is set after the move (The Creation of Avacyn I).
+    bool exile_face_down = false;
     // Defined$ TriggeredAttacker / TriggeredAttackerLKICopy — the effect (a Pump) acts on the
     // creature that triggered this ability by attacking (Tamiyo, Seasoned Scholar: the attacking
     // creature "gets -1/-0"). Bound as this ability's target at trigger-fire time from the

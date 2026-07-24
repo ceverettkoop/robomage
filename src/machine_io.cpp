@@ -575,11 +575,16 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
 
             case Zone::EXILE:
                 // Collected per-owner in recency order, exactly like the graveyard.
-                // All exile is public in this engine, so both sides are serialized.
+                // Most exile is public, so both sides are serialized. The exception is a card
+                // exiled FACE DOWN (CR 708.2, The Creation of Avacyn chapter I): its identity is
+                // hidden from the opponent, so an opponent-owned face-down exile emits the unknown
+                // id sentinel (-1) — the viewer still sees a card is there, just not which. The
+                // owner (who exiled it from their own library) still sees its true identity.
                 // get_card_vocab_idx guards a missing CardData (a token that ever
                 // sits here resolves via its Token band / TOKEN_SENTINEL, no crash).
                 if (is_self) self_exile_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
-                else         opp_exile_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
+                else         opp_exile_items.push_back({zone.distance_from_top,
+                                 zone.is_face_down ? -1 : get_card_vocab_idx(e)});
                 break;
 
             case Zone::STACK:

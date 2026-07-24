@@ -75,6 +75,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::StoreSVar:       return &store_svar;
         case EffectKind::CopySpellAbility: return &copy_spell_ability;
         case EffectKind::SuspendTick:     return &suspend_tick;
+        case EffectKind::SetState:        return &set_state;
         default:                          return nullptr;
     }
 }
@@ -101,7 +102,8 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_dig_until(ab, key, value)
         || parse_play(ab, key, value)
         || parse_animate_all(ab, key, value)
-        || parse_store_svar(ab, key, value);
+        || parse_store_svar(ab, key, value)
+        || parse_set_state(ab, key, value);
 }
 
 }  // namespace effects
