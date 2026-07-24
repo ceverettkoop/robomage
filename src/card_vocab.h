@@ -214,6 +214,14 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Tune the Narrative", 308},
     {"Fiery Islet", 309},
     {"Lava Spike", 310},
+    {"Exploration", 311},
+    {"Crop Rotation", 312},
+    {"Rishadan Port", 313},
+    {"Skateboard", 314},
+    {"Sphere of Resistance", 315},
+    {"Boseiju, Who Endures", 316},
+    {"Twinshot Sniper", 317},
+    {"Yavimaya, Cradle of Growth", 318},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
