@@ -339,7 +339,7 @@ _CARD_COST_MATRIX = np.array([
     [0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.1],  # 330: Geist of Saint Traft
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.1],  # 331: Echoing Truth
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.2],  # 332: Show and Tell
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 333: 
+    [0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.1],  # 333: Jace, Wielder of Mysteries
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 334: Dark Depths
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 335: Thespian's Stage
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 336: Mox Diamond
@@ -1370,7 +1370,7 @@ _VOCAB_NAMES = [
     "Geist of Saint Traft",  # 330
     "Echoing Truth",  # 331
     "Show and Tell",  # 332
-    "",  # 333
+    "Jace, Wielder of Mysteries",  # 333
     "Dark Depths",  # 334
     "Thespian's Stage",  # 335
     "Mox Diamond",  # 336

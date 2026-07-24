@@ -498,6 +498,25 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     }
 
     if (!found) {
+        // Draw-from-empty-library replacement (CR 104.3a/121.4): if the drawing player controls a
+        // live DRAW_EMPTY_WIN replacement (Jace, Wielder of Mysteries: "if you would draw a card
+        // while your library has no cards in it, you win the game instead"), they WIN instead of
+        // decking out. Scan the drawing player's battlefield permanents for the replacement.
+        for (auto e : mEntities) {
+            if (!is_battlefield_permanent(e, player)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            const auto &cd = global_coordinator.GetComponent<CardData>(e);
+            bool has_win = false;
+            for (const auto &r : cd.replacement_effects)
+                if (r.kind == Effect::Replacement::DRAW_EMPTY_WIN) { has_win = true; break; }
+            if (!has_win) continue;
+            printf("\n%s wins the game! (%s)\n", player_name(player).c_str(), cd.name.c_str());
+            game_log("%s wins the game!\n", player_name(player).c_str());
+            cur_game.winner = static_cast<int>(player);
+            cur_game.ended = true;
+            return;
+        }
+
         // Drew from an empty library: the drawing player loses.
         if (player == Zone::PLAYER_A) {
             printf("\nPlayer A decked - Player B wins!\n");

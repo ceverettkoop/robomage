@@ -22,6 +22,7 @@ struct Effect {
             PREVENT_ETB_FROM_ZONES,     // 614.13/CantHappen — a creature card moving from a restricted origin zone to the battlefield doesn't enter; it stays put (Grafdigger's Cage)
             PRODUCE_MANA,               // 614.1 — replaces the mana a matching permanent produces when tapped (Damping Sphere: a land tapped for 2+ produces that much {C})
             DISCARD_ELSE_GRAVEYARD,     // 614.1a self-replacement — as this card would enter, its owner MAY pay an additional discard cost (a matching card); if paid it enters, otherwise it goes to its owner's graveyard instead (Mox Diamond, Chrome Mox)
+            DRAW_EMPTY_WIN,             // 104.3a/121.4 — "if you would draw a card while your library has no cards in it, you win the game instead" (Jace, Wielder of Mysteries / Laboratory Maniac / Thassa's Oracle-adjacent). Applies to the CONTROLLER's empty-library draw.
         };
         Kind kind = ENTERS_TAPPED;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself

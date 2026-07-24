@@ -3688,6 +3688,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool event_is_counter     = false;
         bool event_is_untap       = false;
         bool event_is_produce_mana = false;       // Event$ ProduceMana (Damping Sphere)
+        bool event_is_draw        = false;        // Event$ Draw (Jace, Wielder of Mysteries: win on empty-library draw)
         std::string produce_valid_type;           // ValidCard$ <type> for a ProduceMana replacement ("Land")
         int produce_min_amount    = 1;            // ManaAmount$ GEN — minimum produced amount
         std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
@@ -3718,6 +3719,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
             else if (key == "Event"       && value == "Untap")      event_is_untap          = true;
             else if (key == "Event"       && value == "ProduceMana") event_is_produce_mana  = true;
+            else if (key == "Event"       && value == "Draw")        event_is_draw           = true;
             else if (key == "ManaAmount"  && value.rfind("GE", 0) == 0) {
                 // ManaAmount$ GEN — applies when a source is tapped for >= N mana (Damping Sphere: GE2).
                 std::string n = value.substr(2);
@@ -3931,6 +3933,25 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             r.prevent_from_graveyard = origin_graveyard;
             r.prevent_from_library = origin_library;
             result.push_back(r);
+        }
+        // Jace, Wielder of Mysteries: "If you would draw a card while your library has no cards in
+        // it, you win the game instead." (CR 104.3a/121.4). A draw-event replacement whose
+        // ReplaceWith$ SVar is a DB$ WinsGame; it fires for the CONTROLLER's own empty-library draw
+        // (checked at the empty-draw site in Orderer::perform_draw). We confirm the replacement's
+        // effect is a game win via the named SVar body rather than retagging the R: line.
+        {
+            bool replace_with_win = false;
+            if (!replace_with_svar.empty()) {
+                auto it = svars.find(replace_with_svar);
+                if (it != svars.end() && it->second.find("WinsGame") != std::string::npos)
+                    replace_with_win = true;
+            }
+            if (event_is_draw && replace_with_win) {
+                Effect::Replacement r;
+                r.kind = Effect::Replacement::DRAW_EMPTY_WIN;
+                r.applies_to_self_only = false;  // scoped to the controller at the draw site
+                result.push_back(r);
+            }
         }
         // Choke: matching lands don't untap during their controllers' untap steps (614.1d).
         if (event_is_untap && layer_cant_happen && !untap_valid_subtype.empty()) {
