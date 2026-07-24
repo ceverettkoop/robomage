@@ -604,15 +604,21 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (kw == "Flash") { is_instant = true; break; }
             }
         }
-        // Timing restrictions
-        bool can_cast_now = false;
-        if (is_instant) {
-            can_cast_now = true;  // cast anytime you have priority... TODO handle edge cases
-        } else {
-            // Sorcery speed: main phase, your turn, stack empty
-            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        }
+        // Timing restrictions. The sorcery-speed window is the caster's own main phase with an
+        // empty stack (CR 307.1 / 601.3a). A card is castable at instant speed if it is inherently
+        // an instant/flash OR a cast-with-flash permission (Teferi, Time Raveler's +1) covers it —
+        // BUT an opponent sorcery-speed lock (Teferi's static "each opponent can cast spells only
+        // any time they could cast a sorcery") overrides both, forcing the sorcery-speed window for
+        // every spell this caster casts. Order matters: apply the flash permission first, then let
+        // the lock veto it (a player under the lock can't use their own flash-granting either).
+        bool sorcery_window = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                              (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+        bool effective_instant = is_instant;
+        if (!effective_instant && rules_mod::cast_with_flash_active(priority_player, card_data))
+            effective_instant = true;
+        if (rules_mod::opponent_sorcery_speed_locked(priority_player))
+            effective_instant = false;
+        bool can_cast_now = effective_instant || sorcery_window;
         // Check that at least one legal target exists for any targeting requirement
         // and that any ConditionPresent$ castability condition is met
         bool tgt_ok = true;
@@ -772,6 +778,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         for (auto &type : gcd.types) {
             if (type.kind == TYPE && type.name == "Instant") { is_instant = true; break; }
         }
+        // Teferi, Time Raveler's opponent sorcery-speed lock forces even a flashback instant to
+        // sorcery-speed timing (CR 601.3a).
+        if (is_instant && rules_mod::opponent_sorcery_speed_locked(priority_player)) is_instant = false;
         bool can_cast_now = false;
         if (is_instant) {
             can_cast_now = true;
@@ -830,6 +839,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!gcd.has_escape) continue;
 
         bool esc_is_instant = card_has_type(gcd, "Instant");
+        // Teferi opponent sorcery-speed lock: even an escape instant is sorcery-timed (CR 601.3a).
+        if (esc_is_instant && rules_mod::opponent_sorcery_speed_locked(priority_player)) esc_is_instant = false;
         bool can_cast_now = esc_is_instant ||
                             ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
                              (game.player_a_turn == game.player_a_has_priority) && stack_empty);
@@ -887,6 +898,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool can_cast_at_instant_speed = card_has_type(gcd, "Instant");
         for (const auto &kw : gcd.keywords)
             if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
+        // Teferi opponent sorcery-speed lock: a granted graveyard cast is sorcery-timed (CR 601.3a).
+        if (can_cast_at_instant_speed && rules_mod::opponent_sorcery_speed_locked(priority_player))
+            can_cast_at_instant_speed = false;
         bool can_cast_now = can_cast_at_instant_speed ||
             ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
              (game.player_a_turn == game.player_a_has_priority) && stack_empty);
@@ -952,6 +966,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool can_cast_at_instant_speed = card_has_type(ecd, "Instant");
         for (const auto &kw : ecd.keywords)
             if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
+        // Teferi opponent sorcery-speed lock: an impulse cast is sorcery-timed (CR 601.3a).
+        if (can_cast_at_instant_speed && rules_mod::opponent_sorcery_speed_locked(priority_player))
+            can_cast_at_instant_speed = false;
         bool can_cast_now = can_cast_at_instant_speed || main_phase_window;
         if (!can_cast_now) continue;
 

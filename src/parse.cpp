@@ -60,6 +60,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                                  const std::string& card_name = "");
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
+static std::string param_value(const std::string& line, const std::string& want_key);
 static void parse_card_face(const std::string& front_script, CardData& card);
 // Forward-declared so the K: keyword pass can parse a Gift keyword's GiftAbility SVar into the
 // card's gift effect (Into the Flood Maw's tapped-Fish token).
@@ -108,6 +109,17 @@ static bool next_param(const std::string& line, size_t& pos, std::string& key, s
         return true;
     }
     return false;
+}
+
+// Return the value of the first `want_key$` param in a `|`-delimited Forge line/SVar body,
+// or "" if absent. A convenience over next_param for the one-off "just fetch this field"
+// lookups (e.g. the ValidCard$ filter of a StaticAbilities$ SVar).
+static std::string param_value(const std::string& line, const std::string& want_key) {
+    size_t pos = 0;
+    std::string key, value;
+    while (next_param(line, pos, key, value))
+        if (key == want_key) return value;
+    return "";
 }
 
 // Parse a Ward cost argument (the text after "Ward:") into its amount and payment kind
@@ -2211,6 +2223,17 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             if (!est.category.empty()) sub.effect_emblem_statics.push_back(est);
         }
     }
+    // Mirror the top-level CastWithFlash resolution for a DB$ Effect sub-ability (Teferi-style
+    // "cast ... as though they had flash" granted from a sub-effect). General over any
+    // CastWithFlash-granting sub-Effect.
+    if (sub.category == "Effect" && !sub.effect_static_ability.empty() &&
+        !sub.effect_cast_with_flash) {
+        auto it = svars.find(sub.effect_static_ability);
+        if (it != svars.end() && it->second.find("CastWithFlash") != std::string::npos) {
+            sub.effect_cast_with_flash = true;
+            sub.effect_cast_with_flash_filter = param_value(it->second, "ValidCard");
+        }
+    }
     // Resolve amount_svar through SVars map (same logic as parse_abilities)
     if (!sub.amount_svar.empty()) {
         auto it = svars.find(sub.amount_svar);
@@ -2701,6 +2724,21 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                     ability.effect_cant_gain_life = Ability::CantGainLifeScope::YOU;
                 else
                     ability.effect_cant_gain_life = Ability::CantGainLifeScope::ALL;
+            }
+        }
+
+        // AB$ Effect | StaticAbilities$ <SVar(Mode$ CastWithFlash | ValidCard$ <filter> | Caster$
+        // You)> (Teferi, Time Raveler's +1): a cast-timing PERMISSION — the controller may cast
+        // matching (sorcery) spells as though they had flash for the effect's Duration. Resolve the
+        // named static SVar; if it is a CastWithFlash mode, capture its ValidCard$ filter. The
+        // GrantCast handler records a cur_game.cast_with_flash_permissions entry for the effect's
+        // Duration (duration_until_your_next_turn). General over any CastWithFlash-granting Effect.
+        if (ability.category == "Effect" && !ability.effect_static_ability.empty() &&
+            !ability.effect_cast_with_flash) {
+            auto it = svars.find(ability.effect_static_ability);
+            if (it != svars.end() && it->second.find("CastWithFlash") != std::string::npos) {
+                ability.effect_cast_with_flash = true;
+                ability.effect_cast_with_flash_filter = param_value(it->second, "ValidCard");
             }
         }
 
@@ -3554,6 +3592,12 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // CantBeCast Caster$ Opponent (Voice of Victory): the restriction applies to
                 // the source controller's opponents, not the controller themselves.
                 if (value == "Opponent") sa.cant_cast_by_opponent = true;
+            } else if (key == "OnlySorcerySpeed") {
+                // CantBeCast OnlySorcerySpeed$ True (Teferi, Time Raveler): a TIMING restriction,
+                // not a blanket prohibition — the affected caster may cast spells only when they
+                // could cast a sorcery (CR 601.3a). Enforced in the cast-speed gate
+                // (rules_mod::opponent_sorcery_speed_locked), not by cast_prohibited.
+                if (sa.category == "CantBeCast") sa.only_sorcery_speed = (value == "True");
             } else if (key == "Origin") {
                 // CantBeCast Origin$ Graveyard,Library (Grafdigger's Cage): restrict casting
                 // spells from these zones (e.g. flashback).

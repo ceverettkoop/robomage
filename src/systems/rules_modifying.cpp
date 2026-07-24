@@ -1,6 +1,7 @@
 #include "rules_modifying.h"
 
 #include "state_manager.h"  // g_active_statics, ActiveStatic
+#include "../classes/game.h"  // cur_game, CastWithFlashPermission
 #include "../ecs/coordinator.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
@@ -76,6 +77,10 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
         // condition_met (e.g. Condition$ PlayerTurn) gates when the static is live; an
         // unconditional opponent-lock has condition_met == true already.
         if (as.sa->cant_cast_by_opponent) {
+            // OnlySorcerySpeed$ (Teferi, Time Raveler) is a TIMING restriction, NOT a blanket
+            // "can't cast at all" — it does not prohibit the cast here; the cast-speed gate
+            // enforces it via opponent_sorcery_speed_locked. Skip it in this prohibition scan.
+            if (as.sa->only_sorcery_speed) continue;
             if (!as.condition_met) continue;
             if (caster != as.controller) return true;  // caster is an opponent of the source
             continue;
@@ -100,6 +105,33 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
             extract_static_cmc_bound(as.sa->cant_cast_filter, ctx);
             if (card_matches_filter(card, as.sa->cant_cast_filter, ctx)) return true;
         }
+    }
+    return false;
+}
+
+bool opponent_sorcery_speed_locked(Zone::Ownership caster) {
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
+        if (as.sa->category != "CantBeCast" || !as.sa->only_sorcery_speed) continue;
+        if (!as.condition_met) continue;
+        // Teferi, Time Raveler: the lock applies to the source controller's opponents. Reuses the
+        // same Caster$ Opponent CantBeCast path a cmc/land-count opponent restriction (Lavinia)
+        // would key on.
+        if (as.sa->cant_cast_by_opponent && caster != as.controller) return true;
+    }
+    return false;
+}
+
+bool cast_with_flash_active(Zone::Ownership caster, const CardData &card) {
+    for (const auto &perm : cur_game.cast_with_flash_permissions) {
+        if (perm.controller != caster) continue;
+        // Empty filter = every spell; otherwise the spell's printed characteristics must match
+        // (Teferi's grant: ValidCard$ Sorcery). MatchCtx.controller is the caster for any
+        // YouCtrl/OppCtrl qualifier in the filter.
+        if (perm.filter.empty()) return true;
+        MatchCtx ctx;
+        ctx.controller = caster;
+        if (card_matches_filter(card, perm.filter, ctx)) return true;
     }
     return false;
 }

@@ -614,6 +614,19 @@ struct Game {
             bool until_your_next_turn = false;
         };
         std::vector<PlayerProtectionFromEverything> player_protection_from_everything;
+        // Cast-timing permission "you may cast <filter> spells as though they had flash" (CR 702.8 /
+        // 601.3a; Teferi, Time Raveler's +1 "Until your next turn, you may cast sorcery spells as
+        // though they had flash."). While an entry is active, `controller` may cast a spell matching
+        // `filter` (e.g. "Sorcery") ignoring the sorcery-speed timing restriction. `until_your_next_turn`
+        // selects the duration: when true the grant lapses at the controller's next untap step; when
+        // false it lapses at cleanup (end of turn). A sourceless grant (the Effect belongs to no
+        // permanent). Consulted by the cast-speed gate (rules_mod::cast_with_flash_active).
+        struct CastWithFlashPermission {
+            Zone::Ownership controller = Zone::UNKNOWN;
+            std::string filter = "";  // ValidCard$ filter the flash permission applies to
+            bool until_your_next_turn = false;
+        };
+        std::vector<CastWithFlashPermission> cast_with_flash_permissions;
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)

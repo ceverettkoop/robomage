@@ -182,6 +182,25 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // AB$ Effect | StaticAbilities$ <SVar(Mode$ CastWithFlash | ValidCard$ <filter> | Caster$ You)>
+    // (Teferi, Time Raveler's +1: "Until your next turn, you may cast sorcery spells as though they
+    // had flash."). Record a cast-timing permission bound to this effect's controller for the named
+    // filter, good for the effect's Duration — until the controller's next turn (Duration$
+    // UntilYourNextTurn) or, absent that, until cleanup. Consulted by the cast-speed gate
+    // (rules_mod::cast_with_flash_active). A sourceless turn-scoped grant, like the ones above.
+    if (ab.effect_cast_with_flash) {
+        Game::CastWithFlashPermission perm;
+        perm.controller = ab.controller;
+        perm.filter = ab.effect_cast_with_flash_filter;
+        perm.until_your_next_turn = ab.duration_until_your_next_turn;
+        cur_game.cast_with_flash_permissions.push_back(std::move(perm));
+        game_log("%s may cast %s spells as though they had flash%s.\n",
+                 player_name(ab.controller).c_str(),
+                 ab.effect_cast_with_flash_filter.empty() ? "" : ab.effect_cast_with_flash_filter.c_str(),
+                 ab.duration_until_your_next_turn ? " until their next turn" : " this turn");
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     Entity tgt = ab.target;
     if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) return HandlerResult::DONE_RUN_SUBS;
     if (global_coordinator.GetComponent<Zone>(tgt).location != Zone::GRAVEYARD) return HandlerResult::DONE_RUN_SUBS;

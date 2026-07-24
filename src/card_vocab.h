@@ -258,6 +258,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Chain Lightning", 326},
     {"Prismatic Ending", 338},
     {"Jace, Wielder of Mysteries", 333},
+    {"Teferi, Time Raveler", 344},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

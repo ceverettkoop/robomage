@@ -641,6 +641,17 @@ struct Ability{
     enum class CantGainLifeScope { NONE, OPPONENTS, YOU, ALL };
     CantGainLifeScope effect_cant_gain_life = CantGainLifeScope::NONE;
 
+    // AB$ Effect | StaticAbilities$ <SVar(Mode$ CastWithFlash | ValidCard$ <filter> | Caster$ You)>
+    // (Teferi, Time Raveler's +1: "Until your next turn, you may cast sorcery spells as though they
+    // had flash."). A cast-timing PERMISSION: while active, the effect's controller may cast a
+    // matching spell (effect_cast_with_flash_filter, e.g. "Sorcery") as though it had flash — i.e.
+    // ignore the sorcery-speed timing restriction (CR 702.8 "as though" / 601.3a). Set at parse
+    // time; the GrantCast handler records a cur_game.cast_with_flash_permissions entry bound to the
+    // controller for the effect's Duration (until their next turn), consulted by the cast-speed
+    // gate (rules_mod::cast_with_flash_active). General over any CastWithFlash-granting Effect.
+    bool effect_cast_with_flash = false;
+    std::string effect_cast_with_flash_filter = "";  // ValidCard$ filter of the grant (e.g. "Sorcery")
+
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;
 

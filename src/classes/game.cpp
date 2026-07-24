@@ -133,6 +133,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                            return p.until_your_next_turn && p.player == active_player;
                                        }),
                         player_protection_from_everything.end());
+                    // Lapse any "until your next turn" cast-with-flash permission this player was
+                    // granted (Teferi, Time Raveler's +1) — its duration ends as the controller's
+                    // next turn begins (CR 611.2).
+                    cast_with_flash_permissions.erase(
+                        std::remove_if(cast_with_flash_permissions.begin(),
+                                       cast_with_flash_permissions.end(),
+                                       [active_player](const CastWithFlashPermission &p) {
+                                           return p.until_your_next_turn && p.controller == active_player;
+                                       }),
+                        cast_with_flash_permissions.end());
                     // Lapse any "until your next turn" floating triggered ability this player
                     // created (Tamiyo, Seasoned Scholar's +2 "until your next turn, whenever ...")
                     // — its duration ends as the controller's next turn begins (CR 611.2).
@@ -460,6 +470,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                            return !p.until_your_next_turn;
                                        }),
                         player_protection_from_everything.end());
+                    // An "until end of turn" cast-with-flash permission (a bare CastWithFlash
+                    // Effect) lapses at cleanup; an "until your next turn" grant (Teferi, Time
+                    // Raveler's +1) persists, reverted at that player's untap step instead.
+                    cast_with_flash_permissions.erase(
+                        std::remove_if(cast_with_flash_permissions.begin(),
+                                       cast_with_flash_permissions.end(),
+                                       [](const CastWithFlashPermission &p) {
+                                           return !p.until_your_next_turn;
+                                       }),
+                        cast_with_flash_permissions.end());
                     // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
                     // reset for BOTH players each turn — life can be gained on either player's
                     // turn, and the end-step trigger above has already checked them. Done in
