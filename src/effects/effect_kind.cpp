@@ -54,6 +54,9 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"CopyPermanent", EffectKind::CopyPermanent},
         {"Mobilize", EffectKind::Mobilize},
         {"SacrificeTokens", EffectKind::SacrificeTokens},
+        // Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft): exile
+        // each token in ab.targets still on the battlefield. See effect_token.cpp.
+        {"ExileTokens", EffectKind::ExileTokens},
         {"RepeatEach", EffectKind::RepeatEach},
         // AB$ Effect that grants "you may cast that card this turn" (Emry, Lurker of the
         // Loch). The transient continuous Effect object is modeled as a per-turn cast

@@ -232,6 +232,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Blast Zone", 324},
     {"Malevolent Rumble", 325},
     {"Searing Blood", 327},
+    {"Geist of Saint Traft", 330},
     // Dead//Gone is ONE split card (CR 709) → ONE vocab index (328), aliased under three names so
     // it resolves under both name-normalization schemes. The deck-identity block matches by
     // name_to_uid (lowercases, strips '/'), so "Dead/Gone" → uid "deadgone" lets a "1 Dead/Gone"
@@ -287,6 +288,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"w_1_1_cat", "Cat", 913},                                       // Ocelot Pride
     {"w_2_1_cat_warrior", "Cat Warrior", 914},                       // Ajani, Nacatl Pariah
     {"w_1_1_monk_prowess", "Monk", 915},                             // Cori-Steel Cutter
+    {"w_4_4_angel_flying", "Angel", 916},                            // Geist of Saint Traft
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

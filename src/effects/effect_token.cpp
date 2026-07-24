@@ -1,12 +1,16 @@
 #include "effects.h"
 
+#include <vector>
+
 #include "../classes/game.h"
 #include "../cli_output.h"
+#include "../components/creature.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../ecs/events.h"
 #include "../game_queries.h"
 #include "../parse.h"
 #include "../systems/orderer.h"
@@ -72,6 +76,13 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     else if (count == 0)
         count = 1;
 
+    // TokenAttacking$ True (Geist of Saint Traft): the token is put onto the battlefield attacking
+    // the same defender the source creature is attacking (CR 508.4a). Read the source's target.
+    Entity attack_target = 0;
+    if (tp && tp->attacking && global_coordinator.entity_has_component<Creature>(ab.source))
+        attack_target = global_coordinator.GetComponent<Creature>(ab.source).attack_target;
+
+    std::vector<Entity> created;
     cur_game.remembered_entities.clear();
     for (size_t n = 0; n < count; n++) {
         Entity tok_entity = global_coordinator.CreateEntity();
@@ -86,8 +97,52 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         // block the turn it is given). Stamp the Permanent the bootstrap just created.
         if (tp && tp->tapped && global_coordinator.entity_has_component<Permanent>(tok_entity))
             global_coordinator.GetComponent<Permanent>(tok_entity).is_tapped = true;
+        // TokenAttacking$ True: enter already attacking (not declared as an attacker, so no
+        // summoning-sickness/declare restrictions apply — same as Mobilize).
+        if (tp && tp->attacking && global_coordinator.entity_has_component<Creature>(tok_entity)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(tok_entity);
+            cr.is_attacking = true;
+            cr.attack_target = attack_target;
+        }
+        created.push_back(tok_entity);
         cur_game.remembered_entities.push_back(tok_entity);
-        game_log("Token created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
+        game_log("Token created: %u/%u %s%s\n", tok.power, tok.toughness, tok.name.c_str(),
+                 (tp && tp->attacking) ? " (tapped and attacking)" : "");
+    }
+
+    // AtEOT$ ExileCombat (Geist of Saint Traft): "Exile that token at end of combat." Register a
+    // delayed trigger firing at the end-of-combat step (CR 512) that exiles exactly these tokens.
+    if (tp && tp->at_eot == "ExileCombat" && !created.empty()) {
+        Ability exile_ab;
+        exile_ab.ability_type = Ability::TRIGGERED;
+        exile_ab.category = "ExileTokens";
+        exile_ab.source = ab.source;
+        exile_ab.targets = created;
+
+        DelayedTrigger dt;
+        dt.ability = exile_ab;
+        dt.fire_on = Events::END_OF_COMBAT_BEGAN;
+        dt.owner_entity = get_player_entity(ctrl);
+        dt.fire_on_turn = cur_game.turn;
+        cur_game.delayed_triggers.push_back(dt);
+    }
+    return HandlerResult::DONE_RUN_SUBS;
+}
+
+// Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft). Exiles each
+// token in ab.targets still on the battlefield (some may already have died/left). Mirrors
+// Mobilize's sacrifice_tokens, but the destination is exile rather than the graveyard.
+HandlerResult exile_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    (void)ctx;
+    for (Entity tok : ab.targets) {
+        if (!global_coordinator.entity_has_component<Zone>(tok)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(tok);
+        if (z.location != Zone::BATTLEFIELD) continue;
+        std::string name = global_coordinator.entity_has_component<Permanent>(tok)
+                               ? global_coordinator.GetComponent<Permanent>(tok).name
+                               : "token";
+        orderer->add_to_zone(false, tok, Zone::EXILE);
+        game_log("%s is exiled at end of combat.\n", name.c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;
 }
@@ -128,6 +183,16 @@ bool parse_token(Ability &ab, const std::string &key, const std::string &value) 
     }
     if (key == "TokenTapped") {
         effect_params<TokenParams>(ab).tapped = (value == "True");
+        return true;
+    }
+    if (key == "TokenAttacking") {
+        // TokenAttacking$ True (Geist of Saint Traft): the token enters already attacking.
+        effect_params<TokenParams>(ab).attacking = (value == "True");
+        return true;
+    }
+    if (key == "AtEOT") {
+        // AtEOT$ ExileCombat (Geist of Saint Traft): exile the created token(s) at end of combat.
+        effect_params<TokenParams>(ab).at_eot = value;
         return true;
     }
     if (key == "RememberTokens") {

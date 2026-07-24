@@ -117,6 +117,9 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 // Delayed end-step sacrifice fired by Mobilize: sacrifice each entity in ab.targets that is
 // still on the battlefield (the tokens created when the creature attacked).
 HandlerResult sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft): exile each
+// entity in ab.targets still on the battlefield (the token(s) created when the creature attacked).
+HandlerResult exile_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
 // player, with cur_game.remembered_entities set to that player's entity each iteration.
 HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);

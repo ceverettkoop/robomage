@@ -93,6 +93,13 @@ struct TokenParams {
     bool owner_is_targeted_controller = false;
     // TokenTapped$ True: the token enters the battlefield tapped (Into the Flood Maw's Fish).
     bool tapped = false;
+    // TokenAttacking$ True (Geist of Saint Traft): the token is put onto the battlefield already
+    // attacking the same defender the source is attacking (CR 508.4a — not declared as an
+    // attacker, so no summoning-sickness / attack-trigger checks). Mirrors Mobilize.
+    bool attacking = false;
+    // AtEOT$ ExileCombat (Geist of Saint Traft): register a delayed trigger that exiles the
+    // created token(s) at end of combat (CR 512). Non-empty selects the end-of-combat exile.
+    std::string at_eot = "";
 };
 
 // PutCounter (e.g. Scythecat Cub landfall +1/+1). NOTE: this is the Ability

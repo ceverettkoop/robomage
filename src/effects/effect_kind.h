@@ -57,6 +57,7 @@ enum class EffectKind {
     CopyPermanent,
     Mobilize,
     SacrificeTokens,
+    ExileTokens,
     RepeatEach,
     GrantCast,
     NameCard,

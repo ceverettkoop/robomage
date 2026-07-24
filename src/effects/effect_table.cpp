@@ -55,6 +55,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::CopyPermanent:   return &copy_permanent;
         case EffectKind::Mobilize:        return &mobilize;
         case EffectKind::SacrificeTokens: return &sacrifice_tokens;
+        case EffectKind::ExileTokens:     return &exile_tokens;
         case EffectKind::RepeatEach:      return &repeat_each;
         case EffectKind::GrantCast:       return &grant_cast;
         case EffectKind::NameCard:        return &name_card;

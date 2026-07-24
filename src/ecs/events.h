@@ -25,6 +25,7 @@ namespace Events {
     constexpr EventId SAGA_CHAPTER            = 19; // a Saga's lore counters reached chapter N (CR 714.3) — fires the chapter ability. Params: ENTITY=Saga permanent, AMOUNT=chapter number N
     constexpr EventId SECOND_MAIN_BEGAN       = 20; // "at the beginning of [your] second/postcombat main phase" / Phase$ Main2; Params: PLAYER=active player
     constexpr EventId CLEANUP_BEGAN           = 21; // "at the beginning of the cleanup step" / Phase$ Cleanup; Params: PLAYER=active player
+    constexpr EventId END_OF_COMBAT_BEGAN     = 22; // "at end of combat" — the end of combat step begins (CR 512); Params: PLAYER=active player. Used by end-of-combat delayed triggers (Geist of Saint Traft's token exile).
 }
 
 // Param IDs used across events

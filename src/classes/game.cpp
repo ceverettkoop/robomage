@@ -280,6 +280,14 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case COMBAT_DAMAGE:
                     cur_step = END_OF_COMBAT;
+                    {
+                        // "At end of combat" (CR 512): fire the end-of-combat step event so
+                        // end-of-combat delayed triggers (Geist of Saint Traft's "exile that token
+                        // at end of combat") can fire before the combat state is cleared below.
+                        Event end_of_combat_event(Events::END_OF_COMBAT_BEGAN);
+                        end_of_combat_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(end_of_combat_event);
+                    }
                     break;
                 case END_OF_COMBAT:
                     // Clear all combat state from creatures
