@@ -542,6 +542,12 @@ accepted as a checkpoint/model spec — the only model specs are `gen`, an expli
 `.zip`/`.pt` path, or the `az:gen`/`azraw:gen`/`mcts:gen` search wrappers. `gen`
 is a reserved stem: a roster/league deck may not be named `gen`.
 
+There is likewise **one generalist AZ net**, `checkpoints/az/gen__azfinal.pt`
+(the gate-promoted incumbent) plus `gen__azv{steps}.pt` candidate snapshots.
+It is always warm-started from the PPO `gen` checkpoint — AZ has no
+from-scratch path — so build `gen__final.zip` (via `league`) before running
+`az`/`az-train`.
+
 Every training session **continues that one generalist**: each training
 subcommand auto-resumes the existing `gen__final.zip` (or newest snapshot) and
 accumulates the session's steps onto it, regardless of which deck/opponent this
@@ -555,6 +561,11 @@ analysis's `--deck-a`/`--deck-b`).
 `train.py` uses subcommands (`train -h` for any subcommand's options). The
 `train` subcommand is assumed when none is given, so one-liner training still
 works without typing `train`.
+
+**`league` is the primary way to train the PPO generalist** — it rotates the
+roster and the PFSP snapshot pool for you. The single-matchup `train`/`sweep`
+subcommands below are for scripting one deck-vs-deck session or inspecting a
+checkpoint, not the main training loop.
 
 ```bash
 # Training (the 'train' subcommand is implied when omitted)
@@ -586,6 +597,10 @@ train/.venv/bin/python train/train.py sweep --deck delver                       
 # PFSP league (rotating learner over a shared snapshot pool)
 train/.venv/bin/python train/train.py league                                          # train the decks/league/ roster
 train/.venv/bin/python train/train.py league --resume                                 # resume an interrupted league run
+
+# AlphaZero (MCTS-trained net, warm-started from the PPO gen checkpoint — run league first)
+train/.venv/bin/python train/train.py az --deck delver                                # one cycle: self-play -> train -> gate
+train/.venv/bin/python train/train.py az-league                                       # rotate AZ cycles across decks/league/
 ```
 
 **League resume.** A `league` run persists its driver progress (roster, total budget,
@@ -695,15 +710,27 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 
 ### Interactive front ends: TUI, GUI, and the analysis window
 
-Both boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a
+`./tui.sh` (`train/tui.py`) is the overall Textual control panel — deck management, training,
+league runs, observing games, and launching interactive play — and is a separate tool from the
+two *game board* front ends described below. `./gui.sh` is a thin wrapper that launches
+`train/gui_game.py` with no arguments (the GUI launcher dialog).
+
+Both game boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a
 worker thread reporting `StateUpdate`s to a sink; `build_session` assembles env + opponent
 controller). The engine is always a `--machine` subprocess; the opponent controller is any
 `opponents.make_controller` spec (scripted tiers, `gen`, `az:`/`azraw:`/`mcts:` wrappers).
 
 - **TUI board**: `train/play.py --human-deck X --model-deck Y` (default), or via `./tui.sh`.
-- **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_game.py` with no args for
-  the launcher dialog (deck/opponent/seat/format pickers + search and analysis settings,
-  persisted to `~/.robomage/gui_launcher.json`). Falls back to the TUI if PySide6 is missing.
+- **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_game.py` / `./gui.sh` with
+  no args for the launcher dialog (deck/opponent/seat/format pickers + search and analysis
+  settings, persisted to `~/.robomage/gui_launcher.json`). Falls back to the TUI if PySide6 is
+  missing.
+- **Standalone analysis browser** (`train/tui_analysis.py`, Textual, not on `game_driver.py`):
+  loads a checkpoint, simulates N games against a chosen opponent, and lets you page through
+  each game's board states, seek via a clickable V(s) histogram, run any `analysis.py` REPL
+  view, and branch `whatif` counterfactuals. Launch via `./tui.sh`'s `analysis-tui → browse`
+  menu entry, or directly: `train/tui_analysis.py <model.zip|deck> --opponent scripted
+  [--deck-b mav] [--n-games 20]`.
 - **Headless smokes** (no display; used for sanity checks): `QT_QPA_PLATFORM=offscreen
   ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1`
   to force the analysis window on (uniform evaluator, torch-free) and fail unless a live
@@ -747,8 +774,14 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
 - `train/game_driver.py` — front-end-agnostic play loop + `build_session`; `StateUpdate` carries
   an obs COPY plus `search_safe`/`history_len` for the analysis window
 - `train/tui_game.py` / `train/gui_game.py` — the Textual and PySide6 boards over that driver
+- `train/tui.py` — the overall Textual control panel behind `./tui.sh` (deck management,
+  training, league runs, observing games, launching play — composes `train.py`/`analysis.py`/
+  `play.py` as subprocesses, distinct from the `game_driver.py` boards)
 - `train/gui_analysis.py` — the analysis window (worker thread, live MCTS table, branch chart,
   PV scrubber + MiniBoard)
+- `train/tui_analysis.py` — standalone Textual analysis browser (game list, board-state pager,
+  clickable V(s) histogram, every `analysis.py` REPL view, `whatif` branching); behind
+  `./tui.sh`'s `analysis-tui → browse` menu entry
 - `train/analysis_session.py` — Qt-free analysis core: `AnalysisSession` (detached engine,
   delta-replay lockstep, chunked analyze/pv/walk), `AnalysisConfig`, `load_analysis_evaluator`
 - `train/search_env.py` — `SearchRoboMageEnv` (snapshot protocol client, mirror pool,

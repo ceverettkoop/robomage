@@ -1,9 +1,5 @@
 TODO:
 
-overlord of the balemurk opponent choice confirm is revealed card in hand information
-
-overlord of the balemurk time counter should be a trigger on stack
-
 FEED AZ BACK INTO PPO:
 Aistill AZ's policy into PPO (search-improved actions taught to the fast net), and let PPO keep learning its own value via RL. 
 Don't try to move the value across — the two critics are answering different questions.
@@ -33,6 +29,8 @@ Policy: yes, and it's the principled direction (this is literally Expert Iterati
 
 - When a copied spell targets a permanent with ward, ward will not trigger. Possible similar issues related to
   selecting new targets for copied spells.
+
+-CLEANUP step triggers not implemented
 
 ## Audit: ability-param keys the parser silently ignores
 

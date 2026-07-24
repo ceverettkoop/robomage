@@ -1821,6 +1821,37 @@ _ANALYSIS_EVAL_PRESETS = [
 # Deck subfolders hidden from the launcher dropdowns (mirrors tui.py's scan).
 _DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
 
+# Shipped defaults — what a fresh install (no ~/.robomage/gui_launcher.json yet)
+# shows in the launcher. This is the release's recommended matchup: a league deck
+# on both seats (the roster the released generalist was trained on) against the AZ
+# net with MCTS, on a 25-minute bo3 match clock, with the analysis window open.
+# A saved config overrides every one of these, key by key.
+_LAUNCHER_DEFAULTS = {
+    "human_deck": "league/bug",
+    "model_deck": "league/ur_delver",
+    "opponent": "az:gen",
+    "player": "",                            # Random seat
+    "bo3": True,
+    "sims": None,                            # no sims cap — the match clock paces it
+    "worlds": 8,
+    "think_time": None,
+    "search_procs": None,
+    "match_clock": 1500.0,                   # 25 min of thinking for the whole bo3
+    "paced": True,
+    "analysis_enabled": True,
+    "analysis_evaluator": "az:gen",
+    "analysis_worlds": 4,
+    "analysis_cap": 2000,
+    "analysis_auto": True,
+}
+
+
+def _cfg_get(cfg, key):
+    """A launcher field's starting value: the saved config's, else the shipped
+    default. A saved key is honored even when its value is None (that is the
+    user having parked a knob on '(default)')."""
+    return cfg[key] if key in cfg else _LAUNCHER_DEFAULTS[key]
+
 
 def _scan_decks():
     """All .dk deck stems under bin/resources/decks/ (recursive), decks/-relative
@@ -1877,8 +1908,8 @@ class LauncherDialog(QDialog):
         form = QFormLayout()
         form.setSpacing(8)
 
-        self._human_deck = self._deck_combo(decks, cfg.get("human_deck", "delver"))
-        self._model_deck = self._deck_combo(decks, cfg.get("model_deck", "delver"))
+        self._human_deck = self._deck_combo(decks, _cfg_get(cfg, "human_deck"))
+        self._model_deck = self._deck_combo(decks, _cfg_get(cfg, "model_deck"))
         form.addRow("Your deck", self._human_deck)
         form.addRow("Opponent deck", self._model_deck)
 
@@ -1886,7 +1917,7 @@ class LauncherDialog(QDialog):
         self._opponent.setEditable(True)
         for label, spec in _OPPONENT_PRESETS:
             self._opponent.addItem(label, spec)
-        self._set_opponent(cfg.get("opponent", "gen"))
+        self._set_opponent(_cfg_get(cfg, "opponent"))
         self._opponent.setToolTip(
             "Opponent controller: 'gen' (the generalist model), a scripted tier, "
             "an az:/azraw:/mcts: search spec, or an explicit checkpoint path.")
@@ -1896,13 +1927,13 @@ class LauncherDialog(QDialog):
         for label in ("Random", "A (you go first)", "B (opponent first)"):
             self._player.addItem(label)
         self._player.setCurrentIndex(
-            {"": 0, "A": 1, "B": 2}.get(cfg.get("player", ""), 0))
+            {"": 0, "A": 1, "B": 2}.get(_cfg_get(cfg, "player"), 0))
         form.addRow("You play as", self._player)
 
         self._format = QComboBox()
         self._format.addItem("Best of three (with sideboarding)", True)
         self._format.addItem("Single game", False)
-        self._format.setCurrentIndex(0 if cfg.get("bo3", True) else 1)
+        self._format.setCurrentIndex(0 if _cfg_get(cfg, "bo3") else 1)
         form.addRow("Match format", self._format)
 
         box = QGroupBox("Game setup")
@@ -1944,24 +1975,25 @@ class LauncherDialog(QDialog):
         form = QFormLayout()
         form.setSpacing(8)
         self._sims = self._int_field(
-            cfg.get("sims"), "MCTS simulations per decision (more = stronger, slower).")
+            _cfg_get(cfg, "sims"), "MCTS simulations per decision (more = stronger, slower).")
         self._worlds = self._int_field(
-            cfg.get("worlds"), "Determinized worlds per decision (sims split across them).")
+            _cfg_get(cfg, "worlds"),
+            "Determinized worlds per decision (sims split across them).")
         self._think_time = self._float_field(
-            cfg.get("think_time"), "Wall-clock seconds per decision — runs as many "
+            _cfg_get(cfg, "think_time"), "Wall-clock seconds per decision — runs as many "
             "sims as fit in this budget (overrides the sims terminator).")
         self._search_procs = self._int_field(
-            cfg.get("search_procs"), "Engine processes to fan the worlds across "
+            _cfg_get(cfg, "search_procs"), "Engine processes to fan the worlds across "
             "(world-parallel search; default 1).")
         self._match_clock = self._float_field(
-            cfg.get("match_clock"), "Whole-match thinking bank in seconds (chess "
+            _cfg_get(cfg, "match_clock"), "Whole-match thinking bank in seconds (chess "
             "clock; 1500 = 25 min for a bo3). Each decision draws a variable budget.")
         self._paced = QComboBox()
         self._paced.addItem("Default (on with a time/clock budget)", None)
         self._paced.addItem("On — mask response-timing tells", True)
         self._paced.addItem("Off — instant obvious decisions", False)
         self._paced.setCurrentIndex(
-            {None: 0, True: 1, False: 2}.get(cfg.get("paced"), 0))
+            {None: 0, True: 1, False: 2}.get(_cfg_get(cfg, "paced"), 0))
         form.addRow("Simulations", self._sims)
         form.addRow("Worlds", self._worlds)
         form.addRow("Think time (s)", self._think_time)
@@ -1979,30 +2011,30 @@ class LauncherDialog(QDialog):
         form = QFormLayout()
         form.setSpacing(8)
         self._analysis_enable = QCheckBox("Open the analysis window (F9 toggles in-game)")
-        self._analysis_enable.setChecked(bool(cfg.get("analysis_enabled", True)))
+        self._analysis_enable.setChecked(bool(_cfg_get(cfg, "analysis_enabled")))
         self._analysis_eval = QComboBox()
         self._analysis_eval.setEditable(True)
         for label, spec in _ANALYSIS_EVAL_PRESETS:
             self._analysis_eval.addItem(label, spec)
         self._set_combo_spec(self._analysis_eval,
-                             cfg.get("analysis_evaluator", "az:gen"))
+                             _cfg_get(cfg, "analysis_evaluator"))
         self._analysis_eval.setToolTip(
             "Evaluator behind the analysis search: az:gen (AZ net, calibrated "
             "win%), mcts:gen (PPO heads), uniform (no model), or a checkpoint "
             "path.")
         self._analysis_worlds = self._int_field(
-            cfg.get("analysis_worlds"),
+            _cfg_get(cfg, "analysis_worlds"),
             "Determinized worlds per analysis run (hidden-zone samples).")
         self._analysis_cap = QSpinBox()
         self._analysis_cap.setRange(-1, 1_000_000)
         self._analysis_cap.setSpecialValueText("(default)")
-        self._analysis_cap.setValue(
-            -1 if cfg.get("analysis_cap") is None else int(cfg["analysis_cap"]))
+        cap = _cfg_get(cfg, "analysis_cap")
+        self._analysis_cap.setValue(-1 if cap is None else int(cap))
         self._analysis_cap.setToolTip(
             "Simulation cap per analysis run (0 = run until stopped; "
             "adjustable in the window too).")
         self._analysis_auto = QCheckBox("Auto-analyze each decision")
-        self._analysis_auto.setChecked(bool(cfg.get("analysis_auto", True)))
+        self._analysis_auto.setChecked(bool(_cfg_get(cfg, "analysis_auto")))
         form.addRow(self._analysis_enable)
         form.addRow("Evaluator", self._analysis_eval)
         form.addRow("Worlds", self._analysis_worlds)
