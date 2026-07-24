@@ -675,9 +675,6 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         (ab.target != 0 && !global_coordinator.entity_has_component<Player>(ab.target)) ? ab.target
                                                                                         : 0;
 
-    fprintf(stderr, "DBG search: owner=%d change_type='%s' mandatory=%d origin=%d num_to_move=%zu libN=%zu\n",
-            (int)owner, ab.change_type.c_str(), (int)ab.mandatory, (int)ab.origin, rt.num_to_move,
-            orderer->get_library_contents(owner).size());
     for (; rt.iter < rt.num_to_move; rt.iter++) {
         bool suspended = false;
         Entity chosen = 0;
