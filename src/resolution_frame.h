@@ -101,6 +101,15 @@ struct UnlessRt {
     bool pay_answered = false;    // "Discard N cards" chosen; now picking the cards
     size_t discards_done = 0;
 };
+// effects::discard's choose-N-to-discard loop (Careful Study's "discard two cards";
+// also the single-card Thoughtseize/Archon path with count 1): the chooser picks one
+// card per query so each round-trips in machine mode, and this persists how many picks
+// are done so a suspension resumes at the next unmade pick. The per-pick menu is rebuilt
+// from the LIVE hand each ask (a picked card left the hand), so nothing else persists and
+// the visitor pins nothing extra for it.
+struct DiscardRt {
+    size_t discards_done = 0;
+};
 // change_zone's search loop (fetch lands, Doomsday's 5-pick multi-zone tutor):
 // the outer pick count + the resolved dynamic bounds, computed once — earlier
 // picks mutate the counted state (cards moved, remembered grown), so a resume
@@ -217,7 +226,7 @@ struct DrawRt {
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
                                    SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
-                                   CopySpellRT, DrawRt>;
+                                   CopySpellRT, DrawRt, DiscardRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating

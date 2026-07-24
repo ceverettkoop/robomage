@@ -111,13 +111,11 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         }
     }
 
-    // Filter by DiscardValid$ — "Card.nonLand", "Card.nonCreature+nonLand", "Card.NamedCard"
-    std::vector<Entity> valid;
-    for (auto e : hand)
-        if (discard_filter_matches(e, discard_valid)) valid.push_back(e);
-
     // RevealDiscardAll (Cabal Therapy): the target player discards EVERY matching card; no choice.
     if (mode == "RevealDiscardAll") {
+        std::vector<Entity> valid;
+        for (auto e : hand)
+            if (discard_filter_matches(e, discard_valid)) valid.push_back(e);
         if (valid.empty()) {
             game_log("No matching cards to discard.\n");
         } else {
@@ -130,9 +128,25 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    if (valid.empty()) {
-        game_log("No valid cards to discard.\n");
-    } else {
+    // Player choice (RevealYouChoose — Thoughtseize; TgtChoose — Archon of Cruelty / Careful
+    // Study): the chooser discards NumCards$ card(s) of their choice, ONE per query so each
+    // pick round-trips in machine mode. NumCards$ 0 (unset) means one card (the common
+    // single-discard case); Careful Study's NumCards$ 2 discards two (CR 701.8b). If the hand
+    // runs out of matching cards, discard as many as possible. The DiscardValid$ pool is
+    // rebuilt from the LIVE hand each pick (a picked card left the hand), and the pick count
+    // persists in the level's DiscardRt so a machine-mode suspension resumes at the next pick.
+    size_t count = ab.amount > 0 ? ab.amount : 1;
+    DiscardRt local_rt;
+    DiscardRt &rt = ctx.can_suspend() ? ctx.rt<DiscardRt>() : local_rt;
+    for (; rt.discards_done < count; ++rt.discards_done) {
+        std::vector<Entity> valid;
+        for (auto e : orderer->get_hand(tgt_owner))
+            if (discard_filter_matches(e, discard_valid)) valid.push_back(e);
+        if (valid.empty()) {
+            if (rt.discards_done == 0 && !ctx.resuming())
+                game_log("No valid cards to discard.\n");
+            break;
+        }
         if (!ctx.resuming())
             game_log("%s chooses a card to discard:\n", player_name(chooser).c_str());
         std::vector<LegalAction> discard_actions;

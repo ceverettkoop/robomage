@@ -208,6 +208,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Tropical Island", 300},
     {"Carpet of Flowers", 301},
     {"Reanimate", 302},
+    {"Careful Study", 303},
     {"Griselbrand", 304},
     {"Otherworldly Gaze", 305},
     {"Meticulous Archive", 306},
