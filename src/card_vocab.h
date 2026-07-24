@@ -224,6 +224,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Yavimaya, Cradle of Growth", 318},
     {"Eidolon of the Great Revel", 319},
     {"Spell Snare", 321},
+    {"Goblin Guide", 322},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

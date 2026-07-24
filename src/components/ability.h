@@ -265,6 +265,11 @@ struct Ability{
     // The player who caused this triggered ability to fire (the triggering event's PLAYER).
     // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
     Zone::Ownership triggered_activator = Zone::UNKNOWN;
+    // Defined$ TriggeredDefendingPlayer — the effect's player is the defending player of the
+    // attack that fired this trigger (Goblin Guide: the DEFENDER reveals/draws). In a two-player
+    // game the defender is the opponent of the attacker's controller (the non-active player).
+    // Bound as the ability's target (a player entity) at CREATURE_ATTACKED fire time.
+    bool defined_triggered_defending_player = false;
 
     // DB$ Animate (Guide of Souls): the Types$ list (classified into TYPE/SUBTYPE/SUPERTYPE
     // at parse time) to add to the targeted permanent (e.g. "Angel"), and whether the grant
@@ -574,6 +579,7 @@ struct Ability{
     bool rest_random_order = false;  // RestRandomOrder$ True
     bool optional_choice = false;    // Optional$ True — the effect is a "may": Dig can choose nothing, Attach/Sacrifice/ChangeZone/Play may be declined
     bool change_num_any = false;     // ChangeNum$ Any — may take any number (0..pool) of looked-at cards (Fateseal)
+    bool change_num_all = false;     // ChangeNum$ All — take ALL matching looked-at cards, mandatorily and automatically (no DIG_CHOICE prompt); Goblin Guide
     int change_num = -1;             // ChangeNum$ <N> for Dig — exact take count incl. 0 (-1 = unset); honored over amount so "take 0" works (Birthing Ritual DBDigBis)
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset

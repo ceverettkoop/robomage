@@ -1408,6 +1408,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         } else if (key == "ChangeNum" && value == "Any") {
             // "Any" = the player may take any number of the looked-at cards (Dig/Fateseal).
             ability.change_num_any = true;
+        } else if (key == "ChangeNum" && value == "All") {
+            // "All" = take every matching looked-at card, mandatorily and automatically
+            // (no player choice / DIG_CHOICE prompt). Goblin Guide reveals the top card and
+            // the defender takes it if it's a land.
+            ability.change_num_all = true;
         } else if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
             // For Dig, ChangeNum$ is the exact take count and 0 is meaningful ("take nothing"),
@@ -1511,6 +1516,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // (the caster of the triggering spell). The actual player is bound at trigger-fire
         // time from the event's PLAYER param. CR 603.x.
         else if (value == "TriggeredActivator") ability.defined_triggered_activator = true;
+        // Defined$ TriggeredDefendingPlayer — the effect acts on the defending player of the
+        // attack that fired this trigger (Goblin Guide). Bound at trigger-fire time from the
+        // CREATURE_ATTACKED event (the opponent of the attacker's controller in a 2-player game).
+        else if (value == "TriggeredDefendingPlayer") ability.defined_triggered_defending_player = true;
         else if (value == "Self") ability.defined_self = true;
         // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
         // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.

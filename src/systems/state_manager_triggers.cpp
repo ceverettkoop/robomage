@@ -750,6 +750,18 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // and its subabilities, so the effect (LoseLife etc.) resolves against them.
                 if (ev.HasParam(Params::PLAYER))
                     bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+                // Defined$ TriggeredDefendingPlayer — bind the defending player of the attack
+                // (Goblin Guide's Dig acts on the DEFENDER's library). CREATURE_ATTACKED carries
+                // PLAYER = the attacker's controller (active player); in a two-player game the
+                // defender is that player's opponent. Bind it as the ability's target (a player
+                // entity), which the Dig handler reads as the library owner.
+                if (trigger_ab.defined_triggered_defending_player &&
+                    ev.GetType() == Events::CREATURE_ATTACKED && ev.HasParam(Params::PLAYER)) {
+                    Entity attacker_player = ev.GetParam<Entity>(Params::PLAYER);
+                    trigger_ab.target = (attacker_player == get_player_entity(Zone::PLAYER_A))
+                                            ? get_player_entity(Zone::PLAYER_B)
+                                            : get_player_entity(Zone::PLAYER_A);
+                }
                 // For exalted, target the sole attacker from the event
                 if (trigger_ab.category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
                     trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);

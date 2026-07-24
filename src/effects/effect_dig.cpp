@@ -126,6 +126,9 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
             rt.take_count = compare_svar(sum, ab.cond_amount_compare) ? ab.cond_amount_if_true : ab.amount;
         } else if (any_count) {
             rt.take_count = matching.size();
+        } else if (ab.change_num_all) {
+            // ChangeNum$ All (Goblin Guide): take every matching card, automatically.
+            rt.take_count = matching.size();
         } else if (ab.amount > 0) {
             rt.take_count = ab.amount;
         }
@@ -151,6 +154,15 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
         // If no matching and not optional, fall through (all go to bottom)
         if (dig_actions.empty()) break;
+        // ChangeNum$ All (Goblin Guide): the take is mandatory and automatic — no player choice
+        // / DIG_CHOICE prompt. Take the next pooled card (rt.optional is false here, so index 0
+        // is the first matching card).
+        if (ab.change_num_all) {
+            Entity sel = rt.pool.front();
+            rt.chosen.push_back(sel);
+            rt.pool.erase(rt.pool.begin());
+            continue;
+        }
         // The looker (ab.controller) is the resolving seat, so this is a no-op
         // swap — the exact seat today's inline get_input read from.
         int choice = ctx.ask(dig_actions, looker, ab.source);
