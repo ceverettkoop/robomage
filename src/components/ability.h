@@ -530,6 +530,24 @@ struct Ability{
     // per-player repeat.
     std::string repeat_players = "";  // RepeatPlayers$ — currently "Player" (each player)
 
+    // RepeatEach over CARD TYPES (Atraxa, Grand Unifier): RepeatTypesFrom$ ValidLibrary
+    // Card.IsImprinted makes the effect loop once per distinct card type present among the
+    // imprinted cards (cur_game.imprinted_entities), setting cur_game.chosen_type before
+    // resolving the RepeatSubAbility body each iteration. Empty = not a per-type repeat.
+    std::string repeat_types_from = "";
+    // Number of leading `subabilities` that are the RepeatSubAbility$ body (repeated each
+    // iteration of a per-type RepeatEach); the remaining subabilities are trailing SubAbility$
+    // links resolved ONCE after the whole loop (Atraxa: [ChooseCard]=body, [DBChangeZone]=trailing).
+    // 0 = every subability is the body (the per-player RepeatEach path, unaffected).
+    size_t repeat_sub_count = 0;
+
+    // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa): choose one imprinted
+    // card of the current cur_game.chosen_type owned by the controller. A "you may" choice
+    // (declinable). RememberChosen$ True appends the chosen card to the remembered set so a
+    // trailing Defined$ Remembered ChangeZone moves it to hand.
+    bool choose_imprinted = false;
+    bool remember_chosen = false;    // RememberChosen$ True — append the chosen card to remembered_entities
+
     // Mill: remember milled cards in cur_game.remembered_entities
     bool remember_milled = false;    // RememberMilled$ True
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
@@ -545,6 +563,7 @@ struct Ability{
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
     bool clear_chosen = false;       // ClearChosenCard$ True — clears cur_game.chosen_cards
+    bool clear_imprinted = false;    // ClearImprinted$ True — clears cur_game.imprinted_entities (Atraxa)
 
     // ChooseCard ChooseEach$ "Type & Type & ..." (Ajani -4): each affected player chooses
     // one permanent of each listed type from among their matching permanents to keep

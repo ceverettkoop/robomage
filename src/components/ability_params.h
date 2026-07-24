@@ -135,6 +135,11 @@ struct DiscardParams {
 // reveal choice. Distinguishes the peek path inside the PeekAndReveal handler.
 struct PeekParams {
     bool no_reveal = false;  // NoReveal$ True
+    // ImprintRevealed$ True (Atraxa, Grand Unifier): reveal the top PeekAmount cards of the
+    // controller's library to all players AND record them as the "imprinted" set
+    // (cur_game.imprinted_entities) so a chained Card.IsImprinted filter can act on exactly the
+    // revealed cards. The cards stay in the library; a later ChangeZone/ChangeZoneAll moves them.
+    bool imprint_revealed = false;
     int peek_amount = 1;     // PeekAmount$ N — how many top cards to look at (Birthing Ritual: 7)
     // Random$ True (Urza's Bauble): the controller looks at ONE card chosen uniformly at
     // random from the target/defined player's HAND. Used by the AB$/DB$ Reveal handler

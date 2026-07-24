@@ -127,6 +127,10 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // exile the cards just placed on top, emptying the library.
     bool filter_not_remembered = (ab.change_type.find("!IsRemembered") != std::string::npos
                                   || ab.change_type.find("IsNotRemembered") != std::string::npos);
+    // ChangeType$ Card.IsImprinted (Atraxa's ShuffleRest): restrict the move to the imprinted
+    // cards (the revealed set), so bottoming "the rest" touches only those — not the whole
+    // library. Combined with !IsRemembered it targets exactly the imprinted-but-not-taken cards.
+    bool filter_imprinted = ab.change_type.find("IsImprinted") != std::string::npos;
     std::vector<Entity> to_move;
     for (auto entity : zone_contents) {
         if (filter_not_remembered) {
@@ -135,6 +139,13 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 if (re == entity) { is_remembered = true; break; }
             }
             if (is_remembered) continue;
+        }
+        if (filter_imprinted) {
+            bool is_imprinted = false;
+            for (auto ie : cur_game.imprinted_entities) {
+                if (ie == entity) { is_imprinted = true; break; }
+            }
+            if (!is_imprinted) continue;
         }
         to_move.push_back(entity);
     }

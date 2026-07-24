@@ -24,6 +24,52 @@ extern Game cur_game;
 namespace effects {
 
 HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa, Grand Unifier): from the
+    // imprinted cards (still in the controller's library after the reveal), choose one of the
+    // current cur_game.chosen_type to take. A "you may" choice — the controller may decline. A
+    // chosen card is appended to the remembered set (RememberChosen$ True) so the trailing
+    // Defined$ Remembered ChangeZone moves it to hand. CR 300/401.
+    if (ab.choose_imprinted) {
+        Zone::Ownership you = ab.controller;
+        std::vector<Entity> cands;
+        for (auto e : cur_game.imprinted_entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.owner != you || z.location != Zone::LIBRARY) continue;  // YouOwn + not already taken
+            if (!cur_game.chosen_type.empty() &&
+                !card_has_type(global_coordinator.GetComponent<CardData>(e), cur_game.chosen_type))
+                continue;
+            cands.push_back(e);
+        }
+        if (cands.empty()) return HandlerResult::DONE_RUN_SUBS;  // no imprinted card of this type left
+
+        std::vector<LegalAction> picks;
+        for (auto e : cands) {
+            const std::string &nm = global_coordinator.GetComponent<CardData>(e).name;
+            LegalAction la(PASS_PRIORITY, e, "Put " + nm + " (" + cur_game.chosen_type + ") into hand");
+            la.category = ActionCategory::CHOOSE_CARD;
+            la.card_is_public = true;
+            picks.push_back(la);
+        }
+        LegalAction none(PASS_PRIORITY, std::string("Put no ") + cur_game.chosen_type + " card into hand");
+        none.category = ActionCategory::CHOOSE_CARD;
+        picks.push_back(none);
+
+        if (!ctx.resuming())
+            game_log("%s may put a %s card from among the revealed cards into their hand:\n",
+                     player_name(you).c_str(), cur_game.chosen_type.c_str());
+        int choice = ctx.ask(std::move(picks), you, ab.source);
+        if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+        if (choice >= 0 && choice < static_cast<int>(cands.size())) {
+            Entity chosen = cands[static_cast<size_t>(choice)];
+            if (ab.remember_chosen) cur_game.remembered_entities.push_back(chosen);
+            game_log("%s chooses %s\n", player_name(you).c_str(),
+                     global_coordinator.GetComponent<CardData>(chosen).name.c_str());
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     // ChooseEach (Ajani -4): each opponent keeps one of their nonland permanents of each
     // listed type; the kept permanents go into cur_game.chosen_cards and a SubAbility$
     // SacrificeAll then sacrifices the rest (ValidCards$ ...+nonChosenCard).

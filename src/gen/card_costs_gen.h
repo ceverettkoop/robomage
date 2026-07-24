@@ -355,7 +355,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 344: Teferi, Time Raveler
     {0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 345: Lavinia, Azorius Renegade
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 346: 
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 347: 
+    {0.1f, 0.1f, 0.1f, 0.0f, 0.1f, 0.0f, 0.3f},  // 347: Atraxa, Grand Unifier
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 348: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 349: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 350: 
@@ -1384,7 +1384,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 344: Teferi, Time Raveler
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 345: Lavinia, Azorius Renegade
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 346: 
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 347: 
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 347: Atraxa, Grand Unifier
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 348: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 349: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 350: 

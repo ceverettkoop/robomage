@@ -176,8 +176,9 @@ struct CharmRt {
 struct RepeatRt {
     bool init = false;            // saved_remembered captured
     bool player_setup = false;    // current player's remembered-set swap done
-    int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
-    int sub_idx = 0;              // next RepeatSubAbility for the current player
+    int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP); reused as the type index in the per-type path
+    int sub_idx = 0;              // next RepeatSubAbility for the current player/type
+    int trailing_idx = 0;         // per-type path: next trailing SubAbility$ resolved once after the loop
     std::vector<Entity> saved_remembered;  // outer remembered set to restore at completion
 };
 struct ImmediateRt {

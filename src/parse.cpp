@@ -1813,6 +1813,24 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.remember_sacrificed = (value == "True");
     } else if (key == "RepeatPlayers") {
         ability.repeat_players = value;       // RepeatEach over players (Price of Progress)
+    } else if (key == "RepeatTypesFrom") {
+        // DB$ RepeatEach | RepeatTypesFrom$ ValidLibrary Card.IsImprinted (Atraxa, Grand Unifier):
+        // loop the RepeatSubAbility once per distinct card type among the imprinted cards.
+        ability.repeat_types_from = value;
+    } else if (key == "RememberChosen") {
+        // ChooseCard | RememberChosen$ True (Atraxa): append the chosen card to the remembered set.
+        ability.remember_chosen = (value == "True");
+    } else if (key == "ClearImprinted") {
+        // DB$ Cleanup | ClearImprinted$ True (Atraxa): clear cur_game.imprinted_entities. (For the
+        // exile-and-return cards whose "imprint" is actually the remembered set, imprinted_entities
+        // is empty, so this is a harmless no-op there.)
+        ability.clear_imprinted = (value == "True");
+    } else if (key == "Choices" && ability.category == "ChooseCard" &&
+               value.find("IsImprinted") != std::string::npos) {
+        // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa): choose one imprinted
+        // card of the current cur_game.chosen_type. (The Ajani -4 choose_each umbrella Choices$ has
+        // no IsImprinted and is handled by the ignored-keys path below via ChooseEach$.)
+        ability.choose_imprinted = true;
     } else if (key == "Types" && ability.category == "Animate") {
         // DB$ Animate | Types$ Angel [Cleric ...] — the type/subtype list the animated permanent
         // gains "in addition to its other types" (Guide of Souls: "Angel"; The Fantasticar:
@@ -1924,9 +1942,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is
             // already tracked in cur_game.remembered_entities (RememberObjects$ RememberedLKI),
             // which the paired ConditionDefined$ Imprinted gate reads, so the imprint is redundant.
-            // ClearImprinted$ True on the paired DB$ Cleanup is likewise redundant — the imprint
-            // set is the remembered set, cleared by the same Cleanup's ClearRemembered$ True.
-            "Imprint", "ClearImprinted",
+            // (ClearImprinted$ True is parsed above into clear_imprinted — a no-op for Phelia,
+            // whose imprinted_entities set is empty, but load-bearing for Atraxa.)
+            "Imprint",
+            // ChoiceZone$ Library on Atraxa's ChooseCard: names the zone the imprinted cards are
+            // chosen from. The choose_imprinted handler already scans the imprinted set (which
+            // stays in the library), so this is informational.
+            "ChoiceZone",
             // SP$/AB$ Vote VoteMessage$ <text> (Council's Judgment): the prose shown to voters
             // ("for a nonland permanent you don't control"). Purely cosmetic — the load-bearing
             // VoteCard$ filter and VoteSubAbility$ are parsed above.
@@ -2106,12 +2128,19 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     size_t param_pos = content.find("|", p);
     std::string key, value;
     while (next_param(content, param_pos, key, value)) {
-        if (key == "SubAbility") {
+        if (key == "SubAbility" || key == "RepeatSubAbility" || key == "VoteSubAbility") {
+            // RepeatSubAbility$ (RepeatEach) / VoteSubAbility$ (Vote) resolve like SubAbility$: the
+            // value names an SVar holding a DB$ ability, pushed as a sub-ability. For a per-type
+            // RepeatEach (Atraxa) the RepeatSubAbility entries are the per-iteration body; count
+            // them so repeat_each_types knows how many leading subs are the body vs. trailing links.
             auto it = svars.find(value);
             if (it != svars.end())
                 sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
-        } else if (key == "Choices") {
-            // Charm modal in DB$ context (e.g. Knight of Autumn ETB)
+            if (key == "RepeatSubAbility" && it != svars.end()) sub.repeat_sub_count++;
+        } else if (key == "Choices" && sub.category != "ChooseCard") {
+            // Charm modal in DB$ context (e.g. Knight of Autumn ETB). Excludes DB$ ChooseCard,
+            // whose Choices$ is a card FILTER (Atraxa: Card.ChosenType+YouOwn+IsImprinted) consumed
+            // by apply_param_to_ability, not a list of modal SVars.
             size_t cpos = 0;
             while (cpos < value.size()) {
                 size_t comma = value.find(',', cpos);
@@ -2493,8 +2522,14 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 auto it = svars.find(value);
                 if (it != svars.end())
                     ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
-            } else if (key == "Choices") {
-                // Charm modal: resolve comma-separated SVar names into sub-abilities
+                // Count the RepeatSubAbility$ entries so a per-type RepeatEach (Atraxa) knows how
+                // many leading subabilities are the per-iteration body (vs. trailing SubAbility$
+                // links resolved once after the loop). The per-player RepeatEach ignores this.
+                if (key == "RepeatSubAbility" && it != svars.end()) ability.repeat_sub_count++;
+            } else if (key == "Choices" && ability.category != "ChooseCard") {
+                // Charm modal: resolve comma-separated SVar names into sub-abilities. Excludes DB$
+                // ChooseCard, whose Choices$ is a card FILTER (Atraxa: Card.ChosenType+YouOwn+
+                // IsImprinted), not a list of modal SVars — it falls through to apply_param_to_ability.
                 size_t cpos = 0;
                 while (cpos < value.size()) {
                     size_t comma = value.find(',', cpos);

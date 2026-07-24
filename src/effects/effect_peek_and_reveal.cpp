@@ -6,6 +6,7 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -47,6 +48,30 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             }
         }
         // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
+    if (pp && pp->imprint_revealed) {
+        // Atraxa, Grand Unifier: reveal the top N cards of the controller's ("your") library to
+        // all players and record them as the imprinted set. The cards stay in the library — a
+        // chained per-type RepeatEach / ChooseCard / ChangeZoneAll (all filtered Card.IsImprinted)
+        // decides which enter the hand and bottoms the rest. CR 300/401.
+        Zone::Ownership owner = ab.controller;
+        int n = pp->peek_amount > 0 ? pp->peek_amount : 1;
+        std::vector<Entity> top = orderer->get_library_top(owner, static_cast<size_t>(n));
+        cur_game.imprinted_entities.clear();
+        if (top.empty()) {
+            game_log("%s's library is empty — nothing to reveal.\n", player_name(owner).c_str());
+        } else {
+            for (auto e : top) {
+                cur_game.imprinted_entities.push_back(e);
+                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                mark_card_revealed(e, owner);
+                game_log("%s reveals %s from the top of their library\n",
+                         player_name(owner).c_str(), cd.name.c_str());
+            }
+        }
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -109,6 +134,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value) {
     if (key == "NoReveal") { effect_params<PeekParams>(ab).no_reveal = (value == "True"); return true; }
+    if (key == "ImprintRevealed") { effect_params<PeekParams>(ab).imprint_revealed = (value == "True"); return true; }
     if (key == "PeekAmount") { effect_params<PeekParams>(ab).peek_amount = std::stoi(value); return true; }
     return false;
 }
