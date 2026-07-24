@@ -635,6 +635,15 @@ struct Ability{
     // of the turn (a turn-long, sourceless can't-be-countered grant — distinct from Hexing
     // Squelcher's battlefield static).
     bool effect_spells_uncounterable_this_turn = false;
+    // DB$ Effect | ReplacementEffects$ <SVar list> where a named SVar is a combat-damage
+    // prevention shield: "Event$ DamageDone | Prevent$ True | IsCombat$ True | ValidSource$
+    // Card.IsRemembered" (prevent all combat damage dealt BY the remembered creature) and/or
+    // "... | ValidTarget$ Card.IsRemembered" (prevent all combat damage dealt TO it) — Maze of
+    // Ith. Set at parse time from the SVar bodies; the GrantCast handler registers a turn-scoped
+    // shield on the remembered creature in cur_game.combat_damage_prevention_shields (CR 615).
+    // General over any such DamageDone/Prevent Effect keyed on a remembered object.
+    bool effect_prevent_combat_damage_by_remembered = false;  // ValidSource$ Card.IsRemembered
+    bool effect_prevent_combat_damage_to_remembered = false;  // ValidTarget$ Card.IsRemembered
     // AB$/DB$ Effect | StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> — a turn-long
     // life-gain prohibition (CR 119.x, Roiling Vortex's {R} ability). The scope names whose life
     // gain is prohibited relative to the effect's controller. NONE = not a CantGainLife effect.

@@ -94,7 +94,12 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
         if (!cr.is_blocked) {
             // Unblocked — deal damage to attack target
             uint32_t dmg = cr.power;
-            if (attacker_deals && dmg > 0) {
+            // CR 615: a combat-damage prevention shield (Maze of Ith) on this attacker prevents
+            // all combat damage it would deal — skip the whole assignment (no damage, no
+            // life loss, no trigger, no lifelink).
+            if (attacker_deals && dmg > 0 && game.combat_damage_prevented(entity, cr.attack_target)) {
+                game_log("  %u combat damage from %s is prevented\n", dmg, attacker_name.c_str());
+            } else if (attacker_deals && dmg > 0) {
                 deal_damage(entity, cr.attack_target, dmg);
                 // CR 702.16d: a player with protection from everything (The One Ring) isn't dealt
                 // combat damage by an opponent's attacker — prevent the life loss, the
@@ -142,11 +147,18 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                 auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
                 std::string blocker_name = entity_name(blocker);
 
-                // Blocker deals damage to attacker (only if the blocker qualifies for this step)
+                // Blocker deals damage to attacker (only if the blocker qualifies for this step).
+                // CR 615: a prevention shield on the blocker (as source) or the attacker (as
+                // target) prevents this combat damage — no damage marked, no lifelink.
                 if (bcr.power > 0 && should_deal_damage(bcr, first_strike_only)) {
-                    deal_damage(blocker, entity, bcr.power);
-                    game_log("  %s deals %u damage to %s\n", blocker_name.c_str(), bcr.power, attacker_name.c_str());
-                    apply_lifelink_if_any(blocker, bcr.power, life_delta_a, life_delta_b);
+                    if (game.combat_damage_prevented(blocker, entity)) {
+                        game_log("  %u combat damage from %s to %s is prevented\n",
+                                 bcr.power, blocker_name.c_str(), attacker_name.c_str());
+                    } else {
+                        deal_damage(blocker, entity, bcr.power);
+                        game_log("  %s deals %u damage to %s\n", blocker_name.c_str(), bcr.power, attacker_name.c_str());
+                        apply_lifelink_if_any(blocker, bcr.power, life_delta_a, life_delta_b);
+                    }
                 }
 
                 // Attacker deals damage to this blocker.
@@ -170,15 +182,28 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                         assigned = (remaining >= needed) ? needed : remaining;
                 }
                 if (assigned > 0) {
-                    deal_damage(entity, blocker, assigned);
-                    game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), assigned, blocker_name.c_str());
+                    // Assignment (CR 510.1c) still happens; CR 615 prevents the assigned damage
+                    // from being dealt if a shield covers the attacker (as source) or blocker (as
+                    // target) — remaining is consumed regardless (the damage was assigned).
+                    if (game.combat_damage_prevented(entity, blocker)) {
+                        game_log("  %u combat damage from %s to %s is prevented\n",
+                                 assigned, attacker_name.c_str(), blocker_name.c_str());
+                    } else {
+                        deal_damage(entity, blocker, assigned);
+                        game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), assigned, blocker_name.c_str());
+                        apply_lifelink_if_any(entity, assigned, life_delta_a, life_delta_b);
+                    }
                     remaining -= assigned;
-                    apply_lifelink_if_any(entity, assigned, life_delta_a, life_delta_b);
                 }
             }
             // Trample: excess damage goes to attack target
             if (remaining > 0) {
-                if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target) &&
+                // CR 615: a prevention shield on this attacker (as source) prevents its trampled-
+                // over combat damage too.
+                if (has_trample && game.combat_damage_prevented(entity, cr.attack_target)) {
+                    game_log("  %u trample combat damage from %s is prevented\n",
+                             remaining, attacker_name.c_str());
+                } else if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target) &&
                     player_protected_from_source(cr.attack_target, entity)) {
                     // Protection from everything (The One Ring) also prevents trampled-over combat
                     // damage to the protected player (CR 702.16d) — no life loss, trigger, or

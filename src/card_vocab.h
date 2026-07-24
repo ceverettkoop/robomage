@@ -259,6 +259,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Chain Lightning", 326},
     {"Prismatic Ending", 338},
     {"Jace, Wielder of Mysteries", 333},
+    {"Maze of Ith", 343},
     {"Teferi, Time Raveler", 344},
     {"Lavinia, Azorius Renegade", 345},
 };

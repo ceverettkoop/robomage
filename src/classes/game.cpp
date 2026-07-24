@@ -29,6 +29,15 @@ bool Game::ready_to_resolve() {
     return a_has_passed && b_has_passed;
 }
 
+bool Game::combat_damage_prevented(Entity source, Entity target) const {
+    for (const auto &shield : combat_damage_prevention_shields) {
+        if (shield.creature == 0) continue;
+        if (shield.prevent_as_source && shield.creature == source) return true;
+        if (shield.prevent_as_target && shield.creature == target) return true;
+    }
+    return false;
+}
+
 void Game::generate_players(const Deck &deck_a, const Deck &deck_b) {
     player_a_entity = gen_player(deck_a);
     player_b_entity = gen_player(deck_b);
@@ -459,6 +468,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     cant_counter_spells_of.clear();
                     // "Can't gain life this turn" (Roiling Vortex's {R}) lapses at cleanup (514.2).
                     cant_gain_life_this_turn.clear();
+                    // Combat-damage prevention shields (Maze of Ith, CR 615) are "this turn" and
+                    // lapse at cleanup (514.2).
+                    combat_damage_prevention_shields.clear();
                     hexproof_from_colors_this_turn.clear();
                     // An "until end of turn" player protection-from-everything grant lapses at
                     // cleanup; an "until your next turn" grant persists (reverted at that player's

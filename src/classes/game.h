@@ -627,6 +627,21 @@ struct Game {
             bool until_your_next_turn = false;
         };
         std::vector<CastWithFlashPermission> cast_with_flash_permissions;
+        // Turn-scoped combat-damage prevention shield (CR 615) created by a resolving DB$ Effect |
+        // ReplacementEffects$ <Event$ DamageDone | Prevent$ True | IsCombat$ True | ValidSource$/
+        // ValidTarget$ Card.IsRemembered> (Maze of Ith's "Prevent all combat damage that would be
+        // dealt to and dealt by that creature this turn"). Each shield remembers one `creature`;
+        // while active, all COMBAT damage that creature would DEAL (prevent_as_source) and/or all
+        // combat damage that would be dealt TO it (prevent_as_target) is prevented. A sourceless
+        // turn-long grant (the Effect belongs to no permanent); consulted by deal_combat_damage
+        // via combat_damage_prevented() and cleared at cleanup. General over any DamageDone/Prevent
+        // Effect keyed on a remembered object (reusable by future fog/prevention cards).
+        struct CombatDamagePreventionShield {
+            Entity creature = 0;
+            bool prevent_as_source = false;  // ValidSource$ Card.IsRemembered — damage BY the creature
+            bool prevent_as_target = false;  // ValidTarget$ Card.IsRemembered — damage TO the creature
+        };
+        std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
@@ -708,6 +723,11 @@ struct Game {
         void known_top_library_remove_pos(bool player_a_owner, int pos);
 
         bool ready_to_resolve();
+        // CR 615: is this combat damage prevented by an active combat-damage prevention shield?
+        // True when `source` is a shielded creature under a prevent-as-source shield (damage it
+        // would deal), or `target` is a shielded creature under a prevent-as-target shield (damage
+        // it would be dealt). Consulted at each combat-damage assignment in deal_combat_damage.
+        bool combat_damage_prevented(Entity source, Entity target) const;
         bool is_mandatory_choice_pending() const;
         void generate_players(const Deck &deck_a, const Deck &deck_b);
         bool advance_step(std::shared_ptr<class StackManager> stack_manager, std::shared_ptr<class Orderer> orderer);

@@ -154,6 +154,28 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // DB$ Effect | ReplacementEffects$ <DamageDone/Prevent shields> | RememberObjects$ Targeted
+    // (Maze of Ith): register a turn-scoped combat-damage prevention shield on the remembered
+    // creature — all combat damage it would deal (ValidSource$ Card.IsRemembered) and/or be dealt
+    // (ValidTarget$ Card.IsRemembered) this turn is prevented (CR 615). The remembered creature is
+    // the ability's inherited target (RememberObjects$ Targeted also stashed it in
+    // remembered_entities). Sourceless turn-long grant, cleared at cleanup. General over any such
+    // Effect (reusable by future fog/prevention cards).
+    if (ab.effect_prevent_combat_damage_by_remembered || ab.effect_prevent_combat_damage_to_remembered) {
+        Entity who = ab.target;
+        if (who == 0 && !cur_game.remembered_entities.empty()) who = cur_game.remembered_entities.front();
+        if (who != 0 && global_coordinator.entity_has_component<Creature>(who)) {
+            Game::CombatDamagePreventionShield shield;
+            shield.creature = who;
+            shield.prevent_as_source = ab.effect_prevent_combat_damage_by_remembered;
+            shield.prevent_as_target = ab.effect_prevent_combat_damage_to_remembered;
+            cur_game.combat_damage_prevention_shields.push_back(shield);
+            game_log("All combat damage dealt to and dealt by %s is prevented this turn.\n",
+                     entity_name(who).c_str());
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     // AB$ Effect | StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> (Roiling Vortex's
     // {R}: "Your opponents can't gain life this turn."). Register the affected player(s) in the
     // turn-long can't-gain-life set (CR 119.x); consulted centrally in player_gain_life and cleared

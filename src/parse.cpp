@@ -2171,18 +2171,32 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 }
             }
         } else if (key == "ReplacementEffects") {
-            // DB$ Effect | ReplacementEffects$ <SVar> (Veil of Summer: AntiMagic =
-            // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen"). A turn-long
-            // "spells you control can't be countered" grant. Detect the CantHappen counter
-            // replacement on the controller's spells and flag it; the GrantCast handler records
-            // the controller in cur_game.cant_counter_spells_of for the rest of the turn.
-            auto it = svars.find(value);
-            if (it != svars.end()) {
+            // DB$ Effect | ReplacementEffects$ <SVar>[,<SVar>...] — one or more named replacement
+            // effects the transient Effect carries. Two forms are recognized:
+            //  * Veil of Summer's AntiMagic = "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$
+            //    CantHappen" — a turn-long "spells you control can't be countered" grant; the
+            //    GrantCast handler records the controller in cur_game.cant_counter_spells_of.
+            //  * Maze of Ith's RPrevent1/RPrevent2 = "Event$ DamageDone | Prevent$ True |
+            //    IsCombat$ True | ValidSource$/ValidTarget$ Card.IsRemembered" — prevent all
+            //    combat damage dealt by/to the remembered creature this turn (CR 615); the
+            //    GrantCast handler registers a turn-scoped combat-damage prevention shield.
+            for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
+                auto it = svars.find(svar_name);
+                if (it == svars.end()) continue;
                 const std::string &body = it->second;
                 if (body.find("Event$ Counter") != std::string::npos &&
                     body.find("CantHappen") != std::string::npos &&
-                    body.find("YouCtrl") != std::string::npos)
+                    body.find("YouCtrl") != std::string::npos) {
                     sub.effect_spells_uncounterable_this_turn = true;
+                } else if (body.find("Event$ DamageDone") != std::string::npos &&
+                           body.find("Prevent$ True") != std::string::npos &&
+                           body.find("IsCombat$ True") != std::string::npos &&
+                           body.find("IsRemembered") != std::string::npos) {
+                    if (body.find("ValidSource$") != std::string::npos)
+                        sub.effect_prevent_combat_damage_by_remembered = true;
+                    if (body.find("ValidTarget$") != std::string::npos)
+                        sub.effect_prevent_combat_damage_to_remembered = true;
+                }
             }
         } else if (key == "StaticAbilities") {
             // DB$ Effect | StaticAbilities$ <name>. The value may be a literal keyword
