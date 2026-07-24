@@ -1,5 +1,5 @@
 --- Narrative ---
-  robomage 0.001
+  robomage 0.2
   Using seed: 1187322509
   -------- PREGAME --------
   Player A draws Thoughtseize
