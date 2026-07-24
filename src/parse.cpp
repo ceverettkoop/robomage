@@ -269,6 +269,14 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
         std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
         if (tok == "T") {
             ability.tap_cost = true;
+        } else if (tok == "Mandatory") {
+            // "Mandatory" prefix on a triggered-ability cost (Dark Depths' TrigToken:
+            // Cost$ Mandatory Sac<1/CARDNAME>). The sacrifice is a mandatory part of the
+            // triggered ability's resolution, not an optional cost the controller may decline —
+            // record it and, crucially, do NOT let it fall through to parse_mana_cost (which
+            // would read the word as a spurious mana symbol). CR 603.8 / the card's "sacrifice
+            // it. If you do, ...".
+            ability.mandatory = true;
         } else if (tok.rfind("PayLife<", 0) == 0) {
             size_t angle = tok.find('<');
             size_t close = tok.find('>');
@@ -2761,6 +2769,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool mode_is_taps_for_mana = false;
     bool mode_is_becomes_target = false;
     bool mode_is_become_monstrous = false;
+    bool mode_is_always = false;
     bool source_is_spell = false;
     bool source_opp_ctrl = false;
     bool valid_target_self = false;
@@ -2799,6 +2808,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "TapsForMana") mode_is_taps_for_mana = true;
             else if (value == "BecomesTarget") mode_is_becomes_target = true;
             else if (value == "BecomeMonstrous") mode_is_become_monstrous = true;
+            else if (value == "Always") mode_is_always = true;
         } else if (key == "ValidSource") {
             // Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl — the targeting object must be a
             // SPELL (not an ability) controlled by an opponent of the source's controller.
@@ -3250,6 +3260,18 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         if (valid_card_self) ability.trigger_only_self = true;
     }
 
+    // Mode$ Always — a state-triggered ability (CR 603.8). Its trigger condition is a game STATE
+    // (the IsPresent$ intervening-if parsed above into condition_present/intervening_if), not a
+    // game event, so it has no trigger_on; the dedicated state-trigger scan in
+    // check_triggered_abilities evaluates the condition each SBA pass and fires once when it
+    // becomes true. Dark Depths: IsPresent$ Card.Self+counters_EQ0_ICE ("when this has no ice
+    // counters on it"). trigger_only_self is set so the source is the permanent whose counters
+    // are checked. parse_triggered_abilities keeps this ability despite trigger_on == 0.
+    if (mode_is_always) {
+        ability.trigger_state_condition = true;
+        ability.trigger_only_self = true;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
@@ -3303,6 +3325,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_mana_spent_op                    = ability.trigger_mana_spent_op;
                 effect.trigger_mana_spent_val                   = ability.trigger_mana_spent_val;
                 effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
+                effect.trigger_state_condition                  = ability.trigger_state_condition;
                 effect.trigger_taps_for_mana_static             = ability.trigger_taps_for_mana_static;
                 effect.trigger_source_must_be_spell             = ability.trigger_source_must_be_spell;
                 effect.trigger_source_opp_ctrl                  = ability.trigger_source_opp_ctrl;
@@ -3331,7 +3354,9 @@ static std::vector<Ability> parse_triggered_abilities(const std::string &script,
     std::vector<Ability> result;
     for (const auto &line : find_trigger_lines(script)) {
         Ability ab = parse_one_trigger(line, svars, card_name);
-        if (ab.trigger_on != 0)  // only keep recognised triggers
+        // Keep event-driven triggers (trigger_on != 0) and state-triggered abilities
+        // (Mode$ Always, CR 603.8), which have no event but are fired by the state-trigger scan.
+        if (ab.trigger_on != 0 || ab.trigger_state_condition)
             result.push_back(ab);
     }
     return result;

@@ -1620,23 +1620,41 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             std::string sname = global_coordinator.entity_has_component<Permanent>(source)
                                     ? global_coordinator.GetComponent<Permanent>(source).name
                                     : std::string("it");
-            std::vector<LegalAction> yn;
-            LegalAction decline(PASS_PRIORITY, std::string("Decline"));
-            decline.category = ActionCategory::OPTIONAL_YESNO;
-            decline.option_ordinal = 0;  // 0 = decline
-            yn.push_back(decline);
-            LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
-            accept.category = ActionCategory::OPTIONAL_YESNO;
-            accept.option_ordinal = 1;  // 1 = accept
-            yn.push_back(accept);
-            int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
-            if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
-            if (yc == 0) {
-                game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
-                return ResolveStatus::DONE;
+            bool on_bf = is_battlefield_permanent(source);
+            if (mandatory) {
+                // Cost$ Mandatory Sac<1/CARDNAME> (Dark Depths: "sacrifice it. If you do, create
+                // Marit Lage."). The sacrifice is not optional — no prompt. Honor the "If you do"
+                // clause: only run the effect (the token creation) if the source was actually on
+                // the battlefield to be sacrificed (CR 603.8 fired, but the permanent may already
+                // have left). A source no longer on the battlefield → no sacrifice, no effect.
+                if (!on_bf) {
+                    game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
+                    return ResolveStatus::DONE;
+                }
+                orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+                game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
+            } else {
+                // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost (The Fantasticar):
+                // the Sac<.../CARDNAME> cost makes the whole effect optional — prompt, sacrifice on
+                // accept, do nothing (skip the effect and its subabilities) on decline.
+                std::vector<LegalAction> yn;
+                LegalAction decline(PASS_PRIORITY, std::string("Decline"));
+                decline.category = ActionCategory::OPTIONAL_YESNO;
+                decline.option_ordinal = 0;  // 0 = decline
+                yn.push_back(decline);
+                LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
+                accept.category = ActionCategory::OPTIONAL_YESNO;
+                accept.option_ordinal = 1;  // 1 = accept
+                yn.push_back(accept);
+                int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
+                if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
+                if (yc == 0) {
+                    game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
+                    return ResolveStatus::DONE;
+                }
+                orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+                game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
             }
-            orderer->add_to_zone(false, source, Zone::GRAVEYARD);
-            game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
         }
         phase = 2;
     }
@@ -1650,8 +1668,14 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         if (!ctx.resuming()) {
             // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
             // longer true the ability is removed from the stack and does nothing — not even its
-            // subabilities fire (unlike a ConditionCheckSVar gate).
-            if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
+            // subabilities fire (unlike a ConditionCheckSVar gate). EXCEPTION: a Mode$ Always
+            // state-triggered ability (CR 603.8) uses its IsPresent$ as the TRIGGER condition,
+            // evaluated by the state-trigger scan when it fires — it is NOT an intervening-if to be
+            // re-checked at resolution. Dark Depths' "sacrifice it, if you do create Marit Lage" must
+            // still create the token even though the sacrifice it just performed makes the "no ice
+            // counters" condition read false (the source has left the battlefield).
+            if (intervening_if && !trigger_state_condition &&
+                !evaluate_present_condition(*this, controller, orderer)) {
                 game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
                 return ResolveStatus::DONE;
             }

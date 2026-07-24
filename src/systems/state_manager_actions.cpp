@@ -346,24 +346,22 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
                global_coordinator.GetComponent<Permanent>(ab.source).cast_with_escape;
     }
 
-    // IsPresent$ Card.Self+counters_GE<N>_<TYPE>: the source must be on the battlefield AND
-    // carry at least N counters of the given type (Moonshadow: "while this creature has a
-    // -1/-1 counter on it" → Card.Self+counters_GE1_M1M1). CR 122.1/603.4 — the counter
-    // count is re-checked when the trigger would go on the stack and again on resolution, so
-    // once the last -1/-1 counter is gone the trigger stops firing.
-    if (ab.condition_present.rfind("Card.Self+counters_GE", 0) == 0) {
+    // IsPresent$ Card.Self+counters_<OP><N>_<TYPE>: the source must be on the battlefield AND its
+    // count of counters of the given type satisfy the comparison <OP><N> (Forge spells the op as
+    // GE/LE/EQ/NE/GT/LT). Moonshadow: "while this creature has a -1/-1 counter on it" →
+    // counters_GE1_M1M1; Dark Depths: "when this has no ice counters on it" → counters_EQ0_ICE.
+    // CR 122.1/603.4/603.8 — the counter count is re-checked whenever the condition is evaluated
+    // (trigger placement, resolution, and each state-based check for a Mode$ Always state trigger).
+    if (ab.condition_present.rfind("Card.Self+counters_", 0) == 0) {
         if (!is_battlefield_permanent(ab.source)) return false;
-        std::string rest = ab.condition_present.substr(std::string("Card.Self+counters_GE").size());
-        size_t us = rest.find('_');
-        int need = 1;
-        std::string ctype = "M1M1";
-        if (us != std::string::npos) {
-            need = std::stoi(rest.substr(0, us));
-            ctype = rest.substr(us + 1);
-        } else if (!rest.empty()) {
-            need = std::stoi(rest);
-        }
-        return get_counters(ab.source, ctype) >= need;
+        std::string rest = ab.condition_present.substr(std::string("Card.Self+counters_").size());
+        // rest is "<OP><N>_<TYPE>", e.g. "EQ0_ICE" / "GE1_M1M1".
+        std::string op = rest.substr(0, 2);          // two-letter comparator
+        std::string after = rest.substr(2);          // "<N>_<TYPE>"
+        size_t us = after.find('_');
+        std::string num = (us != std::string::npos) ? after.substr(0, us) : after;
+        std::string ctype = (us != std::string::npos) ? after.substr(us + 1) : "M1M1";
+        return compare_svar(get_counters(ab.source, ctype), op + num);
     }
 
     // Count$<...> dynamic intervening-if (Ocelot Pride's life gained this turn, Arclight

@@ -466,6 +466,17 @@ struct Ability{
     // matches the source while it is in its owner's graveyard.
     bool trigger_from_graveyard = false;
 
+    // Mode$ Always — a STATE-TRIGGERED ability (CR 603.8): its trigger condition is a game
+    // STATE (the IsPresent$ intervening-if), not a game event, so it is checked every time
+    // state-based actions are checked and fires the instant its condition becomes true.
+    // Per 603.8, a state-triggered ability that has already triggered does not trigger again
+    // until its condition has become false and then true once more — the per-permanent latch
+    // (Permanent::state_triggers_armed) enforces that. Dark Depths' "When CARDNAME has no ice
+    // counters on it, sacrifice it. If you do, create Marit Lage." is a Mode$ Always trigger
+    // gated on IsPresent$ Card.Self+counters_EQ0_ICE. There is no trigger_on event; the state
+    // scan in check_triggered_abilities collects these separately from the event-driven scan.
+    bool trigger_state_condition = false;
+
     // Mode$ TapsForMana | Static$ True (Badgermole Cub): "whenever you tap a creature for mana,
     // add an additional {G}." A mana-additional triggered ability that resolves immediately as
     // part of the mana tap (CR 605.1a) — it never uses the stack. Handled directly by the mana

@@ -1080,6 +1080,64 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     }
     }
 
+    // ── State-triggered abilities (Mode$ Always, CR 603.8) ──────────────────────────────────
+    // A state trigger fires off a game STATE (its IsPresent$ intervening-if), not a drained
+    // event, so it is scanned every time this function runs — even when the event batch is empty
+    // (outside the `if (!events.empty())` guard above). For each battlefield permanent's state
+    // trigger: evaluate the condition against live state; if it is true and the trigger is not
+    // already armed, queue it and arm it; if it is false, disarm it so it can fire again the next
+    // time the condition becomes true (603.8: "won't trigger again until it has become false and
+    // then true again"). The per-permanent latch (Permanent::state_triggers_armed) prevents the
+    // trigger from re-queuing on every SBA pass while the condition stays true (e.g. Dark Depths
+    // sits on the battlefield with 0 ice counters until its sacrifice trigger resolves).
+    for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        std::vector<const std::vector<Ability> *> st_sources;
+        if (!perm.abilities_removed) {
+            if (global_coordinator.entity_has_component<CardData>(entity)) {
+                const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+                st_sources.push_back((perm.transformed && cd.backside) ? &cd.backside->abilities
+                                                                       : &cd.abilities);
+            }
+            if (global_coordinator.entity_has_component<Token>(entity))
+                st_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
+        }
+        st_sources.push_back(&perm.abilities);
+        const std::string ent_name = entity_name(entity);
+        for (const auto *src : st_sources) {
+            for (const auto &ab : *src) {
+                if (ab.ability_type != Ability::TRIGGERED) continue;
+                if (!ab.trigger_state_condition) continue;
+
+                Ability trigger_ab = ab;
+                trigger_ab.source = entity;
+                trigger_ab.controller = perm.controller;
+
+                // Stable per-trigger signature for the latch (category + the state condition),
+                // so two distinct state triggers on one permanent latch independently.
+                const std::string sig = ab.category + "|" + ab.condition_present;
+                bool cond = evaluate_present_condition(trigger_ab, perm.controller, orderer);
+                bool armed = perm.state_triggers_armed.count(sig) != 0;
+                if (!cond) {
+                    if (armed) perm.state_triggers_armed.erase(sig);  // re-arm (603.8)
+                    continue;
+                }
+                if (armed) continue;  // already fired while the condition has stayed true
+                perm.state_triggers_armed.insert(sig);
+
+                PendingTrigger pt;
+                pt.ab = trigger_ab;
+                pt.controller = perm.controller;
+                pt.source = entity;
+                pt.label = trigger_label(ent_name, trigger_ab);
+                pt.log_line = ent_name + " triggered";
+                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+                pending.push_back(pt);
+            }
+        }
+    }
+
     place_triggers_apnap(game, orderer, pending);
     // Last-known type snapshots are only valid for this batch of leave-the-battlefield
     // events; clear them so a later, unrelated trigger can't match a stale entity id.
