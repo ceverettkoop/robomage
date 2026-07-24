@@ -91,9 +91,16 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // Mode$ TgtChoose (Archon of Cruelty: "target opponent ... discards a card"): the TARGET
+    // player chooses one of their own cards to discard, and the hand is NOT revealed to the
+    // controller (unlike RevealYouChoose, where the caster sees the hand and picks). Everything
+    // else — the DiscardValid$ filter and the pick loop — is shared with the default branch.
+    bool tgt_chooses = (mode == "TgtChoose");
+    Zone::Ownership chooser = tgt_chooses ? tgt_owner : ab.controller;
+
     // Arm-only reveal: the logs and the belief-state recording ran when the pick
-    // below was armed; a resume must not repeat them.
-    if (!ctx.resuming()) {
+    // below was armed; a resume must not repeat them. TgtChoose does not reveal the hand.
+    if (!ctx.resuming() && !tgt_chooses) {
         game_log("%s reveals their hand:\n", player_name(tgt_owner).c_str());
         for (auto e : hand) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
@@ -127,7 +134,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         game_log("No valid cards to discard.\n");
     } else {
         if (!ctx.resuming())
-            game_log("%s chooses a card to discard:\n", player_name(ab.controller).c_str());
+            game_log("%s chooses a card to discard:\n", player_name(chooser).c_str());
         std::vector<LegalAction> discard_actions;
         for (auto e : valid) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
@@ -135,7 +142,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             la.category = ActionCategory::DISCARD;
             discard_actions.push_back(la);
         }
-        int choice = ctx.ask(std::move(discard_actions), ab.controller, ab.source);
+        int choice = ctx.ask(std::move(discard_actions), chooser, ab.source);
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         Entity chosen = valid[static_cast<size_t>(choice)];
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
@@ -150,7 +157,8 @@ bool parse_discard(Ability &ab, const std::string &key, const std::string &value
     // Discard Mode$ — only the discard modes are claimed here (other effects, e.g.
     // SetState's Mode$ Transform, use the same key with a different meaning).
     if (key == "Mode" &&
-        (value == "RevealYouChoose" || value == "RevealDiscardAll" || value == "Random")) {
+        (value == "RevealYouChoose" || value == "RevealDiscardAll" || value == "Random" ||
+         value == "TgtChoose")) {
         effect_params<DiscardParams>(ab).mode = value;
         return true;
     }

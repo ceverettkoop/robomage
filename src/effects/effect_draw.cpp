@@ -54,8 +54,16 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     if (!rt.init) {
         // "Target player draws" (e.g. Deep Analysis) draws for the chosen target
         // player; otherwise the effect's controller (source owner) draws.
+        // Redirect to the targeted player ONLY when this Draw itself declared the target —
+        // its own ValidTgts$, or an explicit Defined$ naming the parent's target. A DB$ Draw
+        // with no Defined$ means Forge's default of "You" (the controller) even though
+        // sub-ability chaining copies parent.target into ab.target — Archon of Cruelty's
+        // DBDraw ("You draw a card") must draw for the caster, not the sacrifice/discard
+        // target. Mirrors the same guard in effect_lose_life.cpp.
+        bool targets_player = (ab.valid_tgts != "N_A") || ab.defined == "Targeted" ||
+                              ab.defined == "ParentTarget" || ab.defined == "Parent";
         Zone::Ownership owner;
-        if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
+        if (targets_player && ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
             owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
         else if (ab.source != 0 && global_coordinator.entity_has_component<Zone>(ab.source))
             owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
