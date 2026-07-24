@@ -3523,6 +3523,10 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool origin_graveyard     = false;        // Origin$ includes Graveyard
         bool origin_library       = false;        // Origin$ includes Library
         std::string replace_with_svar;  // the SVar named by ReplaceWith$ (e.g. "Exile"), used to inspect the actual zone-change effect
+        // Spell-mastery-style gate on a self CANT_BE_COUNTERED (Exquisite Firecraft): IsPresent$
+        // comma-OR filter counted in PresentZone$ against PresentCompare$ (e.g. two+ instant/
+        // sorcery cards in your graveyard). Left empty for an unconditional "can't be countered".
+        std::string cant_counter_present, cant_counter_zone, cant_counter_compare;
 
         size_t param_pos = 0;
         std::string key, value;
@@ -3563,6 +3567,9 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 if (value.find("Graveyard") != std::string::npos) origin_graveyard = true;
                 if (value.find("Library")   != std::string::npos) origin_library   = true;
             }
+            else if (key == "IsPresent")     cant_counter_present = value;
+            else if (key == "PresentZone")   cant_counter_zone    = value;
+            else if (key == "PresentCompare") cant_counter_compare = value;
         }
 
         // Does the replacement's zone-change effect attach a void counter (Dauthi Voidwalker:
@@ -3650,6 +3657,11 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             Effect::Replacement r;
             r.kind = Effect::Replacement::CANT_BE_COUNTERED;
             r.applies_to_self_only = true;
+            // Spell-mastery gate (Exquisite Firecraft): carried onto the replacement and
+            // re-evaluated at counter time. Empty = the unconditional self form.
+            r.cant_counter_present = cant_counter_present;
+            r.cant_counter_zone    = cant_counter_zone;
+            r.cant_counter_compare = cant_counter_compare;
             result.push_back(r);
         }
         // Hexing Squelcher: "Spells you control can't be countered." A continuous, battlefield-active

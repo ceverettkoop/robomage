@@ -328,7 +328,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.3f},  // 317: Twinshot Sniper
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 318: Yavimaya, Cradle of Growth
     {0.0f, 0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.0f},  // 319: Eidolon of the Great Revel
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 320: 
+    {0.0f, 0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.1f},  // 320: Exquisite Firecraft
     {0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 321: Spell Snare
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.0f},  // 322: Goblin Guide
     {0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.0f, 0.6f},  // 323: Archon of Cruelty
@@ -1357,7 +1357,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 317: Twinshot Sniper
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 318: Yavimaya, Cradle of Growth
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 319: Eidolon of the Great Revel
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 320: 
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 320: Exquisite Firecraft
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 321: Spell Snare
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 322: Goblin Guide
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 323: Archon of Cruelty

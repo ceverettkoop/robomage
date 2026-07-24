@@ -326,7 +326,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.3],  # 317: Twinshot Sniper
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 318: Yavimaya, Cradle of Growth
     [0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0],  # 319: Eidolon of the Great Revel
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 320: 
+    [0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.1],  # 320: Exquisite Firecraft
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 321: Spell Snare
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0],  # 322: Goblin Guide
     [0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.6],  # 323: Archon of Cruelty
@@ -1357,7 +1357,7 @@ _VOCAB_NAMES = [
     "Twinshot Sniper",  # 317
     "Yavimaya, Cradle of Growth",  # 318
     "Eidolon of the Great Revel",  # 319
-    "",  # 320
+    "Exquisite Firecraft",  # 320
     "Spell Snare",  # 321
     "Goblin Guide",  # 322
     "Archon of Cruelty",  # 323

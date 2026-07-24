@@ -225,6 +225,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Twinshot Sniper", 317},
     {"Yavimaya, Cradle of Growth", 318},
     {"Eidolon of the Great Revel", 319},
+    {"Exquisite Firecraft", 320},
     {"Spell Snare", 321},
     {"Goblin Guide", 322},
     {"Archon of Cruelty", 323},

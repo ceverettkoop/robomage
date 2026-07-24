@@ -34,6 +34,17 @@ struct Effect {
         // controller for the filter matcher to read.
         bool from_battlefield = false;      // ActiveZones$ Battlefield — a continuous battlefield static
         std::string valid_sa_filter = "";   // ValidSA$ spec the replacement protects from being countered
+        // CANT_BE_COUNTERED spell-mastery gate (Exquisite Firecraft: "this spell can't be
+        // countered if there are two or more instant and/or sorcery cards in your graveyard").
+        // When cant_counter_present is non-empty the SELF form is NOT stamped onto the spell at
+        // cast; instead the condition is re-evaluated as the counter would resolve (CR 614.13 —
+        // the replacement fires now), counting the caster-owned cards matching the comma-OR
+        // filter `cant_counter_present` in zone `cant_counter_zone` against `cant_counter_compare`.
+        // An empty filter is the unconditional self form ("This spell can't be countered", a
+        // cast-time stamp like Long Goodbye).
+        std::string cant_counter_present = "";   // IsPresent$ (e.g. "Instant.YouOwn,Sorcery.YouOwn")
+        std::string cant_counter_zone = "";      // PresentZone$ (e.g. "Graveyard")
+        std::string cant_counter_compare = "";   // PresentCompare$ (e.g. "GE2")
         std::string valid_subtype = "";     // SKIP_UNTAP: the (sub)type the untap-prevention applies to (e.g. "Island")
         // ENTERS_TAPPED conditional gating (Ba Sing Se: "enters tapped unless you control a
         // basic land"). The replacement applies only when the count of the controller's

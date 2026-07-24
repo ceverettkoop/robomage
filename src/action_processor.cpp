@@ -3101,11 +3101,14 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 cur_game.pending_cant_be_countered = false;
             }
             // Check card's own replacement effects for "can't be countered" (Long Goodbye).
-            // Only the SELF form ("This spell can't be countered") stamps the spell at cast;
-            // the battlefield form (Hexing Squelcher's "Spells you control can't be countered")
-            // is a continuous static consulted at counter-resolution time, not a cast-time stamp.
+            // Only the UNCONDITIONAL SELF form ("This spell can't be countered") stamps the spell
+            // at cast; the battlefield form (Hexing Squelcher's "Spells you control can't be
+            // countered") is a continuous static consulted at counter-resolution time, and a
+            // CONDITIONAL self form (Exquisite Firecraft's spell-mastery gate, cant_counter_present
+            // non-empty) is likewise re-evaluated at counter time — not stamped now.
             for (const auto &r : card_data.replacement_effects) {
-                if (r.kind == Effect::Replacement::CANT_BE_COUNTERED && !r.from_battlefield) {
+                if (r.kind == Effect::Replacement::CANT_BE_COUNTERED && !r.from_battlefield &&
+                    r.cant_counter_present.empty()) {
                     spell.cant_be_countered = true;
                     break;
                 }
