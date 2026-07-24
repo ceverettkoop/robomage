@@ -915,23 +915,51 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (ez.location != Zone::EXILE) continue;  // must still be in exile
         if (!global_coordinator.entity_has_component<CardData>(ex_entity)) continue;
         auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
-        if (is_land_card(ecd)) continue;  // lands aren't cast (601.1)
+
+        bool main_phase_window =
+            (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+            (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+
+        // A LAND among the exiled cards: only a NORMAL "play" permission (Light Up the Stage's
+        // "you may PLAY those cards") may play it — a land play, sorcery-timing, own main phase,
+        // empty stack, and a land drop remaining (CR 305.2 / 601.3e). A free/energy/life "cast"
+        // grant (Ugin -11 / Amped Raptor) can't play a land (601.1), so those skip it.
+        if (is_land_card(ecd)) {
+            if (perm_grant.resource != Game::ImpulseCastPermission::NORMAL || !perm_grant.allow_land)
+                continue;
+            if (!main_phase_window) continue;
+            Entity ple = get_player_entity(priority_player);
+            if (!global_coordinator.entity_has_component<Player>(ple)) continue;
+            int land_play_limit = 1 + rules_mod::land_play_bonus(priority_player);
+            if (global_coordinator.GetComponent<Player>(ple).lands_played_this_turn >= land_play_limit)
+                continue;
+            LegalAction land_la(SPECIAL_ACTION, ex_entity, "Play " + ecd.name + " (from exile)");
+            land_la.category = ActionCategory::PLAY_LAND;
+            actions.push_back(land_la);
+            continue;
+        }
 
         // Timing: instants / Flash cards anytime; everything else sorcery-speed.
         bool can_cast_at_instant_speed = card_has_type(ecd, "Instant");
         for (const auto &kw : ecd.keywords)
             if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
-        bool can_cast_now = can_cast_at_instant_speed ||
-            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
+        bool can_cast_now = can_cast_at_instant_speed || main_phase_window;
         if (!can_cast_now) continue;
 
         // Affordability of the alternative resource cost.
         Entity pe = get_player_entity(priority_player);
         if (!global_coordinator.entity_has_component<Player>(pe)) continue;
         auto &ppl = global_coordinator.GetComponent<Player>(pe);
+        bool is_normal_play = (perm_grant.resource == Game::ImpulseCastPermission::NORMAL);
         if (perm_grant.resource == Game::ImpulseCastPermission::FREE) {
             // No cost to pay (Ugin -11 grant) — always affordable.
+        } else if (is_normal_play) {
+            // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
+            // the full (cost-increase-adjusted, hybrid-resolved) base cost can be paid.
+            ManaValue base = effective_base_cost(ecd, priority_player);
+            if (!resolve_hybrid_cost(priority_player, base, ecd.hybrid_mana, ex_entity, orderer,
+                                     ecd.has_delve, ecd.has_improvise))
+                continue;
         } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
             if (player_energy(ppl) < perm_grant.amount) continue;
         } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
@@ -944,10 +972,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // 601.2f): an impulse/free cast substitutes a {0} mana cost, but an active Trinisphere
         // floor pads that up to its minimum ({3}) and Thalia adds its surcharge — payable ON TOP
         // of the energy/life resource cost. Require the floored mana; empty (no floor/increase)
-        // means no extra mana and this gate is a no-op.
-        ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, priority_player);
-        if (!floor_mana.empty() && !can_pay_mana(priority_player, floor_mana, ex_entity, orderer))
-            continue;
+        // means no extra mana and this gate is a no-op. NORMAL plays already pay the full base
+        // cost above, so this alt-cost floor doesn't apply to them.
+        if (!is_normal_play) {
+            ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, priority_player);
+            if (!floor_mana.empty() && !can_pay_mana(priority_player, floor_mana, ex_entity, orderer))
+                continue;
+        }
 
         // Any targeting requirement must have at least one legal target.
         bool tgt_ok = true;
@@ -963,7 +994,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         const char *imp_suffix = (perm_grant.resource == Game::ImpulseCastPermission::FREE)
                                      ? " (from exile, no cost)"
-                                     : " (impulse, alt cost)";
+                                 : is_normal_play ? " (from exile)"
+                                                  : " (impulse, alt cost)";
         LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + imp_suffix);
         imp_la.category = ActionCategory::CAST_SPELL;
         imp_la.impulse_cast = true;

@@ -94,6 +94,36 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // DB$ Effect | StaticAbilities$ <SVar(MayPlay$ True, AffectedZone$ Exile — NO
+    // MayPlayWithoutManaCost)> | RememberObjects$ Remembered (Light Up the Stage): "Until the
+    // end of your next turn, you may play those cards." The "those cards" are the two cards the
+    // preceding RememberChanged$ Dig just exiled (still in cur_game.remembered_entities). Record a
+    // NORMAL-cost play-from-exile permission for each remembered exiled card in
+    // cur_game.impulse_cast_permission — paid for its normal cost (unlike Ugin's free grant),
+    // LANDS permitted (it's "play", not "cast"), and persisting until the end of the caster's next
+    // turn (Duration$ UntilTheEndOfYourNextTurn). ForgetOnMoved$ Exile: the permission lapses once
+    // a card leaves exile (is played), which the casting/play path enforces by offering it only
+    // while the card is still in exile.
+    if (ab.effect_grant_play_from_exile) {
+        for (Entity card : cur_game.remembered_entities) {
+            if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+            if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
+            if (!global_coordinator.entity_has_component<CardData>(card)) continue;
+            Game::ImpulseCastPermission perm;
+            perm.resource = Game::ImpulseCastPermission::NORMAL;
+            perm.amount = 0;
+            perm.caster = ab.controller;
+            perm.allow_land = true;
+            perm.persist_until_end_of_next_turn = ab.duration_until_end_of_your_next_turn;
+            perm.grant_turn = cur_game.turn;
+            cur_game.impulse_cast_permission[card] = perm;
+            game_log("%s may play %s from exile%s.\n", player_name(ab.controller).c_str(),
+                     global_coordinator.GetComponent<CardData>(card).name.c_str(),
+                     perm.persist_until_end_of_next_turn ? " until the end of their next turn" : " this turn");
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     // DB$ Effect | StaticAbilities$ Unblockable | RememberObjects$ Self — a transient
     // continuous effect that makes the source unblockable until end of turn (Kappa
     // Cannoneer, CR 509.1b / 702.x). Modeled as a per-turn "can't be blocked" mark on the

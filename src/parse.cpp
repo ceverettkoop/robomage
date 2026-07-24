@@ -1756,6 +1756,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // Generic "until your next turn" duration on a non-Animate effect (The One Ring's ETB Pump
         // granting the controller protection from everything). Reverted at the controller's untap.
         ability.duration_until_your_next_turn = true;
+    } else if (key == "Duration" && value == "UntilTheEndOfYourNextTurn") {
+        // "Until the end of your next turn" (Light Up the Stage's play-permission Effect) — one
+        // turn cycle longer than UntilYourNextTurn. Expired at the controller's next-turn cleanup.
+        ability.duration_until_end_of_your_next_turn = true;
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
@@ -2094,9 +2098,16 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             sub.effect_static_ability = value;
             auto it = svars.find(value);
             if (it != svars.end() &&
-                it->second.find("MayPlayWithoutManaCost$ True") != std::string::npos &&
-                it->second.find("AffectedZone$ Exile") != std::string::npos)
-                sub.effect_grant_free_cast_from_exile = true;
+                it->second.find("MayPlay$ True") != std::string::npos &&
+                it->second.find("AffectedZone$ Exile") != std::string::npos) {
+                if (it->second.find("MayPlayWithoutManaCost$ True") != std::string::npos)
+                    // Ugin -11: cast those cards WITHOUT paying their mana costs (free).
+                    sub.effect_grant_free_cast_from_exile = true;
+                else
+                    // Light Up the Stage: plain MayPlay — PLAY those cards for their NORMAL cost
+                    // (lands included), not free.
+                    sub.effect_grant_play_from_exile = true;
+            }
         } else if (key == "ConditionCheckSVar") {
             // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
             auto it = svars.find(value);

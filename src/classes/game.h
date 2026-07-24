@@ -611,10 +611,19 @@ struct Game {
         struct ImpulseCastPermission {
             // FREE = cast without paying any cost (Ugin, Eye of the Storms' -11: "cast those
             // cards without paying their mana costs", CR 118.9 / 601.2f). ENERGY/LIFE pay an
-            // alternative resource cost equal to `amount` (Amped Raptor's DB$ Play).
-            enum Resource { ENERGY, LIFE, FREE } resource = ENERGY;
-            int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE
+            // alternative resource cost equal to `amount` (Amped Raptor's DB$ Play). NORMAL =
+            // PLAY the card for its NORMAL cost (Light Up the Stage's "you may play those cards")
+            // — no alternative cost, and (if allow_land) a land among the cards may be played.
+            enum Resource { ENERGY, LIFE, FREE, NORMAL } resource = ENERGY;
+            int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE/NORMAL
             Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
+            bool allow_land = false;   // NORMAL "play" grants may also play a LAND card from exile
+            // persist_until_end_of_next_turn: the permission survives the cleanup of the turn it was
+            // granted; it is removed at the caster's NEXT turn's cleanup (CR "until the end of your
+            // next turn"). grant_turn records cur_game.turn at grant so game.cpp can detect that
+            // next-turn cleanup. Default (false) = the Forge default "this turn" (cleared every cleanup).
+            bool persist_until_end_of_next_turn = false;
+            size_t grant_turn = 0;
         };
         std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created

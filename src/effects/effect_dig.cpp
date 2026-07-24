@@ -203,6 +203,12 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
     }
 
+    // RememberChanged$ True (Light Up the Stage): stash the moved (chosen) cards in
+    // cur_game.remembered_entities so a paired DB$ Effect sub-ability can grant a play
+    // permission on exactly those cards (mirrors ChangeZone's RememberChanged behaviour).
+    if (ab.remember_changed)
+        for (Entity chosen : rt.chosen) cur_game.remembered_entities.push_back(chosen);
+
     // Remaining cards go to bottom of library
     std::vector<Entity> remaining;
     for (auto e : rt.lib) {
@@ -252,6 +258,7 @@ bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
         else if (value == "Hand") ab.dig_destination = Zone::HAND;
         else if (value == "Graveyard") ab.dig_destination = Zone::GRAVEYARD;
         else if (value == "Battlefield") ab.dig_destination = Zone::BATTLEFIELD;
+        else if (value == "Exile") ab.dig_destination = Zone::EXILE;
         return true;
     } else if (key == "DestinationZone2") {
         // Where the looked-at-but-unchosen remainder goes (default: back to the library).

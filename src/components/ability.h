@@ -293,6 +293,11 @@ struct Ability{
     // controller protection from everything): the effect lasts until the start of the controller's
     // next turn rather than the Forge default (until end of turn). Reverted at that player's untap.
     bool duration_until_your_next_turn = false;
+    // Duration$ UntilTheEndOfYourNextTurn (Light Up the Stage's DB$ Effect play permission): the
+    // grant lasts until the END of the controller's next turn — one full turn cycle longer than
+    // UntilYourNextTurn (which ends at the START of that turn). Read by the impulse play-from-exile
+    // permission; expired at the controller's next-turn cleanup (see game.cpp).
+    bool duration_until_end_of_your_next_turn = false;
     // AB$ Animate | Power$/Toughness$ (Karn +1: "power and toughness each equal to its mana
     // value"). A numeric value sets the base P/T directly; an SVar token (e.g. Power$ X with
     // SVar:X:Targeted$CardManaCost) is resolved post-parse into animate_power_expr /
@@ -544,6 +549,16 @@ struct Ability{
     // for each currently-remembered exiled card (cur_game.remembered_entities), good until end
     // of turn. CR 113.3 / 601.3e / 118.9 (cast without paying mana cost).
     bool effect_grant_free_cast_from_exile = false;
+
+    // DB$ Effect | StaticAbilities$ <SVar> where the named static grants plain MayPlay$ True with
+    // AffectedZone$ Exile but NOT MayPlayWithoutManaCost (Light Up the Stage: "Until the end of
+    // your next turn, you may PLAY those cards"). Unlike the free-cast grant above, the cards are
+    // played for their NORMAL cost, and — since the permission is "play", not "cast" — LANDS among
+    // the exiled cards may be played too (CR 305 / 601.3e). The GrantCast handler records a
+    // normal-cost play-from-exile permission for each currently-remembered exiled card. The
+    // duration (this-turn vs until-end-of-your-next-turn) is carried on
+    // duration_until_end_of_your_next_turn.
+    bool effect_grant_play_from_exile = false;
 
     // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
     // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one

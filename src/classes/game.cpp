@@ -390,8 +390,18 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         std::remove_if(floating_triggers.begin(), floating_triggers.end(),
                                        [](const Ability &ft) { return !ft.duration_until_your_next_turn; }),
                         floating_triggers.end());
-                    // Impulse-cast permissions (Amped Raptor) likewise last only "this turn".
-                    impulse_cast_permission.clear();
+                    // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
+                    // cleared here. A persist_until_end_of_next_turn grant (Light Up the Stage's
+                    // "until the end of your next turn") survives this cleanup and is removed at the
+                    // caster's NEXT turn's cleanup instead — detected as a later cleanup (turn >
+                    // grant_turn) whose active player is the grant's caster.
+                    for (auto pit = impulse_cast_permission.begin(); pit != impulse_cast_permission.end();) {
+                        const ImpulseCastPermission &g = pit->second;
+                        bool expire = !g.persist_until_end_of_next_turn ||
+                                      (g.caster == active_player && turn > g.grant_turn);
+                        if (expire) pit = impulse_cast_permission.erase(pit);
+                        else ++pit;
+                    }
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
                     // Snapshot this (the ending) turn's active player's OWN-TURN spell count before
