@@ -443,6 +443,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     player.spell_colors_cast_this_turn.clear();
                     player.cards_drawn_this_turn.clear();
                     player.cards_drawn_this_draw_step = 0;
+                    // Miracle window (CR 702.94) is a "first card drawn this turn" concept — the
+                    // reveal/cast opportunity lapses at end of turn, so clear it each cleanup.
+                    miracle_window.clear();
                     // Also clear opponent's drawn-this-turn tracking
                     {
                         Entity opp_entity = player_a_turn ? player_b_entity : player_a_entity;

@@ -645,6 +645,11 @@ struct Game {
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
+        // Miracle window (CR 702.94): cards drawn as the FIRST card their controller drew this
+        // turn that carry the Miracle keyword. While a card sits here its owner may cast it for
+        // its miracle (alternative) cost — can_afford_alt gates the is_miracle alt cost on
+        // membership. Populated at the qualifying draw (orderer.cpp), cleared each cleanup.
+        std::set<Entity> miracle_window;
         std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
         std::set<Entity> chosen_cards;  // permanents chosen/kept by a ChooseCard effect (Ajani -4); read by SacrificeAll's nonChosenCard filter, cleared by Cleanup ClearChosenCard$
         std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving

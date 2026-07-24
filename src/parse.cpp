@@ -747,6 +747,22 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Spectacle");
             continue;
         }
+        // K:Miracle:<cost> — Miracle (CR 702.94). An alternative casting cost: when this card is
+        // drawn as the FIRST card its controller drew this turn, they may reveal it and cast it
+        // for <cost> instead of its normal mana cost. Encoded on the shared AltCost (mana portion
+        // = <cost>) with the is_miracle flag; the qualifying-draw gate lives in orderer.cpp (adds
+        // the entity to Game::miracle_window) and can_afford_alt offers the alt cost only while
+        // the card is in that window. General over any Miracle card.
+        if (kw_line.rfind("Miracle", 0) == 0) {
+            size_t colon = kw_line.find(':');
+            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
+            AltCost ac;
+            parse_alt_cost_tokens(cost_str, ac);
+            ac.is_miracle = true;
+            card.alt_cost = ac;
+            card.keywords.push_back("Miracle");
+            continue;
+        }
         // K:Chapter:<final>:<svar1>,<svar2>,...,<svarN> — a Saga's chapter abilities (CR 714). The
         // first field is the Saga's final chapter number (= the number of chapter slots, CR 714.2d);
         // each subsequent comma-separated entry is an SVar naming the DB$ ability run when the Saga's
@@ -1625,6 +1641,16 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // dead creature's controller). Bound from the watched card's last-known controller at
         // trigger-fire time (CR 608.2g); the card is already in the graveyard by then.
         else if (value == "TriggeredCardController") ability.defined_triggered_card_controller = true;
+        // Defined$ TriggeredNewCard(LKICopy) / TriggeredCard(LKICopy) — the object that changed
+        // zones and fired this trigger, referenced in its NEW zone. For a Card.Self ChangesZone
+        // trigger (CR 603.6e) the triggering object IS the ability's own source (e.g. Triumph of
+        // Saint Katherine's dies-trigger, which exiles itself from the graveyard as the head of a
+        // "Descend"-style recursion), so bind it to the source. The LKICopy variant is a
+        // last-known snapshot of that same card; moving the real card in its new zone is
+        // equivalent here. General over self-referential graveyard-recursion cards.
+        else if (value == "TriggeredNewCardLKICopy" || value == "TriggeredNewCard" ||
+                 value == "TriggeredCardLKICopy" || value == "TriggeredCard")
+            ability.defined_self = true;
         else if (value == "Self") ability.defined_self = true;
         // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
         // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.

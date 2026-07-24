@@ -78,6 +78,12 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
 
+    // Miracle (CR 702.94): the miracle cost may be paid only while the card sits in the per-turn
+    // miracle window — i.e. it was drawn as the first card its controller drew this turn (the
+    // qualifying-draw gate in orderer.cpp populated Game::miracle_window). The mana affordability
+    // of the miracle cost is still checked below via the shared alt-cost path.
+    if (alt_cost.is_miracle && !cur_game.miracle_window.count(card_entity)) return false;
+
     // Spectacle (CR 702.107a): the spectacle cost may be paid only if an opponent of the
     // caster lost life this turn. Two-player game — the sole opponent is the other seat.
     if (alt_cost.is_spectacle) {
@@ -745,6 +751,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 alt_la.description = "Cast " + card_data.name +
                     (card_data.alt_cost.is_impending ? " (impending)"
                      : card_data.alt_cost.is_spectacle ? " (spectacle)"
+                     : card_data.alt_cost.is_miracle   ? " (miracle)"
                                                         : " (alternate cost)");
                 actions.push_back(alt_la);
             }

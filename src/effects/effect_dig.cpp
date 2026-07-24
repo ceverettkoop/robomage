@@ -198,8 +198,12 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
             // Public information once it hits the battlefield.
             game_log("%s puts %s onto the battlefield.\n", player_name(dig_owner).c_str(), cd.name.c_str());
         } else {
-            game_log_private(looker, "%s puts %s into hand.\n", player_name(dig_owner).c_str(), cd.name.c_str());
-            game_log_redacted(looker, "%s puts a card into hand.\n", player_name(dig_owner).c_str());
+            const char *where = chosen_dest == Zone::EXILE       ? "exile"
+                                : chosen_dest == Zone::GRAVEYARD ? "their graveyard"
+                                                                 : "hand";
+            game_log_private(looker, "%s puts %s into %s.\n", player_name(dig_owner).c_str(),
+                cd.name.c_str(), where);
+            game_log_redacted(looker, "%s puts a card into %s.\n", player_name(dig_owner).c_str(), where);
         }
     }
 

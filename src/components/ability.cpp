@@ -1302,6 +1302,12 @@ size_t evaluate_dynamic_amount(
             mv = card_mana_value(global_coordinator.GetComponent<CardData>(target));
         return static_cast<size_t>(mv < 0 ? 0 : mv);
     }
+    // Count$RememberedSize / RememberedSize — the total number of currently-remembered objects
+    // (cur_game.remembered_entities), regardless of type. Triumph of Saint Katherine's recursion
+    // gates its shuffle-back on "RememberedSize GE7" — the self-exiled card plus the six milled
+    // cards. Distinct from Remembered$Valid, which filters by card characteristics.
+    if (expr == "Count$RememberedSize" || expr == "RememberedSize")
+        return cur_game.remembered_entities.size();
     // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
     // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek
     // Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each artifact or land card exiled

@@ -540,6 +540,22 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     add_to_zone(false, top, Zone::HAND);
     pl.cards_drawn_this_turn.push_back(top);
 
+    // Miracle (CR 702.94): if this is the FIRST card its controller has drawn this turn and it
+    // carries the Miracle keyword, its owner may reveal it and cast it for its miracle
+    // (alternative) cost. Record the entity in the per-turn miracle window; can_afford_alt then
+    // offers the is_miracle alt cost while the card sits in that window (cleared each cleanup).
+    // General over any Miracle card. Gated on fire_draw_event so the opening-hand / mulligan
+    // draws (draw_hands, which pass fire_draw_event=false) don't count as a card "drawn this turn"
+    // (CR 702.94a — the opening hand is drawn during setup, not during a turn). The turn-based
+    // draw and every draw effect fire the event. (cards_drawn_this_turn was just pushed, so
+    // size()==1 ⇔ this is the first card drawn this turn.)
+    if (fire_draw_event && pl.cards_drawn_this_turn.size() == 1 &&
+        global_coordinator.GetComponent<CardData>(top).alt_cost.is_miracle) {
+        cur_game.miracle_window.insert(top);
+        game_log_private(player, "%s reveals %s for its miracle cost.\n", player_name(player).c_str(),
+                 global_coordinator.GetComponent<CardData>(top).name.c_str());
+    }
+
     // Fire PLAYER_DREW_CARD for this individual draw. The "first card in the
     // drawer's draw step" is flagged so triggers like Orcish Bowmasters can
     // ignore the turn-based draw while punishing every extra draw.

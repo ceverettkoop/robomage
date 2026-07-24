@@ -41,6 +41,13 @@ struct AltCost {
     // an opponent of the caster lost life this turn (CR 702.107a). Gated in can_afford_alt on
     // the opponent's Player::life_lost_this_turn; paid via the shared alt-cost path.
     bool is_spectacle = false;
+    // K:Miracle:<cost> — Miracle (CR 702.94). An ALTERNATIVE casting cost: when a player draws
+    // this card AS THE FIRST CARD they've drawn this turn, they may reveal it and cast it for
+    // `mana_cost` (the miracle cost) rather than its normal mana cost. Encoded on the shared
+    // AltCost (mana portion = <cost>) with the is_miracle flag. Unlike other alt costs it is
+    // gated on a per-turn "miracle window": can_afford_alt offers it only while the card entity
+    // sits in Game::miracle_window (populated at the qualifying draw, cleared each cleanup).
+    bool is_miracle = false;
     std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
     // Sac<N/Type> count of an ALTERNATIVE casting cost (CR 118.9, e.g. Fireblast: "sacrifice two
     // Mountains rather than pay this spell's mana cost"). sac_cost_spec holds the "Type" filter,

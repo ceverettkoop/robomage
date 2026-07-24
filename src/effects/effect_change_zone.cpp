@@ -377,6 +377,10 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
             cur_game.pending_enters_tapped.insert(ab.source);
         Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
+        // RememberChanged$ True — record the moved card so a later chained sub-ability can act on
+        // it via Card.IsRemembered / Count$RememberedSize (Triumph of Saint Katherine's self-exile
+        // head of its recursion pile, counted by the GE7 shuffle-back condition).
+        if (ab.remember_changed) cur_game.remembered_entities.push_back(ab.source);
         if (landed == Zone::BATTLEFIELD) {
             global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
             // Unearth (CR 702.84): flag the returning permanent so its Permanent is created

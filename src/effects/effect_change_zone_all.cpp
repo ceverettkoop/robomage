@@ -118,6 +118,15 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 auto &z = global_coordinator.GetComponent<Zone>(e);
                 if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
             }
+        } else if (zone == Zone::EXILE) {
+            // Origin$ Exile — the owner's exiled cards (Triumph of Saint Katherine's recursion:
+            // move the self-exiled pile back onto the library). Usually paired with a
+            // Card.IsRemembered filter so only the intended pile (not every exiled card) moves.
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                auto &z = global_coordinator.GetComponent<Zone>(e);
+                if (z.location == Zone::EXILE && z.owner == owner) zone_contents.push_back(e);
+            }
         }
     }
 
@@ -131,6 +140,12 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // cards (the revealed set), so bottoming "the rest" touches only those — not the whole
     // library. Combined with !IsRemembered it targets exactly the imprinted-but-not-taken cards.
     bool filter_imprinted = ab.change_type.find("IsImprinted") != std::string::npos;
+    // ChangeType$ Card.IsRemembered (Triumph of Saint Katherine's ShuffleBack): restrict the move
+    // to the remembered pile only — the self-exiled card plus the six milled cards — so the
+    // Origin$ Exile scan doesn't sweep up unrelated exiled cards. Excludes the negated
+    // "!IsRemembered" form (Doomsday), which is handled by filter_not_remembered above.
+    bool filter_remembered = (ab.change_type.find("IsRemembered") != std::string::npos
+                              && !filter_not_remembered);
     std::vector<Entity> to_move;
     for (auto entity : zone_contents) {
         if (filter_not_remembered) {
@@ -139,6 +154,13 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 if (re == entity) { is_remembered = true; break; }
             }
             if (is_remembered) continue;
+        }
+        if (filter_remembered) {
+            bool is_remembered = false;
+            for (auto re : cur_game.remembered_entities) {
+                if (re == entity) { is_remembered = true; break; }
+            }
+            if (!is_remembered) continue;
         }
         if (filter_imprinted) {
             bool is_imprinted = false;

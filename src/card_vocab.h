@@ -264,6 +264,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Lavinia, Azorius Renegade", 345},
     {"Atraxa, Grand Unifier", 347},
     {"Animate Dead", 348},
+    {"Triumph of Saint Katherine", 350},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
