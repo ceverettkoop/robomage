@@ -6,9 +6,12 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/permanent.h"
 #include "../components/player.h"
+#include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 
@@ -17,10 +20,54 @@ extern Game cur_game;
 
 namespace effects {
 
+// Name of a battlefield permanent for a same-name comparison: a real card exposes its name via
+// CardData; a token has no CardData but carries its name on the Token component (so token copies
+// sharing a printed name still match). Returns "" for a nameless object.
+static std::string permanent_name(Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return global_coordinator.GetComponent<CardData>(e).name;
+    if (global_coordinator.entity_has_component<Token>(e))
+        return global_coordinator.GetComponent<Token>(e).name;
+    return "";
+}
+
+// Echoing Truth family: return the chosen TARGET nonland permanent AND every OTHER battlefield
+// permanent sharing its name to their owners' hands (ChangeType$ TargetedCard.Self,Permanent...
+// +sharesNameWith Targeted; Origin$ Battlefield, Destination$ Hand). The target itself is included
+// because it is a battlefield permanent whose name trivially matches. Ownership is fixed (CR
+// 108.3 / 400.3), so a HAND destination routes each permanent to ITS OWNER's hand automatically —
+// this correctly handles copies split across both players. A unique-named target returns alone.
+static bool change_zone_shares_name_battlefield(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    Entity ref = !ab.targets.empty() ? ab.targets[0] : ab.target;
+    if (ref == 0 || !is_battlefield_permanent(ref)) return true;
+    std::string name = permanent_name(ref);
+    if (name.empty()) return true;
+
+    std::vector<Entity> to_move;
+    for (auto e : orderer->mEntities) {
+        if (!is_battlefield_permanent(e)) continue;
+        if (permanent_name(e) == name) to_move.push_back(e);
+    }
+    for (auto e : to_move) {
+        Zone::Ownership owner = global_coordinator.GetComponent<Zone>(e).owner;
+        std::string ename = permanent_name(e);
+        orderer->add_to_zone(false, e, ab.destination);
+        game_log("%s returns to %s's hand\n", ename.c_str(), player_name(owner).c_str());
+    }
+    return true;
+}
+
 HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Same-name move-all (e.g. Extirpate's ExileYard): ChangeType$ Remembered.sameName.
     if (ab.change_type.find("sameName") != std::string::npos)
         return change_zone_same_name(ab, orderer, /*force_all=*/true)
+                   ? HandlerResult::DONE_RUN_SUBS
+                   : HandlerResult::DONE_NO_SUBS;
+
+    // Echoing Truth family: ChangeType$ ...+sharesNameWith Targeted over the battlefield — return
+    // the target and all other permanents with its name to their owners' hands.
+    if (ab.change_type.find("sharesNameWith") != std::string::npos && ab.origin == Zone::BATTLEFIELD)
+        return change_zone_shares_name_battlefield(ab, orderer)
                    ? HandlerResult::DONE_RUN_SUBS
                    : HandlerResult::DONE_NO_SUBS;
 
