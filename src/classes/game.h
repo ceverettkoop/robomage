@@ -116,6 +116,11 @@ struct LastKnownInfo {
                                                 // Raptor's Card.wasCastFromYourHandByYou), read via
                                                 // LKI when the source left play before the trigger
                                                 // resolved (CR 603.10 / 608.2h).
+    std::map<std::string, int> counters;   // typed-counter counts snapshotted as the permanent left
+                                           // play, so an effect that counts counters on a source
+                                           // sacrificed as part of its own activation cost (Blast
+                                           // Zone: "MV equal to the number of charge counters on it")
+                                           // reads the last-known count (CR 608.2h).
 };
 
 enum MandatoryChoice {

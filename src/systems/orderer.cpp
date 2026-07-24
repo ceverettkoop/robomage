@@ -155,6 +155,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
             lki.abilities_removed = p.abilities_removed;
             lki.cast_from_hand_by_controller = p.cast_from_hand_by_controller;
         }
+        // Snapshot the typed counters (CR 608.2h): an ability that counts counters on its own
+        // source AFTER the source has left play — Blast Zone is sacrificed as part of its
+        // activation cost, then destroys permanents with MV equal to its charge-counter count —
+        // reads the last-known count from here.
+        lki.counters.clear();
+        for (const auto &c : global_coordinator.GetComponent<Permanent>(target).counters)
+            lki.counters[c.first] = c.second;
         if (global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
             lki.power = static_cast<int>(cr.power);

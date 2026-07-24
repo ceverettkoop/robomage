@@ -1922,6 +1922,43 @@ static void resolve_pump_exprs(Ability& ability,
     }
 }
 
+// Resolve a DestroyAll ValidCards$ dynamic mana-value bound (Blast Zone:
+// "Permanent.nonLand+cmcEQY", Y = Count$CardCounters.CHARGE) and an energy UnlessCost SVar into
+// their runtime Count$ expressions + comparator on DestroyAllParams, so effect_destroy_all can
+// gate candidates by mana value at resolution. Shared by the top-level activated-ability path
+// (parse_abilities) and the sub-ability path (parse_svar_ability) — Blast Zone's DestroyAll is a
+// top-level AB$ line, so this must not live only in the sub-ability resolver.
+static void resolve_destroyall_svars(Ability &ability,
+                                     const std::map<std::string, std::string> &svars) {
+    if (ability.category != "DestroyAll") return;
+    auto &dp = effect_params<DestroyAllParams>(ability);
+    if (dp.cmc_expr.empty() && !ability.valid_cards_filter.empty()) {
+        for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
+            size_t pos = ability.valid_cards_filter.find(op);
+            if (pos == std::string::npos) continue;
+            std::string svar_ref = ability.valid_cards_filter.substr(pos + 5);
+            size_t end = 0;
+            while (end < svar_ref.size() &&
+                   (std::isalnum(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
+                end++;
+            svar_ref = svar_ref.substr(0, end);
+            // A pure-numeric or "X" bound stays on the legacy path (handled at resolution);
+            // only a named SVar resolving to a Count$ expression routes here.
+            if (svar_ref.empty() || svar_ref == "X") break;
+            auto it = svars.find(svar_ref);
+            if (it != svars.end()) {
+                dp.cmc_expr = it->second;
+                dp.cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
+            }
+            break;
+        }
+    }
+    if (!dp.energy_unless_expr.empty()) {
+        auto it = svars.find(dp.energy_unless_expr);
+        if (it != svars.end()) dp.energy_unless_expr = it->second;
+    }
+}
+
 // Forward declaration so parse_svar_ability can recurse via SubAbility$.
 static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
                                   const std::map<std::string, std::string>& svars,
@@ -2173,34 +2210,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     // PayEnergy<SVar> amount into their runtime Count$ expressions. The numeric/cmcLEX legacy
     // paths are unchanged; this only fires when the SVar is non-numeric (e.g. cmcLEY, Y =
     // Count$ChosenNumber).
-    if (sub.category == "DestroyAll") {
-        auto &dp = effect_params<DestroyAllParams>(sub);
-        if (dp.cmc_expr.empty() && !sub.valid_cards_filter.empty()) {
-            for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
-                size_t pos = sub.valid_cards_filter.find(op);
-                if (pos == std::string::npos) continue;
-                std::string svar_ref = sub.valid_cards_filter.substr(pos + 5);
-                size_t end = 0;
-                while (end < svar_ref.size() &&
-                       (std::isalnum(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
-                    end++;
-                svar_ref = svar_ref.substr(0, end);
-                // A pure-numeric or "X" bound stays on the legacy path (handled at resolution);
-                // only a named SVar resolving to a Count$ expression routes here.
-                if (svar_ref.empty() || svar_ref == "X") break;
-                auto it = svars.find(svar_ref);
-                if (it != svars.end()) {
-                    dp.cmc_expr = it->second;
-                    dp.cmc_op = std::string(op + 3);  // "cmcLE" → "LE"
-                }
-                break;
-            }
-        }
-        if (!dp.energy_unless_expr.empty()) {
-            auto it = svars.find(dp.energy_unless_expr);
-            if (it != svars.end()) dp.energy_unless_expr = it->second;
-        }
-    }
+    resolve_destroyall_svars(sub, svars);
     // Resolve a cmcLE<SVar> threshold inside ChangeValid$ (Birthing Ritual: "Creature.cmcLEX")
     // into dynamic_amount_expr, evaluated by the Dig effect at resolution.
     if (sub.dynamic_amount_expr.empty() && !sub.change_valid.empty()) {
@@ -2396,6 +2406,9 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 break;
             }
         }
+        // DestroyAll with a dynamic mana-value bound (Blast Zone's cmcEQY) — resolve the
+        // ValidCards$ cmc<op><SVar> reference for this top-level activated ability too.
+        resolve_destroyall_svars(ability, svars);
         // Resolve a top-level ConditionCheckSVar$ reference (Veil of Summer's SP$ Draw: "X" →
         // "Count$ThisTurnCast_Card.OppCtrl+Blue,Card.OppCtrl+Black") to its Count$ expression, and
         // default the comparator to GE1 (Forge's default for a bare ConditionCheckSVar with no

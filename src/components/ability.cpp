@@ -1058,14 +1058,25 @@ size_t evaluate_dynamic_amount(
     // Count$CardCounters.<TYPE> — the number of <TYPE> counters on the ability's SOURCE permanent
     // (The One Ring: X = Count$CardCounters.BURDEN, read by its upkeep life-loss and its draw).
     // The counter type is the substring after the dot, up to any further qualifier delimiter.
-    if (expr.rfind("Count$CardCounters.", 0) == 0 && source != 0 &&
-        global_coordinator.entity_has_component<Permanent>(source)) {
+    if (expr.rfind("Count$CardCounters.", 0) == 0 && source != 0) {
         std::string ctype = expr.substr(std::string("Count$CardCounters.").size());
         size_t end = ctype.find_first_of(".+ ");
         if (end != std::string::npos) ctype = ctype.substr(0, end);
-        const auto &counters = global_coordinator.GetComponent<Permanent>(source).counters;
-        auto it = counters.find(ctype);
-        return (it != counters.end() && it->second > 0) ? static_cast<size_t>(it->second) : 0;
+        if (global_coordinator.entity_has_component<Permanent>(source)) {
+            const auto &counters = global_coordinator.GetComponent<Permanent>(source).counters;
+            auto it = counters.find(ctype);
+            return (it != counters.end() && it->second > 0) ? static_cast<size_t>(it->second) : 0;
+        }
+        // LKI fallback (CR 608.2h): the source has left the battlefield (Blast Zone is sacrificed
+        // as part of its own activation cost before this DestroyAll bound resolves) — use the
+        // counter count snapshotted as it left play.
+        auto li = cur_game.last_known_info.find(source);
+        if (li != cur_game.last_known_info.end()) {
+            auto ci = li->second.counters.find(ctype);
+            if (ci != li->second.counters.end() && ci->second > 0)
+                return static_cast<size_t>(ci->second);
+        }
+        return 0;
     }
     if (expr.find("Count$Devotion.") != std::string::npos) {
         // Count mana symbols of a given color in mana costs of permanents you control
