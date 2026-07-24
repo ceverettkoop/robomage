@@ -2815,6 +2815,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (it != svars.end()) {
                     ability.trigger_cmc_expr = it->second;
                     ability.trigger_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
+                } else if (!svar_key.empty() &&
+                           svar_key.find_first_not_of("0123456789") == std::string::npos) {
+                    // A LITERAL numeric bound (Eidolon of the Great Revel: Card.cmcLE3).
+                    // evaluate_sa_svar returns a plain integer literal as itself, so store
+                    // the number directly; without this the filter would be dropped and the
+                    // trigger would fire on every spell.
+                    ability.trigger_cmc_expr = svar_key;
+                    ability.trigger_cmc_op = std::string(op + 3);  // "cmcLE" → "LE"
                 }
                 break;
             }

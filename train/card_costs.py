@@ -325,7 +325,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 316: Boseiju, Who Endures
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.3],  # 317: Twinshot Sniper
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 318: Yavimaya, Cradle of Growth
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 319: 
+    [0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0],  # 319: Eidolon of the Great Revel
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 320: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 321: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 322: 
@@ -1356,7 +1356,7 @@ _VOCAB_NAMES = [
     "Boseiju, Who Endures",  # 316
     "Twinshot Sniper",  # 317
     "Yavimaya, Cradle of Growth",  # 318
-    "",  # 319
+    "Eidolon of the Great Revel",  # 319
     "",  # 320
     "",  # 321
     "",  # 322

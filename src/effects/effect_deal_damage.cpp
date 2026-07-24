@@ -47,7 +47,12 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // last-known information (CR 608.2g/h) — Zone.controller, else the live Permanent.controller,
     // else the controller captured as it left the battlefield. All three are centralized in
     // resolve_defined_player; each resolves to one player we damage.
-    if (ab.defined_you || ab.defined_each_opponent || ab.defined_targeted_controller) {
+    // TriggeredActivator (Eidolon of the Great Revel: "deals 2 damage to that player" — the
+    // player who cast the spell) also routes through resolve_defined_player, which binds the
+    // player captured at trigger-fire time. Without this it would fall to the targeted path
+    // with an unset target and trip the "should have fizzled" guard.
+    if (ab.defined_you || ab.defined_each_opponent || ab.defined_targeted_controller ||
+        ab.defined_triggered_activator) {
         Zone::Ownership who = resolve_defined_player(ab);
         if (who != Zone::UNKNOWN) {
             Entity pe = get_player_entity(who);
