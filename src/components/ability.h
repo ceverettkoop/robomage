@@ -279,6 +279,12 @@ struct Ability{
     // The player whose event fired this triggered ability. Populated at trigger-fire time when
     // defined_triggered_player is set (from the event's PLAYER param); UNKNOWN until then.
     Zone::Ownership triggered_player = Zone::UNKNOWN;
+    // Defined$ TriggeredCardController — the effect's player is the controller of the card that
+    // changed zones to fire this trigger (Searing Blood: the dead creature's controller takes 3
+    // damage). Fired by a Mode$ ChangesZone delayed trigger; the controller is read from the
+    // watched card's last-known information (CR 608.2g) and bound into `triggered_player` at
+    // trigger-fire time (the card is in the graveyard by then). Shares triggered_player storage.
+    bool defined_triggered_card_controller = false;
 
     // DB$ Animate (Guide of Souls): the Types$ list (classified into TYPE/SUBTYPE/SUPERTYPE
     // at parse time) to add to the targeted permanent (e.g. "Angel"), and whether the grant

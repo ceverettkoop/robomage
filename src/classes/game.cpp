@@ -463,6 +463,15 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     global_coordinator.GetComponent<Player>(player_a_entity).life_lost_this_turn = 0;
                     global_coordinator.GetComponent<Player>(player_b_entity).life_lost_this_turn = 0;
 
+                    // "This turn" leave-battlefield delayed triggers (Searing Blood's "when that
+                    // creature dies this turn") expire unfired at cleanup if the watched object
+                    // never left the battlefield (CR 603.7b). Reached after the end step, so any
+                    // death during this turn has already fired the trigger (and removed it).
+                    delayed_triggers.erase(
+                        std::remove_if(delayed_triggers.begin(), delayed_triggers.end(),
+                                       [](const DelayedTrigger &dt) { return dt.expires_end_of_turn; }),
+                        delayed_triggers.end());
+
                     // Reset per-trigger resolution counts
                     ability_resolution_counts.clear();
 

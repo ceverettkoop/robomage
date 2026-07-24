@@ -222,6 +222,11 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                                        ? Zone::PLAYER_A : Zone::PLAYER_B;
                 Ability trigger_ab = dt.ability;
                 trigger_ab.controller = ctrl;
+                // Defined$ TriggeredCardController (Searing Blood): bind the fire ability's player
+                // to the last-known controller of the object whose departure fired this trigger
+                // (CR 608.2g — it is in the graveyard by now). Shares triggered_player storage.
+                if (trigger_ab.defined_triggered_card_controller && dt.fire_on_leave_battlefield)
+                    trigger_ab.triggered_player = last_known_controller(dt.watch_entity);
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = ctrl;

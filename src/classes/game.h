@@ -77,6 +77,11 @@ struct DelayedTrigger {
     // shuffle into the library must NOT fire it). Empty = any departure ("leaves the
     // battlefield", e.g. the exile-until-host-leaves triggers).
     std::vector<Zone::ZoneValue> fire_dest_zones;
+    // ThisTurn$ True (Searing Blood's "When that creature dies this turn"): a leave-battlefield
+    // delayed trigger bounded to the turn it was registered. If the watched object has not left
+    // the battlefield by that turn's cleanup, the trigger is dropped unfired (CR 603.7b). The
+    // phase-based earthbend/exile-until-host-leaves triggers leave this false (they persist).
+    bool expires_end_of_turn = false;
     // RememberObjects$ RememberedLKI (CR 603.7a): objects this delayed trigger captured when it
     // was set up (the cards the preceding RememberChanged$ ChangeZone moved, e.g. the permanent
     // Flickerwisp/Phelia exiled). Restored into cur_game.remembered_entities before the fire

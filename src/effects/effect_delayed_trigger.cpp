@@ -59,6 +59,34 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     }
     fire_ab.source = ab.source;
 
+    // Mode$ ChangesZone (Searing Blood): a "when THAT object changes zone, do Y" delayed trigger
+    // (CR 603.7b). The watched object is the parent spell's target — RememberObjects$ Targeted
+    // put it in cur_game.remembered_entities before this handler ran. Register a
+    // fire_on_leave_battlefield watch (reusing the earthbend infrastructure) filtered to the
+    // Destination$ zone(s) so only the matching move fires it; ThisTurn$ bounds it to this turn.
+    if (dp && dp->mode_changes_zone) {
+        if (cur_game.remembered_entities.empty()) return HandlerResult::DONE_NO_SUBS;
+        Entity watched = cur_game.remembered_entities[0];
+        DelayedTrigger dt;
+        dt.ability = fire_ab;
+        dt.fire_on = Events::CARD_CHANGED_ZONE;
+        dt.owner_entity = owner_entity;
+        dt.fire_on_turn = cur_game.turn;
+        dt.watch_entity = watched;
+        dt.fire_on_leave_battlefield = true;
+        // Origin$ Battlefield / Destination$ Graveyard parsed onto this ability by parse_change_zone.
+        // The origin is implicit (leave-battlefield watch); the destination becomes the zone filter
+        // so a bounce/exile of the watched object does not fire a "when it dies" trigger.
+        if (ab.destination == Zone::GRAVEYARD || ab.destination == Zone::EXILE ||
+            ab.destination == Zone::HAND || ab.destination == Zone::LIBRARY)
+            dt.fire_dest_zones = {ab.destination};
+        dt.expires_end_of_turn = dp->this_turn;
+        cur_game.delayed_triggers.push_back(dt);
+        game_log("Delayed trigger registered: %s when watched permanent leaves the battlefield.\n",
+                 fire_ab.category.c_str());
+        return HandlerResult::DONE_NO_SUBS;
+    }
+
     uint32_t event_id = phase.empty() ? Events::UPKEEP_BEGAN : phase_string_to_event(phase);
 
     DelayedTrigger dt;
@@ -102,14 +130,25 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 }
 
 bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::string &value) {
-    // Mode$ Phase on a DB$ DelayedTrigger is informational: this handler only registers
-    // phase-based delayed triggers, and the firing phase comes from Phase$ below. Consume it so
-    // it isn't flagged as an unrecognized param.
-    if (key == "Mode") return ab.category == "DelayedTrigger";
+    if (ab.category != "DelayedTrigger") return false;
+    // Mode$ on a DB$ DelayedTrigger: Phase (the default) fires at a future step; ChangesZone
+    // (Searing Blood) instead watches a specific object leaving one zone for another. Consume
+    // Mode either way so it isn't flagged as an unrecognized param.
+    if (key == "Mode") {
+        if (value == "ChangesZone")
+            effect_params<DelayedTriggerParams>(ab).mode_changes_zone = true;
+        return true;
+    }
     if (key == "NextTurn") { effect_params<DelayedTriggerParams>(ab).next_turn = (value == "True"); return true; }
     if (key == "Phase")    { effect_params<DelayedTriggerParams>(ab).phase = value; return true; }
     if (key == "Execute")  { effect_params<DelayedTriggerParams>(ab).execute_svar = value; return true; }
     if (key == "ValidPlayer") { effect_params<DelayedTriggerParams>(ab).valid_player = value; return true; }
+    // ThisTurn$ True bounds a ChangesZone watch to its registration turn (CR 603.7b).
+    if (key == "ThisTurn") { effect_params<DelayedTriggerParams>(ab).this_turn = (value == "True"); return true; }
+    // ValidCard$ Card.IsTriggerRemembered restates that the watched card is the remembered
+    // (Targeted) object; the watch entity already comes from RememberObjects$ Targeted, so the
+    // filter is informational here. Consume it so it isn't flagged unrecognized.
+    if (key == "ValidCard") return true;
     return false;
 }
 

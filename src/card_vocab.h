@@ -231,6 +231,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Archon of Cruelty", 323},
     {"Blast Zone", 324},
     {"Malevolent Rumble", 325},
+    {"Searing Blood", 327},
     // Dead//Gone is ONE split card (CR 709) → ONE vocab index (328), aliased under three names so
     // it resolves under both name-normalization schemes. The deck-identity block matches by
     // name_to_uid (lowercases, strips '/'), so "Dead/Gone" → uid "deadgone" lets a "1 Dead/Gone"

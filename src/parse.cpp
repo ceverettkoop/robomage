@@ -1562,6 +1562,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // (Roiling Vortex: each player's upkeep damages THAT player). The actual player is bound at
         // trigger-fire time from the event's PLAYER param.
         else if (value == "TriggeredPlayer") ability.defined_triggered_player = true;
+        // Defined$ TriggeredCardController — the effect's player is the controller of the card
+        // whose zone change fired the (Mode$ ChangesZone delayed) trigger (Searing Blood: the
+        // dead creature's controller). Bound from the watched card's last-known controller at
+        // trigger-fire time (CR 608.2g); the card is already in the graveyard by then.
+        else if (value == "TriggeredCardController") ability.defined_triggered_card_controller = true;
         else if (value == "Self") ability.defined_self = true;
         // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
         // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.

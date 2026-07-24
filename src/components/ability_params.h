@@ -155,6 +155,15 @@ struct DelayedTriggerParams {
     // fires later (CR 603.7a — the delayed trigger references the objects as they were when it
     // was set up). Used by exile-and-return-at-end-of-turn cards (Flickerwisp, Phelia).
     bool remember_objects_lki = false;
+    // Mode$ ChangesZone (Searing Blood's "When that creature dies this turn"): instead of firing
+    // at a future phase, this delayed trigger watches a specific object leaving one zone for
+    // another (CR 603.7b). The watched object is the parent spell's target (RememberObjects$
+    // Targeted, in cur_game.remembered_entities at registration); Origin$/Destination$ on the
+    // same DB$ line become the leave/arrive zone filter (Battlefield -> Graveyard = a death).
+    bool mode_changes_zone = false;
+    // ThisTurn$ True: the ChangesZone watch is bounded to the turn it was registered (CR 603.7b —
+    // "this turn"); if the watched object has not moved by end of turn the trigger expires unfired.
+    bool this_turn = false;
 };
 
 #endif /* ABILITY_PARAMS_H */
