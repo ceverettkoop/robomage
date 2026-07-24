@@ -671,6 +671,20 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Impending");
             continue;
         }
+        // K:Spectacle:<cost> — Spectacle (CR 702.107). An alternative casting cost: the spell may
+        // be cast for <cost> instead of its normal mana cost, but only if an opponent lost life
+        // this turn (CR 702.107a). Encoded on the shared AltCost (mana portion = <cost>) with the
+        // is_spectacle flag; can_afford_alt gates the offering on the opponent's life_lost_this_turn.
+        if (kw_line.rfind("Spectacle", 0) == 0) {
+            size_t colon = kw_line.find(':');
+            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
+            AltCost ac;
+            parse_alt_cost_tokens(cost_str, ac);
+            ac.is_spectacle = true;
+            card.alt_cost = ac;
+            card.keywords.push_back("Spectacle");
+            continue;
+        }
         // K:Chapter:<final>:<svar1>,<svar2>,...,<svarN> — a Saga's chapter abilities (CR 714). The
         // first field is the Saga's final chapter number (= the number of chapter slots, CR 714.2d);
         // each subsequent comma-separated entry is an SVar naming the DB$ ability run when the Saga's

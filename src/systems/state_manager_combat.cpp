@@ -106,8 +106,9 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     game_log("  %s has protection from everything — %u combat damage prevented\n",
                              target_display_name(game, cr.attack_target).c_str(), dmg);
                 } else if (global_coordinator.entity_has_component<Player>(cr.attack_target)) {
-                    auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
-                    target_player.life_total -= static_cast<int>(dmg);
+                    // Combat damage to a player is a loss of that much life (CR 120.3); route
+                    // through the shared helper so Spectacle's life_lost_this_turn stays in sync.
+                    player_lose_life(cr.attack_target, static_cast<int>(dmg));
                     std::string tname = target_display_name(game, cr.attack_target);
                     game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), dmg, tname.c_str());
 
@@ -186,8 +187,9 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                              target_display_name(game, cr.attack_target).c_str(), remaining);
                 } else if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target)) {
                     deal_damage(entity, cr.attack_target, remaining);
-                    auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
-                    target_player.life_total -= static_cast<int>(remaining);
+                    // Trampled-over combat damage to a player is a loss of that much life
+                    // (CR 120.3); route through the shared helper for the Spectacle tracker.
+                    player_lose_life(cr.attack_target, static_cast<int>(remaining));
                     std::string tname = target_display_name(game, cr.attack_target);
                     game_log("  %s tramples %u damage to %s\n", attacker_name.c_str(), remaining, tname.c_str());
 

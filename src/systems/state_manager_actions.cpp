@@ -78,6 +78,14 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
 
+    // Spectacle (CR 702.107a): the spectacle cost may be paid only if an opponent of the
+    // caster lost life this turn. Two-player game — the sole opponent is the other seat.
+    if (alt_cost.is_spectacle) {
+        Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        if (global_coordinator.GetComponent<Player>(get_player_entity(opp)).life_lost_this_turn <= 0)
+            return false;
+    }
+
     // Check SVar condition (e.g. Once Upon a Time: free only if first spell this game)
     if (!alt_cost.condition_svar.empty()) {
         const std::string &cond = alt_cost.condition_svar;
@@ -717,7 +725,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 alt_la.use_alt_cost = true;
                 alt_la.option_ordinal = 1;  // cast variant: 1 = alternate/impending cost
                 alt_la.description = "Cast " + card_data.name +
-                    (card_data.alt_cost.is_impending ? " (impending)" : " (alternate cost)");
+                    (card_data.alt_cost.is_impending ? " (impending)"
+                     : card_data.alt_cost.is_spectacle ? " (spectacle)"
+                                                        : " (alternate cost)");
                 actions.push_back(alt_la);
             }
             // Offspring (CR 702.171): optional ADDITIONAL cost. Offer a separate cast option

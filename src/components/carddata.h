@@ -36,6 +36,11 @@ struct AltCost {
     // becomes a creature when the last is gone. Cast for the NORMAL cost, none of this applies.
     bool is_impending = false;
     int impending_count = 0;            // N time counters the permanent enters with
+    // K:Spectacle:<cost> — Spectacle (CR 702.107). An ALTERNATIVE casting cost: the spell may
+    // be cast for `mana_cost` (the spectacle cost) instead of its normal mana cost, but only if
+    // an opponent of the caster lost life this turn (CR 702.107a). Gated in can_afford_alt on
+    // the opponent's Player::life_lost_this_turn; paid via the shared alt-cost path.
+    bool is_spectacle = false;
     std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
     // ExileFromGrave<X/<filter>/<label>> — exile any number of OTHER cards from the caster's
     // graveyard as an additional cost (CR 601.2f), constrained so the chosen set collectively

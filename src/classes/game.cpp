@@ -446,6 +446,10 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // cleanup so the just-fired end step still saw this turn's totals.
                     global_coordinator.GetComponent<Player>(player_a_entity).life_gained_this_turn = 0;
                     global_coordinator.GetComponent<Player>(player_b_entity).life_gained_this_turn = 0;
+                    // "Life lost this turn" resets for BOTH players each turn too — Spectacle
+                    // (CR 702.107a) reads an opponent's life_lost_this_turn to enable its alt cost.
+                    global_coordinator.GetComponent<Player>(player_a_entity).life_lost_this_turn = 0;
+                    global_coordinator.GetComponent<Player>(player_b_entity).life_lost_this_turn = 0;
 
                     // Reset per-trigger resolution counts
                     ability_resolution_counts.clear();

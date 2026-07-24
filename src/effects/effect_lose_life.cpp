@@ -7,6 +7,7 @@
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -39,7 +40,8 @@ HandlerResult lose_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         loser = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity ctrl_entity = (loser == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
     auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
-    player.life_total -= static_cast<int32_t>(lose_amount);
+    // Route through the shared helper so Spectacle's life_lost_this_turn tracker stays in sync.
+    player_lose_life(ctrl_entity, static_cast<int32_t>(lose_amount));
     game_log(
         "%s loses %zu life (now at %d)\n", player_name(loser).c_str(), lose_amount, player.life_total);
     return HandlerResult::DONE_RUN_SUBS;

@@ -716,6 +716,22 @@ inline void player_gain_life(Entity player_entity, int32_t amount) {
     pl.life_gained_this_turn += amount;
 }
 
+// Single source for "a player loses life": lowers their life total and accumulates
+// life_lost_this_turn (the mirror of player_gain_life). Read by Spectacle (CR 702.107a,
+// "you may cast this spell for its spectacle cost … if an opponent lost life this turn").
+// Damage dealt to a player IS a loss of life (CR 120.3), so the damage-to-player sites
+// (combat + noncombat DealDamage) and the explicit "lose life" effects route through here
+// so the per-turn counter cannot drift from life_total. Life PAID as a cost is deliberately
+// NOT routed here (see docs) — Spectacle tracks life LOSS from damage/effects, matching the
+// life_gained mirror which likewise tracks only explicit gains. Pass the player's
+// Player-component entity. No-op for amount <= 0.
+inline void player_lose_life(Entity player_entity, int32_t amount) {
+    if (amount <= 0 || !global_coordinator.entity_has_component<Player>(player_entity)) return;
+    auto &pl = global_coordinator.GetComponent<Player>(player_entity);
+    pl.life_total -= amount;
+    pl.life_lost_this_turn += amount;
+}
+
 // ── Player energy ({E}, CR 122.1c) ──────────────────────────────────────────
 // Energy is stored as an "ENERGY" counter in Player::counters. These are the single
 // read/spend path so every energy producer/consumer (Guide of Souls, Wrath of the Skies,
