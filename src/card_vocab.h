@@ -207,6 +207,13 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Tamiyo, Inquisitive Student", 298}, {"Tamiyo, Seasoned Scholar", 299},
     {"Tropical Island", 300},
     {"Carpet of Flowers", 301},
+    {"Griselbrand", 304},
+    {"Otherworldly Gaze", 305},
+    {"Meticulous Archive", 306},
+    {"Spell Pierce", 307},
+    {"Tune the Narrative", 308},
+    {"Fiery Islet", 309},
+    {"Lava Spike", 310},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
