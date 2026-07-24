@@ -76,6 +76,7 @@ enum class EffectKind {
     AddTurn,
     StoreSVar,
     CopySpellAbility,
+    SuspendTick,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

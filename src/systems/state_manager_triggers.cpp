@@ -441,6 +441,46 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         }
     }
 
+    // Suspend (CR 702.62a, second ability): "At the beginning of your upkeep, if this card is
+    // suspended, remove a time counter from it." This is a genuine triggered ability — one per
+    // suspended card its owner controls — produced from the UPKEEP_BEGAN event and placed on the
+    // stack (players get priority, opponents can respond), NOT applied as an immediate step side
+    // effect. The removal (and, when the last counter comes off, the free cast) is handled by the
+    // SuspendTick effect on resolution; see effect_suspend_tick. A suspended card is one in the
+    // exile zone with a positive time-counter count (702.62b), tracked in suspend_time_counters
+    // (an exiled card is not a permanent). General over any Suspend card.
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::UPKEEP_BEGAN || !ev.HasParam(Params::PLAYER)) continue;
+        Entity upkeep_player = ev.GetParam<Entity>(Params::PLAYER);
+        Zone::Ownership ctrl = (upkeep_player == game.player_a_entity) ? Zone::PLAYER_A
+                             : (upkeep_player == game.player_b_entity) ? Zone::PLAYER_B
+                                                                       : Zone::UNKNOWN;
+        if (ctrl == Zone::UNKNOWN) continue;
+        for (const auto &[card, count] : game.suspend_time_counters) {
+            if (count <= 0) continue;
+            if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+            auto &cz = global_coordinator.GetComponent<Zone>(card);
+            if (cz.location != Zone::EXILE || cz.owner != ctrl) continue;  // still suspended, this player's
+            std::string cname = global_coordinator.entity_has_component<CardData>(card)
+                                    ? global_coordinator.GetComponent<CardData>(card).name : "card";
+
+            Ability tick_ab;
+            tick_ab.ability_type = Ability::TRIGGERED;
+            tick_ab.category = "SuspendTick";
+            tick_ab.source = card;  // the exiled suspended card
+            tick_ab.controller = ctrl;
+
+            PendingTrigger pt;
+            pt.ab = tick_ab;
+            pt.controller = ctrl;
+            pt.source = card;
+            pt.label = cname + " (suspend: remove a time counter)";
+            pt.log_line = cname + " triggers: remove a time counter (suspend).";
+            pt.needs_target = false;
+            pending.push_back(pt);
+        }
+    }
+
     if (!events.empty()) {
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;

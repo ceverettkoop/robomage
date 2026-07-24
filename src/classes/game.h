@@ -667,8 +667,21 @@ struct Game {
             // next-turn cleanup. Default (false) = the Forge default "this turn" (cleared every cleanup).
             bool persist_until_end_of_next_turn = false;
             size_t grant_turn = 0;
+            // from_suspend: granted by the last Suspend time counter being removed (CR 702.62).
+            // The card is cast without paying its mana cost as an effect of resolving a triggered
+            // ability, so it is offered regardless of the card's normal sorcery/instant timing
+            // (the caster already holds priority in their own upkeep). Ordinary free casts (Ugin)
+            // leave this false and keep their type-based timing.
+            bool from_suspend = false;
         };
         std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
+        // Suspend time counters (CR 702.62 / 122): a card exiled with suspend carries N time
+        // counters. It is NOT a permanent, so its counters can't live in Permanent::counters —
+        // they are tracked here, keyed by the exiled card entity. A card is "suspended" (702.62b)
+        // iff it is in this map with a positive count and still in the exile zone. Removed to 0 at
+        // its owner's upkeep (state_manager_triggers), at which point a FREE from_suspend
+        // impulse-cast permission is granted (the free cast, CR 702.62a third ability).
+        std::map<Entity, int> suspend_time_counters;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
         std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
         std::map<Entity, Entity> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created

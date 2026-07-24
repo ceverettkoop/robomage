@@ -128,6 +128,16 @@ struct CardData{
     bool is_reconfigure = false;         // has K:Reconfigure:<cost> line
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
     ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
+    // K:Suspend:<N>:<cost> — Suspend (CR 702.62). NOT an alternative casting cost; it is a special
+    // action usable from HAND, at the timing you could begin to cast the card (sorcery speed for a
+    // sorcery). Instead of casting, its owner may pay `suspend_cost` and exile the card with
+    // `suspend_count` time counters on it. At the beginning of its owner's upkeep a time counter is
+    // removed (a triggered ability, see state_manager_triggers); when the last is removed its owner
+    // may cast it without paying its mana cost (granted as a FREE from_suspend impulse-cast
+    // permission). General over any Suspend card.
+    bool has_suspend = false;
+    int suspend_count = 0;               // N time counters the card is exiled with
+    ManaValue suspend_cost;              // mana paid to begin the suspend process
     // K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise the
     // gift to an opponent (an optional choice, not a cost); if promised, the opponent receives the
     // gift as the spell resolves, before its other effects. gift_abilities holds the parsed gift

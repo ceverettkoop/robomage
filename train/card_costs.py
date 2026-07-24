@@ -348,7 +348,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.2],  # 339: Skewer the Critics
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.2],  # 340: Light Up the Stage
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.1],  # 341: Roiling Vortex
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 342: 
+    [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.2],  # 342: Rift Bolt
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 343: 
     [0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.1],  # 344: Teferi, Time Raveler
     [0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 345: Lavinia, Azorius Renegade
@@ -1379,7 +1379,7 @@ _VOCAB_NAMES = [
     "Skewer the Critics",  # 339
     "Light Up the Stage",  # 340
     "Roiling Vortex",  # 341
-    "",  # 342
+    "Rift Bolt",  # 342
     "",  # 343
     "Teferi, Time Raveler",  # 344
     "Lavinia, Azorius Renegade",  # 345

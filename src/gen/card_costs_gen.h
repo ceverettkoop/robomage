@@ -350,7 +350,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.2f},  // 339: Skewer the Critics
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.2f},  // 340: Light Up the Stage
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.1f},  // 341: Roiling Vortex
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 342: 
+    {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.2f},  // 342: Rift Bolt
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 343: 
     {0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 344: Teferi, Time Raveler
     {0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 345: Lavinia, Azorius Renegade
@@ -1379,7 +1379,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 339: Skewer the Critics
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 340: Light Up the Stage
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 341: Roiling Vortex
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 342: 
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 342: Rift Bolt
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 343: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 344: Teferi, Time Raveler
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 345: Lavinia, Azorius Renegade

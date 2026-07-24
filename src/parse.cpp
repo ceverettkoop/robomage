@@ -715,6 +715,24 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Impending");
             continue;
         }
+        // K:Suspend:<N>:<cost> — Suspend (CR 702.62). NOT an alternative casting cost: it is a
+        // special action taken from the HAND. Its owner may pay <cost> and exile the card with N
+        // time counters on it (state_manager offers the action; action_processor performs the
+        // exile). The count/cost are stored on CardData (has_suspend/suspend_count/suspend_cost);
+        // the upkeep time-counter removal and free cast are driven from those. Format mirrors
+        // Impending's colon-split: "Suspend:1:R".
+        if (kw_line.rfind("Suspend", 0) == 0) {
+            std::string rest = kw_line.substr(strlen("Suspend"));
+            if (!rest.empty() && rest[0] == ':') rest = rest.substr(1);  // "1:R"
+            size_t colon = rest.find(':');
+            if (colon != std::string::npos) {
+                card.has_suspend = true;
+                card.suspend_count = std::stoi(rest.substr(0, colon));
+                card.suspend_cost = parse_mana_cost(rest.substr(colon + 1));
+            }
+            card.keywords.push_back("Suspend");
+            continue;
+        }
         // K:Spectacle:<cost> — Spectacle (CR 702.107). An alternative casting cost: the spell may
         // be cast for <cost> instead of its normal mana cost, but only if an opponent lost life
         // this turn (CR 702.107a). Encoded on the shared AltCost (mana portion = <cost>) with the

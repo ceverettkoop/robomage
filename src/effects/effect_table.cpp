@@ -74,6 +74,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::AddTurn:         return &add_turn;
         case EffectKind::StoreSVar:       return &store_svar;
         case EffectKind::CopySpellAbility: return &copy_spell_ability;
+        case EffectKind::SuspendTick:     return &suspend_tick;
         default:                          return nullptr;
     }
 }

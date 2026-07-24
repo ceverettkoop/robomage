@@ -130,6 +130,11 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // choose new targets for the copy. Reuses the shared copy-a-spell machine + the unless-cost
         // payment loop. See effect_copy_spell.cpp. CR 707.10 / 707.12.
         {"CopySpellAbility", EffectKind::CopySpellAbility},
+        // Suspend upkeep tick (CR 702.62a): the synthesized "remove a time counter" trigger of a
+        // suspended card resolves here (see state_manager_triggers). Removes one suspend time
+        // counter from the exiled source and, when the last is removed, grants a FREE from_suspend
+        // impulse-cast permission (the free cast). See effect_suspend_tick.cpp.
+        {"SuspendTick", EffectKind::SuspendTick},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

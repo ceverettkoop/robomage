@@ -3292,6 +3292,31 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             break;
 
         case SPECIAL_ACTION: {
+            // SUSPEND (CR 702.62a): pay the suspend cost and exile the card from hand with N time
+            // counters on it. This is a special action (doesn't use the stack). The legal-action
+            // gate already verified sorcery-speed timing, no cast prohibition, and affordability of
+            // the suspend mana cost. Time counters are tracked in cur_game.suspend_time_counters
+            // (an exiled card is not a permanent, so its counters can't live in Permanent::counters).
+            if (action.suspend_action) {
+                Entity card = action.source_entity;
+                auto &zone = global_coordinator.GetComponent<Zone>(card);
+                auto &cd = global_coordinator.GetComponent<CardData>(card);
+                Zone::Ownership owner = zone.owner;
+                auto mana_snap = snapshot_mana_state(owner, orderer);
+                ManaValue cost = cd.suspend_cost;  // copy (prompt_mana_payment takes a mutable ref)
+                if (!prompt_mana_payment(owner, cost, card, orderer)) {
+                    restore_mana_state(owner, mana_snap, orderer);
+                    game_log("Payment cancelled.\n");
+                    break;
+                }
+                orderer->add_to_zone(false, card, Zone::EXILE);
+                cur_game.suspend_time_counters[card] = cd.suspend_count;
+                game_log("%s suspends %s (exiled with %d time counter(s)).\n",
+                         player_name(owner).c_str(), cd.name.c_str(), cd.suspend_count);
+                game.take_action();
+                break;
+            }
+
             // COMPANION (CR 702.139): pay {3} and put the chosen companion from the sideboard into
             // its owner's hand, once per game. The legal-action gate already verified the companion
             // is in the sideboard, unused this game, and that {3} is affordable.

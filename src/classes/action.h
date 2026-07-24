@@ -104,6 +104,11 @@ struct LegalAction {
         // into their hand for {3}. Disambiguates the companion special action from the play-land
         // special action; the processor pays {3} and moves the source entity Sideboard -> Hand.
         bool companion_to_hand = false;
+        // SPECIAL_ACTION that begins the Suspend process (CR 702.62) for the source card in hand:
+        // pay its suspend cost and exile it with N time counters. Disambiguates the suspend special
+        // action from the play-land / companion special actions; the processor pays the cost, moves
+        // the source entity Hand -> Exile, and records the time counters.
+        bool suspend_action = false;
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).

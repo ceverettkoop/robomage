@@ -249,6 +249,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Skewer the Critics", 339},
     {"Light Up the Stage", 340},
     {"Roiling Vortex", 341},
+    {"Rift Bolt", 342},
     {"Echoing Truth", 331},
     {"Show and Tell", 332},
     {"Mox Diamond", 336},

@@ -761,6 +761,21 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 }
             }
         }
+        // SUSPEND (CR 702.62a, first ability): from the hand, at the timing you could begin to cast
+        // the card (`can_cast_now` — sorcery speed for a sorcery), its owner may instead pay the
+        // suspend cost and exile it with N time counters. This is a special action (doesn't use the
+        // stack). Its targets are chosen only later, when the last counter is removed and it is cast
+        // for free, so no legal target is required now (702.62 casts it then, not here); the card
+        // just must not be under a cast prohibition (702.62c) and the suspend mana cost must be
+        // affordable. General over any Suspend card. Offered independently of the normal-cast block.
+        if (card_data.has_suspend && can_cast_now &&
+            !rules_mod::cast_prohibited(priority_player, card_data) &&
+            can_pay_mana(priority_player, card_data.suspend_cost, card_entity, orderer)) {
+            LegalAction sus_la(SPECIAL_ACTION, card_entity, "Suspend " + card_data.name);
+            sus_la.category = ActionCategory::CAST_SPELL;  // cast-adjacent "play this card" action
+            sus_la.suspend_action = true;
+            actions.push_back(sus_la);
+        }
     }
     // Modal DFC nonland back faces: offer the BACK face as a CAST_SPELL (the front face's normal
     // cast and the land-back PLAY_LAND were handled in the hand loop above).
@@ -970,6 +985,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (can_cast_at_instant_speed && rules_mod::opponent_sorcery_speed_locked(priority_player))
             can_cast_at_instant_speed = false;
         bool can_cast_now = can_cast_at_instant_speed || main_phase_window;
+        // A suspend free cast (CR 702.62a) is made as an effect of resolving the last-time-counter
+        // triggered ability during the caster's own upkeep, so it ignores the card's normal
+        // sorcery/instant timing — offer it at any priority window this caster holds (until the
+        // permission lapses at cleanup, i.e. "if you don't, it remains exiled").
+        if (perm_grant.from_suspend) can_cast_now = true;
         if (!can_cast_now) continue;
 
         // Affordability of the alternative resource cost.
