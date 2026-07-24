@@ -842,9 +842,14 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         // through the shared comma-OR card filter. A standalone ability entity on the stack (an
         // Activated/Triggered alternative the script names explicitly — Stifle, Consign to
         // Memory) is not a card, so a card-shaped ValidTgts ("Card,Emblem") never filters it.
+        // A static numeric cmc qualifier (Spell Snare: ValidTgts$ Card.cmcEQ2) is deferred by
+        // the filter evaluator to ctx.cmc_bound, so seed it here or the comparator is a no-op
+        // and the counterspell would target any spell.
+        MatchCtx spell_ctx{caster, source};
+        extract_static_cmc_bound(vt, spell_ctx);
         if (vt != "N_A" && !vt.empty() &&
             global_coordinator.entity_has_component<Spell>(cand) &&
-            !card_matches_any(cand, vt, MatchCtx{caster, source}))
+            !card_matches_any(cand, vt, spell_ctx))
             return false;
         return true;
     }

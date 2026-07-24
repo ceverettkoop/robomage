@@ -223,6 +223,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Twinshot Sniper", 317},
     {"Yavimaya, Cradle of Growth", 318},
     {"Eidolon of the Great Revel", 319},
+    {"Spell Snare", 321},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
