@@ -3693,6 +3693,34 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         // whose ReplaceMana$ names the single color all the produced mana is converted to.
         bool replace_with_produce_mana = false;
         Colors produce_replacement_color = COLORLESS;
+        // Mox Diamond / Chrome Mox "pay-a-discard-as-it-enters-else-to-graveyard" form: the
+        // ReplaceWith$ SVar chain is an optional DB$ Discard (DiscardValid$ <filter>) whose
+        // subability moves the card (Defined$ ReplacedCard) to the graveyard when nothing was
+        // discarded. Walk the SubAbility$ chain of named SVars to recognize all three signals
+        // (an optional discard, its DiscardValid$ filter, an "else to graveyard" move) rather than
+        // retagging the R: line.
+        bool replace_with_discard_else_grave = false;
+        std::string discard_else_filter;
+        if (!replace_with_svar.empty()) {
+            std::string cur = replace_with_svar;
+            bool saw_discard = false, saw_optional = false, saw_grave = false;
+            for (int guard = 0; guard < 8 && !cur.empty(); guard++) {
+                auto sv2 = svars.find(cur);
+                if (sv2 == svars.end()) break;
+                const std::string &b = sv2->second;
+                if (b.find("DB$ Discard") != std::string::npos)          saw_discard = true;
+                if (b.find("Optional$ True") != std::string::npos)       saw_optional = true;
+                if (b.find("Destination$ Graveyard") != std::string::npos) saw_grave = true;
+                std::string next_sub;
+                size_t pp = 0; std::string k, v;
+                while (next_param(b, pp, k, v)) {
+                    if (k == "DiscardValid" && discard_else_filter.empty()) discard_else_filter = v;
+                    else if (k == "SubAbility") next_sub = v;
+                }
+                cur = next_sub;
+            }
+            if (saw_discard && saw_optional && saw_grave) replace_with_discard_else_grave = true;
+        }
         if (!replace_with_svar.empty()) {
             auto sv = svars.find(replace_with_svar);
             if (sv != svars.end()) {
@@ -3757,6 +3785,17 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             r.tapped_condition_filter = tapped_cond_filter;
             r.tapped_condition_compare = tapped_cond_compare;
             r.tapped_unless_life = tapped_unless_life;
+            result.push_back(r);
+        }
+        // Mox Diamond / Chrome Mox: as this card would enter, its owner may discard a matching
+        // card (an additional cost); if they don't, it goes to its owner's graveyard instead
+        // (614.1a self-replacement).
+        if (event_is_moved && valid_card_self && dest_is_battlefield &&
+            replace_with_discard_else_grave) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::DISCARD_ELSE_GRAVEYARD;
+            r.applies_to_self_only = true;
+            r.discard_else_filter = discard_else_filter.empty() ? "Card" : discard_else_filter;
             result.push_back(r);
         }
         if (event_is_counter && valid_card_self && layer_cant_happen) {

@@ -87,6 +87,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         replacement::dispatch(rev);
         if (rev.prevented) return;  // 614.13 — the move is prevented; the card remains in its origin zone
         destination = rev.destination;
+        // Mox Diamond / Chrome Mox additional cost: the affected player chose to discard a card as
+        // this permanent enters (dispatch has no orderer, so the discard is performed here). The
+        // land moves to its owner's graveyard; the permanent then enters normally (destination
+        // unchanged). The discarded card is a different entity, so moving it does not disturb
+        // `target_zone` (no component is added/removed — the packed arrays don't reallocate).
+        if (rev.pending_discard != 0 && rev.pending_discard != target)
+            add_to_zone(false, rev.pending_discard, Zone::GRAVEYARD);
     }
 
     // Unearth (CR 702.84): a permanent returned to the battlefield with its unearth ability is

@@ -31,6 +31,7 @@ enum CandidateKind {
     SKIP_UNTAP,     // 614.1d — this permanent doesn't untap during its controller's untap step (Choke)
     PREVENT_ETB,    // 614.13 — a creature card from a restricted origin zone is prevented from entering (Grafdigger's Cage)
     PRODUCE_MANA,   // 614.1 — replaces the mana a tapped permanent produces (Damping Sphere)
+    DISCARD_ELSE_GRAVEYARD, // 614.1a self-replacement — pay a discard cost as this card enters, else it goes to its owner's graveyard (Mox Diamond, Chrome Mox)
 };
 
 struct Candidate {
@@ -44,6 +45,7 @@ struct Candidate {
     bool with_void_counter = false; // EXILE_INSTEAD: tag the exiled card with a void counter (Dauthi), else plain exile (Leyline)
     int tapped_unless_life = 0;     // SELF_TAPPED: "enters tapped unless you pay N life" — pay N to enter untapped instead
     Colors produce_color = COLORLESS; // PRODUCE_MANA: color the production is converted to
+    std::string discard_filter;     // DISCARD_ELSE_GRAVEYARD: type filter of the card the owner may discard
 };
 
 // Number of cards in a player's library / graveyard scan helpers mirror the
@@ -202,6 +204,25 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
         // be on the battlefield and other permanents' "whenever a creature enters" triggers
         // (and its own ETB) would have fired for a creature that is supposed to never enter.
         if (ev.destination == Zone::BATTLEFIELD) {
+            // Mox Diamond / Chrome Mox (614.1a self-replacement): as this card would enter, its
+            // owner may pay an additional discard cost; if not, it goes to its owner's graveyard.
+            // The source is the entering card itself (self-replacement), so it is read off ev.entity.
+            if (global_coordinator.entity_has_component<CardData>(ev.entity)) {
+                auto &cd = global_coordinator.GetComponent<CardData>(ev.entity);
+                for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                    const Effect::Replacement &r = cd.replacement_effects[i];
+                    if (r.kind != Effect::Replacement::DISCARD_ELSE_GRAVEYARD) continue;
+                    Candidate c;
+                    c.source = ev.entity;
+                    c.kind = DISCARD_ELSE_GRAVEYARD;
+                    c.index = static_cast<int>(i);
+                    c.self_replacement = true;
+                    c.discard_filter = r.discard_else_filter;
+                    c.label = "discard to enter, or go to graveyard";
+                    if (!already_applied(applied, c)) out.push_back(c);
+                }
+            }
+
             bool nontoken_creature =
                 !global_coordinator.entity_has_component<Token>(ev.entity) &&
                 global_coordinator.entity_has_component<CardData>(ev.entity) &&
@@ -476,6 +497,61 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             ev.prevented = true;
             std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
             game_log("%s can't enter the battlefield from that zone.\n", name.c_str());
+            break;
+        }
+        case DISCARD_ELSE_GRAVEYARD: {
+            // Mox Diamond / Chrome Mox: offer the owner an optional additional cost — discard a
+            // card matching the filter (a land) as this permanent enters. If they do, it enters
+            // normally (the discard is performed by the caller via ev.pending_discard); if they
+            // don't (or hold no matching card), it goes to its owner's graveyard instead.
+            std::string self_name = global_coordinator.GetComponent<CardData>(ev.entity).name;
+            MatchCtx dctx;
+            dctx.controller = ev.affected_player;
+            dctx.source = ev.entity;
+            std::vector<Entity> discardable;
+            Entity max_e = global_coordinator.GetMaxIssuedEntity();
+            for (Entity e = 0; e < max_e; e++) {
+                if (e == ev.entity) continue;  // the entering card is not in hand
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                auto &z = global_coordinator.GetComponent<Zone>(e);
+                if (z.location != Zone::HAND || z.owner != ev.affected_player) continue;
+                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                if (card_matches_any(e, c.discard_filter, dctx)) discardable.push_back(e);
+            }
+            if (discardable.empty()) {
+                // Can't pay the cost — put it into its owner's graveyard (614.1a).
+                ev.destination = Zone::GRAVEYARD;
+                game_log("%s has no %s to discard and is put into its owner's graveyard.\n",
+                         self_name.c_str(), c.discard_filter.c_str());
+                break;
+            }
+            std::vector<LegalAction> choices;
+            for (Entity e : discardable) {
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                LegalAction la(PASS_PRIORITY, e,
+                               "Discard " + cd.name + " (put " + self_name + " onto the battlefield)");
+                la.category = ActionCategory::CHOOSE_CARD;
+                choices.push_back(la);
+            }
+            LegalAction decline(PASS_PRIORITY,
+                                std::string("Don't discard (put ") + self_name + " into graveyard)");
+            decline.category = ActionCategory::CHOOSE_CARD;
+            choices.push_back(decline);
+            // Blocking decision seated on the owner — this MOVE_TO_ZONE dispatch fires inside
+            // Orderer::add_to_zone, the one remaining blocking replacement site (see choose_one).
+            bool prev_priority = cur_game.player_a_has_priority;
+            cur_game.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
+            int pick = InputLogger::instance().get_input(choices);
+            cur_game.player_a_has_priority = prev_priority;
+            if (pick >= 0 && pick < static_cast<int>(discardable.size())) {
+                ev.pending_discard = discardable[static_cast<size_t>(pick)];  // caller discards it
+                game_log("%s discards %s.\n", player_name(ev.affected_player).c_str(),
+                         global_coordinator.GetComponent<CardData>(ev.pending_discard).name.c_str());
+                // destination stays BATTLEFIELD — it enters normally
+            } else {
+                ev.destination = Zone::GRAVEYARD;
+                game_log("%s is put into its owner's graveyard.\n", self_name.c_str());
+            }
             break;
         }
     }

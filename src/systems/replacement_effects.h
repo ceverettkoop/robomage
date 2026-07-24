@@ -47,6 +47,12 @@ struct ReplacementEvent {
     Zone::ZoneValue destination = Zone::GRAVEYARD;     // caller seeds the natural destination; dispatch may redirect
     Zone::ZoneValue origin = Zone::LIBRARY;            // caller seeds the zone the card is leaving
     bool prevented = false;                            // 614.13/CantHappen — the move doesn't happen; the card stays in its origin zone (Grafdigger's Cage)
+    // DISCARD_ELSE_GRAVEYARD additional cost (Mox Diamond / Chrome Mox): the card the affected
+    // player chose to discard as this permanent enters. dispatch() has no orderer, so the caller
+    // (Orderer::add_to_zone) performs the discard when this is non-zero (destination stays
+    // battlefield). When the player declines/can't pay, dispatch redirects `destination` to the
+    // graveyard and leaves this 0.
+    Entity pending_discard = 0;
 
     // DRAW_CARD outcome (dredge, 702.52a / 614.1a)
     bool   draw_replaced = false;                      // a dredge replaced the draw — caller performs no draw

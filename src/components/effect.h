@@ -21,6 +21,7 @@ struct Effect {
             SKIP_UNTAP,                 // 614.1d — a matching permanent doesn't untap during its controller's untap step (Choke)
             PREVENT_ETB_FROM_ZONES,     // 614.13/CantHappen — a creature card moving from a restricted origin zone to the battlefield doesn't enter; it stays put (Grafdigger's Cage)
             PRODUCE_MANA,               // 614.1 — replaces the mana a matching permanent produces when tapped (Damping Sphere: a land tapped for 2+ produces that much {C})
+            DISCARD_ELSE_GRAVEYARD,     // 614.1a self-replacement — as this card would enter, its owner MAY pay an additional discard cost (a matching card); if paid it enters, otherwise it goes to its owner's graveyard instead (Mox Diamond, Chrome Mox)
         };
         Kind kind = ENTERS_TAPPED;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself
@@ -70,6 +71,10 @@ struct Effect {
         std::string produce_valid_type = "";          // ValidCard$ type filter ("Land")
         int produce_min_amount = 1;                    // ManaAmount$ GEN — minimum produced amount that triggers
         Colors produce_replacement_color = COLORLESS;  // ReplaceMana$ color the production is converted to
+        // DISCARD_ELSE_GRAVEYARD (Mox Diamond / Chrome Mox): the type filter of the card the owner
+        // may discard as the additional cost to have this permanent enter (e.g. "Land"); if they
+        // don't (or can't), it is put into its owner's graveyard instead.
+        std::string discard_else_filter = "";
     };
 };
 
