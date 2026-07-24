@@ -2325,6 +2325,16 @@ Ability parse_ability_body(const std::string &body, Ability::AbilityType type) {
     return parse_svar_ability(body, type, kNoSvars, "");
 }
 
+Ability parse_granted_trigger(const std::string &trigger_line, const std::string &svar_name,
+                              const std::string &svar_body) {
+    // Build the minimal svars table the trigger's Execute$ resolves against (its named execute
+    // SVar), then run the shared trigger parser — so the granted trigger honours the full trigger
+    // grammar (Mode$/Phase$/ValidPlayer$/Execute$ + the DB$ effect body) exactly as a printed T:.
+    std::map<std::string, std::string> svars;
+    if (!svar_name.empty()) svars[svar_name] = svar_body;
+    return parse_one_trigger(trigger_line, svars, "");
+}
+
 // Resolves an additive SVar chain (e.g. "SVar$Z1/Plus.Z2") into the list of
 // runtime Count$ expressions to be summed at resolution. Each "SVar$<name>"
 // token is looked up in `svars`; if its value is itself an SVar$ chain it is
@@ -3413,6 +3423,19 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // Produced$ C"); the layer-6 grant pass parses it to an Ability per recipient.
                 auto it = svars.find(value);
                 sa.add_ability = (it != svars.end()) ? it->second : value;
+            } else if (key == "AddTrigger") {
+                // AddTrigger$ <SVarName> (The Tabernacle): a continuous static that grants a full
+                // TRIGGERED ability to every Affected$ permanent (CR 613.1f, layer 6). Resolve the
+                // named SVar to the trigger line body now; the paired AddSVar$ supplies the
+                // Execute$ SVar the layer-6 grant pass needs to reparse it (parse_granted_trigger).
+                auto it = svars.find(value);
+                sa.add_trigger = (it != svars.end()) ? it->second : value;
+            } else if (key == "AddSVar") {
+                // AddSVar$ <SVarName> — the Execute$ SVar the granted trigger references. Store both
+                // its name (so the reparse's svars map is keyed correctly) and its resolved body.
+                sa.add_trigger_svar_name = value;
+                auto it = svars.find(value);
+                sa.add_trigger_svar = (it != svars.end()) ? it->second : value;
             } else if (key == "Affected") {
                 sa.affected = value;
                 // Also store as affected_subtype for untap prevention (Choke: Affected$ Island)

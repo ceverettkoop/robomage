@@ -21,6 +21,18 @@ struct StaticAbility {
     // an Ability and attaches it to each affected permanent's ability list, de-duped per
     // source static so SBA repeats don't stack copies. Empty = no granted ability.
     std::string add_ability = "";
+    // AddTrigger$ <SVar> + AddSVar$ <SVar> (The Tabernacle at Pendrell Vale): a continuous static
+    // that GRANTS a whole TRIGGERED ability to every permanent the Affected$ filter designates —
+    // layer 6 (CR 613.1f / 603). add_trigger holds the resolved trigger line (e.g. "Mode$ Phase |
+    // Phase$ Upkeep | ValidPlayer$ You | Execute$ TabernacleDestroy"); add_trigger_svar_name /
+    // add_trigger_svar hold the Execute$ SVar it references (its name and resolved body, e.g.
+    // "DB$ Destroy | Defined$ Self | UnlessPayer$ You | UnlessCost$ 1"), needed to reparse the
+    // trigger's Execute at grant time. The layer-6 grant pass parses these to a TRIGGERED Ability
+    // (parse_granted_trigger) and attaches a copy to each affected permanent's ability list,
+    // deduped per source static. Empty = no granted trigger.
+    std::string add_trigger = "";
+    std::string add_trigger_svar_name = "";
+    std::string add_trigger_svar = "";
     std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
     // ETB counter fields (category = "EtbCounter"):
     std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters

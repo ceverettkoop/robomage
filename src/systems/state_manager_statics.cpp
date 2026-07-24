@@ -1843,6 +1843,52 @@ void StateManager::apply_layer6_ability_grants() {
             abilities.push_back(copy);
         }
     }
+
+    // Phase 3: re-grant from each active AddTrigger$ static whose condition is met (The Tabernacle
+    // at Pendrell Vale: "All creatures have 'At the beginning of your upkeep, sacrifice this
+    // creature unless you pay {1}.'"). CR 613.1f (layer 6) / 603: the whole TRIGGERED ability is
+    // attached to every affected permanent. The granted trigger is placed in the recipient's
+    // ability list (which the trigger scan reads); it is controller-relative — ValidPlayer$ You
+    // gates it to fire only at the RECIPIENT's controller's upkeep, and Defined$ Self makes the
+    // destroy act on the recipient. Like Phase 2 it is rebuilt from scratch every pass (Phase 1
+    // stripped it), so the grant appears/disappears as creatures and the source enter/leave.
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;  // source lost all abilities (Humility)
+        if (a.sa->category != "Continuous") continue;
+        if (a.sa->add_trigger.empty()) continue;
+        if (!a.condition_met) continue;
+
+        std::vector<Entity> targets = ability_grant_targets(a, mEntities);
+        if (targets.empty()) continue;
+
+        // Materialize the granted trigger once (full trigger grammar + its Execute$ SVar), then
+        // attach a per-recipient copy tagged with the source static.
+        Ability granted = parse_granted_trigger(a.sa->add_trigger, a.sa->add_trigger_svar_name,
+                                                a.sa->add_trigger_svar);
+        if (granted.trigger_on == 0 && !granted.trigger_state_condition) continue;  // unparsable
+        granted.ability_type = Ability::TRIGGERED;
+        granted.granted_by_static = a.entity;
+
+        for (Entity e : targets) {
+            auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
+            // De-dupe: skip if this same static's trigger (same category + trigger_on) already
+            // sits on the recipient this pass.
+            bool dup = false;
+            for (auto &existing : abilities) {
+                if (existing.ability_type == Ability::TRIGGERED &&
+                    existing.granted_by_static == a.entity &&
+                    existing.category == granted.category &&
+                    existing.trigger_on == granted.trigger_on) {
+                    dup = true;
+                    break;
+                }
+            }
+            if (dup) continue;
+            Ability copy = granted;
+            copy.source = e;
+            abilities.push_back(copy);
+        }
+    }
 }
 
 // Layer 6 (rule 613.1f) ability REMOVAL — the counterpart to the keyword grants above.

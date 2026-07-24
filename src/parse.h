@@ -17,6 +17,14 @@ Token parse_token_script(const std::string &script_name);
 // inside the body are left as their literal token (the granted bodies in use are self-contained).
 Ability parse_ability_body(const std::string &body, Ability::AbilityType type = Ability::ACTIVATED);
 
+// Parse a TRIGGERED ability granted by a Continuous static's AddTrigger$/AddSVar$ (The Tabernacle
+// at Pendrell Vale). `trigger_line` is the resolved Mode$ ... trigger body; `svar_name`/`svar_body`
+// are the Execute$ SVar it references (so the trigger's Execute can be reparsed at grant time).
+// Returns a TRIGGERED Ability (trigger_on == 0 if unrecognised). The layer-6 grant pass attaches a
+// per-recipient copy to each affected permanent's ability list.
+Ability parse_granted_trigger(const std::string &trigger_line, const std::string &svar_name,
+                              const std::string &svar_body);
+
 // Parse a Ward cost argument — the text after "Ward:" in a K: line or a granted keyword
 // (CR 702.21). Sets `cost` and `is_life` for the two supported shapes: "PayLife<N>"
 // (Ward—Pay N life) and a plain numeric "N" ({N} generic mana). A missing or malformed arg

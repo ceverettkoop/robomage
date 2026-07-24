@@ -254,6 +254,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Mox Diamond", 336},
     {"Dark Depths", 334},
     {"Thespian's Stage", 335},
+    {"The Tabernacle at Pendrell Vale", 337},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

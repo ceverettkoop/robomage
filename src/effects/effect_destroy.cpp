@@ -43,6 +43,12 @@ static void destroy_single(Entity tgt, std::shared_ptr<Orderer> orderer) {
 }
 
 HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    // Defined$ Self (The Tabernacle at Pendrell Vale's granted upkeep trigger: "destroy this
+    // creature unless you pay {1}"): the effect acts on its own source. Bind it as the target so
+    // the shared destroy/unless path below operates on the creature. Idempotent on a suspend/resume.
+    if (ab.defined_self && ab.target == 0 && ab.targets.empty())
+        ab.target = ab.source;
+
     // Pyroblast/Hydroblast destroy mode: only destroy if the target is the required
     // color. The spell still resolves (doing nothing) against a wrong-color permanent.
     if (!target_color_condition_met(ab, ab.target)) {
@@ -67,6 +73,29 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                 return HandlerResult::DONE_RUN_SUBS;
             }
         }
+    }
+
+    // Unless-cost (The Tabernacle: "destroy this creature unless you pay {1}", CR 118.5 /
+    // 603.2). The payer (UnlessPayer$ You ⇒ the ability's controller = the creature's controller)
+    // may pay to prevent the destruction; run_unless_loop returns false when paid (don't destroy)
+    // and true when declined / unaffordable. Handled for the single-target / defined_self form. The
+    // MANA kind may suspend on a payment decision (checked before the return value); the arm-only
+    // announcement is resume-guarded so a resume never re-logs it.
+    if (ab.unless_generic_cost > 0) {
+        Entity tgt = !ab.targets.empty() ? ab.targets[0] : ab.target;
+        Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
+        UnlessPayKind kind = ab.unless_cost_is_energy   ? UnlessPayKind::ENERGY
+                           : ab.unless_cost_is_discard  ? UnlessPayKind::DISCARD
+                           : ab.unless_cost_is_life      ? UnlessPayKind::LIFE
+                                                         : UnlessPayKind::MANA;
+        if (!ctx.resuming())
+            game_log("%s may pay to prevent %s from being destroyed:\n",
+                     player_name(payer).c_str(), entity_name(tgt).c_str());
+        bool suspended = false;
+        bool do_destroy = run_unless_loop(ab.unless_generic_cost, payer, orderer, tgt,
+                                          ctx, suspended, kind);
+        if (suspended) return HandlerResult::SUSPENDED;
+        if (!do_destroy) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is destroyed
     }
 
     if (!ab.targets.empty()) {
