@@ -95,6 +95,13 @@ struct CardData{
     // is what enters and it does not flip in play. The back face is its own complete CardData in
     // `backside`. False for single-faced cards and for transform DFCs.
     bool is_modal_dfc = false;
+    // AlternateMode:Split — a SPLIT card (CR 709): two instant/sorcery halves printed on one
+    // card, each castable from hand for its own cost. The back half is a complete CardData in
+    // `backside` (like an MDFC), but unlike an MDFC neither half is a permanent — the whole card
+    // just goes to the graveyard on resolution. Both halves are offered from hand; the chosen
+    // half's characteristics are used while the spell is on the stack. Distinct from is_modal_dfc
+    // so split cards never pick up MDFC permanent-entering logic.
+    bool is_split = false;
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
     bool has_improvise = false;          // K:Improvise — tap untapped artifacts you control to pay {1} each (CR 702.126)
     int ward_cost = 0;                   // K:Ward:N — opponent's spell/ability targeting this is countered unless they pay {N} (CR 702.21)

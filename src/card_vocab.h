@@ -231,6 +231,18 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Archon of Cruelty", 323},
     {"Blast Zone", 324},
     {"Malevolent Rumble", 325},
+    // Dead//Gone is ONE split card (CR 709) → ONE vocab index (328), aliased under three names so
+    // it resolves under both name-normalization schemes. The deck-identity block matches by
+    // name_to_uid (lowercases, strips '/'), so "Dead/Gone" → uid "deadgone" lets a "1 Dead/Gone"
+    // decklist serialize; the in-game observation matches by ascii_fold (case/punctuation-
+    // preserving), so the loaded front name "Dead" and the back-face cast name "Gone" each resolve
+    // to 328. "Dead/Gone" is listed LAST so the cost-matrix codegen (last-write-wins per index)
+    // leaves an honest zero row for 328: find_card_file's prefix match resolves "Dead"/"Gone" to
+    // unrelated dead*/gone* scripts (wrong cost), while "Dead/Gone" finds no file → the standard
+    // zero/unresolvable sentinel row (same as DFC backs).
+    {"Dead", 328},
+    {"Gone", 328},
+    {"Dead/Gone", 328},
     {"Fireblast", 329},
     {"Skewer the Critics", 339},
     {"Light Up the Stage", 340},

@@ -139,7 +139,10 @@ std::string name_to_uid(std::string name) {
         char value = name[i];
         if (std::isalpha(value)) {
             name[i] = std::tolower(value);
-        } else if( ((value == '-') || (value == ' ')) && (i != name.size() - 1) )   { // we will excise up to 1 trailing space, rest to underscores
+        } else if( ((value == '-') || (value == ' ') || (value == '/')) && (i != name.size() - 1) )   { // we will excise up to 1 trailing space, rest to underscores
+                // '/' is a separator too (CR 709 split cards): a combined "Front/Back" reference
+                // maps to Forge's underscore-joined filename (e.g. "Dead/Gone" -> "dead_gone" ->
+                // cardsfolder/d/dead_gone.txt), matching how space/dash are already normalized.
                 name[i] = '_';
         } else {
             to_rm.push_back(i);
@@ -415,6 +418,10 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     // playable from hand (front spell OR back face). Only the front face carries this line; the
     // back face (parsed from the ALTERNATE block) leaves it false. Distinct from a transform DFC.
     card.is_modal_dfc = (value_from_script(front_script, "AlternateMode") == "Modal");
+    // AlternateMode:Split marks a SPLIT card (CR 709) — both halves playable from hand, neither a
+    // permanent. Only the front face carries this line; the back half (from the ALTERNATE block)
+    // leaves it false. Distinct from a modal DFC so split cards skip MDFC permanent logic.
+    card.is_split = (value_from_script(front_script, "AlternateMode") == "Split");
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));
     card.oracle_text = value_from_script(front_script, "Oracle");

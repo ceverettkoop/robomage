@@ -442,7 +442,9 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
     auto hand = orderer->get_hand(priority_player);
     for (auto card_entity : hand) {
         auto &front = global_coordinator.GetComponent<CardData>(card_entity);
-        if (!front.is_modal_dfc || !front.backside) continue;
+        // Offer the back half for both modal DFCs (nonland back) and split cards (CR 709): both
+        // store the second face in `backside` and cast it via the shared cast_back_face path.
+        if ((!front.is_modal_dfc && !front.is_split) || !front.backside) continue;
         const CardData &back = *front.backside;
         if (is_land_card(back)) continue;  // land back is a PLAY_LAND, handled in the main loop
 
