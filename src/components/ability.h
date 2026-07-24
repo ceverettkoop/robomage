@@ -30,6 +30,11 @@ struct Ability{
 
     AbilityType ability_type = SPELL;
     std::string category = "";
+    // GainThisAbility$ True on an AB$ Clone (Thespian's Stage: "becomes a copy of target land,
+    // except it has this ability."). CR 706.2 in-place copy that RETAINS this very ability on the
+    // copy — the clone handler appends the source's own Clone ability(ies) onto the copied
+    // characteristics so the permanent can keep re-cloning.
+    bool gain_this_ability = false;
     std::string valid_tgts = "N_A";  // Value of ValidTgts$ param; "N_A" if no targeting required
     int target_min = 1;              // TargetMin$ 0 = optional targeting (can choose no target)
     int target_max = 1;             // TargetMax$ N — max number of targets (1 = single target)

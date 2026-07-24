@@ -55,6 +55,7 @@ enum class EffectKind {
     SacrificeAll,
     ImmediateTrigger,
     CopyPermanent,
+    Clone,
     Mobilize,
     SacrificeTokens,
     ExileTokens,

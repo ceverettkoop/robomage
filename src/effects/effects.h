@@ -111,6 +111,10 @@ HandlerResult put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// AB$ Clone (Thespian's Stage): the SOURCE permanent becomes a copy of target land in place —
+// the same object acquires the target's copiable characteristics (CR 706.2), keeping its own
+// counters/tapped state/attachments. GainThisAbility$ True retains this Clone ability on the copy.
+HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // Mobilize N (702.176): create N tapped+attacking 1/1 red Warrior tokens and register a
 // delayed end-step sacrifice of exactly those tokens.
 HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);

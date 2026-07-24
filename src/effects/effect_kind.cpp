@@ -52,6 +52,10 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"SacrificeAll", EffectKind::SacrificeAll},
         {"ImmediateTrigger", EffectKind::ImmediateTrigger},
         {"CopyPermanent", EffectKind::CopyPermanent},
+        // AB$ Clone (Thespian's Stage): the SOURCE permanent becomes a copy of a target land
+        // IN PLACE (same object), CR 706.2 — distinct from CopyPermanent, which spawns a token
+        // copy. See effect_copy_permanent.cpp.
+        {"Clone", EffectKind::Clone},
         {"Mobilize", EffectKind::Mobilize},
         {"SacrificeTokens", EffectKind::SacrificeTokens},
         // Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft): exile

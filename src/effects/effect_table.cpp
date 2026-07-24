@@ -53,6 +53,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::SacrificeAll:    return &sacrifice_all;
         case EffectKind::ImmediateTrigger: return &immediate_trigger;
         case EffectKind::CopyPermanent:   return &copy_permanent;
+        case EffectKind::Clone:           return &clone;
         case EffectKind::Mobilize:        return &mobilize;
         case EffectKind::SacrificeTokens: return &sacrifice_tokens;
         case EffectKind::ExileTokens:     return &exile_tokens;

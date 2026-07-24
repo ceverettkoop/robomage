@@ -1470,6 +1470,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         }
     } else if (key == "ValidTgts") {
         ability.valid_tgts = value;
+    } else if (key == "GainThisAbility") {
+        // GainThisAbility$ True on an AB$ Clone (Thespian's Stage): the in-place copy retains this
+        // very ability ("...except it has this ability."). CR 706.2. Consumed by the clone handler.
+        ability.gain_this_ability = (value == "True");
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
     } else if (key == "UnlessCost") {
