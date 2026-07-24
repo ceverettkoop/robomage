@@ -41,6 +41,10 @@ sacrifice-after-final, `K:Chapter` parse) already existed (`src/saga.cpp`,
 - The search-based ChangeZone (chapter I) records the exiled card on the source's
   `Permanent::exiled_with` (the "cards exiled with this" association) and logs the face-down exile
   **privately** — the searcher knows the card; the opponent sees only "a card face down".
+- **Observation info-hiding** (`src/machine_io.cpp`): an opponent-owned face-down exile emits the
+  unknown-id sentinel (`-1`) in the per-slot exile block, so a viewer sees a card is in the
+  opponent's exile but not which one (the owner still sees its true id). This complements the
+  belief-state (revealed multi-hot) suppression above — the two are distinct observation channels.
 
 ### 2. `DB$ SetState | Mode$ TurnFaceUp` — a new SetState effect (CR 708.3 / 711.8)
 
@@ -93,6 +97,7 @@ mirroring `search_multi_zone` (also benefits Demonic/Vampiric-Tutor-style effect
 - `src/components/ability.cpp` — `ExiledWith$CardManaCost` in `evaluate_dynamic_amount`,
   `condition_on_exiled_with` gate in `resolve`, and the `ChangeType$ Card` search fix.
 - `src/systems/state_manager_actions.cpp` — `condition_on_exiled_with` in `present_condition_raw`.
+- `src/machine_io.cpp` — hide an opponent-owned face-down exile's id in the observation.
 - `src/parse.cpp` — `Defined$/ConditionDefined$ ExiledWith` parse, `ExiledWith$` direct-expr
   preservation for `LifeAmount$`.
 - `src/card_vocab.h` (+ regenerated `train/card_costs.py`, `src/gen/card_costs_gen.h`).
