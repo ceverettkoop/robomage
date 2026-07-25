@@ -357,7 +357,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.1],  # 348: Animate Dead
     [0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.1],  # 349: The Creation of Avacyn
     [0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4],  # 350: Triumph of Saint Katherine
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 351: 
+    [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0],  # 351: Monastery Swiftspear
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 352: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 353: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 354: 
@@ -1388,7 +1388,7 @@ _VOCAB_NAMES = [
     "Animate Dead",  # 348
     "The Creation of Avacyn",  # 349
     "Triumph of Saint Katherine",  # 350
-    "",  # 351
+    "Monastery Swiftspear",  # 351
     "",  # 352
     "",  # 353
     "",  # 354

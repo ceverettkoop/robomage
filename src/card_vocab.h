@@ -267,6 +267,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Animate Dead", 348},
     {"The Creation of Avacyn", 349},
     {"Triumph of Saint Katherine", 350},
+    {"Monastery Swiftspear", 351},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

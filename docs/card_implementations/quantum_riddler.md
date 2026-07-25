@@ -20,8 +20,8 @@ in hand, if you would draw one or more cards, you draw that many cards plus one 
 Warp {1}{U}. (You may cast this card from your hand for its warp cost. If you cast it this way,
 exile it at the beginning of the next end step. For as long as it remains exiled, you may cast it.)
 
-Vocab index: **346** (`src/card_vocab.h`); cast cost {3}{U}{U} regenerated into
-`train/card_costs.py` / `src/gen/card_costs_gen.h` by `make`.
+Vocab index: **346** (`src/card_vocab.h`); cast cost {3}{U}{U} present in the
+`make`-regenerated `train/card_costs.py`.
 
 **Source:** pre-existing local script `bin/resources/cardsfolder/q/quantum_riddler.txt`
 (unchanged — card scripts are never edited).
@@ -54,11 +54,15 @@ number of cards drawn*, gated by a condition evaluated at replacement time. Buil
   scans the player's battlefield permanents, sums `draw_add` over every `DRAW_ADD` whose (optional)
   count gate holds for the drawing player, and returns the extra-card count. No prompt (unlike the
   dredge menu), so it is safe to evaluate at every draw site.
-- **Draw sites** — `Orderer::draw_one` (blocking path) and `effects::draw_n_with_replacements`
-  (suspendable path) compute the bonus **before** the base draw (so the "one or fewer cards in
-  hand" gate sees the pre-draw hand), then perform `bonus` extra **plain** draws after a real base
-  draw. The extra draws are part of the same replaced event (CR 614.5), so they are *not* re-passed
-  through the additive replacement (no re-application / infinite loop).
+- **Draw sites (all three)** — `Orderer::draw_one` (generic bulk-draw path),
+  `effects::draw_n_with_replacements` (suspendable resolution-time `DB$ Draw` path, e.g. the ETB
+  draw) and `resume_pending_draws` in `src/classes/game.cpp` (the **turn-based draw-STEP** batch —
+  both the common no-dredge case and the resumed-after-dredge-answer case) compute the bonus
+  **before** the base draw (so the "one or fewer cards in hand" gate sees the pre-draw hand), then
+  perform `bonus` extra **plain** draws after a real base draw. The extra draws are part of the same
+  replaced event (CR 614.5), so they are *not* re-passed through the additive replacement (no
+  re-application / infinite loop). (The draw-step site was the gap in the initial implementation —
+  it draws via `perform_draw` directly, bypassing `draw_one` — and was fixed here.)
 
 ### 2. `warp` — an alternative cast cost with end-step exile + recast-from-exile (a 2025 keyword)
 

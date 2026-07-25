@@ -607,11 +607,18 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
             int choice = pq.answer;
             game.player_a_has_priority = pq.prev_priority;
             pq = PendingQuery{};
-            if (choice == 0)
+            if (choice == 0) {
+                // Additive draw replacement (CR 614.1, Quantum Riddler): the extra cards this draw
+                // event adds, evaluated on the pre-draw hand so its "one or fewer cards in hand"
+                // gate is correct. The bonus cards are part of the same replaced event (614.5) and
+                // are plain draws (not re-dispatched), so this replacement can't re-apply to them.
+                int draw_bonus = replacement::draw_count_bonus(pd.player);
                 orderer->perform_draw(pd.player);
-            else
+                for (int i = 0; i < draw_bonus && !game.ended; i++) orderer->perform_draw(pd.player);
+            } else {
                 orderer->apply_dredge(pd.player, opts[static_cast<size_t>(choice) - 1].source,
                                       opts[static_cast<size_t>(choice) - 1].mill);
+            }
             pd.remaining--;
             continue;
         }
@@ -625,8 +632,12 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
         std::vector<LegalAction> menu = replacement::collect_draw_replacements(pd.player, &opts);
         if (menu.empty()) {
             // No dredge applies — the promptless common case, exactly today's
-            // draw_one with an empty replacement dispatch.
+            // draw_one with an empty replacement dispatch. The additive draw replacement
+            // (CR 614.1, Quantum Riddler) adds its bonus cards here too — evaluated on the
+            // pre-draw hand, drawn as plain (non-re-dispatched) draws after the base draw.
+            int draw_bonus = replacement::draw_count_bonus(pd.player);
             orderer->perform_draw(pd.player);
+            for (int i = 0; i < draw_bonus && !game.ended; i++) orderer->perform_draw(pd.player);
             pd.remaining--;
             continue;
         }
