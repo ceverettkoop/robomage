@@ -55,7 +55,11 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // Target player reveals hand, then either the controller picks ONE matching card
     // (RevealYouChoose — Thoughtseize/Duress) or all matching cards are discarded
     // (RevealDiscardAll — Cabal Therapy).
-    Zone::Ownership tgt_owner = Zone::PLAYER_A;
+    // Default to the ability's controller so a `Defined$ You` self-discard with no player target
+    // (e.g. Careful Study's "then discard two cards") discards from the CASTER's hand, not a
+    // hard-coded Player A (which was wrong for the non-A seat). A targeted discard (Thoughtseize,
+    // Hymn, Cabal Therapy) overrides this with the actual target player below.
+    Zone::Ownership tgt_owner = ab.controller;
     if (global_coordinator.entity_has_component<Player>(ab.target)) {
         tgt_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     }
