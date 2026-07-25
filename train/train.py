@@ -1310,6 +1310,11 @@ def league(binary_path: str, decks: str | None = None,
     from opponents import assert_not_reserved_deck
     for _deck in roster:
         assert_not_reserved_deck(_deck)
+    # Every league roster deck must carry an archetype tag: the archetype pair of a
+    # matchup selects the critic's value bucket, so an untagged roster deck would
+    # silently train in the catch-all 'unknown' bucket.
+    import archetypes
+    archetypes.validate_roster(roster, context="league")
 
     # Distributed sharding: this driver TRAINS only its slice of the roster, but
     # the opponent pool (and adaptive-rotation leader comparison) still spans the
