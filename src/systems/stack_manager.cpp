@@ -137,6 +137,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_impending)
                 cur_game.pending_impending.insert(top_entity);
+            // Spell was cast for its Warp alternate cost: carry the warp bit onto the permanent so
+            // apply_permanent_components registers its "exile at the next end step" delayed trigger
+            // (consumes pending_warp via mark_warp_permanent).
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_warp)
+                cur_game.pending_warp.insert(top_entity);
             // Carry the X paid for an X-cost permanent into the ETB so an "enters with X
             // counters" replacement can read it (Chalice of the Void).
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&

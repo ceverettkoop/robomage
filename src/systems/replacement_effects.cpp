@@ -682,6 +682,28 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
     return actions;
 }
 
+int draw_count_bonus(Zone::Ownership player) {
+    int bonus = 0;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; e++) {
+        if (!is_battlefield_permanent(e, player)) continue;
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        const auto &cd = global_coordinator.GetComponent<CardData>(e);
+        for (const auto &r : cd.replacement_effects) {
+            if (r.kind != Effect::Replacement::DRAW_ADD) continue;
+            // Optional CheckSVar condition ("one or fewer cards in hand"): evaluate the resolved
+            // Count$ expression for the drawing player and test it against the comparator. An empty
+            // expression means the additive draw is unconditional.
+            if (!r.draw_condition_count_expr.empty()) {
+                int val = evaluate_sa_svar(r.draw_condition_count_expr, player, e);
+                if (!compare_svar(val, r.draw_condition_compare)) continue;
+            }
+            bonus += r.draw_add;
+        }
+    }
+    return bonus;
+}
+
 size_t choose_one_prompt_count() { return g_choose_one_prompts; }
 
 void dispatch(ReplacementEvent &ev) {

@@ -768,6 +768,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     (card_data.alt_cost.is_impending ? " (impending)"
                      : card_data.alt_cost.is_spectacle ? " (spectacle)"
                      : card_data.alt_cost.is_miracle   ? " (miracle)"
+                     : card_data.alt_cost.is_warp      ? " (warp)"
                                                         : " (alternate cost)");
                 actions.push_back(alt_la);
             }

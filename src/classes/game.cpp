@@ -424,6 +424,17 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // grant_turn) whose active player is the grant's caster.
                     for (auto pit = impulse_cast_permission.begin(); pit != impulse_cast_permission.end();) {
                         const ImpulseCastPermission &g = pit->second;
+                        // A warp recast permission persists across turns for as long as the card
+                        // remains in exile; it lapses only once the card has left exile (cast, or
+                        // moved by another effect). It is never expired by the per-turn cleanup.
+                        if (g.warp) {
+                            bool in_exile =
+                                global_coordinator.entity_has_component<Zone>(pit->first) &&
+                                global_coordinator.GetComponent<Zone>(pit->first).location == Zone::EXILE;
+                            if (in_exile) { ++pit; continue; }
+                            pit = impulse_cast_permission.erase(pit);
+                            continue;
+                        }
                         bool expire = !g.persist_until_end_of_next_turn ||
                                       (g.caster == active_player && turn > g.grant_turn);
                         if (expire) pit = impulse_cast_permission.erase(pit);

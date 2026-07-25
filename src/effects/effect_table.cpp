@@ -76,6 +76,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::CopySpellAbility: return &copy_spell_ability;
         case EffectKind::SuspendTick:     return &suspend_tick;
         case EffectKind::SetState:        return &set_state;
+        case EffectKind::WarpExile:       return &warp_exile;
         default:                          return nullptr;
     }
 }

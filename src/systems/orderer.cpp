@@ -461,6 +461,11 @@ void Orderer::draw(Zone::Ownership player, size_t ct, bool fire_draw_event) {
 
 // actual effect here; replacement (dredge) handled here, triggers handled by callers
 void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
+    // Additive draw replacement (CR 614.1, Quantum Riddler): compute the extra-card bonus for this
+    // draw event BEFORE the draw, so its "one or fewer cards in hand" gate sees the pre-draw hand.
+    // The bonus cards are drawn after the base draw as part of the same replaced event (614.5) —
+    // they are plain draws (no re-dispatch), so this additive replacement can't re-apply to them.
+    int draw_bonus = replacement::draw_count_bonus(player);
     // Dredge replacement (rule 702.52a / 614.1a): the player may replace this draw
     // with a dredge from their graveyard. If they do, no card is drawn.
     {
@@ -472,11 +477,16 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
         rev.affected_player = player;
         replacement::dispatch(rev);
         if (rev.draw_replaced) {
+            // The draw was replaced by a dredge, so no card is drawn — the additive bonus, which
+            // modifies the *draw*, does not apply. (No vocab card combines dredge with an additive
+            // draw replacement, so their 616.1 co-application order is not modeled.)
             apply_dredge(player, rev.dredge_source, rev.dredge_mill);
             return;
         }
     }
     perform_draw(player, fire_draw_event);
+    for (int i = 0; i < draw_bonus && !cur_game.ended; i++)
+        perform_draw(player, fire_draw_event);
 }
 
 void Orderer::apply_dredge(Zone::Ownership player, Entity source, int mill_ct) {

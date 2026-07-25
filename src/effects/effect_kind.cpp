@@ -138,6 +138,10 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // DB$ SetState | Mode$ TurnFaceUp (The Creation of Avacyn chapter II): turn the Defined$
         // card face up (clear its face-down flag). See effect_set_state.cpp.
         {"SetState", EffectKind::SetState},
+        // Warp (a 2025 keyword): the synthesized "exile it at the next end step" delayed trigger of
+        // a warp-cast permanent resolves here — exile the source and grant its owner the lasting
+        // recast-from-exile permission (see mark_warp_permanent / effect_warp.cpp).
+        {"WarpExile", EffectKind::WarpExile},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

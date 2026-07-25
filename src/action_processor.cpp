@@ -3153,6 +3153,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             spell.cast_with_escape = pc.use_escape;
             spell.cast_with_offspring = pc.use_offspring;
             spell.cast_with_impending = pc.use_alt_cost && card_data.alt_cost.is_impending;
+            spell.cast_with_warp = pc.use_alt_cost && card_data.alt_cost.is_warp;
             spell.kicked = pc.kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
             spell.replicate_count = pc.replicate_count;  // # of replicate payments (0 if none/no Replicate)
             spell.gift_promised = pc.gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution

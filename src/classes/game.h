@@ -695,8 +695,19 @@ struct Game {
             // (the caster already holds priority in their own upkeep). Ordinary free casts (Ugin)
             // leave this false and keep their type-based timing.
             bool from_suspend = false;
+            // warp: granted when a warp-cast object is exiled at the next end step. Unlike the
+            // per-turn grants above, a warp permission persists across turns FOR AS LONG AS the
+            // card remains in exile — it lapses only once the card leaves exile (cast, or moved
+            // by another effect). The recast keeps the card's normal sorcery/instant timing (a
+            // creature is recast at sorcery speed), so from_suspend stays false. See effect_warp.cpp.
+            bool warp = false;
         };
         std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
+        // Warp (a 2025 keyword): cards cast for their warp cost, pending the delayed end-step exile.
+        // Set from Spell::cast_with_warp as the spell resolves onto the battlefield (stack_manager),
+        // consumed when the permanent is created (apply_permanent_components) to register the
+        // one-shot "exile at the next end step" delayed triggered ability (mark_warp_permanent).
+        std::set<Entity> pending_warp;
         // Suspend time counters (CR 702.62 / 122): a card exiled with suspend carries N time
         // counters. It is NOT a permanent, so its counters can't live in Permanent::counters —
         // they are tracked here, keyed by the exiled card entity. A card is "suspended" (702.62b)

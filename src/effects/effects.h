@@ -215,6 +215,12 @@ HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
 // Structured so other Mode$ values (e.g. TurnFaceDown, Transform) can be added. See
 // effect_set_state.cpp.
 HandlerResult set_state(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// WarpExile (a 2025 keyword; not in the checked-in CR snapshot): the delayed end-step triggered
+// ability set up for a warp-cast permanent (mark_warp_permanent). Exiles ab.source (if it is still
+// on the battlefield as the same object) and grants its owner a lasting cast-from-exile permission
+// so it may be recast on a later turn for its normal cost while it remains exiled. A permanent that
+// already left the battlefield follows normal rules (the exile no-ops). See effect_warp.cpp.
+HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────

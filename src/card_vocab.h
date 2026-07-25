@@ -262,6 +262,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Maze of Ith", 343},
     {"Teferi, Time Raveler", 344},
     {"Lavinia, Azorius Renegade", 345},
+    {"Quantum Riddler", 346},
     {"Atraxa, Grand Unifier", 347},
     {"Animate Dead", 348},
     {"The Creation of Avacyn", 349},

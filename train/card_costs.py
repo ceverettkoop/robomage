@@ -352,7 +352,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 343: Maze of Ith
     [0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.1],  # 344: Teferi, Time Raveler
     [0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 345: Lavinia, Azorius Renegade
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 346: 
+    [0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.3],  # 346: Quantum Riddler
     [0.1, 0.1, 0.1, 0.0, 0.1, 0.0, 0.3],  # 347: Atraxa, Grand Unifier
     [0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.1],  # 348: Animate Dead
     [0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.1],  # 349: The Creation of Avacyn
@@ -1383,7 +1383,7 @@ _VOCAB_NAMES = [
     "Maze of Ith",  # 343
     "Teferi, Time Raveler",  # 344
     "Lavinia, Azorius Renegade",  # 345
-    "",  # 346
+    "Quantum Riddler",  # 346
     "Atraxa, Grand Unifier",  # 347
     "Animate Dead",  # 348
     "The Creation of Avacyn",  # 349

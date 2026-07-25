@@ -48,6 +48,7 @@
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
+static void mark_warp_permanent(Entity entity, Permanent &perm);
 static void apply_global_addtype_statics(const std::set<Entity> &entities);
 static bool etb_ability_removal_applies(Entity entity, const std::set<Entity> &entities);
 static void remerge_animate_granted_abilities(Entity entity);
@@ -85,6 +86,31 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
     dt.fire_on_turn = cur_game.turn;
     cur_game.delayed_triggers.push_back(dt);
     game_log("%s is unearthed (haste; exiled at the next end step).\n", perm.name.c_str());
+}
+
+// Warp (a 2025 keyword; not in the checked-in CR snapshot): finalize a warp-cast permanent the
+// instant its Permanent is created. Registers a one-shot delayed triggered ability (CR 603.7b,
+// like Unearth) that fires at the beginning of the next end step and — via the WarpExile effect —
+// exiles this exact permanent and grants its owner a lasting cast-from-exile permission (recast for
+// its normal cost while it remains exiled). Unlike Unearth, warp grants NO haste and installs NO
+// leaves-the-battlefield → exile redirect: a warp-cast permanent that leaves before the end step
+// (dies, is bounced) simply follows normal rules. The delayed trigger fires on the next end step
+// whoever is active (warp is sorcery-speed on the caster's own turn, so that is this turn's end
+// step). General over any warp card.
+static void mark_warp_permanent(Entity entity, Permanent &perm) {
+    Ability fire_ab;
+    fire_ab.ability_type = Ability::TRIGGERED;
+    fire_ab.category = "WarpExile";
+    fire_ab.source = entity;
+
+    DelayedTrigger dt;
+    dt.ability = fire_ab;
+    dt.fire_on = Events::END_STEP_BEGAN;
+    dt.owner_entity = get_player_entity(perm.controller);
+    dt.fire_on_turn = cur_game.turn;
+    cur_game.delayed_triggers.push_back(dt);
+    game_log("%s was cast with warp (exiled at the next end step; castable from exile later).\n",
+             perm.name.c_str());
 }
 
 // Evaluate a continuous static's IsPresent$/PresentZone$/PresentCompare$ gate (CR 604.3 /
@@ -663,6 +689,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Unearth (CR 702.84): returned to the battlefield by its unearth ability — gains
                 // haste, gets the delayed end-step exile, and the leaves→exile redirect.
                 if (game.pending_unearthed.erase(entity)) mark_unearthed_permanent(entity, perm);
+                // Warp: cast for its warp alternate cost — register the delayed end-step exile that
+                // then grants the recast-from-exile permission (no haste, no leaves→exile redirect).
+                if (game.pending_warp.erase(entity)) mark_warp_permanent(entity, perm);
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;

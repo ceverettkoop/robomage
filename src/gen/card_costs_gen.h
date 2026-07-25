@@ -354,7 +354,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 343: Maze of Ith
     {0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 344: Teferi, Time Raveler
     {0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 345: Lavinia, Azorius Renegade
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 346: 
+    {0.0f, 0.2f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f},  // 346: Quantum Riddler
     {0.1f, 0.1f, 0.1f, 0.0f, 0.1f, 0.0f, 0.3f},  // 347: Atraxa, Grand Unifier
     {0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.1f},  // 348: Animate Dead
     {0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.0f, 0.1f},  // 349: The Creation of Avacyn
@@ -1383,7 +1383,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 343: Maze of Ith
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 344: Teferi, Time Raveler
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 345: Lavinia, Azorius Renegade
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 346: 
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 346: Quantum Riddler
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 347: Atraxa, Grand Unifier
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 348: Animate Dead
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 349: The Creation of Avacyn

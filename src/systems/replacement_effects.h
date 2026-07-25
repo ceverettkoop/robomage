@@ -94,6 +94,16 @@ struct DrawReplacementOption {
 std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
                                                    std::vector<DrawReplacementOption> *opts);
 
+// Additive draw replacement (CR 614.1, Quantum Riddler): the number of EXTRA cards `player`
+// draws for a single "would draw a card" event, summed over every DRAW_ADD replacement on
+// `player`'s battlefield permanents whose CheckSVar condition currently holds ("as long as you
+// have one or fewer cards in hand"). 0 = no additive replacement applies (the common case). A
+// pure ECS read (battlefield scan + SVar evaluation) with no prompt, evaluated at the draw site
+// BEFORE the base draw so the condition sees the pre-draw hand. The caller performs `bonus`
+// extra plain draws after the base draw — those extra draws are part of the same replaced event
+// (614.5) and are NOT re-passed through this replacement.
+int draw_count_bonus(Zone::Ownership player);
+
 // Diagnostics: how many 616.1 choose-one-of-several-replacements prompts this
 // process has emitted. The choose_one prompt is the one remaining blocking
 // mid-flow prompt family (see the residual note at choose_one in

@@ -41,6 +41,14 @@ struct AltCost {
     // an opponent of the caster lost life this turn (CR 702.107a). Gated in can_afford_alt on
     // the opponent's Player::life_lost_this_turn; paid via the shared alt-cost path.
     bool is_spectacle = false;
+    // K:Warp:<cost> — Warp (a 2025 keyword; not in the checked-in CR snapshot). An ALTERNATIVE
+    // casting cost: the spell may be cast from hand for `mana_cost` (the warp cost) instead of its
+    // normal mana cost. When cast this way, at the beginning of the NEXT end step the resulting
+    // object is exiled (a delayed triggered ability, mirroring Unearth), and for as long as it
+    // remains exiled this way its owner may cast it on a later turn for its NORMAL cost (a lasting
+    // cast-from-exile permission). Cast for the normal cost, none of this applies. The end-step
+    // exile + recast permission are keyed off Spell::cast_with_warp; see effect_warp.cpp.
+    bool is_warp = false;
     // K:Miracle:<cost> — Miracle (CR 702.94). An ALTERNATIVE casting cost: when a player draws
     // this card AS THE FIRST CARD they've drawn this turn, they may reveal it and cast it for
     // `mana_cost` (the miracle cost) rather than its normal mana cost. Encoded on the shared

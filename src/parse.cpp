@@ -747,6 +747,22 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Spectacle");
             continue;
         }
+        // K:Warp:<cost> — Warp (a 2025 keyword; not in the checked-in CR snapshot). An alternative
+        // casting cost: the spell may be cast from hand for <cost> instead of its normal mana cost.
+        // If cast this way the object is exiled at the beginning of the next end step and may then
+        // be cast from exile later for its normal cost (see effect_warp.cpp / the cast-with-warp
+        // markers). Encoded on the shared AltCost (mana portion = <cost>) with the is_warp flag;
+        // can_afford_alt gates it purely on affordability of the warp cost. Format mirrors Spectacle.
+        if (kw_line.rfind("Warp", 0) == 0) {
+            size_t colon = kw_line.find(':');
+            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
+            AltCost ac;
+            parse_alt_cost_tokens(cost_str, ac);
+            ac.is_warp = true;
+            card.alt_cost = ac;
+            card.keywords.push_back("Warp");
+            continue;
+        }
         // K:Miracle:<cost> — Miracle (CR 702.94). An alternative casting cost: when this card is
         // drawn as the FIRST card its controller drew this turn, they may reveal it and cast it
         // for <cost> instead of its normal mana cost. Encoded on the shared AltCost (mana portion
@@ -3861,6 +3877,10 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool event_is_untap       = false;
         bool event_is_produce_mana = false;       // Event$ ProduceMana (Damping Sphere)
         bool event_is_draw        = false;        // Event$ Draw (Jace, Wielder of Mysteries: win on empty-library draw)
+        bool event_is_draw_cards  = false;        // Event$ DrawCards (Quantum Riddler: additive "draw that many plus one")
+        std::string draw_check_svar;              // CheckSVar$ <var> — the count-gate SVar name (resolved to its Count$ body below)
+        std::string draw_svar_compare;            // SVarCompare$ <cmp> — comparator for the count gate (e.g. "LE1")
+        bool valid_player_you     = false;        // ValidPlayer$ You — the replacement applies to the source controller's own draws
         std::string produce_valid_type;           // ValidCard$ <type> for a ProduceMana replacement ("Land")
         int produce_min_amount    = 1;            // ManaAmount$ GEN — minimum produced amount
         std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
@@ -3892,6 +3912,10 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             else if (key == "Event"       && value == "Untap")      event_is_untap          = true;
             else if (key == "Event"       && value == "ProduceMana") event_is_produce_mana  = true;
             else if (key == "Event"       && value == "Draw")        event_is_draw           = true;
+            else if (key == "Event"       && value == "DrawCards")   event_is_draw_cards     = true;
+            else if (key == "ValidPlayer" && value == "You")         valid_player_you        = true;
+            else if (key == "CheckSVar")  draw_check_svar          = value;
+            else if (key == "SVarCompare") draw_svar_compare       = value;
             else if (key == "ManaAmount"  && value.rfind("GE", 0) == 0) {
                 // ManaAmount$ GEN — applies when a source is tapped for >= N mana (Damping Sphere: GE2).
                 std::string n = value.substr(2);
@@ -4122,6 +4146,43 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 Effect::Replacement r;
                 r.kind = Effect::Replacement::DRAW_EMPTY_WIN;
                 r.applies_to_self_only = false;  // scoped to the controller at the draw site
+                result.push_back(r);
+            }
+        }
+        // Quantum Riddler: "As long as you have one or fewer cards in hand, if you would draw one
+        // or more cards, you draw that many cards plus one instead." (CR 614.1). A MODIFYING draw
+        // replacement — Event$ DrawCards, ValidPlayer$ You (the source controller's own draws),
+        // whose ReplaceWith$ SVar is a DB$ Draw with NumCards$ ReplaceCount$Number/Plus.K: the draw
+        // count is increased by K. The optional CheckSVar$/SVarCompare$ gate ("one or fewer cards in
+        // hand") is carried onto the replacement and re-evaluated for the drawing player at draw
+        // time (replacement::draw_count_bonus). General over any additive draw replacement.
+        if (event_is_draw_cards && active_zones_battlefield && valid_player_you &&
+            !replace_with_svar.empty()) {
+            auto it = svars.find(replace_with_svar);
+            int add = 0;
+            if (it != svars.end() && it->second.find("DB$ Draw") != std::string::npos) {
+                // Pull the additive count out of NumCards$ ReplaceCount$Number/Plus.K.
+                size_t pp = 0; std::string k, v;
+                while (next_param(it->second, pp, k, v)) {
+                    if (k != "NumCards") continue;
+                    size_t plus = v.find("/Plus.");
+                    if (plus != std::string::npos) add = std::stoi(v.substr(plus + 6));
+                    break;
+                }
+            }
+            if (add > 0) {
+                Effect::Replacement r;
+                r.kind = Effect::Replacement::DRAW_ADD;
+                r.applies_to_self_only = false;
+                r.draw_add = add;
+                // Resolve CheckSVar$ <var> to the SVar's Count$ body so the count gate can be
+                // evaluated directly (mirrors the trigger-side CheckSVar handling). An absent
+                // CheckSVar leaves the gate empty = the additive draw always applies.
+                if (!draw_check_svar.empty()) {
+                    auto cv = svars.find(draw_check_svar);
+                    r.draw_condition_count_expr = (cv != svars.end()) ? cv->second : draw_check_svar;
+                    r.draw_condition_compare = draw_svar_compare;
+                }
                 result.push_back(r);
             }
         }
