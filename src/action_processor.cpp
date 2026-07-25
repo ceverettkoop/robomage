@@ -64,6 +64,7 @@ static void finish_pending_attacker(Game &game);
 static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer);
+static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer);
 // One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
 // amount, or a life amount when is_life) the targeting player must pay or have the spell/
 // ability countered. Collected from the printed ward (CardData::ward_cost) and from any
@@ -3697,11 +3698,71 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     orderer->push_ability_onto_stack(trig, owner);
 }
 
+// Miracle (CR 702.94a) cast decision. The linked "you may cast it" triggered ability has resolved
+// (effect_miracle.cpp armed Game::miracle_cast_pending), so the owner now makes a single immediate
+// choice: cast the card for its miracle cost, or do not. Presented only while the card is still in
+// the owner's hand; the "Cast" option is offered only when the miracle mana cost is affordable
+// (CR 601.2f floor folded in), otherwise ONLY "do not cast" is offered. On "cast" the real cast is
+// initiated immediately for the miracle alternate cost through the normal cast machinery
+// (process_action -> run_cast_flow), so payment / targets / X behave exactly like any other cast.
+static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer) {
+    Entity card = game.miracle_cast_pending;
+    game.miracle_cast_pending = 0;  // consume up front — a single, one-shot decision
+    if (!global_coordinator.entity_has_component<Zone>(card)) return;
+    auto &z = global_coordinator.GetComponent<Zone>(card);
+    if (z.location != Zone::HAND) return;  // left hand (e.g. countered reveal) — nothing to cast
+    Zone::Ownership owner = z.owner;
+    if (owner != Zone::PLAYER_A && owner != Zone::PLAYER_B) return;
+    if (!global_coordinator.entity_has_component<CardData>(card)) return;
+    const CardData &card_data = global_coordinator.GetComponent<CardData>(card);
+    const std::string nm = card_data.name;
+
+    // Affordability of the miracle mana cost, matching can_afford_alt's final mana check so the
+    // offer and the actual payment agree.
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost, owner);
+    bool affordable = alt_mana.empty() || can_pay_mana(owner, alt_mana, card, orderer);
+
+    std::vector<LegalAction> menu;
+    LegalAction decline(PASS_PRIORITY, std::string("Do not cast ") + nm + " (miracle)");
+    decline.category = ActionCategory::OPTIONAL_YESNO;
+    decline.option_ordinal = 0;  // 0 = do not cast
+    menu.push_back(decline);
+    if (affordable) {
+        LegalAction accept(PASS_PRIORITY, card, std::string("Cast ") + nm + " for its miracle cost");
+        accept.category = ActionCategory::OPTIONAL_YESNO;
+        accept.option_ordinal = 1;  // 1 = cast now for the miracle cost
+        menu.push_back(accept);
+    }
+
+    // Present to the OWNER (seat repointed, loop-safe — same pattern as cleanup discard / the reveal).
+    bool prev_priority = game.player_a_has_priority;
+    game.player_a_has_priority = (owner == Zone::PLAYER_A);
+    search_set_loop_safe(true);
+    int choice = InputLogger::instance().get_input(menu);
+    search_set_loop_safe(false);
+
+    if (choice != 1) {
+        game.player_a_has_priority = prev_priority;  // declined (or unaffordable) — restore priority
+        return;
+    }
+    // Cast it now for the miracle alternate cost via the normal cast machinery. Priority stays at the
+    // owner (the caster) so run_cast_flow's converted prompts (mana payment, targets, X) seat on them.
+    LegalAction cast(CAST_SPELL, card, std::string("Cast ") + nm + " (miracle)");
+    cast.category = ActionCategory::CAST_SPELL;
+    cast.use_alt_cost = true;
+    cast.option_ordinal = 1;
+    process_action(cast, game, orderer);
+}
+
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
-    // A pending miracle reveal (CR 702.94) is a forced private decision the drawing player makes
-    // before proceeding; it rides this channel but is not a pending_choice enum value.
+    // A pending miracle reveal or cast (CR 702.94) is a forced decision the drawing player makes
+    // before proceeding; both ride this channel but are not pending_choice enum values.
     if (game.miracle_reveal_pending != 0) {
         proc_miracle_reveal(game, orderer);
+        return;
+    }
+    if (game.miracle_cast_pending != 0) {
+        proc_miracle_cast(game, orderer);
         return;
     }
     switch (game.pending_choice) {

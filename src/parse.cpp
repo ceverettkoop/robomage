@@ -778,9 +778,10 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // K:Miracle:<cost> — Miracle (CR 702.94). An alternative casting cost: when this card is
         // drawn as the FIRST card its controller drew this turn, they may reveal it and cast it
         // for <cost> instead of its normal mana cost. Encoded on the shared AltCost (mana portion
-        // = <cost>) with the is_miracle flag; the qualifying-draw gate lives in orderer.cpp (adds
-        // the entity to Game::miracle_window) and can_afford_alt offers the alt cost only while
-        // the card is in that window. General over any Miracle card.
+        // = <cost>) with the is_miracle flag. The qualifying-draw gate lives in orderer.cpp (arms
+        // Game::miracle_reveal_pending); miracle then runs as two mandatory-choice decisions — a
+        // private reveal and an immediate cast/do-not-cast — rather than a priority-menu alt cost.
+        // General over any Miracle card.
         if (kw_line.rfind("Miracle", 0) == 0) {
             size_t colon = kw_line.find(':');
             std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";

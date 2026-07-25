@@ -78,11 +78,11 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
 
-    // Miracle (CR 702.94): the miracle cost may be paid only while the card sits in the per-turn
-    // miracle window — i.e. it was drawn as the first card its controller drew this turn (the
-    // qualifying-draw gate in orderer.cpp populated Game::miracle_window). The mana affordability
-    // of the miracle cost is still checked below via the shared alt-cost path.
-    if (alt_cost.is_miracle && !cur_game.miracle_window.count(card_entity)) return false;
+    // Miracle (CR 702.94) is never a normal priority-menu cast: it is castable ONLY through the
+    // dedicated immediate "cast it for its miracle cost / do not cast" decision presented right when
+    // its linked triggered ability resolves (proc_mandatory_choice's miracle-cast branch, gated on
+    // its own affordability check). So the alternate-cost cast option is never offered here.
+    if (alt_cost.is_miracle) return false;
 
     // Spectacle (CR 702.107a): the spectacle cost may be paid only if an opponent of the
     // caster lost life this turn. Two-player game — the sole opponent is the other seat.
