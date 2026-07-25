@@ -735,6 +735,8 @@ struct Ability{
     int dig_until_found_dest = Zone::HAND;      // FoundDestination$ — zone the matching card goes to
     int dig_until_revealed_dest = Zone::LIBRARY; // RevealedDestination$ — zone the skipped cards go to
     bool dig_until_remember_found = false;       // RememberFound$ True
+    bool dig_until_attacking = false;            // Attacking$ True — the found card (FoundDestination$ Battlefield)
+                                                 // enters tapped (enters_tapped) and attacking (Raph & Mikey; CR 508.4)
 
     // DB$ Play (Amped Raptor): cast a Defined$ card from its current zone, paying an
     // alternative RESOURCE cost (PlayCost$) instead of its mana cost. play_cost_resource is

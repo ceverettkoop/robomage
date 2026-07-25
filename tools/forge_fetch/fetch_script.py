@@ -106,8 +106,11 @@ _VOCAB_ORDER = None
 
 
 def name_to_uid(name):
-    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen -> '_', drop other punct."""
-    return re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
+    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen -> '_', drop other punct,
+    then collapse consecutive underscores to one (so "& "-joined names like
+    "Raph & Mikey, Troublemakers" match Forge's single-underscore filename)."""
+    uid = re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
+    return re.sub(r"_+", "_", uid)
 
 
 def _resolve(uid, is_token):

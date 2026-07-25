@@ -66,12 +66,17 @@ def find_card_file(name):
     so we also try a prefix match when an exact match isn't found.
     """
     stem = re.sub(r'[^a-z0-9_]', '', name.lower().replace(' ', '_').replace('-', '_'))
+    # Collapse consecutive underscores to one, matching parse.cpp name_to_uid — a name whose
+    # "& "/punctuation excision leaves a doubled "__" (e.g. "Raph & Mikey, Troublemakers")
+    # must resolve to Forge's single-underscore filename (raph_mikey_troublemakers.txt).
+    stem = re.sub(r'_+', '_', stem)
     # Accented names: the C++ name_to_uid strips non-ASCII bytes (an accented letter is
     # dropped, not transliterated), but Forge's filename transliterates the accent (e.g. to
     # "lorien_revealed"). Try an NFKD-decomposed ASCII stem as well so an accented card name
     # resolves to its on-disk script.
     translit = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
     translit_stem = re.sub(r'[^a-z0-9_]', '', translit.lower().replace(' ', '_').replace('-', '_'))
+    translit_stem = re.sub(r'_+', '_', translit_stem)
     stems = [stem] if translit_stem == stem else [stem, translit_stem]
     for s in stems:
         filename = s + '.txt'

@@ -360,7 +360,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.0f, 0.1f},  // 349: The Creation of Avacyn
     {0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.4f},  // 350: Triumph of Saint Katherine
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.0f},  // 351: Monastery Swiftspear
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 352: 
+    {0.0f, 0.0f, 0.0f, 0.2f, 0.2f, 0.0f, 0.5f},  // 352: Raph & Mikey, Troublemakers
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 353: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 354: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 355: 
@@ -1389,7 +1389,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 349: The Creation of Avacyn
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 350: Triumph of Saint Katherine
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 351: Monastery Swiftspear
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 352: 
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 352: Raph & Mikey, Troublemakers
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 353: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 354: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 355: 

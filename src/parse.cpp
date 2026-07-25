@@ -165,7 +165,19 @@ std::string name_to_uid(std::string name) {
         name.erase(index_to_rm, 1);
     }
 
-    return name;
+    // Collapse consecutive underscores to one. Removing a non-alphanumeric character that sat
+    // between two separators (e.g. the "& " in "Raph & Mikey" — space->_, '&' excised, space->_)
+    // leaves a doubled "__"; Forge's filenames join such names with a SINGLE underscore
+    // (raph_mikey_troublemakers.txt). Collapsing here aligns name_to_uid with Forge's convention.
+    // Safe: no shipped Forge script has a "__" in its filename, so this can't shadow another card.
+    std::string collapsed;
+    collapsed.reserve(name.size());
+    for (char c : name) {
+        if (c == '_' && !collapsed.empty() && collapsed.back() == '_') continue;
+        collapsed.push_back(c);
+    }
+
+    return collapsed;
 }
 
 // Parses the cost portion of an alternate cost string (the value after Cost$ / after

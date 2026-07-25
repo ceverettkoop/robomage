@@ -884,7 +884,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     ncr.is_attacking = true;
                     ncr.attack_target = pea->second;
                     ncr.is_blocked = false;
-                    game_log("%s is attacking (ninjutsu).\n", entity_name(entity).c_str());
+                    game_log("%s is attacking.\n", entity_name(entity).c_str());
                     game.pending_enters_attacking.erase(pea);
                 }
             }
@@ -1305,7 +1305,7 @@ static void apply_self_animate_statics() {
                     ncr.is_attacking = true;
                     ncr.attack_target = pea->second;
                     ncr.is_blocked = false;
-                    game_log("%s is attacking (ninjutsu).\n", entity_name(a.entity).c_str());
+                    game_log("%s is attacking.\n", entity_name(a.entity).c_str());
                     cur_game.pending_enters_attacking.erase(pea);
                 }
             }
