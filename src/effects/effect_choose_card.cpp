@@ -36,7 +36,14 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.owner != you || z.location != Zone::LIBRARY) continue;  // YouOwn + not already taken
+            if (z.owner != you || z.location != Zone::LIBRARY) continue;  // YouOwn + still in library
+            // A card already chosen for an earlier card type this resolution is no longer "among
+            // them" (CR: one card per card type) — exclude it even though it hasn't physically left
+            // the library yet (the trailing Defined$ Remembered move runs after the whole type loop).
+            bool already_picked = false;
+            for (auto r : cur_game.remembered_entities)
+                if (r == e) { already_picked = true; break; }
+            if (already_picked) continue;
             if (!cur_game.chosen_type.empty() &&
                 !card_has_type(global_coordinator.GetComponent<CardData>(e), cur_game.chosen_type))
                 continue;
