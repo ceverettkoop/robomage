@@ -85,6 +85,25 @@ USE_PER_ACTION_HEAD = os.environ.get("ROBOMAGE_PER_ACTION_HEAD", "1").lower() \
     not in ("0", "", "false", "no")
 
 
+# ── PopArt value normalization (opt-in, default OFF) ────────────────────────
+# --popart (any training subcommand) or ROBOMAGE_POPART=1 swaps MaskablePPO for
+# the thin PopArtMaskablePPO subclass (train/popart.py), which normalizes each
+# archetype bucket's value targets by that bucket's running (mu, sigma). The
+# statistics live in the POLICY's buffers, so a checkpoint is loadable either way
+# and the flag can be flipped between sessions; with it off the stats stay at
+# (0, 1) and every PopArt formula is the identity.
+USE_POPART = os.environ.get("ROBOMAGE_POPART", "0").lower() \
+    in ("1", "true", "yes", "on")
+
+
+def _ppo_class():
+    """The PPO class to construct/resume with this session (PopArt or stock)."""
+    if not USE_POPART:
+        return MaskablePPO
+    from popart import PopArtMaskablePPO
+    return PopArtMaskablePPO
+
+
 def _policy_config(policy_kwargs):
     """Resolve (policy, policy_kwargs) for MaskablePPO construction.
 
@@ -1103,11 +1122,11 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
         if load_path:
             print(f"Resuming from {load_path}")
-            model = _reassert_hparams(MaskablePPO.load(load_path, env=vec_env),
+            model = _reassert_hparams(_ppo_class().load(load_path, env=vec_env),
                                       model_deck)
         else:
             policy_cls, policy_kwargs = _policy_config(policy_kwargs)
-            model = MaskablePPO(
+            model = _ppo_class()(
                 policy_cls,
                 vec_env,
                 policy_kwargs=policy_kwargs,
@@ -1191,13 +1210,13 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         if resuming:
             print(f"[league] rotation piloting {learner_deck}: resuming the "
                   f"generalist from {os.path.basename(resume)}")
-            model = _reassert_hparams(MaskablePPO.load(resume, env=vec_env),
+            model = _reassert_hparams(_ppo_class().load(resume, env=vec_env),
                                       learner_deck)
         else:
             print(f"[league] starting the generalist from scratch "
                   f"(first rotation piloting {learner_deck}, embed_dim={embed_dim})")
             policy_cls, policy_kwargs = _policy_config(policy_kwargs)
-            model = MaskablePPO(
+            model = _ppo_class()(
                 policy_cls, vec_env, policy_kwargs=policy_kwargs,
                 verbose=1, tensorboard_log=LOG_DIR, **PPO_KWARGS)
 
@@ -1584,7 +1603,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
 
     try:
         print(f"Resuming from {load_path}")
-        model = _reassert_hparams(MaskablePPO.load(load_path, env=vec_env),
+        model = _reassert_hparams(_ppo_class().load(load_path, env=vec_env),
                                   model_deck)
 
         if no_shaping:
@@ -2013,6 +2032,14 @@ if __name__ == "__main__":
             USE_PER_ACTION_HEAD = False
             print("[head] --stock-head: fresh models this session use the "
                   "stock MlpPolicy positional head")
+        # --popart normalizes each archetype bucket's value targets by that
+        # bucket's running (mu, sigma) (see train/popart.py). Default OFF.
+        if getattr(args, "popart", False):
+            if not USE_PER_ACTION_HEAD:
+                parser.error("--popart requires the multi-head critic policy; it "
+                             "cannot be combined with --stock-head")
+            USE_POPART = True
+            print("[popart] per-archetype-bucket value normalization ENABLED")
 
     if args.command == "league":
         league(args.binary, decks=args.decks, total_timesteps=args.total_timesteps,

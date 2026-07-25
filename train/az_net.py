@@ -633,6 +633,18 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
                     transferred.append(tk)
         notes.append("multi-head value head copied 1:1 from PPO value_net "
                      f"({N_VALUE_BUCKETS} archetype-bucket columns, now behind tanh)")
+        # A PopArt-trained PPO head predicts NORMALIZED values (its per-bucket
+        # (mu, sigma) live in policy buffers AZNet has no counterpart for), so its
+        # copied columns are on a different scale than AZ's tanh targets. Harmless
+        # (AZ re-fits the head from ±1 targets) but say so rather than hide it.
+        sigma = sd.get("popart_sigma")
+        mu = sd.get("popart_mu")
+        if sigma is not None and mu is not None and (
+                bool((sigma != 1.0).any()) or bool((mu != 0.0).any())):
+            notes.append("source checkpoint was trained with PopArt: the copied "
+                         "value head is in NORMALIZED value space (its per-bucket "
+                         "mu/sigma are not transferred) — AZ retrains it against "
+                         "its own [-1,1] targets")
     else:
         notes.append("stock MlpPolicy: policy/value heads start fresh "
                      "(shape-incompatible with the per-action AZ head)")

@@ -682,6 +682,19 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         self.value_net = nn.Linear(self.mlp_extractor.latent_dim_vf, N_VALUE_BUCKETS)
         if self.ortho_init:
             self.value_net.apply(partial(self.init_weights, gain=1.0))
+        # Per-bucket PopArt statistics (Hessel et al. 2019). ALWAYS present as
+        # buffers — they ride in the checkpoint, and at (mu=0, sigma=1) the
+        # de-normalization below is the identity, so a run without --popart
+        # behaves exactly as if they weren't here. Only PopArtMaskablePPO
+        # (train/popart.py) ever updates them.
+        self.register_buffer("popart_mu", torch.zeros(N_VALUE_BUCKETS))
+        self.register_buffer("popart_sigma", torch.ones(N_VALUE_BUCKETS))
+        self.register_buffer("popart_count", torch.zeros(N_VALUE_BUCKETS))
+        # When True, _bucket_values returns the head's NORMALIZED output instead of
+        # the de-normalized value. The PopArt algorithm flips this for the duration
+        # of its value-loss computation (where the targets are normalized too);
+        # rollout collection always sees real-scale values so GAE is unaffected.
+        self.popart_normalized_out = False
         self.action_scorer = _ActionScorer(self.mlp_extractor.latent_dim_pi, self._pa_dim)
         if self.ortho_init:
             self.action_scorer.out.apply(partial(self.init_weights, gain=0.01))
@@ -694,6 +707,15 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         pa = features[:, self._pa_offset:self._pa_offset + self._pa_slots * self._pa_dim]
         return pa.reshape(pa.shape[0], self._pa_slots, self._pa_dim)
 
+    def _current_buckets(self, n_samples: int) -> torch.Tensor:
+        """The (B,) bucket indices the extractor stashed for the current batch."""
+        bucket = self.features_extractor.last_bucket
+        assert bucket is not None and bucket.shape[0] == n_samples, (
+            "multi-head critic: the features extractor did not stash a value-bucket "
+            f"index for this batch ({None if bucket is None else tuple(bucket.shape)} "
+            f"vs {n_samples} samples) — extract_features() must run first")
+        return bucket
+
     def _bucket_values(self, latent_vf: torch.Tensor) -> torch.Tensor:
         """Value per sample, gathered from its archetype-bucket head column.
 
@@ -701,14 +723,60 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         matchup tail during the extract_features() call that produced
         ``latent_vf`` — so every caller MUST run extract_features first (all three
         entry points below do). Returns (B, 1), exactly like the stock scalar head.
+
+        The head's output is in NORMALIZED value space and is de-normalized here
+        with that bucket's PopArt (mu, sigma) — the identity while PopArt is off.
         """
         all_values = self.value_net(latent_vf)                 # (B, N_VALUE_BUCKETS)
-        bucket = self.features_extractor.last_bucket
-        assert bucket is not None and bucket.shape[0] == all_values.shape[0], (
-            "multi-head critic: the features extractor did not stash a value-bucket "
-            f"index for this batch ({None if bucket is None else tuple(bucket.shape)} "
-            f"vs {all_values.shape[0]} samples) — extract_features() must run first")
-        return all_values.gather(1, bucket.view(-1, 1))        # (B, 1)
+        bucket = self._current_buckets(all_values.shape[0])
+        v_norm = all_values.gather(1, bucket.view(-1, 1))      # (B, 1)
+        if self.popart_normalized_out:
+            return v_norm
+        return v_norm * self.popart_sigma[bucket].view(-1, 1) \
+            + self.popart_mu[bucket].view(-1, 1)
+
+    @torch.no_grad()
+    def popart_update(self, buckets, means, second_moments, counts,
+                      beta: float = 0.99, eps: float = 1e-4):
+        """Fold a batch's per-bucket return statistics into the PopArt stats.
+
+        ``buckets`` are the bucket indices present in the batch; ``means`` /
+        ``second_moments`` their return mean and mean-of-squares; ``counts`` the
+        per-bucket sample counts (unused for weighting beyond the first update,
+        kept for the debias/first-update rule). For every updated bucket the head
+        column is rescaled so the network's OUTPUT is preserved across the stats
+        change (Hessel et al. 2019, the "art" half of PopArt):
+
+            w <- w * sigma_old / sigma_new
+            b <- (b * sigma_old + mu_old - mu_new) / sigma_new
+
+        Returns ``(mu_new, sigma_new)`` (full-length tensors) so the caller can
+        normalize its targets with exactly the values the head was rescaled to.
+        """
+        idx = torch.as_tensor(buckets, dtype=torch.long, device=self.popart_mu.device)
+        m = torch.as_tensor(means, dtype=self.popart_mu.dtype, device=idx.device)
+        s2 = torch.as_tensor(second_moments, dtype=self.popart_mu.dtype, device=idx.device)
+        n = torch.as_tensor(counts, dtype=self.popart_mu.dtype, device=idx.device)
+        mu_old = self.popart_mu[idx].clone()
+        sigma_old = self.popart_sigma[idx].clone()
+        # First update of a bucket adopts the batch statistics outright (no decay
+        # bias); later updates fold them in with decay `beta`.
+        first = self.popart_count[idx] == 0
+        b = torch.where(first, torch.zeros_like(m), torch.full_like(m, float(beta)))
+        mu_new = (1.0 - b) * m + b * mu_old
+        nu_old = sigma_old ** 2 + mu_old ** 2          # running second moment
+        nu_new = (1.0 - b) * s2 + b * nu_old
+        sigma_new = torch.sqrt(torch.clamp(nu_new - mu_new ** 2, min=eps ** 2))
+        sigma_new = torch.clamp(sigma_new, min=eps, max=1e6)
+        # Output-preserving rescale of the affected head columns.
+        scale = (sigma_old / sigma_new).view(-1, 1)
+        self.value_net.weight[idx] = self.value_net.weight[idx] * scale
+        self.value_net.bias[idx] = (self.value_net.bias[idx] * sigma_old
+                                    + mu_old - mu_new) / sigma_new
+        self.popart_mu[idx] = mu_new
+        self.popart_sigma[idx] = sigma_new
+        self.popart_count[idx] = self.popart_count[idx] + n
+        return self.popart_mu, self.popart_sigma
 
     def _dist_from(self, features, latent_pi, action_masks):
         logits = self.action_scorer(latent_pi, self._slice_per_action(features))

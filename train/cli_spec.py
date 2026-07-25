@@ -289,6 +289,15 @@ def train_opts():
                  "checkpoint-compatible; resuming always keeps the checkpoint's "
                  "own head, so this only affects fresh (--fresh / first-time) "
                  "models."),
+        Arg("--popart", "flag",
+            help="Per-archetype-bucket PopArt value normalization (default OFF). "
+                 "The multi-head critic already isolates each matchup class in the "
+                 "last layer; PopArt additionally keeps a running (mu, sigma) of "
+                 "each bucket's returns and predicts normalized values, so a "
+                 "high-variance matchup can't dominate the SHARED torso's value "
+                 "gradients. Output-preserving (the head column is rescaled on "
+                 "every stats update), so it is safe to switch on mid-run. "
+                 "Incompatible with --stock-head and with clip_range_vf."),
         Arg("--n-epochs", "int", default=N_EPOCHS,
             help="PPO optimization epochs per update (default: %d). Applies to "
                  "fresh models AND overrides whatever a resumed checkpoint was "
