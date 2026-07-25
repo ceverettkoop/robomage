@@ -317,6 +317,16 @@ def fetch_script(name, force=False, dry_run=False, is_token=False):
                 continue  # gone, or a prefix collision rather than this card's front face
             return _write(name, os.path.join(CARDS_DIR, uid[0], combined), body, branch)
 
+    # 3. Forge stages preview / not-yet-released cards (e.g. Universes Beyond sets like
+    #    the TMNT drop) under a FLAT "cardsfolder/upcoming/<uid>.txt" rather than the
+    #    letter dir. Try there on an exact-filename basis and, if found, write it to the
+    #    engine-loadable letter-dir dest (src/card_db.cpp reads cardsfolder/<letter>/).
+    if not is_token:
+        for branch in BRANCHES:
+            body = fetch_text(f"{RES_BASE.format(branch=branch)}/cardsfolder/upcoming/{uid}.txt")
+            if body is not None:
+                return _write(name, dest, body, branch)
+
     print(f"  {name}: NOT FOUND on Forge ({kind} {uid}.txt) — hand-authoring required",
           file=sys.stderr)
     return False
