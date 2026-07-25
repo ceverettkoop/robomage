@@ -392,6 +392,7 @@ static void pay_alternate_cost(Game &game, std::shared_ptr<Orderer> orderer,
     // life
     if (card_data.alt_cost.life_cost != 0) {
         player.life_total -= card_data.alt_cost.life_cost;
+        player.life_lost_this_turn += card_data.alt_cost.life_cost;  // CR 119.4: paying life is losing life
         game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
     }
 }
@@ -1898,6 +1899,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 auto &activating_player =
                     global_coordinator.GetComponent<Player>(get_player_entity(controller));
                 activating_player.life_total -= ability.life_cost;
+                activating_player.life_lost_this_turn += ability.life_cost;  // CR 119.4: paying life is losing life
                 game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
             }
             // Energy cost (PayEnergy<N>, CR 122.1c): affordability is gated in
@@ -2161,6 +2163,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         game_log("%s pays %d energy\n", player_name(caster).c_str(), grant.amount);
                     } else {
                         player.life_total -= grant.amount;
+                        player.life_lost_this_turn += grant.amount;  // CR 119.4: paying life is losing life
                         game_log("%s pays %d life\n", player_name(caster).c_str(), grant.amount);
                     }
                     // ForgetOnMoved$ Exile / one-shot: the card leaves exile as it's cast, so the
@@ -2506,6 +2509,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         // suppressed the sole option is "Pay {color}", so fall through to mana.
                         if (can_pay_life && phyrex_choice == 0) {
                             phyrex_player.life_total -= 2;
+                            phyrex_player.life_lost_this_turn += 2;  // CR 119.4: paying life is losing life
                             game_log("%s pays 2 life\n", player_name(caster).c_str());
                         } else {
                             pc.cost_to_pay.insert(phyrex_color);
@@ -2561,6 +2565,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     resume_choice = -1;
                     cur_game.x_paid = x_val;
                     life_player.life_total -= static_cast<int>(x_val);
+                    life_player.life_lost_this_turn += static_cast<int>(x_val);  // CR 119.4: paying life is losing life
                     game_log("%s pays %zu life (X = %zu)\n", player_name(caster).c_str(),
                              x_val, x_val);
                 } else {
@@ -3023,6 +3028,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             if (pc.deferred_life_cost > 0) {
                 auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
                 player.life_total -= pc.deferred_life_cost;
+                player.life_lost_this_turn += pc.deferred_life_cost;  // CR 119.4: paying life is losing life
                 game_log("%s pays %d life\n", player_name(caster).c_str(), pc.deferred_life_cost);
             }
             pc.step = Game::PendingCast::DEF_SAC;

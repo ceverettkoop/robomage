@@ -451,6 +451,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                     }
                     if (choice == 1) {
                         pl.life_total -= c.tapped_unless_life;
+                        pl.life_lost_this_turn += c.tapped_unless_life;  // CR 119.4: paying life is losing life
                         game_log("%s pays %d life.\n", player_name(ev.affected_player).c_str(),
                                  c.tapped_unless_life);
                         break;  // enters untapped

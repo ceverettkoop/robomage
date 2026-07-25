@@ -745,6 +745,7 @@ bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership cont
     }
     if (commit && ab.life_cost > 0) {
         player.life_total -= ab.life_cost;
+        player.life_lost_this_turn += ab.life_cost;  // CR 119.4: paying life is losing life
         game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
     }
     produce_mana_from_ability(source, ab, controller, orderer, pool, commit, log_style);

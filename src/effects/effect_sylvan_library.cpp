@@ -102,6 +102,7 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (choice == 0) {
             pl.life_total -= 4;
+            pl.life_lost_this_turn += 4;  // CR 119.4: paying life is losing life
             game_log("%s pays 4 life (now at %d)\n", player_name(ctrl).c_str(), pl.life_total);
         } else {
             orderer->add_to_zone(false, card, Zone::LIBRARY);

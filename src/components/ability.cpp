@@ -533,6 +533,7 @@ bool run_unless_loop(
         }
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             payer.life_total -= static_cast<int>(cost);
+            payer.life_lost_this_turn += static_cast<int>(cost);  // CR 119.4: paying life is losing life
             game_log("%s pays %zu life — spell is not countered\n",
                 player_name(controller).c_str(), cost);
             return false;
