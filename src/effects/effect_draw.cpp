@@ -19,18 +19,13 @@ bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
         // Per-draw ended bail, mirroring Orderer::draw's loop guard (a decked
         // draw ends the game mid-batch).
         if (cur_game.ended) return true;
-        // Additive draw replacement (CR 614.1, Quantum Riddler): the extra cards this draw event
-        // adds, computed before the base draw so its "one or fewer cards in hand" gate sees the
-        // pre-draw hand. Applied only when the base draw actually happens (not on a dredge), as
-        // plain draws that don't re-pass through this replacement (614.5).
-        int draw_bonus = replacement::draw_count_bonus(owner);
         std::vector<replacement::DrawReplacementOption> opts;
         std::vector<LegalAction> menu = replacement::collect_draw_replacements(owner, &opts);
         if (menu.empty()) {
             // No dredge applies — the promptless common case, exactly today's
-            // draw_one with an empty replacement dispatch.
-            orderer->perform_draw(owner);
-            for (int i = 0; i < draw_bonus && !cur_game.ended; i++) orderer->perform_draw(owner);
+            // draw_one with an empty replacement dispatch. The additive draw replacement
+            // (CR 614.1/614.5, Quantum Riddler) bonus is applied inside the helper.
+            orderer->perform_draw_with_bonus(owner);
             continue;
         }
         // One dredge question per draw (CR 702.52a / 614.1a), asked on the
@@ -42,8 +37,7 @@ bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
         int choice = ctx.ask(menu, owner, cur_game.pending_decision_source);
         if (choice < 0 && decision_suspended()) return false;
         if (choice == 0) {
-            orderer->perform_draw(owner);
-            for (int i = 0; i < draw_bonus && !cur_game.ended; i++) orderer->perform_draw(owner);
+            orderer->perform_draw_with_bonus(owner);
         } else {
             orderer->apply_dredge(owner, opts[static_cast<size_t>(choice) - 1].source,
                                   opts[static_cast<size_t>(choice) - 1].mill);

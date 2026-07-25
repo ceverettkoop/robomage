@@ -56,6 +56,13 @@ public:
     // (resume_pending_draws, effects::draw_n_with_replacements) once the dredge
     // question is settled; draw_one routes through it after its blocking dispatch.
     void perform_draw(Zone::Ownership player, bool fire_draw_event = true);
+    // Performs the base draw plus any additive-draw-replacement bonus cards (CR 614.1/614.5,
+    // Quantum Riddler) as one replaced event. Single owner of the additive-draw application:
+    // every draw path routes its "the draw actually happens" case through here (never the
+    // dredge-replaced case), so the bonus is applied in exactly one place. The bonus is read
+    // immediately before the base draw, so its "one or fewer cards in hand" gate sees the
+    // pre-draw hand.
+    void perform_draw_with_bonus(Zone::Ownership player, bool fire_draw_event = true);
     // Apply a chosen dredge (CR 702.52a): mill `mill_ct`, return `source` from the
     // graveyard to hand, and log — the replaced draw's outcome. Shared by the
     // blocking draw_one path and the suspendable draw loops.
