@@ -720,6 +720,7 @@ struct Ability{
     bool optional_choice = false;    // Optional$ True — the effect is a "may": Dig can choose nothing, Attach/Sacrifice/ChangeZone/Play may be declined
     bool change_num_any = false;     // ChangeNum$ Any — may take any number (0..pool) of looked-at cards (Fateseal)
     bool change_num_all = false;     // ChangeNum$ All — take ALL matching looked-at cards, mandatorily and automatically (no DIG_CHOICE prompt); Goblin Guide
+    bool dig_reveal = false;         // Reveal$ True — the looked-at cards are revealed publicly (belief-state + public log); Goblin Guide
     int change_num = -1;             // ChangeNum$ <N> for Dig — exact take count incl. 0 (-1 = unset); honored over amount so "take 0" works (Birthing Ritual DBDigBis)
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset

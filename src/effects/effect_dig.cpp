@@ -8,6 +8,7 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../game_queries.h"
@@ -112,6 +113,19 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
 
         game_log("%s looks at the top %zu card(s) of their library.\n", player_name(dig_owner).c_str(), rt.lib.size());
+
+        // Reveal$ True (Goblin Guide): the looked-at cards are shown to ALL players. Log the
+        // reveal publicly (visible to both seats, not redacted) and record it in the belief-state
+        // multi-hot so the non-owner's observation carries the revealed identity, regardless of
+        // where each card subsequently goes (hand if it matches, else back on top).
+        if (ab.dig_reveal) {
+            for (auto e : rt.lib) {
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                game_log("%s reveals %s from the top of their library.\n", player_name(dig_owner).c_str(),
+                         cd.name.c_str());
+                mark_card_revealed(e, dig_owner);
+            }
+        }
 
         // How many of the looked-at cards may be taken (default 1). A conditional
         // ChangeNum$ (Flow State) raises this to its true-value when the summed
@@ -285,6 +299,10 @@ bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
         return true;
     } else if (key == "RestRandomOrder" || key == "RandomOrder") {
         ab.rest_random_order = (value == "True");
+        return true;
+    } else if (key == "Reveal") {
+        // Reveal$ True — the looked-at cards are shown to all players (Goblin Guide).
+        ab.dig_reveal = (value == "True");
         return true;
     }
     return false;
