@@ -19,6 +19,9 @@ fails, so one invocation reports every finding):
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
           resolve through their script's front face, mirroring the engine.
+  curriculum The curriculum plan schema and the argv each phase kind composes
+          for its train.py subcommand, the resume argv forms, and the plan-hash
+          prefix check (train/test_curriculum.py). Stdlib-only, instant.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
@@ -104,8 +107,8 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "obsinv", "snapshot", "sbselfplay", "mirror",
-             "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "snapshot", "sbselfplay",
+             "mirror", "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -255,6 +258,23 @@ def tier_obsinv(rep):
         rep.error("obsinv", "observation invariant violation "
                             f"(test_obs_invariants.py exit {r.returncode}):\n"
                             f"{r.stdout}{r.stderr}")
+
+
+def tier_curriculum(rep):
+    """Curriculum plan schema + composed-argv regression (train/curriculum.py).
+
+    Asserts every phase kind's composed `train.py <sub> …` argv, the loud
+    failures (unknown kind / override key / wrong value type), the resume argv
+    forms, and the plan-hash prefix check that lets a resume rewrite future
+    phases but not executed ones (see train/test_curriculum.py). Stdlib-only and
+    instant; catches a cli_spec rename silently changing what a plan runs."""
+    r = subprocess.run([sys.executable, "train/test_curriculum.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("curriculum", "curriculum plan/argv violation "
+                                f"(test_curriculum.py exit {r.returncode}):\n"
+                                f"{r.stdout}{r.stderr}")
 
 
 def tier_snapshot(rep):
@@ -497,6 +517,8 @@ def main(argv=None):
             tier_pygen(rep)
         elif t == "vocab":
             tier_vocab(rep)
+        elif t == "curriculum":
+            tier_curriculum(rep)
         elif t == "obsinv":
             tier_obsinv(rep)
         elif t == "snapshot":

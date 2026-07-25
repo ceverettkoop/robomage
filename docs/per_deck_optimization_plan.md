@@ -179,6 +179,31 @@ generalist gets inoculated against burn/combo/control without having to discover
 
 ## Part 3 — Unified curriculum interface (design / track / run / resume, PPO + AZ, Textual)
 
+**AS BUILT.** Shipped as described below. Specifics worth knowing:
+`train/curriculum.py` is stdlib-only (imports `cli_spec` + the new
+`train/progress_io.py`), so the Textual launcher and the plan/progress
+machinery never pull in torch. Part 2's `_write/_read_progress_state` moved
+into `progress_io.py` as the single home for the crash-safe sidecar writer
+(train.py re-imports them under their old private names; `az_train.py`'s
+hand-rolled duplicate now calls it too). A phase's top-level fields are the
+small **alias** table `PHASE_FIELDS` (`decks`/`steps`/`archetype`/`rotations`/
+`games`/`model`/`deck`) onto that subcommand's arg dests; everything else is an
+`overrides` key, validated against `cli_spec` — unknown kind, unknown override,
+wrong value type, a set-at-once mutex pair, or the runner-owned `resume` all
+fail loudly at load. `decks: "all"` means "the subcommand's own default roster"
+(the flag is omitted). Resume relaunches only a phase left in status `running`,
+and for a resumable kind emits just the run-SELECTING flags plus `--resume`
+(`--archetype` for an exploiter, `--shard` for a sharded league) since those
+drivers restore everything else from their own sidecar; `done`/`running` phases
+are hash-immutable while `pending`/`failed` ones may be rewritten. SIGINT
+(child rc 130/-2) leaves the phase `running` and exits 130; any other nonzero
+exit marks it `failed` and stops. Verified by `train/test_curriculum.py` (new
+`make check` tier `curriculum`) plus a live interrupted-and-resumed 2-phase toy
+plan in a sandboxed checkpoint dir. The TUI screen reuses the launcher's form
+machinery through a new `ArgFormMixin` (extracted from `LauncherApp`, no
+behavior change) and turns the az-form random-seed convenience OFF for plan
+editing.
+
 ### Plan + progress files
 - **Plan definition** `train/checkpoints/curricula/<name>.plan.json` (versioned):
   ```json

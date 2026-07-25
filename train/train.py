@@ -53,6 +53,12 @@ from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
                       LEAGUE_ADAPTIVE_BOOST, LEAGUE_EXPLOITER_FLOOR,
                       EXPLOITER_STEPS, EXPLOITER_CHUNK, parse_shard, shard_tag,
                       TRAIN_TOOL, apply_to_parser)
+# Crash-safe progress sidecars (write-to-temp + os.replace) shared by every
+# resumable driver — the league rotations, exploiter runs, the AZ league, and
+# the curriculum runner. Stdlib-only module so the torch-free callers (tui.py,
+# curriculum.py) get the same writer.
+from progress_io import (write_progress_state as _write_progress_state,
+                         read_progress_state as _read_progress_state)
 
 try:
     from sb3_contrib import MaskablePPO
@@ -858,33 +864,6 @@ def _league_state_path(checkpoint_dir: str, tag: str = "") -> str:
     # run, '.shard{i}of{n}' for distributed shards — see cli_spec.shard_tag),
     # so two drivers sharing a synced checkpoint dir never clobber each other.
     return os.path.join(checkpoint_dir, f"_league_progress{tag}.json")
-
-
-def _write_progress_state(path: str, state: dict, label: str) -> None:
-    """Atomically persist a driver's progress dict to its JSON sidecar.
-
-    The shared writer behind every resumable driver's sidecar (league rotations,
-    exploiter runs): write-to-temp + os.replace, so a crash mid-write can never
-    leave a half-written file that would break --resume."""
-    tmp = path + ".tmp"
-    try:
-        with open(tmp, "w") as fh:
-            json.dump(state, fh, indent=2)
-        os.replace(tmp, path)
-    except OSError as exc:
-        print(f"[{label}] WARNING: could not write progress file {path}: {exc}")
-
-
-def _read_progress_state(path: str, label: str) -> dict | None:
-    """Load a driver's progress sidecar, or None if it is absent/unreadable."""
-    if not os.path.exists(path):
-        return None
-    try:
-        with open(path) as fh:
-            return json.load(fh)
-    except (OSError, ValueError) as exc:
-        print(f"[{label}] WARNING: could not read progress file {path}: {exc}")
-        return None
 
 
 def _write_league_state(checkpoint_dir: str, state: dict, tag: str = "") -> None:
@@ -2386,6 +2365,16 @@ if __name__ == "__main__":
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
               embed_dim=args.embed_dim, fresh=args.fresh, **env_kwargs)
+    elif args.command == "curriculum":
+        # Multi-phase plan runner: every phase is launched as its own train.py
+        # subprocess, so this branch just drives the plan/progress bookkeeping.
+        import curriculum
+        try:
+            sys.exit(curriculum.run_curriculum(
+                args.plan, resume=args.resume, status=args.status,
+                dry_run=args.dry_run))
+        except curriculum.PlanError as exc:
+            parser.error(str(exc))
     elif args.command == "sweep":
         _run_sweep(args, parser)
     elif args.command == "fixed-model":

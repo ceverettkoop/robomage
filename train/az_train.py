@@ -25,6 +25,10 @@ import shutil
 import time
 from typing import Optional
 
+# Shared crash-safe sidecar IO (write-to-temp + os.replace), same writer the PPO
+# league / exploiter / curriculum drivers use.
+from progress_io import write_progress_state, read_progress_state
+
 import numpy as np
 
 try:
@@ -429,26 +433,11 @@ def _az_league_state_path(ckpt_dir: str) -> str:
 
 def _write_az_league_state(ckpt_dir: str, state: dict) -> None:
     """Atomically persist the az-league driver's progress to its JSON sidecar."""
-    path = _az_league_state_path(ckpt_dir)
-    tmp = path + ".tmp"
-    try:
-        with open(tmp, "w") as fh:
-            json.dump(state, fh, indent=2)
-        os.replace(tmp, path)
-    except OSError as exc:
-        print(f"[az-league] WARNING: could not write progress file {path}: {exc}")
+    write_progress_state(_az_league_state_path(ckpt_dir), state, "az-league")
 
 
 def _read_az_league_state(ckpt_dir: str) -> Optional[dict]:
-    path = _az_league_state_path(ckpt_dir)
-    if not os.path.exists(path):
-        return None
-    try:
-        with open(path) as fh:
-            return json.load(fh)
-    except (OSError, ValueError) as exc:
-        print(f"[az-league] WARNING: could not read progress file {path}: {exc}")
-        return None
+    return read_progress_state(_az_league_state_path(ckpt_dir), "az-league")
 
 
 def _default_az_league_roster() -> list:

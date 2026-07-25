@@ -605,7 +605,28 @@ train/.venv/bin/python train/train.py exploiter --archetype burn --resume       
 # AlphaZero (MCTS-trained net, warm-started from the PPO gen checkpoint — run league first)
 train/.venv/bin/python train/train.py az --deck delver                                # one cycle: self-play -> train -> gate
 train/.venv/bin/python train/train.py az-league                                       # rotate AZ cycles across decks/league/
+
+# Curriculum: a multi-phase plan (league -> exploiter -> league -> az-league -> baseline) in one file
+train/.venv/bin/python train/train.py curriculum --plan q3 --dry-run                  # print each phase's composed command
+train/.venv/bin/python train/train.py curriculum --plan q3                            # run it (each phase is a subprocess)
+train/.venv/bin/python train/train.py curriculum --plan q3 --status                   # per-phase state from the progress file
+train/.venv/bin/python train/train.py curriculum --plan q3 --resume                   # continue after an interruption
 ```
+
+**Curricula.** A curriculum is an ordered list of phases whose `kind` is a `train.py`
+subcommand (`league`, `exploiter`, `az`, `az-league`, `baseline`), written as
+`train/checkpoints/curricula/<name>.plan.json` (`"version": 1`) and executed by
+`train.py curriculum` — one SUBPROCESS per phase, so PPO and AZ phases stay memory-isolated
+and each phase reuses its own `--resume` machinery. A phase carries a few convenience fields
+(`decks`, `steps`, `archetype`, `rotations`, `games`, `model`, `deck`) plus an `overrides`
+object whose keys are that subcommand's **`cli_spec` arg dests** — the spec IS the schema, so
+an unknown kind/override or a wrong value type fails loudly at load instead of at phase
+launch. Progress lives in `<name>.progress.json` next to the plan; `--resume` skips completed
+phases and relaunches the one that was in flight (with `--resume` of its own for the drivers
+that support it), refusing to run if an already-executed phase was edited while allowing free
+edits to the phases still ahead. The TUI's `curriculum` entry opens a plan builder screen
+(phase list + per-phase form generated from that kind's `cli_spec` Sub) with Save/Load/Run/
+Resume/Status. See `train/curriculum.py`.
 
 **League resume.** A `league` run persists its driver progress (roster, total budget,
 global steps done, current rotation, and every hyperparameter) to
@@ -788,6 +809,13 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
 - `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
 - `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
+- `train/curriculum.py` — multi-phase training plans behind `train.py curriculum`: the plan
+  schema (validated against `cli_spec`, which IS the schema), the composed per-phase argv, the
+  progress sidecar + resume/hash rules, and the subprocess runner. Stdlib-only, so `tui.py`'s
+  plan-builder screen imports it without torch. Regression: `train/test_curriculum.py`
+  (`make check` tier `curriculum`)
+- `train/progress_io.py` — the single crash-safe (write-temp + `os.replace`) JSON progress
+  sidecar reader/writer shared by the league, exploiter, az-league, and curriculum drivers
 - `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates games for a matchup, and inspects play (card importance, SHAP, value swings, regret, entropy, calibration, an interactive REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a GUI window) with terminal sparkline/bar fallbacks. The model is the one generalist (`gen`, an explicit `.zip`/`.pt` path, or `az:gen`/`azraw:gen`) and encodes **no deck**, so both the model's deck and the opponent's deck must be given explicitly with `--deck-a`/`--deck-b` for any model seat (a scripted opponent defaults to a mirror of `--deck-a`). (The older offline `.rmrec` recording subsystem and `train.py --record` were removed.)
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
 - `train/play.py` — interactive human-vs-model play (text mode, `--tui`, `--gui`, `--analysis`)
@@ -796,7 +824,9 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
 - `train/tui_game.py` / `train/gui_game.py` — the Textual and PySide6 boards over that driver
 - `train/tui.py` — the overall Textual control panel behind `./tui.sh` (deck management,
   training, league runs, observing games, launching play — composes `train.py`/`analysis.py`/
-  `play.py` as subprocesses, distinct from the `game_driver.py` boards)
+  `play.py` as subprocesses, distinct from the `game_driver.py` boards). `ArgFormMixin` builds
+  every input form from `cli_spec`; the `curriculum` entry pushes `CurriculumScreen`, the
+  multi-phase plan builder (phase list + per-phase form + Save/Load/Run/Resume/Status)
 - `train/gui_analysis.py` — the analysis window (worker thread, live MCTS table, branch chart,
   PV scrubber + MiniBoard)
 - `train/tui_analysis.py` — standalone Textual analysis browser (game list, board-state pager,

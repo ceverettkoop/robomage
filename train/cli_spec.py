@@ -565,6 +565,29 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *train_opts_except("total_timesteps", "fresh"),
         *common_args(),
     ]),
+    Sub("curriculum",
+        "Run / resume a multi-phase training PLAN (league, exploiter, az, "
+        "az-league, baseline phases) from one JSON file", items=[
+        Arg("--plan", "str", required=True, suggest="curriculum",
+            help="Curriculum plan to run: a name under "
+                 "train/checkpoints/curricula/ (e.g. 'q3_archetypes' -> "
+                 "q3_archetypes.plan.json) or a path to a .plan.json file. Each "
+                 "phase is a train.py subcommand with its own arguments; "
+                 "progress is tracked in <name>.progress.json next to the plan. "
+                 "In the TUI, the 'curriculum' entry opens a plan builder."),
+        Arg("--resume", "flag",
+            help="Continue an interrupted curriculum from its progress file: "
+                 "completed phases are skipped and the phase that was in flight "
+                 "is relaunched (with --resume of its own when the subcommand "
+                 "supports it). Refuses to run if an already-executed phase was "
+                 "edited; phases still ahead may be freely rewritten."),
+        Arg("--status", "flag",
+            help="Print each phase's state (pending/running/done/failed, steps "
+                 "done, last gate result) from the progress file and exit."),
+        Arg("--dry-run", "flag",
+            help="Print the command each phase would run and exit — the way to "
+                 "check a plan's composed argv before spending GPU-days on it."),
+    ]),
     Sub("sweep", "PFSP sweep: train the generalist on one deck vs a pool of the other decks", items=[
         Arg("--deck", "str", required=True, suggest="deck",
             help="Deck to train on (.dk stem). Always saved to gen__final.zip; this "
