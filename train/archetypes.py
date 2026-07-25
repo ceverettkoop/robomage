@@ -114,6 +114,28 @@ def bucket_index(self_deck, opp_deck):
     return arch_index(self_deck) * N_ARCH + arch_index(opp_deck)
 
 
+def arch_name_at(index):
+    """Archetype NAME for an archetype INDEX (``UNKNOWN`` -> ``'unknown'``)."""
+    i = int(index)
+    return ARCHETYPES[i] if 0 <= i < len(ARCHETYPES) else UNKNOWN_NAME
+
+
+def bucket_archetypes(bucket):
+    """Split a value-bucket index back into ``(self archetype, opp archetype)`` indices."""
+    b = int(bucket)
+    return b // N_ARCH, b % N_ARCH
+
+
+def bucket_name(bucket):
+    """Human/TensorBoard-friendly label for a value bucket: ``'burn_vs_control'``.
+
+    The canonical tag for per-bucket diagnostics (training logs, baseline
+    reports) so every report names a bucket the same way.
+    """
+    self_arch, opp_arch = bucket_archetypes(bucket)
+    return f"{arch_name_at(self_arch)}_vs_{arch_name_at(opp_arch)}"
+
+
 def decks_for_archetype(arch):
     """Every tagged deck stem belonging to ``arch`` (name or index), sorted."""
     name = ARCHETYPES[arch] if isinstance(arch, int) else arch

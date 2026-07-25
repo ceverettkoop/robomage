@@ -30,7 +30,8 @@ BINNAME=robomage
 PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
 # Auto-generated files kept in sync with the C++ sources at build time
 # (train/ codegen plus the C++ mirror header src/gen/card_costs_gen.h).
-PYGEN := train/_enums.py train/card_costs.py src/gen/card_costs_gen.h
+PYGEN := train/_enums.py train/card_costs.py src/gen/card_costs_gen.h \
+	src/gen/archetypes_gen.h
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -92,6 +93,11 @@ train/_enums.py: src/classes/action.h src/classes/game.h src/classes/gamestate.h
 train/card_costs.py src/gen/card_costs_gen.h &: src/card_vocab.h src/machine_io.h train/gen_card_costs.py
 	$(PYTHON) train/gen_card_costs.py
 
+# C++ mirror of the deck -> archetype -> value-bucket metadata, so the in-process
+# AZ actor rebuilds the same observation matchup tail train/env.py appends.
+src/gen/archetypes_gen.h: train/archetypes.py bin/resources/decks/archetypes.json train/gen_archetypes.py
+	$(PYTHON) train/gen_archetypes.py
+
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/$(BINNAME) $(C_OBJ) $(CXX_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
@@ -105,7 +111,7 @@ check: all
 	$(PYTHON) train/ci_check.py
 
 # Regenerate every derived artifact after an intentional C++ change: provision
-# the card set (codegen reads card scripts), force-rerun both generators, and
+# the card set (codegen reads card scripts), force-rerun every generator, and
 # re-record the replay corpus with the fresh binary. Run this when `make check`
 # reports stale codegen or corpus drift, then commit the results. The generators
 # run unconditionally here (not via the incremental pygen file targets) because
@@ -116,6 +122,7 @@ regen: all
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(PYTHON) train/gen_enums.py
 	$(PYTHON) train/gen_card_costs.py
+	$(PYTHON) train/gen_archetypes.py
 	$(PYTHON) train/regression/replay_diff.py record
 
 # ── bin/az_actor — in-process AlphaZero actor (Phase D), NOT in the default build ──
@@ -166,3 +173,8 @@ clean:
 	rm -f $(BINDIR)/$(BINNAME)
 
 -include $(DEPS)
+# The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
+# so their generated dep files must be included separately — otherwise editing a
+# header they share with the engine (e.g. obs_builder.h) leaves stale actor
+# objects behind and bin/az_actor links two different obs layouts together.
+-include $(ACTOR_OBJ:.o=.d)

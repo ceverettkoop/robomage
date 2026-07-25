@@ -31,7 +31,11 @@ from collections import deque
 
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
                  scripted_action,
-                 OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY)
+                 OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY,
+                 BUCKET_IDX)
+# Deck -> archetype -> value-bucket metadata (stdlib-only): the league roster
+# validation and the per-bucket critic diagnostics both key off it.
+import archetypes
 from extractor import CardGameExtractor, PerActionMaskablePolicy
 from card_costs import N_CARD_TYPES
 import decode
@@ -194,6 +198,10 @@ class PFSPCallback(BaseCallback):
     set_attr would only touch the outer Monitor wrapper.
     """
 
+    # Minimum samples a value bucket needs in a rollout before its critic stats
+    # are logged (below that the per-bucket loss/EV is pure noise).
+    _MIN_BUCKET_SAMPLES = 32
+
     def __init__(self, vec_env, mode: str = "pfsp", p: float = 2.0, eta: float = 0.01,
                  recent_window: int = 200, min_matchup_samples: int = 8):
         super().__init__()
@@ -305,7 +313,57 @@ class PFSPCallback(BaseCallback):
         n = len(self._recent)
         return (sum(self._recent) / n if n else 0.0), n
 
+    def _log_bucket_value_stats(self) -> None:
+        """Log per-archetype-bucket critic quality for the rollout just collected.
+
+        The critic is multi-head (one column per (self arch x opp arch) value
+        bucket, gathered by the bucket float in the obs's matchup tail), so a
+        single aggregate value loss hides whether a given head is learning at all.
+        This splits the rollout's (value, return) pairs by bucket and records each
+        bucket's value loss, explained variance and share of the batch — the
+        signal that every bucket which appears is actually receiving gradients.
+
+        Runs at rollout end, i.e. after SB3's compute_returns_and_advantage, so
+        ``returns``/``values`` are final. Buckets with fewer than
+        ``_MIN_BUCKET_SAMPLES`` samples are skipped as noise.
+        """
+        buf = getattr(self.model, "rollout_buffer", None)
+        if buf is None or getattr(buf, "observations", None) is None:
+            return
+        obs = np.asarray(buf.observations)
+        if obs.ndim != 3 or obs.shape[-1] <= BUCKET_IDX:
+            return  # not a flat-obs rollout buffer (or a layout mismatch)
+        buckets = np.rint(obs[..., BUCKET_IDX]).astype(np.int64).ravel()
+        values = np.asarray(buf.values, dtype=np.float64).ravel()
+        returns = np.asarray(buf.returns, dtype=np.float64).ravel()
+        if buckets.size != values.size or values.size != returns.size:
+            return
+        total = float(values.size)
+        parts = []
+        for b in np.unique(buckets):
+            sel = buckets == b
+            n = int(sel.sum())
+            if n < self._MIN_BUCKET_SAMPLES:
+                continue
+            v, r = values[sel], returns[sel]
+            err = r - v
+            loss = float(np.mean(err ** 2))
+            var_r = float(np.var(r))
+            ev = float("nan") if var_r == 0.0 else 1.0 - float(np.var(err)) / var_r
+            tag = archetypes.bucket_name(b)
+            self.logger.record(f"value_bucket/loss_{tag}", loss)
+            self.logger.record(f"value_bucket/frac_{tag}", n / total)
+            if not np.isnan(ev):
+                self.logger.record(f"value_bucket/ev_{tag}", ev)
+            parts.append(f"{tag}: n={n} loss={loss:.4f} ev={ev:.2f}")
+        self.logger.record("value_bucket/n_active", len(parts))
+        for line in parts:
+            print(f"[value-head] {line}")
+
     def _on_rollout_end(self) -> None:
+        # Per-bucket critic diagnostics first: they describe the rollout itself and
+        # must be logged even before any episode has finished decisively.
+        self._log_bucket_value_stats()
         if not self._stats:
             return
         # Aggregate (opp_deck, label) weights PLUS matchup-keyed (self_deck,
@@ -1313,7 +1371,6 @@ def league(binary_path: str, decks: str | None = None,
     # Every league roster deck must carry an archetype tag: the archetype pair of a
     # matchup selects the critic's value bucket, so an untagged roster deck would
     # silently train in the catch-all 'unknown' bucket.
-    import archetypes
     archetypes.validate_roster(roster, context="league")
 
     # Distributed sharding: this driver TRAINS only its slice of the roster, but
@@ -1726,6 +1783,11 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
     # opponent pilots (across every model deck).
     per_model_deck = {deck: [0, 0, 0] for deck in roster}
     per_opp_deck = {deck: [0, 0, 0] for deck in roster}
+    # Same tallies grouped by VALUE BUCKET (self archetype x opp archetype) — the
+    # unit the multi-head critic is split along, so this view says whether a whole
+    # matchup CLASS (e.g. burn piloting vs control) is the weak spot rather than
+    # one deck pairing.
+    per_bucket: dict[int, list[int]] = {}
 
     for deck in roster:
         row_cells = []
@@ -1738,7 +1800,9 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
             row_cells.append(f"{opp}={w}W/{l}L/{d}D({pct:.0f}%)")
             lines.append(f"gen piloting {deck:<22} vs scripted:hard {opp:<22} "
                          + _wld_line(w, l, d))
-            for tally in (per_model_deck[deck], per_opp_deck[opp]):
+            bucket = archetypes.bucket_index(deck, opp)
+            for tally in (per_model_deck[deck], per_opp_deck[opp],
+                          per_bucket.setdefault(bucket, [0, 0, 0])):
                 tally[0] += w
                 tally[1] += l
                 tally[2] += d
@@ -1752,6 +1816,23 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
                  "win rate is still the model's):")
     for deck, (w, l, d) in per_opp_deck.items():
         lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
+    # Archetype-grouped view: one row per value bucket the roster actually spans,
+    # then one row per self archetype pooled across every opponent archetype.
+    lines.append("per value bucket (self archetype vs opponent archetype — the "
+                 "multi-head critic's split):")
+    per_self_arch: dict[int, list[int]] = {}
+    for bucket in sorted(per_bucket):
+        w, l, d = per_bucket[bucket]
+        lines.append(f"  {archetypes.bucket_name(bucket):<34} " + _wld_line(w, l, d))
+        tally = per_self_arch.setdefault(archetypes.bucket_archetypes(bucket)[0],
+                                        [0, 0, 0])
+        tally[0] += w
+        tally[1] += l
+        tally[2] += d
+    lines.append("per self archetype (pooled over every opponent archetype):")
+    for arch in sorted(per_self_arch):
+        w, l, d = per_self_arch[arch]
+        lines.append(f"  {archetypes.arch_name_at(arch):<34} " + _wld_line(w, l, d))
 
     summary = "\n".join(lines)
     with open(log_path, "a") as f:

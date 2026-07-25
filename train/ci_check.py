@@ -199,15 +199,17 @@ class Report:
 def tier_pygen(rep):
     """Regenerate the codegen outputs and fail if the committed copies are stale.
 
-    Both are deterministic given the committed C++ inputs AND a fully provisioned
-    card set: _enums.py derives from action.h/game.h; card_costs.py additionally
+    All are deterministic given the committed inputs AND a fully provisioned
+    card set: _enums.py derives from action.h/game.h; archetypes_gen.h from
+    archetypes.py + decks/archetypes.json; card_costs.py additionally
     reads each vocab card's ManaCost from its script — and provision_decks.py
     fetches the whole vocab, so every cost is reproducible here and in CI. The
     working tree is restored afterward so a stale result is reported, not left
     half-regenerated (the developer runs `make pygen` to actually update them)."""
     gen_files = ["train/_enums.py", "train/card_costs.py",
-                 "src/gen/card_costs_gen.h"]
-    for gen in ("train/gen_enums.py", "train/gen_card_costs.py"):
+                 "src/gen/card_costs_gen.h", "src/gen/archetypes_gen.h"]
+    for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
+                "train/gen_archetypes.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
         if r.returncode != 0:

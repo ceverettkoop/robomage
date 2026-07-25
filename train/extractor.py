@@ -185,10 +185,24 @@ _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 # action-block layout the engine emits).
 try:
     from env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
-                     _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS)
+                     _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS,
+                     OBS_SIZE as _ENV_OBS_SIZE, BUCKET_IDX as _BUCKET_IDX,
+                     ARCH_ONEHOT_START as _ARCH_ONEHOT_START,
+                     ARCH_ONEHOT_END as _ARCH_ONEHOT_END)
 except ImportError:
     from train.env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
-                           _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS)
+                           _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS,
+                           OBS_SIZE as _ENV_OBS_SIZE, BUCKET_IDX as _BUCKET_IDX,
+                           ARCH_ONEHOT_START as _ARCH_ONEHOT_START,
+                           ARCH_ONEHOT_END as _ARCH_ONEHOT_END)
+try:
+    from archetypes import N_VALUE_BUCKETS
+except ImportError:
+    from train.archetypes import N_VALUE_BUCKETS
+# Width of the matchup tail's trunk-visible part (the two archetype one-hots) and
+# of the whole tail. Both derived from env.py's offsets — never re-typed here.
+_ARCH_ONEHOT_FEATS  = _ARCH_ONEHOT_END - _ARCH_ONEHOT_START
+_MATCHUP_TAIL_FEATS = _ARCH_ONEHOT_END - _BUCKET_IDX
 _GLOBAL_SIZE = _ENV_GLOBAL_SIZE   # header width (single source of truth: env.py)
 try:
     from _enums import REF_ZONE_MAX, N_REF_ZONES
@@ -246,9 +260,12 @@ _OPP_DECK_MAIN_END    = _OPP_DECK_MAIN_START + _DECKLIST_MAIN_SLOTS * _DECKLIST_
 _OPP_DECK_SIDE_START  = _OPP_DECK_MAIN_END
 _OPP_DECK_SIDE_END    = _OPP_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
 _STATE_END            = _OPP_DECK_SIDE_END
-# obs[_STATE_END:] = action metadata + cost features appended by env.py
-# Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE).
+# obs[_STATE_END:] = action metadata + cost features + matchup tail (env.py)
+# Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE and
+# the obs tail offsets; these asserts are the mirror check).
 assert _STATE_END == _ENV_STATE_SIZE, (_STATE_END, _ENV_STATE_SIZE)
+assert _ARCH_ONEHOT_END == _ENV_OBS_SIZE, (_ARCH_ONEHOT_END, _ENV_OBS_SIZE)
+assert _BUCKET_IDX > _STATE_END, (_BUCKET_IDX, _STATE_END)
 
 
 class CardGameExtractor(BaseFeaturesExtractor):
@@ -278,6 +295,9 @@ class CardGameExtractor(BaseFeaturesExtractor):
       pending_feat(card_emb+1: what's asking for the current choice) +
       extras(19 raw: lands played, priority, monarch, ..., MandatoryChoice one-hot) +
       action_extras(action metadata cats|ids|ctrl|zone|refs + cost feats) +
+      arch_onehot(2*N_ARCH raw: one-hot self archetype | one-hot opp archetype;
+                  the tail's raw bucket index is stripped and stashed as
+                  ``self.last_bucket`` for the multi-head critic) +
       perm_agg(embed*2: masked mean+max) + stack_agg(embed//2 * 2) +
       graveyard_agg(embed*2: masked mean+max) + exile_agg(embed*2: masked mean+max) +
       hand_agg(embed*2: masked mean+max) + opp_known_hand_agg(embed*2: masked mean+max) +
@@ -308,7 +328,12 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim                                  # opponent revealed-cards multi-hot
             + card_embed_dim + 1                         # pending-decision source embed + ctrl flag
             + _EXTRAS_SIZE                               # 19 global extras (raw passthrough)
-            + (observation_space.shape[0] - _STATE_END)  # action extras (6 blocks incl. refs + ords + costs)
+            # action extras (6 blocks incl. refs + ords + costs): everything after
+            # the state EXCEPT the matchup tail, which is handled separately.
+            + (observation_space.shape[0] - _STATE_END - _MATCHUP_TAIL_FEATS)
+            + _ARCH_ONEHOT_FEATS                         # self/opp archetype one-hots
+                                                         # (the raw bucket float is
+                                                         # stripped, see forward)
             + embed_dim * 2                              # perm masked mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
             + embed_dim * 2                              # graveyard masked-mean + max
@@ -322,6 +347,10 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # When the per-action logit head is enabled, the encoded per-action tensor
         # (MAX_ACTIONS × _PER_ACTION_DIM) is appended at the END of the returned
         # features so PerActionMaskablePolicy can slice it back out by offset.
+        assert observation_space.shape[0] == _ENV_OBS_SIZE, (
+            f"CardGameExtractor got an obs of {observation_space.shape[0]} floats but "
+            f"this build's OBS_SIZE is {_ENV_OBS_SIZE} — a checkpoint saved against a "
+            f"different observation layout cannot be loaded (retrain from scratch)")
         self.per_action_head = per_action_head
         if per_action_head:
             self.per_action_slots = _MAX_ACTIONS
@@ -331,6 +360,12 @@ class CardGameExtractor(BaseFeaturesExtractor):
         else:
             features_dim = base_features_dim
         super().__init__(observation_space, features_dim=features_dim)
+
+        # Side-channel set by every forward(): the (B,) long tensor of value-bucket
+        # indices sliced off the matchup tail. PerActionMaskablePolicy reads it to
+        # pick each sample's column out of the multi-head value_net. Not a buffer —
+        # it is per-batch scratch, never part of the checkpoint.
+        self.last_bucket = None
 
         # Shared card-identity embedding. Slot id -1 (empty) maps to padding row 0;
         # real ids 0..N_CARD_TYPES-1 map to rows 1..N_CARD_TYPES.
@@ -426,7 +461,14 @@ class CardGameExtractor(BaseFeaturesExtractor):
         revealed      = obs[:, _REVEALED_START:_REVEALED_END]   # opponent revealed-cards multi-hot
         pending       = obs[:, _PENDING_START:_PENDING_END]     # pending-decision source id + ctrl flag
         extras        = obs[:, _EXTRAS_START:_EXTRAS_END]       # 19 global extras (raw passthrough)
-        action_extras = obs[:, _STATE_END:]                     # action cats|ids|ctrl|zone|refs + cost features
+        action_extras = obs[:, _STATE_END:_BUCKET_IDX]          # action cats|ids|ctrl|zone|refs + cost features
+        # Matchup tail: the raw value-bucket index is STRIPPED here (a bucket id is
+        # a meaningless magnitude to the trunk) and stashed for the policy's
+        # multi-head critic to gather with; the two archetype one-hots DO feed the
+        # trunk as explicit matchup conditioning.
+        self.last_bucket = torch.round(obs[:, _BUCKET_IDX]).long().clamp_(
+            0, N_VALUE_BUCKETS - 1)
+        arch_onehot   = obs[:, _ARCH_ONEHOT_START:_ARCH_ONEHOT_END]
 
         # Embedded recent history: card ids as raw floats are unlearnable (vocab
         # order is meaningless), so the K most recent entries get their card id
@@ -535,6 +577,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
                           revealed_agg, pending_feat, extras, action_extras,
+                          arch_onehot,
                           perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
                           self_lib_agg, opp_main_agg, opp_side_agg], dim=-1)
         if not self.per_action_head:
@@ -613,6 +656,13 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
     from ``_ActionScorer`` so each action's own encoded features (category, target
     card embedding, controller_is_self) drive its logit.
 
+    The critic is MULTI-HEAD: ``value_net`` has one column per
+    (self archetype x opp archetype) value bucket, and each sample's column is
+    gathered by the bucket index the extractor sliced off the observation's
+    matchup tail. Upstream (GAE, value loss) still sees one scalar per sample, but
+    a burn race's value statistics no longer fight a control grind's in the last
+    layer.
+
     Prototype: enabling this changes the network shape, so it is NOT
     checkpoint-compatible with the stock MlpPolicy models.
     """
@@ -627,6 +677,11 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         self._pa_offset = fe.per_action_offset
         self._pa_slots = fe.per_action_slots
         self._pa_dim = fe.per_action_dim
+        # Per-archetype-bucket critic: replace the stock single-output value head
+        # with one column per bucket (~N_VALUE_BUCKETS * latent params — trivial).
+        self.value_net = nn.Linear(self.mlp_extractor.latent_dim_vf, N_VALUE_BUCKETS)
+        if self.ortho_init:
+            self.value_net.apply(partial(self.init_weights, gain=1.0))
         self.action_scorer = _ActionScorer(self.mlp_extractor.latent_dim_pi, self._pa_dim)
         if self.ortho_init:
             self.action_scorer.out.apply(partial(self.init_weights, gain=0.01))
@@ -639,6 +694,22 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         pa = features[:, self._pa_offset:self._pa_offset + self._pa_slots * self._pa_dim]
         return pa.reshape(pa.shape[0], self._pa_slots, self._pa_dim)
 
+    def _bucket_values(self, latent_vf: torch.Tensor) -> torch.Tensor:
+        """Value per sample, gathered from its archetype-bucket head column.
+
+        Uses the bucket index the shared features extractor sliced off the obs's
+        matchup tail during the extract_features() call that produced
+        ``latent_vf`` — so every caller MUST run extract_features first (all three
+        entry points below do). Returns (B, 1), exactly like the stock scalar head.
+        """
+        all_values = self.value_net(latent_vf)                 # (B, N_VALUE_BUCKETS)
+        bucket = self.features_extractor.last_bucket
+        assert bucket is not None and bucket.shape[0] == all_values.shape[0], (
+            "multi-head critic: the features extractor did not stash a value-bucket "
+            f"index for this batch ({None if bucket is None else tuple(bucket.shape)} "
+            f"vs {all_values.shape[0]} samples) — extract_features() must run first")
+        return all_values.gather(1, bucket.view(-1, 1))        # (B, 1)
+
     def _dist_from(self, features, latent_pi, action_masks):
         logits = self.action_scorer(latent_pi, self._slice_per_action(features))
         distribution = self.action_dist.proba_distribution(action_logits=logits)
@@ -649,7 +720,7 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
     def forward(self, obs, deterministic=False, action_masks=None):
         features = self.extract_features(obs)
         latent_pi, latent_vf = self.mlp_extractor(features)
-        values = self.value_net(latent_vf)
+        values = self._bucket_values(latent_vf)
         distribution = self._dist_from(features, latent_pi, action_masks)
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
@@ -659,8 +730,18 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         features = self.extract_features(obs)
         latent_pi, latent_vf = self.mlp_extractor(features)
         distribution = self._dist_from(features, latent_pi, action_masks)
-        values = self.value_net(latent_vf)
+        values = self._bucket_values(latent_vf)
         return values, distribution.log_prob(actions), distribution.entropy()
+
+    def predict_values(self, obs):
+        """Critic-only pass (SB3 calls this for the GAE bootstrap value).
+
+        Overridden so the value comes from the sample's archetype-bucket column;
+        it must run extract_features itself to stash that bucket index.
+        """
+        features = self.extract_features(obs)
+        latent_vf = self.mlp_extractor.forward_critic(features)
+        return self._bucket_values(latent_vf)
 
     def get_distribution(self, obs, action_masks=None):
         features = self.extract_features(obs)

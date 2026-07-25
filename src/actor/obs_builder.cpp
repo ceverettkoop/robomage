@@ -1,13 +1,17 @@
 #include "obs_builder.h"
 
 #include <array>
+#include <cctype>
 #include <cmath>
 #include <cstring>
+
+#include <string>
 
 #include "classes/game.h"  // MandatoryChoice enum (mandatory-choice one-hot width)
 #include "components/zone.h"
 #include "error.h"
-#include "game_driver.h"  // sideboard_phase / sideboard_phase_player globals
+#include "game_driver.h"  // sideboard_phase / sideboard_phase_player + deck names
+#include "gen/archetypes_gen.h"  // ARCH_DECK_TAGS, ARCH_UNKNOWN, ARCH_N
 #include "gen/card_costs_gen.h"  // CARD_COST_MATRIX, CARD_ABILITY_COST_MATRIX, N_COST_FEATS
 
 // ── Derived state-vector offsets ────────────────────────────────────────────
@@ -88,8 +92,68 @@ static constexpr int ACT_REFS_START = ACT_ZONE_START + MAX_ACTIONS;
 static constexpr int ACT_ORDS_START = ACT_REFS_START + MAX_ACTIONS;
 static constexpr int HAND_COST_START = ACT_ORDS_START + MAX_ACTIONS;
 static constexpr int BF_COST_START = HAND_COST_START + MAX_HAND_SLOTS * ACTOR_N_COST_FEATS;
+// Matchup tail: raw bucket float, then one-hot(self arch), then one-hot(opp arch).
+static constexpr int MATCHUP_TAIL_START = BF_COST_START + MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS;
+static constexpr int ARCH_ONEHOT_START = MATCHUP_TAIL_START + 1;
+static_assert(ARCH_ONEHOT_START + 2 * ARCH_N == ACTOR_OBS_SIZE,
+              "matchup tail must end exactly at ACTOR_OBS_SIZE");
 
 static_assert(N_COST_FEATS == ACTOR_N_COST_FEATS, "cost matrix width mismatch");
+
+// ── Deck -> archetype index ─────────────────────────────────────────────────
+// Mirror of train/archetypes.py::normalize_deck: a deck spec becomes its
+// canonical decks/-relative stem (lowercase, '/' separators, no ".dk" suffix, no
+// leading "./" or "/", nothing above bin/resources/decks/). The generated
+// ARCH_DECK_TAGS keys are already in that form.
+static std::string normalize_deck(const std::string& deck) {
+    std::string stem = deck;
+    for (char& c : stem) {
+        if (c == '\\') c = '/';
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    static const std::string prefix = "resources/decks/";
+    size_t idx = stem.rfind(prefix);
+    if (idx != std::string::npos) stem = stem.substr(idx + prefix.size());
+    while (stem.compare(0, 2, "./") == 0) stem = stem.substr(2);
+    while (!stem.empty() && stem.front() == '/') stem = stem.substr(1);
+    if (stem.size() > 3 && stem.compare(stem.size() - 3, 3, ".dk") == 0)
+        stem = stem.substr(0, stem.size() - 3);
+    while (!stem.empty() && stem.back() == '/') stem.pop_back();
+    return stem;
+}
+
+// Archetype index for a deck spec: ARCH_DECK_TAGS lookup, else ARCH_UNKNOWN —
+// exactly archetypes.arch_index().
+static int arch_index_for_deck(const std::string& deck) {
+    if (deck.empty()) return ARCH_UNKNOWN;
+    std::string stem = normalize_deck(deck);
+    for (int i = 0; i < ARCH_N_DECK_TAGS; i++)
+        if (stem == ARCH_DECK_TAGS[i].stem) return ARCH_DECK_TAGS[i].arch;
+    return ARCH_UNKNOWN;
+}
+
+// Write env.py's matchup tail for the seat the observation is written for.
+// `self_is_a` comes from the state vector's own self_is_a flag, so the tail is
+// perspective-relative like every other block (and stays correct during a bo3
+// sideboard phase, where the viewer is sideboard_phase_player).
+static void write_matchup_tail(float* o, bool self_is_a) {
+    // The deck names are set once at startup; cache their archetype indices but
+    // re-resolve if a caller ever swaps decks mid-run.
+    static std::string cached_a, cached_b;
+    static int arch_a = ARCH_UNKNOWN, arch_b = ARCH_UNKNOWN;
+    if (cached_a != deck_a_name || cached_b != deck_b_name) {
+        cached_a = deck_a_name;
+        cached_b = deck_b_name;
+        arch_a = arch_index_for_deck(cached_a);
+        arch_b = arch_index_for_deck(cached_b);
+    }
+    int self_arch = self_is_a ? arch_a : arch_b;
+    int opp_arch = self_is_a ? arch_b : arch_a;
+    o[MATCHUP_TAIL_START] = static_cast<float>(self_arch * ARCH_N + opp_arch);
+    for (int i = 0; i < 2 * ARCH_N; i++) o[ARCH_ONEHOT_START + i] = 0.0f;
+    o[ARCH_ONEHOT_START + self_arch] = 1.0f;
+    o[ARCH_ONEHOT_START + ARCH_N + opp_arch] = 1.0f;
+}
 
 // ── Sideboard observation mask ──────────────────────────────────────────────
 // Bit-exact C++ twin of train/env.py::_build_sideboard_mask. During the bo3
@@ -264,6 +328,11 @@ ActorObs build_obs(const std::vector<LegalAction>& actions) {
         int id = decode_card_id(o[SELF_PERM_START + i * PERM_SLOT_SIZE + PERM_CARD_OFF]);
         write_cost_row(o + BF_COST_START + i * N_COST_FEATS, CARD_ABILITY_COST_MATRIX, id);
     }
+
+    // Matchup tail (value bucket + archetype one-hots), from the state's own
+    // self_is_a flag — read AFTER the sideboard mask, which deliberately keeps
+    // that flag live.
+    write_matchup_tail(o, o[ACTOR_SELF_IS_A_IDX] > 0.5f);
 
     return result;
 }

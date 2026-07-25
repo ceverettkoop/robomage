@@ -37,7 +37,9 @@ block is the only vocab-width block (N_CARD_TYPES multi-hot).
 State (STATE_SIZE) + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 64 action zone_ref floats
 + 64 action entity-slot-ref floats
-+ 70 hand cost floats + 336 battlefield ability cost floats = OBS_SIZE total.
++ 70 hand cost floats + 336 battlefield ability cost floats
++ the matchup tail (1 value-bucket index + one-hot(self archetype, N_ARCH)
++ one-hot(opp archetype, N_ARCH)) = OBS_SIZE total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (CLI) and is never sent to the ML model.
 NOTE: Both exile zones (self + opp, 64 recency-ordered card-id slots each) are
@@ -67,6 +69,15 @@ try:
     from card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
+
+# Deck -> strategic-archetype metadata (stdlib-only module). The matchup's
+# (self archetype x opp archetype) VALUE BUCKET rides in the observation tail so
+# the critic can give each matchup class its own final head — see the
+# "matchup tail" block below.
+try:
+    from archetypes import N_ARCH, N_VALUE_BUCKETS, arch_index, bucket_index
+except ImportError:
+    from train.archetypes import N_ARCH, N_VALUE_BUCKETS, arch_index, bucket_index
 
 # ACTION_CATEGORY_MAX is generated from the C++ ActionCategory enum (single source
 # of truth) by train/gen_enums.py — import it so this module never drifts from the
@@ -204,7 +215,85 @@ _BF_ABILITY_FEATS = MAX_BATTLEFIELD_SLOTS * _N_COST_FEATS  # 48 * 7 = 336
 # (self._action_public), not in the obs. N_ACTION_OBS_BLOCKS is single-sourced from
 # src/machine_io.h (via _enums codegen), the same constant src/actor/obs_builder.h
 # uses, so the block count never drifts between the two obs reconstructions.
-OBS_SIZE = STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS
+# ── Matchup tail (the LAST block of the obs) ─────────────────────────────────
+# Python-side only — the engine's state vector knows nothing about archetypes.
+#   [0]                 raw value-bucket index (self_arch * N_ARCH + opp_arch).
+#                       Consumed by the POLICY (it gathers that column out of the
+#                       multi-head critic) and STRIPPED before the trunk, so the
+#                       network never sees a meaningless magnitude.
+#   [1 : 1+N_ARCH]      one-hot(self archetype)   } explicit matchup conditioning
+#   [1+N_ARCH : ...]    one-hot(opp archetype)    } that DOES feed the trunk
+# Everything is perspective-relative ("self" = the priority player of this
+# decision), exactly like the rest of the observation — see write_matchup_tail.
+_BUCKET_FEATS       = 1
+_ARCH_ONEHOT_FEATS  = 2 * N_ARCH            # one-hot(self) + one-hot(opp): 8 + 8
+_MATCHUP_TAIL_FEATS = _BUCKET_FEATS + _ARCH_ONEHOT_FEATS
+OBS_SIZE = (STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS
+            + _HAND_COST_FEATS + _BF_ABILITY_FEATS + _MATCHUP_TAIL_FEATS)
+# Absolute offsets of the tail (imported by extractor.py / az_net.py / the C++
+# actor's mirror, which must never re-derive them).
+MATCHUP_TAIL_START = OBS_SIZE - _MATCHUP_TAIL_FEATS
+BUCKET_IDX         = MATCHUP_TAIL_START
+ARCH_ONEHOT_START  = BUCKET_IDX + _BUCKET_FEATS
+ARCH_ONEHOT_END    = ARCH_ONEHOT_START + _ARCH_ONEHOT_FEATS
+assert ARCH_ONEHOT_END == OBS_SIZE, (ARCH_ONEHOT_END, OBS_SIZE)
+
+
+def make_observation_space():
+    """The observation Box — the ONE definition every obs consumer must use.
+
+    Per-dimension bounds: everything is a normalized feature in [-10, 10] except
+    the raw value-bucket float, which is an INDEX in [0, N_VALUE_BUCKETS). Giving
+    that one slot honest bounds keeps the declared space truthful (a flat
+    ``high=10`` would lie about buckets >= 10) — and SB3 compares this space
+    against the one saved in a checkpoint, so an obs-layout change fails loudly
+    on load instead of silently misreading the tail.
+    """
+    low = np.full(OBS_SIZE, -10.0, dtype=np.float32)
+    high = np.full(OBS_SIZE, 10.0, dtype=np.float32)
+    low[BUCKET_IDX] = 0.0
+    high[BUCKET_IDX] = float(N_VALUE_BUCKETS - 1)
+    return spaces.Box(low=low, high=high, shape=(OBS_SIZE,), dtype=np.float32)
+
+
+_matchup_tail_cache = {}
+
+
+def matchup_tail(self_deck, opp_deck) -> np.ndarray:
+    """The (_MATCHUP_TAIL_FEATS,) tail for a matchup, from ``self_deck``'s view.
+
+    Cached per (self_deck, opp_deck) pair — an episode's decks are fixed, so this
+    is one dict lookup per decision. Returns a read-only shared array; callers
+    copy it into their obs buffer via :func:`write_matchup_tail`.
+    """
+    key = (self_deck or "", opp_deck or "")
+    tail = _matchup_tail_cache.get(key)
+    if tail is None:
+        tail = np.zeros(_MATCHUP_TAIL_FEATS, dtype=np.float32)
+        self_arch, opp_arch = arch_index(self_deck), arch_index(opp_deck)
+        tail[0] = float(bucket_index(self_deck, opp_deck))
+        tail[_BUCKET_FEATS + self_arch] = 1.0
+        tail[_BUCKET_FEATS + N_ARCH + opp_arch] = 1.0
+        tail.flags.writeable = False
+        _matchup_tail_cache[key] = tail
+    return tail
+
+
+def write_matchup_tail(obs: np.ndarray, self_deck, opp_deck) -> None:
+    """Write the matchup tail into the LAST _MATCHUP_TAIL_FEATS floats of ``obs``.
+
+    THE single obs-assembly entry point for the tail: every path that builds an
+    observation (the training env, the search-server mirrors, the analysis
+    engines) funnels through RoboMageEnv._parse_bquery_payload, which calls this —
+    so no caller has to know the layout. ``self_deck`` is the deck of the player
+    the observation is written for (the priority player), NOT Player A's.
+    """
+    obs[MATCHUP_TAIL_START:] = matchup_tail(self_deck, opp_deck)
+
+
+def obs_bucket(obs: np.ndarray) -> int:
+    """Decode the value-bucket index from a full observation vector."""
+    return int(round(float(obs[BUCKET_IDX])))
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -562,9 +651,7 @@ class RoboMageEnv(gym.Env):
         self._broadcast_steps = broadcast_steps
         self._passive_frames = []
 
-        self.observation_space = spaces.Box(
-            low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
-        )
+        self.observation_space = make_observation_space()
         # Discrete action space sized to the max we'd ever see.
         # Invalid actions are masked at each step via `action_masks()`.
         self.action_space = spaces.Discrete(MAX_ACTIONS)
@@ -964,6 +1051,16 @@ class RoboMageEnv(gym.Env):
         o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
         _bf_start = _hc_start + _HAND_COST_FEATS
         o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
+        # Matchup tail, PERSPECTIVE-RELATIVE like everything above it: the state
+        # vector is serialized from the priority player's view ("self"), and
+        # state[_SELF_IS_A_IDX] says which seat that is (during a bo3 sideboard
+        # phase the engine sets it from sideboard_phase_player, so it stays
+        # correct there too). So the bucket the multi-head critic gathers always
+        # scores the matchup from the viewpoint the rest of the obs is written in.
+        self_is_a = state_arr[_SELF_IS_A_IDX] > 0.5
+        self_deck = self._deck_a if self_is_a else self._deck_b
+        opp_deck = self._deck_b if self_is_a else self._deck_a
+        write_matchup_tail(o, self_deck, opp_deck)
 
     def drain_passive_frames(self) -> list:
         """Return and clear the accumulated --broadcast-steps BSTATE frames:

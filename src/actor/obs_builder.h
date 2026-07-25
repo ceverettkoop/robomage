@@ -3,19 +3,21 @@
 
 // Bit-exact, engine-side reconstruction of the Python RL observation vector.
 //
-// The gym env (train/env.py::_parse_bquery_payload) builds a 6986-float obs by
+// The gym env (train/env.py::_parse_bquery_payload) builds a 7003-float obs by
 // concatenating the machine-mode BQUERY payload (the STATE_SIZE state vector +
-// the padded per-action metadata arrays) and appending gathered cast/ability
-// cost rows. The in-process AlphaZero actor never speaks the stdio BQUERY
-// protocol, so it reconstructs the identical obs here from the same primitives
-// (populate_gamestate / populate_query / serialize_state) plus the generated
-// cost matrices — see obs_builder.cpp for the exact per-block contract, which
-// MIRRORS env.py so the two paths are bit-for-bit identical.
+// the padded per-action metadata arrays), appending gathered cast/ability cost
+// rows, and finally appending the matchup tail (value-bucket index + the two
+// archetype one-hots). The in-process AlphaZero actor never speaks the stdio
+// BQUERY protocol, so it reconstructs the identical obs here from the same
+// primitives (populate_gamestate / populate_query / serialize_state) plus the
+// generated cost/archetype tables — see obs_builder.cpp for the exact per-block
+// contract, which MIRRORS env.py so the two paths are bit-for-bit identical.
 
 #include <vector>
 
 #include "classes/action.h"     // LegalAction, ACTION_CATEGORY_MAX
 #include "classes/gamestate.h"  // MAX_ACTIONS, MAX_HAND_SLOTS, MAX_BATTLEFIELD_SLOTS
+#include "gen/archetypes_gen.h" // ARCH_N (matchup-tail width)
 #include "machine_io.h"         // STATE_SIZE, N_CARD_TYPES, N_ENTITY_REF_SLOTS
 
 // Cost-feature width (W,U,B,R,G,C,generic) — mirrors card_costs.py::_N_COST_FEATS
@@ -34,8 +36,15 @@ constexpr int ACTOR_SELF_IS_A_IDX = ACTOR_IS_ACTIVE_IDX + 1;
 constexpr int ACTOR_STATE_HEADER_SIZE = ACTOR_SELF_IS_A_IDX + 2;  // + stack_size
 static_assert(ACTOR_SELF_IS_A_IDX == 34, "self_is_a documented at float 34 (machine_io.h)");
 
-// obs = state | cats | ids | ctrl | zone | refs | ords | hand_costs | bf_ability_costs.
-// Must equal train/env.py::OBS_SIZE (6986). Derived from the engine layout
+// Matchup tail (train/env.py's _MATCHUP_TAIL_FEATS): the raw value-bucket index
+// (self_arch * ARCH_N + opp_arch) followed by one-hot(self arch) + one-hot(opp
+// arch). ARCH_N comes from the generated archetype mirror, so the width tracks
+// train/archetypes.py automatically.
+constexpr int ACTOR_MATCHUP_TAIL_FEATS = 1 + 2 * ARCH_N;
+
+// obs = state | cats | ids | ctrl | zone | refs | ords | hand_costs |
+//       bf_ability_costs | matchup_tail.
+// Must equal train/env.py::OBS_SIZE (7003). Derived from the engine layout
 // constants so a layout change is caught by the static_assert, never a literal.
 // The per-action metadata blocks (N_ACTION_OBS_BLOCKS: cats | ids | ctrl | zone_ref
 // | slot_ref | option_ordinal; pub stays a side-channel, not in the obs) are counted
@@ -44,8 +53,9 @@ static_assert(ACTOR_SELF_IS_A_IDX == 34, "self_is_a documented at float 34 (mach
 constexpr int ACTOR_OBS_SIZE =
     STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS +
     MAX_HAND_SLOTS * ACTOR_N_COST_FEATS +
-    MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS;
-static_assert(ACTOR_OBS_SIZE == 6986, "actor obs size must match env.py OBS_SIZE");
+    MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS +
+    ACTOR_MATCHUP_TAIL_FEATS;
+static_assert(ACTOR_OBS_SIZE == 7003, "actor obs size must match env.py OBS_SIZE");
 
 struct ActorObs {
     std::vector<float> obs;  // ACTOR_OBS_SIZE floats

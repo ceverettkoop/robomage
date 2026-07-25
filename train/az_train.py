@@ -71,6 +71,15 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None):
     pi = np.concatenate(pi, axis=0)
     z = np.concatenate(z, axis=0)
     mask = np.concatenate(mask, axis=0)
+    # Shards are raw observation rows, so an obs-layout change (e.g. a new tail
+    # block) makes older shards unusable. Say so instead of letting the net's
+    # first slice fail with a bare shape error deep in the forward pass.
+    if obs.shape[1] != OBS_SIZE or mask.shape[1] != MAX_ACTIONS:
+        raise RuntimeError(
+            f"self-play shards in {data_dir} were recorded against a different "
+            f"observation layout (obs width {obs.shape[1]}, mask {mask.shape[1]}) "
+            f"but this build has OBS_SIZE={OBS_SIZE}, MAX_ACTIONS={MAX_ACTIONS} — "
+            "delete/regenerate the shards (re-run az-selfplay) before training")
     return obs, pi, z, mask, len(shards)
 
 

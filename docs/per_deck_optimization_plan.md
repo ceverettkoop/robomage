@@ -43,6 +43,17 @@ anticipates). Update the SessionStart provisioning hook deck list if needed.
 
 ## Part 1 — Per-archetype-bucket value heads (PPO + AZ)
 
+**AS BUILT (supersedes the counts below).** Part 0 shipped 7 archetypes + `unknown`,
+so `N_ARCH = 8` and `N_VALUE_BUCKETS = 64` (not 7/49), and the obs tail is
+1 bucket float + one-hot(8) + one-hot(8) = **17 floats** (not 15):
+`OBS_SIZE` 6986 → **7003**. The tail is written by the single helper
+`env.write_matchup_tail()` from `RoboMageEnv._parse_bquery_payload`, keyed on the
+state vector's own `self_is_a` flag so the bucket is perspective-relative like the
+rest of the observation. The C++ AZ actor mirrors it in
+`src/actor/obs_builder.cpp` off the generated `src/gen/archetypes_gen.h`
+(`train/gen_archetypes.py`, wired into `make pygen`), keeping
+`train/archetypes.py` + `decks/archetypes.json` the one source of truth.
+
 ### How it works (mechanics)
 
 **Bucket delivery — through the observation tail (Python side only, no C++ change).**
