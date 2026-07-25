@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdio>
 
+#include "classes/match_state.h"
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
@@ -62,6 +63,7 @@ static bool arm_damage_assign_query(Game &game);
 static void finish_pending_attacker(Game &game);
 static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
+static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer);
 // One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
 // amount, or a life amount when is_life) the targeting player must pay or have the spell/
 // ability countered. Collected from the printed ward (CardData::ward_cost) and from any
@@ -3638,7 +3640,70 @@ void resume_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer) {
     run_damage_assignment(game, orderer, game.pending_query.answer);
 }
 
+// Miracle (CR 702.94a) reveal decision. A first-of-turn miracle card was drawn and its owner may
+// reveal it "as they draw it" — a PRIVATE special action taken off the stack (the opponent is not
+// told a miracle card was drawn unless it is revealed). This forced yes/no is presented to the
+// OWNER (who need not hold priority) before they proceed. On decline the card stays hidden in hand.
+// On accept the card becomes public (belief state + log) and the linked "when you reveal this card
+// this way, you may cast it" triggered ability is synthesized onto the stack (opponent now sees the
+// revealed card and gets a response window); that trigger resolves in effect_miracle.cpp by opening
+// the miracle-cast window, so the owner makes the actual cast decision at their following priority.
+static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
+    Entity card = game.miracle_reveal_pending;
+    game.miracle_reveal_pending = 0;  // consume up front — a single, one-shot decision
+    // The card must still be in its owner's hand to be miracle-revealed (nothing runs between the
+    // draw and this decision today, but guard against a vanished/moved entity regardless).
+    if (!global_coordinator.entity_has_component<Zone>(card)) return;
+    auto &z = global_coordinator.GetComponent<Zone>(card);
+    if (z.location != Zone::HAND) return;
+    Zone::Ownership owner = z.owner;
+    if (owner != Zone::PLAYER_A && owner != Zone::PLAYER_B) return;
+    const std::string nm = global_coordinator.entity_has_component<CardData>(card)
+                               ? global_coordinator.GetComponent<CardData>(card).name
+                               : "the card";
+
+    std::vector<LegalAction> yn;
+    LegalAction decline(PASS_PRIORITY, std::string("Don't reveal ") + nm + " (miracle)");
+    decline.category = ActionCategory::OPTIONAL_YESNO;
+    decline.option_ordinal = 0;  // 0 = decline
+    yn.push_back(decline);
+    LegalAction accept(PASS_PRIORITY, std::string("Reveal ") + nm + " for its miracle cost");
+    accept.category = ActionCategory::OPTIONAL_YESNO;
+    accept.option_ordinal = 1;  // 1 = accept (reveal)
+    yn.push_back(accept);
+
+    // Point the input query at the OWNER (the drawer), who need not be the priority holder — the
+    // shared chooser-scope pattern (mirrors CLEANUP_DISCARD): machine mode then serializes the state
+    // from the owner's perspective and routes the decision to them, keeping it hidden from the
+    // opponent. Loop-safe: one decision derived from the pending card alone.
+    bool prev_priority = game.player_a_has_priority;
+    game.player_a_has_priority = (owner == Zone::PLAYER_A);
+    search_set_loop_safe(true);
+    int choice = InputLogger::instance().get_input(yn);
+    search_set_loop_safe(false);
+    game.player_a_has_priority = prev_priority;
+
+    if (choice != 1) return;  // declined — the card stays hidden in hand, no cast opportunity
+
+    // Revealed (CR 702.94a/702.94b): the card is now public. Record the reveal in the belief state
+    // and log it, then put the linked "you may cast it" triggered ability on the stack.
+    mark_card_revealed(card, owner);
+    game_log("%s reveals %s for its miracle cost.\n", player_name(owner).c_str(), nm.c_str());
+    Ability trig;
+    trig.ability_type = Ability::TRIGGERED;
+    trig.category = "MiracleCast";
+    trig.source = card;
+    trig.controller = owner;
+    orderer->push_ability_onto_stack(trig, owner);
+}
+
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
+    // A pending miracle reveal (CR 702.94) is a forced private decision the drawing player makes
+    // before proceeding; it rides this channel but is not a pending_choice enum value.
+    if (game.miracle_reveal_pending != 0) {
+        proc_miracle_reveal(game, orderer);
+        return;
+    }
     switch (game.pending_choice) {
         case DECLARE_ATTACKERS_CHOICE:
             declare_attackers(game, orderer);

@@ -222,6 +222,12 @@ HandlerResult set_state(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
 // already left the battlefield follows normal rules (the exile no-ops). See effect_warp.cpp.
 HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 
+// Miracle (CR 702.94a): the linked "when you reveal this card this way, you may cast it" triggered
+// ability. Synthesized and put on the stack when its owner reveals a freshly-drawn miracle card; on
+// resolution it opens the miracle-cast window for the source card (so its owner may then cast it for
+// its miracle cost at their following priority). See effect_miracle.cpp.
+HandlerResult miracle_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
 //

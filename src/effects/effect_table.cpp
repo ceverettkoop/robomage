@@ -77,6 +77,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::SuspendTick:     return &suspend_tick;
         case EffectKind::SetState:        return &set_state;
         case EffectKind::WarpExile:       return &warp_exile;
+        case EffectKind::MiracleCast:     return &miracle_cast;
         default:                          return nullptr;
     }
 }

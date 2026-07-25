@@ -456,7 +456,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     player.cards_drawn_this_draw_step = 0;
                     // Miracle window (CR 702.94) is a "first card drawn this turn" concept — the
                     // reveal/cast opportunity lapses at end of turn, so clear it each cleanup.
+                    // A never-answered pending reveal (e.g. the game ended first) lapses too.
                     miracle_window.clear();
+                    miracle_reveal_pending = 0;
                     // Also clear opponent's drawn-this-turn tracking
                     {
                         Entity opp_entity = player_a_turn ? player_b_entity : player_a_entity;
@@ -572,7 +574,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 }
 
 bool Game::is_mandatory_choice_pending() const {
-    return pending_choice != NONE;
+    // A pending miracle reveal (CR 702.94) is a forced decision the drawing player must make
+    // before proceeding, so it rides the mandatory-choice channel alongside pending_choice.
+    return pending_choice != NONE || miracle_reveal_pending != 0;
 }
 
 void Game::finish_suspended_turn_draw() {

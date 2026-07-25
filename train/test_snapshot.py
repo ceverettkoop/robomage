@@ -3300,7 +3300,10 @@ PROMPT_SITE_WHITELIST = {
     #   game_driver.cpp: pending-query emitter, priority decision, pregame_ask,
     #     sideboard IN, sideboard OUT (5)
     #   action_processor.cpp: declare-attackers select, declare-blockers
-    #     select, cleanup discard (3 of its 6)
+    #     select, cleanup discard, miracle reveal (4 of its 7) — the miracle
+    #     reveal (CR 702.94) rides the mandatory-choice channel via
+    #     proc_mandatory_choice, wrapped in search_set_loop_safe like cleanup
+    #     discard, so it is a loop-top snapshot-safe emitter
     # (b) interactive-only (machine mode auto-resolves; never a search root):
     #   action_processor.cpp: hybrid-pip interactive branch (1 of 6)
     #   mana_system.cpp: interactive mana payment (1)
@@ -3331,7 +3334,7 @@ PROMPT_SITE_WHITELIST = {
     "input_logger.cpp": 2,
     "game_driver.cpp": 5,
     "resolution_frame.cpp": 1,
-    "action_processor.cpp": 6,
+    "action_processor.cpp": 7,
     "mana_system.cpp": 1,
     os.path.join("systems", "replacement_effects.cpp"): 3,
     os.path.join("systems", "state_manager.cpp"): 1,

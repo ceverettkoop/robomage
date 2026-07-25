@@ -650,6 +650,14 @@ struct Game {
         // its miracle (alternative) cost — can_afford_alt gates the is_miracle alt cost on
         // membership. Populated at the qualifying draw (orderer.cpp), cleared each cleanup.
         std::set<Entity> miracle_window;
+        // Miracle (CR 702.94): a first-of-turn miracle card was just drawn and awaits its owner's
+        // PRIVATE reveal decision — the "you may reveal it as you draw it" special action (off the
+        // stack, hidden from the opponent until they choose to reveal). Set in Orderer::perform_draw,
+        // presented and consumed by proc_mandatory_choice's miracle-reveal branch (a forced decision
+        // before the owner proceeds), and cleared each cleanup (the opportunity lapses at end of
+        // turn). 0 = none pending. Only on reveal does the card become public and the linked "you may
+        // cast it" triggered ability (category MiracleCast) go on the stack to open miracle_window.
+        Entity miracle_reveal_pending = 0;
         std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
         std::set<Entity> chosen_cards;  // permanents chosen/kept by a ChooseCard effect (Ajani -4); read by SacrificeAll's nonChosenCard filter, cleared by Cleanup ClearChosenCard$
         std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving

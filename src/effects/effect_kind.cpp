@@ -142,6 +142,11 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // a warp-cast permanent resolves here — exile the source and grant its owner the lasting
         // recast-from-exile permission (see mark_warp_permanent / effect_warp.cpp).
         {"WarpExile", EffectKind::WarpExile},
+        // Miracle (CR 702.94a): the linked "when you reveal this card, you may cast it" triggered
+        // ability, synthesized and put on the stack when its owner reveals a freshly-drawn miracle
+        // card (see proc_mandatory_choice's miracle-reveal branch). On resolution it opens the
+        // miracle-cast window for the source card. See effect_miracle.cpp.
+        {"MiracleCast", EffectKind::MiracleCast},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;
