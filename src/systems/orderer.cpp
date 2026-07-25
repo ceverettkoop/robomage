@@ -571,7 +571,11 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     if (fire_draw_event && pl.cards_drawn_this_turn.size() == 1 &&
         global_coordinator.GetComponent<CardData>(top).alt_cost.is_miracle) {
         cur_game.miracle_window.insert(top);
-        game_log_private(player, "%s reveals %s for its miracle cost.\n", player_name(player).c_str(),
+        // The miracle reveal (CR 702.94) is public: record it in the belief state and log it
+        // to both players, so an opponent sees the revealed miracle card (which then opens the
+        // miracle-cost casting window) rather than treating the first-draw as private.
+        mark_card_revealed(top, player);
+        game_log("%s reveals %s for its miracle cost.\n", player_name(player).c_str(),
                  global_coordinator.GetComponent<CardData>(top).name.c_str());
     }
 
