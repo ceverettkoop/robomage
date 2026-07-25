@@ -1,9 +1,10 @@
 """RoboMage TUI launcher.
 
 A Textual control panel that composes and runs train.py / analysis.py / play.py
-commands. It imports ONLY cli_spec (the single source of truth for every flag),
-never the heavy ML scripts, so it starts instantly and can never drift from the
-real CLIs — change a flag in cli_spec.py and it shows up here automatically.
+commands. It imports ONLY cli_spec (the single source of truth for every flag)
+and curriculum (itself cli_spec-only), never the heavy ML scripts, so it starts
+instantly and can never drift from the real CLIs — change a flag in cli_spec.py
+and it shows up here automatically.
 
 Run from the repo root:
     train/.venv/bin/python train/tui.py
@@ -13,6 +14,7 @@ simultaneously teed to a per-run log file. The TUI resumes when the command
 exits.
 """
 
+import contextlib
 import glob
 import os
 import random
@@ -24,10 +26,15 @@ from datetime import datetime
 
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.widgets import (Checkbox, Footer, Header, Input, Label,
-                             Select, SelectionList, Static, Tree)
+from textual.screen import Screen
+from textual.widgets import (Button, Checkbox, Footer, Header, Input, Label,
+                             ListItem, ListView, Select, SelectionList, Static,
+                             Tree)
 
 from cli_spec import (ALL_TOOLS, REPO_ROOT, MutexGroup)
+# Curriculum plans: stdlib-only module (cli_spec + progress_io), so the launcher
+# can list/read/write plan files without pulling in the ML stack.
+import curriculum
 
 VENV_PY = sys.executable
 _DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
@@ -140,6 +147,11 @@ def _scan_agents():
     return _scan_checkpoints() + az + _scan_az_checkpoints()
 
 
+def _scan_curricula():
+    """Curriculum plan names under checkpoints/curricula/ (see curriculum.py)."""
+    return curriculum.list_plans()
+
+
 def _generalist_checkpoints():
     """PPO checkpoints the --load field can resume, as checkpoints/-relative
     paths.
@@ -165,7 +177,8 @@ def _expand_checkpoint(val):
 # .pt paths.
 _SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
              "checkpoint": _scan_checkpoints, "agent": _scan_agents,
-             "az_checkpoint": _scan_az_checkpoints}
+             "az_checkpoint": _scan_az_checkpoints,
+             "curriculum": _scan_curricula}
 
 # TUI-only default overrides for the league form (the common "train the whole
 # roster" run): these seed the widgets differently from the CLI Arg defaults but
@@ -184,74 +197,30 @@ def _suggestions_for(arg):
     return fn() if fn else []
 
 
-class LauncherApp(App):
-    CSS = """
-    #tree { width: 22; border-right: solid $accent; }
-    #right { width: 1fr; }
-    #form { height: 1fr; padding: 0 1; }
-    .fieldrow { height: 1; margin-bottom: 1; }
-    .fieldname { width: 18; color: $text-muted; text-align: right; padding: 0 1 0 0; }
-    .req { color: $warning; }
-    .fieldrow Input, .fieldrow Select { width: 1fr; }
-    .fieldrow.tall { height: auto; }
-    .fieldrow.tall SelectionList { width: 1fr; height: auto; max-height: 8; border: round $accent; }
-    #fieldhelp { height: 1; padding: 0 1; color: $text-muted; }
-    .rosterorder { width: 1fr; color: $accent; }
-    #preview { height: auto; max-height: 5; padding: 0 1; color: $text-muted; border-top: solid $accent; }
+class ArgFormMixin:
+    """Builds an input form from ``cli_spec`` Sub items and reads it back.
+
+    Shared by the launcher's flat command form and the curriculum screen's
+    per-phase form: one Arg -> one row (Checkbox / Select / SelectionList /
+    Input), a MutexGroup -> one Select, plus the roster ordering behaviour of a
+    ``multi=True`` deck picker. Hosts must call ``_init_form_state()`` and
+    provide ``self._sub`` (the Sub being edited, used for the form-level
+    defaults) and a ``#fieldhelp`` Static.
     """
 
-    TITLE = "robomage"
+    # Seed an az* form's --seed with a fresh random value per load (see
+    # _default_for). Hosts that EDIT a stored document rather than launch a
+    # one-off command turn this off.
+    _RANDOM_AZ_SEED = True
 
-    BINDINGS = [
-        ("r", "run", "Run"),
-        ("q", "quit", "Quit"),
-        # League roster reorder — only active while the --decks list is focused
-        # (see check_action); moves the highlighted deck in the training rotation.
-        ("[", "roster_earlier", "◀ order"),
-        ("]", "roster_later", "order ▶"),
-    ]
-
-    def __init__(self):
-        super().__init__()
-        self._tool = None
-        self._sub = None
+    def _init_form_state(self):
         self._fields = []
         self._help_by_widget = {}   # widget -> help text, for the focus help line
 
-    # ── layout ────────────────────────────────────────────────────────────
-    def compose(self) -> ComposeResult:
-        yield Header()
-        with Horizontal():
-            yield Tree("Commands", id="tree")
-            with Vertical(id="right"):
-                yield VerticalScroll(id="form")
-                yield Static("", id="fieldhelp")
-                yield Static("Select a command on the left.", id="preview")
-        yield Footer()
-
-    def on_mount(self):
-        tree = self.query_one("#tree", Tree)
-        tree.show_root = False
-        for tool in ALL_TOOLS:
-            node = tree.root.add(tool.key, expand=True)
-            for sub in tool.subs:
-                leaf = node.add_leaf(sub.name)
-                leaf.data = (tool, sub)
-        tree.root.expand()
-
-    # ── form building ─────────────────────────────────────────────────────
-    async def on_tree_node_selected(self, event: Tree.NodeSelected):
-        if event.node.data:
-            await self._load_sub(*event.node.data)
-
-    async def _load_sub(self, tool, sub):
-        self._tool, self._sub = tool, sub
-        form = self.query_one("#form", VerticalScroll)
-        await form.remove_children()
-        self._fields = []
-        self._help_by_widget = {}
+    def _form_rows(self, items):
+        """Widget rows for a list of Sub items; populates ``self._fields``."""
         rows = []
-        for item in sub.items:
+        for item in items:
             if isinstance(item, MutexGroup):
                 opts = [(a.name, a.name) for a in item.args]
                 sel = Select(opts, allow_blank=True, prompt="(neither)", compact=True)
@@ -264,11 +233,7 @@ class LauncherApp(App):
                 f = self._fields[-1]
                 if f.get("readout") is not None:
                     rows.append(self._row("order", f["readout"], required=False))
-        if rows:
-            await form.mount(*rows)
-        self._apply_league_defaults()
-        self.query_one("#fieldhelp", Static).update("")
-        self.update_preview()
+        return rows
 
     def _row(self, name, widget, required, extra=""):
         """Wrap a field as a single compact row: short name label + widget.
@@ -311,8 +276,11 @@ class LauncherApp(App):
         # repeated TUI launches don't silently replay the fixed cli_spec seed
         # (identical self-play games before any training has happened). CLI
         # defaults are untouched, and the value is visible in the field and the
-        # composed-command preview, so every run stays reproducible.
-        if a.name == "--seed" and str(getattr(self._sub, "name", "")).startswith("az"):
+        # composed-command preview, so every run stays reproducible. A plan
+        # editor opts out (_RANDOM_AZ_SEED): merely selecting a phase must not
+        # rewrite the saved plan with a new random seed.
+        if (self._RANDOM_AZ_SEED and a.name == "--seed"
+                and str(getattr(self._sub, "name", "")).startswith("az")):
             return random.randint(1, 999_999)
         return a.default
 
@@ -362,24 +330,71 @@ class LauncherApp(App):
         return next((f for f in self._fields
                      if f.get("arg") is not None and f["arg"].name == name), None)
 
-    def _apply_league_defaults(self):
-        """Post-mount league conveniences: pre-check all roster decks, then apply
-        the --resume gate. No-op for every other sub."""
-        if getattr(self._sub, "name", None) != "league":
-            return
-        decks = self._field_by_name("--decks")
-        if decks is not None and decks["kind"] == "multipick":
-            decks["widget"].select_all()   # start with the whole roster checked
-            self._reconcile_roster_order(decks)   # seed rotation order + readout
-        self._apply_resume_gate()
+    def _field_by_dest(self, dest):
+        return next((f for f in self._fields
+                     if f.get("arg") is not None and f["arg"].dest == dest), None)
 
-    # ── league roster ordering (== training rotation order) ─────────────────
+    # ── reading the form back ────────────────────────────────────────────
+    def _field_value(self, f):
+        """One field's current value, normalized by field kind.
+
+        flag -> bool; mutex -> the chosen flag NAME or None; choice/pick -> str
+        or None; multipick -> the ordered list of picks; value -> the trimmed
+        text or None."""
+        w = f["widget"]
+        kind = f["kind"]
+        if kind == "flag":
+            return bool(w.value)
+        if kind in ("mutex", "choice", "pick"):
+            v = w.value
+            return v if isinstance(v, str) and v else None
+        if kind == "multipick":
+            selected = set(w.selected)
+            order = f.get("order")
+            return ([d for d in order if d in selected] if order is not None
+                    else list(w.selected))
+        text = w.value.strip()
+        return text or None
+
+    def _collect_values(self):
+        """``([(field, value)], missing_required_names)`` for the whole form."""
+        out, missing = [], []
+        for f in self._fields:
+            val = self._field_value(f)
+            a = f.get("arg")
+            if a is not None and a.required and val in (None, [], False):
+                missing.append(a.name)
+            out.append((f, val))
+        return out, missing
+
+    def _apply_values(self, values):
+        """Push ``{dest: value}`` back into the mounted widgets (form prefill)."""
+        for dest, val in values.items():
+            f = self._field_by_dest(dest)
+            if f is None:
+                continue
+            w = f["widget"]
+            if f["kind"] == "flag":
+                w.value = bool(val)
+            elif f["kind"] == "multipick":
+                picks = ([v.strip() for v in str(val).split(",") if v.strip()]
+                         if not isinstance(val, (list, tuple)) else list(val))
+                w.deselect_all()
+                for p in picks:
+                    with contextlib.suppress(Exception):
+                        w.select(p)
+                f["order"] = picks
+                self._refresh_roster_readout(f)
+            elif f["kind"] in ("choice", "pick"):
+                with contextlib.suppress(Exception):
+                    w.value = val
+            else:
+                w.value = "" if val is None else str(val)
+
+    # ── roster ordering (== training rotation order) ─────────────────────
     def _roster_field(self):
-        """The league ``--decks`` multipick field, or None when not on it."""
-        if getattr(self._sub, "name", None) != "league":
-            return None
-        f = self._field_by_name("--decks")
-        return f if (f is not None and f.get("readout") is not None) else None
+        """The focused-form's order-tracked multipick field, or None."""
+        return next((f for f in self._fields if f.get("readout") is not None), None)
 
     def _reconcile_roster_order(self, f):
         """Sync f["order"] (the emitted rotation order) with what's checked:
@@ -401,34 +416,136 @@ class LauncherApp(App):
         f["readout"].update("rotation → " + txt)
 
     def _roster_move(self, delta):
-        """Move the highlighted deck delta places in the rotation order."""
+        """Move the highlighted deck delta places in the rotation order.
+
+        Returns True when it acted (the roster list had focus), so a host that
+        shares the [ / ] keys with another list can fall through."""
         f = self._roster_field()
         if f is None or self.focused is not f["widget"]:
-            return
+            return False
         w = f["widget"]
         idx = w.highlighted
         if idx is None:
-            return
+            return False
         val = w.get_option_at_index(idx).value
         order = f.get("order", [])
         if val not in order:
-            return                                       # highlighted deck not checked
+            return False                                 # highlighted deck not checked
         i = order.index(val)
         j = i + delta
         if 0 <= j < len(order):
             order[i], order[j] = order[j], order[i]
             self._refresh_roster_readout(f)
+        return True
+
+    def _show_field_help(self, widget):
+        """Update the #fieldhelp line for the newly focused widget."""
+        help_text = self._help_by_widget.get(widget)
+        if help_text is not None:
+            self.query_one("#fieldhelp", Static).update(help_text)
+
+
+class LauncherApp(ArgFormMixin, App):
+    CSS = """
+    #tree { width: 22; border-right: solid $accent; }
+    #right { width: 1fr; }
+    #form { height: 1fr; padding: 0 1; }
+    .fieldrow { height: 1; margin-bottom: 1; }
+    .fieldname { width: 18; color: $text-muted; text-align: right; padding: 0 1 0 0; }
+    .req { color: $warning; }
+    .fieldrow Input, .fieldrow Select { width: 1fr; }
+    .fieldrow.tall { height: auto; }
+    .fieldrow.tall SelectionList { width: 1fr; height: auto; max-height: 8; border: round $accent; }
+    #fieldhelp { height: 1; padding: 0 1; color: $text-muted; }
+    .rosterorder { width: 1fr; color: $accent; }
+    #preview { height: auto; max-height: 5; padding: 0 1; color: $text-muted; border-top: solid $accent; }
+    """
+
+    TITLE = "robomage"
+
+    BINDINGS = [
+        ("r", "run", "Run"),
+        ("q", "quit", "Quit"),
+        # League roster reorder — only active while the --decks list is focused
+        # (see check_action); moves the highlighted deck in the training rotation.
+        ("[", "roster_earlier", "◀ order"),
+        ("]", "roster_later", "order ▶"),
+    ]
+
+    def __init__(self):
+        super().__init__()
+        self._tool = None
+        self._sub = None
+        self._init_form_state()
+
+    # ── layout ────────────────────────────────────────────────────────────
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Horizontal():
+            yield Tree("Commands", id="tree")
+            with Vertical(id="right"):
+                yield VerticalScroll(id="form")
+                yield Static("", id="fieldhelp")
+                yield Static("Select a command on the left.", id="preview")
+        yield Footer()
+
+    def on_mount(self):
+        tree = self.query_one("#tree", Tree)
+        tree.show_root = False
+        for tool in ALL_TOOLS:
+            node = tree.root.add(tool.key, expand=True)
+            for sub in tool.subs:
+                leaf = node.add_leaf(sub.name)
+                leaf.data = (tool, sub)
+        tree.root.expand()
+
+    # ── form building ─────────────────────────────────────────────────────
+    async def on_tree_node_selected(self, event: Tree.NodeSelected):
+        if not event.node.data:
+            return
+        tool, sub = event.node.data
+        # 'curriculum' is not a flat form: it opens the multi-phase plan builder
+        # (the one command whose input is a JSON file rather than a flag list).
+        if sub.name == "curriculum":
+            self.push_screen(CurriculumScreen())
+            return
+        await self._load_sub(tool, sub)
+
+    async def _load_sub(self, tool, sub):
+        self._tool, self._sub = tool, sub
+        form = self.query_one("#form", VerticalScroll)
+        await form.remove_children()
+        self._init_form_state()
+        rows = self._form_rows(sub.items)
+        if rows:
+            await form.mount(*rows)
+        self._apply_league_defaults()
+        self.query_one("#fieldhelp", Static).update("")
+        self.update_preview()
+
+    def _apply_league_defaults(self):
+        """Post-mount league conveniences: pre-check all roster decks, then apply
+        the --resume gate. No-op for every other sub."""
+        if getattr(self._sub, "name", None) != "league":
+            return
+        decks = self._field_by_name("--decks")
+        if decks is not None and decks["kind"] == "multipick":
+            decks["widget"].select_all()   # start with the whole roster checked
+            self._reconcile_roster_order(decks)   # seed rotation order + readout
+        self._apply_resume_gate()
+
+    # ── league roster ordering (== training rotation order) ─────────────────
+    def action_roster_earlier(self):
+        if self._roster_move(-1):
             self.update_preview()
 
-    def action_roster_earlier(self):
-        self._roster_move(-1)
-
     def action_roster_later(self):
-        self._roster_move(1)
+        if self._roster_move(1):
+            self.update_preview()
 
     def check_action(self, action, parameters):
         # The roster reorder keys are only meaningful (and only shown in the
-        # footer) while the league --decks list is focused.
+        # footer) while a deck multipick list is focused.
         if action in ("roster_earlier", "roster_later"):
             f = self._roster_field()
             return f is not None and self.focused is f["widget"]
@@ -451,9 +568,7 @@ class LauncherApp(App):
 
     # ── reactive updates ──────────────────────────────────────────────────
     def on_descendant_focus(self, event):
-        help_text = self._help_by_widget.get(event.widget)
-        if help_text is not None:
-            self.query_one("#fieldhelp", Static).update(help_text)
+        self._show_field_help(event.widget)
         # Roster reorder keys ([ / ]) are only live while the list is focused, so
         # re-evaluate check_action to show/hide them in the footer on focus change.
         self.refresh_bindings()
@@ -493,7 +608,7 @@ class LauncherApp(App):
                                      in self._FULLSCREEN_SCRIPTS)
 
     def _collect(self):
-        """Return (argv, missing_required_names)."""
+        """Return (argv, missing_required_names) for the selected command."""
         argv = [VENV_PY, self._script_abs()]
         if not self._tool.flat:          # flat tools (play.py, test_harness.py) have no subcommand token
             argv.append(self._sub.name)
@@ -503,58 +618,30 @@ class LauncherApp(App):
             resume = self._field_by_name("--resume")
             if resume is not None and resume["widget"].value:
                 return argv + ["--resume"], []
-        missing = []
-        for f in self._fields:
+        values, missing = self._collect_values()
+        for f, val in values:
+            if f["kind"] == "mutex":
+                if val:                  # a real flag name (not the blank sentinel)
+                    argv.append(val)
+                continue
+            a = f["arg"]
             if f["kind"] == "flag":
-                if f["widget"].value:
-                    argv.append(f["arg"].name)
-            elif f["kind"] == "mutex":
-                v = f["widget"].value
-                if isinstance(v, str) and v:   # real flag name (not the blank sentinel)
-                    argv.append(v)
-            elif f["kind"] == "choice":
-                v = f["widget"].value
-                if isinstance(v, str) and v:
-                    argv += [f["arg"].name, v]
-                elif f["arg"].required:
-                    missing.append(f["arg"].name)
-            elif f["kind"] == "multipick":   # multi-select roster → comma-joined
-                a = f["arg"]
-                # Emit in the user-set rotation order (f["order"], reorderable with
-                # [ / ]), filtered to what's currently checked; fall back to raw
-                # check-order for non-order-tracked multipicks.
-                selected = set(f["widget"].selected)
-                order = f.get("order")
-                if order is not None:
-                    vals = [d for d in order if d in selected]
-                else:
-                    vals = list(f["widget"].selected)
-                if vals:
-                    argv += [a.name, ",".join(vals)]
-                elif a.required:
-                    missing.append(a.name)
-            elif f["kind"] == "pick":   # dropdown of decks/checkpoints
-                a = f["arg"]
-                v = f["widget"].value
-                if isinstance(v, str) and v:
-                    if a.suggest in ("checkpoint", "agent", "az_checkpoint"):
-                        v = _expand_checkpoint(v)
-                    if a.is_positional:
-                        argv.append(v)
-                    else:
-                        argv += [a.name, v]
-                elif a.required:
-                    missing.append(a.name)
-            else:  # value (free-text Input: numbers, --binary, …)
-                a = f["arg"]
-                val = f["widget"].value.strip()
                 if val:
-                    if a.is_positional:
-                        argv.append(val)
-                    else:
-                        argv += [a.name, val]
-                elif a.required:
-                    missing.append(a.name)
+                    argv.append(a.name)
+                continue
+            if val in (None, []):
+                continue
+            if f["kind"] == "multipick":   # multi-select roster -> comma-joined
+                text = ",".join(val)
+            elif f["kind"] == "pick" and a.suggest in ("checkpoint", "agent",
+                                                       "az_checkpoint"):
+                text = _expand_checkpoint(val)
+            else:
+                text = val
+            if a.is_positional:
+                argv.append(text)
+            else:
+                argv += [a.name, text]
         return argv, missing
 
     def _preview_text(self, argv):
@@ -616,6 +703,340 @@ class LauncherApp(App):
                 pass
         if logpath and _SCRIPT_BIN:
             self.notify(f"output logged to {os.path.relpath(logpath, REPO_ROOT)}")
+
+
+class CurriculumScreen(ArgFormMixin, Screen):
+    """Plan builder + status view for multi-phase training curricula.
+
+    The one command whose input is a FILE rather than a flag list, so it gets a
+    screen of its own instead of the flat form: the left pane edits the phase
+    list (add / remove / reorder, same ``[`` / ``]`` convention as the league
+    roster), the right pane is that phase's argument form — generated by the
+    shared ``ArgFormMixin`` from the phase kind's own cli_spec Sub, so a league
+    phase offers the same deck multipick and an AZ phase the same knobs as the
+    flat forms do. Save/Load read and write
+    ``train/checkpoints/curricula/<name>.plan.json``; Run/Resume hand
+    ``train.py curriculum --plan …`` to the launcher's terminal-suspend path
+    like every other command."""
+
+    DEFAULT_CSS = """
+    #cleft { width: 46; border-right: solid $accent; }
+    #cright { width: 1fr; }
+    #phases { height: 1fr; border: round $accent; }
+    #cbuttons { height: 3; }
+    #cbuttons Button { min-width: 8; margin: 0 1 0 0; }
+    #phaseform { height: 1fr; padding: 0 1; }
+    #cstatus { height: auto; max-height: 10; padding: 0 1; color: $text-muted;
+               border-top: solid $accent; }
+    """
+
+    BINDINGS = [
+        ("escape", "back", "Back"),
+        ("ctrl+s", "save", "Save"),
+        ("ctrl+r", "run", "Run"),
+        # Phase reorder — falls through to the roster reorder while a phase
+        # form's deck multipick is focused (see action_move_earlier).
+        ("[", "move_earlier", "◀ move"),
+        ("]", "move_later", "move ▶"),
+    ]
+
+    # A plan is a stored document: selecting an az phase must not rewrite it
+    # with a fresh random --seed the way a one-off az launch form does.
+    _RANDOM_AZ_SEED = False
+
+    def __init__(self, name_or_path: str = None):
+        super().__init__()
+        self._init_form_state()
+        self._sub = None            # the Sub whose form is currently mounted
+        self._phase_idx = None
+        self._plan = {"version": curriculum.PLAN_VERSION, "name": "new_plan",
+                      "phases": []}
+        self._pending_load = name_or_path
+
+    # ── layout ────────────────────────────────────────────────────────────
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Horizontal():
+            with Vertical(id="cleft"):
+                yield self._row("plan name", Input(value=self._plan["name"],
+                                                   id="planname", compact=True),
+                                required=False)
+                yield self._row("load plan",
+                                Select([(p, p) for p in _scan_curricula()],
+                                       id="planpick", allow_blank=True,
+                                       compact=True), required=False)
+                yield self._row("phase kind",
+                                Select([(k, k) for k in curriculum.PHASE_KINDS],
+                                       id="kindpick", allow_blank=False,
+                                       value=curriculum.PHASE_KINDS[0],
+                                       compact=True), required=False)
+                yield ListView(id="phases")
+                with Horizontal(id="cbuttons"):
+                    yield Button("Add", id="add", variant="primary")
+                    yield Button("Del", id="del")
+                    yield Button("Save", id="save")
+                    yield Button("Load", id="load")
+                    yield Button("Run", id="run", variant="success")
+                    yield Button("Resume", id="resume")
+                    yield Button("Status", id="status")
+            with Vertical(id="cright"):
+                yield VerticalScroll(id="phaseform")
+                yield Static("", id="fieldhelp")
+                yield Static("", id="cstatus")
+        yield Footer()
+
+    async def on_mount(self):
+        if self._pending_load:
+            await self._load_plan(self._pending_load)
+        else:
+            await self._refresh_phase_list()
+        self._show_status("Add phases on the left; edit the selected phase's "
+                          "arguments on the right. Save writes "
+                          f"{os.path.relpath(curriculum.CURRICULA_DIR, REPO_ROOT)}"
+                          "/<name>.plan.json")
+
+    # ── plan <-> widgets ──────────────────────────────────────────────────
+    async def _refresh_phase_list(self, select=None):
+        lv = self.query_one("#phases", ListView)
+        await lv.clear()
+        for i, phase in enumerate(self._plan["phases"]):
+            lv.append(ListItem(Label(self._phase_line(i, phase))))
+        if self._plan["phases"]:
+            lv.index = max(0, min(len(self._plan["phases"]) - 1,
+                                  self._phase_idx if select is None else select))
+        else:
+            self._phase_idx = None
+            await self._clear_form()
+
+    def _phase_line(self, i, phase):
+        return f"{i + 1}. {curriculum.describe_phase(phase)}"
+
+    def _refresh_phase_line(self, idx):
+        """Update one list row in place (keeps focus, unlike a full rebuild)."""
+        lv = self.query_one("#phases", ListView)
+        if 0 <= idx < len(lv.children):
+            with contextlib.suppress(Exception):
+                lv.children[idx].query_one(Label).update(
+                    self._phase_line(idx, self._plan["phases"][idx]))
+
+    async def _clear_form(self):
+        await self.query_one("#phaseform", VerticalScroll).remove_children()
+        self._init_form_state()
+        self._sub = None
+
+    async def _load_phase_form(self, idx):
+        """Mount the selected phase's argument form and prefill it."""
+        self._phase_idx = idx
+        phase = self._plan["phases"][idx]
+        kind = phase["kind"]
+        form = self.query_one("#phaseform", VerticalScroll)
+        await form.remove_children()
+        self._init_form_state()
+        self._sub = curriculum.phase_sub(kind)
+        rows = self._form_rows(curriculum.phase_form_args(kind))
+        if rows:
+            await form.mount(*rows)
+        self._apply_values(curriculum.phase_values(phase))
+        self.query_one("#fieldhelp", Static).update(
+            f"phase {idx + 1}: train.py {kind}")
+
+    def _form_phase(self, kind):
+        """The phase dict the mounted form currently describes.
+
+        Only values that DIFFER from the subcommand's own default are stored, so
+        a saved plan stays readable and keeps tracking the cli_spec defaults;
+        the convenience fields (steps / decks / archetype / …) are always kept
+        so a phase line reads like the plan documentation."""
+        values, _missing = self._collect_values()
+        out = {}
+        for f, val in values:
+            if f["kind"] == "mutex":
+                if val:
+                    arg = next(a for a in f["group"].args if a.name == val)
+                    out[arg.dest] = True
+                continue
+            a = f["arg"]
+            if f["kind"] == "flag":
+                if val:
+                    out[a.dest] = True
+                continue
+            if val in (None, [], ""):
+                continue
+            named = curriculum.dest_phase_field(kind, a.dest) is not None
+            if named or str(val) != str(a.default):
+                out[a.dest] = curriculum.coerce_value(a, val)
+        return curriculum.make_phase(kind, out)
+
+    def _sync_phase(self):
+        """Write the mounted form back into the selected phase."""
+        if self._phase_idx is None or self._sub is None:
+            return
+        idx = self._phase_idx
+        self._plan["phases"][idx] = self._form_phase(self._sub.name)
+        self._refresh_phase_line(idx)
+
+    # ── events ────────────────────────────────────────────────────────────
+    async def on_list_view_highlighted(self, event: ListView.Highlighted):
+        idx = event.list_view.index
+        if idx is None or idx >= len(self._plan["phases"]) or idx == self._phase_idx:
+            return
+        await self._load_phase_form(idx)
+
+    def on_descendant_focus(self, event):
+        self._show_field_help(event.widget)
+
+    def on_select_changed(self, event: Select.Changed):
+        event.stop()
+        if event.select.id in ("planpick", "kindpick"):
+            return
+        self._sync_phase()
+
+    def on_selection_list_selected_changed(self, event):
+        event.stop()
+        f = next((f for f in self._fields
+                  if f.get("widget") is event.selection_list), None)
+        if f is not None and f.get("readout") is not None:
+            self._reconcile_roster_order(f)
+        self._sync_phase()
+
+    def on_input_changed(self, event: Input.Changed):
+        event.stop()
+        if event.input.id == "planname":
+            self._plan["name"] = event.input.value.strip() or "new_plan"
+            return
+        self._sync_phase()
+
+    def on_checkbox_changed(self, event: Checkbox.Changed):
+        event.stop()
+        self._sync_phase()
+
+    async def on_button_pressed(self, event: Button.Pressed):
+        await self._do(event.button.id)
+
+    async def _do(self, what):
+        if what == "add":
+            await self.action_add_phase()
+        elif what == "del":
+            await self.action_del_phase()
+        elif what == "save":
+            self.action_save()
+        elif what == "load":
+            await self._load_plan(self.query_one("#planpick", Select).value)
+        elif what == "run":
+            self._launch(resume=False)
+        elif what == "resume":
+            self._launch(resume=True)
+        elif what == "status":
+            self.action_status()
+
+    # ── actions ───────────────────────────────────────────────────────────
+    async def action_add_phase(self):
+        kind = self.query_one("#kindpick", Select).value
+        if not isinstance(kind, str):
+            return
+        self._plan["phases"].append(curriculum.make_phase(kind, {}))
+        await self._refresh_phase_list(select=len(self._plan["phases"]) - 1)
+
+    async def action_del_phase(self):
+        if self._phase_idx is None:
+            return
+        idx = self._phase_idx
+        del self._plan["phases"][idx]
+        self._phase_idx = None
+        await self._refresh_phase_list(select=max(0, idx - 1))
+
+    def _move_phase(self, delta):
+        i = self._phase_idx
+        if i is None:
+            return
+        j = i + delta
+        phases = self._plan["phases"]
+        if not (0 <= j < len(phases)):
+            return
+        phases[i], phases[j] = phases[j], phases[i]
+        self._phase_idx = j
+        self._refresh_phase_line(i)
+        self._refresh_phase_line(j)
+        self.query_one("#phases", ListView).index = j
+
+    def action_move_earlier(self):
+        # Inside a phase form's deck multipick the keys keep their league
+        # meaning (reorder the rotation); elsewhere they move the phase.
+        if not self._roster_move(-1):
+            self._move_phase(-1)
+        else:
+            self._sync_phase()
+
+    def action_move_later(self):
+        if not self._roster_move(1):
+            self._move_phase(1)
+        else:
+            self._sync_phase()
+
+    def action_back(self):
+        self.app.pop_screen()
+
+    def _plan_path(self):
+        name = self.query_one("#planname", Input).value.strip() or "new_plan"
+        return curriculum.plan_path(name)
+
+    def action_save(self):
+        self._sync_phase()
+        try:
+            path = curriculum.save_plan(self._plan_path(), self._plan)
+        except (curriculum.PlanError, OSError) as exc:
+            self.notify(str(exc), severity="error", timeout=10)
+            return None
+        self.notify(f"saved {os.path.relpath(path, REPO_ROOT)}")
+        picker = self.query_one("#planpick", Select)
+        picker.set_options([(p, p) for p in _scan_curricula()])
+        return path
+
+    async def _load_plan(self, name_or_path):
+        if not isinstance(name_or_path, str) or not name_or_path:
+            return
+        try:
+            plan = curriculum.load_plan(curriculum.plan_path(name_or_path))
+        except curriculum.PlanError as exc:
+            self.notify(str(exc), severity="error", timeout=10)
+            return
+        self._plan = plan
+        self._phase_idx = None
+        self.query_one("#planname", Input).value = plan.get("name", "")
+        await self._refresh_phase_list(select=0)
+        self.action_status()
+
+    def action_status(self):
+        """Show the plan's progress sidecar (per-phase state + driver detail)."""
+        path = self._plan_path()
+        if not os.path.exists(path):
+            self._show_status("(save the plan to track its progress)")
+            return
+        try:
+            plan = curriculum.load_plan(path)
+        except curriculum.PlanError as exc:
+            self._show_status(str(exc))
+            return
+        self._show_status(curriculum.format_status(
+            plan, curriculum.read_progress(path), path))
+
+    def _show_status(self, text):
+        self.query_one("#cstatus", Static).update(text)
+
+    def action_run(self):
+        self._launch(resume=False)
+
+    def _launch(self, resume: bool):
+        """Save the plan, then run it through the launcher's terminal path."""
+        path = self.action_save()
+        if path is None:
+            return
+        argv = [VENV_PY, os.path.join(REPO_ROOT, "train", "train.py"),
+                "curriculum", "--plan", path]
+        if resume:
+            argv.append("--resume")
+        self.app._run_in_terminal(argv)
+        self.action_status()
 
 
 if __name__ == "__main__":
