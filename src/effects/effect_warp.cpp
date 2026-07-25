@@ -5,7 +5,6 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
-#include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
@@ -33,7 +32,7 @@ HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // object is new and is not the warp-cast one.
     if (!is_battlefield_permanent(card)) return HandlerResult::DONE_RUN_SUBS;
 
-    Zone::Ownership owner = global_coordinator.GetComponent<Permanent>(card).controller;
+    Zone::Ownership owner = global_coordinator.GetComponent<Zone>(card).owner;
     std::string nm = global_coordinator.entity_has_component<CardData>(card)
                          ? global_coordinator.GetComponent<CardData>(card).name
                          : "It";
