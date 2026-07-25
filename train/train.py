@@ -50,7 +50,8 @@ from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
                       LEAGUE_PFSP_P, LEAGUE_SOFTMAX_ETA, LEAGUE_SNAPSHOT_EVERY,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
-                      LEAGUE_ADAPTIVE_BOOST, parse_shard, shard_tag,
+                      LEAGUE_ADAPTIVE_BOOST, LEAGUE_EXPLOITER_FLOOR,
+                      EXPLOITER_STEPS, EXPLOITER_CHUNK, parse_shard, shard_tag,
                       TRAIN_TOOL, apply_to_parser)
 
 try:
@@ -509,8 +510,10 @@ class SnapshotCallback(BaseCallback):
         if self.num_timesteps < self._next_at:
             return True
         self._next_at += self._every
-        from opponents import gen_snapshots
-        first = len(gen_snapshots(self._dir)) == 0
+        from opponents import stem_snapshots
+        # 'first snapshot is exempt from the gate' is per STEM, so an exploiter's
+        # first snapshot bootstraps its own pool entry independently of gen's.
+        first = len(stem_snapshots(self._dir, self._deck)) == 0
         if self._margin != 0 and not first and self._pfsp is not None:
             wr, n = self._pfsp.recent_winrate()
             # Too few decisive games in the window to judge current strength: don't
@@ -713,6 +716,25 @@ def _warn_head_flavor(model, label: str):
           f"Use --fresh to retrain this deck with the {want} head.")
 
 
+def _load_warm_start(path: str, vec_env, stem: str):
+    """Load donor weights for a stem that has no checkpoint of its own yet.
+
+    Used by an exploiter run warm-starting from the generalist. A donor saved
+    under a different OBSERVATION LAYOUT (or policy-head shape) cannot be loaded
+    at all — SB3 raises on the shape mismatch — so the failure is re-raised with
+    the actionable message rather than a bare torch traceback."""
+    try:
+        return _reassert_hparams(_ppo_class().load(path, env=vec_env), stem)
+    except (ValueError, RuntimeError, KeyError) as exc:
+        raise RuntimeError(
+            f"[{stem}] cannot warm-start from {path}: {exc}\n"
+            f"That checkpoint was saved under an incompatible observation layout / "
+            f"policy-head shape (the obs grew a matchup tail and the critic became "
+            f"multi-head, so pre-Part-1 checkpoints cannot be loaded). Either "
+            f"retrain the generalist with the current layout ('train.py league') or "
+            f"run this exploiter with --fresh (random init, no warm start).") from exc
+
+
 def _apply_ppo_overrides(args):
     """Fold the session's --n-epochs / --clip-range CLI values into PPO_KWARGS.
 
@@ -838,29 +860,50 @@ def _league_state_path(checkpoint_dir: str, tag: str = "") -> str:
     return os.path.join(checkpoint_dir, f"_league_progress{tag}.json")
 
 
-def _write_league_state(checkpoint_dir: str, state: dict, tag: str = "") -> None:
-    """Atomically persist the league driver's progress to its JSON sidecar."""
-    path = _league_state_path(checkpoint_dir, tag)
+def _write_progress_state(path: str, state: dict, label: str) -> None:
+    """Atomically persist a driver's progress dict to its JSON sidecar.
+
+    The shared writer behind every resumable driver's sidecar (league rotations,
+    exploiter runs): write-to-temp + os.replace, so a crash mid-write can never
+    leave a half-written file that would break --resume."""
     tmp = path + ".tmp"
     try:
         with open(tmp, "w") as fh:
             json.dump(state, fh, indent=2)
         os.replace(tmp, path)
     except OSError as exc:
-        print(f"[league] WARNING: could not write progress file {path}: {exc}")
+        print(f"[{label}] WARNING: could not write progress file {path}: {exc}")
 
 
-def _read_league_state(checkpoint_dir: str, tag: str = "") -> dict | None:
-    """Load the league progress sidecar, or None if it is absent/unreadable."""
-    path = _league_state_path(checkpoint_dir, tag)
+def _read_progress_state(path: str, label: str) -> dict | None:
+    """Load a driver's progress sidecar, or None if it is absent/unreadable."""
     if not os.path.exists(path):
         return None
     try:
         with open(path) as fh:
             return json.load(fh)
     except (OSError, ValueError) as exc:
-        print(f"[league] WARNING: could not read progress file {path}: {exc}")
+        print(f"[{label}] WARNING: could not read progress file {path}: {exc}")
         return None
+
+
+def _write_league_state(checkpoint_dir: str, state: dict, tag: str = "") -> None:
+    """Atomically persist the league driver's progress to its JSON sidecar."""
+    _write_progress_state(_league_state_path(checkpoint_dir, tag), state, "league")
+
+
+def _read_league_state(checkpoint_dir: str, tag: str = "") -> dict | None:
+    """Load the league progress sidecar, or None if it is absent/unreadable."""
+    return _read_progress_state(_league_state_path(checkpoint_dir, tag), "league")
+
+
+# Progress-sidecar format version for an exploiter run (see `exploiter`).
+EXPLOITER_STATE_VERSION = 1
+
+
+def _exploiter_state_path(checkpoint_dir: str, archetype: str) -> str:
+    """Sidecar path for one archetype's exploiter run (per-archetype namespace)."""
+    return os.path.join(checkpoint_dir, f"_exploiter_{archetype}_progress.json")
 
 
 def _deck_trained_steps(deck: str, checkpoint_dir: str) -> int:
@@ -1028,6 +1071,8 @@ def make_self_play_env(checkpoint_dir: str, rank: int,
 def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_dir: str,
                     n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
                     scripted_anchor_frac: float, self_decks: list[str] | None = None,
+                    exploiter_floor: float = 0.0,
+                    pinned_snapshots: list[str] | None = None,
                     **env_kwargs):
     def _init():
         _limit_worker_threads()
@@ -1037,7 +1082,8 @@ def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_
             self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
             rng=np.random.default_rng(2000 + rank),
             n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio,
-            self_decks=self_decks)
+            self_decks=self_decks, exploiter_floor=exploiter_floor,
+            pinned_snapshots=pinned_snapshots)
         # Mixed mode: model_deck is None and the pool supplies the learner's deck
         # per episode. Fixed mode: the learner always pilots learner_deck.
         # opp_deck is None either way: the LeaguePool picks the opponent's deck.
@@ -1171,15 +1217,30 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
                   scripted_anchor_frac: float, pfsp_mode: str, pfsp_p: float,
                   softmax_eta: float, snapshot_every: int, promote_margin: float,
                   embed_dim: int, no_shaping: bool, fresh: bool = False,
-                  on_progress=None, self_decks: list[str] | None = None, **env_kwargs):
-    """Train the one generalist on ``deck`` for ``chunk_steps`` against the shared
-    league pool.
+                  on_progress=None, self_decks: list[str] | None = None,
+                  stem: str = GEN_STEM, warm_start: str | None = None,
+                  exploiter_floor: float = 0.0,
+                  pinned_snapshots: list[str] | None = None, **env_kwargs):
+    """Train one model stem on ``deck`` for ``chunk_steps`` against a league pool.
 
-    Resumes the generalist's latest checkpoint (``gen__final`` or newest
-    ``gen__v*``) so its cumulative step count — and therefore snapshot version
+    Resumes ``stem``'s latest checkpoint (``<stem>__final`` or newest
+    ``<stem>__v*``) so its cumulative step count — and therefore snapshot version
     numbering — keeps growing across rotations and across decks; starts from
-    scratch only the very first time the generalist is trained, or whenever
-    ``fresh`` is set.
+    scratch only the very first time that stem is trained, or whenever ``fresh``
+    is set.
+
+    ``stem`` is the generalist (``gen``) for every league/sweep rotation and
+    ``exp_<archetype>`` for an exploiter run — the ONLY thing that decides which
+    checkpoint files this chunk reads and writes. ``warm_start`` is the fallback
+    starting weights used when the stem has no checkpoint of its own yet (an
+    exploiter warm-starts from ``gen__final``); its step counter is NOT inherited,
+    so the exploiter's snapshot versions count its own steps and its LR/shaping
+    schedules start from the top.
+
+    ``pinned_snapshots`` pins the opponent pool to those frozen files (the
+    exploiter's fixed target — no snapshot rotation, no self-play slot);
+    ``exploiter_floor`` reserves a share of episodes for the archetype exploiters
+    in a normal league pool.
 
     ``on_progress(steps_this_chunk)`` (optional) is called after every snapshot save
     with the number of new steps trained so far in this chunk, so the driver can
@@ -1192,7 +1253,8 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
     vec_env = SubprocVecEnv([
         make_league_env(i, learner_deck, roster, checkpoint_dir, n_envs,
                         opp_ckpt_ratio, self_play_frac, scripted_anchor_frac,
-                        self_decks=self_decks, **env_kwargs)
+                        self_decks=self_decks, exploiter_floor=exploiter_floor,
+                        pinned_snapshots=pinned_snapshots, **env_kwargs)
         for i in range(n_envs)])
     try:
         policy_kwargs = dict(
@@ -1200,20 +1262,31 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             features_extractor_kwargs=dict(embed_dim=embed_dim),
             net_arch=list(NET_ARCH),
         )
-        from opponents import gen_final_path, latest_gen_snapshot
-        resume = None
+        from opponents import stem_final_path, stem_snapshots
+        resume, warming = None, False
         if not fresh:
-            resume = gen_final_path(checkpoint_dir)
+            resume = stem_final_path(checkpoint_dir, stem)
             if not os.path.exists(resume):
-                resume = latest_gen_snapshot(checkpoint_dir)
-        resuming = bool(resume and os.path.exists(resume))
-        if resuming:
-            print(f"[league] rotation piloting {learner_deck}: resuming the "
-                  f"generalist from {os.path.basename(resume)}")
+                snaps = stem_snapshots(checkpoint_dir, stem)
+                resume = snaps[-1] if snaps else None
+            if not resume and warm_start and os.path.exists(warm_start):
+                # No checkpoint under this stem yet: start from another stem's
+                # weights (exploiter <- generalist) but with a fresh step counter.
+                resume, warming = warm_start, True
+        # Only a same-stem resume continues the step counter; a warm start begins
+        # this stem's own step count at 0.
+        resuming = bool(resume) and not warming
+        if warming:
+            print(f"[{stem}] warm-starting from {os.path.basename(resume)} "
+                  f"(fresh step counter; use --fresh for random weights)")
+            model = _load_warm_start(resume, vec_env, stem)
+        elif resuming:
+            print(f"[{stem}] rotation piloting {learner_deck}: resuming from "
+                  f"{os.path.basename(resume)}")
             model = _reassert_hparams(_ppo_class().load(resume, env=vec_env),
                                       learner_deck)
         else:
-            print(f"[league] starting the generalist from scratch "
+            print(f"[{stem}] starting from scratch "
                   f"(first rotation piloting {learner_deck}, embed_dim={embed_dim})")
             policy_cls, policy_kwargs = _policy_config(policy_kwargs)
             model = _ppo_class()(
@@ -1224,7 +1297,9 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
 
-        start_steps = model.num_timesteps
+        # A warm start resets the step counter at learn() time, so this chunk's new
+        # steps are counted from 0 rather than from the donor stem's total.
+        start_steps = 0 if warming else model.num_timesteps
         # Translate a snapshot's absolute step count into "new steps this chunk" so the
         # driver can persist the global league position whenever a checkpoint is saved.
         snap_hook = None
@@ -1235,7 +1310,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         callbacks = [
             LRDecayCallback(),
             pfsp_cb,
-            SnapshotCallback(checkpoint_dir, GEN_STEM, snapshot_every,
+            SnapshotCallback(checkpoint_dir, stem, snapshot_every,
                              promote_margin=promote_margin, pfsp_callback=pfsp_cb,
                              on_snapshot=snap_hook),
         ]
@@ -1245,8 +1320,8 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         _configure_run_logger(model, learner_deck)
         model.learn(total_timesteps=chunk_steps, callback=callbacks,
                     reset_num_timesteps=not resuming)
-        model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
-        print(f"[league] saved {GEN_STEM}__final (rotation piloted {learner_deck})")
+        model.save(os.path.join(checkpoint_dir, f"{stem}__final"))
+        print(f"[{stem}] saved {stem}__final (rotation piloted {learner_deck})")
         # PPO collects whole rollouts, so the chunk overshoots chunk_steps; return
         # the actual new steps so the driver's global budget stays accurate, plus
         # the learner's end-of-rotation win-rate and absolute step count for the
@@ -1279,7 +1354,8 @@ def league(binary_path: str, decks: str | None = None,
            adaptive_boost: float = LEAGUE_ADAPTIVE_BOOST,
            shard: str | None = None, train_decks_spec: str | None = None,
            tally: bool = False, resume: bool = False,
-           fixed_self_deck: bool = False, **env_kwargs):
+           fixed_self_deck: bool = False,
+           exploiter_floor: float = LEAGUE_EXPLOITER_FLOOR, **env_kwargs):
     """PFSP league driver: rotating single learner over a shared snapshot pool.
 
     One learner deck at a time trains for ``rotate_every`` steps against a frozen
@@ -1287,6 +1363,13 @@ def league(binary_path: str, decks: str | None = None,
     latest self; then the run rotates to the next deck. Snapshots dropped into the
     shared dir by earlier rotations become opponents for later ones, so the league
     structure is self-managing. Continues until ``total_timesteps`` total.
+
+    The pool also carries any ARCHETYPE EXPLOITERS that have been trained
+    (``exp_<arch>__*.zip``, see :func:`exploiter`): their newest snapshot is a
+    never-evicted pool entry piloting its own archetype's decks, they take part in
+    the normal PFSP weighting, and ``exploiter_floor`` reserves a minimum share of
+    episodes for them so their styles stay in the field once the learner starts
+    beating them.
 
     Adaptive rotation length (``adaptive_boost`` > 1): a catch-up deck's rotation
     is stretched toward ``adaptive_boost * rotate_every``, scaled by how far its
@@ -1344,6 +1427,7 @@ def league(binary_path: str, decks: str | None = None,
         rotate_every = int(p.get("rotate_every", rotate_every))
         self_play_frac = float(p.get("self_play_frac", self_play_frac))
         scripted_anchor_frac = float(p.get("scripted_anchor_frac", scripted_anchor_frac))
+        exploiter_floor = float(p.get("exploiter_floor", exploiter_floor))
         pfsp_mode = p.get("pfsp_mode", pfsp_mode)
         pfsp_p = float(p.get("pfsp_p", pfsp_p))
         softmax_eta = float(p.get("softmax_eta", softmax_eta))
@@ -1427,9 +1511,11 @@ def league(binary_path: str, decks: str | None = None,
     print(f"  mode: {mode_label}")
     print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  "
           f"adaptive_boost={adaptive_boost}  n_envs={n_envs}")
-    print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}")
+    print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}"
+          f"  exploiter_floor={exploiter_floor}")
     print(f"  pfsp_mode={pfsp_mode}  p={pfsp_p}  eta={softmax_eta}")
     print(f"  snapshot_every={snapshot_every:,}  promote_margin={promote_margin}  embed_dim={embed_dim}")
+    _print_exploiter_pool(checkpoint_dir)
 
     # Everything the sidecar needs to faithfully reconstruct this run on --resume.
     base_state = {
@@ -1441,6 +1527,7 @@ def league(binary_path: str, decks: str | None = None,
             "rotate_every": rotate_every,
             "self_play_frac": self_play_frac,
             "scripted_anchor_frac": scripted_anchor_frac,
+            "exploiter_floor": exploiter_floor,
             "pfsp_mode": pfsp_mode,
             "pfsp_p": pfsp_p,
             "softmax_eta": softmax_eta,
@@ -1532,6 +1619,7 @@ def league(binary_path: str, decks: str | None = None,
             pfsp_mode=pfsp_mode, pfsp_p=pfsp_p, softmax_eta=softmax_eta,
             snapshot_every=snapshot_every, promote_margin=promote_margin,
             embed_dim=embed_dim, no_shaping=no_shaping, self_decks=self_decks_arg,
+            exploiter_floor=exploiter_floor,
             on_progress=lambda chunk_steps: save_progress(
                 steps_done + chunk_steps, rotation, rotation_start_done),
             **env_kwargs)
@@ -1549,6 +1637,233 @@ def league(binary_path: str, decks: str | None = None,
         save_progress(steps_done, rotation, chunk_start)
 
     print(f"\nLeague complete: {total_timesteps:,} total timesteps over {rotation} rotations.")
+
+
+def _print_exploiter_pool(checkpoint_dir: str) -> None:
+    """Report which archetype exploiters this checkpoint dir contributes to a pool."""
+    from opponents import exploiter_snapshots
+    found = exploiter_snapshots(checkpoint_dir)
+    if not found:
+        print("  exploiters: none in the pool yet "
+              "(train one with 'train.py exploiter --archetype <arch>')")
+        return
+    for arch in sorted(found):
+        snaps = found[arch]
+        print(f"  exploiter {arch}: {len(snaps)} snapshot(s), newest "
+              f"{os.path.basename(snaps[-1])}")
+
+
+def _archetype_decks(archetype: str) -> list[str]:
+    """Decks an exploiter for ``archetype`` pilots, validated to exist on disk.
+
+    The learner's deck set comes from the archetype tags in
+    ``decks/archetypes.json`` (never from a CLI list), so a mistagged or missing
+    deck file is a loud startup error rather than a mid-run engine failure."""
+    decks = archetypes.decks_for_archetype(archetype)
+    if not decks:
+        raise ValueError(
+            f"exploiter: archetype '{archetype}' has no decks in "
+            f"{archetypes.ARCHETYPES_JSON}. Tag at least one deck with it (add "
+            f'"<stem>": "{archetype}", stems relative to decks/) before training '
+            f"an exploiter for it.")
+    missing = [d for d in decks
+               if not os.path.exists(os.path.join(_DECKS_DIR, f"{d}.dk"))]
+    if missing:
+        raise FileNotFoundError(
+            f"exploiter: archetype '{archetype}' is tagged on deck(s) {missing} "
+            f"with no matching .dk file under {_DECKS_DIR}. Fix the stems in "
+            f"{archetypes.ARCHETYPES_JSON}.")
+    return decks
+
+
+def exploiter(binary_path: str, archetype: str,
+              total_timesteps: int = EXPLOITER_STEPS,
+              chunk_steps: int = EXPLOITER_CHUNK,
+              decks: str | None = None,
+              scripted_anchor_frac: float = LEAGUE_SCRIPTED_ANCHOR_FRAC,
+              pfsp_mode: str = "pfsp", pfsp_p: float = LEAGUE_PFSP_P,
+              softmax_eta: float = LEAGUE_SOFTMAX_ETA,
+              snapshot_every: int = LEAGUE_SNAPSHOT_EVERY,
+              promote_margin: float = 0.0,
+              embed_dim: int = EMBED_DIM, n_envs_override: int | None = None,
+              no_shaping: bool = False, fresh: bool = False,
+              resume: bool = False, **env_kwargs):
+    """Train a dedicated ARCHETYPE EXPLOITER against the frozen generalist.
+
+    An exploiter is the AlphaStar 'main exploiter' of this league: its learner
+    pilots ONE archetype's decks (every deck tagged with ``archetype`` in
+    ``decks/archetypes.json``, cycled per episode like league mixed mode) and its
+    opponent pool is PINNED to the frozen ``gen__final.zip`` piloting the whole
+    league roster — no snapshot rotation, no latest-self mirror, so the target
+    never moves while the exploiter learns to beat it. PFSP still weights across
+    the frozen opponent's DECKS, concentrating the run on the roster decks this
+    archetype currently loses to.
+
+    Checkpoints go to their own stem — ``exp_<archetype>__v{steps}.zip`` plus
+    ``exp_<archetype>__final.zip``. Nothing here ever writes a ``gen`` file. Later
+    league runs pick these up automatically (LeaguePool tier 3 + the
+    ``--exploiter-floor`` share), which is how the generalist gets inoculated
+    against burn/combo/control without discovering those styles itself.
+
+    Starting weights, in priority order: this archetype's own newest exploiter
+    checkpoint (so a re-invocation continues it), else the generalist
+    (``gen__final``, else newest ``gen__v*``) as a WARM START with a fresh step
+    counter, else — only with ``fresh`` — random init. Missing generalist without
+    ``fresh`` is a loud error, as is a generalist saved under an incompatible
+    observation layout.
+
+    Progress is persisted to ``checkpoints/_exploiter_<archetype>_progress.json``
+    on every snapshot and chunk boundary, so an interrupted run continues with
+    ``exploiter --archetype <arch> --resume`` (all other flags come from the
+    sidecar).
+    """
+    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    os.makedirs(LOG_DIR, exist_ok=True)
+    from opponents import (exploiter_stem, gen_final_path, latest_gen_snapshot,
+                           assert_not_reserved_deck)
+
+    if archetype not in archetypes.ARCHETYPES:
+        raise ValueError(f"exploiter: unknown archetype {archetype!r}. "
+                         f"Valid archetypes: {archetypes.ARCHETYPES}")
+    stem = exploiter_stem(archetype)
+    state_path = _exploiter_state_path(checkpoint_dir, archetype)
+
+    steps_done = 0
+    chunk_idx = 0
+    if resume:
+        state = _read_progress_state(state_path, "exploiter")
+        if state is None:
+            raise FileNotFoundError(
+                f"--resume: no exploiter progress file at {state_path}. Start an "
+                f"exploiter run for '{archetype}' first (it writes the file as it "
+                f"trains), then resume it.")
+        steps_done = int(state["steps_done"])
+        chunk_idx = int(state.get("chunk", 0))  # keep the chunk numbering continuous
+        total_timesteps = int(state["total_timesteps"])
+        roster = list(state["roster"])
+        p = state.get("params", {})
+        chunk_steps = int(p.get("chunk_steps", chunk_steps))
+        scripted_anchor_frac = float(p.get("scripted_anchor_frac", scripted_anchor_frac))
+        pfsp_mode = p.get("pfsp_mode", pfsp_mode)
+        pfsp_p = float(p.get("pfsp_p", pfsp_p))
+        softmax_eta = float(p.get("softmax_eta", softmax_eta))
+        snapshot_every = int(p.get("snapshot_every", snapshot_every))
+        promote_margin = float(p.get("promote_margin", promote_margin))
+        embed_dim = int(p.get("embed_dim", embed_dim))
+        n_envs_override = p.get("n_envs", n_envs_override)
+        no_shaping = bool(p.get("no_shaping", no_shaping))
+        env_kwargs.setdefault("bo3", bool(p.get("bo3", env_kwargs.get("bo3", False))))
+        env_kwargs.setdefault("auto_sideboard", bool(
+            p.get("auto_sideboard", env_kwargs.get("auto_sideboard", False))))
+        print(f"[exploiter] resuming from {state_path}: "
+              f"{steps_done:,}/{total_timesteps:,} steps")
+        if steps_done >= total_timesteps:
+            print("[exploiter] saved progress is already complete — nothing to resume.")
+            return
+    else:
+        roster = ([d.strip() for d in decks.split(",") if d.strip()] if decks
+                  else _league_roster())
+    if not roster:
+        raise ValueError(
+            f"exploiter: no opponent decks (looked in {_LEAGUE_DECKS_DIR}). Add "
+            f"deck files there, or pass --decks explicitly.")
+    for _deck in roster:
+        assert_not_reserved_deck(_deck)
+    # The frozen opponent's decks index value buckets exactly like a league run's.
+    archetypes.validate_roster(roster, context="exploiter opponent roster")
+
+    self_decks = _archetype_decks(archetype)
+
+    # Warm start: only consulted when this exploiter has no checkpoint of its own.
+    from opponents import stem_snapshots
+    own = stem_snapshots(checkpoint_dir, stem)
+    warm_start = gen_final_path(checkpoint_dir)
+    if not os.path.exists(warm_start):
+        warm_start = latest_gen_snapshot(checkpoint_dir)
+    if not own and not fresh and not (warm_start and os.path.exists(warm_start)):
+        raise FileNotFoundError(
+            f"exploiter: no generalist checkpoint to warm-start from in "
+            f"{checkpoint_dir} (looked for gen__final.zip, then gen__v*.zip), and "
+            f"'{stem}' has no checkpoint of its own yet. Train the generalist first "
+            f"('train.py league'), or pass --fresh to start this exploiter from "
+            f"random weights.")
+
+    # The frozen target: the generalist as it stands right now, resolved ONCE so
+    # later gen snapshots (from a concurrent league run) can't move the target.
+    pinned = [warm_start] if (warm_start and os.path.exists(warm_start)) else []
+    n_envs = n_envs_override if n_envs_override is not None else N_ENVS_SELF_PLAY
+
+    print(f"Exploiter '{archetype}' -> {stem}__final.zip / {stem}__v*.zip "
+          f"(the generalist's own checkpoints are never written)")
+    print(f"  learner decks: {', '.join(self_decks)}")
+    print(f"  frozen opponent: "
+          f"{os.path.basename(pinned[0]) if pinned else 'scripted only (no gen ckpt)'}"
+          f" piloting {', '.join(roster)}")
+    print(f"  total={total_timesteps:,}  chunk={chunk_steps:,}  n_envs={n_envs}")
+    print(f"  scripted_anchor_frac={scripted_anchor_frac}  pfsp_mode={pfsp_mode}  "
+          f"p={pfsp_p}  eta={softmax_eta}")
+    print(f"  snapshot_every={snapshot_every:,}  promote_margin={promote_margin}  "
+          f"embed_dim={embed_dim}")
+
+    base_state = {
+        "version": EXPLOITER_STATE_VERSION,
+        "archetype": archetype,
+        "stem": stem,
+        "roster": roster,
+        "self_decks": self_decks,
+        "total_timesteps": total_timesteps,
+        "params": {
+            "chunk_steps": chunk_steps,
+            "scripted_anchor_frac": scripted_anchor_frac,
+            "pfsp_mode": pfsp_mode,
+            "pfsp_p": pfsp_p,
+            "softmax_eta": softmax_eta,
+            "snapshot_every": snapshot_every,
+            "promote_margin": promote_margin,
+            "embed_dim": embed_dim,
+            "n_envs": n_envs,
+            "no_shaping": no_shaping,
+            "bo3": bool(env_kwargs.get("bo3", False)),
+            "auto_sideboard": bool(env_kwargs.get("auto_sideboard", False)),
+        },
+    }
+
+    def save_progress(done: int, chunk_idx: int):
+        _write_progress_state(state_path,
+                              {**base_state, "steps_done": int(done),
+                               "chunk": int(chunk_idx),
+                               "pinned": pinned}, "exploiter")
+
+    save_progress(steps_done, chunk_idx)
+    while steps_done < total_timesteps:
+        chunk = min(max(1, chunk_steps), total_timesteps - steps_done)
+        print(f"\n{'='*60}")
+        print(f"[exploiter {archetype} chunk {chunk_idx + 1}] {chunk:,} steps "
+              f"({steps_done:,}/{total_timesteps:,} done)")
+        print(f"{'='*60}")
+        chunk_start_done = steps_done
+        ran, _wr, _steps, _per_self = _league_chunk(
+            binary_path, "mixed", roster, checkpoint_dir, chunk,
+            n_envs=n_envs, opp_ckpt_ratio=1.0,
+            self_play_frac=0.0, scripted_anchor_frac=scripted_anchor_frac,
+            pfsp_mode=pfsp_mode, pfsp_p=pfsp_p, softmax_eta=softmax_eta,
+            snapshot_every=snapshot_every, promote_margin=promote_margin,
+            embed_dim=embed_dim, no_shaping=no_shaping, fresh=fresh,
+            self_decks=self_decks, stem=stem, warm_start=warm_start,
+            pinned_snapshots=pinned,
+            on_progress=lambda done: save_progress(chunk_start_done + done, chunk_idx),
+            **env_kwargs)
+        steps_done += ran if ran else chunk
+        chunk_idx += 1
+        # Only the FIRST chunk may warm-start / start fresh; later chunks continue
+        # this exploiter's own checkpoint.
+        fresh = False
+        save_progress(steps_done, chunk_idx)
+
+    print(f"\nExploiter '{archetype}' complete: {total_timesteps:,} timesteps -> "
+          f"{stem}__final.zip. Later league runs will sample it automatically "
+          f"(LeaguePool exploiter tier + --exploiter-floor).")
 
 
 def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
@@ -2021,7 +2336,8 @@ if __name__ == "__main__":
         argv = ["train"] + argv
     args = parser.parse_args(argv)
 
-    if args.command in ("train", "sweep", "fixed-model", "alternate", "league"):
+    if args.command in ("train", "sweep", "fixed-model", "alternate", "league",
+                        "exploiter"):
         env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
         # These are the training subcommands — nudge toward a release engine build.
         _warn_if_debug_build(args.binary)
@@ -2052,7 +2368,17 @@ if __name__ == "__main__":
                adaptive_boost=args.adaptive_boost, shard=args.shard,
                train_decks_spec=args.train_decks,
                tally=args.tally, resume=args.resume,
-               fixed_self_deck=args.fixed_self_deck, **env_kwargs)
+               fixed_self_deck=args.fixed_self_deck,
+               exploiter_floor=args.exploiter_floor, **env_kwargs)
+    elif args.command == "exploiter":
+        exploiter(args.binary, args.archetype, total_timesteps=args.steps,
+                  chunk_steps=args.chunk_steps, decks=args.decks,
+                  scripted_anchor_frac=args.scripted_anchor_frac,
+                  pfsp_mode=args.pfsp_mode, pfsp_p=args.pfsp_p,
+                  softmax_eta=args.softmax_eta, snapshot_every=args.snapshot_every,
+                  promote_margin=args.promote_margin, embed_dim=args.embed_dim,
+                  n_envs_override=args.n_envs, no_shaping=args.no_shaping,
+                  fresh=args.fresh, resume=args.resume, **env_kwargs)
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,

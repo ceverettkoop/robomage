@@ -110,6 +110,30 @@ specialize; add an archetype-grouped view to the `baseline --all` matrix report.
 
 ## Part 2 — League exploiters
 
+**AS BUILT.** Shipped as described below, with these specifics:
+`train.py exploiter --archetype <arch> [--steps N] [--chunk-steps N] [--decks …]
+[--fresh] [--resume]`. The learner pilots every deck tagged with `<arch>` in
+`archetypes.json` (per-episode cycling, league "mixed" mode); the opponent pool is
+**pinned** to the frozen `gen__final.zip` (else the newest `gen__v*`) piloting the whole
+league roster — `LeaguePool(pinned_snapshots=…)` replaces snapshot discovery, drops the
+latest-self slot, and is deliberately *unsharded* so every env process can face every
+roster deck. PFSP still weights across the frozen opponent's decks. Checkpoints are
+written **only** under `exp_<arch>` (`_league_chunk` gained a `stem` parameter; the
+generalist's files are never touched), warm-started from `gen` with a **fresh step
+counter** (so exploiter snapshot versions count exploiter steps and the LR/shaping
+schedules restart), and an incompatible-layout donor fails with an actionable message
+(`_load_warm_start`). Progress lives in
+`checkpoints/_exploiter_<arch>_progress.json` via the shared atomic
+`_write_progress_state`. Pool integration: `LeaguePool.refresh` tier 3 guarantees each
+archetype's newest exploiter paired with that archetype's roster decks (never evicted),
+older `exp_*__v*` interleave with older `gen__v*` in the discretionary budget, and
+`--exploiter-floor` (default 0.1) reserves a share of episodes for exploiter entries on
+top of their normal PFSP weight. `exp_*` joined `gen` as a reserved deck-name stem.
+The optional BC **kickstart** (item 4 below) was NOT implemented — it is a separate
+supervised-learning path (obs/action collection through the gym env + a masked
+cross-entropy pretrain of the policy head) with its own failure modes, and was left
+out rather than half-landed; `exploiter` has no `--kickstart` flag yet.
+
 **Concept:** dedicated runs whose learner pilots one archetype's decks against the *frozen*
 current `gen`, saved under their own stem, then injected into the PFSP opponent pool — so the
 generalist gets inoculated against burn/combo/control without having to discover those styles.

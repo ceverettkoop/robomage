@@ -598,6 +598,10 @@ train/.venv/bin/python train/train.py sweep --deck delver                       
 train/.venv/bin/python train/train.py league                                          # train the decks/league/ roster
 train/.venv/bin/python train/train.py league --resume                                 # resume an interrupted league run
 
+# Archetype exploiters (AlphaStar-style main exploiters feeding the league pool)
+train/.venv/bin/python train/train.py exploiter --archetype burn                      # pilot the burn decks vs the FROZEN gen; saves exp_burn__*.zip
+train/.venv/bin/python train/train.py exploiter --archetype burn --resume             # resume that archetype's run
+
 # AlphaZero (MCTS-trained net, warm-started from the PPO gen checkpoint — run league first)
 train/.venv/bin/python train/train.py az --deck delver                                # one cycle: self-play -> train -> gate
 train/.venv/bin/python train/train.py az-league                                       # rotate AZ cycles across decks/league/
@@ -635,6 +639,22 @@ that deck, or the newest `gen` snapshot if no `__final` yet) that is never evict
 **discretionary** `gen__v*` intermediates filled newest-first round-robin across decks. So every
 roster deck is always represented as an opponent — even a perennial-loser deck stays in the pool
 via the generalist's `__final` piloting it.
+
+**Archetype exploiters (`train.py exploiter --archetype <arch>`).** A dedicated run whose
+learner pilots ONE archetype's decks (every deck tagged with that archetype in
+`bin/resources/decks/archetypes.json`) against a **frozen** opponent pool pinned to the
+current `gen__final.zip` piloting the whole league roster — no snapshot rotation, no
+latest-self mirror, so the target never moves. It saves under its own checkpoint stem
+`exp_<archetype>` (`exp_burn__v{steps}.zip` / `exp_burn__final.zip`) and **never writes a
+`gen` file**; `exp_*`, like `gen`, is a reserved stem no deck may be named. Weights
+warm-start from `gen` (fresh step counter) unless `--fresh`; progress goes to
+`checkpoints/_exploiter_<archetype>_progress.json` so `exploiter --archetype <arch> --resume`
+continues an interrupted run. Later `league` runs then pick the exploiters up
+automatically: each archetype's newest exploiter is a never-evicted pool entry piloting that
+archetype's roster decks, older `exp_*__v*` compete for the discretionary budget, and
+`--exploiter-floor` (default 0.1) reserves a minimum share of episodes for them on top of
+their normal PFSP weight — so the generalist gets inoculated against burn/combo/control
+styles without having to discover them itself.
 
 **Snapshot promotion gate (`--promote-margin`, default 0.05).** The periodic
 `gen__v{steps}.zip` snapshots are only saved when the learner's *recent-window* win-rate
