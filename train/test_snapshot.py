@@ -3324,13 +3324,16 @@ PROMPT_SITE_WHITELIST = {
     #     (counted by choose_one_prompt_count; residual note at the site) +
     #     dispatch_draw's blocking form (now reachable only from pregame
     #     mulligan/opening draws, where the graveyard is empty — the prompt
-    #     cannot fire) (2)
+    #     cannot fire) + the Mox Diamond "discard a land as it enters or be
+    #     put into the graveyard instead" replacement prompt (a MOVE_TO_ZONE→
+    #     Battlefield self-replacement resolved inline like the other residual
+    #     MOVE_TO_ZONE replacement prompts; blocks safe=0, same family) (3)
     "input_logger.cpp": 2,
     "game_driver.cpp": 5,
     "resolution_frame.cpp": 1,
     "action_processor.cpp": 6,
     "mana_system.cpp": 1,
-    os.path.join("systems", "replacement_effects.cpp"): 2,
+    os.path.join("systems", "replacement_effects.cpp"): 3,
     os.path.join("systems", "state_manager.cpp"): 1,
     os.path.join("systems", "state_manager_statics.cpp"): 2,
     os.path.join("systems", "state_manager_triggers.cpp"): 1,
