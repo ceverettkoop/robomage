@@ -116,6 +116,14 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
 
 // State-based actions are checked simultaneously and loop until stable (rule 704.3)
 void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orderer) {
+    // CR 104.1: once the game has ended, nothing further happens. No SBAs — the
+    // deck-out check below must not overturn a "wins the game" effect that
+    // already decided it (first game-ending event wins) — and no trigger
+    // collection/placement, which could otherwise park a decision under a
+    // finished game (the loop-exit "still parked" fatal). A resolution can end
+    // the game (deck-out, WinsGame) and still fall through to the post-advance
+    // SBE call, so this gate is load-bearing, not just belt-and-braces.
+    if (game.ended) return;
     for (;;) {
         // Continuous effects define the game state that SBAs evaluate
         apply_permanent_components(game, orderer);
@@ -144,6 +152,24 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         }
         if (player_b.life_total <= 0) {
             printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
+            game.ended = true;
+            game.winner = Zone::PLAYER_A;
+            return;
+        }
+
+        // 704.5c - a player who attempted to draw from an empty library since the last SBA check
+        // loses. Deferred here from Orderer::perform_draw (CR 120.3): the failed draw itself does
+        // not end the game, so the resolving effect finishes first and a "then if your library is
+        // empty, you win" sub-ability (Jace, Wielder of Mysteries' -8) can decide the game before
+        // this check ever runs.
+        if (player_a.attempted_draw_from_empty) {
+            printf("\nPlayer A decked - Player B wins!\n");
+            game.ended = true;
+            game.winner = Zone::PLAYER_B;
+            return;
+        }
+        if (player_b.attempted_draw_from_empty) {
+            printf("\nPlayer B decked - Player A wins!\n");
             game.ended = true;
             game.winner = Zone::PLAYER_A;
             return;

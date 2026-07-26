@@ -34,6 +34,11 @@ struct Player {
     std::set<Colors> spell_colors_cast_this_turn;
     std::vector<Entity> cards_drawn_this_turn;
     size_t cards_drawn_this_draw_step = 0;  // reset each turn; used to detect the first draw of a draw step (Orcish Bowmasters)
+    // CR 120.3 / 704.5c: set when this player attempted to draw from an empty library (and no
+    // draw-empty replacement applied). The loss is NOT immediate — the resolving effect finishes
+    // first (so e.g. Jace, Wielder of Mysteries' -8 "then if your library is empty, you win" can
+    // decide the game) and the player loses at the next state-based-action check.
+    bool attempted_draw_from_empty = false;
     // creature subtypes in this player's deck: pair<list_index, all_subtypes_index>
     std::vector<std::pair<int, int>> creature_subtypes;
 

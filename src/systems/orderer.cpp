@@ -517,6 +517,9 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     }
 
     if (!found) {
+        // The game is already decided (e.g. a "wins the game" effect earlier in this same
+        // resolution): a further failed draw changes nothing — first game-ending event wins.
+        if (cur_game.ended) return;
         // Draw-from-empty-library replacement (CR 104.3a/121.4): if the drawing player controls a
         // live DRAW_EMPTY_WIN replacement (Jace, Wielder of Mysteries: "if you would draw a card
         // while your library has no cards in it, you win the game instead"), they WIN instead of
@@ -536,15 +539,14 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
             return;
         }
 
-        // Drew from an empty library: the drawing player loses.
-        if (player == Zone::PLAYER_A) {
-            printf("\nPlayer A decked - Player B wins!\n");
-            cur_game.winner = Zone::PLAYER_B;
-        } else {
-            printf("\nPlayer B decked - Player A wins!\n");
-            cur_game.winner = Zone::PLAYER_A;
-        }
-        cur_game.ended = true;
+        // Attempted to draw from an empty library. CR 120.3 / 704.5c: the loss is NOT immediate —
+        // record the attempt and let the resolving effect finish (a "then if your library is empty,
+        // you win" sub-ability like Jace, Wielder of Mysteries' -8 decides the game first); the
+        // player loses at the next state-based-action check (state_based_effects).
+        Entity player_entity_deck =
+            (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        global_coordinator.GetComponent<Player>(player_entity_deck).attempted_draw_from_empty = true;
+        game_log("%s attempts to draw from an empty library.\n", player_name(player).c_str());
         return;
     }
 
