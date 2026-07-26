@@ -3298,7 +3298,10 @@ PROMPT_SITE_WHITELIST = {
     #
     # (a) loop-top / loop-safe emitters:
     #   game_driver.cpp: pending-query emitter, priority decision, pregame_ask,
-    #     sideboard IN, sideboard OUT (5)
+    #     the sideboard delta menu (4). The sideboard phase used to hold TWO
+    #     prompts — pick a card to bring in, then pick one to cut — which the
+    #     balanced delta menu merged into a single per-move prompt; both halves of
+    #     a swap now come through that one loop-safe site.
     #   action_processor.cpp: declare-attackers select, declare-blockers
     #     select, cleanup discard, miracle reveal, miracle cast (5 of its 8) —
     #     the miracle reveal and the miracle cast/do-not-cast decision (CR 702.94)
@@ -3333,7 +3336,7 @@ PROMPT_SITE_WHITELIST = {
     #     Battlefield self-replacement resolved inline like the other residual
     #     MOVE_TO_ZONE replacement prompts; blocks safe=0, same family) (3)
     "input_logger.cpp": 2,
-    "game_driver.cpp": 5,
+    "game_driver.cpp": 4,
     "resolution_frame.cpp": 1,
     "action_processor.cpp": 8,
     "mana_system.cpp": 1,

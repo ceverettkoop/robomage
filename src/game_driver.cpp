@@ -42,6 +42,9 @@
 // definition so the C++ actor and the Python stdio driver stay in parity.
 static unsigned int match_game_seed(const MatchContext &ctx);
 static int sideboard_copy_ordinal(size_t copies);
+static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from,
+                               std::vector<std::pair<size_t, std::string>> &to,
+                               size_t from_idx);
 
 // ── Pregame gate (Family F): mulligans + opening-hand actions as loop-top
 // decisions. One stage step (≤1 decision) per main-loop iteration; all state
@@ -857,11 +860,46 @@ static int sideboard_copy_ordinal(size_t copies) {
     return static_cast<int>(copies);
 }
 
-// present sideboard choices to a player via the standard query mechanism.
-// All persistent phase state (swap count, one-shot sided-in/out bookkeeping,
-// and the OUT-menu resumption point) lives in `st` so the phase is resumable:
-// on re-entry with st.pending_in_sb_idx >= 0 we re-derive the chosen IN card
-// and resume directly at the OUT menu.
+// Move ONE copy of from[from_idx] into `to`, merging by name. Both deck sections
+// are (count, name) lists with one entry per distinct name, so this decrements
+// (or erases) the source entry and increments (or appends) the destination one.
+// The sideboard phase moves single copies in both directions; keeping the
+// bookkeeping here means the two directions cannot drift apart.
+static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from,
+                               std::vector<std::pair<size_t, std::string>> &to,
+                               size_t from_idx) {
+    const std::string name = from[from_idx].second;  // by value: `from` is mutated below
+    bool merged = false;
+    for (auto &entry : to) {
+        if (entry.second == name) {
+            entry.first++;
+            merged = true;
+            break;
+        }
+    }
+    if (!merged) to.push_back({1, name});
+    if (from[from_idx].first > 1)
+        from[from_idx].first--;
+    else
+        from.erase(from.begin() + static_cast<long>(from_idx));
+}
+
+// Present sideboard choices as a single balanced DELTA menu: each decision offers
+// every distinct sideboard card as a "+1", every distinct maindeck card as a "-1",
+// and Done. Both lists are therefore visible at every balanced decision (the old
+// paired IN->OUT menus showed only one at a time), and the player may lead with
+// either a cut or an addition.
+//
+// Balance is enforced by the action mask, not by validating at the end: `st.delta`
+// is the maindeck's drift from its size at phase start, and while it is nonzero
+// only the balancing direction is offered and Done is withheld. So an off-size
+// deck cannot be expressed at all — which for a learned policy is strictly better
+// than rejecting it after the fact, since no sample is wasted on an illegal line.
+//
+// All persistent state (swap count, the one-shot direction locks, the drift and
+// the outstanding card) lives in `st`, and the menu is a pure function of it plus
+// `deck` — so a MATCH-scoped restore re-derives the identical menu, which is what
+// keeps a sideboard prompt a loop-safe MCTS search root.
 void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     Zone::Ownership player = st.player;
     sideboard_phase = true;
@@ -884,18 +922,14 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     // is a no-op in normal play (no decision is pending between games).
     cur_game.pending_decision_source = 0;
     const char *player_name = (player == Zone::PLAYER_A) ? "Player A" : "Player B";
-    // Each card is a one-shot decision per phase: once moved, it cannot be
-    // moved back. Prevents oscillation and makes the 15-swap cap easier to
-    // avoid. Both sets reset between phases (i.e. for game 3 sideboarding).
+    // One-shot direction locks (see SideboardPhaseState). Both reset between
+    // phases, i.e. game 3's sideboarding starts fresh.
     std::unordered_set<std::string> &sided_out_names = st.sided_out_names;
     std::unordered_set<std::string> &sided_in_names = st.sided_in_names;
-    // Index lookups from filtered action list slots back to deck indices.
-    std::vector<size_t> in_action_to_sb_idx;
-    std::vector<size_t> out_action_to_md_idx;
-
-    // Resume directly at the OUT menu if we re-entered mid-swap (a chosen IN card
-    // is pending). Otherwise fall through to the normal IN-menu loop.
-    bool resume_at_out = (st.pending_in_sb_idx >= 0);
+    // Per-action lookups from the built menu back into the deck. Parallel to
+    // `actions`: entry i says which deck section slot i moves a copy out of.
+    std::vector<size_t> action_deck_idx;
+    std::vector<bool> action_is_in;   // true = sideboard->maindeck (+1)
 
     while (true) {
         // A MATCH-scoped restore latched during a simulation unwinds through here
@@ -903,167 +937,172 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         // without building the menu or mutating the deck; the dispatcher applies
         // the restore and re-enters this phase from the restored state.
         if (search_match_restore_pending()) return;
-        // The chosen IN card carries across the IN→OUT menu step. On a resume
-        // (st.pending_in_sb_idx >= 0) it is re-derived below and we skip straight
-        // to the OUT menu; otherwise it is picked from the IN menu.
-        size_t sb_idx;
-        std::string card_in;
-        Entity in_card_eid;
 
-        if (resume_at_out) {
-            // Re-entered mid-swap: re-derive the pending IN card and resume at the
-            // OUT menu (recreating the same pending-decision context below).
-            sb_idx = static_cast<size_t>(st.pending_in_sb_idx);
-            card_in = deck.sideboard[sb_idx].second;
-            in_card_eid = load_card(card_in);
-            resume_at_out = false;
-        } else {
-            // build action list: index 0 = done, 1..N = sideboard cards to bring in
-            std::vector<LegalAction> actions;
+        // ── Build the one balanced delta menu ────────────────────────────────
+        // Every distinct sideboard card is a "+1" and every distinct maindeck card
+        // a "-1", so both lists are visible at every balanced decision and the
+        // player may lead with either. Balance is an ACTION-MASK invariant rather
+        // than a post-hoc validation: with a move outstanding (delta != 0) only the
+        // balancing direction is offered and Done is withheld, so an off-size deck
+        // is not merely rejected — it cannot be expressed.
+        std::vector<LegalAction> actions;
+        action_deck_idx.clear();
+        action_is_in.clear();
+        // Keep the three parallel vectors aligned; every menu entry goes through here.
+        auto add_choice = [&](const char *verb, size_t deck_idx, size_t copies,
+                              const std::string &name, bool is_in) {
+            actions.emplace_back(ActionType::SPECIAL_ACTION,
+                                 std::string(verb) + std::to_string(copies) + "x " + name);
+            actions.back().category = is_in ? ActionCategory::SIDEBOARD_IN
+                                            : ActionCategory::SIDEBOARD_OUT;
+            actions.back().option_ordinal = sideboard_copy_ordinal(copies);
+            // Load the card so the choice carries its vocab index for ML.
+            actions.back().source_entity = load_card(name);
+            action_deck_idx.push_back(deck_idx);
+            action_is_in.push_back(is_in);
+        };
+
+        // Done is legal only at a balanced deck. Kept at index 0 when present so
+        // the "first choice" convention (auto-pass drivers, scripted_action) still
+        // finishes the phase rather than making an arbitrary swap.
+        const bool balanced = (st.delta == 0);
+        if (balanced) {
             actions.emplace_back(ActionType::SPECIAL_ACTION, "Done sideboarding");
             actions.back().category = ActionCategory::SIDEBOARD_DONE;
-
-            in_action_to_sb_idx.clear();
+            action_deck_idx.push_back(0);
+            action_is_in.push_back(false);
+        }
+        if (st.delta <= 0) {  // room to bring a card in
             for (size_t i = 0; i < deck.sideboard.size(); i++) {
-                if (sided_out_names.count(deck.sideboard[i].second)) continue;
-                std::string desc = "Sideboard in: " + std::to_string(deck.sideboard[i].first) + "x " + deck.sideboard[i].second;
-                actions.emplace_back(ActionType::SPECIAL_ACTION, desc);
-                actions.back().category = ActionCategory::SIDEBOARD_IN;
-                actions.back().option_ordinal = sideboard_copy_ordinal(deck.sideboard[i].first);
-                // load the card so we can get its vocab index for ML
-                Entity card_eid = load_card(deck.sideboard[i].second);
-                actions.back().source_entity = card_eid;
-                in_action_to_sb_idx.push_back(i);
+                const std::string &name = deck.sideboard[i].second;
+                // A name locked out of the maindeck stays out — unless it is the
+                // outstanding move itself, which is the takeback.
+                if (sided_out_names.count(name) && name != st.unpaired_name) continue;
+                add_choice("Sideboard in: ", i, deck.sideboard[i].first, name, true);
             }
-
-            if (actions.size() <= 1) break;  // no sideboard cards available
-
-            // in machine mode, cap sideboarding at 15 swaps to prevent infinite loops
-            // (schedule-affecting, so a replayed machine log must apply the same cap)
-            if (InputLogger::instance().is_machine_schedule() && st.sb_swaps >= 15) {
-                game_log("%s hit sideboard swap limit (15), auto-finishing.\n", player_name);
-                break;
+        }
+        if (st.delta >= 0) {  // room to cut a card
+            for (size_t i = 0; i < deck.main_deck.size(); i++) {
+                const std::string &name = deck.main_deck[i].second;
+                if (sided_in_names.count(name) && name != st.unpaired_name) continue;
+                add_choice("Sideboard out: ", i, deck.main_deck[i].first, name, false);
             }
-
-            game_log("\n%s sideboarding (%zu cards in sideboard):\n", player_name, deck.sideboard.size());
-
-            populate_gamestate(&gs, player);
-            print_game_state(&gs);
-            // Loop-safe: re-entering run_sideboard_phase from the restored match
-            // state re-derives this exact IN menu (the snapshot round-trip proves
-            // it byte-for-byte), so SNAPSHOT/DETERMINIZE are legal here.
-            search_set_loop_safe(true);
-            int choice = InputLogger::instance().get_input(actions);
-            search_set_loop_safe(false);
-            // A RESTORE latched during the query (stdio command) unwinds via
-            // choice 0; bail before acting so no swap is performed on rollback.
-            if (search_match_restore_pending()) return;
-
-            if (choice == 0) break;  // done
-
-            // player chose to bring in a sideboard card
-            sb_idx = in_action_to_sb_idx[static_cast<size_t>(choice - 1)];
-            card_in = deck.sideboard[sb_idx].second;
-            in_card_eid = actions[static_cast<size_t>(choice)].source_entity;
-            // Record the OUT-menu resumption point (cleared once the swap completes).
-            st.pending_in_sb_idx = static_cast<long>(sb_idx);
         }
 
-        // now ask which main deck card to swap out
-        std::vector<LegalAction> out_actions;
-        out_action_to_md_idx.clear();
-        for (size_t i = 0; i < deck.main_deck.size(); i++) {
-            if (sided_in_names.count(deck.main_deck[i].second)) continue;
-            std::string desc = "Sideboard out: " + std::to_string(deck.main_deck[i].first) + "x " + deck.main_deck[i].second;
-            out_actions.emplace_back(ActionType::SPECIAL_ACTION, desc);
-            out_actions.back().category = ActionCategory::SIDEBOARD_OUT;
-            out_actions.back().option_ordinal = sideboard_copy_ordinal(deck.main_deck[i].first);
-            Entity card_eid = load_card(deck.main_deck[i].second);
-            out_actions.back().source_entity = card_eid;
-            out_action_to_md_idx.push_back(i);
-        }
+        // The one-shot locks bound the menu to (distinct maindeck) + (distinct
+        // sideboard) + Done + the takeback, comfortably inside MAX_ACTIONS for any
+        // real deck. Fail loudly rather than relying on populate_query's silent
+        // truncation, which would make legal choices unreachable to the model.
+        if (actions.size() > MAX_ACTIONS)
+            fatal_error("sideboard menu has " + std::to_string(actions.size()) +
+                        " entries, exceeds MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
+                        " — choices beyond that would be unreachable");
 
-        // No eligible main-deck cards to swap out: undo the selected IN and end phase.
-        if (out_actions.empty()) {
-            game_log("No eligible cards to swap out — ending sideboard phase.\n");
+        // Nothing legal at all (empty sideboard AND nothing cuttable): end the
+        // phase. Only reachable while balanced — an outstanding move always leaves
+        // its own takeback legal, so the deck can never be stranded off-size.
+        if (actions.empty()) {
+            game_log("No sideboard moves available — ending sideboard phase.\n");
+            break;
+        }
+        // Cap completed swaps in machine mode so a runaway agent cannot spin here
+        // (schedule-affecting, so a replayed machine log must apply the same cap).
+        // Checked only while balanced: interrupting mid-move would strand the deck
+        // off-size.
+        if (balanced && InputLogger::instance().is_machine_schedule() &&
+            st.sb_swaps >= SIDEBOARD_SWAP_CAP) {
+            game_log("%s hit sideboard swap limit (%d), auto-finishing.\n",
+                     player_name, SIDEBOARD_SWAP_CAP);
             break;
         }
 
-        game_log("Choose card to remove from main deck (replacing with %s):\n", card_in.c_str());
-        // Expose the chosen IN card as the pending-decision source so the OUT
-        // query's observation shows which card this cut is FOR (the
-        // pending-decision context slots — see the machine_io.h layout).
-        PendingDecisionScope pending(in_card_eid);
+        if (balanced)
+            game_log("\n%s sideboarding (%zu in sideboard, %d swap(s) made):\n",
+                     player_name, deck.sideboard.size(), st.sb_swaps);
+        else
+            game_log("\n%s must balance %s (%+d): choose a card to %s.\n", player_name,
+                     st.unpaired_name.c_str(), st.delta,
+                     st.delta > 0 ? "cut" : "bring in");
+
+        // With a move outstanding, expose the unpaired card as the pending-decision
+        // source so the observation shows WHICH card the balancing move is for.
+        // Entity 0 is the "none" sentinel, so this is a no-op while balanced.
+        PendingDecisionScope pending(balanced ? 0 : load_card(st.unpaired_name));
         populate_gamestate(&gs, player);
-        // A restore latched before we reach the query (e.g. during the IN-menu
-        // wait) must bail here — the OUT menu's choice 0 is a real swap, not a
-        // no-op, so unwinding through it would corrupt the deck.
+        if (balanced) print_game_state(&gs);
+        // A restore latched before we reach the query must bail here — every choice
+        // below mutates the deck, so unwinding through one would corrupt it.
         if (search_match_restore_pending()) return;
-        // Loop-safe: on rollback we re-enter with resume_at_out and re-derive this
-        // exact OUT menu (with its pending-decision context), so it round-trips.
+        // Loop-safe: the menu above is a pure function of (deck, the one-shot name
+        // sets, delta, unpaired_name), all of which live in `st` and are restored
+        // wholesale, so re-entry after a rollback re-derives this exact menu.
         search_set_loop_safe(true);
-        int out_choice = InputLogger::instance().get_input(out_actions);
+        int choice = InputLogger::instance().get_input(actions);
         search_set_loop_safe(false);
-        // A RESTORE latched during THIS query unwinds via choice 0; bail before
-        // the swap so the deck is not mutated on the rollback path.
+        // A RESTORE latched during the query unwinds via choice 0; bail before
+        // acting so no deck mutation happens on the rollback path.
         if (search_match_restore_pending()) return;
 
-        size_t md_idx = out_action_to_md_idx[static_cast<size_t>(out_choice)];
-        std::string card_out = deck.main_deck[md_idx].second;
+        const size_t pick = static_cast<size_t>(choice);
+        if (balanced && pick == 0) break;  // Done
 
-        // perform the swap (one copy at a time)
-        if (deck.sideboard[sb_idx].first > 1) {
-            deck.sideboard[sb_idx].first--;
+        // ── Apply the chosen single-card move ────────────────────────────────
+        const bool is_in = action_is_in[pick];
+        const size_t deck_idx = action_deck_idx[pick];
+        const std::string moved = is_in ? deck.sideboard[deck_idx].second
+                                        : deck.main_deck[deck_idx].second;
+        // A takeback reverses the outstanding move instead of pairing with it.
+        const bool is_takeback = (!balanced && moved == st.unpaired_name);
+
+        if (is_in)
+            deck_move_one_copy(deck.sideboard, deck.main_deck, deck_idx);
+        else
+            deck_move_one_copy(deck.main_deck, deck.sideboard, deck_idx);
+
+        if (is_takeback) {
+            // Undo: restore balance without crediting a swap. Lock the card out of
+            // the direction it just came from, so a +/- cycle cannot repeat — each
+            // takeback permanently shrinks one pool, which is what guarantees the
+            // phase terminates even though moves are individually reversible.
+            if (is_in)
+                sided_in_names.insert(moved);
+            else
+                sided_out_names.insert(moved);
+            game_log("Took back %s.\n", moved.c_str());
+            st.delta = 0;
+            st.unpaired_name.clear();
         } else {
-            deck.sideboard.erase(deck.sideboard.begin() + static_cast<long>(sb_idx));
-        }
-        // add the removed main deck card to sideboard
-        bool found_in_sb = false;
-        for (auto &entry : deck.sideboard) {
-            if (entry.second == card_out) {
-                entry.first++;
-                found_in_sb = true;
-                break;
+            if (is_in)
+                sided_in_names.insert(moved);
+            else
+                sided_out_names.insert(moved);
+            if (balanced) {
+                // Opening half of a swap: the deck is now off-size and the next
+                // decision offers only the balancing direction.
+                st.delta = is_in ? 1 : -1;
+                st.unpaired_name = moved;
+                game_log("%s %s.\n", is_in ? "Bringing in" : "Cutting", moved.c_str());
+            } else {
+                // Closing half: the pair is complete, so this counts as a swap.
+                game_log("Swapped %s for %s.\n",
+                         is_in ? st.unpaired_name.c_str() : moved.c_str(),
+                         is_in ? moved.c_str() : st.unpaired_name.c_str());
+                st.delta = 0;
+                st.unpaired_name.clear();
+                st.sb_swaps++;
             }
         }
-        if (!found_in_sb) {
-            deck.sideboard.push_back({1, card_out});
-        }
-        // add the sideboard card to main deck
-        bool found_in_md = false;
-        for (auto &entry : deck.main_deck) {
-            if (entry.second == card_in) {
-                entry.first++;
-                found_in_md = true;
-                break;
-            }
-        }
-        if (!found_in_md) {
-            deck.main_deck.push_back({1, card_in});
-        }
-        // remove one copy from main deck
-        if (deck.main_deck[md_idx].first > 1) {
-            deck.main_deck[md_idx].first--;
-        } else {
-            deck.main_deck.erase(deck.main_deck.begin() + static_cast<long>(md_idx));
-        }
 
-        sided_out_names.insert(card_out);
-        sided_in_names.insert(card_in);
-
-        // The swap mutated `deck`, so the sideboarding player's own-view store
-        // must track it mid-phase (the registered store is deliberately NOT
-        // touched — see deck_state.h).
+        // The move mutated `deck`, so the sideboarding player's own-view store must
+        // track it after EVERY move, not just completed pairs — the observation's
+        // self-deck blocks are read from it mid-phase. (The registered store is
+        // deliberately NOT touched — see deck_state.h.)
         deck_state_set_live(player, deck);
-
-        game_log("Swapped out %s for %s\n", card_out.c_str(), card_in.c_str());
-        st.sb_swaps++;
-        // OUT swap completed: the phase is no longer resumable mid-swap.
-        st.pending_in_sb_idx = -1;
     }
 
-    // Phase ended (any break path): clear the mid-swap resumption marker.
-    st.pending_in_sb_idx = -1;
+    // Every exit path leaves the deck balanced: Done is only offered at delta 0,
+    // the swap cap is only checked there, and the no-moves-available break is
+    // unreachable while a move is outstanding (its takeback is always legal).
     sideboard_phase = false;
     sideboard_phase_player = Zone::UNKNOWN;
     sideboard_phase_state = nullptr;

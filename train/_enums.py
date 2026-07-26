@@ -30,6 +30,7 @@ N_CARD_TYPES = 1024  # src/machine_io.h
 PERM_SLOT_SIZE = 38  # src/machine_io.h
 OPTION_ORDINAL_MAX = 63  # src/machine_io.h
 N_ACTION_OBS_BLOCKS = 6  # src/machine_io.h
+SIDEBOARD_SWAP_CAP = 15  # src/machine_io.h
 
 # Name-keyed ActionCategory constants: CAT_<ENUM_NAME> = value, for every
 # entry in the C++ ActionCategory enum (src/classes/action.h).
