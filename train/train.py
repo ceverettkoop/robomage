@@ -1981,7 +1981,8 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
 
 def baseline(binary_path: str, model_path: str, n_games: int = 100,
              deck: str | None = None, opp_deck: str | None = None,
-             seed: int | None = None, quiet: bool = False):
+             seed: int | None = None, quiet: bool = False, bo3: bool = False,
+             split_out: dict | None = None):
     """Evaluate the generalist's win rate vs the scripted HARD agent.
 
     The model pilots ``deck`` (REQUIRED — a checkpoint no longer encodes a deck;
@@ -1989,8 +1990,21 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
     piloting ``opp_deck`` (defaults to ``deck`` — a mirror match). Seats alternate
     each game (model is Player A in even games) so neither side gets a systematic
     on-the-play edge. ``seed`` makes the run reproducible (game ``i`` uses
-    ``seed + i``; None = random per game). Returns ``(wins, losses, draws)`` from
-    the model's perspective.
+    ``seed + i``; None = random per game).
+
+    ``bo3`` plays best-of-three MATCHES (sideboarding between games) instead of
+    single games, and additionally reports the pre-board vs post-board win-rate
+    split: game 1 is played on the registered decks and cannot be affected by
+    sideboarding, so it is the control against which games 2-3 are read. That
+    split is the only way to see whether sideboarding helps — an aggregate match
+    W/L cannot separate the two.
+
+    ``split_out``, when given, is a ``runner.tally_per_game``-shaped dict this
+    run's per-game tallies are folded into (model's perspective), so a caller
+    running many matchups (``baseline_all``) can aggregate the split without
+    changing the return type.
+
+    Returns ``(wins, losses, draws)`` from the model's perspective.
     """
     import runner
     from opponents import ModelController, ScriptedController
@@ -2007,6 +2021,17 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
     ctrl_model = ModelController(model, label="Model", deterministic=True)
     ctrl_scripted = ScriptedController(make_agent("scripted:hard"), label="Scripted")
     wins = losses = draws = 0
+    # Per-game-index tallies in the MODEL's perspective. tally_per_game scores for
+    # Player A by default and the seats alternate every game, so ask it to flip on
+    # the games where the model sits in seat B — that flips the on-the-play side
+    # too, which the aggregate would otherwise get backwards.
+    per_game: dict = {}
+
+    def _fold_split(records, model_is_a):
+        tally = runner.tally_per_game(records, flip=not model_is_a)
+        for dest in (per_game, split_out):
+            if dest is not None:
+                runner.merge_per_game(dest, tally)
 
     for i in range(n_games):
         model_is_a = (i % 2 == 0)
@@ -2014,13 +2039,15 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
                           else (ctrl_scripted, ctrl_model))
         # The model always pilots `deck`; the scripted opponent always `opp_deck`.
         deck_a, deck_b = ((deck, opp_deck) if model_is_a else (opp_deck, deck))
+        records = []
         w, l, d = runner.run_games(
             ctrl_a, ctrl_b,
             label_a="Model" if model_is_a else "Scripted",
             label_b="Scripted" if model_is_a else "Model",
             binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
             n_games=1, seed=(seed + i) if seed is not None else None,
-            transcript="quiet")
+            transcript="quiet", bo3=bo3, on_game_end=records.append)
+        _fold_split(records, model_is_a)
         wins += w if model_is_a else l
         losses += l if model_is_a else w
         draws += d
@@ -2031,9 +2058,12 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
     if not quiet:
         print()
         vs = (f"scripted:hard ({opp_deck})" if opp_deck != deck else "scripted:hard")
+        unit = "matches" if bo3 else "games"
         print(f"{os.path.basename(model_path)} ({deck or 'default deck'}) vs "
-              f"{vs} over {n_games} games: {wins}W / {losses}L / {draws}D "
+              f"{vs} over {n_games} {unit}: {wins}W / {losses}L / {draws}D "
               f"({100 * wins / n_games:.1f}% win rate)")
+        for line in runner.format_per_game_split(per_game, subject="model"):
+            print(f"  {line}")
     return wins, losses, draws
 
 
@@ -2057,7 +2087,7 @@ def _wld_line(w: int, l: int, d: int) -> str:
 
 
 def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
-                 log_path: str | None = None):
+                 log_path: str | None = None, bo3: bool = False):
     """Round-robin the one generalist over every league matchup vs scripted:hard.
 
     There is a single generalist checkpoint (``gen__final.zip``); this runs it
@@ -2069,6 +2099,8 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
     from the model's perspective. It is appended to ``log_path`` (default
     checkpoints/baseline_report.log) and printed to stdout.
     """
+    import runner
+
     roster = _league_roster()
     if not roster:
         print(f"No league decks found under {_LEAGUE_DECKS_DIR}")
@@ -2087,7 +2119,7 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
     stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     header = (f"=== generalist ({os.path.basename(ckpt)}) baseline round-robin vs "
               f"scripted:hard ({len(roster)}x{len(roster)} matchups) — {stamp} — "
-              f"{n_games} games/matchup, seed={seed} ===")
+              f"{n_games} {'matches' if bo3 else 'games'}/matchup, seed={seed} ===")
     lines = [header]
     print(header, flush=True)
 
@@ -2101,13 +2133,16 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
     # matchup CLASS (e.g. burn piloting vs control) is the weak spot rather than
     # one deck pairing.
     per_bucket: dict[int, list[int]] = {}
+    # Pre-board vs post-board tallies pooled over every matchup (bo3 only).
+    per_game_all: dict[int, list[int]] = {}
 
     for deck in roster:
         row_cells = []
         for opp in roster:
             print(f"\n  gen (model) piloting {deck} vs {opp} (scripted:hard):", flush=True)
             w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
-                               opp_deck=opp, seed=seed)
+                               opp_deck=opp, seed=seed, bo3=bo3,
+                               split_out=per_game_all)
             total = w + l + d
             pct = 100 * w / total if total else 0
             row_cells.append(f"{opp}={w}W/{l}L/{d}D({pct:.0f}%)")
@@ -2122,6 +2157,12 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
         lines.append(f"  [gen {deck}] " + "  ".join(row_cells))
 
     lines.append("")
+    # Pre-board vs post-board: game 1 is played on the registered decks and cannot
+    # be affected by sideboarding, so it is the control for games 2-3.
+    split = runner.format_per_game_split(per_game_all, subject="model")
+    if split:
+        lines.extend(split)
+        lines.append("")
     lines.append("per model deck (gen piloting it vs the whole scripted field):")
     for deck, (w, l, d) in per_model_deck.items():
         lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
@@ -2402,7 +2443,7 @@ if __name__ == "__main__":
     elif args.command == "baseline":
         if args.all:
             baseline_all(args.binary, n_games=args.games or 50, seed=args.seed,
-                         log_path=args.log)
+                         log_path=args.log, bo3=args.bo3)
         elif args.model is None:
             parser.error("baseline: give a model checkpoint (e.g. 'gen'), or --all "
                          "to round-robin the generalist over every league matchup")
@@ -2416,7 +2457,7 @@ if __name__ == "__main__":
             except ValueError as exc:
                 parser.error(str(exc))
             baseline(args.binary, model_path, args.games or 100,
-                     deck=args.deck, seed=args.seed)
+                     deck=args.deck, seed=args.seed, bo3=args.bo3)
     elif args.command == "az-selfplay":
         import az_selfplay
         az_selfplay.run(args)

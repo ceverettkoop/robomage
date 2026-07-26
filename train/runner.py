@@ -25,13 +25,14 @@ torch is only pulled in if a caller passes a model ``Controller`` / checkpoint.
 import datetime
 import random
 import sys
+from typing import NamedTuple
 
 import numpy as np
 
 import decode
 from env import (NarrativeEnv, STATE_SIZE, ACTION_CATEGORY_MAX, MAX_ACTIONS,
                  N_CARD_TYPES, BINARY, _IS_ACTIVE_IDX, _SELF_IS_A_IDX,
-                 _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE)
+                 _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE, _EXTRAS_PLAYS_FIRST)
 from _enums import _CAT_NAMES, _STEP_NAMES
 
 
@@ -63,17 +64,35 @@ class Decision:
         return self._menu
 
 
+class GameOutcome(NamedTuple):
+    """One game's result inside a bo3 match."""
+    winner: str | None      # "A" / "B", None if undecided
+    a_on_play: bool         # Player A was the starting player of THIS game
+
+
 class GameRecord:
     """Result of one drive_game run (one game, or one bo3 match)."""
 
-    __slots__ = ("reward", "decisions", "capped", "actions", "engine_seed")
+    __slots__ = ("reward", "decisions", "capped", "actions", "engine_seed",
+                 "game_results")
 
-    def __init__(self, reward, decisions, capped, actions, engine_seed=None):
+    def __init__(self, reward, decisions, capped, actions, engine_seed=None,
+                 game_results=None):
         self.reward = reward          # cumulative reward, Player A perspective
         self.decisions = decisions
         self.capped = capped          # True if stopped by max_decisions
         self.actions = actions        # every action index fed to env.step
         self.engine_seed = engine_seed
+        # Per-GAME outcomes inside this record, in play order, as GameOutcome
+        # (winner, a_on_play). Index 0 is the pre-board game; everything after it
+        # was played on a sideboarded deck, which is what makes sideboarding
+        # measurable. `a_on_play` is recorded because a bo3's pre/post comparison
+        # is otherwise CONFOUNDED: the loser of each game chooses to play first, so
+        # whoever wins game 1 is usually on the draw in game 2. Populated in bo3
+        # only — the engine emits the per-game marker this is built from under
+        # --bo3, so a bo1 run leaves it EMPTY (its single result is already
+        # `reward`/`winner`).
+        self.game_results = game_results if game_results is not None else []
 
     @property
     def winner(self):
@@ -113,6 +132,14 @@ def drive_game(env, obs, controller_a, controller_b, *,
     decisions = 0
     capped = False
     actions_log = []
+    game_results = []
+    # Whether Player A is the starting player of the game currently being played,
+    # refreshed every decision from the observation's self_plays_first flag. It is
+    # perspective-relative, so un-flip it by the viewer's seat. During a bo3
+    # sideboard phase the engine reports the UPCOMING game's starting player,
+    # which is the game this value will be filed under — so the same read is
+    # correct in-game and between games.
+    a_on_play = True
     done = False
 
     while not done:
@@ -123,6 +150,8 @@ def drive_game(env, obs, controller_a, controller_b, *,
             break
 
         priority_is_a = obs[_SELF_IS_A_IDX] > 0.5
+        self_plays_first = obs[_EXTRAS_PLAYS_FIRST] > 0.5
+        a_on_play = self_plays_first if priority_is_a else not self_plays_first
         controller = controller_a if priority_is_a else controller_b
         d = Decision(env, obs, env._num_choices, priority_is_a, controller,
                      decisions)
@@ -150,14 +179,96 @@ def drive_game(env, obs, controller_a, controller_b, *,
             on_action(d, action)
 
         actions_log.append(int(action))
-        obs, reward, terminated, truncated, _ = env.step(action)
+        obs, reward, terminated, truncated, info = env.step(action)
         total_reward += reward
+        # Per-game winner (bo3): the engine flags the step a game ended on, and
+        # this env family reports the raw Player-A-perspective reward, so the sign
+        # names the winner. On the last game that reward carries the ±0.3 game
+        # result AND the ±1.0 match result, but they always share a sign (the
+        # match winner won the final game), so it stays correct.
+        # NOTE: valid because run_games drives a NarrativeEnv/SearchNarrativeEnv
+        # (RoboMageEnv subclasses, one engine step per env step). The TRAINING
+        # wrappers aggregate several inner steps into one info and would break
+        # this — they never reach drive_game.
+        if info.get("game_result"):
+            winner = "A" if reward > 0 else ("B" if reward < 0 else None)
+            game_results.append(GameOutcome(winner, a_on_play))
         done = terminated or truncated
         decisions += 1
 
     _narrative()
     return GameRecord(total_reward, decisions, capped, actions_log,
-                      getattr(env, "last_engine_seed", None))
+                      getattr(env, "last_engine_seed", None), game_results)
+
+
+def tally_per_game(records, flip=False):
+    """Tally per-game-index results across GameRecords.
+
+    Returns ``{game index: {"wins", "played", "play_wins", "play_n",
+    "draw_wins", "draw_n"}}``, where ``play_*`` / ``draw_*`` restrict to the games
+    the subject was on the play / on the draw. Index 0 is the pre-board game; 1+
+    were played after sideboarding. Empty for bo1 records, which carry no per-game
+    breakdown.
+
+    Tallies are Player A's unless ``flip`` is set, which scores them for Player B
+    instead (used when the subject alternates seats between matches).
+    """
+    per_game = {}
+    for rec in records:
+        for gi, out in enumerate(rec.game_results):
+            cell = per_game.setdefault(gi, {"wins": 0, "played": 0, "play_wins": 0,
+                                            "play_n": 0, "draw_wins": 0, "draw_n": 0})
+            subject = "B" if flip else "A"
+            won = out.winner == subject
+            on_play = out.a_on_play if not flip else not out.a_on_play
+            cell["played"] += 1
+            cell["wins"] += int(won)
+            key = "play" if on_play else "draw"
+            cell[f"{key}_n"] += 1
+            cell[f"{key}_wins"] += int(won)
+    return per_game
+
+
+def merge_per_game(dest, src):
+    """Fold one tally_per_game result into another, in place."""
+    for gi, cell in src.items():
+        into = dest.setdefault(gi, {"wins": 0, "played": 0, "play_wins": 0,
+                                    "play_n": 0, "draw_wins": 0, "draw_n": 0})
+        for k, v in cell.items():
+            into[k] += v
+    return dest
+
+
+def _pct(w, n):
+    return f"{w}/{n} ({100 * w / n:.1f}%)" if n else f"{w}/{n} (n/a)"
+
+
+def format_per_game_split(per_game, subject="Player A"):
+    """Per-game-index and play/draw-controlled summary lines, or [] if no split.
+
+    Read this carefully: a raw pre-board vs post-board comparison is CONFOUNDED by
+    the bo3 play/draw rule. Game 1's starting player is fixed, but from game 2 the
+    LOSER of the previous game chooses to play first — so whoever wins game 1 is
+    usually on the draw afterwards. Measured on mirror matchups with agents that
+    never sideboard, that alone moves game 1 (~63-75%) to post-board (~46%). Any
+    honest read of a sideboarding change therefore has to compare like with like,
+    which is what the second line does: post-board win rate split by whether the
+    subject was on the play. Returns [] for bo1, or when no match reached game 2.
+    """
+    if not per_game or max(per_game) == 0:
+        return []
+    per_idx = "  ".join(
+        f"g{gi + 1} {_pct(c['wins'], c['played'])}"
+        for gi, c in sorted(per_game.items()))
+    post = [c for gi, c in per_game.items() if gi > 0]
+    pw, pn = sum(c["play_wins"] for c in post), sum(c["play_n"] for c in post)
+    dw, dn = sum(c["draw_wins"] for c in post), sum(c["draw_n"] for c in post)
+    return [
+        f"per-game ({subject}): {per_idx}",
+        f"post-board by seat ({subject}): on the play {_pct(pw, pn)}"
+        f" | on the draw {_pct(dw, dn)}"
+        "   [g1 vs g2-3 alone is confounded by the play/draw rule]",
+    ]
 
 
 def _compact_line(decision, player, label, step_name, cats, action):
@@ -220,6 +331,10 @@ def run_games(controller_a, controller_b, *,
 
     wins = losses = draws = incomplete = 0
     unit = "match" if bo3 else "game"
+    # Every record, so the bo3 per-game-index split can be tallied at the end. The
+    # aggregate match W/L cannot distinguish the pre-board game from the games
+    # played after sideboarding, which is exactly the comparison that matters.
+    all_records = []
 
     # Push per-seat deck names to scripted controllers so their doomsday/tron
     # identification uses the shared name rule (duck-typed; decks are fixed
@@ -363,6 +478,8 @@ def run_games(controller_a, controller_b, *,
         if on_game_end is not None:
             on_game_end(record)
 
+        all_records.append(record)
+
         if record.capped:
             incomplete += 1
             if transcript != "quiet":
@@ -399,6 +516,8 @@ def run_games(controller_a, controller_b, *,
         print(f"\n{wins}W / {losses}L / {draws}D over {n_games} {unit}"
               f"{'es' if bo3 else 's'} ({win_pct:.1f}% Player A win rate){extra}",
               file=stream, flush=True)
+        for line in format_per_game_split(tally_per_game(all_records)):
+            print(f"  {line}", file=stream, flush=True)
 
     # Lightweight per-side search-effort summary for MCTS/AZ seats — lets the
     # user see the effort actually spent (mean sims/decision), which is the

@@ -32,6 +32,11 @@ fails, so one invocation reports every finding):
           SIM_RESULT terminal intercept, and determinize invariants
           (train/test_snapshot.py). Catches a regression in the in-process
           MCTS search primitives.
+  pergame The bo3 per-game-index win-rate split: seat-flip consistency, tally
+          merging, and a live bo3 pinned against the engine (Player A starts
+          game 1 of every match). Guards the measurement sideboarding is judged
+          by, including the play/draw confound the report controls for
+          (train/test_per_game_split.py). Torch-free; needs bin/robomage.
   sbselfplay The AZ self-play collector turns bo3 sideboard search roots into
           samples priced by the UPCOMING game's winner: one small bo3 match
           through the real _play_match, then assert a sideboard sample exists,
@@ -107,8 +112,8 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "snapshot", "sbselfplay",
-             "mirror", "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "pergame", "snapshot",
+             "sbselfplay", "mirror", "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -290,6 +295,23 @@ def tier_snapshot(rep):
     if r.returncode != 0:
         rep.error("snapshot", "search-server protocol violation "
                              f"(test_snapshot.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
+
+
+def tier_pergame(rep):
+    """The bo3 per-game-index win-rate split behaves.
+
+    Guards the measurement sideboarding is judged by: per-game bookkeeping, the
+    seat flip `baseline` relies on (seats alternate between matches), and the
+    play/draw control the report needs — a raw pre-board vs post-board comparison
+    is confounded by the bo3 rule that the previous game's loser plays first.
+    Torch-free and quick (see train/test_per_game_split.py)."""
+    r = subprocess.run([sys.executable, "train/test_per_game_split.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("pergame", "per-game split violation "
+                             f"(test_per_game_split.py exit {r.returncode}):\n"
                              f"{r.stdout}{r.stderr}")
 
 
@@ -530,7 +552,7 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "snapshot",
+    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "pergame", "snapshot",
                   "sbselfplay", "mirror", "analysis"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
@@ -556,6 +578,8 @@ def main(argv=None):
             tier_obsinv(rep)
         elif t == "snapshot":
             tier_snapshot(rep)
+        elif t == "pergame":
+            tier_pergame(rep)
         elif t == "sbselfplay":
             tier_sbselfplay(rep)
         elif t == "mirror":
