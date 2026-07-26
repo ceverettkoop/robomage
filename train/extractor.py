@@ -87,10 +87,24 @@ except ImportError:
 # per-action logit head. Same source of truth env.py uses for the action block.
 try:
     from _enums import (ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
-                        DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS)
+                        DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
+                        MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY, MAX_STACK_MODES,
+                        MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
+                        KNOWN_TOP_LIBRARY_SIZE, ACTION_HISTORY_SIZE,
+                        CARD_ID_SLOT_SIZE, STACK_HEAD_FIELDS, STACK_XAMT_FIELDS,
+                        STACK_QUAL_FIELDS, STACK_TGT_FIELDS, HIST_ENTRY_SIZE,
+                        PENDING_DECISION_SIZE, EXTRAS_SCALARS,
+                        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE)
 except ImportError:
     from train._enums import (ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
-                             DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS)
+                             DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
+                             MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY, MAX_STACK_MODES,
+                             MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
+                             KNOWN_TOP_LIBRARY_SIZE, ACTION_HISTORY_SIZE,
+                             CARD_ID_SLOT_SIZE, STACK_HEAD_FIELDS, STACK_XAMT_FIELDS,
+                             STACK_QUAL_FIELDS, STACK_TGT_FIELDS, HIST_ENTRY_SIZE,
+                             PENDING_DECISION_SIZE, EXTRAS_SCALARS,
+                             EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE)
 
 
 def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -124,7 +138,11 @@ def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
 # round(val * N_CARD_TYPES) and look up in self.card_emb.
 # (_GLOBAL_SIZE is derived from env._GLOBAL_SIZE just below, after that import.)
 
-_PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
+# Every width below comes from _enums (generated from src/machine_io.h +
+# src/classes/gamestate.h), never a bare literal — this module keeps its OWN
+# offset chain, so a hand-copied width here silently misreads the observation.
+# The chain is cross-checked block-by-block against env.py's at the bottom.
+_PERM_SLOTS      = 2 * MAX_BATTLEFIELD_SLOTS  # 48 self + 48 opponent (unified: creatures, lands, other)
 # 11 status (incl. loyalty) + 2 counters + 4 entity refs + is_blocked +
 # is_phased_out + keyword multi-hot + chosen-name id + returnable-exile id +
 # card id (LAST) = 38
@@ -134,35 +152,35 @@ _PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3  # 35 (chosen-name id, 3rd-last)
 _PERM_RETURNABLE_OFF  = _PERM_SLOT_SIZE - 2  # 36 (returnable-exile id, 2nd-last)
 _PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 37 (card id is always LAST)
 
-_STACK_SLOTS      = 12
-_STACK_XAMT_OFF   = 3   # x_or_amount / 10 within a stack slot
-_STACK_QUALS      = 7   # cast qualifiers (is_copy, kicked, flashback, evoke, ...)
-_STACK_MODE_SLOTS = 6   # chosen-mode multi-hot width per stack slot
-_STACK_MODE_OFF   = _STACK_XAMT_OFF + 1 + _STACK_QUALS      # 11
-_STACK_TGT_SLOTS  = 4   # announced-target sub-slots per stack slot
-_STACK_TGT_FIELDS = 5   # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
+_STACK_SLOTS      = MAX_STACK_DISPLAY
+_STACK_XAMT_OFF   = STACK_HEAD_FIELDS   # x_or_amount / 10 within a stack slot
+_STACK_QUALS      = STACK_QUAL_FIELDS   # cast qualifiers (is_copy, kicked, flashback, evoke, ...)
+_STACK_MODE_SLOTS = MAX_STACK_MODES     # chosen-mode multi-hot width per stack slot
+_STACK_MODE_OFF   = _STACK_XAMT_OFF + STACK_XAMT_FIELDS + _STACK_QUALS  # 11
+_STACK_TGT_SLOTS  = MAX_STACK_TGTS      # announced-target sub-slots per stack slot
+_STACK_TGT_FIELDS = STACK_TGT_FIELDS    # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
 _STACK_TGT_OFF    = _STACK_MODE_OFF + _STACK_MODE_SLOTS     # 17
 # ctrl(1) + card id(1) + is_spell(1) + x_or_amount + qualifiers + modes +
 # target sub-slots (37 total)
 _STACK_SLOT_SIZE  = _STACK_TGT_OFF + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 
-_GY_SLOTS        = 128  # 64 self + 64 opponent
-_GY_SLOT_SIZE    = 1    # card id only
+_GY_SLOTS        = 2 * MAX_GY_SLOTS  # 64 self + 64 opponent
+_GY_SLOT_SIZE    = CARD_ID_SLOT_SIZE # card id only
 
-_EXILE_SLOTS     = 128  # 64 self + 64 opponent (same layout as graveyard)
-_EXILE_SLOT_SIZE = 1    # card id only
+_EXILE_SLOTS     = 2 * MAX_GY_SLOTS  # 64 self + 64 opponent (same layout as graveyard)
+_EXILE_SLOT_SIZE = CARD_ID_SLOT_SIZE # card id only
 
-_HAND_SLOTS      = 10
-_HAND_SLOT_SIZE  = 1    # card id only
+_HAND_SLOTS      = MAX_HAND_SLOTS
+_HAND_SLOT_SIZE  = CARD_ID_SLOT_SIZE # card id only
 
-_HIST_ENTRIES    = 128  # action history entries (newest first)
-_HIST_ENTRY_SIZE = 4    # category_norm, card_id_norm, is_self, turn/50
+_HIST_ENTRIES    = ACTION_HISTORY_SIZE  # action history entries (newest first)
+_HIST_ENTRY_SIZE = HIST_ENTRY_SIZE      # category_norm, card_id_norm, is_self, turn/50
 
-_KNOWN_TOP_LIB_SLOTS     = 5   # known top-of-library cards
-_KNOWN_TOP_LIB_SLOT_SIZE = 1   # card id per slot
+_KNOWN_TOP_LIB_SLOTS     = KNOWN_TOP_LIBRARY_SIZE  # known top-of-library cards
+_KNOWN_TOP_LIB_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
 _REVEALED_SIZE           = N_CARD_TYPES  # opponent revealed-cards multi-hot (dense, not one-hot-per-slot)
-_OPP_KNOWN_HAND_SLOTS    = 10  # known opponent-hand card identities
-_OPP_KNOWN_HAND_SLOT_SIZE = 1  # card id per slot
+_OPP_KNOWN_HAND_SLOTS    = MAX_HAND_SLOTS  # known opponent-hand card identities
+_OPP_KNOWN_HAND_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
 
 # Deck-identity tail blocks (mirror machine_io.h [5977-6328] / env.py): five
 # (card_id, count) slot blocks — the viewer's live LIBRARY tally, the viewer's own
@@ -171,7 +189,7 @@ _OPP_KNOWN_HAND_SLOT_SIZE = 1  # card id per slot
 # share one decklist_encoder.
 _DECKLIST_MAIN_SLOTS = DECKLIST_MAIN_SLOTS   # 48 (self live lib, self/opp main)
 _DECKLIST_SIDE_SLOTS = DECKLIST_SIDE_SLOTS   # 16 (self/opp side)
-_DECKLIST_SLOT_SIZE  = 2                      # card id + count per slot
+_DECKLIST_SLOT_SIZE  = DECKLIST_SLOT_SIZE     # card id + count per slot
 _DECKLIST_CARD_OFF   = 0                      # card id first within a slot
 _DECKLIST_COUNT_OFF  = 1                      # count second
 
@@ -192,12 +210,16 @@ _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 # MAX_ACTIONS and STATE_SIZE come from env.py (single source of truth for the
 # action-block layout the engine emits).
 try:
+    # The module itself too, so the block-by-block chain comparison at the bottom
+    # can getattr() env's offsets by name instead of importing 18 more aliases.
+    import env as _env_mod
     from env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
                      _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS,
                      OBS_SIZE as _ENV_OBS_SIZE, BUCKET_IDX as _BUCKET_IDX,
                      ARCH_ONEHOT_START as _ARCH_ONEHOT_START,
                      ARCH_ONEHOT_END as _ARCH_ONEHOT_END)
 except ImportError:
+    import train.env as _env_mod
     from train.env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
                            _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS,
                            OBS_SIZE as _ENV_OBS_SIZE, BUCKET_IDX as _BUCKET_IDX,
@@ -252,14 +274,14 @@ _OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNO
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (sentinel = none) + its controller-is-viewer flag.
 _PENDING_START        = _OPP_KNOWN_HAND_END
-_PENDING_SIZE         = 2
+_PENDING_SIZE         = PENDING_DECISION_SIZE
 _PENDING_END          = _PENDING_START + _PENDING_SIZE
 # Global extras: self/opp lands played, priority, monarch, city's blessing,
 # revolt, pending extra turns, day/night flags, the MandatoryChoice one-hot, then
 # self_plays_first and the two sideboard-progress scalars (swaps made, maindeck
 # drift). Cheap scalar facts — passed through raw.
 _EXTRAS_START         = _PENDING_END
-_EXTRAS_SIZE          = 13 + N_MANDATORY_CHOICES + 3          # 22
+_EXTRAS_SIZE          = EXTRAS_SCALARS + N_MANDATORY_CHOICES + EXTRAS_SB_CTX_SIZE  # 22
 _EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE
 # Deck-identity tail blocks: self live library, the viewer's own live 75, then the
 # opponent's registered main + side.
@@ -280,6 +302,39 @@ _STATE_END            = _OPP_DECK_SIDE_END
 assert _STATE_END == _ENV_STATE_SIZE, (_STATE_END, _ENV_STATE_SIZE)
 assert _ARCH_ONEHOT_END == _ENV_OBS_SIZE, (_ARCH_ONEHOT_END, _ENV_OBS_SIZE)
 assert _BUCKET_IDX > _STATE_END, (_BUCKET_IDX, _STATE_END)
+
+# ...and compare the two chains BLOCK BY BLOCK, not just on their total. A
+# total-only assert passes a compensating change (a float moved from one block
+# into the next) while every field between the two blocks reads from the wrong
+# offset — a silent, training-corrupting failure rather than a loud one. env.py
+# is in turn checked against src/machine_io.h's OFFSET_CHAIN by ci_check.py's
+# `actorobs` tier, so all three reconstructions are transitively pinned.
+_ENV_CHAIN_PAIRS = [
+    ("_GLOBAL_SIZE",          _GLOBAL_SIZE),
+    ("_STACK_START",          _STACK_START),
+    ("_GY_START",             _GY_START),
+    ("_EXILE_START",          _EXILE_START),
+    ("_HAND_START",           _HAND_START),
+    ("_HIST_START",           _HIST_START),
+    ("_MATCH_CTX_START",      _MATCH_CTX_START),
+    ("_CUR_TURN_IDX",         _CUR_TURN_IDX),
+    ("_KNOWN_TOP_LIB_START",  _KNOWN_TOP_LIB_START),
+    ("_REVEALED_START",       _REVEALED_START),
+    ("_OPP_KNOWN_HAND_START", _OPP_KNOWN_HAND_START),
+    ("_EXTRAS_START",         _EXTRAS_START),
+    ("_EXTRAS_END",           _EXTRAS_END),
+    ("_SELF_LIVE_LIB_START",  _SELF_LIVE_LIB_START),
+    ("_SELF_DECK_MAIN_START", _SELF_DECK_MAIN_START),
+    ("_SELF_DECK_SIDE_START", _SELF_DECK_SIDE_START),
+    ("_OPP_DECK_MAIN_START",  _OPP_DECK_MAIN_START),
+    ("_OPP_DECK_SIDE_START",  _OPP_DECK_SIDE_START),
+]
+for _name, _mine in _ENV_CHAIN_PAIRS:
+    _theirs = getattr(_env_mod, _name)
+    assert _mine == _theirs, (
+        f"extractor.py and env.py disagree on {_name}: {_mine} vs {_theirs} — "
+        "the two state-vector offset chains have drifted")
+del _name, _mine, _theirs
 
 
 class CardGameExtractor(BaseFeaturesExtractor):

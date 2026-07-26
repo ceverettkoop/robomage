@@ -136,6 +136,11 @@ enum MandatoryChoice {
     CHOOSE_ENTITY,  // Legend rule, replacement effect, choose card name, choose permanent
     ASSIGN_COMBAT_DAMAGE_CHOICE  // T3.10: attacker divides damage among 2+ blockers it can't all kill
 };
+// Width of the MandatoryChoice one-hot in the serialized state vector. Derived
+// from the enum's last value, so adding a choice kind widens the one-hot (and
+// shifts every later block via machine_io.h's offset chain) automatically.
+// Mirrored into Python by train/gen_enums.py, which counts the enum's members.
+static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
 
 struct ActionHistoryEntry {
     int category;        // ActionCategory value

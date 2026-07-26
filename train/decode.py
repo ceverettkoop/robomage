@@ -18,6 +18,8 @@ Two coordinate systems appear here:
 import numpy as np
 
 from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
+                 ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
+                 ACT_ZONE_START, ACT_REFS_START, ACT_ORDS_START,
                  _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
                  _GY_START, _EXILE_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
                  _PERM_SLOTS, _PERM_CARD_OFF, _PERM_CHOSEN_NAME_OFF,
@@ -933,20 +935,25 @@ def _decode_pending_decision(state):
 
 # ── Action decoders ───────────────────────────────────────────────────────────
 
+# Each decoder slices its block at the shared ACT_*_START offset env.py wrote it
+# to, rather than counting blocks in as a bare `STATE_SIZE + k * MAX_ACTIONS`.
+# Under the old form, reordering the per-action blocks left every decoder here
+# silently reading the wrong one.
+
 def action_categories(obs, num_choices=MAX_ACTIONS):
     """Integer ActionCategory per legal action (from the obs metadata block)."""
-    raw = obs[STATE_SIZE: STATE_SIZE + num_choices]
+    raw = obs[ACT_CATS_START: ACT_CATS_START + num_choices]
     return np.round(raw * ACTION_CATEGORY_MAX).astype(int)
 
 
 def action_card_ids(obs):
     """Normalised card-ID float per action slot."""
-    return obs[STATE_SIZE + MAX_ACTIONS: STATE_SIZE + 2 * MAX_ACTIONS]
+    return obs[ACT_IDS_START: ACT_IDS_START + MAX_ACTIONS]
 
 
 def action_ctrls(obs):
     """controller_is_self float per action slot."""
-    return obs[STATE_SIZE + 2 * MAX_ACTIONS: STATE_SIZE + 3 * MAX_ACTIONS]
+    return obs[ACT_CTRL_START: ACT_CTRL_START + MAX_ACTIONS]
 
 
 def action_zone_refs(obs, num_choices=MAX_ACTIONS):
@@ -954,7 +961,7 @@ def action_zone_refs(obs, num_choices=MAX_ACTIONS):
 
     Display names for the values live in _REF_NAMES.
     """
-    raw = obs[STATE_SIZE + 3 * MAX_ACTIONS: STATE_SIZE + 3 * MAX_ACTIONS + num_choices]
+    raw = obs[ACT_ZONE_START: ACT_ZONE_START + num_choices]
     return np.round(raw * REF_ZONE_MAX).astype(int)
 
 
@@ -966,7 +973,7 @@ def action_slot_refs(obs, num_choices=MAX_ACTIONS):
     stack) of the choice's source entity, normalized like the in-state ref
     fields ((idx + 1) / N_ENTITY_REF_SLOTS, 0.0 = none).
     """
-    raw = obs[STATE_SIZE + 4 * MAX_ACTIONS: STATE_SIZE + 4 * MAX_ACTIONS + num_choices]
+    raw = obs[ACT_REFS_START: ACT_REFS_START + num_choices]
     return (np.round(raw * N_ENTITY_REF_SLOTS) - 1).astype(int)
 
 
@@ -977,7 +984,7 @@ def action_ordinals(obs, num_choices=MAX_ACTIONS):
     ordinal/value scalar (mode index, X value, color index, cast variant,
     top-of-library depth, ...), normalized (ord + 1) / (OPTION_ORDINAL_MAX + 1).
     """
-    raw = obs[STATE_SIZE + 5 * MAX_ACTIONS: STATE_SIZE + 5 * MAX_ACTIONS + num_choices]
+    raw = obs[ACT_ORDS_START: ACT_ORDS_START + num_choices]
     return (np.round(raw * (OPTION_ORDINAL_MAX + 1)) - 1).astype(int)
 
 

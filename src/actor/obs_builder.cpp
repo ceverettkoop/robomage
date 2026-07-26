@@ -14,78 +14,42 @@
 #include "gen/archetypes_gen.h"  // ARCH_DECK_TAGS, ARCH_UNKNOWN, ARCH_N
 #include "gen/card_costs_gen.h"  // CARD_COST_MATRIX, CARD_ABILITY_COST_MATRIX, N_COST_FEATS
 
-// ── Derived state-vector offsets ────────────────────────────────────────────
-// Every offset below is DERIVED from the engine layout constants (never a bare
-// literal), mirroring the derivation chain in train/env.py so the two stay
-// locked together. The static_asserts pin the derived absolute indices against
-// the values documented in src/machine_io.h.
-static constexpr int SELF_PERM_START = ACTOR_STATE_HEADER_SIZE;
-static constexpr int OPP_PERM_START = SELF_PERM_START + MAX_BATTLEFIELD_SLOTS * PERM_SLOT_SIZE;
-static constexpr int STACK_START = OPP_PERM_START + MAX_BATTLEFIELD_SLOTS * PERM_SLOT_SIZE;
-static constexpr int GY_START = STACK_START + MAX_STACK_DISPLAY * STACK_SLOT_SIZE;
-static constexpr int EXILE_START = GY_START + 2 * MAX_GY_SLOTS;
-static constexpr int HAND_START = EXILE_START + 2 * MAX_GY_SLOTS;
+// ── State-vector offsets ────────────────────────────────────────────────────
+// The actor no longer keeps its own copy of the offset chain. Every absolute
+// block offset it needs (SELF_PERM_START, HAND_START, MATCH_CTX_START,
+// REVEALED_START, EXTRAS_*, the deck-identity tail, ...) comes from the
+// OFFSET_CHAIN in src/machine_io.h, which is derived from that header's block
+// widths and pinned by its own `== STATE_SIZE` static_assert. train/env.py
+// derives the same chain from the same widths (mirrored by train/gen_enums.py),
+// and ci_check.py's `actorobs` tier compiles a generated TU that static_asserts
+// the two chains equal boundary-by-boundary.
+//
+// Only offsets WITHIN a slot — which machine_io.h does not name — are defined
+// here, derived from the slot widths it does export.
+//
 // The three id-family floats sit LAST in a permanent slot (chosen-name id, then
 // returnable-exile id, then card id) — mirror env.py's _PERM_*_OFF.
 static constexpr int PERM_CHOSEN_NAME_OFF = PERM_SLOT_SIZE - 3;
 static constexpr int PERM_RETURNABLE_OFF = PERM_SLOT_SIZE - 2;
 static constexpr int PERM_CARD_OFF = PERM_SLOT_SIZE - 1;  // card id is LAST in a perm slot
 // Stack-slot layout (mirror env.py): [1] is the object card id; the announced
-// target sub-slots start after ctrl+id+is_spell(3) + x/quals(1+7) + mode multi-hot.
-static constexpr int STACK_TGT_START = 4 + 7 + STACK_MODE_SLOTS;  // == 17
+// target sub-slots start after ctrl+id+is_spell + x_or_amount + quals + modes.
+static constexpr int STACK_TGT_START = STACK_HEAD_FIELDS + STACK_XAMT_FIELDS +
+                                       STACK_QUAL_FIELDS + STACK_MODE_SLOTS;  // == 17
 static constexpr int STACK_TGT_ID_OFF = STACK_TGT_FIELDS - 1;     // card id is LAST per sub-slot
-// Match-context block starts right after the action-history ring; its 4th float
-// (offset +3) is is_sideboard_phase, which triggers the sideboard obs mask below.
-static constexpr int HIST_START = HAND_START + MAX_HAND_SLOTS;
-static constexpr int HIST_END = HIST_START + ACTION_HISTORY_SIZE * 4;
-static constexpr int MATCH_CTX_START = HIST_END;
-// Remaining tail-block offsets (mirror the derivation chain in train/env.py and
-// the byte ranges in src/machine_io.h). Needed by the sideboard mask below.
-static constexpr int MATCH_CTX_SIZE = 4;                       // game#, self/opp wins, is_sideboard
-static constexpr int LIBRARY_CTX_START = MATCH_CTX_START + MATCH_CTX_SIZE;
-static constexpr int LIBRARY_CTX_SIZE = 3;                     // self_lib/60, opp_lib/60, is_post_board
-static constexpr int CUR_TURN_IDX = LIBRARY_CTX_START + LIBRARY_CTX_SIZE;
-static constexpr int KNOWN_TOP_LIB_START = CUR_TURN_IDX + 1;
-static constexpr int KNOWN_TOP_LIB_END = KNOWN_TOP_LIB_START + KNOWN_TOP_LIBRARY_SIZE;
-static constexpr int REVEALED_START = KNOWN_TOP_LIB_END;
-static constexpr int REVEALED_END = REVEALED_START + N_CARD_TYPES;
-static constexpr int OPP_KNOWN_HAND_START = REVEALED_END;
-static constexpr int OPP_KNOWN_HAND_END = OPP_KNOWN_HAND_START + MAX_HAND_SLOTS;
-static constexpr int PENDING_DECISION_START = OPP_KNOWN_HAND_END;
-static constexpr int PENDING_DECISION_END = PENDING_DECISION_START + 2;
-// Global extras: 13 scalar/flag floats then the MandatoryChoice one-hot. Derive
-// the one-hot width from the enum (ASSIGN_COMBAT_DAMAGE_CHOICE is the last value)
-// so a new mandatory-choice kind moves this offset automatically.
-static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;  // == 6
-static constexpr int EXTRAS_START = PENDING_DECISION_END;
-// 13 scalars + the MandatoryChoice one-hot, then self_plays_first and the two
-// sideboard-progress scalars (swaps made, maindeck drift).
-static constexpr int EXTRAS_SB_CTX_START = EXTRAS_START + 13 + N_MANDATORY_CHOICES;
-static constexpr int EXTRAS_END = EXTRAS_SB_CTX_START + 3;
-// Deck-identity tail blocks: each slot is (card_id, count).
-static constexpr int DECKLIST_SLOT_SIZE = 2;
-static constexpr int SELF_LIVE_LIB_START = EXTRAS_END;
-static constexpr int SELF_LIVE_LIB_END = SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
-static constexpr int SELF_DECK_MAIN_START = SELF_LIVE_LIB_END;
-static constexpr int SELF_DECK_MAIN_END = SELF_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
-static constexpr int SELF_DECK_SIDE_START = SELF_DECK_MAIN_END;
-static constexpr int SELF_DECK_SIDE_END = SELF_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
-static constexpr int OPP_DECK_MAIN_START = SELF_DECK_SIDE_END;
-static constexpr int OPP_DECK_MAIN_END = OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
-static constexpr int OPP_DECK_SIDE_START = OPP_DECK_MAIN_END;
-static constexpr int OPP_DECK_SIDE_END = OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
-
-static_assert(SELF_PERM_START == 36, "self permanents start at float 36");
-static_assert(HAND_START == 4384, "self hand starts at float 4384 (machine_io.h)");
-static_assert(MATCH_CTX_START == 4906, "match context starts at float 4906 (machine_io.h)");
 static_assert(STACK_TGT_START == 17, "stack target sub-slots start at slot offset 17");
-static_assert(KNOWN_TOP_LIB_START == 4914, "known top-of-library starts at float 4914");
-static_assert(REVEALED_START == 4919, "opponent revealed multi-hot starts at float 4919");
-static_assert(PENDING_DECISION_START == 5953, "pending-decision context starts at float 5953");
-static_assert(SELF_LIVE_LIB_START == 5977, "self live library starts at float 5977");
-static_assert(SELF_DECK_MAIN_START == 6073, "self maindeck starts at float 6073");
-static_assert(OPP_DECK_MAIN_START == 6201, "opp maindeck starts at float 6201");
-static_assert(OPP_DECK_SIDE_END == STATE_SIZE, "deck-identity tail must end exactly at STATE_SIZE");
+
+// Block ENDs the sideboard obs mask below needs; machine_io.h names each block's
+// start, and one block's end is the next one's start.
+static constexpr int HIST_END = MATCH_CTX_START;
+static constexpr int KNOWN_TOP_LIB_END = REVEALED_START;
+static constexpr int REVEALED_END = OPP_KNOWN_HAND_START;
+static constexpr int OPP_KNOWN_HAND_END = PENDING_DECISION_START;
+static constexpr int PENDING_DECISION_END = EXTRAS_START;
+static constexpr int SELF_LIVE_LIB_END = SELF_DECK_MAIN_START;
+static constexpr int SELF_DECK_MAIN_END = SELF_DECK_SIDE_START;
+static constexpr int SELF_DECK_SIDE_END = OPP_DECK_MAIN_START;
+static constexpr int OPP_DECK_MAIN_END = OPP_DECK_SIDE_START;
 
 // REF_ZONE_MAX (env.py / _enums.py) = highest ActionRefZone value = REF_PLAYER_OPP.
 static constexpr int ACTOR_REF_ZONE_MAX = static_cast<int>(REF_PLAYER_OPP);

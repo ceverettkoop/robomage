@@ -11,6 +11,8 @@ import sys
 import numpy as np
 
 from env import (OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
+                 ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
+                 ACT_ZONE_START, ACT_REFS_START, ACT_ORDS_START,
                  N_ENTITY_REF_SLOTS, _STACK_START, _STACK_TGT_START,
                  _SELF_PERM_START, _PERM_SLOT_SIZE, _OFF_ATTACHED_BY,
                  _ACTION_CTRL_NULL)
@@ -43,14 +45,14 @@ def make_obs(actions):
     obs = np.zeros(OBS_SIZE, dtype=np.float32)
     for i, a in enumerate(actions):
         ctrl = a.get("ctrl", 1.0)
-        obs[STATE_SIZE + i] = a.get("cat", 0) / ACTION_CATEGORY_MAX
-        obs[STATE_SIZE + MAX_ACTIONS + i] = a.get("id", -1) / N_CARD_TYPES
-        obs[STATE_SIZE + 2 * MAX_ACTIONS + i] = (
+        obs[ACT_CATS_START + i] = a.get("cat", 0) / ACTION_CATEGORY_MAX
+        obs[ACT_IDS_START + i] = a.get("id", -1) / N_CARD_TYPES
+        obs[ACT_CTRL_START + i] = (
             _ACTION_CTRL_NULL if ctrl is None else ctrl)
-        obs[STATE_SIZE + 3 * MAX_ACTIONS + i] = a.get("zone", 0) / REF_ZONE_MAX
-        obs[STATE_SIZE + 4 * MAX_ACTIONS + i] = (
+        obs[ACT_ZONE_START + i] = a.get("zone", 0) / REF_ZONE_MAX
+        obs[ACT_REFS_START + i] = (
             (a.get("ref", -1) + 1) / N_ENTITY_REF_SLOTS)
-        obs[STATE_SIZE + 5 * MAX_ACTIONS + i] = (
+        obs[ACT_ORDS_START + i] = (
             (a.get("ord", -1) + 1) / (OPTION_ORDINAL_MAX + 1))
     return obs
 

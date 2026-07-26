@@ -309,8 +309,43 @@ static constexpr int PERM_SLOT_SIZE    = 38;   // 11 stat/combat/type + 2 counte
 static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot
 static constexpr int STACK_TGT_SLOTS   = MAX_STACK_TGTS;  // serialized targets per stack slot (truncated)
 static constexpr int STACK_TGT_FIELDS  = 5;    // present + is_player + controller_is_self + slot_ref + card-id
-static constexpr int STACK_SLOT_SIZE   = 3 + 1 + 7 + STACK_MODE_SLOTS + STACK_TGT_SLOTS * STACK_TGT_FIELDS;
-static constexpr int GY_SLOT_SIZE      = 1;    // card-id float only
+
+// ── State-vector block widths (THE source of truth) ──────────────────────────
+// Every fixed-width block of the state vector, as a named constant. Four separate
+// reconstructions of this layout exist — serialize_state (machine_io.cpp), the
+// gym env (train/env.py), the policy extractor (train/extractor.py), and the C++
+// AZ actor (src/actor/obs_builder.cpp) — and each used to re-spell these widths as
+// bare literals. They are now single-sourced here and mirrored into Python by
+// codegen (train/gen_enums.py's _MACHINE_INTS -> train/_enums.py), so a width
+// change propagates to every consumer instead of being hand-copied four times.
+//
+// Why this matters beyond tidiness: the Python side's only structural guard was
+// `_EXTRAS_END == STATE_SIZE`, which catches a change to the TOTAL but NOT a
+// compensating one (a float moved from one block to another keeps the total and
+// silently misaligns every field in between). The OFFSET_CHAIN below closes that
+// hole on the C++ side by pinning each block's absolute start.
+static constexpr int PLAYER_BLOCK_SIZE = 10;   // life, hand_ct, poison, mana[WUBRGC], energy
+static constexpr int STEP_ONEHOT_SIZE  = 13;   // UNTAP..CLEANUP, incl. FIRST_STRIKE_DAMAGE
+static constexpr int HEADER_FLAGS      = 3;    // is_active + self_is_a + stack_size
+static constexpr int CARD_ID_SLOT_SIZE = 1;    // GY / exile / hand / known-top / known-opp-hand
+static constexpr int GY_SLOT_SIZE      = CARD_ID_SLOT_SIZE;
+static constexpr int STACK_HEAD_FIELDS = 3;    // controller_is_self + card id + is_spell
+static constexpr int STACK_XAMT_FIELDS = 1;    // x_or_amount / 10
+static constexpr int STACK_QUAL_FIELDS = 7;    // is_copy, kicked, flashback, evoke, escape, offspring, impending
+static constexpr int HIST_ENTRY_SIZE   = 4;    // category, card id, is_self, turn/50
+static constexpr int MATCH_CTX_SIZE    = 4;    // game#, self wins, opp wins, is_sideboard_phase
+static constexpr int LIBRARY_CTX_SIZE  = 3;    // self lib/60, opp lib/60, is_post_board
+static constexpr int CUR_TURN_SIZE     = 1;    // current turn / 50
+static constexpr int PENDING_DECISION_SIZE = 2; // source card id + ctrl_is_self
+static constexpr int EXTRAS_SCALARS    = 13;   // lands x2, priority, monarch x2, blessing x2,
+                                               // revolt x2, extra turns x2, is_day, is_night
+static constexpr int EXTRAS_SB_CTX_SIZE = 3;   // self_plays_first + swaps made + maindeck drift
+static constexpr int DECKLIST_SLOT_SIZE = 2;   // card id + count per decklist slot
+
+static constexpr int STATE_HEADER_SIZE = 2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + HEADER_FLAGS;
+static constexpr int STACK_SLOT_SIZE   = STACK_HEAD_FIELDS + STACK_XAMT_FIELDS +
+                                         STACK_QUAL_FIELDS + STACK_MODE_SLOTS +
+                                         STACK_TGT_SLOTS * STACK_TGT_FIELDS;
 static constexpr float TURN_NORMALIZER = 50.0f; // divisor for turn fields
 
 // Unified entity-reference slot space width (see the layout comment above):
@@ -318,6 +353,43 @@ static constexpr float TURN_NORMALIZER = 50.0f; // divisor for turn fields
 static constexpr int N_ENTITY_REF_SLOTS = 2 * MAX_BATTLEFIELD_SLOTS + MAX_STACK_DISPLAY;
 static_assert(N_ENTITY_REF_SLOTS == 108, "entity-ref space width documented as 108");
 static_assert(STACK_SLOT_SIZE == 37, "stack slot layout documented as 37 floats");
+static_assert(STATE_HEADER_SIZE == 36, "state header documented as 36 floats");
+
+// ── Absolute block offsets (OFFSET_CHAIN) ────────────────────────────────────
+// The state vector's blocks in serialization order, each derived from the widths
+// above. This is the C++ counterpart of train/env.py's offset chain (and the one
+// src/actor/obs_builder.cpp consumes, so the actor no longer keeps a third copy).
+// The closing static_assert against STATE_SIZE means an edit that adds, removes,
+// resizes, or REORDERS a block fails to compile unless STATE_SIZE moves with it.
+static constexpr int SELF_PERM_START      = STATE_HEADER_SIZE;
+static constexpr int OPP_PERM_START       = SELF_PERM_START + MAX_BATTLEFIELD_SLOTS * PERM_SLOT_SIZE;
+static constexpr int STACK_START          = OPP_PERM_START + MAX_BATTLEFIELD_SLOTS * PERM_SLOT_SIZE;
+static constexpr int GY_START             = STACK_START + MAX_STACK_DISPLAY * STACK_SLOT_SIZE;
+static constexpr int EXILE_START          = GY_START + 2 * MAX_GY_SLOTS * GY_SLOT_SIZE;
+static constexpr int HAND_START           = EXILE_START + 2 * MAX_GY_SLOTS * GY_SLOT_SIZE;
+static constexpr int HIST_START           = HAND_START + MAX_HAND_SLOTS * CARD_ID_SLOT_SIZE;
+static constexpr int MATCH_CTX_START      = HIST_START + ACTION_HISTORY_SIZE * HIST_ENTRY_SIZE;
+static constexpr int LIBRARY_CTX_START    = MATCH_CTX_START + MATCH_CTX_SIZE;
+static constexpr int CUR_TURN_IDX         = LIBRARY_CTX_START + LIBRARY_CTX_SIZE;
+static constexpr int KNOWN_TOP_LIB_START  = CUR_TURN_IDX + CUR_TURN_SIZE;
+static constexpr int REVEALED_START       = KNOWN_TOP_LIB_START + KNOWN_TOP_LIBRARY_SIZE * CARD_ID_SLOT_SIZE;
+static constexpr int OPP_KNOWN_HAND_START = REVEALED_START + N_CARD_TYPES;
+static constexpr int PENDING_DECISION_START = OPP_KNOWN_HAND_START + MAX_HAND_SLOTS * CARD_ID_SLOT_SIZE;
+static constexpr int EXTRAS_START         = PENDING_DECISION_START + PENDING_DECISION_SIZE;
+// Within the extras block: the MandatoryChoice one-hot, then the sideboard context.
+static constexpr int EXTRAS_MC_ONEHOT_START = EXTRAS_START + EXTRAS_SCALARS;
+static constexpr int EXTRAS_SB_CTX_START  = EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES;
+static constexpr int EXTRAS_END           = EXTRAS_SB_CTX_START + EXTRAS_SB_CTX_SIZE;
+static constexpr int SELF_LIVE_LIB_START  = EXTRAS_END;
+static constexpr int SELF_DECK_MAIN_START = SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int SELF_DECK_SIDE_START = SELF_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int OPP_DECK_MAIN_START  = SELF_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int OPP_DECK_SIDE_START  = OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int OPP_DECK_SIDE_END    = OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
+static_assert(OPP_DECK_SIDE_END == STATE_SIZE,
+              "state-vector offset chain must end exactly at STATE_SIZE — a block "
+              "was added/resized/reordered without updating STATE_SIZE (and the "
+              "layout comment above, train/env.py, and train/extractor.py)");
 
 // Effective-keyword multi-hot vocabulary for the permanent slots (offsets [19-34]),
 // in serialized order. Exactly the engine-implemented keyword set; queried per slot

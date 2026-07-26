@@ -31,6 +31,22 @@ PERM_SLOT_SIZE = 38  # src/machine_io.h
 OPTION_ORDINAL_MAX = 63  # src/machine_io.h
 N_ACTION_OBS_BLOCKS = 6  # src/machine_io.h
 SIDEBOARD_SWAP_CAP = 15  # src/machine_io.h
+PLAYER_BLOCK_SIZE = 10  # src/machine_io.h
+STEP_ONEHOT_SIZE = 13  # src/machine_io.h
+HEADER_FLAGS = 3  # src/machine_io.h
+CARD_ID_SLOT_SIZE = 1  # src/machine_io.h
+STACK_HEAD_FIELDS = 3  # src/machine_io.h
+STACK_XAMT_FIELDS = 1  # src/machine_io.h
+STACK_QUAL_FIELDS = 7  # src/machine_io.h
+STACK_TGT_FIELDS = 5  # src/machine_io.h
+HIST_ENTRY_SIZE = 4  # src/machine_io.h
+MATCH_CTX_SIZE = 4  # src/machine_io.h
+LIBRARY_CTX_SIZE = 3  # src/machine_io.h
+CUR_TURN_SIZE = 1  # src/machine_io.h
+PENDING_DECISION_SIZE = 2  # src/machine_io.h
+EXTRAS_SCALARS = 13  # src/machine_io.h
+EXTRAS_SB_CTX_SIZE = 3  # src/machine_io.h
+DECKLIST_SLOT_SIZE = 2  # src/machine_io.h
 
 # Name-keyed ActionCategory constants: CAT_<ENUM_NAME> = value, for every
 # entry in the C++ ActionCategory enum (src/classes/action.h).

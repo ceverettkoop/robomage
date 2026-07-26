@@ -104,7 +104,21 @@ _GAMESTATE_INTS = [
 ]
 _GAME_INTS = ["KNOWN_TOP_LIBRARY_SIZE", "ACTION_HISTORY_SIZE"]
 _MACHINE_INTS = ["STATE_SIZE", "N_CARD_TYPES", "PERM_SLOT_SIZE", "OPTION_ORDINAL_MAX",
-                 "N_ACTION_OBS_BLOCKS", "SIDEBOARD_SWAP_CAP"]
+                 "N_ACTION_OBS_BLOCKS", "SIDEBOARD_SWAP_CAP",
+                 # State-vector block widths (the "State-vector block widths"
+                 # block in machine_io.h). env.py / extractor.py build their
+                 # offset chains from these instead of re-spelling each width as
+                 # a literal, so a width change propagates to every consumer.
+                 # Only PLAIN-LITERAL constants belong here: parse_int_constant
+                 # matches `NAME = <digits>`, so a constant defined in terms of
+                 # others (STATE_HEADER_SIZE, STACK_SLOT_SIZE, GY_SLOT_SIZE, the
+                 # whole offset chain) must be re-derived on the Python side.
+                 "PLAYER_BLOCK_SIZE", "STEP_ONEHOT_SIZE", "HEADER_FLAGS",
+                 "CARD_ID_SLOT_SIZE", "STACK_HEAD_FIELDS", "STACK_XAMT_FIELDS",
+                 "STACK_QUAL_FIELDS", "STACK_TGT_FIELDS", "HIST_ENTRY_SIZE",
+                 "MATCH_CTX_SIZE", "LIBRARY_CTX_SIZE", "CUR_TURN_SIZE",
+                 "PENDING_DECISION_SIZE", "EXTRAS_SCALARS", "EXTRAS_SB_CTX_SIZE",
+                 "DECKLIST_SLOT_SIZE"]
 
 
 def _strip_comments(text):

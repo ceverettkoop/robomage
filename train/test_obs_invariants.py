@@ -34,6 +34,7 @@ import runner
 from env import (
     RoboMageEnv, NarrativeEnv, STATE_SIZE, N_CARD_TYPES, N_ENTITY_REF_SLOTS, BIN_DIR,
     ACTION_CATEGORY_MAX, MAX_ACTIONS, OPTION_ORDINAL_MAX,
+    ACT_CATS_START, ACT_ORDS_START,
     _SELF_PERM_START, _OPP_PERM_START, _PERM_SLOTS, _PERM_SLOT_SIZE,
     _PERM_CHOSEN_NAME_OFF, _PERM_RETURNABLE_OFF, _PERM_CARD_OFF,
     _OFF_ATTACHED_TO, _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
@@ -346,7 +347,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata
     # block, normalized (ord + 1) / (OPTION_ORDINAL_MAX + 1) so -1 (n/a) -> 0.0.
-    _ords_start = STATE_SIZE + 5 * MAX_ACTIONS
+    _ords_start = ACT_ORDS_START
     for i in range(MAX_ACTIONS):
         v = obs[_ords_start + i]
         if not np.isfinite(v):
@@ -420,7 +421,7 @@ def run_matchup(deck_a, deck_b, seed, companion_by_seat=None, max_decisions=None
     deck_block_by_seat = {}
 
     def on_query(d):
-        cats = np.round(d.obs[STATE_SIZE:STATE_SIZE + d.num_choices]
+        cats = np.round(d.obs[ACT_CATS_START:ACT_CATS_START + d.num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
         is_pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
         check_decision(d.index, d.obs, d.priority_is_a, companion_by_seat,

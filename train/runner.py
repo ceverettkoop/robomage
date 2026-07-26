@@ -32,6 +32,7 @@ import numpy as np
 import decode
 from env import (NarrativeEnv, STATE_SIZE, ACTION_CATEGORY_MAX, MAX_ACTIONS,
                  N_CARD_TYPES, BINARY, _IS_ACTIVE_IDX, _SELF_IS_A_IDX,
+                 ACT_CATS_START, ACT_IDS_START,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE, _EXTRAS_PLAYS_FIRST)
 from _enums import _CAT_NAMES, _STEP_NAMES
 
@@ -168,10 +169,10 @@ def drive_game(env, obs, controller_a, controller_b, *,
             # (cats|ids|ctrl|zone|refs — entity-slot refs appended last, see
             # decode.action_slot_refs); coverage reads only the first two,
             # whose offsets are unchanged.
-            cats = np.round(obs[STATE_SIZE:STATE_SIZE + d.num_choices]
+            cats = np.round(obs[ACT_CATS_START:ACT_CATS_START + d.num_choices]
                             * ACTION_CATEGORY_MAX).astype(int)
-            ids = np.rint(obs[STATE_SIZE + MAX_ACTIONS:
-                              STATE_SIZE + MAX_ACTIONS + d.num_choices]
+            ids = np.rint(obs[ACT_IDS_START:
+                              ACT_IDS_START + d.num_choices]
                           * N_CARD_TYPES).astype(int)
             coverage.record(cats.tolist(), ids.tolist(), int(action))
 
@@ -420,7 +421,7 @@ def run_games(controller_a, controller_b, *,
                 obs_ = d.obs
                 player = "A" if d.priority_is_a else "B"
                 active_is_a = (obs_[_IS_ACTIVE_IDX] > 0.5) == d.priority_is_a
-                cats = np.round(obs_[STATE_SIZE:STATE_SIZE + d.num_choices]
+                cats = np.round(obs_[ACT_CATS_START:ACT_CATS_START + d.num_choices]
                                 * ACTION_CATEGORY_MAX).astype(int)
                 is_pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
 
@@ -453,7 +454,7 @@ def run_games(controller_a, controller_b, *,
                     emit(decode.format_chosen_action(f"{label}/{player}", action,
                                                      d.menu()))
                 else:
-                    cats = np.round(obs_[STATE_SIZE:STATE_SIZE + d.num_choices]
+                    cats = np.round(obs_[ACT_CATS_START:ACT_CATS_START + d.num_choices]
                                     * ACTION_CATEGORY_MAX).astype(int)
                     step_name = _STEP_NAMES[int(np.argmax(
                         obs_[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))]

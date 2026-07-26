@@ -498,19 +498,86 @@ def _newer_engine_sources(binary_path):
     return sorted(newer)
 
 
+# env.py offset-chain name -> the machine_io.h OFFSET_CHAIN constant it mirrors.
+# Every absolute block boundary in the state vector appears here, so the two
+# independent derivations are compared boundary-by-boundary rather than only on
+# their total (which is all `_EXTRAS_END == STATE_SIZE` ever proved).
+_CHAIN_PAIRS = [
+    ("_GLOBAL_SIZE",            "STATE_HEADER_SIZE"),
+    ("_PERM_SLOT_SIZE",         "PERM_SLOT_SIZE"),
+    ("_STACK_SLOT_SIZE",        "STACK_SLOT_SIZE"),
+    ("_SELF_PERM_START",        "SELF_PERM_START"),
+    ("_OPP_PERM_START",         "OPP_PERM_START"),
+    ("_STACK_START",            "STACK_START"),
+    ("_GY_START",               "GY_START"),
+    ("_EXILE_START",            "EXILE_START"),
+    ("_HAND_START",             "HAND_START"),
+    ("_HIST_START",             "HIST_START"),
+    ("_MATCH_CTX_START",        "MATCH_CTX_START"),
+    ("_LIBRARY_CTX_START",      "LIBRARY_CTX_START"),
+    ("_CUR_TURN_IDX",           "CUR_TURN_IDX"),
+    ("_KNOWN_TOP_LIB_START",    "KNOWN_TOP_LIB_START"),
+    ("_REVEALED_START",         "REVEALED_START"),
+    ("_OPP_KNOWN_HAND_START",   "OPP_KNOWN_HAND_START"),
+    ("_PENDING_DECISION_START", "PENDING_DECISION_START"),
+    ("_EXTRAS_START",           "EXTRAS_START"),
+    ("_EXTRAS_MC_ONEHOT_START", "EXTRAS_MC_ONEHOT_START"),
+    ("_EXTRAS_PLAYS_FIRST",     "EXTRAS_SB_CTX_START"),
+    ("_EXTRAS_END",             "EXTRAS_END"),
+    ("_SELF_LIVE_LIB_START",    "SELF_LIVE_LIB_START"),
+    ("_SELF_DECK_MAIN_START",   "SELF_DECK_MAIN_START"),
+    ("_SELF_DECK_SIDE_START",   "SELF_DECK_SIDE_START"),
+    ("_OPP_DECK_MAIN_START",    "OPP_DECK_MAIN_START"),
+    ("_OPP_DECK_SIDE_START",    "OPP_DECK_SIDE_START"),
+    ("_OPP_DECK_SIDE_END",      "OPP_DECK_SIDE_END"),
+]
+
+
+def _check_chain_parity(rep):
+    """Prove machine_io.h's OFFSET_CHAIN == train/env.py's offset chain.
+
+    Both are derived from the same single-sourced block widths, but they are two
+    separate hand-written derivations, so "derived" is not "equal". This compiles
+    a generated TU whose static_asserts carry env.py's values, turning the
+    comparison into a compiler error naming the exact block that moved.
+    """
+    sys.path.insert(0, os.path.join(_REPO_ROOT, "train"))
+    import env  # torch-free
+
+    lines = ['#include "machine_io.h"']
+    for py_name, cpp_name in _CHAIN_PAIRS:
+        val = int(getattr(env, py_name))
+        lines.append(f'static_assert({cpp_name} == {val}, '
+                     f'"env.py {py_name} = {val}, machine_io.h {cpp_name} differs");')
+    with tempfile.TemporaryDirectory() as td:
+        src_path = os.path.join(td, "chain_parity.cpp")
+        with open(src_path, "w") as fh:
+            fh.write("\n".join(lines) + "\n")
+        r = subprocess.run(
+            ["g++", "-std=c++17", "-fno-exceptions", "-fsyntax-only",
+             "-Isrc", "-Iinclude", "-Icomponents", src_path],
+            cwd=_REPO_ROOT, capture_output=True, text=True)
+    if r.returncode != 0:
+        rep.error("actorobs",
+                  "src/machine_io.h and train/env.py disagree on the state-vector "
+                  f"offset chain:\n{r.stderr}")
+
+
 def tier_actorobs(rep):
-    """Compile the actor's observation-layout mirror (libtorch-free).
+    """The observation layout's C++/Python mirrors still agree (libtorch-free).
 
-    src/actor/obs_builder.{h,cpp} keeps its own copy of the obs offset chain,
-    pinned to the engine by a wall of absolute-offset static_asserts. Those are
-    the only automated check that the C++ actor still agrees with
-    src/machine_io.h — but they used to fire only under `make actor`, which needs
-    libtorch and is not in the default build. Result: a layout change landed with
-    two of those asserts stale and bin/az_actor uncompilable, undetected.
+    Two checks, both compiler-only:
 
-    `make actor-syntax` runs -fsyntax-only over the actor's two torch-free TUs,
-    so every layout assert is evaluated with nothing but a compiler. Cheap enough
-    to be a default tier.
+    1. `make actor-syntax` -fsyntax-only over the actor's two torch-free TUs.
+       src/actor/obs_builder.{h,cpp} keeps its own view of the obs layout, pinned
+       by static_asserts that used to fire only under `make actor` — which needs
+       libtorch and is not in the default build. A layout change duly landed with
+       two of those asserts stale and bin/az_actor uncompilable, undetected.
+    2. machine_io.h's OFFSET_CHAIN == env.py's offset chain, boundary by
+       boundary. The Python side's own guard is `_EXTRAS_END == STATE_SIZE`,
+       which proves only the TOTAL — a compensating change (a float moved from
+       one block to the next) keeps the total and silently misaligns every field
+       between them. This compares every block start instead.
     """
     r = subprocess.run(["make", "actor-syntax"], cwd=_REPO_ROOT,
                        capture_output=True, text=True)
@@ -519,6 +586,7 @@ def tier_actorobs(rep):
                   "actor obs-layout mirror does not compile — src/actor/"
                   "obs_builder.{h,cpp} has drifted from src/machine_io.h "
                   f"(run `make actor-syntax`):\n{r.stdout}\n{r.stderr}")
+    _check_chain_parity(rep)
 
 
 def tier_actor(rep):

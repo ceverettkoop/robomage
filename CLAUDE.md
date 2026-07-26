@@ -741,6 +741,19 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 - **State vector layout, `STATE_SIZE`, `N_CARD_TYPES`, per-slot field order** — the commented
   layout block and constants in `src/machine_io.h`. Card identity is a single normalized id
   float per slot (`norm_card_id`), *not* a one-hot.
+- **Every block WIDTH** (player block, step one-hot, match/library context, pending decision,
+  global extras, history entry, decklist slot, the stack sub-fields) — the "State-vector block
+  widths" block in `src/machine_io.h`, mirrored into `train/_enums.py` by `gen_enums.py`.
+  Never re-spell a width as a literal in `env.py`/`extractor.py`/`obs_builder.cpp`; import it.
+- **Every block's absolute OFFSET** — `machine_io.h`'s `OFFSET_CHAIN`, pinned by its own
+  `== STATE_SIZE` static_assert. `env.py` derives the same chain from the mirrored widths and
+  `ci_check.py`'s `actorobs` tier proves the two equal block-by-block; `extractor.py` asserts
+  itself against `env.py` at import. A block-by-block check, not a total-only one: a
+  compensating change (a float moved between adjacent blocks) keeps the total and would
+  otherwise misalign every field in between silently.
+- **Per-action metadata block positions in the obs** — `env.py`'s `ACT_CATS_START` /
+  `ACT_IDS_START` / `ACT_CTRL_START` / `ACT_ZONE_START` / `ACT_REFS_START` / `ACT_ORDS_START`.
+  Slice those, never a hand-counted `STATE_SIZE + k * MAX_ACTIONS`.
 - **`ActionCategory` values and meanings** — the enum in `src/classes/action.h` (mirrored to
   Python by codegen in `train/_enums.py`; `ACTION_CATEGORY_MAX` is generated from it).
 - **`OBS_SIZE` and the observation composition** (`STATE_SIZE + N_ACTION_OBS_BLOCKS*MAX_ACTIONS`

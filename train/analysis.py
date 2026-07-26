@@ -80,6 +80,7 @@ import viz
 from cli_spec import (ANALYSIS_TOOL, apply_to_parser, DEFAULT_SB_SIMS,
                       DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv,
+                 ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
                  _HAND_START, _MATCH_CTX_START, _IS_SIDEBOARD_IDX, _LIBRARY_CTX_START,
                  _SELF_PERM_START, _PERM_SLOTS as _ENV_PERM_SLOTS, _PERM_SLOT_SIZE,
@@ -1668,7 +1669,7 @@ def _obs_action_cat(obs, i):
 
 def _obs_card_id(obs, i):
     """Extract card vocab index for slot i from obs array. Returns -1 for null."""
-    raw = obs[STATE_SIZE + MAX_ACTIONS + i]
+    raw = obs[ACT_IDS_START + i]
     if raw < 0:
         return -1
     return int(round(raw * N_CARD_TYPES))
@@ -1676,7 +1677,7 @@ def _obs_card_id(obs, i):
 
 def _obs_ctrl_flag(obs, i):
     """Extract controller flag for slot i. 1=self, 0=opp, -1=null."""
-    raw = obs[STATE_SIZE + 2 * MAX_ACTIONS + i]
+    raw = obs[ACT_CTRL_START + i]
     if raw > 0.5:
         return 1
     elif raw > -0.01:
@@ -1859,7 +1860,7 @@ def _sim_sideboard_report(games):
             obs = observations[si]
             action = actions[si]
 
-            cat_raw = obs[STATE_SIZE + action]
+            cat_raw = obs[ACT_CATS_START + action]
             cat = int(round(cat_raw * ACTION_CATEGORY_MAX))
 
             is_sb_action = cat in (_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE)
@@ -1878,7 +1879,7 @@ def _sim_sideboard_report(games):
                 current_after_game = int(round(obs[_MATCH_CTX_START] * 3.0))
 
             if cat == _CAT_SB_IN:
-                card_raw = obs[STATE_SIZE + MAX_ACTIONS + action]
+                card_raw = obs[ACT_IDS_START + action]
                 if card_raw >= 0:
                     cid = int(round(card_raw * N_CARD_TYPES))
                     name = _VOCAB_NAMES[cid] if 0 <= cid < len(_VOCAB_NAMES) else f"card#{cid}"
@@ -1886,7 +1887,7 @@ def _sim_sideboard_report(games):
                     name = "?"
                 cards_in.append(name)
             elif cat == _CAT_SB_OUT:
-                card_raw = obs[STATE_SIZE + MAX_ACTIONS + action]
+                card_raw = obs[ACT_IDS_START + action]
                 if card_raw >= 0:
                     cid = int(round(card_raw * N_CARD_TYPES))
                     name = _VOCAB_NAMES[cid] if 0 <= cid < len(_VOCAB_NAMES) else f"card#{cid}"
@@ -3235,7 +3236,7 @@ def _analyze_consistency(games, top_n=20, verbose=True):
                 game["interp_features"], game["actions"],
                 game["num_choices"], game["observations"])):
             # Decode chosen action category
-            cat_raw = obs[STATE_SIZE + action]
+            cat_raw = obs[ACT_CATS_START + action]
             cat = int(round(cat_raw * ACTION_CATEGORY_MAX))
             points.append({
                 "feat": feat, "action": action, "cat": cat,

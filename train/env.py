@@ -97,6 +97,11 @@ try:
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
         KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
+        PLAYER_BLOCK_SIZE, STEP_ONEHOT_SIZE, HEADER_FLAGS, CARD_ID_SLOT_SIZE,
+        STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
+        STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
+        CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
+        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -115,6 +120,11 @@ except ImportError:
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
         KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
+        PLAYER_BLOCK_SIZE, STEP_ONEHOT_SIZE, HEADER_FLAGS, CARD_ID_SLOT_SIZE,
+        STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
+        STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
+        CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
+        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -230,6 +240,16 @@ _ARCH_ONEHOT_FEATS  = 2 * N_ARCH            # one-hot(self) + one-hot(opp): 8 + 
 _MATCHUP_TAIL_FEATS = _BUCKET_FEATS + _ARCH_ONEHOT_FEATS
 OBS_SIZE = (STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS
             + _HAND_COST_FEATS + _BF_ABILITY_FEATS + _MATCHUP_TAIL_FEATS)
+# Absolute start of each per-action metadata block, in emission order. THE names
+# every reader uses (decode.py, test_obs_invariants.py, the search/analysis
+# paths) — previously each spelled its block's position as a bare multiplier
+# (`STATE_SIZE + 4 * MAX_ACTIONS`), so reordering the blocks silently changed
+# what every one of those readers decoded. The writer in
+# _parse_bquery_payload uses these too, so writer and readers move together.
+(ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
+ ACT_ZONE_START, ACT_REFS_START, ACT_ORDS_START) = (
+    STATE_SIZE + i * MAX_ACTIONS for i in range(N_ACTION_OBS_BLOCKS))
+ACT_BLOCKS_END = STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS
 # Absolute offsets of the tail (imported by extractor.py / az_net.py / the C++
 # actor's mirror, which must never re-derive them).
 MATCHUP_TAIL_START = OBS_SIZE - _MATCHUP_TAIL_FEATS
@@ -305,9 +325,11 @@ def obs_bucket(obs: np.ndarray) -> int:
 # a player-block field or a header flag only requires editing these constants —
 # every consumer that reads the header (decode.py, runner.py, analysis.py,
 # scripted_agent.py, opponents.py, this module) imports these names instead of
-# hardcoding a literal index. Must mirror push_player_block + the header pushes
-# in src/machine_io.h / src/machine_io.cpp serialize_state().
-_PLAYER_BLOCK_SIZE = 10                        # floats per player block
+# hardcoding a literal index. The BLOCK WIDTHS come from _enums (machine_io.h's
+# "State-vector block widths" block), so they cannot drift from the engine; only
+# the sub-offsets WITHIN a block are spelled out here. Must mirror
+# push_player_block + the header pushes in src/machine_io.cpp serialize_state().
+_PLAYER_BLOCK_SIZE = PLAYER_BLOCK_SIZE         # floats per player block
 # Sub-offsets within one player block:
 _PB_LIFE    = 0
 _PB_HAND_CT = 1
@@ -317,7 +339,7 @@ _PB_ENERGY  = 9
 _SELF_BLOCK_START  = 0
 _OPP_BLOCK_START   = _SELF_BLOCK_START + _PLAYER_BLOCK_SIZE          # 10
 _STEP_ONEHOT_START = _OPP_BLOCK_START + _PLAYER_BLOCK_SIZE           # 20
-_STEP_ONEHOT_SIZE  = 13                        # UNTAP..CLEANUP, incl. FIRST_STRIKE_DAMAGE
+_STEP_ONEHOT_SIZE  = STEP_ONEHOT_SIZE          # UNTAP..CLEANUP, incl. FIRST_STRIKE_DAMAGE
 # Step one-hot sub-indices (main phases; SECOND_MAIN is +1 vs. tabletop order
 # because FIRST_STRIKE_DAMAGE occupies its own one-hot slot):
 _STEP_FIRST_MAIN_IDX  = _STEP_ONEHOT_START + 3                       # 23
@@ -326,6 +348,10 @@ _IS_ACTIVE_IDX  = _STEP_ONEHOT_START + _STEP_ONEHOT_SIZE            # 33: priori
 _SELF_IS_A_IDX  = _IS_ACTIVE_IDX + 1                                # 34: "self" is Player A
 _STACK_SIZE_IDX = _SELF_IS_A_IDX + 1                                # 35: stack size / 10
 _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full header width
+# HEADER_FLAGS (machine_io.h) counts those three trailing scalars; if a fourth is
+# added engine-side this catches the missing Python mirror instead of silently
+# shifting every block below.
+assert _GLOBAL_SIZE == 2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + HEADER_FLAGS, _GLOBAL_SIZE
 _PERM_SLOTS             = MAX_BATTLEFIELD_SLOTS  # per-player; 96 total (self + opp)
 # 11 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
 # + keyword multi-hot + chosen-name id + returnable-exile id + card id (LAST) = 38.
@@ -335,33 +361,33 @@ _PERM_SLOTS             = MAX_BATTLEFIELD_SLOTS  # per-player; 96 total (self + 
 _PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 3
 assert _PERM_SLOT_SIZE == PERM_SLOT_SIZE, (_PERM_SLOT_SIZE, PERM_SLOT_SIZE)
 _STACK_SLOTS            = MAX_STACK_DISPLAY
-_STACK_XAMT_OFF         = 3                    # x_or_amount / 10 within a stack slot
-_STACK_QUAL_START       = 4                    # cast qualifiers (is_copy, kicked, flashback, ...)
-_STACK_QUALS            = 7
+_STACK_XAMT_OFF         = STACK_HEAD_FIELDS    # x_or_amount / 10 within a stack slot
+_STACK_QUAL_START       = _STACK_XAMT_OFF + STACK_XAMT_FIELDS  # cast qualifiers (is_copy, kicked, ...)
+_STACK_QUALS            = STACK_QUAL_FIELDS
 _STACK_MODE_SLOTS       = MAX_STACK_MODES      # chosen-mode multi-hot width per stack slot
 _STACK_MODE_START       = _STACK_QUAL_START + _STACK_QUALS                    # 11
 _STACK_TGT_SLOTS        = MAX_STACK_TGTS       # announced-target sub-slots per stack slot
-_STACK_TGT_FIELDS       = 5                    # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
+_STACK_TGT_FIELDS       = STACK_TGT_FIELDS     # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
 _STACK_TGT_START        = _STACK_MODE_START + _STACK_MODE_SLOTS               # 17
 # ctrl + card id + is_spell, then x_or_amount + qualifiers, then mode multi-hot,
 # then target sub-slots (37 total)
 _STACK_SLOT_SIZE        = _STACK_TGT_START + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 _GY_SLOTS_TOTAL         = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent
-_GY_SLOT_SIZE           = 1                    # card id only
+_GY_SLOT_SIZE           = CARD_ID_SLOT_SIZE    # card id only
 _EXILE_SLOTS_TOTAL      = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent (same layout as GY)
-_EXILE_SLOT_SIZE        = 1                    # card id only
+_EXILE_SLOT_SIZE        = CARD_ID_SLOT_SIZE    # card id only
 _HAND_SLOTS_TOTAL       = MAX_HAND_SLOTS
-_HAND_SLOT_SIZE         = 1
+_HAND_SLOT_SIZE         = CARD_ID_SLOT_SIZE
 _ACTION_HISTORY_SIZE    = ACTION_HISTORY_SIZE  # entries in the action history ring (src/classes/game.h)
-_ACTION_HISTORY_ENTRY   = 4                    # cat_norm, card_id, is_self, turn/50
-_MATCH_CTX_SIZE         = 4                    # game_number, self_wins, opp_wins, sideboard_phase
-_LIBRARY_CTX_SIZE       = 3                    # self_lib/60, opp_lib/60, is_post_board
-_CUR_TURN_SIZE          = 1                    # current turn / 50
+_ACTION_HISTORY_ENTRY   = HIST_ENTRY_SIZE      # cat_norm, card_id, is_self, turn/50
+_MATCH_CTX_SIZE         = MATCH_CTX_SIZE       # game_number, self_wins, opp_wins, sideboard_phase
+_LIBRARY_CTX_SIZE       = LIBRARY_CTX_SIZE     # self_lib/60, opp_lib/60, is_post_board
+_CUR_TURN_SIZE          = CUR_TURN_SIZE        # current turn / 50
 _KNOWN_TOP_LIB_SLOTS    = KNOWN_TOP_LIBRARY_SIZE  # serialized known top-of-library cards
-_KNOWN_TOP_LIB_SLOT_SIZE = 1                   # card id per slot
+_KNOWN_TOP_LIB_SLOT_SIZE = CARD_ID_SLOT_SIZE   # card id per slot
 _REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-hot (only vocab-width block)
 _OPP_KNOWN_HAND_SLOTS   = MAX_HAND_SLOTS       # known opponent-hand card identities
-_OPP_KNOWN_HAND_SLOT_SIZE = 1                  # card id per slot
+_OPP_KNOWN_HAND_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
 
 # Offset chain is fully derived from the block-size constants above and pinned by
 # the `assert _EXTRAS_END == STATE_SIZE` below, so absolute indices are intentionally
@@ -394,7 +420,7 @@ _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOW
 # stack yet (targets are announced before the spell moves there), so this is the
 # only place the observation shows WHAT is asking for the current choice.
 _PENDING_DECISION_START = _OPP_KNOWN_HAND_END
-_PENDING_DECISION_SIZE  = 2                    # source card id + ctrl_is_self
+_PENDING_DECISION_SIZE  = PENDING_DECISION_SIZE  # source card id + ctrl_is_self
 _PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE
 # Global extras (see machine_io.h [5955-5976]): self/opp lands_played/10,
 # viewer_has_priority, self/opp is_monarch, self/opp city's blessing, self/opp
@@ -414,7 +440,10 @@ _EXTRAS_EXTRA_TURNS_SELF = _EXTRAS_START + 9
 _EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 10
 _EXTRAS_IS_DAY       = _EXTRAS_START + 11
 _EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
-_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13
+# EXTRAS_SCALARS (machine_io.h) = the 13 scalar/flag floats enumerated above, so
+# the one-hot's start follows a width change engine-side instead of a bare 13.
+_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + EXTRAS_SCALARS
+assert _EXTRAS_MC_ONEHOT_START == _EXTRAS_IS_NIGHT + 1, _EXTRAS_MC_ONEHOT_START
 # self_plays_first: the viewer is the starting player of the game this observation
 # pertains to — the current game in-game, the UPCOMING game during a bo3 sideboard
 # phase (whose starting player is already fixed before either sideboard stage runs).
@@ -424,6 +453,9 @@ _EXTRAS_PLAYS_FIRST  = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
 _EXTRAS_SB_SWAPS     = _EXTRAS_PLAYS_FIRST + 1
 _EXTRAS_SB_DELTA     = _EXTRAS_SB_SWAPS + 1
 _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
+# EXTRAS_SB_CTX_SIZE (machine_io.h) covers self_plays_first + the two sideboard
+# progress scalars — the three floats indexed immediately above.
+assert _EXTRAS_END == _EXTRAS_PLAYS_FIRST + EXTRAS_SB_CTX_SIZE, _EXTRAS_END
 
 # ── Deck-identity tail blocks (mirror machine_io.h [5977-6328]) ──────────────
 # Each slot is (card_id, count): card id via norm_card_id (empty = -1 sentinel),
@@ -435,7 +467,7 @@ _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
 #     between games; this is what the sideboarding player is choosing between.
 #   OPP_DECK_MAIN / OPP_DECK_SIDE : the opponent's REGISTERED decklist, frozen at
 #     the match's registered 75 (the post-board split is hidden information).
-_DECKLIST_SLOT_SIZE     = 2                       # card id + count per slot
+_DECKLIST_SLOT_SIZE     = DECKLIST_SLOT_SIZE      # card id + count per slot
 _SELF_LIVE_LIB_START    = _EXTRAS_END
 _SELF_LIVE_LIB_END      = _SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
 _SELF_DECK_MAIN_START   = _SELF_LIVE_LIB_END
@@ -1062,24 +1094,23 @@ class RoboMageEnv(gym.Env):
         # Write sections into preallocated obs buffer (avoids concatenate allocation)
         o = self._obs
         o[:STATE_SIZE] = state_arr
-        _act_end = STATE_SIZE + MAX_ACTIONS
-        o[STATE_SIZE:_act_end] = cats_int / ACTION_CATEGORY_MAX
-        o[_act_end:_act_end + MAX_ACTIONS] = id_arr
-        o[_act_end + MAX_ACTIONS:_act_end + 2 * MAX_ACTIONS] = ctrl_arr
-        o[_act_end + 2 * MAX_ACTIONS:_act_end + 3 * MAX_ACTIONS] = (
-            zone_int / REF_ZONE_MAX)
+        # Per-action metadata blocks, at the shared ACT_*_START offsets that
+        # decode.py and the other readers use — so writer and readers can never
+        # disagree about which block is which.
+        o[ACT_CATS_START:ACT_CATS_START + MAX_ACTIONS] = cats_int / ACTION_CATEGORY_MAX
+        o[ACT_IDS_START:ACT_IDS_START + MAX_ACTIONS] = id_arr
+        o[ACT_CTRL_START:ACT_CTRL_START + MAX_ACTIONS] = ctrl_arr
+        o[ACT_ZONE_START:ACT_ZONE_START + MAX_ACTIONS] = zone_int / REF_ZONE_MAX
         # Entity-slot refs, normalized like the in-state ref fields:
         # (idx + 1) / 108, so -1 (none) lands exactly on 0.0.
-        o[_act_end + 3 * MAX_ACTIONS:_act_end + 4 * MAX_ACTIONS] = (
+        o[ACT_REFS_START:ACT_REFS_START + MAX_ACTIONS] = (
             (refs_int + 1) / N_ENTITY_REF_SLOTS)
         # Per-action ordinal/value scalar, normalized the same way so -1 (n/a)
         # lands on 0.0: (ord + 1) / (OPTION_ORDINAL_MAX + 1).
-        o[_act_end + 4 * MAX_ACTIONS:_act_end + 5 * MAX_ACTIONS] = (
+        o[ACT_ORDS_START:ACT_ORDS_START + MAX_ACTIONS] = (
             (ords_int + 1) / (OPTION_ORDINAL_MAX + 1))
-        # Hand costs begin right after all N_ACTION_OBS_BLOCKS per-action blocks
-        # (== _act_end + (N_ACTION_OBS_BLOCKS - 1) * MAX_ACTIONS, cats being the block
-        # already consumed by _act_end). Pin it to the shared count, not a bare literal.
-        _hc_start = STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS
+        # Hand costs begin right after all N_ACTION_OBS_BLOCKS per-action blocks.
+        _hc_start = ACT_BLOCKS_END
         o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
         _bf_start = _hc_start + _HAND_COST_FEATS
         o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
@@ -1225,7 +1256,7 @@ def _gather_costs(matrix, ids):
 # Start of bf_ability_costs block in the full obs vector, after the
 # N_ACTION_OBS_BLOCKS per-action metadata blocks (cats | ids | ctrl | zone_ref |
 # slot_ref | option_ordinal) and the hand-cost block.
-_BF_COST_START    = STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS + _HAND_COST_FEATS
+_BF_COST_START    = ACT_BLOCKS_END + _HAND_COST_FEATS
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
 _AETHER_VIAL_VOCAB_IDX   = 121
@@ -1329,12 +1360,12 @@ def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:
 
 def _obs_action_category(obs: np.ndarray, action: int) -> int:
     """Extract the raw action category int for the given action index from a full obs vector."""
-    return int(round(obs[STATE_SIZE + action] * ACTION_CATEGORY_MAX))
+    return int(round(obs[ACT_CATS_START + action] * ACTION_CATEGORY_MAX))
 
 
 def _obs_action_card_id(obs: np.ndarray, action: int) -> int:
     """Extract the card vocab index for the given action index from a full obs vector."""
-    return int(round(obs[STATE_SIZE + MAX_ACTIONS + action] * N_CARD_TYPES))
+    return int(round(obs[ACT_IDS_START + action] * N_CARD_TYPES))
 
 
 def _obs_is_main_phase(obs: np.ndarray) -> bool:

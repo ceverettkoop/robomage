@@ -963,8 +963,10 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(static_cast<float>(gs->opponent.extra_turns_pending) / 3.0f);
     state.push_back(gs->is_day ? 1.0f : 0.0f);
     state.push_back(gs->is_night ? 1.0f : 0.0f);
-    // MandatoryChoice one-hot x6, NONE at index 0 (see the enum in classes/game.h)
-    for (int i = 0; i < 6; i++)
+    // MandatoryChoice one-hot, NONE at index 0 (see the enum in classes/game.h).
+    // N_MANDATORY_CHOICES tracks the enum, so adding a choice kind widens this
+    // one-hot and machine_io.h's offset chain shifts every later block with it.
+    for (int i = 0; i < N_MANDATORY_CHOICES; i++)
         state.push_back(gs->pending_choice_kind == i ? 1.0f : 0.0f);
     state.push_back(gs->self_plays_first ? 1.0f : 0.0f);
     state.push_back(static_cast<float>(gs->sideboard_swaps_made) /
