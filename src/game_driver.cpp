@@ -387,6 +387,17 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             run_pregame_step(sys, deck_a, deck_b);
             continue;
         }
+        // The game may already be decided when a drained decision falls
+        // through to here — a parked prompt answered under an ended game (the
+        // documented Brainstorm-put-back-after-fatal-draw case), or a
+        // resolution/advance that ended the game via a "wins the game"
+        // effect. Nothing below may run on a finished game — no turn-based
+        // actions, no SBE trigger scan, no new decisions (CR 104.1: the game
+        // ends immediately) — so exit (or hand the end to a live search) now.
+        if (cur_game.ended) {
+            if (!search_intercept_game_end()) break;
+            continue;
+        }
         Zone::Ownership viewer = (has_human_player)
             ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
             : Zone::UNKNOWN;
@@ -404,14 +415,19 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 continue;
             }
             sys.state_manager->state_based_effects(cur_game, sys.orderer);
+            // A trigger placement suspended inside state_based_effects: loop
+            // back so the pending branch emits the parked decision before
+            // advance_step (or anything else) runs underneath it. Checked
+            // BEFORE the game-end break: one SBE call can both observe an
+            // already-ended game and park a question (a non-life ending —
+            // deck-out, a "wins the game" effect — doesn't stop the trigger
+            // scan the way the life SBA's early return does), and breaking
+            // with the query parked trips the loop-exit invariant fatal.
+            if (decision_suspended()) continue;
             if (cur_game.ended) {
                 if (!search_intercept_game_end()) break;
                 continue;
             }
-            // A trigger placement suspended inside state_based_effects: loop
-            // back so the pending branch emits the parked decision before
-            // advance_step (or anything else) runs underneath it.
-            if (decision_suspended()) continue;
             if (cur_game.advance_step(sys.stack_manager, sys.orderer)) {
                 continue;
             }
@@ -422,15 +438,35 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // which is exactly where the single-call flow stood after its
         // advance_step returned false.
         sys.state_manager->state_based_effects(cur_game, sys.orderer);
+        // A trigger placement suspended inside the post-advance SBE: loop back
+        // so the pending branch emits the parked decision before priority is
+        // offered on a half-placed batch. Checked BEFORE the game-end break
+        // for the same reason as the pre-advance site: an SBE call may park a
+        // question under an already-ended game, and the parked decision must
+        // drain before the loop may exit.
+        if (decision_suspended()) continue;
         if (cur_game.ended) {
             if (!search_intercept_game_end()) break;
             continue;
         }
-        // A trigger placement suspended inside the post-advance SBE: loop back
-        // so the pending branch emits the parked decision before priority is
-        // offered on a half-placed batch.
-        if (decision_suspended()) continue;
 
+        // Diagnostic tripwire (stranded-flow hunt): this is a quiescent point —
+        // no run_*_flow is on the C++ stack and no query is parked — so every
+        // suspended-flow flag must be clear. A flag still set here means some
+        // flow path returned without either arming a pending query or clearing
+        // its own state; catch it NOW (with the step/turn context) instead of at
+        // the game-end invariant check.
+        if (!cur_game.pending_query.active &&
+            (cur_game.pending_cast.active || cur_game.pending_activation.active ||
+             cur_game.pending_draw.active)) {
+            std::string which;
+            if (cur_game.pending_cast.active) which += " pending_cast";
+            if (cur_game.pending_activation.active) which += " pending_activation";
+            if (cur_game.pending_draw.active) which += " pending_draw";
+            fatal_error("stranded suspended-flow flag at quiescent loop point:" + which +
+                        " (turn=" + std::to_string(cur_game.turn) +
+                        " step=" + std::to_string(static_cast<int>(cur_game.cur_step)) + ")");
+        }
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
         if (legal_actions.size() == 1) {
             // --broadcast-steps: surface this forced pass to the machine driver as
@@ -477,8 +513,17 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     if (cur_game.resolution.active || cur_game.pending_query.active ||
         cur_game.pending_cast.active || cur_game.pending_activation.active ||
         cur_game.pending_draw.active ||
-        cur_game.pregame.stage != Game::PregameState::DONE)
-        fatal_error("game ended with a suspended resolution/pending query still parked");
+        cur_game.pregame.stage != Game::PregameState::DONE) {
+        std::string which;
+        if (cur_game.resolution.active) which += " resolution";
+        if (cur_game.pending_query.active)
+            which += " pending_query(tag=" + std::to_string(static_cast<int>(cur_game.pending_query.tag)) + ")";
+        if (cur_game.pending_cast.active) which += " pending_cast";
+        if (cur_game.pending_activation.active) which += " pending_activation";
+        if (cur_game.pending_draw.active) which += " pending_draw";
+        if (cur_game.pregame.stage != Game::PregameState::DONE) which += " pregame";
+        fatal_error("game ended with a suspended resolution/pending query still parked:" + which);
+    }
     g_in_main_loop = false;
     return cur_game.winner;
 }
