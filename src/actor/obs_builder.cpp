@@ -84,7 +84,7 @@ static_assert(REVEALED_START == 4919, "opponent revealed multi-hot starts at flo
 static_assert(PENDING_DECISION_START == 5953, "pending-decision context starts at float 5953");
 static_assert(SELF_LIVE_LIB_START == 5977, "self live library starts at float 5977");
 static_assert(SELF_DECK_MAIN_START == 6073, "self maindeck starts at float 6073");
-static_assert(OPP_DECK_MAIN_START == 6199, "opp maindeck starts at float 6199");
+static_assert(OPP_DECK_MAIN_START == 6201, "opp maindeck starts at float 6201");
 static_assert(OPP_DECK_SIDE_END == STATE_SIZE, "deck-identity tail must end exactly at STATE_SIZE");
 
 // REF_ZONE_MAX (env.py / _enums.py) = highest ActionRefZone value = REF_PLAYER_OPP.

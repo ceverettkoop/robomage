@@ -7,8 +7,10 @@ phases, decisions, risks) is summarized at the bottom.
 > **Update (generalist collapse, 2026-07).** AZ has since collapsed to **one
 > generalist net** (`checkpoints/az/gen__azfinal.pt` + `gen__azv{steps}.pt`), the
 > counterpart of the single PPO `gen__final.zip`. The deck the net pilots is now an
-> explicit observation input (self live-library + opponent static-decklist blocks,
-> `STATE_SIZE 6196` / `OBS_SIZE 6922`), not a per-checkpoint identity — so self-play
+> explicit observation input (self live-library + opponent static-decklist blocks;
+> for the current `STATE_SIZE`/`OBS_SIZE` read `src/machine_io.h` and
+> `train/env.py` — they drift with every layout change), not a per-checkpoint
+> identity — so self-play
 > is **mirrors + cross-deck** (a focus deck vs a mirror with `--mirror-frac`,
 > default 0.25, else a uniform roster opponent), shards pool into **`az_data/gen/`**,
 > and the promotion gate is an **aggregate win-rate over a sample of roster
@@ -361,7 +363,8 @@ opt-in target and its CI tier self-skips when the binary isn't built.
 
 1. **Obs bit-parity** — `test_actor_parity.py`: the C++ obs builder reproduces
    the engine's observation vector **bit-exact over 226 decisions**
-   (`league/ur_delver`, seed 1, `OBS_SIZE=6922`).
+   (`league/ur_delver`, seed 1, at the `OBS_SIZE` of that run — 6922; the obs has
+   widened since, and the test reads the size from `env.py` rather than pinning it).
 2. **MCTS visit parity** — `test_mcts_parity.py`: C++ vs `mcts.py` visit counts
    **exact over 271 searched roots** (4336 total root visits; sims=16 worlds=2
    c=1.5, batch=1). Batched search (batch=16) is a separate line — it agrees on

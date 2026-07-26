@@ -946,9 +946,10 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(norm_card_id(gs->pending_decision_card));
     state.push_back(gs->pending_decision_ctrl_is_self ? 1.0f : 0.0f);
 
-    // Global extras (19 floats): lands played, priority, monarch, city's blessing,
-    // revolt, pending extra turns, day/night, mandatory-choice one-hot. See the
-    // [5955-5973] block in machine_io.h.
+    // Global extras (22 floats): lands played, priority, monarch, city's blessing,
+    // revolt, pending extra turns, day/night, mandatory-choice one-hot, then
+    // self_plays_first and the two sideboard-phase progress scalars. See the
+    // [5955-5976] block in machine_io.h.
     state.push_back(static_cast<float>(gs->self.lands_played_this_turn) / 10.0f);
     state.push_back(static_cast<float>(gs->opponent.lands_played_this_turn) / 10.0f);
     state.push_back(gs->viewer_has_priority ? 1.0f : 0.0f);
@@ -972,7 +973,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // unbalanced poles sit symmetrically either side of it.
     state.push_back((static_cast<float>(gs->sideboard_delta) + 1.0f) / 2.0f);
 
-    // ── Deck-identity tail blocks (see machine_io.h [5977-6324]) ───────────────
+    // ── Deck-identity tail blocks (see machine_io.h [5977-6328]) ───────────────
     // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count
     // normalized /4.0. Slots are packed ascending by vocab id with no holes.
     auto push_decklist_block = [&](const int* ids, const int* counts, int n_slots) {

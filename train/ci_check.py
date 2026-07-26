@@ -27,6 +27,13 @@ fails, so one invocation reports every finding):
           card-id / entity-ref floats decode in range, recency-packed zones have
           no holes, one-hots are one-hot, etc. Catches a silent serialize_state
           layout/encoding regression.
+  actorobs The C++ AZ actor's copy of the observation layout still agrees with
+          src/machine_io.h: `make actor-syntax` runs -fsyntax-only over the
+          actor's two libtorch-free TUs, firing every absolute-offset
+          static_assert in src/actor/obs_builder.{h,cpp}. Those asserts used to
+          be reachable only via `make actor` (needs libtorch, not in the default
+          build), so a layout change could leave the actor uncompilable
+          undetected. Compiler-only, no torch, ~1s.
   snapshot The --search-server snapshot/restore/determinize protocol behaves:
           round-trip byte identity, RNG isolation, determinize efficacy, the
           SIM_RESULT terminal intercept, and determinize invariants
@@ -112,8 +119,8 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "pergame", "snapshot",
-             "sbselfplay", "mirror", "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "actorobs", "pergame",
+             "snapshot", "sbselfplay", "mirror", "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -491,6 +498,29 @@ def _newer_engine_sources(binary_path):
     return sorted(newer)
 
 
+def tier_actorobs(rep):
+    """Compile the actor's observation-layout mirror (libtorch-free).
+
+    src/actor/obs_builder.{h,cpp} keeps its own copy of the obs offset chain,
+    pinned to the engine by a wall of absolute-offset static_asserts. Those are
+    the only automated check that the C++ actor still agrees with
+    src/machine_io.h — but they used to fire only under `make actor`, which needs
+    libtorch and is not in the default build. Result: a layout change landed with
+    two of those asserts stale and bin/az_actor uncompilable, undetected.
+
+    `make actor-syntax` runs -fsyntax-only over the actor's two torch-free TUs,
+    so every layout assert is evaluated with nothing but a compiler. Cheap enough
+    to be a default tier.
+    """
+    r = subprocess.run(["make", "actor-syntax"], cwd=_REPO_ROOT,
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        rep.error("actorobs",
+                  "actor obs-layout mirror does not compile — src/actor/"
+                  "obs_builder.{h,cpp} has drifted from src/machine_io.h "
+                  f"(run `make actor-syntax`):\n{r.stdout}\n{r.stderr}")
+
+
 def tier_actor(rep):
     """Phase-D AZ actor gate (opt-in). Self-skips when bin/az_actor is missing or
     torch is unavailable; otherwise runs the actor/MCTS/shard parity tests as
@@ -589,6 +619,8 @@ def main(argv=None):
             tier_curriculum(rep)
         elif t == "obsinv":
             tier_obsinv(rep)
+        elif t == "actorobs":
+            tier_actorobs(rep)
         elif t == "snapshot":
             tier_snapshot(rep)
         elif t == "pergame":

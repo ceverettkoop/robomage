@@ -725,6 +725,7 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 [float32 × MAX_ACTIONS — action card_is_public flags (padded)]
 [int32   × MAX_ACTIONS — action zone_ref (ActionRefZone; padded)]
 [int32   × MAX_ACTIONS — action slot_ref (entity-reference slot, -1 = none; padded)]
+[int32   × MAX_ACTIONS — action option_ordinal (mode/X/color/ability index, -1 = n/a; padded)]
 ```
 - `N` = number of legal choices; the trailing `STATE_SIZE`/`MAX_ACTIONS` are a runtime
   layout handshake (the Python driver asserts them against its own imported constants so a
@@ -742,8 +743,11 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
   float per slot (`norm_card_id`), *not* a one-hot.
 - **`ActionCategory` values and meanings** — the enum in `src/classes/action.h` (mirrored to
   Python by codegen in `train/_enums.py`; `ACTION_CATEGORY_MAX` is generated from it).
-- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + 5*MAX_ACTIONS` metadata +
-  hand/battlefield cost features) — `train/env.py`.
+- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + N_ACTION_OBS_BLOCKS*MAX_ACTIONS`
+  metadata + hand/battlefield cost features + the matchup tail) — `train/env.py`.
+  `N_ACTION_OBS_BLOCKS` (`src/machine_io.h`) is the ONE source of truth for how many
+  per-action arrays are folded into the obs; `pub` is emitted in the BQUERY but stays a
+  side-channel and is not counted.
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 

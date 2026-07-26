@@ -45,8 +45,9 @@ anticipates). Update the SessionStart provisioning hook deck list if needed.
 
 **AS BUILT (supersedes the counts below).** Part 0 shipped 7 archetypes + `unknown`,
 so `N_ARCH = 8` and `N_VALUE_BUCKETS = 64` (not 7/49), and the obs tail is
-1 bucket float + one-hot(8) + one-hot(8) = **17 floats** (not 15):
-`OBS_SIZE` 6986 → **7003**. The tail is written by the single helper
+1 bucket float + one-hot(8) + one-hot(8) = **17 floats** (not 15), so `OBS_SIZE`
+grew by 17 (6986 → 7003 at the time; it has widened further since — read
+`train/env.py:OBS_SIZE`). The tail is written by the single helper
 `env.write_matchup_tail()` from `RoboMageEnv._parse_bquery_payload`, keyed on the
 state vector's own `self_is_a` flag so the bucket is perspective-relative like the
 rest of the observation. The C++ AZ actor mirrors it in

@@ -17,7 +17,7 @@ Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 looked up in a learned nn.Embedding. This decouples the observation size from the
 vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slots.
 
-Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6325):
+Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6329):
   obs[0:36]            global context (player stats, step, flags, stack size)
   obs[36:3684]         96 permanent slots × 38 floats
                          slots 0-47: self; slots 48-95: opponent
@@ -59,11 +59,12 @@ Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6325):
                          turns, is_day, is_night, MandatoryChoice one-hot(6),
                          self_plays_first, sideboard swaps made, sideboard delta)
   obs[5977:6073]       48 self live-library slots × (card id, count)
-  obs[6073:6199]       the viewer's own live 75: 48 maindeck + 15 sideboard slots
-                         × (card id, count)
-  obs[6199:6325]       the opponent's REGISTERED 75 (frozen at match start):
-                         48 maindeck + 15 sideboard slots × (card id, count)
-  obs[6325:]           action metadata (cats|ids|ctrl|zone|refs|ords) + cost
+  obs[6073:6201]       the viewer's own live 75: 48 maindeck + 16 sideboard slots
+                         × (card id, count). 16, not 15: mid-swap a cut card is
+                         momentarily the sideboard's 16th (DECKLIST_SIDE_SLOTS).
+  obs[6201:6329]       the opponent's REGISTERED 75 (frozen at match start):
+                         48 maindeck + 16 sideboard slots × (card id, count)
+  obs[6329:]           action metadata (cats|ids|ctrl|zone|refs|ords) + cost
                          features (appended by env.py; refs are normalized
                          entity-slot references, (idx+1)/108 with 0.0 = none)
 """
@@ -163,12 +164,13 @@ _REVEALED_SIZE           = N_CARD_TYPES  # opponent revealed-cards multi-hot (de
 _OPP_KNOWN_HAND_SLOTS    = 10  # known opponent-hand card identities
 _OPP_KNOWN_HAND_SLOT_SIZE = 1  # card id per slot
 
-# Deck-identity tail blocks (mirror machine_io.h [5974-6195] / env.py): three
-# (card_id, count) slot blocks — the viewer's live LIBRARY tally, and the
-# opponent's STATIC maindeck + sideboard. card id first (norm_card_id, -1 empty
-# sentinel), count second (/4.0). All three share one decklist_encoder.
-_DECKLIST_MAIN_SLOTS = DECKLIST_MAIN_SLOTS   # 48 (self live lib, opp main)
-_DECKLIST_SIDE_SLOTS = DECKLIST_SIDE_SLOTS   # 15 (opp side)
+# Deck-identity tail blocks (mirror machine_io.h [5977-6328] / env.py): five
+# (card_id, count) slot blocks — the viewer's live LIBRARY tally, the viewer's own
+# LIVE maindeck + sideboard, and the opponent's REGISTERED maindeck + sideboard.
+# card id first (norm_card_id, -1 empty sentinel), count second (/4.0). All five
+# share one decklist_encoder.
+_DECKLIST_MAIN_SLOTS = DECKLIST_MAIN_SLOTS   # 48 (self live lib, self/opp main)
+_DECKLIST_SIDE_SLOTS = DECKLIST_SIDE_SLOTS   # 16 (self/opp side)
 _DECKLIST_SLOT_SIZE  = 2                      # card id + count per slot
 _DECKLIST_CARD_OFF   = 0                      # card id first within a slot
 _DECKLIST_COUNT_OFF  = 1                      # count second

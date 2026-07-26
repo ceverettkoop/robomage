@@ -14,12 +14,13 @@
 //   float32[STATE_SIZE] state, int32[MAX_ACTIONS] cats,
 //   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl,
 //   float32[MAX_ACTIONS] pub, int32[MAX_ACTIONS] zone,
-//   int32[MAX_ACTIONS] refs.
+//   int32[MAX_ACTIONS] refs, int32[MAX_ACTIONS] ords.
 // Per-action metadata is padded to MAX_ACTIONS; only the first num_choices
 // entries are meaningful.
 //
 // The state vector (STATE_SIZE floats) is followed by:
-//   - N ActionCategory integers (values 0-46, see ActionCategory enum).
+//   - N ActionCategory integers (0 .. ACTION_CATEGORY_MAX, see the enum in
+//     src/classes/action.h).
 //   - N card vocab index floats: card_vocab_index / N_CARD_TYPES for card
 //     entities, or -1.0 / N_CARD_TYPES (-0.0009765625) as a null sentinel for
 //     non-card entities (players, confirm slots, fail-to-find, empty).
@@ -37,13 +38,17 @@
 //     entity-reference slot space (see below; -1 = no serialized entity). This is
 //     the action<->entity join — the policy can tell WHICH of two same-name
 //     permanents a targeting action refers to.
+//   - N option_ordinal integers: the choice's ordinal/value scalar (mode index, X
+//     value, color index, activated-ability index, ...; -1 = not applicable). See
+//     OPTION_ORDINAL_MAX below, the normalizer env.py divides these by.
 //
 // NOTE: ActionChoice.description is NOT emitted in the BQUERY payload.
 // It is stored in Query for human-readable display (CLI) only.
 //
 // The Python env pads the per-action arrays to MAX_ACTIONS slots; cats, ids,
-// ctrl, zone, and refs go into the observation (STATE_SIZE + 5*MAX_ACTIONS floats
-// plus cost features); pub stays a side-channel for observers.
+// ctrl, zone, refs, and ords go into the observation (STATE_SIZE +
+// N_ACTION_OBS_BLOCKS*MAX_ACTIONS floats plus cost features); pub stays a
+// side-channel for observers.
 //
 // State is always serialized from the PRIORITY PLAYER'S perspective ("self").
 // "Self" refers to the player who currently holds priority.

@@ -161,7 +161,25 @@ actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
 		$(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
 		-L$(LIBTORCH_DIR)/lib -ltorch -ltorch_cpu -lc10 -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
 
-.PHONY: all pygen check regen clean actor
+# ── actor-syntax — libtorch-free compile check of the actor's obs layout mirror ──
+# obs_builder.{h,cpp} carries the actor's copy of the observation layout, pinned by
+# a wall of static_asserts against the engine's constants. Those asserts are the
+# only thing that catches the C++ actor drifting from src/machine_io.h — but they
+# only fire under `make actor`, which needs libtorch and is not in the default
+# build, so a layout change can (and did) land with the actor left uncompilable.
+# These two TUs are the actor's only torch-free ones, so -fsyntax-only fires every
+# layout assert with nothing but a compiler. Wired into ci_check.py's `actorobs`
+# tier, which IS part of `make check`.
+ACTOR_SYNTAX_SRCS := $(SRCDIR)/actor/obs_builder.cpp $(SRCDIR)/actor/npz_writer.cpp
+
+actor-syntax: pygen
+	@for f in $(ACTOR_SYNTAX_SRCS); do \
+		echo "  syntax-only: $$f"; \
+		$(CXX) -fsyntax-only $$f $(ACTOR_IFLAGS) \
+			$(filter-out -fno-exceptions,$(CXXFLAGS)) $(PLATFLAGS) || exit 1; \
+	done
+
+.PHONY: all pygen check regen clean actor actor-syntax
 
 # Remove everything under the object tree (the compile rules mkdir -p subdirs
 # back on demand), not per-level globs that silently miss deeper nesting, plus

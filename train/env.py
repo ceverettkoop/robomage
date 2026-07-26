@@ -396,7 +396,7 @@ _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOW
 _PENDING_DECISION_START = _OPP_KNOWN_HAND_END
 _PENDING_DECISION_SIZE  = 2                    # source card id + ctrl_is_self
 _PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE
-# Global extras (see machine_io.h [5955-5973]): self/opp lands_played/10,
+# Global extras (see machine_io.h [5955-5976]): self/opp lands_played/10,
 # viewer_has_priority, self/opp is_monarch, self/opp city's blessing, self/opp
 # revolt, self/opp pending extra turns/3, is_day, is_night, then the
 # MandatoryChoice one-hot (NONE at index 0).
@@ -425,7 +425,7 @@ _EXTRAS_SB_SWAPS     = _EXTRAS_PLAYS_FIRST + 1
 _EXTRAS_SB_DELTA     = _EXTRAS_SB_SWAPS + 1
 _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
 
-# ── Deck-identity tail blocks (mirror machine_io.h [5977-6324]) ──────────────
+# ── Deck-identity tail blocks (mirror machine_io.h [5977-6328]) ──────────────
 # Each slot is (card_id, count): card id via norm_card_id (empty = -1 sentinel),
 # count normalized /4.0. Slots packed ascending by vocab id, no holes.
 #   SELF_LIVE_LIBRARY : the viewer's LIBRARY zone tallied live (viewer-only).
