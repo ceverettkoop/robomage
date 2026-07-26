@@ -165,6 +165,23 @@ bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& ba
                          std::shared_ptr<Orderer> orderer, bool has_delve = false,
                          bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr);
 
+// A permanent about to LEAVE the battlefield to pay a NON-mana cost (a spell's additional
+// sacrifice, an alternate cost's return-to-hand) takes its mana ability with it. CR 601.2g
+// lets the caster activate mana abilities before costs are paid, so the correct order is
+// "tap it, then lose it" — otherwise a Crop Rotation cast off a lone Savannah sacrifices
+// the land and is then unable to pay {G}.
+//
+// Taps `leaving` for mana toward `unpaid_cost` (the cast's still-unpaid mana cost) and
+// returns whether anything was floated; the mana sits in the pool for the payment that
+// follows. No-op when nothing is owed, when the pool already covers the cost, or when the
+// permanent has no mana ability usable for this payment. A PAINFUL ability (Ancient Tomb's
+// damage rider, Horizon Canopy's PayLife) is engaged only when the cost is unpayable
+// WITHOUT this permanent — the same "life is a resource" rule the auto-payer uses, so a
+// sacrifice never charges life for mana the payment did not need.
+bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
+                                    std::shared_ptr<Orderer> orderer,
+                                    const ManaValue& unpaid_cost, Entity paid_for);
+
 // Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
 // On false, caller must restore from snapshot.
 // If has_delve is true, delve exile options are included alongside mana abilities for generic costs.

@@ -1219,6 +1219,57 @@ bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
                          has_improvise);
 }
 
+bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
+                                    std::shared_ptr<Orderer> orderer,
+                                    const ManaValue &unpaid_cost, Entity paid_for) {
+    if (unpaid_cost.empty()) return false;
+    if (!is_battlefield_permanent(leaving, controller)) return false;
+    Entity player_entity = get_player_entity(controller);
+    if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
+    auto &player = global_coordinator.GetComponent<Player>(player_entity);
+    // Floating mana the payment does not need would only empty away at end of step —
+    // and a painful source would charge life for it. Nothing owed, nothing tapped.
+    if (can_afford_pool(player.mana, unpaid_cost)) return false;
+
+    // Candidates: this permanent's mana abilities that are usable for THIS payment (same
+    // restricted-mana gate the payer applies) and whose activation costs nothing but the
+    // tap. An ability that spends a SECOND resource — its own sacrifice, a discard (Lion's
+    // Eye Diamond), a land bounce — is skipped: the permanent is already being spent as a
+    // cost, so stacking another cost onto it is never the intent. A life cost is allowed
+    // here and weighed as "painful" below.
+    std::vector<Ability> candidates;
+    for (auto &[entity, ab] : collect_available_mana_sources(controller, orderer)) {
+        if (entity != leaving) continue;
+        if (!mana_source_usable_for(ab, entity, paid_for)) continue;
+        if (!ab.activation_mana_cost.empty()) continue;
+        if (ab.sac_self || ab.discard_hand_cost || ab.discard_self_cost ||
+            ab.return_cost_count > 0)
+            continue;
+        candidates.push_back(ab);
+    }
+    if (candidates.empty()) return false;
+
+    // Rank: producing a color the cost actually asks for beats one it doesn't (a dual land
+    // taps for the pip that is owed), and a painless ability beats a painful one. Ties keep
+    // collect_available_mana_sources' order, so the pick is deterministic.
+    auto score = [&](const Ability &ab) {
+        return (unpaid_cost.count(ab.color) > 0 ? 2 : 0) + (mana_ability_is_painful(ab) ? 0 : 1);
+    };
+    const Ability *chosen = &candidates.front();
+    for (const auto &ab : candidates)
+        if (score(ab) > score(*chosen)) chosen = &ab;
+
+    // Life is a resource: engage a painful source only when the cost cannot be paid at all
+    // without this permanent (can_afford_with_sources' exclude_entity is exactly the
+    // "this source is being consumed by the cost" question it exists for).
+    if (mana_ability_is_painful(*chosen) &&
+        can_afford_with_sources(controller, unpaid_cost, orderer, leaving, paid_for))
+        return false;
+
+    return activate_mana_source(leaving, *chosen, controller, orderer, player.mana, player,
+                                /*commit=*/true, ManaLogStyle::ACTIVATED);
+}
+
 // Depth-first enumeration of hybrid-pip assignments (see resolve_hybrid_cost). `cur` carries the
 // concrete cost so far; at the leaf it is tested via can_pay_mana. Colored options are tried
 // before a twobrid's generic alternative so the cheapest/most-flexible payable assignment wins.

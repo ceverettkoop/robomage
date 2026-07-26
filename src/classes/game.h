@@ -297,20 +297,22 @@ struct Game {
         // active == true from the CAST_SPELL action until the spell reaches
         // the stack (COPY_TARGETS end) or the payment cancel rewinds.
         struct PendingCast {
-            // Where the flow resumes. Steps run in today's exact statement
-            // order; unconverted steps pass through synchronously.
+            // Where the flow resumes. The enum is listed in RUN order, which follows
+            // CR 601.2: announce (601.2b) -> targets (601.2c) -> pay every cost
+            // (601.2f-h). Everything from ALT_PITCH to PAY_APPLY is the single payment
+            // phase: it CHOOSES each non-mana cost item first, then floats and pays
+            // mana, then applies the chosen items. Nothing irreversible happens before
+            // MANA_PAY commits, so its failure path rewinds the whole cast from
+            // mana_snap alone (see cost_removals).
             enum Step {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
-                ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
-                ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
-                ALT_SAC,          // alt-cost sacrifice picks (Fireblast: sacrifice two Mountains)
                 KICKER,           // per-kicker optional-additional-cost y/n
                 REPLICATE,        // repeated replicate-cost y/n loop
                 CHOOSE_X,         // X-cost ladder
                 HYBRID,           // hybrid pips (machine auto-resolve; interactive stays blocking)
                 PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
-                LIFE_X,           // variable life X (Toxic Deluge's PayLife<X>)
-                SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
+                LIFE_X,           // variable life X ANNOUNCEMENT (Toxic Deluge's PayLife<X>;
+                                  // CR 601.2b announces the value, the life is paid at PAY_APPLY)
                 GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
                 CHARM_MODE,       // modal mode announcement (one pick per entry, CR 601.2b)
                 CHARM_TARGET,     // the just-picked mode's targets (before the next mode pick)
@@ -318,12 +320,18 @@ struct Game {
                 SUB_TARGET,       // targeting chained sub-abilities' targets (ends with AddComponent)
                 AURA_TARGET,      // aura enchant target (pc.enchant_ab)
                 ANNOUNCE,         // primary-template setup; dispatches into the announce steps
+                // ── payment phase (CR 601.2f-h), all of it after targets ──
+                ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
+                ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
+                ALT_SAC,          // alt-cost sacrifice picks (Fireblast: sacrifice two Mountains)
+                SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
                 DELVE_COUNT,      // delve exile count menu (CR 702.66)
                 DELVE_PICK,       // delve exile picks, one card at a time
-                MANA_PAY,         // deferred mana payment + life (interactive payer stays blocking)
                 DEF_SAC,          // deferred flashback sacrifice (Cabal Therapy)
                 DEF_EXILE_TYPES,  // escape exile-by-types picks (CR 702.139)
                 DEF_EXILE_COUNT,  // escape exile-by-count picks (Uro)
+                MANA_PAY,         // float doomed permanents, then pay mana (interactive payer stays blocking)
+                PAY_APPLY,        // apply the chosen cost items + life, once the mana committed
                 COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
                 FINISH            // spell to stack + cast events; seeds COPY_TARGETS
             };
@@ -385,9 +393,33 @@ struct Game {
             // then every cost (601.2g/h). They are paid only after the deferred mana
             // payment commits, so a cancelled payment never costs life or a creature.
             int deferred_life_cost = 0;
+            // Variable life X (Toxic Deluge's PayLife<X>): the value ANNOUNCED at LIFE_X
+            // (CR 601.2b), paid at PAY_APPLY. Kept apart from deferred_life_cost only so
+            // the narrative can still say "pays N life (X = N)". -1 = no such cost.
+            int life_x_announced = -1;
             std::string deferred_sac_spec;
             int deferred_exile_min_types = 0;
             int deferred_exile_count = 0;
+            // Cost items that have been CHOSEN but not yet applied. Every non-mana cost
+            // that moves a card (the alt cost's pitch/bounce/sacrifice, a spell's
+            // additional sacrifice, flashback's sacrifice, escape's graveyard exiles) is
+            // picked before the mana payment and applied only after it commits, at
+            // PAY_APPLY. That split is what makes a failed payment a CLEAN rewind: when
+            // prompt_mana_payment returns false nothing irreversible has happened yet, so
+            // restoring mana_snap restores the whole cast (CR 601.2h lets the costs be
+            // paid in any order, and CR 733 wants the failure to leave no trace). It also
+            // lets the payment SEE the doomed permanents — MANA_PAY floats their mana
+            // before spending, since they are still on the battlefield at that point.
+            struct CostRemoval {
+                Entity entity = 0;
+                Zone::ZoneValue dest = Zone::GRAVEYARD;
+                // The narrative line, formatted at PICK time (while the card is still
+                // where it was) and emitted at PAY_APPLY, where the move happens. Held
+                // whole so each cost keeps its own wording ("sacrifices X", "returns X
+                // to hand", "exiles X from their graveyard").
+                std::string log;
+            };
+            std::vector<CostRemoval> cost_removals;
             // The half-built primary spell ability. The ENTITY's Ability
             // component is added at the same point as the blocking flow did
             // (at the end of SUB_TARGET, once every announce target is

@@ -162,12 +162,29 @@
    1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
-  Player B pays 1 life
+  Choose target for Force of Will:
 
 --- Decision 9 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
+  Opp BF:   Island (T)
+  Stack: Ponder (spell, opponent)
+  Pending: Force of Will (self)
+  Opp GY:  Misty Rainforest
+  Opp revealed: Misty Rainforest, Ponder, Island
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Ponder
+  >> B/B: 0 (Ponder)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 10 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 52
   Opp BF:   Island (T)
   Stack: Ponder (spell, opponent)
@@ -179,26 +196,8 @@
    1: Exile Ponder
   >> B/B: 0 (Exile Personal Tutor)
 --- Narrative ---
+  Player B pays 1 life
   Player B exiles Personal Tutor
-  Choose target for Force of Will:
-
---- Decision 10 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 52
-  Opp BF:   Island (T)
-  Stack: Ponder (spell, opponent)
-  Pending: Force of Will (self)
-  Opp GY:  Misty Rainforest
-  Self exile: Personal Tutor
-  Opp revealed: Misty Rainforest, Ponder, Island
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Ponder
-  >> B/B: 0 (Ponder)
---- Narrative ---
-  Targeting choice 0
   Player B casts Force of Will targeting Ponder
 
 --- Decision 11 ---
@@ -217,8 +216,29 @@
    1: Cast Daze (alternate cost)  [#1]
    2: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 12 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Island (T)
+  Stack: Force of Will (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
+  Pending: Daze (self)
+  Self GY: Misty Rainforest
+  Opp exile:  Personal Tutor
+  Opp revealed: Force of Will, Personal Tutor
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Force of Will
+   1: Ponder
+  >> A/A: 0 (Force of Will)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 13 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Daze, Scalding Tarn, Wasteland | lib 52
@@ -234,25 +254,6 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target for Daze:
-
---- Decision 13 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Island, Scalding Tarn, Wasteland | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Stack: Force of Will (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
-  Pending: Daze (self)
-  Self GY: Misty Rainforest
-  Opp exile:  Personal Tutor
-  Opp revealed: Force of Will, Personal Tutor
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Force of Will
-   1: Ponder
-  >> A/A: 0 (Force of Will)
---- Narrative ---
-  Targeting choice 0
   Player A casts Daze targeting Force of Will
   Resolving ability (category: Counter)
   Force of Will's controller may pay {1} to save it:
@@ -915,8 +916,31 @@
    2: Cast Dark Ritual  [#0]
    3: Cast Dark Ritual  [#0]
   >> B/B: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 45 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
+  Opp:   18 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Underground Sea
+  Opp BF:   Island | Mountain (T)
+  Stack: Dragon's Rage Channeler (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Self exile: Personal Tutor
+  Known top: Doomsday, ?, ?, ?, ?
+  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Dragon's Rage Channeler
+  >> B/B: 0 (Dragon's Rage Channeler)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 46 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
   Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
@@ -935,27 +959,6 @@
   >> B/B: 0 (Return Underground Sea)
 --- Narrative ---
   Player B returns Underground Sea to hand
-  Choose target for Daze:
-
---- Decision 46 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  19 life | mana: empty | hand(5): Daze, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs | lib 49
-  Opp:   18 life | mana: empty | hand count: 5 | lib 48
-  Opp BF:   Island | Mountain (T)
-  Stack: Dragon's Rage Channeler (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
-  Opp GY:  Scalding Tarn, Ponder, Daze, Misty Rainforest
-  Self exile: Personal Tutor
-  Known top: Doomsday, ?, ?, ?, ?
-  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Dragon's Rage Channeler
-  >> B/B: 0 (Dragon's Rage Channeler)
---- Narrative ---
-  Targeting choice 0
   Player B casts Daze targeting Dragon's Rage Channeler
 
 --- Decision 47 ---
@@ -975,8 +978,31 @@
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 48 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland | lib 48
+  Opp:   19 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island | Mountain (T)
+  Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
+  Pending: Daze (self)
+  Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
+  Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
+  Known opp hand: Underground Sea
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Daze
+   1: Dragon's Rage Channeler
+  >> A/A: 0 (Daze)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland | lib 48
@@ -994,28 +1020,6 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target for Daze:
-
---- Decision 49 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Island, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Mountain (T)
-  Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
-  Pending: Daze (self)
-  Self GY: Scalding Tarn, Ponder, Daze, Misty Rainforest
-  Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
-  Opp exile:  Personal Tutor
-  Known opp hand: Underground Sea
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Lotus Petal, Personal Tutor, Edge of Autumn, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Daze
-   1: Dragon's Rage Channeler
-  >> A/A: 0 (Daze)
---- Narrative ---
-  Targeting choice 0
   Player A casts Daze targeting Daze
   Resolving ability (category: Counter)
   Daze's controller may pay {1} to save it:
@@ -1047,7 +1051,7 @@
   -------- TURN 6 (Player B) --------
   Player B draws Doomsday
 --- Turn 6 (Player B) ---
-  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Island, Wasteland
+  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Unholy Heat, Wasteland
   PB: Doomsday, Dark Ritual, Dark Ritual, Underground Sea, Verdant Catacombs
 
 --- Decision 51 ---

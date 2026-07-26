@@ -936,8 +936,30 @@
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
   >> B/B: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 52 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Island (T)
+  Opp BF:   Island (T)
+  Stack: Ponder (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: opp_lands_played=1
+  Actions:
+   0: Ponder
+  >> B/B: 0 (Ponder)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 53 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
@@ -955,26 +977,6 @@
   >> B/B: 0 (Return Island)
 --- Narrative ---
   Player B returns Island to hand
-  Choose target for Daze:
-
---- Decision 53 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Lightning Bolt, Daze, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Opp BF:   Island (T)
-  Stack: Ponder (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
-  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
-  Opp revealed: Ponder, Island, Thoughtseize, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Ponder
-  >> B/B: 0 (Ponder)
---- Narrative ---
-  Targeting choice 0
   Player B casts Daze targeting Ponder
 
 --- Decision 54 ---
@@ -1153,7 +1155,7 @@
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Doomsday, Thoughtseize, Street Wraith, Misty Rainforest
-  PB: Lightning Bolt, Daze, Ponder, Island, Volcanic Island, Scalding Tarn, Scalding Tarn
+  PB: Lightning Bolt, Daze, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn
 
 --- Decision 64 ---
   Priority: Player A (non-active)
@@ -2510,12 +2512,31 @@
    2: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
-  Player A pays 1 life
+  Choose target for Force of Will:
 
 --- Decision 135 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
-  Self:  14 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
+  Opp:   19 life | mana: empty | hand count: 4 | lib 44
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
+  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
+  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
+  Actions:
+   0: Mishra's Bauble
+  >> A/A: 0 (Mishra's Bauble)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 136 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  15 life | mana: empty | hand(4): Doomsday, Force of Will, Thassa's Oracle, Street Wraith | lib 46
   Opp:   19 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Undercity Sewers (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
@@ -2528,28 +2549,8 @@
    0: Exile Thassa's Oracle
   >> A/A: 0 (Exile Thassa's Oracle)
 --- Narrative ---
+  Player A pays 1 life
   Player A exiles Thassa's Oracle
-  Choose target for Force of Will:
-
---- Decision 136 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 8)
-  Self:  14 life | mana: empty | hand(3): Doomsday, Force of Will, Street Wraith | lib 46
-  Opp:   19 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
-  Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Mishra's Bauble (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Thoughtseize, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Lightning Bolt, Ponder, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble, Dragon's Rage Channeler
-  Self exile: Thassa's Oracle
-  Known opp hand: Ponder, Scalding Tarn, Scalding Tarn, Thundering Falls
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble
-  Actions:
-   0: Mishra's Bauble
-  >> A/A: 0 (Mishra's Bauble)
---- Narrative ---
-  Targeting choice 0
   Player A casts Force of Will targeting Mishra's Bauble
 
 --- Decision 137 ---

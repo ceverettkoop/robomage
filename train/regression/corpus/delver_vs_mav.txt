@@ -569,8 +569,29 @@
    1: Cast Daze (alternate cost)  [#1]
    2: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 28 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Island | Mountain (T)
+  Opp BF:   Savannah (T)
+  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
+  Pending: Daze (self)
+  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Once Upon a Time
+  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Swords to Plowshares
+  >> A/A: 0 (Swords to Plowshares)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 29 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Daze, Daze, Unholy Heat, Scalding Tarn, Wasteland | lib 48
@@ -587,26 +608,6 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target for Daze:
-
---- Decision 29 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(6): Daze, Daze, Unholy Heat, Island, Scalding Tarn, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Mountain (T)
-  Opp BF:   Savannah (T)
-  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
-  Pending: Daze (self)
-  Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
-  Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Swords to Plowshares
-  >> A/A: 0 (Swords to Plowshares)
---- Narrative ---
-  Targeting choice 0
   Player A casts Daze targeting Swords to Plowshares
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
@@ -955,8 +956,29 @@
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 45 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Daze, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T)
+  Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Keen-Eyed Curator (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
+  Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Extras: opp_lands_played=1
+  Actions:
+   0: Keen-Eyed Curator
+  >> A/A: 0 (Keen-Eyed Curator)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 46 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(4): Daze, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
@@ -973,26 +995,6 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target for Daze:
-
---- Decision 46 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Daze, Island, Wooded Foothills, Scalding Tarn, Wasteland | lib 45
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Mountain (T)
-  Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Keen-Eyed Curator (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
-  Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Keen-Eyed Curator
-  >> A/A: 0 (Keen-Eyed Curator)
---- Narrative ---
-  Targeting choice 0
   Player A casts Daze targeting Keen-Eyed Curator
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
