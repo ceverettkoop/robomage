@@ -434,6 +434,28 @@ def tier_fuzz(rep, args, out_dir):
     _run_matchups(rep, "fuzz", pairs, args.mode, args.fuzz_games, args.seed, out_dir)
 
 
+def _newer_engine_sources(binary_path):
+    """Engine sources modified after `binary_path` was linked (repo-relative paths).
+
+    Only src/**/*.{cpp,h,c} count: those are what bin/az_actor links, so a doc or
+    deck edit never trips this. Returns [] when the binary is current.
+    """
+    bin_mtime = os.path.getmtime(binary_path)
+    src = os.path.join(_REPO_ROOT, "src")
+    newer = []
+    for root, _dirs, files in os.walk(src):
+        for fn in files:
+            if not fn.endswith((".cpp", ".h", ".c")):
+                continue
+            path = os.path.join(root, fn)
+            try:
+                if os.path.getmtime(path) > bin_mtime:
+                    newer.append(os.path.relpath(path, _REPO_ROOT))
+            except OSError:
+                continue
+    return sorted(newer)
+
+
 def tier_actor(rep):
     """Phase-D AZ actor gate (opt-in). Self-skips when bin/az_actor is missing or
     torch is unavailable; otherwise runs the actor/MCTS/shard parity tests as
@@ -442,6 +464,17 @@ def tier_actor(rep):
     if not os.path.exists(actor_bin):
         print(f"  [skip] actor: {actor_bin} not built "
               "(build with `make actor`)", flush=True)
+        return
+    # bin/az_actor is a SEPARATE make target that `make` and `make check` do not
+    # build, so it silently keeps whatever engine it was last linked against. A
+    # stale binary then fails the parity tests as an obs/decision-count divergence,
+    # which reads exactly like a real layout bug — so name the actual cause here.
+    stale = _newer_engine_sources(actor_bin)
+    if stale:
+        rep.error("actor",
+                  f"bin/az_actor is older than {len(stale)} engine source(s) "
+                  f"(e.g. {', '.join(stale[:3])}) — run `make actor` first. A stale "
+                  "actor fails parity as a spurious obs/decision-count divergence.")
         return
     try:
         import torch  # noqa: F401
