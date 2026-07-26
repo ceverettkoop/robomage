@@ -237,12 +237,14 @@
 //                cards leaving/returning to the library are always reflected.
 //                Viewer-only — the opponent's live library stays hidden.
 //
-//  [6070-6165]   Opponent-of-viewer STATIC maindeck: 48 slots x (card_id, count) = 96.
-//  [6166-6195]   Opponent-of-viewer STATIC sideboard: 15 slots x (card_id, count) = 30.
-//                The opponent's configured decklist (open-decklist ruleset), read
-//                from deck_state — the post-sideboard config for game 2+ of a bo3.
-//                Refreshed at game start; during the between-games sideboard phase
-//                itself the lists still show the just-played game's config.
+//  [6070-6165]   Opponent-of-viewer REGISTERED maindeck: 48 slots x (card_id, count) = 96.
+//  [6166-6195]   Opponent-of-viewer REGISTERED sideboard: 15 slots x (card_id, count) = 30.
+//                The opponent's decklist as REGISTERED at match start (open-decklist
+//                ruleset), read from deck_state. FROZEN for the whole match: a bo3's
+//                sideboard swaps never touch these blocks, so you know the opponent's
+//                registered 75 but NOT which 60 of it they boarded into for game 2+.
+//                That split is hidden information, and the MCTS determinizer models
+//                it as such (see `opp_sideboard_hidden` in search_server.cpp).
 
 static constexpr int STATE_SIZE             = 6196;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)

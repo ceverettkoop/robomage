@@ -160,11 +160,21 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // and dropping its snapshot here would strand the rollback. The guard keeps
     // the original invariant for ordinary game starts (no match snapshot live).
     if (!snapshot_any_match_scope_live()) snapshot_release_all();
-    // Refresh the static decklist store for the state serializer. Called each game
-    // start so a bo3's post-sideboard (mutated) Deck structs are reflected in the
-    // opponent-decklist observation blocks (see deck_state.h / machine_io.h tail).
-    deck_state_set(Zone::PLAYER_A, deck_a);
-    deck_state_set(Zone::PLAYER_B, deck_b);
+    // Decklist stores for the state serializer (see deck_state.h for why there
+    // are two). The REGISTERED list is what the opponent sees, so it is captured
+    // ONCE per match, from the pre-board Deck structs: match_game_number is -1
+    // for a single game and 0 for game 1 of a bo3, and 1/2 for the post-board
+    // games — so this guard freezes it exactly at the registered 75. Without the
+    // guard, game 2+ would refresh it from the already-sideboarded structs and
+    // hand each player their opponent's entire board plan.
+    if (match_game_number <= 0) {
+        deck_state_set_registered(Zone::PLAYER_A, deck_a);
+        deck_state_set_registered(Zone::PLAYER_B, deck_b);
+    }
+    // The LIVE list is each player's own current configuration, so it DOES track
+    // the post-sideboard structs and is refreshed every game.
+    deck_state_set_live(Zone::PLAYER_A, deck_a);
+    deck_state_set_live(Zone::PLAYER_B, deck_b);
     cur_game = Game(seed);
     cur_game.generate_players(deck_a, deck_b);
     // Apply starting-life overrides (test harness --life-a/--life-b) before any play.
@@ -1019,6 +1029,11 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         sided_out_names.insert(card_out);
         sided_in_names.insert(card_in);
 
+        // The swap mutated `deck`, so the sideboarding player's own-view store
+        // must track it mid-phase (the registered store is deliberately NOT
+        // touched — see deck_state.h).
+        deck_state_set_live(player, deck);
+
         game_log("Swapped out %s for %s\n", card_out.c_str(), card_in.c_str());
         st.sb_swaps++;
         // OUT swap completed: the phase is no longer resumable mid-swap.
@@ -1053,6 +1068,9 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     match_wins_a = 0;
     match_wins_b = 0;
     match_reset_revealed();  // clear revealed-cards accumulator for the whole match
+    // Drop the previous match's decklists so neither store can bleed across
+    // matches; game 1's play_single_game repopulates both.
+    deck_state_reset();
 
     bool match_done = false;
     while (!match_done && ctx.game_num < 3) {

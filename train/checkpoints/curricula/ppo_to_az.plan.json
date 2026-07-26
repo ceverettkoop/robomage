@@ -5,11 +5,16 @@
   "phases": [
     {
       "kind": "league",
-      "label": "ppo-plateau",
-      "note": "Primary EV plateau across the full field. PopArt removes gradient-scale interference between near-deterministic (burn) and high-variance (control mirror) buckets in the shared torso.",
-      "decks": "all",
+      "decks": [
+        "all"
+      ],
       "steps": 16000000,
-      "overrides": { "popart": true, "n_envs": 20 }
+      "overrides": {
+        "promote_margin": 0.0,
+        "n_envs": 20,
+        "popart": true,
+        "bo3": true
+      }
     },
     {
       "kind": "exploiter",
@@ -17,7 +22,10 @@
       "note": "exp_burn learner pilots the burn archetype vs the frozen gen; the next league folds it in as a never-evicted pool entry.",
       "archetype": "burn",
       "steps": 1000000,
-      "overrides": { "popart": true, "n_envs": 20 }
+      "overrides": {
+        "popart": true,
+        "n_envs": 20
+      }
     },
     {
       "kind": "exploiter",
@@ -25,7 +33,10 @@
       "note": "Combo axis: a value landscape very unlike the aggro/midrange bulk.",
       "archetype": "doomsday",
       "steps": 1000000,
-      "overrides": { "popart": true, "n_envs": 20 }
+      "overrides": {
+        "popart": true,
+        "n_envs": 20
+      }
     },
     {
       "kind": "league",
@@ -33,14 +44,19 @@
       "note": "Fresh league run (auto-continues gen__final.zip) that now sees both exploiters in its opponent pool, hardening gen against burn/combo. Brings gen to ~24M total steps.",
       "decks": "all",
       "steps": 8000000,
-      "overrides": { "popart": true, "n_envs": 20 }
+      "overrides": {
+        "popart": true,
+        "n_envs": 20
+      }
     },
     {
       "kind": "baseline",
       "label": "ppo-gate",
       "note": "Full NxN round-robin of gen vs scripted:hard across the roster, appended to baseline_report.log. Sanity-check the PPO generalist BEFORE spending ~24h of MCTS warm-starting from it.",
       "games": 50,
-      "overrides": { "all": true }
+      "overrides": {
+        "all": true
+      }
     },
     {
       "kind": "az-league",
@@ -48,7 +64,12 @@
       "note": "Warm-starts from the PPO gen. rotations:0 runs indefinitely over the full roster; mirror_frac 0.25 keeps ~75% of self-play games cross-deck (mixed matchups). bo3 by default. Ctrl-C at ~24h; --resume to extend.",
       "decks": "all",
       "rotations": 0,
-      "overrides": { "mirror_frac": 0.25, "workers": 28, "sims": 128, "actor": true }
+      "overrides": {
+        "mirror_frac": 0.25,
+        "workers": 28,
+        "sims": 128,
+        "actor": true
+      }
     }
   ]
 }

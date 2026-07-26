@@ -683,12 +683,16 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         fill_decklist_block(gs->self_live_library_id, gs->self_live_library_ct,
                             DECKLIST_MAIN_SLOTS, live, "self live library");
     }
-    // Opponent-of-viewer STATIC decklist (maindeck + sideboard) from deck_state.
+    // Opponent-of-viewer REGISTERED decklist (maindeck + sideboard). Frozen at
+    // the match's registered 75 — deliberately NOT the post-board split, which is
+    // hidden information in game 2+ (see deck_state.h).
     Zone::Ownership opp_owner = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
     fill_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct,
-                        DECKLIST_MAIN_SLOTS, deck_state_main(opp_owner), "opp maindeck");
+                        DECKLIST_MAIN_SLOTS, deck_state_registered_main(opp_owner),
+                        "opp maindeck");
     fill_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct,
-                        DECKLIST_SIDE_SLOTS, deck_state_side(opp_owner), "opp sideboard");
+                        DECKLIST_SIDE_SLOTS, deck_state_registered_side(opp_owner),
+                        "opp sideboard");
 }
 
 // ── populate_query ────────────────────────────────────────────────────────────

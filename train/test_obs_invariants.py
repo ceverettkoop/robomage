@@ -47,10 +47,12 @@ from env import (
     _EXTRAS_MC_ONEHOT_START, _SELF_BLOCK_START, _OPP_BLOCK_START,
     _PB_LIFE, _PB_HAND_CT, _LIBRARY_CTX_START, _REVEALED_START,
     _SELF_LIVE_LIB_START, _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
-    _DECKLIST_SLOT_SIZE)
+    _DECKLIST_SLOT_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
 from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
-                    DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY)
+                    DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY,
+                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE)
 from opponents import make_controller
+from scripted_agent import scripted_action
 
 # Card-id decode: sentinel (empty/unknown) -> -1; a real id -> [0, N_CARD_TYPES).
 _CARD_ID_SENTINEL = -1
@@ -489,6 +491,120 @@ def check_walker_activation_ordinals():
         env.close()
 
 
+# Frozen-decklist check tuning: swaps each seat makes per sideboard phase, how
+# many post-board decisions are enough to prove the freeze held into game 2, and
+# a hard decision cap so a pathological match can never hang the tier.
+_FROZEN_SWAPS_PER_PHASE = 2
+_FROZEN_POST_BOARD_MIN = 40
+_FROZEN_MAX_DECISIONS = 4000
+
+
+def _decklist_diff(before, after):
+    """Short human-readable diff of two decoded decklist blocks."""
+    parts = []
+    for slot, (b, a) in enumerate(zip(before, after)):
+        if b != a:
+            parts.append(f"slot {slot}: (id={b[0]}, ct={b[1]}) -> (id={a[0]}, ct={a[1]})")
+        if len(parts) >= 4:
+            parts.append("...")
+            break
+    return "; ".join(parts) or "(no slot differs — length mismatch)"
+
+
+def _sideboard_action(cats, swaps_left):
+    """Pick a sideboard menu action: take a swap while budget remains, else Done.
+    Returns (action, completed_a_swap) or None when this is not a sideboard menu.
+
+    The scripted agent always answers Done (scripted_agent.py), so the frozen-block
+    check drives the swaps itself — otherwise nothing would ever mutate a deck and
+    the assertion would pass vacuously.
+    """
+    if any(c == CAT_SIDEBOARD_OUT for c in cats):
+        # OUT menu: every entry is a cut, and picking one completes the swap.
+        return 0, True
+    if any(c == CAT_SIDEBOARD_IN for c in cats):
+        if swaps_left > 0:
+            for i, c in enumerate(cats):
+                if c == CAT_SIDEBOARD_IN:
+                    return i, False
+        for i, c in enumerate(cats):
+            if c == CAT_SIDEBOARD_DONE:
+                return i, False
+    return None
+
+
+def check_opponent_decklist_frozen():
+    """The opponent decklist blocks must be the match's REGISTERED 75, FROZEN for
+    the whole bo3 — a sideboard swap must never leak into the view the other seat
+    sees (see src/classes/deck_state.h).
+
+    Drives a real bo3 in which BOTH seats actually sideboard, and asserts that for
+    each viewer seat the decoded opp_deck_main / opp_deck_side blocks are byte-
+    identical at every decision of every game, including the between-games
+    sideboard phases (where env's sideboard mask deliberately keeps them visible).
+    Returns (swaps_made, post_board_decisions)."""
+    env = RoboMageEnv(deck_a="league/ur_delver", deck_b="league/gw_maverick",
+                      bo3=True, auto_sideboard=False)
+    obs, _ = env.reset(seed=3)
+    first = {}                        # seat -> (main_block, side_block) at first sight
+    swaps_left = {"A": _FROZEN_SWAPS_PER_PHASE, "B": _FROZEN_SWAPS_PER_PHASE}
+    swaps = 0
+    saw_sideboard = False
+    post_board = 0
+    try:
+        for _ in range(_FROZEN_MAX_DECISIONS):
+            num = env._num_choices
+            seat = "A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"
+            blocks = (
+                tuple(_decode_decklist_block(obs, _OPP_DECK_MAIN_START,
+                                             DECKLIST_MAIN_SLOTS)),
+                tuple(_decode_decklist_block(obs, _OPP_DECK_SIDE_START,
+                                             DECKLIST_SIDE_SLOTS)),
+            )
+            if seat not in first:
+                first[seat] = blocks
+            elif blocks != first[seat]:
+                which = "maindeck" if blocks[0] != first[seat][0] else "sideboard"
+                i = 0 if which == "maindeck" else 1
+                raise InvariantError(
+                    f"opponent {which} block changed mid-match for viewer seat "
+                    f"{seat} (it must stay the registered 75): "
+                    f"{_decklist_diff(first[seat][i], blocks[i])}")
+
+            cats = decode.action_categories(obs, num)
+            if obs[_IS_SIDEBOARD_IDX] > 0.5:
+                saw_sideboard = True
+            elif saw_sideboard:
+                post_board += 1
+                if post_board >= _FROZEN_POST_BOARD_MIN:
+                    break
+
+            picked = _sideboard_action(cats, swaps_left[seat])
+            if picked is None:
+                action = scripted_action(obs, num)
+            else:
+                action, completed = picked
+                if completed:
+                    swaps += 1
+                    swaps_left[seat] -= 1
+
+            obs, _r, terminated, truncated, _info = env.step(action)
+            if terminated or truncated:
+                break
+    finally:
+        env.close()
+
+    # Guard against a vacuous pass: without real swaps, and without decisions in a
+    # post-board game, the assertion above proves nothing.
+    if swaps == 0:
+        raise InvariantError("no sideboard swap was made — the frozen-block "
+                             "assertion would pass vacuously")
+    if post_board == 0:
+        raise InvariantError("the match never reached a post-board game — the "
+                             "frozen-block assertion would pass vacuously")
+    return swaps, post_board
+
+
 def main():
     yorion_deck = _write_yorion80_deck()
     matchups = list(_MATCHUPS) + [
@@ -516,6 +632,14 @@ def main():
         return 1
     print(f"ok    walker activation ordinals: {n_loyal} distinct loyalty "
           "activations on one Jace", flush=True)
+
+    try:
+        n_swaps, n_post = check_opponent_decklist_frozen()
+    except InvariantError as e:
+        print(f"FAIL  opponent decklist frozen across bo3\n  {e}", flush=True)
+        return 1
+    print(f"ok    opponent decklist frozen across bo3: {n_swaps} swaps made, "
+          f"{n_post} post-board decisions checked", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)
