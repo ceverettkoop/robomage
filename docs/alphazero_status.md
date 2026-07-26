@@ -434,10 +434,29 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
 `az-eval`, all bo3 by default with `--bo1` to opt out):
 
 ```
---sb-sims N        PUCT sims at a bo3 sideboard root (default 32)
+--sb-sims N        PUCT sims at a bo3 sideboard root (default 128, was 32)
 --sb-worlds N      determinized worlds at a bo3 sideboard root (default 4)
 --sb-max-depth N   rollout depth cap at a bo3 sideboard root (default 200)
 ```
+
+> **Update (2026-07-26).** `--sb-sims` default raised 32 → **128**. The 32 was
+> chosen when a sideboard decision was the old paired IN→OUT menu; the balanced
+> delta menu offers every sideboard card *and* every maindeck card at once (~33
+> children on a league deck, up to ~39), so 32 sims was about ONE visit per child
+> and the visit distribution the policy trains on could not rank cards at all.
+> 128 gives ~3-4 visits per child.
+>
+> Measured per-root cost on a real league sideboard root (ur_delver vs
+> gw_maverick, 33 legal choices, uniform evaluator, `worlds=4`,
+> `max_depth=200`, identical world seeds, only `sims` varied, interleaved and
+> repeated): **~116 ms at 32 sims → ~399 ms at 128 sims, 3.4x**. Slightly
+> sublinear against the 4x sim ratio because each root pays a fixed
+> snapshot/determinize overhead. Affects the AZ / search paths only — PPO
+> training does no search, so its cost is unchanged.
+>
+> This also fixed real drift — `az_train.py` hardcoded `32`/`4`/`200` in six
+> places instead of importing the `cli_spec` constants, so the az / az-league
+> paths would have silently kept the old budget.
 
 Both self-play backends now run bo3 — `--actor` / `--no-actor` (default AUTO) picks
 the backend independently of bo3 (the actor is no longer bo1-only). The actor argv

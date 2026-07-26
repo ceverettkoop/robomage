@@ -23,9 +23,18 @@ BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resou
 # opponents.SearchController, and the CLI flag defaults below). A bo3 sideboard
 # prompt IS a valid MCTS root, but each rollout there re-crosses init_ecs() + deck
 # load + shuffle on RESTORE and its horizon spans the whole next game, so it gets
-# its own deeper/fewer-sim budget rather than the per-in-game-decision one (whose
-# max_depth is mcts.run_search's default of 60 — too shallow for a game-long horizon).
-DEFAULT_SB_SIMS = 32
+# its own deeper budget rather than the per-in-game-decision one (whose max_depth
+# is mcts.run_search's default of 60 — too shallow for a game-long horizon).
+#
+# sims was 32, chosen when a sideboard decision was the old paired IN->OUT menu.
+# The balanced delta menu offers every sideboard card AND every maindeck card at
+# once — ~33 children on a league deck, up to ~39 — so 32 sims was roughly ONE
+# visit per child: the visit distribution the policy trains on was essentially
+# noise, and could not rank cards at all. 128 gives ~3-4 visits per child, which
+# is the minimum for the ordering to mean anything. This affects only the AZ /
+# search paths (az_selfplay, bin/az_actor, az*/eval, the analysis window); PPO
+# training does no search, so its cost is unchanged.
+DEFAULT_SB_SIMS = 128
 DEFAULT_SB_WORLDS = 4
 DEFAULT_SB_MAX_DEPTH = 200
 

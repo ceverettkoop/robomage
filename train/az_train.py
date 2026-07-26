@@ -28,6 +28,11 @@ from typing import Optional
 # Shared crash-safe sidecar IO (write-to-temp + os.replace), same writer the PPO
 # league / exploiter / curriculum drivers use.
 from progress_io import write_progress_state, read_progress_state
+# The bo3 sideboard-root budget has ONE home (cli_spec). These were hardcoded
+# literals here, which silently pinned this module to the old values whenever the
+# arg was absent — import them so a change to the default actually reaches the
+# az / az-league paths.
+from cli_spec import DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH
 
 import numpy as np
 
@@ -278,7 +283,8 @@ def _gate_matchups(focus_decks, roster, cross: int, seed: int) -> list:
 
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = 20, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
-            sb_sims: int = 32, sb_worlds: int = 4, sb_max_depth: int = 200,
+            sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
+            sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
             promote_threshold: float = 0.55, promote: bool = False,
             roster: Optional[list] = None, cross_matchups: int = 2,
             ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True) -> dict:
@@ -363,7 +369,8 @@ def _meta_of(path: str) -> str:
 # ----------------------------------------------------------------------
 
 def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
-             sb_sims: int = 32, sb_worlds: int = 4, sb_max_depth: int = 200,
+             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
+             sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
              workers: Optional[int] = None, batches: int = 500,
              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
              eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
@@ -450,7 +457,8 @@ def _default_az_league_roster() -> list:
 
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               games: int = 50, sims: int = 64, worlds: int = 4,
-              sb_sims: int = 32, sb_worlds: int = 4, sb_max_depth: int = 200,
+              sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
+              sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
               workers: Optional[int] = None, batches: int = 500,
               batch_size: int = 256, lr: float = 1e-3, window: int = 50,
               eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
@@ -628,9 +636,9 @@ def run_eval(args) -> None:
     # az-eval defaults to bo3 matches; --bo1 opts back into single games.
     az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
-            sb_sims=getattr(args, "sb_sims", 32),
-            sb_worlds=getattr(args, "sb_worlds", 4),
-            sb_max_depth=getattr(args, "sb_max_depth", 200),
+            sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+            sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
+            sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
             promote_threshold=args.promote_threshold, promote=args.promote,
             seed=args.seed if args.seed is not None else 1,
             bo3=not getattr(args, "bo1", False))
@@ -653,9 +661,9 @@ def run_cycle(args) -> None:
     roster = _split_decks(getattr(args, "opponents", None))
     # az defaults to bo3 matches (per-game value target); --bo1 opts back to bo1.
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
-             sb_sims=getattr(args, "sb_sims", 32),
-             sb_worlds=getattr(args, "sb_worlds", 4),
-             sb_max_depth=getattr(args, "sb_max_depth", 200),
+             sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+             sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
+             sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, window=args.window, eval_games=args.eval_games,
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
@@ -670,9 +678,9 @@ def run_league(args) -> None:
     az_league(decks=args.decks, rotations=args.rotations,
               cycles_per_deck=args.cycles_per_deck,
               games=args.games, sims=args.sims, worlds=args.worlds,
-              sb_sims=getattr(args, "sb_sims", 32),
-              sb_worlds=getattr(args, "sb_worlds", 4),
-              sb_max_depth=getattr(args, "sb_max_depth", 200),
+              sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
+              sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
               workers=args.workers, batches=args.batches, batch_size=args.batch_size,
               lr=args.lr, window=args.window, eval_games=args.eval_games,
               eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,

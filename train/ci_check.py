@@ -461,11 +461,24 @@ def _newer_engine_sources(binary_path):
 
     Only src/**/*.{cpp,h,c} count: those are what bin/az_actor links, so a doc or
     deck edit never trips this. Returns [] when the binary is current.
+
+    src/gen/ is EXCLUDED. Those are generated mirrors, and the `pygen` tier
+    restores them with `git checkout`, which rewrites byte-identical content and
+    bumps their mtime (the same behaviour Makefile:117-120 documents). Since the
+    normal flow is `make check` followed by the actor tier, including them made
+    this guard fire on essentially every run — a check that cries wolf is worse
+    than none, because it trains you to ignore it. The tradeoff: a codegen-ONLY
+    change no longer trips the guard, so run `make actor` after regenerating.
+    The case this exists for — editing engine sources and forgetting to rebuild
+    the actor — is unaffected.
     """
     bin_mtime = os.path.getmtime(binary_path)
     src = os.path.join(_REPO_ROOT, "src")
+    gen_dir = os.path.join(src, "gen")
     newer = []
     for root, _dirs, files in os.walk(src):
+        if os.path.commonpath([root, gen_dir]) == gen_dir:
+            continue
         for fn in files:
             if not fn.endswith((".cpp", ".h", ".c")):
                 continue
