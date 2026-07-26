@@ -41,6 +41,7 @@
 // to sample a distinct next-game deal per searched world. One engine-side
 // definition so the C++ actor and the Python stdio driver stay in parity.
 static unsigned int match_game_seed(const MatchContext &ctx);
+static int sideboard_copy_ordinal(size_t copies);
 
 // ── Pregame gate (Family F): mulligans + opening-hand actions as loop-top
 // decisions. One stage step (≤1 decision) per main-loop iteration; all state
@@ -838,6 +839,18 @@ static void run_pregame_step(EcsSystems &sys, const Deck &deck_a, const Deck &de
     }
 }
 
+// How many copies a sideboard IN/OUT choice moves between, as the per-action
+// option_ordinal. Without it "4x Lightning Bolt" and "1x Island" reach the policy
+// as the same action (category + card id only), so cutting one of four looks
+// identical to cutting a singleton. Clamped to OPTION_ORDINAL_MAX because the
+// ordinal is serialized as (ord + 1) / (OPTION_ORDINAL_MAX + 1) — a 60-basic deck
+// tallies to 60, inside the clamp, but a pathological entry must not wrap.
+static int sideboard_copy_ordinal(size_t copies) {
+    if (copies > static_cast<size_t>(OPTION_ORDINAL_MAX))
+        return OPTION_ORDINAL_MAX;
+    return static_cast<int>(copies);
+}
+
 // present sideboard choices to a player via the standard query mechanism.
 // All persistent phase state (swap count, one-shot sided-in/out bookkeeping,
 // and the OUT-menu resumption point) lives in `st` so the phase is resumable:
@@ -909,6 +922,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
                 std::string desc = "Sideboard in: " + std::to_string(deck.sideboard[i].first) + "x " + deck.sideboard[i].second;
                 actions.emplace_back(ActionType::SPECIAL_ACTION, desc);
                 actions.back().category = ActionCategory::SIDEBOARD_IN;
+                actions.back().option_ordinal = sideboard_copy_ordinal(deck.sideboard[i].first);
                 // load the card so we can get its vocab index for ML
                 Entity card_eid = load_card(deck.sideboard[i].second);
                 actions.back().source_entity = card_eid;
@@ -956,6 +970,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             std::string desc = "Sideboard out: " + std::to_string(deck.main_deck[i].first) + "x " + deck.main_deck[i].second;
             out_actions.emplace_back(ActionType::SPECIAL_ACTION, desc);
             out_actions.back().category = ActionCategory::SIDEBOARD_OUT;
+            out_actions.back().option_ordinal = sideboard_copy_ordinal(deck.main_deck[i].first);
             Entity card_eid = load_card(deck.main_deck[i].second);
             out_actions.back().source_entity = card_eid;
             out_action_to_md_idx.push_back(i);

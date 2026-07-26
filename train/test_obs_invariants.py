@@ -22,6 +22,7 @@ it); also runnable standalone::
 """
 import os
 import random
+import re
 import sys
 
 import numpy as np
@@ -31,7 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import decode
 import runner
 from env import (
-    RoboMageEnv, STATE_SIZE, N_CARD_TYPES, N_ENTITY_REF_SLOTS, BIN_DIR,
+    RoboMageEnv, NarrativeEnv, STATE_SIZE, N_CARD_TYPES, N_ENTITY_REF_SLOTS, BIN_DIR,
     ACTION_CATEGORY_MAX, MAX_ACTIONS, OPTION_ORDINAL_MAX,
     _SELF_PERM_START, _OPP_PERM_START, _PERM_SLOTS, _PERM_SLOT_SIZE,
     _PERM_CHOSEN_NAME_OFF, _PERM_RETURNABLE_OFF, _PERM_CARD_OFF,
@@ -491,12 +492,15 @@ def check_walker_activation_ordinals():
         env.close()
 
 
-# Frozen-decklist check tuning: swaps each seat makes per sideboard phase, how
-# many post-board decisions are enough to prove the freeze held into game 2, and
-# a hard decision cap so a pathological match can never hang the tier.
-_FROZEN_SWAPS_PER_PHASE = 2
-_FROZEN_POST_BOARD_MIN = 40
-_FROZEN_MAX_DECISIONS = 4000
+# Bo3 sideboard-check tuning: swaps each seat makes per sideboard phase, how many
+# post-board decisions are enough to prove the freeze held into game 2, and a hard
+# decision cap so a pathological match can never hang the tier.
+_SB_SWAPS_PER_PHASE = 2
+_SB_POST_BOARD_MIN = 40
+_SB_MAX_DECISIONS = 4000
+# The bo3 matchup the sideboard checks drive: both decks carry a real sideboard,
+# and the seed reaches a second game quickly.
+_SB_DECK_A, _SB_DECK_B, _SB_SEED = "league/ur_delver", "league/gw_maverick", 3
 
 
 def _decklist_diff(before, after):
@@ -515,9 +519,9 @@ def _sideboard_action(cats, swaps_left):
     """Pick a sideboard menu action: take a swap while budget remains, else Done.
     Returns (action, completed_a_swap) or None when this is not a sideboard menu.
 
-    The scripted agent always answers Done (scripted_agent.py), so the frozen-block
-    check drives the swaps itself — otherwise nothing would ever mutate a deck and
-    the assertion would pass vacuously.
+    The scripted agent always answers Done (scripted_agent.py), so the bo3 sideboard
+    checks drive the swaps themselves — otherwise nothing would ever mutate a deck
+    and their assertions would pass vacuously.
     """
     if any(c == CAT_SIDEBOARD_OUT for c in cats):
         # OUT menu: every entry is a cut, and picking one completes the swap.
@@ -533,6 +537,35 @@ def _sideboard_action(cats, swaps_left):
     return None
 
 
+def _drive_bo3_sideboarding(env, seed=_SB_SEED, swaps_per_seat=_SB_SWAPS_PER_PHASE,
+                            max_decisions=_SB_MAX_DECISIONS):
+    """Yield (obs, num_choices, cats, seat) at every decision of a bo3 in which
+    BOTH seats really sideboard.
+
+    Shared by the bo3 sideboard checks below: each drives the same match and only
+    differs in what it asserts per decision. The caller owns the env (and its
+    close); breaking out of the loop early is fine.
+    """
+    obs, _ = env.reset(seed=seed)
+    swaps_left = {"A": swaps_per_seat, "B": swaps_per_seat}
+    for _ in range(max_decisions):
+        num = env._num_choices
+        seat = "A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"
+        cats = decode.action_categories(obs, num)
+        yield obs, num, cats, seat
+
+        picked = _sideboard_action(cats, swaps_left[seat])
+        if picked is None:
+            action = scripted_action(obs, num)
+        else:
+            action, completed = picked
+            if completed:
+                swaps_left[seat] -= 1
+        obs, _r, terminated, truncated, _info = env.step(action)
+        if terminated or truncated:
+            return
+
+
 def check_opponent_decklist_frozen():
     """The opponent decklist blocks must be the match's REGISTERED 75, FROZEN for
     the whole bo3 — a sideboard swap must never leak into the view the other seat
@@ -543,18 +576,14 @@ def check_opponent_decklist_frozen():
     identical at every decision of every game, including the between-games
     sideboard phases (where env's sideboard mask deliberately keeps them visible).
     Returns (swaps_made, post_board_decisions)."""
-    env = RoboMageEnv(deck_a="league/ur_delver", deck_b="league/gw_maverick",
-                      bo3=True, auto_sideboard=False)
-    obs, _ = env.reset(seed=3)
+    env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
+                      auto_sideboard=False)
     first = {}                        # seat -> (main_block, side_block) at first sight
-    swaps_left = {"A": _FROZEN_SWAPS_PER_PHASE, "B": _FROZEN_SWAPS_PER_PHASE}
     swaps = 0
     saw_sideboard = False
     post_board = 0
     try:
-        for _ in range(_FROZEN_MAX_DECISIONS):
-            num = env._num_choices
-            seat = "A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"
+        for obs, _num, cats, seat in _drive_bo3_sideboarding(env):
             blocks = (
                 tuple(_decode_decklist_block(obs, _OPP_DECK_MAIN_START,
                                              DECKLIST_MAIN_SLOTS)),
@@ -571,26 +600,16 @@ def check_opponent_decklist_frozen():
                     f"{seat} (it must stay the registered 75): "
                     f"{_decklist_diff(first[seat][i], blocks[i])}")
 
-            cats = decode.action_categories(obs, num)
+            # Every OUT menu is answered with a cut by _sideboard_action, so seeing
+            # one is exactly one completed swap.
+            if any(c == CAT_SIDEBOARD_OUT for c in cats):
+                swaps += 1
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 saw_sideboard = True
             elif saw_sideboard:
                 post_board += 1
-                if post_board >= _FROZEN_POST_BOARD_MIN:
+                if post_board >= _SB_POST_BOARD_MIN:
                     break
-
-            picked = _sideboard_action(cats, swaps_left[seat])
-            if picked is None:
-                action = scripted_action(obs, num)
-            else:
-                action, completed = picked
-                if completed:
-                    swaps += 1
-                    swaps_left[seat] -= 1
-
-            obs, _r, terminated, truncated, _info = env.step(action)
-            if terminated or truncated:
-                break
     finally:
         env.close()
 
@@ -603,6 +622,65 @@ def check_opponent_decklist_frozen():
         raise InvariantError("the match never reached a post-board game — the "
                              "frozen-block assertion would pass vacuously")
     return swaps, post_board
+
+
+# "Sideboard in: 4x Lightning Bolt" / "Sideboard out: 1x Island" — the count is the
+# ground truth the per-action option_ordinal must reproduce.
+_SB_DESC_COUNT_RE = re.compile(r"^Sideboard (?:in|out): (\d+)x ")
+
+
+def check_sideboard_copy_ordinals():
+    """Every sideboard IN/OUT action must carry its COPY COUNT as option_ordinal.
+
+    Without it the policy sees "4x Lightning Bolt" and "1x Island" as the same
+    action — category + card id are otherwise the only non-null per-action features
+    at a sideboard root — so cutting one of four is indistinguishable from cutting a
+    singleton. Cross-checks the decoded ordinal against the count parsed out of the
+    engine's own action label (NarrativeEnv, which carries the descriptions), so
+    this is an exact check rather than a range assertion. Returns (actions_checked,
+    distinct_ordinals_seen)."""
+    env = NarrativeEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
+                       auto_sideboard=False)
+    checked = 0
+    seen_ordinals = set()
+    try:
+        for obs, num, cats, _seat in _drive_bo3_sideboarding(env):
+            if not any(c in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT) for c in cats):
+                continue
+            ords = decode.action_ordinals(obs, num)
+            descs = env._action_descriptions or []
+            for i in range(num):
+                if cats[i] not in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT):
+                    continue
+                desc = descs[i] if i < len(descs) else ""
+                m = _SB_DESC_COUNT_RE.match(desc)
+                if not m:
+                    raise InvariantError(
+                        f"sideboard action {i} has an unparseable label {desc!r} — "
+                        "the ordinal cross-check cannot verify it")
+                want = min(int(m.group(1)), OPTION_ORDINAL_MAX)
+                got = int(ords[i])
+                if got != want:
+                    raise InvariantError(
+                        f"sideboard action {i} ({desc!r}) has option_ordinal {got}, "
+                        f"expected the copy count {want}")
+                seen_ordinals.add(got)
+                checked += 1
+            # One phase's menus are plenty; stop as soon as we have both a
+            # multi-copy and a single-copy entry to prove the ordinal really varies.
+            if checked and len(seen_ordinals) >= 2:
+                break
+    finally:
+        env.close()
+
+    if checked == 0:
+        raise InvariantError("no sideboard IN/OUT action was ever offered — the "
+                             "ordinal assertion would pass vacuously")
+    if len(seen_ordinals) < 2:
+        raise InvariantError(
+            f"every sideboard action carried the same ordinal {seen_ordinals} — a "
+            "constant would satisfy the per-action check without encoding anything")
+    return checked, len(seen_ordinals)
 
 
 def main():
@@ -640,6 +718,14 @@ def main():
         return 1
     print(f"ok    opponent decklist frozen across bo3: {n_swaps} swaps made, "
           f"{n_post} post-board decisions checked", flush=True)
+
+    try:
+        n_acts, n_ords = check_sideboard_copy_ordinals()
+    except InvariantError as e:
+        print(f"FAIL  sideboard copy-count ordinals\n  {e}", flush=True)
+        return 1
+    print(f"ok    sideboard copy-count ordinals: {n_acts} actions checked, "
+          f"{n_ords} distinct counts", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)
