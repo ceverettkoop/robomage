@@ -60,7 +60,7 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// Fixed-size state vector layout (STATE_SIZE = 6325 floats):
+// Fixed-size state vector layout (STATE_SIZE = 6329 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -253,7 +253,10 @@
 //                Viewer-only — the opponent's live library stays hidden.
 //
 //  [6073-6168]   Self LIVE maindeck:  48 slots x (card_id, count) = 96.
-//  [6169-6198]   Self LIVE sideboard: 15 slots x (card_id, count) = 30.
+//  [6169-6200]   Self LIVE sideboard: 16 slots x (card_id, count) = 32.
+//                (16, not 15: a legal sideboard is 15 cards, but this block is
+//                also written mid-swap, when a cut card is momentarily the
+//                sideboard's 16th — see DECKLIST_SIDE_SLOTS in gamestate.h.)
 //                The viewer's OWN current 75 (deck_state's live store), which every
 //                player legitimately knows. Distinct from the live-library block
 //                above: that is the LIBRARY ZONE, which shrinks as you draw and is
@@ -264,8 +267,10 @@
 //                picking a card to bring in and its remaining sideboard while picking
 //                a card to cut.
 //
-//  [6199-6294]   Opponent-of-viewer REGISTERED maindeck: 48 slots x (card_id, count) = 96.
-//  [6295-6324]   Opponent-of-viewer REGISTERED sideboard: 15 slots x (card_id, count) = 30.
+//  [6201-6296]   Opponent-of-viewer REGISTERED maindeck: 48 slots x (card_id, count) = 96.
+//  [6297-6328]   Opponent-of-viewer REGISTERED sideboard: 16 slots x (card_id, count) = 32.
+//                (Registered, so only 15 slots can ever fill; the width just
+//                follows DECKLIST_SIDE_SLOTS.)
 //                The opponent's decklist as REGISTERED at match start (open-decklist
 //                ruleset), read from deck_state. FROZEN for the whole match: a bo3's
 //                sideboard swaps never touch these blocks, so you know the opponent's
@@ -273,7 +278,7 @@
 //                That split is hidden information, and the MCTS determinizer models
 //                it as such (see `opp_sideboard_hidden` in search_server.cpp).
 
-static constexpr int STATE_SIZE             = 6325;
+static constexpr int STATE_SIZE             = 6329;
 // Max sideboard swaps a player may complete in one between-games phase. Both the
 // engine's phase cap and the normalizer for the serialized swaps-made scalar, so
 // the two can never drift apart.

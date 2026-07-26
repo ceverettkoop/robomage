@@ -18,7 +18,12 @@ extern "C" {
 #define MAX_GY_SLOTS 64  // per player
 #define MAX_HAND_SLOTS 10
 #define DECKLIST_MAIN_SLOTS 48  // distinct-name slots: self live library + opp maindeck
-#define DECKLIST_SIDE_SLOTS 15  // distinct-name slots: opp sideboard
+// Distinct-name slots for a sideboard block. A legal sideboard is 15 CARDS, so a
+// balanced one never exceeds 15 distinct names — but the sideboard phase serializes
+// the sideboarding player's own live deck after EVERY single-card move, including
+// the mid-swap state where a card has been cut into a still-full sideboard (16
+// cards). Hence 16, not 15: the extra slot is that transient cut card.
+#define DECKLIST_SIDE_SLOTS 16
 #define MAX_ACTIONS 64
 #define MAX_CHOICE_DESC 128
 #define PERM_COUNTERS_LEN 64  // PermanentState.counters summary width (mirrored in train/env.py)
