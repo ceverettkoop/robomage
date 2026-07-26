@@ -1254,8 +1254,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.life_cost > 0 &&
                 global_coordinator.GetComponent<Player>(get_player_entity(priority_player)).life_total < ab.life_cost)
                 continue;
-            // Check target legality
-            if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
+            // Check target legality. The bare CardData ability carries no source/controller, and
+            // ability_perspective_player would fall back to the default-initialized controller
+            // (player A) — evaluating .OppCtrl from the wrong seat when B activates (Boseiju's
+            // Channel was offered targeting B's own nonbasic land). Stamp the real activator via
+            // cast_gate_probe so the existence check matches what target selection will offer.
+            if (ab.valid_tgts != "N_A" && ab.target_min > 0 &&
+                !has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer)) continue;
             // sac_cost_spec: require controller has a permanent matching type (honouring a
             // .Other self-exclusion against the activating card).
             if (!ab.sac_cost_spec.empty() &&
@@ -1290,6 +1295,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (ab.sorcery_speed_only && !gy_sorcery_speed) continue;
                 ManaValue gy_cost = effective_activation_mana_cost(ab, priority_player, orderer);
                 if (!gy_cost.empty() && !can_pay_mana(priority_player, gy_cost, card_entity, orderer)) continue;
+                // Target-existence gate (CR 601.2c), stamped like the hand loop above — today's
+                // graveyard activations (Unearth) don't target, but a targeted one must not be
+                // offered with zero legal targets.
+                if (ab.valid_tgts != "N_A" && ab.target_min > 0 &&
+                    !has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer)) continue;
                 { auto it = cur_game.payment_fail_counts.find(card_entity);
                   if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
                 std::string desc = "Unearth " + card_data.name;
