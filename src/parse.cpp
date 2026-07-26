@@ -317,7 +317,10 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
             // A bare {X} in an activation cost (Candelabra of Tawnos: Cost$ X T). parse_mana_cost
             // drops X (it has no fixed value); record that the activator chooses X, so the cost
             // path can prompt for it and add X generic mana. X = Count$xPaid.
+            // COUNT the pips: a cost may repeat X (Blast Zone's "Cost$ X X T" = {X}{X}), and the
+            // one chosen X is then owed once per pip.
             ability.activation_has_x = true;
+            ability.activation_x_count++;
         } else if (tok.rfind("PayEnergy<", 0) == 0) {
             // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
             // Guide of Souls' AttackersDeclared ImmediateTrigger ("you may pay {E}{E}{E}").

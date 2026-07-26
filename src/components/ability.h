@@ -83,6 +83,10 @@ struct Ability{
     bool tap_cost = false;              // {T} is part of the activation cost
     bool activation_has_x = false;      // Cost$ contains {X}: choose X at activation, add X generic to the
                                         // activation mana cost; X = Count$xPaid (Candelabra of Tawnos)
+    int activation_x_count = 0;         // how MANY {X} pips the Cost$ carries. Almost always 1, but
+                                        // Blast Zone is "{X}{X}, {T}: put X charge counters" — one X is
+                                        // chosen (CR 601.2b) and paid once PER PIP, so the mana owed is
+                                        // X * activation_x_count. A bool alone silently charged {X}.
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
     bool life_cost_is_x = false;        // PayLife<X> — variable life cost: the life paid IS X (Count$xPaid),

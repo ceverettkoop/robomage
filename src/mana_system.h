@@ -89,12 +89,14 @@ bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>
                              Entity paid_for = 0);
 
 // Return the maximum total mana producible (pool + untapped sources) minus colored base cost
-// obligations; used for computing max X value
+// obligations; used for computing max X value. `exclude_entity` drops one permanent from the
+// count — pass the ability's source when its cost taps it, for the same reason can_pay_mana
+// takes it (the {T} is already spent, so the source cannot also be tapped for mana).
 // NOTE: a coarse upper bound — ignores color feasibility of the base cost's pips and counts
 // one ability per source entity. An overestimated X fails at payment and is absorbed by the
 // payment_fail_counts rewind, so the bound is deliberately cheap rather than exact.
 size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
-                          std::shared_ptr<Orderer> orderer);
+                          std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0);
 
 // Spend mana from player's pool (assumes can_afford was checked)
 // paid_for: the entity being paid for (used for diagnostics on insufficient mana)
@@ -147,9 +149,16 @@ std::vector<LegalAction> collect_mana_legal_actions(
 // side-effect-free simulate mode, so legality and actual payment can never disagree.
 // has_delve folds in graveyard instant/sorcery exiling; paid_for gates restricted mana
 // (Cavern of Souls) the same way the payer does.
+//
+// `exclude_entity` drops one permanent from the source pool. Pass the ability's SOURCE
+// when the ability's own cost taps it ({T} in the cost): that tap is already spoken for,
+// so counting the source's mana ability too would double-spend it and offer an ability
+// whose payment must then fail. The real payment never had this problem — by the time it
+// runs, the tap cost is already applied and the source reads as tapped — which is exactly
+// why only the LEGALITY side needs to be told.
 bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
                   Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                  bool has_improvise = false);
+                  bool has_improvise = false, Entity exclude_entity = 0);
 
 // Resolve a card's HYBRID pips (CR 107.4) against the caster's available mana. Each color-hybrid
 // pip ({W/U}) may be paid by one mana of either listed color; each twobrid pip ({2/W}) by one

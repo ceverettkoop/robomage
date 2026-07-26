@@ -126,6 +126,27 @@ static std::vector<LegalAction> permanent_choice_menu(const std::vector<Entity> 
     return menu;
 }
 
+// Largest X the payer will actually accept. max_available_mana is a deliberately coarse
+// upper bound — it counts ONE ability per source at face value — but the payer may take a
+// SMALLER ability from the same permanent: with Yavimaya out, Ancient Tomb is also a Forest,
+// and the painless {G} outranks its own painful {C}{C}. The bound then overshoots and the
+// chosen X fails to pay. Walk it down with the shared simulate-mode predicate (payability is
+// monotone in X, so the first accepted value is the maximum), exactly as DELVE_COUNT bounds
+// its exile count — offered ladder and eventual payment can never disagree.
+// `x_pips` is how many {X} the cost carries (2 for Blast Zone's {X}{X}); `exclude` is the
+// ability's source when its own tap is part of the cost.
+static size_t payable_max_x(Zone::Ownership payer, const ManaValue &base_cost, size_t coarse_max,
+                            size_t x_pips, Entity paid_for, Entity exclude,
+                            std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise) {
+    while (coarse_max > 0) {
+        ManaValue trial = base_cost;
+        for (size_t i = 0; i < coarse_max * x_pips; i++) trial.insert(GENERIC);
+        if (can_pay_mana(payer, trial, paid_for, orderer, has_delve, has_improvise, exclude)) break;
+        coarse_max--;
+    }
+    return coarse_max;
+}
+
 // Has `e` already been CHOSEN as a cost item for the in-flight cast? The pick loops
 // re-derive their candidate menu each pass and used to rely on the previous pick having
 // already left its zone to drop it from the next menu. With the moves deferred to
@@ -1801,7 +1822,17 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                              pa.x_activation);
                 } else {
                     ManaValue base_cost = effective_activation_mana_cost(ability, controller, orderer);
-                    size_t max_x = max_available_mana(controller, base_cost, orderer);
+                    // The source's own tap is part of this ability's cost, so its mana
+                    // ability can't also fund X (Blast Zone offered X=3 off 2 real mana by
+                    // counting its own {C}). Each {X} in the cost is paid separately, so a
+                    // {X}{X} ability can only afford half the budget (CR 601.2b).
+                    Entity x_exclude = ability.tap_cost ? permanent_entity : 0;
+                    size_t max_x = max_available_mana(controller, base_cost, orderer, x_exclude);
+                    size_t x_pips = std::max<size_t>(1, ability.activation_x_count);
+                    max_x /= x_pips;
+                    max_x = payable_max_x(controller, base_cost, max_x, x_pips, permanent_entity,
+                                          x_exclude, orderer, /*has_delve=*/false,
+                                          /*has_improvise=*/false);
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;
                     for (size_t xv = 0; xv <= max_x; xv++) {
@@ -1872,9 +1903,11 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 permanent.is_tapped = true;
             }
             // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only). For an X-cost
-            // ability the chosen X is added as generic mana on top of the base cost.
+            // ability the chosen X is added as generic mana on top of the base cost — once per
+            // {X} pip in the cost, so Blast Zone's {X}{X} charges 2X, not X.
             ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
-            for (size_t i = 0; i < pa.x_activation; i++) activate_cost.insert(GENERIC);
+            size_t x_pips = std::max<size_t>(1, ability.activation_x_count);
+            for (size_t i = 0; i < pa.x_activation * x_pips; i++) activate_cost.insert(GENERIC);
             if (!activate_cost.empty()) {
                 auto mana_snap = snapshot_mana_state(controller, orderer);
                 if (!prompt_mana_payment(controller, activate_cost, permanent_entity, orderer)) {
@@ -2439,6 +2472,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     game_log("%s chooses X = %zu\n", player_name(caster).c_str(), x_val);
                 } else {
                     size_t max_x = max_available_mana(caster, pc.cost_to_pay, orderer);
+                    max_x = payable_max_x(caster, pc.cost_to_pay, max_x, /*x_pips=*/1, spell_entity,
+                                          /*exclude=*/0, orderer, card_data.has_delve,
+                                          card_data.has_improvise);
                     // For a spell whose required target count IS X (Hide on the Ceiling), X can't
                     // exceed the number of legal targets (CR 601.2c) — clamp so the agent can't
                     // pick an X that leaves a mandatory target choice with too few candidates.
@@ -2537,6 +2573,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         resume_choice = -1;
                         // The life option occupies index 0 only when it was offered; with it
                         // suppressed the sole option is "Pay {color}", so fall through to mana.
+                        // The mana option's own gate (below) never shifts this indexing — life
+                        // is always index 0 when present — so only can_pay_life is recomputed
+                        // here.
                         if (can_pay_life && phyrex_choice == 0) {
                             phyrex_player.life_total -= 2;
                             phyrex_player.life_lost_this_turn += 2;  // CR 119.4: paying life is losing life
@@ -2547,6 +2586,23 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pc.phyrexian_idx++;
                         continue;
                     }
+                    // The colored half of the pip (CR 107.4f) is only a real choice when that
+                    // mana is actually payable ON TOP of the cost accumulated so far. The
+                    // cast-legality gate treats a Phyrexian pip as always payable — it is, via
+                    // life — so without this check a {B/P} spell offered "Pay {B}" with no black
+                    // source, and taking it dead-ended the whole cast in a payment failure.
+                    // Checked against the same predicate the payer uses, so the option is
+                    // offered exactly when it can be honoured.
+                    ManaValue with_pip = pc.cost_to_pay;
+                    with_pip.insert(phyrex_color);
+                    bool can_pay_colored =
+                        can_pay_mana(caster, with_pip, spell_entity, orderer,
+                                     card_data.has_delve, card_data.has_improvise);
+                    // Never arm an empty menu. Neither half payable means the cast should not
+                    // have been offered (life < 2 AND no source); keep the mana option so the
+                    // payment fails through the normal path instead of vanishing here.
+                    if (!can_pay_life && !can_pay_colored) can_pay_colored = true;
+
                     std::vector<LegalAction> phyrex_actions;
                     if (can_pay_life) {
                         LegalAction pay_life(PASS_PRIORITY,
@@ -2555,10 +2611,12 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pay_life.option_ordinal = 0;  // Phyrexian pip: 0 = pay life
                         phyrex_actions.push_back(pay_life);
                     }
-                    LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
-                    pay_mana.category = ActionCategory::PAYING_COSTS;
-                    pay_mana.option_ordinal = 1;  // Phyrexian pip: 1 = pay mana
-                    phyrex_actions.push_back(pay_mana);
+                    if (can_pay_colored) {
+                        LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
+                        pay_mana.category = ActionCategory::PAYING_COSTS;
+                        pay_mana.option_ordinal = 1;  // Phyrexian pip: 1 = pay mana
+                        phyrex_actions.push_back(pay_mana);
+                    }
                     arm_cast_query(game, std::move(phyrex_actions), caster);
                     return;
                 }

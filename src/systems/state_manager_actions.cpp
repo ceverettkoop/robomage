@@ -1203,8 +1203,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland).
                 // Gate on the post-ReduceCost$ cost so legality matches what payment will charge.
+                // A {T} in the ability's own cost spends the source's tap, so its mana ability is
+                // NOT also available to pay with — exclude it, or a Blast Zone whose only other
+                // land is an Ancient Tomb reads as able to pay {3} off 2 mana plus its own {C}.
                 ManaValue ab_cost = effective_activation_mana_cost(ab, priority_player, orderer);
-                if (!ab_cost.empty() && !can_pay_mana(priority_player, ab_cost, ab.source, orderer)) continue;
+                if (!ab_cost.empty() &&
+                    !can_pay_mana(priority_player, ab_cost, ab.source, orderer,
+                                  /*has_delve=*/false, /*has_improvise=*/false,
+                                  /*exclude_entity=*/ab.tap_cost ? entity : 0))
+                    continue;
                 // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
                 if (ab.energy_cost > 0 &&
                     player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)

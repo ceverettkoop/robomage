@@ -46,7 +46,8 @@ static ManaValue *s_mana_spent_sink = nullptr;
 static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost, ManaValue *spent = nullptr);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit = true, bool has_improvise = false);
+                          bool commit = true, bool has_improvise = false,
+                          Entity exclude_entity = 0);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
@@ -487,7 +488,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
 }
 
 size_t max_available_mana(Zone::Ownership player_owner, const ManaValue &base_cost,
-                          std::shared_ptr<Orderer> orderer) {
+                          std::shared_ptr<Orderer> orderer, Entity exclude_entity) {
     Entity player_entity = get_player_entity(player_owner);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return 0;
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
@@ -497,6 +498,7 @@ size_t max_available_mana(Zone::Ownership player_owner, const ManaValue &base_co
     std::set<Entity> counted;
     auto sources = collect_available_mana_sources(player_owner, orderer);
     for (auto &[entity, ab] : sources) {
+        if (entity == exclude_entity && ab.tap_cost) continue;  // its tap is the ability's own cost
         if (counted.count(entity)) continue;
         total += eval_mana_amount(ab, player_owner, orderer);
         counted.insert(entity);
@@ -858,7 +860,7 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
 // set — so the decision sequence is identical to a real payment.
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit, bool has_improvise) {
+                          bool commit, bool has_improvise, Entity exclude_entity) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -910,6 +912,11 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     // Filter to actions valid for this payment (same as collect_mana_legal_actions)
     std::vector<SourceInfo> valid_sources;
     for (auto &[entity, ab] : sources) {
+        // The caller's ability taps this permanent as part of its own cost, so the
+        // permanent's TAP-requiring mana abilities are already spoken for. A mana ability
+        // on the same permanent that needs no tap is still usable, so scope the exclusion
+        // to the tap (see can_pay_mana's exclude_entity).
+        if (entity == exclude_entity && ab.tap_cost) continue;
         // Restricted mana check (Cavern of Souls / Abundant Countryside / Eldrazi Temple):
         // same gate as collect_mana_legal_actions so a listed source is always spendable here.
         if (!mana_source_usable_for(ab, entity, paid_for)) continue;
@@ -1208,7 +1215,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 
 bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
                   Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                  bool has_improvise) {
+                  bool has_improvise, Entity exclude_entity) {
     Entity player_entity = get_player_entity(controller);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
     // Run the exact machine-mode payment algorithm in simulate mode (no side effects).
@@ -1216,7 +1223,7 @@ bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
     // so a spell can never be offered as legal and then fail to pay (and vice versa).
     ManaValue remaining = cost;
     return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false,
-                         has_improvise);
+                         has_improvise, exclude_entity);
 }
 
 bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,

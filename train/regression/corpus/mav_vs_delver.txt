@@ -793,7 +793,7 @@
    5: Cast Thalia, Guardian of Thraben  [#0]
   >> A/A: 1 (Cast Green Sun's Zenith)
 --- Narrative ---
-  Choose X value (0-1):
+  Choose X value (0-0):
 
 --- Decision 36 ---
   Priority: Player A (active)
@@ -808,7 +808,6 @@
   Extras: self_lands_played=1
   Actions:
    0: X = 0  [#0]
-   1: X = 1  [#1]
   >> A/A: 0 (X = 0)
 --- Narrative ---
   Player A chooses X = 0
