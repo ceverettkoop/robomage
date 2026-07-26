@@ -45,9 +45,10 @@ from env import (
     _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END,
     _PENDING_DECISION_START, _HIST_START, _ACTION_HISTORY_SIZE,
     _ACTION_HISTORY_ENTRY, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
-    _EXTRAS_MC_ONEHOT_START, _SELF_BLOCK_START, _OPP_BLOCK_START,
+    _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _SELF_BLOCK_START, _OPP_BLOCK_START,
     _PB_LIFE, _PB_HAND_CT, _LIBRARY_CTX_START, _REVEALED_START,
-    _SELF_LIVE_LIB_START, _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
+    _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
+    _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
     _DECKLIST_SLOT_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
 from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY,
@@ -128,9 +129,11 @@ def _card_id_slots():
             yield name, s, start + s * _DECKLIST_SLOT_SIZE
 
 
-# The three deck-identity blocks: (name, start offset, slot count).
+# The deck-identity blocks: (name, start offset, slot count).
 _DECKLIST_BLOCKS = (
     ("self_live_lib", _SELF_LIVE_LIB_START, DECKLIST_MAIN_SLOTS),
+    ("self_deck_main", _SELF_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
+    ("self_deck_side", _SELF_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
     ("opp_deck_main", _OPP_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
     ("opp_deck_side", _OPP_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
 )
@@ -683,6 +686,100 @@ def check_sideboard_copy_ordinals():
     return checked, len(seen_ordinals)
 
 
+def _block_total(obs, start, n_slots):
+    """Total card count across a decoded decklist block (empty slots contribute 0)."""
+    return sum(ct for cid, ct in _decode_decklist_block(obs, start, n_slots) if cid >= 0)
+
+
+def check_sideboard_self_context():
+    """The sideboarding player must be able to see its OWN deck and the game it is
+    boarding for.
+
+    Before these blocks existed the phase observation showed neither: the self
+    live-library block is stale between games and the sideboard mask zeroes it, so
+    the player was configuring a 75 it could not observe. Asserts, across a real
+    bo3 with both seats sideboarding:
+
+      (i)   self_deck_main / self_deck_side are populated at every decision;
+      (ii)  the maindeck TOTAL is invariant across the whole match — swaps are 1:1,
+            so the deck can never change size;
+      (iii) the self-deck blocks actually MOVE during a sideboard phase (they are
+            the live view; the complement of the frozen opponent blocks);
+      (iv)  at a sideboard root the match context describes the UPCOMING game
+            (game_number advanced, is_post_board set), not the one that just ended;
+      (v)   the two seats disagree about self_plays_first at the same boundary —
+            exactly one of them is on the play next.
+
+    Returns (sideboard_decisions, self_deck_changes)."""
+    env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
+                      auto_sideboard=False)
+    main_total = None
+    last_self_deck = {}                  # seat -> (main_block, side_block)
+    changes = 0
+    sb_decisions = 0
+    plays_first_at_boundary = {}         # seat -> bool, first sideboard phase only
+    try:
+        for obs, _num, _cats, seat in _drive_bo3_sideboarding(env):
+            main_block = tuple(_decode_decklist_block(obs, _SELF_DECK_MAIN_START,
+                                                      DECKLIST_MAIN_SLOTS))
+            side_block = tuple(_decode_decklist_block(obs, _SELF_DECK_SIDE_START,
+                                                      DECKLIST_SIDE_SLOTS))
+            # (i) populated — a card id >= 0 in the first slot means real content.
+            if main_block[0][0] < 0:
+                raise InvariantError(
+                    f"seat {seat}: self_deck_main is empty — the sideboarding "
+                    "player cannot see its own maindeck")
+            if side_block[0][0] < 0:
+                raise InvariantError(
+                    f"seat {seat}: self_deck_side is empty — the sideboarding "
+                    "player cannot see its own sideboard")
+
+            # (ii) 1:1 swaps preserve deck size, in every game and mid-phase.
+            total = _block_total(obs, _SELF_DECK_MAIN_START, DECKLIST_MAIN_SLOTS)
+            if main_total is None:
+                main_total = total
+            elif total != main_total:
+                raise InvariantError(
+                    f"seat {seat}: maindeck total changed {main_total} -> {total}; "
+                    "sideboard swaps are 1:1 and must preserve deck size")
+
+            # (iii) the live view moves as swaps land.
+            if seat in last_self_deck and last_self_deck[seat] != (main_block, side_block):
+                changes += 1
+            last_self_deck[seat] = (main_block, side_block)
+
+            if obs[_IS_SIDEBOARD_IDX] > 0.5:
+                sb_decisions += 1
+                match = decode._decode_match_context(obs[:STATE_SIZE])
+                # (iv) boarding for game 2 means game_number 1 (0-based) and a
+                # post-board game ahead. Reading the ended game would give 0/False.
+                if match["game_number"] <= 0 or not match["is_post_board"]:
+                    raise InvariantError(
+                        f"seat {seat}: sideboard root reports game_number "
+                        f"{match['game_number']} / is_post_board "
+                        f"{match['is_post_board']} — it must describe the UPCOMING "
+                        "game, not the one that just ended")
+                plays_first_at_boundary.setdefault(
+                    seat, bool(obs[_EXTRAS_PLAYS_FIRST] > 0.5))
+    finally:
+        env.close()
+
+    if sb_decisions == 0:
+        raise InvariantError("no sideboard decision occurred — these assertions "
+                             "would pass vacuously")
+    if changes == 0:
+        raise InvariantError("the self-deck blocks never changed — they are meant "
+                             "to be the LIVE view and must track each swap")
+    # (v) exactly one seat is on the play in the upcoming game.
+    if len(plays_first_at_boundary) == 2 and \
+            plays_first_at_boundary["A"] == plays_first_at_boundary["B"]:
+        raise InvariantError(
+            f"both seats report self_plays_first="
+            f"{plays_first_at_boundary['A']} for the upcoming game; exactly one "
+            "of them starts it")
+    return sb_decisions, changes
+
+
 def main():
     yorion_deck = _write_yorion80_deck()
     matchups = list(_MATCHUPS) + [
@@ -726,6 +823,14 @@ def main():
         return 1
     print(f"ok    sideboard copy-count ordinals: {n_acts} actions checked, "
           f"{n_ords} distinct counts", flush=True)
+
+    try:
+        n_sb, n_chg = check_sideboard_self_context()
+    except InvariantError as e:
+        print(f"FAIL  sideboard self-deck context\n  {e}", flush=True)
+        return 1
+    print(f"ok    sideboard self-deck context: {n_sb} sideboard decisions, "
+          f"{n_chg} live self-deck updates", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)

@@ -17,7 +17,7 @@ Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 looked up in a learned nn.Embedding. This decouples the observation size from the
 vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slots.
 
-Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 5974):
+Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6325):
   obs[0:36]            global context (player stats, step, flags, stack size)
   obs[36:3684]         96 permanent slots × 38 floats
                          slots 0-47: self; slots 48-95: opponent
@@ -54,12 +54,18 @@ Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 5974):
   obs[4919:5943]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
   obs[5943:5953]       10 known opponent-hand slots × 1 float (card id)
   obs[5953:5955]       pending-decision context (source card id + ctrl_is_self)
-  obs[5955:5974]       global extras (self/opp lands played, viewer_has_priority,
+  obs[5955:5977]       global extras (self/opp lands played, viewer_has_priority,
                          self/opp monarch, city's blessing, revolt, pending extra
-                         turns, is_day, is_night, MandatoryChoice one-hot(6))
-  obs[5974:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
-                         (appended by env.py; refs are normalized entity-slot
-                         references, (idx+1)/108 with 0.0 = none)
+                         turns, is_day, is_night, MandatoryChoice one-hot(6),
+                         self_plays_first, sideboard swaps made, sideboard delta)
+  obs[5977:6073]       48 self live-library slots × (card id, count)
+  obs[6073:6199]       the viewer's own live 75: 48 maindeck + 15 sideboard slots
+                         × (card id, count)
+  obs[6199:6325]       the opponent's REGISTERED 75 (frozen at match start):
+                         48 maindeck + 15 sideboard slots × (card id, count)
+  obs[6325:]           action metadata (cats|ids|ctrl|zone|refs|ords) + cost
+                         features (appended by env.py; refs are normalized
+                         entity-slot references, (idx+1)/108 with 0.0 = none)
 """
 
 from functools import partial
@@ -246,16 +252,22 @@ _OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNO
 _PENDING_START        = _OPP_KNOWN_HAND_END
 _PENDING_SIZE         = 2
 _PENDING_END          = _PENDING_START + _PENDING_SIZE
-# Global extras (machine_io.h [5955:5974]): self/opp lands played, priority,
-# monarch, city's blessing, revolt, pending extra turns, day/night flags, plus
-# the MandatoryChoice one-hot. Cheap scalar facts — passed through raw.
+# Global extras: self/opp lands played, priority, monarch, city's blessing,
+# revolt, pending extra turns, day/night flags, the MandatoryChoice one-hot, then
+# self_plays_first and the two sideboard-progress scalars (swaps made, maindeck
+# drift). Cheap scalar facts — passed through raw.
 _EXTRAS_START         = _PENDING_END
-_EXTRAS_SIZE          = 13 + N_MANDATORY_CHOICES              # 19
+_EXTRAS_SIZE          = 13 + N_MANDATORY_CHOICES + 3          # 22
 _EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE
-# Deck-identity tail blocks: self live library, opponent static main + side.
+# Deck-identity tail blocks: self live library, the viewer's own live 75, then the
+# opponent's registered main + side.
 _SELF_LIVE_LIB_START  = _EXTRAS_END
 _SELF_LIVE_LIB_END    = _SELF_LIVE_LIB_START + _DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
-_OPP_DECK_MAIN_START  = _SELF_LIVE_LIB_END
+_SELF_DECK_MAIN_START = _SELF_LIVE_LIB_END
+_SELF_DECK_MAIN_END   = _SELF_DECK_MAIN_START + _DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_SELF_DECK_SIDE_START = _SELF_DECK_MAIN_END
+_SELF_DECK_SIDE_END   = _SELF_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_MAIN_START  = _SELF_DECK_SIDE_END
 _OPP_DECK_MAIN_END    = _OPP_DECK_MAIN_START + _DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
 _OPP_DECK_SIDE_START  = _OPP_DECK_MAIN_END
 _OPP_DECK_SIDE_END    = _OPP_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
@@ -327,7 +339,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim                                  # known-top library mean
             + embed_dim                                  # opponent revealed-cards multi-hot
             + card_embed_dim + 1                         # pending-decision source embed + ctrl flag
-            + _EXTRAS_SIZE                               # 19 global extras (raw passthrough)
+            + _EXTRAS_SIZE                               # 22 global extras (raw passthrough)
             # action extras (6 blocks incl. refs + ords + costs): everything after
             # the state EXCEPT the matchup tail, which is handled separately.
             + (observation_space.shape[0] - _STATE_END - _MATCHUP_TAIL_FEATS)
@@ -341,6 +353,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim * 2                              # hand masked-mean + max
             + embed_dim * 2                              # known opponent-hand masked-mean + max
             + embed_dim * 2                              # self live-library masked-mean + max
+            + embed_dim * 2                              # self maindeck masked-mean + max
+            + embed_dim * 2                              # self sideboard masked-mean + max
             + embed_dim * 2                              # opponent maindeck masked-mean + max
             + embed_dim * 2                              # opponent sideboard masked-mean + max
         )
@@ -499,6 +513,10 @@ class CardGameExtractor(BaseFeaturesExtractor):
             -1, _KNOWN_TOP_LIB_SLOTS, _KNOWN_TOP_LIB_SLOT_SIZE)
         self_lib  = obs[:, _SELF_LIVE_LIB_START:_SELF_LIVE_LIB_END].reshape(
             -1, _DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE)
+        self_main = obs[:, _SELF_DECK_MAIN_START:_SELF_DECK_MAIN_END].reshape(
+            -1, _DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE)
+        self_side = obs[:, _SELF_DECK_SIDE_START:_SELF_DECK_SIDE_END].reshape(
+            -1, _DECKLIST_SIDE_SLOTS, _DECKLIST_SLOT_SIZE)
         opp_main  = obs[:, _OPP_DECK_MAIN_START:_OPP_DECK_MAIN_END].reshape(
             -1, _DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE)
         opp_side  = obs[:, _OPP_DECK_SIDE_START:_OPP_DECK_SIDE_END].reshape(
@@ -538,10 +556,16 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # Deck-identity blocks: embed the card id, append the normalized count,
         # encode with the shared decklist_encoder, pool masked mean+max per block.
         self_lib_emb, self_lib_present = self._embed_ids(self_lib[:, :, _DECKLIST_CARD_OFF])
+        self_main_emb, self_main_present = self._embed_ids(self_main[:, :, _DECKLIST_CARD_OFF])
+        self_side_emb, self_side_present = self._embed_ids(self_side[:, :, _DECKLIST_CARD_OFF])
         opp_main_emb, opp_main_present = self._embed_ids(opp_main[:, :, _DECKLIST_CARD_OFF])
         opp_side_emb, opp_side_present = self._embed_ids(opp_side[:, :, _DECKLIST_CARD_OFF])
         self_lib_in = torch.cat(
             [self_lib_emb, self_lib[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+        self_main_in = torch.cat(
+            [self_main_emb, self_main[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+        self_side_in = torch.cat(
+            [self_side_emb, self_side[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
         opp_main_in = torch.cat(
             [opp_main_emb, opp_main[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
         opp_side_in = torch.cat(
@@ -556,6 +580,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
         opp_hand_emb = self.entity_encoder(opp_hand_emb_in)  # (B, 10, embed)  — shared weights
         top_lib_emb = self.entity_encoder(top_lib_emb_in)  # (B, 5, embed)  — shared weights
         self_lib_enc = self.decklist_encoder(self_lib_in)  # (B, 48, embed)  — shared weights
+        self_main_enc = self.decklist_encoder(self_main_in)  # (B, 48, embed) — shared weights
+        self_side_enc = self.decklist_encoder(self_side_in)  # (B, 15, embed) — shared weights
         opp_main_enc = self.decklist_encoder(opp_main_in)  # (B, 48, embed)  — shared weights
         opp_side_enc = self.decklist_encoder(opp_side_in)  # (B, 15, embed)  — shared weights
 
@@ -572,6 +598,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
         top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)  # (B, embed) dense multi-hot encoding
         self_lib_agg = _masked_mean_max(self_lib_enc, self_lib_present)
+        self_main_agg = _masked_mean_max(self_main_enc, self_main_present)
+        self_side_agg = _masked_mean_max(self_side_enc, self_side_present)
         opp_main_agg = _masked_mean_max(opp_main_enc, opp_main_present)
         opp_side_agg = _masked_mean_max(opp_side_enc, opp_side_present)
 
@@ -579,7 +607,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
                           revealed_agg, pending_feat, extras, action_extras,
                           arch_onehot,
                           perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
-                          self_lib_agg, opp_main_agg, opp_side_agg], dim=-1)
+                          self_lib_agg, self_main_agg, self_side_agg,
+                          opp_main_agg, opp_side_agg], dim=-1)
         if not self.per_action_head:
             return base
 

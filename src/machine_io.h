@@ -60,7 +60,7 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// Fixed-size state vector layout (STATE_SIZE = 6196 floats):
+// Fixed-size state vector layout (STATE_SIZE = 6325 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -207,7 +207,7 @@
 //                [5954] 1.0 if that source's controller is the viewer, else 0.0
 //                (e.g. 0.0 while choosing a card for the opponent's Thoughtseize).
 //
-//  [5955-5973]   Global extras (19 floats):
+//  [5955-5976]   Global extras (22 floats):
 //                  [5955] self lands_played_this_turn / 10
 //                  [5956] opp  lands_played_this_turn / 10
 //                  [5957] viewer_has_priority (1.0 = the viewer holds priority)
@@ -224,6 +224,21 @@
 //                  [5968-5973] MandatoryChoice one-hot x6 (NONE at index 0, then
 //                       DECLARE_ATTACKERS_CHOICE, DECLARE_BLOCKERS_CHOICE,
 //                       CLEANUP_DISCARD, CHOOSE_ENTITY, ASSIGN_COMBAT_DAMAGE_CHOICE)
+//                  [5974] self_plays_first — the viewer is the starting player of the
+//                       game this observation PERTAINS TO. In-game that is the current
+//                       game (Game::pregame.a_goes_first); during a bo3 between-games
+//                       sideboard phase it is the UPCOMING game, whose starting player
+//                       play_bo3_match has already decided (the loser of the game that
+//                       just ended) before either sideboard stage runs. Boarding plans
+//                       differ substantially on the play vs the draw, and at 1-1 the
+//                       upcoming starting player is otherwise unrecoverable from the
+//                       observation.
+//                  [5975] sideboard swaps completed this phase / SIDEBOARD_SWAP_CAP
+//                       (0.0 outside the phase)
+//                  [5976] sideboard maindeck drift, (d + 1) / 2 so -1/0/+1 map to
+//                       0.0/0.5/1.0 and "balanced" is the 0.5 midpoint. Always 0.5
+//                       outside the phase (and under the paired IN->OUT menu, which
+//                       never leaves the deck unbalanced at a decision point).
 //
 //  ── Deck-identity tail blocks ────────────────────────────────────────────────
 //  Each slot is (card_id, count): card_id via norm_card_id (empty slot = -1
@@ -232,13 +247,25 @@
 //  encoding byte-stable across actors). Overflow (more distinct names than slots)
 //  or a name absent from the vocab is a fatal_error, never a silent truncation.
 //
-//  [5974-6069]   Self LIVE library: 48 slots x (card_id, count) = 96.
+//  [5977-6072]   Self LIVE library: 48 slots x (card_id, count) = 96.
 //                The viewer's LIBRARY zone tallied live at serialization time, so
 //                cards leaving/returning to the library are always reflected.
 //                Viewer-only — the opponent's live library stays hidden.
 //
-//  [6070-6165]   Opponent-of-viewer REGISTERED maindeck: 48 slots x (card_id, count) = 96.
-//  [6166-6195]   Opponent-of-viewer REGISTERED sideboard: 15 slots x (card_id, count) = 30.
+//  [6073-6168]   Self LIVE maindeck:  48 slots x (card_id, count) = 96.
+//  [6169-6198]   Self LIVE sideboard: 15 slots x (card_id, count) = 30.
+//                The viewer's OWN current 75 (deck_state's live store), which every
+//                player legitimately knows. Distinct from the live-library block
+//                above: that is the LIBRARY ZONE, which shrinks as you draw and is
+//                stale between games, whereas this is the deck CONFIGURATION —
+//                every card regardless of zone. It is the only place the observation
+//                shows what the sideboarding player is choosing between: mid-phase it
+//                tracks each completed swap, so the model can see its maindeck while
+//                picking a card to bring in and its remaining sideboard while picking
+//                a card to cut.
+//
+//  [6199-6294]   Opponent-of-viewer REGISTERED maindeck: 48 slots x (card_id, count) = 96.
+//  [6295-6324]   Opponent-of-viewer REGISTERED sideboard: 15 slots x (card_id, count) = 30.
 //                The opponent's decklist as REGISTERED at match start (open-decklist
 //                ruleset), read from deck_state. FROZEN for the whole match: a bo3's
 //                sideboard swaps never touch these blocks, so you know the opponent's
@@ -246,7 +273,11 @@
 //                That split is hidden information, and the MCTS determinizer models
 //                it as such (see `opp_sideboard_hidden` in search_server.cpp).
 
-static constexpr int STATE_SIZE             = 6196;
+static constexpr int STATE_SIZE             = 6325;
+// Max sideboard swaps a player may complete in one between-games phase. Both the
+// engine's phase cap and the normalizer for the serialized swaps-made scalar, so
+// the two can never drift apart.
+static constexpr int SIDEBOARD_SWAP_CAP     = 15;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
 static constexpr int OPTION_ORDINAL_MAX = 63;  // normalizer for the per-action option_ordinal scalar
                                                // (see LegalAction::option_ordinal): mode index, X

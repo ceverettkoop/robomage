@@ -108,6 +108,12 @@ int match_wins_a = 0;
 int match_wins_b = 0;
 bool sideboard_phase = false;
 Zone::Ownership sideboard_phase_player = Zone::UNKNOWN;
+// The phase state currently being driven (null outside the phase). The serializer
+// reads the progress scalars straight off it rather than off mirror globals, so
+// they can never drift from the phase's own bookkeeping. Points into g_match_ctx,
+// which is a global object — a match restore assigns into it rather than moving
+// it, so the pointer stays valid across a sideboard-rooted rollback.
+const SideboardPhaseState *sideboard_phase_state = nullptr;
 
 // The whole bo3 match's between-game state in one snapshottable value struct.
 // play_bo3_match dispatches over its `stage`; the legacy globals above remain
@@ -860,6 +866,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     Zone::Ownership player = st.player;
     sideboard_phase = true;
     sideboard_phase_player = player;
+    sideboard_phase_state = &st;
     // Repoint priority to the sideboarding player (the established engine pattern:
     // every prompt is issued with player_a_has_priority pointing at the chooser).
     // record_chosen_action's actor stamp and populate_query's per-action
@@ -1059,6 +1066,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     st.pending_in_sb_idx = -1;
     sideboard_phase = false;
     sideboard_phase_player = Zone::UNKNOWN;
+    sideboard_phase_state = nullptr;
 }
 
 int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,

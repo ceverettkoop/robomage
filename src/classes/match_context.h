@@ -29,6 +29,11 @@ struct SideboardPhaseState {
     // the chosen IN card (re-derived via load_card(deck.sideboard[idx].second) on
     // re-entry so the OUT menu resumes with its pending-decision context intact).
     long pending_in_sb_idx = -1;
+    // Maindeck drift from its size at phase start, constrained to {-1, 0, +1} and
+    // serialized into the observation. Always 0 under the paired IN->OUT menu,
+    // which applies a swap atomically and so never leaves the deck unbalanced at a
+    // decision point; it becomes live when the balanced delta menu lands.
+    int delta = 0;
 };
 
 // The whole match's between-game state, in one snapshottable value struct.

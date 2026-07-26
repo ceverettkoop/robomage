@@ -108,7 +108,9 @@ class ScriptTrunk(nn.Module):
         "GY_END", "GY_SLOTS", "EXILE_START", "EXILE_END", "EXILE_SLOTS",
         "HAND_START", "HAND_END", "HAND_SLOTS", "OPP_KNOWN_HAND_START",
         "OPP_KNOWN_HAND_END", "OPP_KNOWN_HAND_SLOTS", "SELF_LIVE_LIB_START",
-        "SELF_LIVE_LIB_END", "OPP_DECK_MAIN_START", "OPP_DECK_MAIN_END",
+        "SELF_LIVE_LIB_END", "SELF_DECK_MAIN_START", "SELF_DECK_MAIN_END",
+        "SELF_DECK_SIDE_START", "SELF_DECK_SIDE_END",
+        "OPP_DECK_MAIN_START", "OPP_DECK_MAIN_END",
         "OPP_DECK_SIDE_START", "OPP_DECK_SIDE_END", "DECKLIST_MAIN_SLOTS",
         "DECKLIST_SIDE_SLOTS", "DECKLIST_SLOT_SIZE", "DECKLIST_CARD_OFF",
         "DECKLIST_COUNT_OFF", "MAX_ACTIONS", "BUCKET_IDX",
@@ -184,6 +186,10 @@ class ScriptTrunk(nn.Module):
         self.OPP_KNOWN_HAND_SLOTS = int(_ex._OPP_KNOWN_HAND_SLOTS)
         self.SELF_LIVE_LIB_START = int(_ex._SELF_LIVE_LIB_START)
         self.SELF_LIVE_LIB_END = int(_ex._SELF_LIVE_LIB_END)
+        self.SELF_DECK_MAIN_START = int(_ex._SELF_DECK_MAIN_START)
+        self.SELF_DECK_MAIN_END = int(_ex._SELF_DECK_MAIN_END)
+        self.SELF_DECK_SIDE_START = int(_ex._SELF_DECK_SIDE_START)
+        self.SELF_DECK_SIDE_END = int(_ex._SELF_DECK_SIDE_END)
         self.OPP_DECK_MAIN_START = int(_ex._OPP_DECK_MAIN_START)
         self.OPP_DECK_MAIN_END = int(_ex._OPP_DECK_MAIN_END)
         self.OPP_DECK_SIDE_START = int(_ex._OPP_DECK_SIDE_START)
@@ -261,6 +267,10 @@ class ScriptTrunk(nn.Module):
             -1, self.OPP_KNOWN_HAND_SLOTS, 1)
         top_lib = obs[:, self.KNOWN_TOP_LIB_START:self.KNOWN_TOP_LIB_END].reshape(
             -1, self.KNOWN_TOP_LIB_SLOTS, 1)
+        self_main = obs[:, self.SELF_DECK_MAIN_START:self.SELF_DECK_MAIN_END].reshape(
+            -1, self.DECKLIST_MAIN_SLOTS, self.DECKLIST_SLOT_SIZE)
+        self_side = obs[:, self.SELF_DECK_SIDE_START:self.SELF_DECK_SIDE_END].reshape(
+            -1, self.DECKLIST_SIDE_SLOTS, self.DECKLIST_SLOT_SIZE)
         self_lib = obs[:, self.SELF_LIVE_LIB_START:self.SELF_LIVE_LIB_END].reshape(
             -1, self.DECKLIST_MAIN_SLOTS, self.DECKLIST_SLOT_SIZE)
         opp_main = obs[:, self.OPP_DECK_MAIN_START:self.OPP_DECK_MAIN_END].reshape(
@@ -294,10 +304,16 @@ class ScriptTrunk(nn.Module):
         top_lib_emb_in, _ = self._embed_ids(top_lib[:, :, 0])
 
         self_lib_emb, self_lib_present = self._embed_ids(self_lib[:, :, self.DECKLIST_CARD_OFF])
+        self_main_emb, self_main_present = self._embed_ids(self_main[:, :, self.DECKLIST_CARD_OFF])
+        self_side_emb, self_side_present = self._embed_ids(self_side[:, :, self.DECKLIST_CARD_OFF])
         opp_main_emb, opp_main_present = self._embed_ids(opp_main[:, :, self.DECKLIST_CARD_OFF])
         opp_side_emb, opp_side_present = self._embed_ids(opp_side[:, :, self.DECKLIST_CARD_OFF])
         self_lib_in = torch.cat(
             [self_lib_emb, self_lib[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
+        self_main_in = torch.cat(
+            [self_main_emb, self_main[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
+        self_side_in = torch.cat(
+            [self_side_emb, self_side[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
         opp_main_in = torch.cat(
             [opp_main_emb, opp_main[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
         opp_side_in = torch.cat(
@@ -311,6 +327,8 @@ class ScriptTrunk(nn.Module):
         opp_hand_emb = self.entity_encoder(opp_hand_emb_in)
         top_lib_emb = self.entity_encoder(top_lib_emb_in)
         self_lib_enc = self.decklist_encoder(self_lib_in)
+        self_main_enc = self.decklist_encoder(self_main_in)
+        self_side_enc = self.decklist_encoder(self_side_in)
         opp_main_enc = self.decklist_encoder(opp_main_in)
         opp_side_enc = self.decklist_encoder(opp_side_in)
 
@@ -323,6 +341,8 @@ class ScriptTrunk(nn.Module):
         top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)
         self_lib_agg = self._mean_max(self_lib_enc, self_lib_present)
+        self_main_agg = self._mean_max(self_main_enc, self_main_present)
+        self_side_agg = self._mean_max(self_side_enc, self_side_present)
         opp_main_agg = self._mean_max(opp_main_enc, opp_main_present)
         opp_side_agg = self._mean_max(opp_side_enc, opp_side_present)
 
@@ -330,7 +350,8 @@ class ScriptTrunk(nn.Module):
                           revealed_agg, pending_feat, extras, action_extras,
                           arch_onehot,
                           perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
-                          self_lib_agg, opp_main_agg, opp_side_agg], dim=-1)
+                          self_lib_agg, self_main_agg, self_side_agg,
+                          opp_main_agg, opp_side_agg], dim=-1)
 
         a0 = self.STATE_END
         cats = obs[:, a0:a0 + self.MAX_ACTIONS]

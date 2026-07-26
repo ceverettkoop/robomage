@@ -415,17 +415,34 @@ _EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 10
 _EXTRAS_IS_DAY       = _EXTRAS_START + 11
 _EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
 _EXTRAS_MC_ONEHOT_START = _EXTRAS_START + 13
-_EXTRAS_END          = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
+# self_plays_first: the viewer is the starting player of the game this observation
+# pertains to — the current game in-game, the UPCOMING game during a bo3 sideboard
+# phase (whose starting player is already fixed before either sideboard stage runs).
+_EXTRAS_PLAYS_FIRST  = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
+# Sideboard-phase progress: swaps completed / SIDEBOARD_SWAP_CAP, and the maindeck
+# drift as (d + 1) / 2 so balanced sits at 0.5. Both inert outside the phase.
+_EXTRAS_SB_SWAPS     = _EXTRAS_PLAYS_FIRST + 1
+_EXTRAS_SB_DELTA     = _EXTRAS_SB_SWAPS + 1
+_EXTRAS_END          = _EXTRAS_SB_DELTA + 1
 
-# ── Deck-identity tail blocks (mirror machine_io.h [5974-6195]) ──────────────
+# ── Deck-identity tail blocks (mirror machine_io.h [5977-6324]) ──────────────
 # Each slot is (card_id, count): card id via norm_card_id (empty = -1 sentinel),
 # count normalized /4.0. Slots packed ascending by vocab id, no holes.
 #   SELF_LIVE_LIBRARY : the viewer's LIBRARY zone tallied live (viewer-only).
-#   OPP_DECK_MAIN / OPP_DECK_SIDE : the opponent's STATIC decklist (post-board).
+#   SELF_DECK_MAIN / SELF_DECK_SIDE : the viewer's OWN current 75 — the deck
+#     CONFIGURATION (every card regardless of zone), tracking each sideboard swap.
+#     Distinct from the library block, which shrinks as you draw and is stale
+#     between games; this is what the sideboarding player is choosing between.
+#   OPP_DECK_MAIN / OPP_DECK_SIDE : the opponent's REGISTERED decklist, frozen at
+#     the match's registered 75 (the post-board split is hidden information).
 _DECKLIST_SLOT_SIZE     = 2                       # card id + count per slot
 _SELF_LIVE_LIB_START    = _EXTRAS_END
 _SELF_LIVE_LIB_END      = _SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
-_OPP_DECK_MAIN_START    = _SELF_LIVE_LIB_END
+_SELF_DECK_MAIN_START   = _SELF_LIVE_LIB_END
+_SELF_DECK_MAIN_END     = _SELF_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_SELF_DECK_SIDE_START   = _SELF_DECK_MAIN_END
+_SELF_DECK_SIDE_END     = _SELF_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_MAIN_START    = _SELF_DECK_SIDE_END
 _OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
 _OPP_DECK_SIDE_START    = _OPP_DECK_MAIN_END
 _OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
@@ -469,11 +486,19 @@ def _build_sideboard_mask():
         (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
         (_REVEALED_START, _REVEALED_END),           # opponent revealed multi-hot
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
-        # The opponent's STATIC decklist is exactly what informs sideboarding, so
+        # The opponent's REGISTERED decklist is exactly what informs sideboarding, so
         # both opp-deck blocks stay visible. The SELF_LIVE_LIBRARY block is NOT
         # kept (the library zone is stale during the sideboard phase); its card-id
         # positions are sentinel-filled below, its counts masked to 0.0.
         (_OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END),
+        # The viewer's OWN current 75 is live during the phase (deck_state's live
+        # store tracks each swap as it lands) and is the single most decision-
+        # relevant block here — it is what the IN/OUT menus are choosing between.
+        (_SELF_DECK_MAIN_START, _SELF_DECK_SIDE_END),
+        # self_plays_first + the two sideboard-progress scalars. The REST of the
+        # global-extras block describes the stale ended game and stays masked, so
+        # this is a narrow keep inside an otherwise-masked block.
+        (_EXTRAS_PLAYS_FIRST, _EXTRAS_END),
     ):
         keep[lo:hi] = True
     # The "self is Player A" flag MUST survive the mask: it is the seat-routing
@@ -502,9 +527,16 @@ def _build_sideboard_mask():
         card_id_idx.append(i)
     for i in range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END):        # known opp hand
         card_id_idx.append(i)
+    # Card id is the first float of each (card_id, count) slot; the count masks to
+    # 0.0. Listing every decklist block keeps this "all card-id positions" rather
+    # than "the masked ones" — the `if not keep[i]` guard below skips the kept
+    # blocks, so the list stays correct if the keep set ever changes.
     for s in range(DECKLIST_MAIN_SLOTS):                               # self live library
-        # card id is the first float of each (card_id, count) slot; count masks to 0.0
         card_id_idx.append(_SELF_LIVE_LIB_START + s * _DECKLIST_SLOT_SIZE)
+    for s in range(DECKLIST_MAIN_SLOTS):                               # self deck main
+        card_id_idx.append(_SELF_DECK_MAIN_START + s * _DECKLIST_SLOT_SIZE)
+    for s in range(DECKLIST_SIDE_SLOTS):                               # self deck side
+        card_id_idx.append(_SELF_DECK_SIDE_START + s * _DECKLIST_SLOT_SIZE)
     for i in card_id_idx:
         if not keep[i]:
             fill[i] = _ACTION_CARD_ID_NULL

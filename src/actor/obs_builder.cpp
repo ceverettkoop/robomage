@@ -58,12 +58,19 @@ static constexpr int PENDING_DECISION_END = PENDING_DECISION_START + 2;
 // so a new mandatory-choice kind moves this offset automatically.
 static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;  // == 6
 static constexpr int EXTRAS_START = PENDING_DECISION_END;
-static constexpr int EXTRAS_END = EXTRAS_START + 13 + N_MANDATORY_CHOICES;
+// 13 scalars + the MandatoryChoice one-hot, then self_plays_first and the two
+// sideboard-progress scalars (swaps made, maindeck drift).
+static constexpr int EXTRAS_SB_CTX_START = EXTRAS_START + 13 + N_MANDATORY_CHOICES;
+static constexpr int EXTRAS_END = EXTRAS_SB_CTX_START + 3;
 // Deck-identity tail blocks: each slot is (card_id, count).
 static constexpr int DECKLIST_SLOT_SIZE = 2;
 static constexpr int SELF_LIVE_LIB_START = EXTRAS_END;
 static constexpr int SELF_LIVE_LIB_END = SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
-static constexpr int OPP_DECK_MAIN_START = SELF_LIVE_LIB_END;
+static constexpr int SELF_DECK_MAIN_START = SELF_LIVE_LIB_END;
+static constexpr int SELF_DECK_MAIN_END = SELF_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int SELF_DECK_SIDE_START = SELF_DECK_MAIN_END;
+static constexpr int SELF_DECK_SIDE_END = SELF_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int OPP_DECK_MAIN_START = SELF_DECK_SIDE_END;
 static constexpr int OPP_DECK_MAIN_END = OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
 static constexpr int OPP_DECK_SIDE_START = OPP_DECK_MAIN_END;
 static constexpr int OPP_DECK_SIDE_END = OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
@@ -75,8 +82,9 @@ static_assert(STACK_TGT_START == 17, "stack target sub-slots start at slot offse
 static_assert(KNOWN_TOP_LIB_START == 4914, "known top-of-library starts at float 4914");
 static_assert(REVEALED_START == 4919, "opponent revealed multi-hot starts at float 4919");
 static_assert(PENDING_DECISION_START == 5953, "pending-decision context starts at float 5953");
-static_assert(SELF_LIVE_LIB_START == 5974, "self live library starts at float 5974");
-static_assert(OPP_DECK_MAIN_START == 6070, "opp maindeck starts at float 6070");
+static_assert(SELF_LIVE_LIB_START == 5977, "self live library starts at float 5977");
+static_assert(SELF_DECK_MAIN_START == 6073, "self maindeck starts at float 6073");
+static_assert(OPP_DECK_MAIN_START == 6199, "opp maindeck starts at float 6199");
 static_assert(OPP_DECK_SIDE_END == STATE_SIZE, "deck-identity tail must end exactly at STATE_SIZE");
 
 // REF_ZONE_MAX (env.py / _enums.py) = highest ActionRefZone value = REF_PLAYER_OPP.
@@ -181,7 +189,9 @@ static const SideboardMask& sideboard_mask() {
         keep_range(MATCH_CTX_START, KNOWN_TOP_LIB_START);   // match + library ctx + current turn
         keep_range(REVEALED_START, REVEALED_END);           // opponent revealed multi-hot
         keep_range(PENDING_DECISION_START, PENDING_DECISION_END);  // pending-decision context
-        keep_range(OPP_DECK_MAIN_START, OPP_DECK_SIDE_END); // opponent static decklist (both blocks)
+        keep_range(OPP_DECK_MAIN_START, OPP_DECK_SIDE_END); // opponent registered decklist (both blocks)
+        keep_range(SELF_DECK_MAIN_START, SELF_DECK_SIDE_END);  // the viewer's own live 75
+        keep_range(EXTRAS_SB_CTX_START, EXTRAS_END);        // plays-first + sideboard progress
         // The "self is Player A" seat flag must survive (it is live during the
         // sideboard phase, set from sideboard_phase_player, and every obs consumer
         // routes seats by it).
@@ -209,8 +219,14 @@ static const SideboardMask& sideboard_mask() {
         for (int i = HAND_START; i < HAND_START + MAX_HAND_SLOTS; i++) card_id_slot(i);       // self hand
         for (int i = KNOWN_TOP_LIB_START; i < KNOWN_TOP_LIB_END; i++) card_id_slot(i);        // known top-5
         for (int i = OPP_KNOWN_HAND_START; i < OPP_KNOWN_HAND_END; i++) card_id_slot(i);      // known opp hand
-        for (int s = 0; s < DECKLIST_MAIN_SLOTS; s++)                                         // self live library
-            card_id_slot(SELF_LIVE_LIB_START + s * DECKLIST_SLOT_SIZE);
+        // Every decklist block's card-id position (card_id_slot skips the kept ones,
+        // so this stays "all card-id positions" rather than "the masked ones").
+        for (int s = 0; s < DECKLIST_MAIN_SLOTS; s++) {
+            card_id_slot(SELF_LIVE_LIB_START + s * DECKLIST_SLOT_SIZE);   // self live library
+            card_id_slot(SELF_DECK_MAIN_START + s * DECKLIST_SLOT_SIZE);  // self maindeck
+        }
+        for (int s = 0; s < DECKLIST_SIDE_SLOTS; s++)                     // self sideboard
+            card_id_slot(SELF_DECK_SIDE_START + s * DECKLIST_SLOT_SIZE);
         return m;
     }();
     return mask;

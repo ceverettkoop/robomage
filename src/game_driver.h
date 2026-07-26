@@ -66,6 +66,10 @@ extern int match_wins_a;
 extern int match_wins_b;
 extern bool sideboard_phase;
 extern Zone::Ownership sideboard_phase_player;
+// The phase state being driven right now, or null outside the phase. The state
+// serializer reads its progress scalars (swaps completed, maindeck drift) rather
+// than keeping mirror globals that could drift from it.
+extern const SideboardPhaseState *sideboard_phase_state;
 
 // The whole bo3 match's between-game state (dispatched over by play_bo3_match).
 // Exposed so the match-scoped game snapshot (snapshot.cpp) can capture/restore
