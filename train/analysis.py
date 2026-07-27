@@ -79,7 +79,7 @@ import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import (ANALYSIS_TOOL, apply_to_parser, DEFAULT_SB_SIMS,
                       DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH)
-from env import (ACTION_CATEGORY_MAX, RoboMageEnv,
+from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
                  _HAND_START, _MATCH_CTX_START, _IS_SIDEBOARD_IDX, _LIBRARY_CTX_START,
@@ -1676,13 +1676,23 @@ def _obs_card_id(obs, i):
 
 
 def _obs_ctrl_flag(obs, i):
-    """Extract controller flag for slot i. 1=self, 0=opp, -1=null."""
-    raw = obs[ACT_CTRL_START + i]
-    if raw > 0.5:
-        return 1
-    elif raw > -0.01:
-        return 0
-    return -1
+    """Extract controller flag for slot i. 1=self, 0=opp, -1=null.
+
+    The engine writes the ctrl-null sentinel (a small NEGATIVE value,
+    _ACTION_CTRL_NULL == -1/N_CARD_TYPES) for a choice whose source has no zone
+    — see cli_output.cpp, which emits it exactly when zone_ref == REF_NONE — and
+    0.0 / 1.0 for opponent / self. Test against the sentinel's midpoint, the same
+    way decode._ctrl_str does.
+
+    The old test was `raw > -0.01 -> 0`, which the sentinel (-0.00098) satisfies,
+    so -1 was unreachable and a zone-less choice was reported as OPPONENT-owned.
+    (Note a player target is NOT affected either way: its zone_ref is
+    REF_PLAYER_SELF/OPP, not REF_NONE, so it carries a real 0.0/1.0 flag.)
+    """
+    raw = float(obs[ACT_CTRL_START + i])
+    if raw < _ACTION_CTRL_NULL / 2:
+        return -1
+    return 1 if raw > 0.5 else 0
 
 
 def _sim_targeting(games):
