@@ -167,8 +167,10 @@ _CARDS_DIR = os.path.join(
 
 
 def _name_to_uid(name):
-    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen -> '_', drop the rest."""
-    return re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
+    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen/slash -> '_', drop the
+    rest ('/' is a split-card separator, so "Dead/Gone" -> "dead_gone")."""
+    return re.sub(r"[^a-z0-9_]", "",
+                  name.lower().replace(" ", "_").replace("-", "_").replace("/", "_"))
 
 
 def _resolve_script_path(uid):

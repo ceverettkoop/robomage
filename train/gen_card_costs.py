@@ -60,12 +60,19 @@ def parse_mana_cost(cost_str):
 def find_card_file(name):
     """Find the card script file for a given card name.
 
-    Normalization matches parse.cpp name_to_uid: lowercase, spaces→underscores,
+    Normalization matches parse.cpp name_to_uid: lowercase, space/hyphen/slash→underscore,
     non-alpha/non-underscore chars removed.  For double-faced cards the file is
     named after the combined front//back name (e.g. delver_of_secrets_insectile_aberration.txt),
     so we also try a prefix match when an exact match isn't found.
+
+    '/' is a separator, not punctuation (CR 709 split cards), so a combined "Front/Back"
+    name resolves EXACTLY to Forge's underscore-joined script (e.g. "Dead/Gone" ->
+    dead_gone.txt) instead of falling through to the unverified prefix match below,
+    which would otherwise pick whichever "dead*.txt" happens to sort first on this
+    machine — making the generated costs depend on which scripts are provisioned.
     """
-    stem = re.sub(r'[^a-z0-9_]', '', name.lower().replace(' ', '_').replace('-', '_'))
+    stem = re.sub(r'[^a-z0-9_]', '',
+                  name.lower().replace(' ', '_').replace('-', '_').replace('/', '_'))
     # Collapse consecutive underscores to one, matching parse.cpp name_to_uid — a name whose
     # "& "/punctuation excision leaves a doubled "__" (e.g. "Raph & Mikey, Troublemakers")
     # must resolve to Forge's single-underscore filename (raph_mikey_troublemakers.txt).
@@ -75,7 +82,8 @@ def find_card_file(name):
     # "lorien_revealed"). Try an NFKD-decomposed ASCII stem as well so an accented card name
     # resolves to its on-disk script.
     translit = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
-    translit_stem = re.sub(r'[^a-z0-9_]', '', translit.lower().replace(' ', '_').replace('-', '_'))
+    translit_stem = re.sub(r'[^a-z0-9_]', '',
+                           translit.lower().replace(' ', '_').replace('-', '_').replace('/', '_'))
     translit_stem = re.sub(r'_+', '_', translit_stem)
     stems = [stem] if translit_stem == stem else [stem, translit_stem]
     for s in stems:

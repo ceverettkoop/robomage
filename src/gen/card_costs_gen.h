@@ -336,7 +336,7 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.1f},  // 325: Malevolent Rumble
     {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.0f},  // 326: Chain Lightning
     {0.0f, 0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.0f},  // 327: Searing Blood
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 328: Dead/Gone
+    {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.0f},  // 328: Dead/Gone
     {0.0f, 0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.4f},  // 329: Fireblast
     {0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 330: Geist of Saint Traft
     {0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 331: Echoing Truth

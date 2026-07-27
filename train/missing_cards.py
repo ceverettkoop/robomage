@@ -32,8 +32,10 @@ DEFAULT_DECKS = os.path.join(_REPO_ROOT, "bin", "resources", "decks", "meta")
 
 
 def name_to_uid(name):
-    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen -> '_', drop other punct."""
-    return re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
+    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen/slash -> '_', drop other
+    punct ('/' is a split-card separator, so "Dead/Gone" -> "dead_gone")."""
+    return re.sub(r"[^a-z0-9_]", "",
+                  name.lower().replace(" ", "_").replace("-", "_").replace("/", "_"))
 
 
 def parse_vocab(path):
