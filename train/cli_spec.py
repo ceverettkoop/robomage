@@ -695,6 +695,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "The scripted opponent mirrors it."),
         Arg("--seed", "int", default=None,
             help="RNG seed for reproducible runs (game N uses seed+N; default: random)"),
+        Arg("--bo1", "flag",
+            help="Single-game mode. baseline defaults to bo3 matches; this opts back "
+                 "into one-off games (--bo3 is a redundant no-op here)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
     ]),
     # ── AlphaZero (Phase C) ───────────────────────────────────────────────────

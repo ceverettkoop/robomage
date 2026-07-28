@@ -723,7 +723,8 @@ class CurriculumScreen(ArgFormMixin, Screen):
     #cleft { width: 46; border-right: solid $accent; }
     #cright { width: 1fr; }
     #phases { height: 1fr; border: round $accent; }
-    #cbuttons { height: 3; }
+    #cbuttons { height: 6; }
+    #cbuttons .cbuttonrow { height: 3; }
     #cbuttons Button { min-width: 8; margin: 0 1 0 0; }
     #phaseform { height: 1fr; padding: 0 1; }
     #cstatus { height: auto; max-height: 10; padding: 0 1; color: $text-muted;
@@ -771,14 +772,16 @@ class CurriculumScreen(ArgFormMixin, Screen):
                                        value=curriculum.PHASE_KINDS[0],
                                        compact=True), required=False)
                 yield ListView(id="phases")
-                with Horizontal(id="cbuttons"):
-                    yield Button("Add", id="add", variant="primary")
-                    yield Button("Del", id="del")
-                    yield Button("Save", id="save")
-                    yield Button("Load", id="load")
-                    yield Button("Run", id="run", variant="success")
-                    yield Button("Resume", id="resume")
-                    yield Button("Status", id="status")
+                with Vertical(id="cbuttons"):
+                    with Horizontal(classes="cbuttonrow"):
+                        yield Button("Add", id="add", variant="primary")
+                        yield Button("Del", id="del")
+                        yield Button("Save", id="save")
+                        yield Button("Load", id="load")
+                    with Horizontal(classes="cbuttonrow"):
+                        yield Button("Run", id="run", variant="success")
+                        yield Button("Resume", id="resume")
+                        yield Button("Status", id="status")
             with Vertical(id="cright"):
                 yield VerticalScroll(id="phaseform")
                 yield Static("", id="fieldhelp")

@@ -2441,9 +2441,11 @@ if __name__ == "__main__":
                 verbose=args.verbose,
                 play_a=args.play_a, play_b=args.play_b)
     elif args.command == "baseline":
+        # baseline defaults to bo3 matches; --bo1 opts back into single games
+        # (--bo3 is accepted as a redundant no-op for backward compatibility).
         if args.all:
             baseline_all(args.binary, n_games=args.games or 50, seed=args.seed,
-                         log_path=args.log, bo3=args.bo3)
+                         log_path=args.log, bo3=not args.bo1)
         elif args.model is None:
             parser.error("baseline: give a model checkpoint (e.g. 'gen'), or --all "
                          "to round-robin the generalist over every league matchup")
@@ -2457,7 +2459,7 @@ if __name__ == "__main__":
             except ValueError as exc:
                 parser.error(str(exc))
             baseline(args.binary, model_path, args.games or 100,
-                     deck=args.deck, seed=args.seed, bo3=args.bo3)
+                     deck=args.deck, seed=args.seed, bo3=not args.bo1)
     elif args.command == "az-selfplay":
         import az_selfplay
         az_selfplay.run(args)
