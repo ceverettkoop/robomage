@@ -111,12 +111,19 @@ HandlerResult put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// AB$ Clone (Thespian's Stage): the SOURCE permanent becomes a copy of target land in place —
+// the same object acquires the target's copiable characteristics (CR 706.2), keeping its own
+// counters/tapped state/attachments. GainThisAbility$ True retains this Clone ability on the copy.
+HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // Mobilize N (702.176): create N tapped+attacking 1/1 red Warrior tokens and register a
 // delayed end-step sacrifice of exactly those tokens.
 HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // Delayed end-step sacrifice fired by Mobilize: sacrifice each entity in ab.targets that is
 // still on the battlefield (the tokens created when the creature attacked).
 HandlerResult sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft): exile each
+// entity in ab.targets still on the battlefield (the token(s) created when the creature attacked).
+HandlerResult exile_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
 // player, with cur_game.remembered_entities set to that player's entity each iteration.
 HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
@@ -136,6 +143,11 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
 // the trigger fired. Puts that many copies of the source spell on the stack (each may choose new
 // targets) via the shared run_copy_spell machine (suspendable). See effect_storm.cpp.
 HandlerResult storm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// DB$ CopySpellAbility (Chain Lightning): after the parent spell's effect, the target-or-its-
+// controller may pay an UnlessCost$ ({R}{R}) to copy the parent spell and choose new targets for
+// the copy (UnlessSwitched$ True = copy ONLY IF paid). Reuses run_unless_loop + the shared
+// run_copy_spell machine (suspendable). See effect_copy_spell.cpp. CR 707.10 / 707.12.
+HandlerResult copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
 // chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
 // (here a RevealDiscardAll discard) can reference it.
@@ -191,6 +203,30 @@ HandlerResult add_turn(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 // read back by a CheckSVar trigger gate. No-op if the source is not a battlefield permanent (e.g.
 // the leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
 HandlerResult store_svar(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// Suspend upkeep tick (CR 702.62a, second/third abilities): remove one suspend time counter from
+// ab.source (an exiled suspended card, tracked in cur_game.suspend_time_counters — an exiled card
+// is not a permanent, so its counters can't live in Permanent::counters). When the last counter is
+// removed, grant its owner a FREE from_suspend impulse-cast permission so it may be cast without
+// paying its mana cost (the third suspend ability). General over any Suspend card. See
+// effect_suspend_tick.cpp.
+HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// DB$ SetState | Mode$ TurnFaceUp | Defined$ ExiledWith (The Creation of Avacyn chapter II):
+// turn the Defined$ card face up by clearing its Zone::is_face_down flag (CR 708.3 / 711.8).
+// Structured so other Mode$ values (e.g. TurnFaceDown, Transform) can be added. See
+// effect_set_state.cpp.
+HandlerResult set_state(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// WarpExile (a 2025 keyword; not in the checked-in CR snapshot): the delayed end-step triggered
+// ability set up for a warp-cast permanent (mark_warp_permanent). Exiles ab.source (if it is still
+// on the battlefield as the same object) and grants its owner a lasting cast-from-exile permission
+// so it may be recast on a later turn for its normal cost while it remains exiled. A permanent that
+// already left the battlefield follows normal rules (the exile no-ops). See effect_warp.cpp.
+HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+
+// Miracle (CR 702.94a): the linked "when you reveal this card this way, you may cast it" triggered
+// ability. Synthesized and put on the stack when its owner reveals a freshly-drawn miracle card; on
+// resolution it opens the miracle-cast window for the source card (so its owner may then cast it for
+// its miracle cost at their following priority). See effect_miracle.cpp.
+HandlerResult miracle_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
@@ -224,6 +260,8 @@ bool parse_play(Ability &ab, const std::string &key, const std::string &value);
 bool parse_animate_all(Ability &ab, const std::string &key, const std::string &value);
 // DB$ StoreSVar SVar$/Expression$/Type$ (Carpet of Flowers). See effect_store_svar.cpp.
 bool parse_store_svar(Ability &ab, const std::string &key, const std::string &value);
+// DB$ SetState Mode$ <mode> (The Creation of Avacyn). See effect_set_state.cpp.
+bool parse_set_state(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 
@@ -262,7 +300,10 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 // DISCARD flow ask through `ctx` and may suspend (`suspended` set, return value meaningless —
 // check it FIRST); the MANA tap-for-mana loop is still a blocking prompt (Shape C, Batch 7).
 enum class UnlessPayKind { MANA, LIFE, DISCARD, ENERGY };
+// `cost_pips` (MANA kind only) overrides the default generic {cost} requirement with exact colored
+// pips (Chain Lightning: {R}{R}); when null/empty the cost is `cost` generic mana as before.
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-                     FrameCtx &ctx, bool &suspended, UnlessPayKind kind = UnlessPayKind::MANA);
+                     FrameCtx &ctx, bool &suspended, UnlessPayKind kind = UnlessPayKind::MANA,
+                     const ManaValue *cost_pips = nullptr);
 
 #endif /* EFFECTS_H */

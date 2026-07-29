@@ -194,6 +194,18 @@ struct Permanent {
     // battlefield. Only genuinely-new types are recorded (a type the permanent already had is not
     // tracked here and so is never erased), and only TYPE/SUBTYPE/SUPERTYPE not already present.
     std::set<Type> static_added_types;
+
+    // CR 603.8 state-triggered abilities (Mode$ Always, e.g. Dark Depths' "When CARDNAME has no
+    // ice counters on it, sacrifice it."). A state trigger fires the instant its condition becomes
+    // true and does NOT fire again until the condition has become false and then true again. This
+    // set holds the signature of each of THIS permanent's state triggers whose condition is
+    // currently true and has already been placed on the stack ("armed"): a signature present here
+    // is suppressed until the condition goes false (which erases it), re-arming it. Keyed by a
+    // stable per-trigger signature string (category + condition) so it survives the by-value
+    // Permanent copies the snapshot/mirror pool makes. Empty for a permanent with no state triggers;
+    // a fresh Permanent on re-entry starts empty, so the latch resets naturally when the source
+    // leaves the battlefield. Mutated only by the state-trigger scan in state_manager_triggers.cpp.
+    std::set<std::string> state_triggers_armed;
 };
 
 #endif /* PERMANENT_H */

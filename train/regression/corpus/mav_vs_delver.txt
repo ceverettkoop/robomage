@@ -402,8 +402,28 @@
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
   >> B/B: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 19 ---
+  Priority: Player B (non-active)
+  Step: Draw (turn 3)
+  Self:  19 life | mana: empty | hand(7): Mishra's Bauble, Daze, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Island (T)
+  Opp BF:   Talon Gates of Madara
+  Stack: Once Upon a Time (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
+  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Actions:
+   0: Once Upon a Time
+  >> B/B: 0 (Once Upon a Time)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 20 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  19 life | mana: empty | hand(7): Mishra's Bauble, Daze, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 49
@@ -419,25 +439,6 @@
   >> B/B: 0 (Return Island)
 --- Narrative ---
   Player B returns Island to hand
-  Choose target for Daze:
-
---- Decision 20 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 3)
-  Self:  19 life | mana: empty | hand(8): Mishra's Bauble, Daze, Ponder, Island, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 49
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Talon Gates of Madara
-  Stack: Once Upon a Time (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
-  Actions:
-   0: Once Upon a Time
-  >> B/B: 0 (Once Upon a Time)
---- Narrative ---
-  Targeting choice 0
   Player B casts Daze targeting Once Upon a Time
   Resolving ability (category: Counter)
   Once Upon a Time's controller may pay {1} to save it:
@@ -792,7 +793,7 @@
    5: Cast Thalia, Guardian of Thraben  [#0]
   >> A/A: 1 (Cast Green Sun's Zenith)
 --- Narrative ---
-  Choose X value (0-1):
+  Choose X value (0-0):
 
 --- Decision 36 ---
   Priority: Player A (active)
@@ -807,7 +808,6 @@
   Extras: self_lands_played=1
   Actions:
    0: X = 0  [#0]
-   1: X = 1  [#1]
   >> A/A: 0 (X = 0)
 --- Narrative ---
   Player A chooses X = 0

@@ -394,11 +394,15 @@ bool match_filter_core(const CharView &v, const std::string &spec, const MatchCt
     if (spec.empty()) return false;  // an empty spec matches nothing (existing convention)
     size_t pp = 0;
     while (pp <= spec.size()) {
-        size_t sc = spec.find(';', pp);
+        // ';' and ',' are both top-level OR separators between alternatives. Forge writes
+        // "Creature,Planeswalker" (SacValid$ on Archon of Cruelty) with a comma; the engine
+        // historically only split on ';', so a comma-joined list matched nothing. No qualifier
+        // token contains a comma, so treating ',' as OR here is safe and additive.
+        size_t sc = spec.find_first_of(";,", pp);
         if (sc == std::string::npos) sc = spec.size();
         std::string alt = spec.substr(pp, sc - pp);
         pp = sc + 1;
-        if (!alt.empty() && eval_alternative(v, ctx, alt)) return true;  // ';' is OR
+        if (!alt.empty() && eval_alternative(v, ctx, alt)) return true;  // ';'/',' is OR
     }
     return false;
 }
@@ -571,5 +575,17 @@ Zone::Ownership resolve_defined_player(const Ability &ab) {
     if (ab.defined_each_opponent)       return opponent_of(source_controller(ab.source));
     if (ab.defined_targeted_controller) return ab.target != 0 ? last_known_controller(ab.target) : Zone::UNKNOWN;
     if (ab.defined_triggered_activator) return ab.triggered_activator;
+    if (ab.defined_triggered_player)    return ab.triggered_player;
+    // TriggeredCardController shares triggered_player storage; bound at fire time (see
+    // check_triggered_abilities' delayed-trigger leave-battlefield path).
+    if (ab.defined_triggered_card_controller) return ab.triggered_player;
     return Zone::UNKNOWN;
+}
+
+bool player_cant_gain_life(Entity player_entity) {
+    if (cur_game.cant_gain_life_this_turn.empty()) return false;
+    Zone::Ownership who = (player_entity == cur_game.player_a_entity) ? Zone::PLAYER_A
+                        : (player_entity == cur_game.player_b_entity) ? Zone::PLAYER_B
+                                                                      : Zone::UNKNOWN;
+    return who != Zone::UNKNOWN && cur_game.cant_gain_life_this_turn.count(who) > 0;
 }

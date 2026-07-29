@@ -12,6 +12,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
+#include "../svar_eval.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -25,6 +26,10 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     bool filter_artifact = filter.find("Artifact") != std::string::npos;
     bool filter_creature = filter.find("Creature") != std::string::npos;
     bool filter_enchantment = filter.find("Enchantment") != std::string::npos;
+    // "nonLand" exclusion (Blast Zone: "each nonland permanent …"). Without honouring it, a
+    // filter that names no positive card type — "Permanent.nonLand" — falls to the
+    // match-anything default below and would wrongly destroy lands too.
+    bool filter_nonland = filter.find("nonLand") != std::string::npos;
 
     const DestroyAllParams *dp = std::get_if<DestroyAllParams>(&ab.params);
 
@@ -64,12 +69,17 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // CMC filter bound. Legacy cmcLEX keys off the X paid at cast (Meltdown). A dynamic
     // cmcLE<SVar> bound (Wrath of the Skies' cmcLEY, Y = Count$ChosenNumber = energy paid) is
     // resolved from the parsed Count$ expression at resolution.
-    int cmc_le = -1;
+    // cmc_bound is the mana-value threshold; cmc_op is how a card's MV is compared to it. The
+    // legacy cmcLEX / numeric path is "<=" (LE); a dynamic cmc<op><SVar> filter (Blast Zone's
+    // cmcEQY = "MV equal to the charge-counter count") carries its own operator in dp->cmc_op.
+    int cmc_bound = -1;
+    std::string cmc_op = "LE";
     if (dp && !dp->cmc_expr.empty()) {
-        cmc_le = static_cast<int>(
-            evaluate_dynamic_amount(dp->cmc_expr, ab.controller, orderer, ab.target));
+        cmc_bound = static_cast<int>(
+            evaluate_dynamic_amount(dp->cmc_expr, ab.controller, orderer, ab.target, ab.source));
+        if (!dp->cmc_op.empty()) cmc_op = dp->cmc_op;
     } else if (filter.find("cmcLEX") != std::string::npos) {
-        cmc_le = static_cast<int>(cur_game.x_paid);
+        cmc_bound = static_cast<int>(cur_game.x_paid);
     }
     std::vector<Entity> to_destroy;
     for (auto e : orderer->mEntities) {
@@ -83,10 +93,18 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             if (filter_enchantment && t.kind == TYPE && t.name == "Enchantment") type_match = true;
         }
         if (!type_match) continue;
-        // CMC filter
-        if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(e)) {
+        // nonLand exclusion (CR 110.4a): "each nonland permanent" never hits a land.
+        if (filter_nonland) {
+            bool is_land = false;
+            for (auto &t : perm.types)
+                if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
+            if (is_land) continue;
+        }
+        // CMC filter, comparing the card's mana value to the bound with the parsed operator
+        // (EQ for Blast Zone, LE for the legacy cmcLEX / Wrath-of-the-Skies path).
+        if (cmc_bound >= 0 && global_coordinator.entity_has_component<CardData>(e)) {
             int cmc = card_mana_value(global_coordinator.GetComponent<CardData>(e));
-            if (cmc > cmc_le) continue;
+            if (!apply_svar_op(cmc, cmc_op, cmc_bound)) continue;
         }
         to_destroy.push_back(e);
     }

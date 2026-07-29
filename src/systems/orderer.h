@@ -20,8 +20,11 @@ public:
     // fateseal-class dig on an OPPONENT's library (Jace +2), where the looker is the controller and
     // the owner must NOT learn the card. When false the owner's known-top cache still shifts down
     // (positions stay honest) but records an UNKNOWN marker at slot 0 instead of the real identity.
+    // exile_face_down (CR 708): when true and destination is EXILE, the card is exiled FACE DOWN —
+    // its Zone::is_face_down flag is set and it is NOT accumulated into the owner's public revealed
+    // multi-hot (its identity stays hidden from the opponent until an effect turns it face up).
     void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                     bool top_seen_by_owner = true);
+                     bool top_seen_by_owner = true, bool exile_face_down = false);
     // Place a freshly-created entity directly on top of the stack (CR 707.10: a spell copy is
     // *created* on the stack, it does not move there from another zone). Adds a STACK Zone owned
     // by `controller`, sets it as the new top (distance_from_top 0, shifting the rest down), and
@@ -53,6 +56,13 @@ public:
     // (resume_pending_draws, effects::draw_n_with_replacements) once the dredge
     // question is settled; draw_one routes through it after its blocking dispatch.
     void perform_draw(Zone::Ownership player, bool fire_draw_event = true);
+    // Performs the base draw plus any additive-draw-replacement bonus cards (CR 614.1/614.5,
+    // Quantum Riddler) as one replaced event. Single owner of the additive-draw application:
+    // every draw path routes its "the draw actually happens" case through here (never the
+    // dredge-replaced case), so the bonus is applied in exactly one place. The bonus is read
+    // immediately before the base draw, so its "one or fewer cards in hand" gate sees the
+    // pre-draw hand.
+    void perform_draw_with_bonus(Zone::Ownership player, bool fire_draw_event = true);
     // Apply a chosen dredge (CR 702.52a): mill `mill_ct`, return `source` from the
     // graveyard to hand, and log — the replaced draw's outcome. Shared by the
     // blocking draw_one path and the suspendable draw loops.

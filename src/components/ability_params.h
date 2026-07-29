@@ -93,6 +93,13 @@ struct TokenParams {
     bool owner_is_targeted_controller = false;
     // TokenTapped$ True: the token enters the battlefield tapped (Into the Flood Maw's Fish).
     bool tapped = false;
+    // TokenAttacking$ True (Geist of Saint Traft): the token is put onto the battlefield already
+    // attacking the same defender the source is attacking (CR 508.4a — not declared as an
+    // attacker, so no summoning-sickness / attack-trigger checks). Mirrors Mobilize.
+    bool attacking = false;
+    // AtEOT$ ExileCombat (Geist of Saint Traft): register a delayed trigger that exiles the
+    // created token(s) at end of combat (CR 512). Non-empty selects the end-of-combat exile.
+    std::string at_eot = "";
 };
 
 // PutCounter (e.g. Scythecat Cub landfall +1/+1). NOTE: this is the Ability
@@ -128,6 +135,11 @@ struct DiscardParams {
 // reveal choice. Distinguishes the peek path inside the PeekAndReveal handler.
 struct PeekParams {
     bool no_reveal = false;  // NoReveal$ True
+    // ImprintRevealed$ True (Atraxa, Grand Unifier): reveal the top PeekAmount cards of the
+    // controller's library to all players AND record them as the "imprinted" set
+    // (cur_game.imprinted_entities) so a chained Card.IsImprinted filter can act on exactly the
+    // revealed cards. The cards stay in the library; a later ChangeZone/ChangeZoneAll moves them.
+    bool imprint_revealed = false;
     int peek_amount = 1;     // PeekAmount$ N — how many top cards to look at (Birthing Ritual: 7)
     // Random$ True (Urza's Bauble): the controller looks at ONE card chosen uniformly at
     // random from the target/defined player's HAND. Used by the AB$/DB$ Reveal handler
@@ -155,6 +167,19 @@ struct DelayedTriggerParams {
     // fires later (CR 603.7a — the delayed trigger references the objects as they were when it
     // was set up). Used by exile-and-return-at-end-of-turn cards (Flickerwisp, Phelia).
     bool remember_objects_lki = false;
+    // Mode$ ChangesZone (Searing Blood's "When that creature dies this turn"): instead of firing
+    // at a future phase, this delayed trigger watches a specific object leaving one zone for
+    // another (CR 603.7b). The watched object is the parent spell's target (RememberObjects$
+    // Targeted, in cur_game.remembered_entities at registration); Origin$/Destination$ on the
+    // same DB$ line become the leave/arrive zone filter (Battlefield -> Graveyard = a death).
+    bool mode_changes_zone = false;
+    // ThisTurn$ True: the ChangesZone watch is bounded to the turn it was registered (CR 603.7b —
+    // "this turn"); if the watched object has not moved by end of turn the trigger expires unfired.
+    bool this_turn = false;
+    // ValidCard$ on a Mode$ ChangesZone delayed trigger names which object's departure fires it.
+    // "Card.Self" (Animate Dead's leaves-the-battlefield sacrifice) watches the trigger's OWN
+    // source; any other value (Searing Blood's IsTriggerRemembered) watches the remembered target.
+    std::string valid_card = "";
 };
 
 #endif /* ABILITY_PARAMS_H */

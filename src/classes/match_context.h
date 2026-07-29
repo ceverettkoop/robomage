@@ -15,20 +15,30 @@
 // snapshots or restores these.
 
 // Per-player sideboard-phase state. run_sideboard_phase reads/writes this so the
-// phase is resumable in principle: its swap counter and one-shot sided-in/out
-// bookkeeping live here rather than in call-scoped locals.
+// phase is resumable: the whole menu is a pure function of (deck, these one-shot
+// name sets, delta, unpaired_name), so after a MATCH-scoped restore the phase
+// re-derives the identical menu — which is what makes a sideboard prompt a
+// loop-safe MCTS search root.
 struct SideboardPhaseState {
     Zone::Ownership player = Zone::UNKNOWN;
+    // Completed swaps (a +1 paired with a -1). Takebacks do not count.
     int sb_swaps = 0;
-    // Each card is a one-shot decision per phase: once moved it cannot be moved
-    // back (prevents oscillation, keeps the 15-swap cap easy to reason about).
-    // Keyed by card name to mirror the original locals.
+    // One-shot direction locks, keyed by card name: a name in sided_out_names can
+    // no longer move INTO the maindeck, one in sided_in_names can no longer move
+    // OUT of it. They prevent oscillation, and a takeback adds its card to the
+    // opposing set — so each takeback permanently shrinks one pool and the phase
+    // is guaranteed to terminate.
     std::unordered_set<std::string> sided_out_names;
     std::unordered_set<std::string> sided_in_names;
-    // OUT-menu resumption point: -1 = at the IN menu; else the sideboard index of
-    // the chosen IN card (re-derived via load_card(deck.sideboard[idx].second) on
-    // re-entry so the OUT menu resumes with its pending-decision context intact).
-    long pending_in_sb_idx = -1;
+    // Maindeck drift from its size at phase start, constrained to {-1, 0, +1} and
+    // serialized into the observation. Nonzero means a move is outstanding: the
+    // menu offers only the balancing direction and Done is withheld, so the deck
+    // can never be submitted off-size.
+    int delta = 0;
+    // The card whose unpaired move produced a nonzero delta ("" when balanced).
+    // It is exempt from its own direction lock, which is what lets an exploratory
+    // move be taken back in one ply instead of forcing a matching move.
+    std::string unpaired_name;
 };
 
 // The whole match's between-game state, in one snapshottable value struct.

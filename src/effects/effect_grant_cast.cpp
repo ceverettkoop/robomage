@@ -94,6 +94,36 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // DB$ Effect | StaticAbilities$ <SVar(MayPlay$ True, AffectedZone$ Exile — NO
+    // MayPlayWithoutManaCost)> | RememberObjects$ Remembered (Light Up the Stage): "Until the
+    // end of your next turn, you may play those cards." The "those cards" are the two cards the
+    // preceding RememberChanged$ Dig just exiled (still in cur_game.remembered_entities). Record a
+    // NORMAL-cost play-from-exile permission for each remembered exiled card in
+    // cur_game.impulse_cast_permission — paid for its normal cost (unlike Ugin's free grant),
+    // LANDS permitted (it's "play", not "cast"), and persisting until the end of the caster's next
+    // turn (Duration$ UntilTheEndOfYourNextTurn). ForgetOnMoved$ Exile: the permission lapses once
+    // a card leaves exile (is played), which the casting/play path enforces by offering it only
+    // while the card is still in exile.
+    if (ab.effect_grant_play_from_exile) {
+        for (Entity card : cur_game.remembered_entities) {
+            if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+            if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
+            if (!global_coordinator.entity_has_component<CardData>(card)) continue;
+            Game::ImpulseCastPermission perm;
+            perm.resource = Game::ImpulseCastPermission::NORMAL;
+            perm.amount = 0;
+            perm.caster = ab.controller;
+            perm.allow_land = true;
+            perm.persist_until_end_of_next_turn = ab.duration_until_end_of_your_next_turn;
+            perm.grant_turn = cur_game.turn;
+            cur_game.impulse_cast_permission[card] = perm;
+            game_log("%s may play %s from exile%s.\n", player_name(ab.controller).c_str(),
+                     global_coordinator.GetComponent<CardData>(card).name.c_str(),
+                     perm.persist_until_end_of_next_turn ? " until the end of their next turn" : " this turn");
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     // DB$ Effect | StaticAbilities$ Unblockable | RememberObjects$ Self — a transient
     // continuous effect that makes the source unblockable until end of turn (Kappa
     // Cannoneer, CR 509.1b / 702.x). Modeled as a per-turn "can't be blocked" mark on the
@@ -121,6 +151,75 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     if (ab.effect_spells_uncounterable_this_turn) {
         cur_game.cant_counter_spells_of.insert(ab.controller);
         game_log("Spells %s controls can't be countered this turn.\n", player_name(ab.controller).c_str());
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
+    // DB$ Effect | ReplacementEffects$ <DamageDone/Prevent shields> | RememberObjects$ Targeted
+    // (Maze of Ith): register a turn-scoped combat-damage prevention shield on the remembered
+    // creature — all combat damage it would deal (ValidSource$ Card.IsRemembered) and/or be dealt
+    // (ValidTarget$ Card.IsRemembered) this turn is prevented (CR 615). The remembered creature is
+    // the ability's inherited target (RememberObjects$ Targeted also stashed it in
+    // remembered_entities). Sourceless turn-long grant, cleared at cleanup. General over any such
+    // Effect (reusable by future fog/prevention cards).
+    if (ab.effect_prevent_combat_damage_by_remembered || ab.effect_prevent_combat_damage_to_remembered) {
+        Entity who = ab.target;
+        if (who == 0 && !cur_game.remembered_entities.empty()) who = cur_game.remembered_entities.front();
+        if (who != 0 && global_coordinator.entity_has_component<Creature>(who)) {
+            Game::CombatDamagePreventionShield shield;
+            shield.creature = who;
+            shield.prevent_as_source = ab.effect_prevent_combat_damage_by_remembered;
+            shield.prevent_as_target = ab.effect_prevent_combat_damage_to_remembered;
+            cur_game.combat_damage_prevention_shields.push_back(shield);
+            game_log("All combat damage dealt to and dealt by %s is prevented this turn.\n",
+                     entity_name(who).c_str());
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
+    // AB$ Effect | StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> (Roiling Vortex's
+    // {R}: "Your opponents can't gain life this turn."). Register the affected player(s) in the
+    // turn-long can't-gain-life set (CR 119.x); consulted centrally in player_gain_life and cleared
+    // at cleanup. Scope is resolved relative to this effect's controller. A sourceless turn-long
+    // grant, unlike a battlefield static.
+    if (ab.effect_cant_gain_life != Ability::CantGainLifeScope::NONE) {
+        Zone::Ownership me = ab.controller;
+        Zone::Ownership opp = (me == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        switch (ab.effect_cant_gain_life) {
+            case Ability::CantGainLifeScope::OPPONENTS:
+                cur_game.cant_gain_life_this_turn.insert(opp);
+                game_log("%s can't gain life this turn.\n", player_name(opp).c_str());
+                break;
+            case Ability::CantGainLifeScope::YOU:
+                cur_game.cant_gain_life_this_turn.insert(me);
+                game_log("%s can't gain life this turn.\n", player_name(me).c_str());
+                break;
+            case Ability::CantGainLifeScope::ALL:
+                cur_game.cant_gain_life_this_turn.insert(me);
+                cur_game.cant_gain_life_this_turn.insert(opp);
+                game_log("No player can gain life this turn.\n");
+                break;
+            default:
+                break;
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
+    // AB$ Effect | StaticAbilities$ <SVar(Mode$ CastWithFlash | ValidCard$ <filter> | Caster$ You)>
+    // (Teferi, Time Raveler's +1: "Until your next turn, you may cast sorcery spells as though they
+    // had flash."). Record a cast-timing permission bound to this effect's controller for the named
+    // filter, good for the effect's Duration — until the controller's next turn (Duration$
+    // UntilYourNextTurn) or, absent that, until cleanup. Consulted by the cast-speed gate
+    // (rules_mod::cast_with_flash_active). A sourceless turn-scoped grant, like the ones above.
+    if (ab.effect_cast_with_flash) {
+        Game::CastWithFlashPermission perm;
+        perm.controller = ab.controller;
+        perm.filter = ab.effect_cast_with_flash_filter;
+        perm.until_your_next_turn = ab.duration_until_your_next_turn;
+        cur_game.cast_with_flash_permissions.push_back(std::move(perm));
+        game_log("%s may cast %s spells as though they had flash%s.\n",
+                 player_name(ab.controller).c_str(),
+                 ab.effect_cast_with_flash_filter.empty() ? "" : ab.effect_cast_with_flash_filter.c_str(),
+                 ab.duration_until_your_next_turn ? " until their next turn" : " this turn");
         return HandlerResult::DONE_RUN_SUBS;
     }
 

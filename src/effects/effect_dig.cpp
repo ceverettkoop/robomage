@@ -8,6 +8,7 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../game_queries.h"
@@ -95,7 +96,12 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
                     start = dot + 1;
                 }
                 bool type_ok = want_type.empty();
-                if (!type_ok)
+                // "Permanent" is not a printed type name — it's the permanent-card-type class
+                // (CR 110.4a). Malevolent Rumble's ChangeValid$ Permanent matches any permanent
+                // card (artifact/creature/enchantment/land/planeswalker/battle).
+                if (!type_ok && want_type == "Permanent")
+                    type_ok = is_permanent_card(cd);
+                else if (!type_ok)
                     for (auto &t : cd.types)
                         if (t.name == want_type) { type_ok = true; break; }
                 if (type_ok) { card_matches = true; break; }
@@ -107,6 +113,19 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
 
         game_log("%s looks at the top %zu card(s) of their library.\n", player_name(dig_owner).c_str(), rt.lib.size());
+
+        // Reveal$ True (Goblin Guide): the looked-at cards are shown to ALL players. Log the
+        // reveal publicly (visible to both seats, not redacted) and record it in the belief-state
+        // multi-hot so the non-owner's observation carries the revealed identity, regardless of
+        // where each card subsequently goes (hand if it matches, else back on top).
+        if (ab.dig_reveal) {
+            for (auto e : rt.lib) {
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                game_log("%s reveals %s from the top of their library.\n", player_name(dig_owner).c_str(),
+                         cd.name.c_str());
+                mark_card_revealed(e, dig_owner);
+            }
+        }
 
         // How many of the looked-at cards may be taken (default 1). A conditional
         // ChangeNum$ (Flow State) raises this to its true-value when the summed
@@ -125,6 +144,9 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
                 sum += static_cast<int>(evaluate_dynamic_amount(expr, dig_owner, orderer, 0));
             rt.take_count = compare_svar(sum, ab.cond_amount_compare) ? ab.cond_amount_if_true : ab.amount;
         } else if (any_count) {
+            rt.take_count = matching.size();
+        } else if (ab.change_num_all) {
+            // ChangeNum$ All (Goblin Guide): take every matching card, automatically.
             rt.take_count = matching.size();
         } else if (ab.amount > 0) {
             rt.take_count = ab.amount;
@@ -151,6 +173,15 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
         // If no matching and not optional, fall through (all go to bottom)
         if (dig_actions.empty()) break;
+        // ChangeNum$ All (Goblin Guide): the take is mandatory and automatic — no player choice
+        // / DIG_CHOICE prompt. Take the next pooled card (rt.optional is false here, so index 0
+        // is the first matching card).
+        if (ab.change_num_all) {
+            Entity sel = rt.pool.front();
+            rt.chosen.push_back(sel);
+            rt.pool.erase(rt.pool.begin());
+            continue;
+        }
         // The looker (ab.controller) is the resolving seat, so this is a no-op
         // swap — the exact seat today's inline get_input read from.
         int choice = ctx.ask(dig_actions, looker, ab.source);
@@ -181,10 +212,20 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
             // Public information once it hits the battlefield.
             game_log("%s puts %s onto the battlefield.\n", player_name(dig_owner).c_str(), cd.name.c_str());
         } else {
-            game_log_private(looker, "%s puts %s into hand.\n", player_name(dig_owner).c_str(), cd.name.c_str());
-            game_log_redacted(looker, "%s puts a card into hand.\n", player_name(dig_owner).c_str());
+            const char *where = chosen_dest == Zone::EXILE       ? "exile"
+                                : chosen_dest == Zone::GRAVEYARD ? "their graveyard"
+                                                                 : "hand";
+            game_log_private(looker, "%s puts %s into %s.\n", player_name(dig_owner).c_str(),
+                cd.name.c_str(), where);
+            game_log_redacted(looker, "%s puts a card into %s.\n", player_name(dig_owner).c_str(), where);
         }
     }
+
+    // RememberChanged$ True (Light Up the Stage): stash the moved (chosen) cards in
+    // cur_game.remembered_entities so a paired DB$ Effect sub-ability can grant a play
+    // permission on exactly those cards (mirrors ChangeZone's RememberChanged behaviour).
+    if (ab.remember_changed)
+        for (Entity chosen : rt.chosen) cur_game.remembered_entities.push_back(chosen);
 
     // Remaining cards go to bottom of library
     std::vector<Entity> remaining;
@@ -194,6 +235,20 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     if (ab.rest_random_order) {
         // Shuffle remaining with game RNG (platform-stable — see stable_rng.h)
         stable_shuffle(remaining, cur_game.gen);
+    }
+    // DestinationZone2$ routes the unchosen remainder somewhere other than the library
+    // (Malevolent Rumble: "Put the rest into your graveyard"). Default (-1) stays the library.
+    if (ab.dig_rest_destination >= 0 && ab.dig_rest_destination != Zone::LIBRARY) {
+        Zone::ZoneValue rest_dest = static_cast<Zone::ZoneValue>(ab.dig_rest_destination);
+        for (auto e : remaining) {
+            orderer->add_to_zone(false, e, rest_dest, owner_sees);
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            game_log("%s puts %s into their %s.\n", player_name(dig_owner).c_str(), cd.name.c_str(),
+                     rest_dest == Zone::GRAVEYARD ? "graveyard"
+                     : rest_dest == Zone::EXILE   ? "exile"
+                                                  : "hand");
+        }
+        return HandlerResult::DONE_RUN_SUBS;
     }
     // Unchosen cards normally go to the bottom; LibraryPosition2$ 0 (Fateseal) keeps
     // them on top instead (i.e. you may bottom the looked-at card, else it stays put).
@@ -221,6 +276,16 @@ bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
         else if (value == "Hand") ab.dig_destination = Zone::HAND;
         else if (value == "Graveyard") ab.dig_destination = Zone::GRAVEYARD;
         else if (value == "Battlefield") ab.dig_destination = Zone::BATTLEFIELD;
+        else if (value == "Exile") ab.dig_destination = Zone::EXILE;
+        return true;
+    } else if (key == "DestinationZone2") {
+        // Where the looked-at-but-unchosen remainder goes (default: back to the library).
+        // Malevolent Rumble: Graveyard ("Put the rest into your graveyard").
+        if (value == "Library") ab.dig_rest_destination = Zone::LIBRARY;
+        else if (value == "Hand") ab.dig_rest_destination = Zone::HAND;
+        else if (value == "Graveyard") ab.dig_rest_destination = Zone::GRAVEYARD;
+        else if (value == "Battlefield") ab.dig_rest_destination = Zone::BATTLEFIELD;
+        else if (value == "Exile") ab.dig_rest_destination = Zone::EXILE;
         return true;
     } else if (key == "LibraryPosition") {
         ab.dig_library_position = std::stoi(value);
@@ -234,6 +299,10 @@ bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
         return true;
     } else if (key == "RestRandomOrder" || key == "RandomOrder") {
         ab.rest_random_order = (value == "True");
+        return true;
+    } else if (key == "Reveal") {
+        // Reveal$ True — the looked-at cards are shown to all players (Goblin Guide).
+        ab.dig_reveal = (value == "True");
         return true;
     }
     return false;

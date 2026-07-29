@@ -88,19 +88,32 @@ bool StackManager::is_empty() {
 
 void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     Entity top_entity = 0;
-    size_t min_distance = SIZE_MAX;
-    bool found = false;
 
-    // Find the entity on top of the stack (closest to top, distance_from_top == 0)
-    for (auto &&entity : mEntities) {
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location == Zone::STACK && zone.distance_from_top < min_distance) {
-            top_entity = entity;
-            min_distance = zone.distance_from_top;
-            found = true;
+    // A suspended resolution must RESUME the object it suspended on — not whatever is
+    // currently on top of the stack. A resolving object can place NEW objects on the
+    // stack ABOVE itself before it suspends: a Storm/Replicate copy machine places copy
+    // N (place_created_on_stack shifts it to distance 0), then suspends choosing copy
+    // N+1's targets. Re-scanning for distance_from_top == 0 here would pick that
+    // freshly-placed copy instead of the still-resolving storm ability, tripping
+    // frame_enter's "top of stack is not the suspended object" identity check. While a
+    // frame is active we always re-enter its own stack_entity (still on the stack, mid-
+    // resolve); the objects placed above it resolve only after it finishes and leaves.
+    if (cur_game.resolution.active) {
+        top_entity = cur_game.resolution.stack_entity;
+    } else {
+        size_t min_distance = SIZE_MAX;
+        bool found = false;
+        // Find the entity on top of the stack (closest to top, distance_from_top == 0)
+        for (auto &&entity : mEntities) {
+            auto &zone = global_coordinator.GetComponent<Zone>(entity);
+            if (zone.location == Zone::STACK && zone.distance_from_top < min_distance) {
+                top_entity = entity;
+                min_distance = zone.distance_from_top;
+                found = true;
+            }
         }
+        if (!found) return;
     }
-    if (!found) return;
 
     // Check if it's a spell card (not just an ability)
     if (global_coordinator.entity_has_component<CardData>(top_entity)) {
@@ -137,6 +150,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_impending)
                 cur_game.pending_impending.insert(top_entity);
+            // Spell was cast for its Warp alternate cost: carry the warp bit onto the permanent so
+            // apply_permanent_components registers its "exile at the next end step" delayed trigger
+            // (consumes pending_warp via mark_warp_permanent).
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_warp)
+                cur_game.pending_warp.insert(top_entity);
             // Carry the X paid for an X-cost permanent into the ETB so an "enters with X
             // counters" replacement can read it (Chalice of the Void).
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
@@ -167,6 +186,13 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             // (x_paid == 0) — not only when x_paid > 0.
             if (global_coordinator.entity_has_component<Spell>(top_entity))
                 cur_game.x_paid = static_cast<size_t>(global_coordinator.GetComponent<Spell>(top_entity).x_paid);
+            // Restore Converge (CR 702.90) — distinct colors of mana spent to cast this spell — the
+            // same way as x_paid, so a resolving Count$Converge bound (Prismatic Ending's cmcLEY)
+            // reads THIS spell's value. Set for every resolving spell (0 for a no-colored-mana cast)
+            // so a stale value from an unrelated earlier cast is always overwritten.
+            if (global_coordinator.entity_has_component<Spell>(top_entity))
+                cur_game.converge =
+                    static_cast<int>(global_coordinator.GetComponent<Spell>(top_entity).colors_spent.size());
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
                 frame_enter(top_entity, ab, /*count_triggered=*/false);

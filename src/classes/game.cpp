@@ -29,6 +29,15 @@ bool Game::ready_to_resolve() {
     return a_has_passed && b_has_passed;
 }
 
+bool Game::combat_damage_prevented(Entity source, Entity target) const {
+    for (const auto &shield : combat_damage_prevention_shields) {
+        if (shield.creature == 0) continue;
+        if (shield.prevent_as_source && shield.creature == source) return true;
+        if (shield.prevent_as_target && shield.creature == target) return true;
+    }
+    return false;
+}
+
 void Game::generate_players(const Deck &deck_a, const Deck &deck_b) {
     player_a_entity = gen_player(deck_a);
     player_b_entity = gen_player(deck_b);
@@ -133,6 +142,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                            return p.until_your_next_turn && p.player == active_player;
                                        }),
                         player_protection_from_everything.end());
+                    // Lapse any "until your next turn" cast-with-flash permission this player was
+                    // granted (Teferi, Time Raveler's +1) — its duration ends as the controller's
+                    // next turn begins (CR 611.2).
+                    cast_with_flash_permissions.erase(
+                        std::remove_if(cast_with_flash_permissions.begin(),
+                                       cast_with_flash_permissions.end(),
+                                       [active_player](const CastWithFlashPermission &p) {
+                                           return p.until_your_next_turn && p.controller == active_player;
+                                       }),
+                        cast_with_flash_permissions.end());
                     // Lapse any "until your next turn" floating triggered ability this player
                     // created (Tamiyo, Seasoned Scholar's +2 "until your next turn, whenever ...")
                     // — its duration ends as the controller's next turn begins (CR 611.2).
@@ -280,6 +299,14 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case COMBAT_DAMAGE:
                     cur_step = END_OF_COMBAT;
+                    {
+                        // "At end of combat" (CR 512): fire the end-of-combat step event so
+                        // end-of-combat delayed triggers (Geist of Saint Traft's "exile that token
+                        // at end of combat") can fire before the combat state is cleared below.
+                        Event end_of_combat_event(Events::END_OF_COMBAT_BEGAN);
+                        end_of_combat_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(end_of_combat_event);
+                    }
                     break;
                 case END_OF_COMBAT:
                     // Clear all combat state from creatures
@@ -390,8 +417,29 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         std::remove_if(floating_triggers.begin(), floating_triggers.end(),
                                        [](const Ability &ft) { return !ft.duration_until_your_next_turn; }),
                         floating_triggers.end());
-                    // Impulse-cast permissions (Amped Raptor) likewise last only "this turn".
-                    impulse_cast_permission.clear();
+                    // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
+                    // cleared here. A persist_until_end_of_next_turn grant (Light Up the Stage's
+                    // "until the end of your next turn") survives this cleanup and is removed at the
+                    // caster's NEXT turn's cleanup instead — detected as a later cleanup (turn >
+                    // grant_turn) whose active player is the grant's caster.
+                    for (auto pit = impulse_cast_permission.begin(); pit != impulse_cast_permission.end();) {
+                        const ImpulseCastPermission &g = pit->second;
+                        // A warp recast permission persists across turns for as long as the card
+                        // remains in exile; it lapses only once the card has left exile (cast, or
+                        // moved by another effect). It is never expired by the per-turn cleanup.
+                        if (g.warp) {
+                            bool in_exile =
+                                global_coordinator.entity_has_component<Zone>(pit->first) &&
+                                global_coordinator.GetComponent<Zone>(pit->first).location == Zone::EXILE;
+                            if (in_exile) { ++pit; continue; }
+                            pit = impulse_cast_permission.erase(pit);
+                            continue;
+                        }
+                        bool expire = !g.persist_until_end_of_next_turn ||
+                                      (g.caster == active_player && turn > g.grant_turn);
+                        if (expire) pit = impulse_cast_permission.erase(pit);
+                        else ++pit;
+                    }
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
                     // Snapshot this (the ending) turn's active player's OWN-TURN spell count before
@@ -406,6 +454,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     player.spell_colors_cast_this_turn.clear();
                     player.cards_drawn_this_turn.clear();
                     player.cards_drawn_this_draw_step = 0;
+                    // Miracle (CR 702.94) is a "first card drawn this turn" concept — the
+                    // reveal/cast opportunity lapses at end of turn, so a never-answered pending
+                    // reveal or cast decision (e.g. the game ended first) lapses each cleanup.
+                    miracle_reveal_pending = 0;
+                    miracle_cast_pending = 0;
                     // Also clear opponent's drawn-this-turn tracking
                     {
                         Entity opp_entity = player_a_turn ? player_b_entity : player_a_entity;
@@ -429,6 +482,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // "Spells you control can't be countered this turn" + "hexproof from blue and
                     // from black until end of turn") lapse at cleanup (CR 514.2).
                     cant_counter_spells_of.clear();
+                    // "Can't gain life this turn" (Roiling Vortex's {R}) lapses at cleanup (514.2).
+                    cant_gain_life_this_turn.clear();
+                    // Combat-damage prevention shields (Maze of Ith, CR 615) are "this turn" and
+                    // lapse at cleanup (514.2).
+                    combat_damage_prevention_shields.clear();
                     hexproof_from_colors_this_turn.clear();
                     // An "until end of turn" player protection-from-everything grant lapses at
                     // cleanup; an "until your next turn" grant persists (reverted at that player's
@@ -440,12 +498,35 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                            return !p.until_your_next_turn;
                                        }),
                         player_protection_from_everything.end());
+                    // An "until end of turn" cast-with-flash permission (a bare CastWithFlash
+                    // Effect) lapses at cleanup; an "until your next turn" grant (Teferi, Time
+                    // Raveler's +1) persists, reverted at that player's untap step instead.
+                    cast_with_flash_permissions.erase(
+                        std::remove_if(cast_with_flash_permissions.begin(),
+                                       cast_with_flash_permissions.end(),
+                                       [](const CastWithFlashPermission &p) {
+                                           return !p.until_your_next_turn;
+                                       }),
+                        cast_with_flash_permissions.end());
                     // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
                     // reset for BOTH players each turn — life can be gained on either player's
                     // turn, and the end-step trigger above has already checked them. Done in
                     // cleanup so the just-fired end step still saw this turn's totals.
                     global_coordinator.GetComponent<Player>(player_a_entity).life_gained_this_turn = 0;
                     global_coordinator.GetComponent<Player>(player_b_entity).life_gained_this_turn = 0;
+                    // "Life lost this turn" resets for BOTH players each turn too — Spectacle
+                    // (CR 702.107a) reads an opponent's life_lost_this_turn to enable its alt cost.
+                    global_coordinator.GetComponent<Player>(player_a_entity).life_lost_this_turn = 0;
+                    global_coordinator.GetComponent<Player>(player_b_entity).life_lost_this_turn = 0;
+
+                    // "This turn" leave-battlefield delayed triggers (Searing Blood's "when that
+                    // creature dies this turn") expire unfired at cleanup if the watched object
+                    // never left the battlefield (CR 603.7b). Reached after the end step, so any
+                    // death during this turn has already fired the trigger (and removed it).
+                    delayed_triggers.erase(
+                        std::remove_if(delayed_triggers.begin(), delayed_triggers.end(),
+                                       [](const DelayedTrigger &dt) { return dt.expires_end_of_turn; }),
+                        delayed_triggers.end());
 
                     // Reset per-trigger resolution counts
                     ability_resolution_counts.clear();
@@ -493,7 +574,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 }
 
 bool Game::is_mandatory_choice_pending() const {
-    return pending_choice != NONE;
+    // A pending miracle reveal or miracle cast (CR 702.94) is a forced decision the drawing player
+    // must make before proceeding, so both ride the mandatory-choice channel alongside pending_choice.
+    return pending_choice != NONE || miracle_reveal_pending != 0 || miracle_cast_pending != 0;
 }
 
 void Game::finish_suspended_turn_draw() {
@@ -528,11 +611,14 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
             int choice = pq.answer;
             game.player_a_has_priority = pq.prev_priority;
             pq = PendingQuery{};
-            if (choice == 0)
-                orderer->perform_draw(pd.player);
-            else
+            if (choice == 0) {
+                // The base draw plus any additive-draw-replacement bonus (CR 614.1/614.5,
+                // Quantum Riddler) is applied inside the shared helper.
+                orderer->perform_draw_with_bonus(pd.player);
+            } else {
                 orderer->apply_dredge(pd.player, opts[static_cast<size_t>(choice) - 1].source,
                                       opts[static_cast<size_t>(choice) - 1].mill);
+            }
             pd.remaining--;
             continue;
         }
@@ -546,8 +632,9 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
         std::vector<LegalAction> menu = replacement::collect_draw_replacements(pd.player, &opts);
         if (menu.empty()) {
             // No dredge applies — the promptless common case, exactly today's
-            // draw_one with an empty replacement dispatch.
-            orderer->perform_draw(pd.player);
+            // draw_one with an empty replacement dispatch. The additive draw replacement
+            // (CR 614.1/614.5, Quantum Riddler) bonus is applied inside the helper.
+            orderer->perform_draw_with_bonus(pd.player);
             pd.remaining--;
             continue;
         }

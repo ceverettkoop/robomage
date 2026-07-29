@@ -18,7 +18,12 @@ extern "C" {
 #define MAX_GY_SLOTS 64  // per player
 #define MAX_HAND_SLOTS 10
 #define DECKLIST_MAIN_SLOTS 48  // distinct-name slots: self live library + opp maindeck
-#define DECKLIST_SIDE_SLOTS 15  // distinct-name slots: opp sideboard
+// Distinct-name slots for a sideboard block. A legal sideboard is 15 CARDS, so a
+// balanced one never exceeds 15 distinct names — but the sideboard phase serializes
+// the sideboarding player's own live deck after EVERY single-card move, including
+// the mid-swap state where a card has been cut into a still-full sideboard (16
+// cards). Hence 16, not 15: the extra slot is that transient cut card.
+#define DECKLIST_SIDE_SLOTS 16
 #define MAX_ACTIONS 64
 #define MAX_CHOICE_DESC 128
 #define PERM_COUNTERS_LEN 64  // PermanentState.counters summary width (mirrored in train/env.py)
@@ -204,6 +209,13 @@ typedef struct GameState_tag {
     bool is_day;               // game designation is day (CR 731.1)
     bool is_night;             // game designation is night
     int  pending_choice_kind;  // MandatoryChoice enum value (NONE = 0)
+    // The viewer is the starting player of the game this observation pertains to:
+    // the current game in-game, the UPCOMING game during a bo3 sideboard phase.
+    bool self_plays_first;
+    // Sideboard-phase progress: swaps completed so far this phase, and the maindeck
+    // drift from its size at phase start (-1/0/+1). Both 0 outside the phase.
+    int  sideboard_swaps_made;
+    int  sideboard_delta;
 
     // ── Deck-identity tail blocks (serialized last; see machine_io.h) ──────────
     // Each block is a list of (vocab id, count) slots, packed ascending by vocab
@@ -215,8 +227,16 @@ typedef struct GameState_tag {
     // Viewer-only — the opponent's live library stays hidden.
     int self_live_library_id[DECKLIST_MAIN_SLOTS];
     int self_live_library_ct[DECKLIST_MAIN_SLOTS];
-    // Opponent-of-viewer's STATIC decklist (post-sideboard config for game 2+ of a
-    // bo3), read from deck_state; maindeck then sideboard.
+    // Viewer's OWN current 75 (deck_state's LIVE store): the deck CONFIGURATION,
+    // every card regardless of zone, tracking each sideboard swap as it lands.
+    // Distinct from the live-library block above (the LIBRARY ZONE, which shrinks
+    // as you draw and is stale between games).
+    int self_deck_main_id[DECKLIST_MAIN_SLOTS];
+    int self_deck_main_ct[DECKLIST_MAIN_SLOTS];
+    int self_deck_side_id[DECKLIST_SIDE_SLOTS];
+    int self_deck_side_ct[DECKLIST_SIDE_SLOTS];
+    // Opponent-of-viewer's REGISTERED decklist, frozen at the match's registered 75
+    // (see deck_state.h); maindeck then sideboard.
     int opp_deck_main_id[DECKLIST_MAIN_SLOTS];
     int opp_deck_main_ct[DECKLIST_MAIN_SLOTS];
     int opp_deck_side_id[DECKLIST_SIDE_SLOTS];

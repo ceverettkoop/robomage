@@ -47,7 +47,7 @@ from typing import NamedTuple, Optional
 import numpy as np
 
 from env import (NarrativeEnv, RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX,
-                 _SELF_IS_A_IDX)
+                 ACT_CATS_START, _SELF_IS_A_IDX)
 
 
 class SimQuery(NamedTuple):
@@ -105,7 +105,7 @@ class SearchRoboMageEnv(RoboMageEnv):
         actor_is_a = bool(self._obs[_SELF_IS_A_IDX] > 0.5)
         cat = -1
         if 0 <= a < self._num_choices:
-            cat = int(round(float(self._obs[STATE_SIZE + a]) * ACTION_CATEGORY_MAX))
+            cat = int(round(float(self._obs[ACT_CATS_START + a]) * ACTION_CATEGORY_MAX))
         result = super().step(action)
         # Record the PRE-remap env-index action (the same value step() consumed,
         # before its own confirm-slot remap): replaying it into a mirror

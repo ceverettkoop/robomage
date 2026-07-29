@@ -40,8 +40,11 @@ _VOCAB_H = os.path.join(_REPO_ROOT, "src", "card_vocab.h")
 
 
 def name_to_uid(name):
-    """Mirror src/parse.cpp name_to_uid (and the fetch tool)."""
-    return re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
+    """Mirror src/parse.cpp name_to_uid (and the fetch tool): lowercase,
+    space/hyphen/slash -> '_', drop other punct. '/' is a split-card separator
+    (CR 709), so "Dead/Gone" -> "dead_gone", matching Forge's filename."""
+    return re.sub(r"[^a-z0-9_]", "",
+                  name.lower().replace(" ", "_").replace("-", "_").replace("/", "_"))
 
 
 def collect_vocab_names(vocab_h):

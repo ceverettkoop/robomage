@@ -30,7 +30,8 @@ BINNAME=robomage
 PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
 # Auto-generated files kept in sync with the C++ sources at build time
 # (train/ codegen plus the C++ mirror header src/gen/card_costs_gen.h).
-PYGEN := train/_enums.py train/card_costs.py src/gen/card_costs_gen.h
+PYGEN := train/_enums.py train/card_costs.py src/gen/card_costs_gen.h \
+	src/gen/archetypes_gen.h
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -69,6 +70,18 @@ $(ODIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) -c -o $@ $< $(IFLAGS) $(CFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
+# NOTE: this actor-specific pattern rule MUST stay defined before the generic
+# $(ODIR)/%.o: $(SRCDIR)/%.cpp rule below. Apple's bundled GNU Make (3.81, the
+# last GPLv2 release — macOS never ships GNU Make 4.x) resolves competing
+# pattern rules by definition order rather than by shortest/most-specific stem
+# as newer make and the GNU Make manual describe. If the generic rule comes
+# first, `make actor` on macOS silently compiles src/actor/*.cpp with the
+# engine's IFLAGS/CXXFLAGS instead of ACTOR_IFLAGS/ACTOR_CXXFLAGS, dropping
+# -I$(SRCDIR) (breaking `#include "classes/..."`) and leaving -fno-exceptions on.
+$(ODIR)/actor/%.o: $(SRCDIR)/actor/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(ACTOR_IFLAGS) $(ACTOR_CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
 $(ODIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
@@ -92,6 +105,11 @@ train/_enums.py: src/classes/action.h src/classes/game.h src/classes/gamestate.h
 train/card_costs.py src/gen/card_costs_gen.h &: src/card_vocab.h src/machine_io.h train/gen_card_costs.py
 	$(PYTHON) train/gen_card_costs.py
 
+# C++ mirror of the deck -> archetype -> value-bucket metadata, so the in-process
+# AZ actor rebuilds the same observation matchup tail train/env.py appends.
+src/gen/archetypes_gen.h: train/archetypes.py bin/resources/decks/archetypes.json train/gen_archetypes.py
+	$(PYTHON) train/gen_archetypes.py
+
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/$(BINNAME) $(C_OBJ) $(CXX_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
@@ -105,7 +123,7 @@ check: all
 	$(PYTHON) train/ci_check.py
 
 # Regenerate every derived artifact after an intentional C++ change: provision
-# the card set (codegen reads card scripts), force-rerun both generators, and
+# the card set (codegen reads card scripts), force-rerun every generator, and
 # re-record the replay corpus with the fresh binary. Run this when `make check`
 # reports stale codegen or corpus drift, then commit the results. The generators
 # run unconditionally here (not via the incremental pygen file targets) because
@@ -116,6 +134,7 @@ regen: all
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(PYTHON) train/gen_enums.py
 	$(PYTHON) train/gen_card_costs.py
+	$(PYTHON) train/gen_archetypes.py
 	$(PYTHON) train/regression/replay_diff.py record
 
 # ── bin/az_actor — in-process AlphaZero actor (Phase D), NOT in the default build ──
@@ -144,17 +163,31 @@ TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/incl
 ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
 ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
 
-$(ODIR)/actor/%.o: $(SRCDIR)/actor/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) -c -o $@ $< $(ACTOR_IFLAGS) $(ACTOR_CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
-
 actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/az_actor $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) \
 		$(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
 		-L$(LIBTORCH_DIR)/lib -ltorch -ltorch_cpu -lc10 -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
 
-.PHONY: all pygen check regen clean actor
+# ── actor-syntax — libtorch-free compile check of the actor's obs layout mirror ──
+# obs_builder.{h,cpp} carries the actor's copy of the observation layout, pinned by
+# a wall of static_asserts against the engine's constants. Those asserts are the
+# only thing that catches the C++ actor drifting from src/machine_io.h — but they
+# only fire under `make actor`, which needs libtorch and is not in the default
+# build, so a layout change can (and did) land with the actor left uncompilable.
+# These two TUs are the actor's only torch-free ones, so -fsyntax-only fires every
+# layout assert with nothing but a compiler. Wired into ci_check.py's `actorobs`
+# tier, which IS part of `make check`.
+ACTOR_SYNTAX_SRCS := $(SRCDIR)/actor/obs_builder.cpp $(SRCDIR)/actor/npz_writer.cpp
+
+actor-syntax: pygen
+	@for f in $(ACTOR_SYNTAX_SRCS); do \
+		echo "  syntax-only: $$f"; \
+		$(CXX) -fsyntax-only $$f $(ACTOR_IFLAGS) \
+			$(filter-out -fno-exceptions,$(CXXFLAGS)) $(PLATFLAGS) || exit 1; \
+	done
+
+.PHONY: all pygen check regen clean actor actor-syntax
 
 # Remove everything under the object tree (the compile rules mkdir -p subdirs
 # back on demand), not per-level globs that silently miss deeper nesting, plus
@@ -166,3 +199,8 @@ clean:
 	rm -f $(BINDIR)/$(BINNAME)
 
 -include $(DEPS)
+# The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
+# so their generated dep files must be included separately — otherwise editing a
+# header they share with the engine (e.g. obs_builder.h) leaves stale actor
+# objects behind and bin/az_actor links two different obs layouts together.
+-include $(ACTOR_OBJ:.o=.d)

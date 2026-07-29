@@ -12,6 +12,8 @@ or change a flag in one place and both stay in sync.
 import os
 from dataclasses import dataclass, field
 
+from archetypes import ARCHETYPES
+
 # ── Canonical CLI constants (single home; imported by env.py / train.py) ──────
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(REPO_ROOT, "bin", "robomage")
@@ -21,9 +23,18 @@ BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resou
 # opponents.SearchController, and the CLI flag defaults below). A bo3 sideboard
 # prompt IS a valid MCTS root, but each rollout there re-crosses init_ecs() + deck
 # load + shuffle on RESTORE and its horizon spans the whole next game, so it gets
-# its own deeper/fewer-sim budget rather than the per-in-game-decision one (whose
-# max_depth is mcts.run_search's default of 60 — too shallow for a game-long horizon).
-DEFAULT_SB_SIMS = 32
+# its own deeper budget rather than the per-in-game-decision one (whose max_depth
+# is mcts.run_search's default of 60 — too shallow for a game-long horizon).
+#
+# sims was 32, chosen when a sideboard decision was the old paired IN->OUT menu.
+# The balanced delta menu offers every sideboard card AND every maindeck card at
+# once — ~33 children on a league deck, up to ~39 — so 32 sims was roughly ONE
+# visit per child: the visit distribution the policy trains on was essentially
+# noise, and could not rank cards at all. 128 gives ~3-4 visits per child, which
+# is the minimum for the ordering to mean anything. This affects only the AZ /
+# search paths (az_selfplay, bin/az_actor, az*/eval, the analysis window); PPO
+# training does no search, so its cost is unchanged.
+DEFAULT_SB_SIMS = 128
 DEFAULT_SB_WORLDS = 4
 DEFAULT_SB_MAX_DEPTH = 200
 
@@ -146,6 +157,16 @@ LEAGUE_ROTATE_EVERY        = 500_000 # steps to train one learner deck before ro
 # so strong decks are never starved, and it self-corrects as win-rates recover.
 # 1.0 disables (fixed-length rotations).
 LEAGUE_ADAPTIVE_BOOST      = 2.0
+# Minimum share of league episodes reserved for the archetype EXPLOITERS
+# ('exp_<arch>__*.zip', see train.py's `exploiter` subcommand). Exploiters also take
+# part in the normal PFSP weighting; this floor keeps their alien styles in the field
+# after the learner starts beating them (PFSP alone would weight them away).
+LEAGUE_EXPLOITER_FLOOR     = 0.1
+
+# Exploiter-run defaults: a dedicated learner piloting ONE archetype's decks against
+# the frozen generalist, saved under its own 'exp_<archetype>' stem.
+EXPLOITER_STEPS            = 500_000 # default step budget for an exploiter run
+EXPLOITER_CHUNK            = 100_000 # steps per sidecar/progress chunk
 
 
 # ── Distributed league sharding (docs/distributed_league_training.md) ─────────
@@ -289,6 +310,15 @@ def train_opts():
                  "checkpoint-compatible; resuming always keeps the checkpoint's "
                  "own head, so this only affects fresh (--fresh / first-time) "
                  "models."),
+        Arg("--popart", "flag",
+            help="Per-archetype-bucket PopArt value normalization (default OFF). "
+                 "The multi-head critic already isolates each matchup class in the "
+                 "last layer; PopArt additionally keeps a running (mu, sigma) of "
+                 "each bucket's returns and predicts normalized values, so a "
+                 "high-variance matchup can't dominate the SHARED torso's value "
+                 "gradients. Output-preserving (the head column is rescaled on "
+                 "every stats update), so it is safe to switch on mid-run. "
+                 "Incompatible with --stock-head and with clip_range_vf."),
         Arg("--n-epochs", "int", default=N_EPOCHS,
             help="PPO optimization epochs per update (default: %d). Applies to "
                  "fresh models AND overrides whatever a resumed checkpoint was "
@@ -298,6 +328,16 @@ def train_opts():
                  "AND overrides whatever a resumed checkpoint was saved with, for "
                  "this session only." % CLIP_RANGE),
     ]
+
+
+def train_opts_except(*dests):
+    """``train_opts()`` minus the named arg dests.
+
+    Lets a training subcommand keep the shared knobs while naming its step budget
+    differently (the exploiter's budget is ``--steps``, so it drops
+    ``--total-timesteps`` rather than offering two budget flags)."""
+    skip = set(dests)
+    return [a for a in train_opts() if a.dest not in skip]
 
 
 def _opponent_mode():
@@ -420,6 +460,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--scripted-anchor-frac", "float", default=LEAGUE_SCRIPTED_ANCHOR_FRAC,
             help="Minimum share of the historical-pool branch reserved for the "
                  "scripted anchor so it never vanishes (default %.2f)." % LEAGUE_SCRIPTED_ANCHOR_FRAC),
+        Arg("--exploiter-floor", "float", default=LEAGUE_EXPLOITER_FLOOR,
+            help="Minimum share of the historical-pool branch reserved for the "
+                 "archetype exploiters (exp_<arch>__*.zip from 'train.py exploiter'), "
+                 "so their styles stay in the field once the learner starts beating "
+                 "them; they also take part in the normal PFSP weighting. 0 disables "
+                 "the floor (default %.2f)." % LEAGUE_EXPLOITER_FLOOR),
         Arg("--pfsp-mode", "choice", choices=("pfsp", "softmax"), default="pfsp",
             help="Opponent quality weighting: 'pfsp' = (1-winrate)^p (AlphaStar) or "
                  "'softmax' = exp(q) with OpenAI-Five quality updates (default pfsp)."),
@@ -476,6 +522,80 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
         *train_opts(),
         *common_args(),
+    ]),
+    Sub("exploiter",
+        "Train a dedicated ARCHETYPE EXPLOITER vs the frozen generalist "
+        "(saved as exp_<archetype>__*.zip; never touches gen)", items=[
+        Arg("--archetype", "choice", choices=tuple(ARCHETYPES), required=True,
+            help="Archetype to exploit WITH: the learner pilots this archetype's "
+                 "decks (from decks/archetypes.json) against the frozen generalist "
+                 "piloting the whole roster. Saved under the stem "
+                 "exp_<archetype> (exp_burn__v{steps}.zip / exp_burn__final.zip)."),
+        Arg("--steps", "int", default=EXPLOITER_STEPS,
+            help="Step budget for this exploiter run (default %d)." % EXPLOITER_STEPS),
+        Arg("--resume", "flag",
+            help="Resume this archetype's interrupted exploiter run from its saved "
+                 "progress (checkpoints/_exploiter_<archetype>_progress.json, "
+                 "rewritten on every snapshot). Restores the budget and all "
+                 "hyperparameters from the sidecar — other flags are ignored "
+                 "(--archetype is still required: it selects the sidecar)."),
+        Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated roster the FROZEN OPPONENT pilots (default: every "
+                 "deck in decks/league/). The learner's own decks always come from "
+                 "the archetype tag, never from this list."),
+        Arg("--chunk-steps", "int", default=EXPLOITER_CHUNK,
+            help="Steps per progress chunk: the run is trained in chunks of this "
+                 "size so the sidecar/snapshots advance and --resume re-enters "
+                 "mid-run (default %d)." % EXPLOITER_CHUNK),
+        Arg("--scripted-anchor-frac", "float", default=LEAGUE_SCRIPTED_ANCHOR_FRAC,
+            help="Share of episodes played against the scripted anchor rather than "
+                 "the frozen generalist (collapse guard; default %.2f)."
+                 % LEAGUE_SCRIPTED_ANCHOR_FRAC),
+        Arg("--pfsp-mode", "choice", choices=("pfsp", "softmax"), default="pfsp",
+            help="Weighting across the frozen opponent's decks: 'pfsp' = "
+                 "(1-winrate)^p (AlphaStar) or 'softmax' = exp(q) (default pfsp). "
+                 "Concentrates the exploiter on the roster decks it loses to."),
+        Arg("--pfsp-p", "float", default=LEAGUE_PFSP_P,
+            help="PFSP exponent p in (1-winrate)^p (default %.1f)." % LEAGUE_PFSP_P),
+        Arg("--softmax-eta", "float", default=LEAGUE_SOFTMAX_ETA,
+            help="Softmax quality learning rate eta (default %.3f)." % LEAGUE_SOFTMAX_ETA),
+        Arg("--snapshot-every", "int", default=LEAGUE_SNAPSHOT_EVERY,
+            help="Save a frozen exp_<archetype>__v{steps}.zip snapshot every N "
+                 "steps (default %d)." % LEAGUE_SNAPSHOT_EVERY),
+        Arg("--promote-margin", "float", default=0.0,
+            help="Only keep a snapshot when the exploiter's recent-window win-rate "
+                 ">= 0.5 + margin (default 0.0 = keep every snapshot; an exploiter "
+                 "is worth pooling even below 50%%, so the gate is off by default)."),
+        Arg("--fresh", "flag",
+            help="Start the exploiter from RANDOM weights instead of warm-starting "
+                 "from the generalist (gen__final.zip / newest gen__v*.zip). An "
+                 "existing exp_<archetype> checkpoint always wins over both — this "
+                 "flag only affects the FIRST run of an archetype's exploiter."),
+        *train_opts_except("total_timesteps", "fresh"),
+        *common_args(),
+    ]),
+    Sub("curriculum",
+        "Run / resume a multi-phase training PLAN (league, exploiter, az, "
+        "az-league, baseline phases) from one JSON file", items=[
+        Arg("--plan", "str", required=True, suggest="curriculum",
+            help="Curriculum plan to run: a name under "
+                 "train/checkpoints/curricula/ (e.g. 'q3_archetypes' -> "
+                 "q3_archetypes.plan.json) or a path to a .plan.json file. Each "
+                 "phase is a train.py subcommand with its own arguments; "
+                 "progress is tracked in <name>.progress.json next to the plan. "
+                 "In the TUI, the 'curriculum' entry opens a plan builder."),
+        Arg("--resume", "flag",
+            help="Continue an interrupted curriculum from its progress file: "
+                 "completed phases are skipped and the phase that was in flight "
+                 "is relaunched (with --resume of its own when the subcommand "
+                 "supports it). Refuses to run if an already-executed phase was "
+                 "edited; phases still ahead may be freely rewritten."),
+        Arg("--status", "flag",
+            help="Print each phase's state (pending/running/done/failed, steps "
+                 "done, last gate result) from the progress file and exit."),
+        Arg("--dry-run", "flag",
+            help="Print the command each phase would run and exit — the way to "
+                 "check a plan's composed argv before spending GPU-days on it."),
     ]),
     Sub("sweep", "PFSP sweep: train the generalist on one deck vs a pool of the other decks", items=[
         Arg("--deck", "str", required=True, suggest="deck",
@@ -575,6 +695,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "The scripted opponent mirrors it."),
         Arg("--seed", "int", default=None,
             help="RNG seed for reproducible runs (game N uses seed+N; default: random)"),
+        Arg("--bo1", "flag",
+            help="Single-game mode. baseline defaults to bo3 matches; this opts back "
+                 "into one-off games (--bo3 is a redundant no-op here)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
     ]),
     # ── AlphaZero (Phase C) ───────────────────────────────────────────────────

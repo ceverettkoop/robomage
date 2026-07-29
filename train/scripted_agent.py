@@ -31,11 +31,14 @@ import numpy as np
 from env import (
     # sizes / normalisers
     STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, N_CARD_TYPES, MAX_HAND_SLOTS,
+    # per-action metadata block starts (never re-count blocks off STATE_SIZE)
+    ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
     # action category constants
     _CAT_PASS, _CAT_SEL_ATK, _CAT_CONF_ATK, _CAT_SEL_BLK, _CAT_CONF_BLK,
     _CAT_ACTIVATE, _CAT_CAST, _CAT_TARGET, _CAT_LAND, _CAT_MULLIGAN, _CAT_KEEP_HAND,
     _CAT_SEARCH,
-    _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY, _CAT_SB_DONE,
+    _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY,
+    _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE,
     _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD, _CAT_YESNO,
     # battlefield / stack layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
@@ -608,17 +611,25 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
          red for Dragon's Rage Channeler, Lightning Strike)
       - Passes priority otherwise
 
-    Action categories are stored in obs[STATE_SIZE:] normalised by ACTION_CATEGORY_MAX.
+    Action categories are stored in obs[ACT_CATS_START:] normalised by ACTION_CATEGORY_MAX.
     """
-    cats     = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
-    card_ids = obs[STATE_SIZE + MAX_ACTIONS     : STATE_SIZE + 2 * MAX_ACTIONS]
-    ctrl_arr = obs[STATE_SIZE + 2 * MAX_ACTIONS : STATE_SIZE + 3 * MAX_ACTIONS]
+    cats     = np.round(obs[ACT_CATS_START:ACT_CATS_START + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+    card_ids = obs[ACT_IDS_START  : ACT_IDS_START + MAX_ACTIONS]
+    ctrl_arr = obs[ACT_CTRL_START : ACT_CTRL_START + MAX_ACTIONS]
 
     in_main_phase = obs[_STEP_FIRST_MAIN_IDX] > 0.5 or obs[_STEP_SECOND_MAIN_IDX] > 0.5
 
-    # 0a. Sideboarding: scripted agent never sideboards — always pick done (index 0)
+    # 0a. Sideboarding: the scripted agent never sideboards, so it takes Done as
+    # soon as the deck is balanced (Done is index 0 whenever it is offered). On the
+    # balanced delta menu that is every decision it can reach, since it never opens
+    # a swap. The fallback matters only if it inherits a phase mid-move (Done is
+    # withheld while the deck is off-size): pick the first offered move, which is
+    # necessarily a balancing one, so the phase still terminates instead of falling
+    # through to the combat/casting logic below with a sideboard menu in hand.
     if any(c == _CAT_SB_DONE for c in cats):
         return 0
+    if any(c in (_CAT_SB_IN, _CAT_SB_OUT) for c in cats):
+        return next(i for i, c in enumerate(cats) if c in (_CAT_SB_IN, _CAT_SB_OUT))
 
     # 0. Mulligan: always keep — return the first non-mulligan action (the keep action)
     if any(c == _CAT_MULLIGAN for c in cats):
@@ -1116,7 +1127,7 @@ class ScriptedAgent:
             # new_game() (same safety net as _explore_seen in _explore_action).
             self._fruitless_activations.clear()
         elif (num_choices == 1 and c0 in _SEARCH_MENU_CATS
-              and float(obs[STATE_SIZE + MAX_ACTIONS]) < 0.0):
+              and float(obs[ACT_IDS_START]) < 0.0):
             # Fail-only search menu (single choice, null card-id sentinel):
             # blame the resolving self-controlled ability on top of the stack.
             cid = _slot_card_idx(obs, _STACK_START + 1)
@@ -1148,10 +1159,10 @@ class ScriptedAgent:
         # Tron-synergy gating uses the unified deck identification (name rule,
         # content fallback) — computed once per decision for all blocks below.
         tron_synergy = cfg.use_tron_synergy and self._deck_is_tron(obs)
-        cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices]
+        cats = np.round(obs[ACT_CATS_START:ACT_CATS_START + num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
-        card_ids = obs[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
-        ctrl_arr = obs[STATE_SIZE + 2 * MAX_ACTIONS:STATE_SIZE + 3 * MAX_ACTIONS]
+        card_ids = obs[ACT_IDS_START:ACT_IDS_START + MAX_ACTIONS]
+        ctrl_arr = obs[ACT_CTRL_START:ACT_CTRL_START + MAX_ACTIONS]
 
         # Decode the readable game state lazily — only when a heuristic branch needs it.
         g_cache = {}
@@ -1432,7 +1443,7 @@ class ScriptedAgent:
         """
         if num_choices <= 1:
             return 0
-        cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices]
+        cats = np.round(obs[ACT_CATS_START:ACT_CATS_START + num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
         # A game always opens with a mulligan query, so seeing one means a new game
         # started: clear the novelty set even when nobody called new_game() (e.g. a
@@ -1440,7 +1451,7 @@ class ScriptedAgent:
         # London mulligans are harmless — nothing is cast pregame.
         if any(int(c) == _CAT_MULLIGAN for c in cats):
             self._explore_seen.clear()
-        card_ids = obs[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
+        card_ids = obs[ACT_IDS_START:ACT_IDS_START + MAX_ACTIONS]
         # The "patient" profile swaps in the big-mana weight table, scales CAST
         # weight by mana value, and withholds the novelty boost from ACTIVATE
         # (see the _EXPLORE_PATIENT_* constants). The default profile takes the

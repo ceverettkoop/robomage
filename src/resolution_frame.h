@@ -101,6 +101,15 @@ struct UnlessRt {
     bool pay_answered = false;    // "Discard N cards" chosen; now picking the cards
     size_t discards_done = 0;
 };
+// effects::discard's choose-N-to-discard loop (Careful Study's "discard two cards";
+// also the single-card Thoughtseize/Archon path with count 1): the chooser picks one
+// card per query so each round-trips in machine mode, and this persists how many picks
+// are done so a suspension resumes at the next unmade pick. The per-pick menu is rebuilt
+// from the LIVE hand each ask (a picked card left the hand), so nothing else persists and
+// the visitor pins nothing extra for it.
+struct DiscardRt {
+    size_t discards_done = 0;
+};
 // change_zone's search loop (fetch lands, Doomsday's 5-pick multi-zone tutor):
 // the outer pick count + the resolved dynamic bounds, computed once — earlier
 // picks mutate the counted state (cards moved, remembered grown), so a resume
@@ -167,8 +176,9 @@ struct CharmRt {
 struct RepeatRt {
     bool init = false;            // saved_remembered captured
     bool player_setup = false;    // current player's remembered-set swap done
-    int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
-    int sub_idx = 0;              // next RepeatSubAbility for the current player
+    int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP); reused as the type index in the per-type path
+    int sub_idx = 0;              // next RepeatSubAbility for the current player/type
+    int trailing_idx = 0;         // per-type path: next trailing SubAbility$ resolved once after the loop
     std::vector<Entity> saved_remembered;  // outer remembered set to restore at completion
 };
 struct ImmediateRt {
@@ -214,10 +224,18 @@ struct DrawRt {
     size_t total = 0;
     size_t done = 0;
 };
+// change_zone's DefinedPlayer$ Player put-from-hand (Show and Tell: "Each player MAY put an
+// artifact, creature, enchantment, or land card from their hand onto the battlefield"). Each
+// player decides in APNAP order (CR 101.4 / 405.6, active player first); only the loop index
+// persists across a suspension — the per-player candidate menu is re-derived from that player's
+// live hand every pass (a live-menu loop; the parked menu pins cover the hand cards).
+struct EachPlayerPutRt {
+    int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
+};
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
                                    SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
-                                   CopySpellRT, DrawRt>;
+                                   CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating

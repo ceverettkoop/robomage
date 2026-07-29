@@ -19,6 +19,7 @@ from typing import Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
 
+import archetypes
 from env import (MAX_ACTIONS, STATE_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
                  _CUR_TURN_IDX, _MATCH_CTX_START)
 from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
@@ -40,6 +41,14 @@ _SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard",
 # be named 'gen' (see ``assert_not_reserved_deck``).
 GEN_STEM = "gen"
 
+# Checkpoint stem prefix of an ARCHETYPE EXPLOITER: a dedicated run whose learner
+# pilots one archetype's decks against the frozen generalist, saved under its own
+# stem ('exp_burn__v{steps}.zip' / 'exp_burn__final.zip') so it never touches the
+# generalist's files, and injected back into the league pool as an opponent (see
+# LeaguePool.refresh tier 3 and train.py's `exploiter` subcommand). Like 'gen',
+# the prefix is reserved — a deck may not be named 'exp_*'.
+EXPLOITER_PREFIX = "exp_"
+
 # Checkpoint format version. v3 is the single-generalist naming ('gen__final.zip' /
 # 'gen__v{steps}.zip'); the double underscore is the format marker that separates
 # these from the legacy '{a}_{b}_*.zip' matchup files. Bumping the observation
@@ -51,38 +60,83 @@ CHECKPOINT_FORMAT_VERSION = 3
 _SNAPSHOT_RE = re.compile(r"^(?P<deck>.+)__v(?P<steps>\d+)\.zip$")
 
 
-def assert_not_reserved_deck(deck: Optional[str]) -> None:
-    """Refuse a roster/league deck literally named ``gen`` (the reserved model stem).
+def exploiter_stem(archetype: str) -> str:
+    """Checkpoint stem of an archetype's exploiter ('burn' -> 'exp_burn')."""
+    return f"{EXPLOITER_PREFIX}{archetype}"
 
-    A deck called 'gen' would collide with the generalist checkpoint stem, so its
-    snapshots ('gen__v*.zip') would be indistinguishable from the model's own.
+
+def is_exploiter_path(path: Optional[str]) -> bool:
+    """True when a checkpoint path/label belongs to an exploiter stem."""
+    return bool(path) and os.path.basename(path).startswith(EXPLOITER_PREFIX)
+
+
+def assert_not_reserved_deck(deck: Optional[str]) -> None:
+    """Refuse a roster/league deck whose name collides with a reserved model stem.
+
+    Reserved are ``gen`` (the one generalist) and anything starting with ``exp_``
+    (the archetype exploiters): such a deck's checkpoints ('gen__v*.zip',
+    'exp_*__v*.zip') would be indistinguishable from a model's own snapshots.
     Fail loudly rather than silently corrupt the pool."""
-    if deck and os.path.basename(deck).strip().lower() == GEN_STEM:
+    if not deck:
+        return
+    stem = os.path.basename(deck).strip().lower()
+    if stem == GEN_STEM:
         raise ValueError(
             f"deck name {deck!r} collides with the reserved generalist model stem "
             f"'{GEN_STEM}'. Rename the deck — 'gen' is reserved for the one "
             f"generalist checkpoint (gen__final.zip / gen__v*.zip).")
+    if stem.startswith(EXPLOITER_PREFIX):
+        raise ValueError(
+            f"deck name {deck!r} collides with the reserved exploiter stem prefix "
+            f"'{EXPLOITER_PREFIX}'. Rename the deck — '{EXPLOITER_PREFIX}*' is "
+            f"reserved for archetype exploiter checkpoints "
+            f"({EXPLOITER_PREFIX}<archetype>__final.zip / __v*.zip).")
 
 
-def gen_snapshots(checkpoint_dir: Optional[str]) -> list[str]:
-    """All frozen snapshots of the one generalist ('gen__v{steps}.zip' + 'gen__final.zip').
+def stem_final_path(checkpoint_dir: str, stem: str) -> str:
+    """Path to ``<stem>__final.zip`` (whether or not it exists yet)."""
+    return os.path.join(checkpoint_dir, f"{stem}__final.zip")
 
-    Returns absolute paths sorted by training step (the ``gen__final`` snapshot, if
-    present, last). Files that don't parse as gen snapshots are skipped. Empty when
-    the dir is unknown or nothing matches.
+
+def stem_snapshots(checkpoint_dir: Optional[str], stem: str) -> list[str]:
+    """All frozen snapshots of one checkpoint stem ('<stem>__v{steps}.zip' + '__final').
+
+    Returns absolute paths sorted by training step (the ``<stem>__final`` snapshot,
+    if present, last). Files that don't parse as snapshots of exactly this stem are
+    skipped. Empty when the dir is unknown or nothing matches. The shared scan
+    behind both the generalist (``gen_snapshots``) and the archetype exploiters
+    (``exploiter_snapshots``).
     """
     if not checkpoint_dir:
         return []
     versioned: list[tuple[int, str]] = []
-    for path in _glob.glob(os.path.join(checkpoint_dir, f"{GEN_STEM}__v*.zip")):
+    for path in _glob.glob(os.path.join(checkpoint_dir, f"{stem}__v*.zip")):
         m = _SNAPSHOT_RE.match(os.path.basename(path))
-        if m and m.group("deck") == GEN_STEM:
+        if m and m.group("deck") == stem:
             versioned.append((int(m.group("steps")), path))
     versioned.sort()
     out = [p for _, p in versioned]
-    final = gen_final_path(checkpoint_dir)
+    final = stem_final_path(checkpoint_dir, stem)
     if os.path.exists(final):
         out.append(final)
+    return out
+
+
+def gen_snapshots(checkpoint_dir: Optional[str]) -> list[str]:
+    """All frozen snapshots of the one generalist ('gen__v{steps}.zip' + 'gen__final.zip')."""
+    return stem_snapshots(checkpoint_dir, GEN_STEM)
+
+
+def exploiter_snapshots(checkpoint_dir: Optional[str]) -> dict[str, list[str]]:
+    """``{archetype: [snapshots oldest..newest, '__final' last]}`` per exploiter.
+
+    Only archetypes that actually have exploiter checkpoints appear, so an
+    untrained archetype contributes nothing to the pool."""
+    out: dict[str, list[str]] = {}
+    for arch in archetypes.ARCHETYPES:
+        snaps = stem_snapshots(checkpoint_dir, exploiter_stem(arch))
+        if snaps:
+            out[arch] = snaps
     return out
 
 
@@ -94,7 +148,7 @@ def latest_gen_snapshot(checkpoint_dir: Optional[str]) -> Optional[str]:
 
 def gen_final_path(checkpoint_dir: str) -> str:
     """Path to the generalist's ``gen__final.zip`` (whether or not it exists yet)."""
-    return os.path.join(checkpoint_dir, f"{GEN_STEM}__final.zip")
+    return stem_final_path(checkpoint_dir, GEN_STEM)
 
 
 _DEFAULT_CHECKPOINT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -1348,6 +1402,20 @@ class OpponentPool:
         return list(self._specs)
 
 
+def _interleave(*lists) -> list:
+    """Round-robin merge of several lists, preserving each list's own order.
+
+    Used to share one bounded budget fairly between competing newest-first
+    candidate lists (older generalist snapshots vs older exploiter snapshots), so
+    truncating the merged list never starves the shorter source."""
+    out = []
+    for i in range(max((len(l) for l in lists), default=0)):
+        for l in lists:
+            if i < len(l):
+                out.append(l[i])
+    return out
+
+
 class LeaguePool:
     """League opponent sampler for PFSP / softmax multi-matchup training.
 
@@ -1362,6 +1430,16 @@ class LeaguePool:
       3. the newest generalist snapshot piloting the learner's own current deck
          (the OpenAI-Five 'play the latest self' slot, chosen with probability
          ``self_play_frac``).
+      4. frozen ARCHETYPE EXPLOITER snapshots (``exp_<arch>__v*`` /
+         ``exp_<arch>__final``), each paired with a deck of the archetype it
+         exploits, so the league inoculates the generalist against the alien
+         styles a dedicated run discovered (``exploiter_floor`` guarantees them a
+         minimum share even once the learner beats them).
+
+    ``pinned_snapshots`` switches the pool into the fixed-opponent configuration
+    an EXPLOITER run trains against: exactly those checkpoint files, each paired
+    with every roster deck, with no snapshot rotation, no exploiter tier and no
+    self-play branch — the frozen target the exploiter is supposed to beat.
 
     Memory is bounded exactly like :class:`OpponentPool`: the pool is capped at
     ``max(1, floor(max_checkpoint_ratio * n_envs))`` unique generalist snapshot
@@ -1388,12 +1466,20 @@ class LeaguePool:
                  n_envs: int = 1, env_index: int = 0,
                  max_checkpoint_ratio: float = 1.0,
                  deterministic: bool = False, scripted_spec: str = "scripted",
-                 self_decks: Optional[Sequence[str]] = None):
+                 self_decks: Optional[Sequence[str]] = None,
+                 exploiter_floor: float = 0.0,
+                 pinned_snapshots: Optional[Sequence[str]] = None):
         self._learner = learner_deck
         self._roster = list(roster) or [learner_deck]
         self._dir = checkpoint_dir
         self._self_play_frac = float(self_play_frac)
         self._anchor_frac = float(scripted_anchor_frac)
+        self._exploiter_floor = float(exploiter_floor)
+        # Pinned mode is selected by PASSING the argument at all (even empty): an
+        # exploiter run with no generalist to freeze must face the scripted anchor
+        # only, never a rediscovered snapshot pool.
+        self._pinned_mode = pinned_snapshots is not None
+        self._pinned = [p for p in (pinned_snapshots or []) if p]
         self._rng = rng if rng is not None else np.random.default_rng()
         self._n_envs = max(1, n_envs)
         self._env_index = env_index
@@ -1414,6 +1500,9 @@ class LeaguePool:
         # opp_deck, label) matchup weights layered on top — see _entry_weights.
         self._weights: dict = {}
         self._snap_entries: list[tuple[str, str]] = []  # [(path, deck)] this process holds
+        # Indices into _snap_entries whose checkpoint is an archetype exploiter
+        # (the subset the exploiter floor samples from).
+        self._exp_indices: list[int] = []
         self._latest_self: Optional[str] = None    # learner's newest snapshot
         self._total_snaps = 0                      # total snapshots across roster (auto-ramp)
         self._episode = 0
@@ -1433,32 +1522,77 @@ class LeaguePool:
             generalist snapshot (== ``gen__final`` when present). All these entries
             reuse the one newest file, so keeping every roster deck represented as
             an opponent costs a single resident model.
-          * Tier 2 (discretionary) — the remaining older ``gen__v*`` snapshots,
-            newest-first, each assigned a roster deck round-robin so historical
-            snapshots face varied decks. Capped so the pool holds at most
-            ``max_unique`` unique snapshot files.
+          * Tier 2 (discretionary) — the remaining older ``gen__v*`` snapshots and
+            older ``exp_*__v*`` exploiter snapshots, newest-first and interleaved,
+            each assigned a deck round-robin so historical snapshots face varied
+            decks. Capped so the pool holds at most ``max_unique`` unique snapshot
+            files.
+          * Tier 3 (guaranteed) — the newest snapshot of every archetype exploiter
+            that exists, paired with the decks of the archetype it exploits, so an
+            exploiter that has been trained is always in the field.
+
+        ``pinned_snapshots`` short-circuits all of it: the pool is exactly those
+        files x the roster, unsharded (a pinned run holds one or two files, so
+        every process can face every roster deck) and with no self-play slot.
         """
+        if self._pinned_mode:
+            self._total_snaps = len(self._pinned)
+            self._latest_self = None   # no latest-self slot against a frozen target
+            self._snap_entries = [(path, deck) for path in self._pinned
+                                  for deck in self._roster]
+            self._exp_indices = []
+            return
+
         snaps = gen_snapshots(self._dir)             # oldest..newest, gen__final last
         self._total_snaps = len(snaps)
         # The newest generalist snapshot pilots the learner in the latest-self slot.
         self._latest_self = snaps[-1] if snaps else None
         newest = snaps[-1] if snaps else None
+        exp_by_arch = exploiter_snapshots(self._dir)
 
         # Tier 1: every roster deck paired with the newest snapshot (one shared file).
         guaranteed = [(newest, deck) for deck in self._roster] if newest else []
 
-        # Tier 2: older snapshots newest-first, each assigned a roster deck. Bound
-        # the pool to max_unique unique FILES; the newest file (Tier 1) is one, so
-        # the rest of the budget goes to older files.
+        # Tier 3: the newest snapshot of each exploiter, piloting its archetype's
+        # decks. Never evicted (an exploiter the learner has learned to beat is
+        # still the only representative of its style in the pool).
+        exp_files: list[str] = []
+        for arch in sorted(exp_by_arch):
+            exp_newest = exp_by_arch[arch][-1]
+            exp_files.append(exp_newest)
+            guaranteed += [(exp_newest, deck)
+                           for deck in self._exploiter_decks(arch)]
+
+        # Tier 2: older snapshots newest-first, each assigned a deck. Bound the pool
+        # to max_unique unique FILES; the guaranteed files (newest gen + one per
+        # exploiter) are already resident, so the rest of the budget goes to older
+        # files, interleaved so a long gen history can't starve the exploiters.
         max_unique = max(1, int(math.floor(self._ratio * self._n_envs)))
-        older = list(reversed(snaps[:-1])) if len(snaps) > 1 else []  # newest -> oldest
-        older = older[:max(0, max_unique - 1)]
         roster = self._roster
-        discretionary = [(snap, roster[i % len(roster)]) for i, snap in enumerate(older)]
+        gen_older = [(snap, roster) for snap in reversed(snaps[:-1])]
+        exp_older = [(snap, self._exploiter_decks(arch))
+                     for arch in sorted(exp_by_arch)
+                     for snap in reversed(exp_by_arch[arch][:-1])]
+        budget = max(0, max_unique - len(exp_files) - (1 if newest else 0))
+        older = _interleave(gen_older, exp_older)[:budget]
+        discretionary = [(snap, decks[i % len(decks)])
+                         for i, (snap, decks) in enumerate(older)]
 
         # Shard the pooled set across processes (each env keeps ~max_unique/n_envs).
         active = guaranteed + discretionary
         self._snap_entries = active[self._env_index % self._n_envs::self._n_envs]
+        self._exp_indices = [i for i, (path, _deck) in enumerate(self._snap_entries)
+                             if is_exploiter_path(path)]
+
+    def _exploiter_decks(self, arch: str) -> list[str]:
+        """Decks an ``arch`` exploiter pilots as a pool opponent.
+
+        Its own archetype's decks, preferring the ones in this pool's roster (so a
+        league opponent plays a roster deck); if the archetype has no roster deck,
+        its tagged decks are used as-is rather than dropping the exploiter."""
+        decks = archetypes.decks_for_archetype(arch)
+        in_roster = [d for d in decks if d in self._roster]
+        return in_roster or decks
 
     def _maybe_refresh(self):
         self._episode += 1
@@ -1542,13 +1676,24 @@ class LeaguePool:
         if (not self._snap_entries) or self._rng.random() < self._anchor_frac:
             deck = self._roster[int(self._rng.integers(len(self._roster)))]
             return self_deck, deck, self._scripted_spec, self._scripted()
-        # 3. weighted historical snapshot (cross-deck league + mirror self-play).
-        weights = self._entry_weights(self_deck)
-        idx = int(self._rng.choice(len(self._snap_entries), p=weights))
-        path, deck = self._snap_entries[idx]
+        # 2b. exploiter floor — a share reserved for the archetype exploiters, so
+        #     the styles a dedicated run discovered keep showing up even once PFSP
+        #     stops preferring them (the learner beats them).
+        if self._exp_indices and self._rng.random() < self._exploiter_floor:
+            return self._sample_entry(self_deck, self._exp_indices)
+        # 3. weighted historical snapshot (cross-deck league + mirror self-play,
+        #    exploiters included in the normal PFSP weighting).
+        return self._sample_entry(self_deck, None)
+
+    def _sample_entry(self, self_deck: str, indices) -> tuple[str, str, str, Controller]:
+        """PFSP-sample one snapshot entry (optionally restricted to ``indices``)."""
+        pool = self._snap_entries if indices is None else [self._snap_entries[i]
+                                                           for i in indices]
+        weights = self._entry_weights(self_deck, indices)
+        path, deck = pool[int(self._rng.choice(len(pool), p=weights))]
         return self_deck, deck, os.path.basename(path), self._model_for(path)
 
-    def _entry_weights(self, self_deck: str) -> np.ndarray:
+    def _entry_weights(self, self_deck: str, indices=None) -> np.ndarray:
         """Normalised PFSP/softmax weights for this process's snapshot entries.
 
         Weighting is matchup-aware: for each ``(path, opp_deck)`` entry we prefer
@@ -1557,10 +1702,15 @@ class LeaguePool:
         weight ``(opp_deck, label)``, else the current max weight so unseen entries
         still get tried (OpenAI-Five 'init new snapshot quality to the max' rule).
         In fixed mode the weights dict has no matchup keys, so this collapses to
-        the old aggregate-only behavior."""
+        the old aggregate-only behavior.
+
+        ``indices`` restricts the weighting to a subset of the entries (the
+        exploiter floor weights the exploiter entries among themselves)."""
         default = max(self._weights.values()) if self._weights else 1.0
+        entries = (self._snap_entries if indices is None
+                   else [self._snap_entries[i] for i in indices])
         w = []
-        for path, deck in self._snap_entries:
+        for path, deck in entries:
             label = os.path.basename(path)
             val = self._weights.get((self_deck, deck, label))
             if val is None:

@@ -60,10 +60,10 @@ harness, the TUI, and `play.py` — accepts:
   (raw AZ policy) — `SearchController`/`AZRawController`. The search specs take a
   `?k=v&…` query: `sims`/`worlds`/`c`/`temp`/`seed` (in-game search) plus
   `sb_sims`/`sb_worlds`/`sb_max_depth` — the **bo3 sideboard-root** budget
-  (defaults `32`/`4`/`200`). A sideboard prompt is a valid MCTS root but its
+  (defaults `128`/`4`/`200`). A sideboard prompt is a valid MCTS root but its
   horizon spans the whole next game, so `SearchController` switches to the
   sideboard budget there rather than the in-game one (whose `max_depth` default is
-  60). e.g. `az:gen?sims=64&worlds=4&sb_sims=32`.
+  60). e.g. `az:gen?sims=64&worlds=4&sb_sims=128`.
   - `time=<seconds>` sets a **wall-clock per-decision budget** instead of a fixed
     sim count: the search interleaves its `worlds` round-robin and runs as many
     simulations as fit in that many seconds, then stops (more time = stronger

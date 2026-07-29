@@ -106,8 +106,18 @@ _VOCAB_ORDER = None
 
 
 def name_to_uid(name):
-    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen -> '_', drop other punct."""
-    return re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
+    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen/slash -> '_', drop other
+    punct, then collapse consecutive underscores to one (so "& "-joined names like
+    "Raph & Mikey, Troublemakers" match Forge's single-underscore filename).
+
+    '/' is a separator, not punctuation (CR 709 split cards): a combined "Front/Back"
+    reference maps to Forge's underscore-joined filename, e.g. "Dead/Gone" -> "dead_gone"
+    -> cardsfolder/d/dead_gone.txt. Dropping it instead would ask Forge for a
+    "deadgone.txt" that does not exist, and the engine — which does apply this rule —
+    would then assert on the missing script the moment a deck naming the card loads."""
+    uid = re.sub(r"[^a-z0-9_]", "",
+                 name.lower().replace(" ", "_").replace("-", "_").replace("/", "_"))
+    return re.sub(r"_+", "_", uid)
 
 
 def _resolve(uid, is_token):
@@ -245,17 +255,29 @@ def _dfc_back_candidate(uid):
     return None
 
 
-def _discover_forge_dfc(uid, branch):
-    """The combined '<uid>_<back>.txt' filename Forge serves for a DFC, or None."""
+def _forge_dfc_candidates(uid, branch):
+    """Ordered combined-'<uid>_<back>.txt' candidates Forge may serve for this DFC front.
+
+    Several listed files can share the '<uid>_' prefix without being this card — 'dead_'
+    matches Dead//Gone's dead_gone.txt but also dead_drop.txt, dead_reckoning.txt and so
+    on — so EVERY match is a candidate and the caller verifies each one's front face,
+    mirroring how _local_combined scans the local dir. Returning only the first match
+    made a card lose to an alphabetically earlier neighbour.
+
+    The vocab-adjacency guess is tried first when it is a real listing entry: it is right
+    whenever the card is registered, so the common case still costs one fetch."""
+    guess = _dfc_back_candidate(uid)
     names = _list_forge_dir(uid[0], branch)
-    if names:
-        prefix = uid + "_"
-        for nm in sorted(names):
-            if nm.startswith(prefix) and nm.endswith(".txt"):
-                return nm
-    # Contents API unavailable (blocked / rate-limited): fall back to the
-    # vocab-adjacency candidate. The caller verifies the front face before writing.
-    return _dfc_back_candidate(uid)
+    if not names:
+        # Contents API unavailable (blocked / rate-limited): the vocab-adjacency
+        # candidate is all we have. The caller verifies the front face before writing.
+        return [guess] if guess else []
+    prefix = uid + "_"
+    cands = sorted(nm for nm in names if nm.startswith(prefix) and nm.endswith(".txt"))
+    if guess in cands:
+        cands.remove(guess)
+        cands.insert(0, guess)
+    return cands
 
 
 def _write(name, dest, body, branch):
@@ -305,14 +327,22 @@ def fetch_script(name, force=False, dry_run=False, is_token=False):
     #    never a duplicate front-name file.
     if not is_token:
         for branch in BRANCHES:
-            combined = _discover_forge_dfc(uid, branch)
-            if not combined:
-                continue
-            url = f"{RES_BASE.format(branch=branch)}/cardsfolder/{uid[0]}/{combined}"
-            body = fetch_text(url)
-            if body is None or not _front_face_is(body, uid, is_path=False):
-                continue  # gone, or a prefix collision rather than this card's front face
-            return _write(name, os.path.join(CARDS_DIR, uid[0], combined), body, branch)
+            for combined in _forge_dfc_candidates(uid, branch):
+                url = f"{RES_BASE.format(branch=branch)}/cardsfolder/{uid[0]}/{combined}"
+                body = fetch_text(url)
+                if body is None or not _front_face_is(body, uid, is_path=False):
+                    continue  # gone, or a prefix collision rather than this card's front face
+                return _write(name, os.path.join(CARDS_DIR, uid[0], combined), body, branch)
+
+    # 3. Forge stages preview / not-yet-released cards (e.g. Universes Beyond sets like
+    #    the TMNT drop) under a FLAT "cardsfolder/upcoming/<uid>.txt" rather than the
+    #    letter dir. Try there on an exact-filename basis and, if found, write it to the
+    #    engine-loadable letter-dir dest (src/card_db.cpp reads cardsfolder/<letter>/).
+    if not is_token:
+        for branch in BRANCHES:
+            body = fetch_text(f"{RES_BASE.format(branch=branch)}/cardsfolder/upcoming/{uid}.txt")
+            if body is not None:
+                return _write(name, dest, body, branch)
 
     print(f"  {name}: NOT FOUND on Forge ({kind} {uid}.txt) — hand-authoring required",
           file=sys.stderr)

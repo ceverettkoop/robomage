@@ -19,16 +19,31 @@ fails, so one invocation reports every finding):
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
           resolve through their script's front face, mirroring the engine.
+  curriculum The curriculum plan schema and the argv each phase kind composes
+          for its train.py subcommand, the resume argv forms, and the plan-hash
+          prefix check (train/test_curriculum.py). Stdlib-only, instant.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
           no holes, one-hots are one-hot, etc. Catches a silent serialize_state
           layout/encoding regression.
+  actorobs The C++ AZ actor's copy of the observation layout still agrees with
+          src/machine_io.h: `make actor-syntax` runs -fsyntax-only over the
+          actor's two libtorch-free TUs, firing every absolute-offset
+          static_assert in src/actor/obs_builder.{h,cpp}. Those asserts used to
+          be reachable only via `make actor` (needs libtorch, not in the default
+          build), so a layout change could leave the actor uncompilable
+          undetected. Compiler-only, no torch, ~1s.
   snapshot The --search-server snapshot/restore/determinize protocol behaves:
           round-trip byte identity, RNG isolation, determinize efficacy, the
           SIM_RESULT terminal intercept, and determinize invariants
           (train/test_snapshot.py). Catches a regression in the in-process
           MCTS search primitives.
+  pergame The bo3 per-game-index win-rate split: seat-flip consistency, tally
+          merging, and a live bo3 pinned against the engine (Player A starts
+          game 1 of every match). Guards the measurement sideboarding is judged
+          by, including the play/draw confound the report controls for
+          (train/test_per_game_split.py). Torch-free; needs bin/robomage.
   sbselfplay The AZ self-play collector turns bo3 sideboard search roots into
           samples priced by the UPCOMING game's winner: one small bo3 match
           through the real _play_match, then assert a sideboard sample exists,
@@ -104,8 +119,8 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "obsinv", "snapshot", "sbselfplay", "mirror",
-             "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "actorobs", "pergame",
+             "snapshot", "sbselfplay", "mirror", "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -199,15 +214,17 @@ class Report:
 def tier_pygen(rep):
     """Regenerate the codegen outputs and fail if the committed copies are stale.
 
-    Both are deterministic given the committed C++ inputs AND a fully provisioned
-    card set: _enums.py derives from action.h/game.h; card_costs.py additionally
+    All are deterministic given the committed inputs AND a fully provisioned
+    card set: _enums.py derives from action.h/game.h; archetypes_gen.h from
+    archetypes.py + decks/archetypes.json; card_costs.py additionally
     reads each vocab card's ManaCost from its script — and provision_decks.py
     fetches the whole vocab, so every cost is reproducible here and in CI. The
     working tree is restored afterward so a stale result is reported, not left
     half-regenerated (the developer runs `make pygen` to actually update them)."""
     gen_files = ["train/_enums.py", "train/card_costs.py",
-                 "src/gen/card_costs_gen.h"]
-    for gen in ("train/gen_enums.py", "train/gen_card_costs.py"):
+                 "src/gen/card_costs_gen.h", "src/gen/archetypes_gen.h"]
+    for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
+                "train/gen_archetypes.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
         if r.returncode != 0:
@@ -255,6 +272,23 @@ def tier_obsinv(rep):
                             f"{r.stdout}{r.stderr}")
 
 
+def tier_curriculum(rep):
+    """Curriculum plan schema + composed-argv regression (train/curriculum.py).
+
+    Asserts every phase kind's composed `train.py <sub> …` argv, the loud
+    failures (unknown kind / override key / wrong value type), the resume argv
+    forms, and the plan-hash prefix check that lets a resume rewrite future
+    phases but not executed ones (see train/test_curriculum.py). Stdlib-only and
+    instant; catches a cli_spec rename silently changing what a plan runs."""
+    r = subprocess.run([sys.executable, "train/test_curriculum.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("curriculum", "curriculum plan/argv violation "
+                                f"(test_curriculum.py exit {r.returncode}):\n"
+                                f"{r.stdout}{r.stderr}")
+
+
 def tier_snapshot(rep):
     """The --search-server snapshot/restore/determinize protocol regression.
 
@@ -268,6 +302,23 @@ def tier_snapshot(rep):
     if r.returncode != 0:
         rep.error("snapshot", "search-server protocol violation "
                              f"(test_snapshot.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
+
+
+def tier_pergame(rep):
+    """The bo3 per-game-index win-rate split behaves.
+
+    Guards the measurement sideboarding is judged by: per-game bookkeeping, the
+    seat flip `baseline` relies on (seats alternate between matches), and the
+    play/draw control the report needs — a raw pre-board vs post-board comparison
+    is confounded by the bo3 rule that the previous game's loser plays first.
+    Torch-free and quick (see train/test_per_game_split.py)."""
+    r = subprocess.run([sys.executable, "train/test_per_game_split.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("pergame", "per-game split violation "
+                             f"(test_per_game_split.py exit {r.returncode}):\n"
                              f"{r.stdout}{r.stderr}")
 
 
@@ -412,6 +463,132 @@ def tier_fuzz(rep, args, out_dir):
     _run_matchups(rep, "fuzz", pairs, args.mode, args.fuzz_games, args.seed, out_dir)
 
 
+def _newer_engine_sources(binary_path):
+    """Engine sources modified after `binary_path` was linked (repo-relative paths).
+
+    Only src/**/*.{cpp,h,c} count: those are what bin/az_actor links, so a doc or
+    deck edit never trips this. Returns [] when the binary is current.
+
+    src/gen/ is EXCLUDED. Those are generated mirrors, and the `pygen` tier
+    restores them with `git checkout`, which rewrites byte-identical content and
+    bumps their mtime (the same behaviour Makefile:117-120 documents). Since the
+    normal flow is `make check` followed by the actor tier, including them made
+    this guard fire on essentially every run — a check that cries wolf is worse
+    than none, because it trains you to ignore it. The tradeoff: a codegen-ONLY
+    change no longer trips the guard, so run `make actor` after regenerating.
+    The case this exists for — editing engine sources and forgetting to rebuild
+    the actor — is unaffected.
+    """
+    bin_mtime = os.path.getmtime(binary_path)
+    src = os.path.join(_REPO_ROOT, "src")
+    gen_dir = os.path.join(src, "gen")
+    newer = []
+    for root, _dirs, files in os.walk(src):
+        if os.path.commonpath([root, gen_dir]) == gen_dir:
+            continue
+        for fn in files:
+            if not fn.endswith((".cpp", ".h", ".c")):
+                continue
+            path = os.path.join(root, fn)
+            try:
+                if os.path.getmtime(path) > bin_mtime:
+                    newer.append(os.path.relpath(path, _REPO_ROOT))
+            except OSError:
+                continue
+    return sorted(newer)
+
+
+# env.py offset-chain name -> the machine_io.h OFFSET_CHAIN constant it mirrors.
+# Every absolute block boundary in the state vector appears here, so the two
+# independent derivations are compared boundary-by-boundary rather than only on
+# their total (which is all `_EXTRAS_END == STATE_SIZE` ever proved).
+_CHAIN_PAIRS = [
+    ("_GLOBAL_SIZE",            "STATE_HEADER_SIZE"),
+    ("_PERM_SLOT_SIZE",         "PERM_SLOT_SIZE"),
+    ("_STACK_SLOT_SIZE",        "STACK_SLOT_SIZE"),
+    ("_SELF_PERM_START",        "SELF_PERM_START"),
+    ("_OPP_PERM_START",         "OPP_PERM_START"),
+    ("_STACK_START",            "STACK_START"),
+    ("_GY_START",               "GY_START"),
+    ("_EXILE_START",            "EXILE_START"),
+    ("_HAND_START",             "HAND_START"),
+    ("_HIST_START",             "HIST_START"),
+    ("_MATCH_CTX_START",        "MATCH_CTX_START"),
+    ("_LIBRARY_CTX_START",      "LIBRARY_CTX_START"),
+    ("_CUR_TURN_IDX",           "CUR_TURN_IDX"),
+    ("_KNOWN_TOP_LIB_START",    "KNOWN_TOP_LIB_START"),
+    ("_REVEALED_START",         "REVEALED_START"),
+    ("_OPP_KNOWN_HAND_START",   "OPP_KNOWN_HAND_START"),
+    ("_PENDING_DECISION_START", "PENDING_DECISION_START"),
+    ("_EXTRAS_START",           "EXTRAS_START"),
+    ("_EXTRAS_MC_ONEHOT_START", "EXTRAS_MC_ONEHOT_START"),
+    ("_EXTRAS_PLAYS_FIRST",     "EXTRAS_SB_CTX_START"),
+    ("_EXTRAS_END",             "EXTRAS_END"),
+    ("_SELF_LIVE_LIB_START",    "SELF_LIVE_LIB_START"),
+    ("_SELF_DECK_MAIN_START",   "SELF_DECK_MAIN_START"),
+    ("_SELF_DECK_SIDE_START",   "SELF_DECK_SIDE_START"),
+    ("_OPP_DECK_MAIN_START",    "OPP_DECK_MAIN_START"),
+    ("_OPP_DECK_SIDE_START",    "OPP_DECK_SIDE_START"),
+    ("_OPP_DECK_SIDE_END",      "OPP_DECK_SIDE_END"),
+]
+
+
+def _check_chain_parity(rep):
+    """Prove machine_io.h's OFFSET_CHAIN == train/env.py's offset chain.
+
+    Both are derived from the same single-sourced block widths, but they are two
+    separate hand-written derivations, so "derived" is not "equal". This compiles
+    a generated TU whose static_asserts carry env.py's values, turning the
+    comparison into a compiler error naming the exact block that moved.
+    """
+    sys.path.insert(0, os.path.join(_REPO_ROOT, "train"))
+    import env  # torch-free
+
+    lines = ['#include "machine_io.h"']
+    for py_name, cpp_name in _CHAIN_PAIRS:
+        val = int(getattr(env, py_name))
+        lines.append(f'static_assert({cpp_name} == {val}, '
+                     f'"env.py {py_name} = {val}, machine_io.h {cpp_name} differs");')
+    with tempfile.TemporaryDirectory() as td:
+        src_path = os.path.join(td, "chain_parity.cpp")
+        with open(src_path, "w") as fh:
+            fh.write("\n".join(lines) + "\n")
+        r = subprocess.run(
+            ["g++", "-std=c++17", "-fno-exceptions", "-fsyntax-only",
+             "-Isrc", "-Iinclude", "-Icomponents", src_path],
+            cwd=_REPO_ROOT, capture_output=True, text=True)
+    if r.returncode != 0:
+        rep.error("actorobs",
+                  "src/machine_io.h and train/env.py disagree on the state-vector "
+                  f"offset chain:\n{r.stderr}")
+
+
+def tier_actorobs(rep):
+    """The observation layout's C++/Python mirrors still agree (libtorch-free).
+
+    Two checks, both compiler-only:
+
+    1. `make actor-syntax` -fsyntax-only over the actor's two torch-free TUs.
+       src/actor/obs_builder.{h,cpp} keeps its own view of the obs layout, pinned
+       by static_asserts that used to fire only under `make actor` — which needs
+       libtorch and is not in the default build. A layout change duly landed with
+       two of those asserts stale and bin/az_actor uncompilable, undetected.
+    2. machine_io.h's OFFSET_CHAIN == env.py's offset chain, boundary by
+       boundary. The Python side's own guard is `_EXTRAS_END == STATE_SIZE`,
+       which proves only the TOTAL — a compensating change (a float moved from
+       one block to the next) keeps the total and silently misaligns every field
+       between them. This compares every block start instead.
+    """
+    r = subprocess.run(["make", "actor-syntax"], cwd=_REPO_ROOT,
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        rep.error("actorobs",
+                  "actor obs-layout mirror does not compile — src/actor/"
+                  "obs_builder.{h,cpp} has drifted from src/machine_io.h "
+                  f"(run `make actor-syntax`):\n{r.stdout}\n{r.stderr}")
+    _check_chain_parity(rep)
+
+
 def tier_actor(rep):
     """Phase-D AZ actor gate (opt-in). Self-skips when bin/az_actor is missing or
     torch is unavailable; otherwise runs the actor/MCTS/shard parity tests as
@@ -420,6 +597,17 @@ def tier_actor(rep):
     if not os.path.exists(actor_bin):
         print(f"  [skip] actor: {actor_bin} not built "
               "(build with `make actor`)", flush=True)
+        return
+    # bin/az_actor is a SEPARATE make target that `make` and `make check` do not
+    # build, so it silently keeps whatever engine it was last linked against. A
+    # stale binary then fails the parity tests as an obs/decision-count divergence,
+    # which reads exactly like a real layout bug — so name the actual cause here.
+    stale = _newer_engine_sources(actor_bin)
+    if stale:
+        rep.error("actor",
+                  f"bin/az_actor is older than {len(stale)} engine source(s) "
+                  f"(e.g. {', '.join(stale[:3])}) — run `make actor` first. A stale "
+                  "actor fails parity as a spurious obs/decision-count divergence.")
         return
     try:
         import torch  # noqa: F401
@@ -475,7 +663,7 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "snapshot",
+    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "pergame", "snapshot",
                   "sbselfplay", "mirror", "analysis"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
@@ -495,10 +683,16 @@ def main(argv=None):
             tier_pygen(rep)
         elif t == "vocab":
             tier_vocab(rep)
+        elif t == "curriculum":
+            tier_curriculum(rep)
         elif t == "obsinv":
             tier_obsinv(rep)
+        elif t == "actorobs":
+            tier_actorobs(rep)
         elif t == "snapshot":
             tier_snapshot(rep)
+        elif t == "pergame":
+            tier_pergame(rep)
         elif t == "sbselfplay":
             tier_sbselfplay(rep)
         elif t == "mirror":

@@ -187,12 +187,28 @@
    1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
-  Player B pays 1 life
+  Choose target for Force of Will:
 
 --- Decision 12 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 4 | lib 53
+  Stack: Edge of Autumn (ability, opponent) [amt=1] -> Thoughtseize (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
+  Opp GY:  Edge of Autumn, Underground Sea
+  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Thoughtseize
+  >> B/B: 0 (Thoughtseize)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 13 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
   Opp:   20 life | mana: empty | hand count: 4 | lib 53
   Stack: Edge of Autumn (ability, opponent) [amt=1] -> Thoughtseize (spell, opponent) -> self (player)
   Opp GY:  Edge of Autumn, Underground Sea
@@ -203,25 +219,8 @@
    1: Exile Ponder
   >> B/B: 0 (Exile Personal Tutor)
 --- Narrative ---
+  Player B pays 1 life
   Player B exiles Personal Tutor
-  Choose target for Force of Will:
-
---- Decision 13 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
-  Opp:   20 life | mana: empty | hand count: 4 | lib 53
-  Stack: Edge of Autumn (ability, opponent) [amt=1] -> Thoughtseize (spell, opponent) -> self (player)
-  Pending: Force of Will (self)
-  Opp GY:  Edge of Autumn, Underground Sea
-  Self exile: Personal Tutor
-  Opp revealed: Thoughtseize, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Thoughtseize
-  >> B/B: 0 (Thoughtseize)
---- Narrative ---
-  Targeting choice 0
   Player B casts Force of Will targeting Thoughtseize
 
 --- Decision 14 ---
@@ -391,7 +390,7 @@
   -------- TURN 2 (Player B) --------
 --- Turn 2 (Player B) ---
   PA: Doomsday, Street Wraith, Ponder, Island, Misty Rainforest
-  PB: Force of Will, Dark Ritual, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
+  PB: Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
 
 --- Decision 24 ---
   Priority: Player A (non-active)
@@ -4373,12 +4372,32 @@
    4: Activate Street Wraith from hand (Draw)  [#0]
   >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
-  Player A pays 1 life
+  Choose target for Force of Will:
 
 --- Decision 235 ---
   Priority: Player A (non-active)
   Step: Draw (turn 12)
-  Self:  16 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
+  Opp:   18 life | mana: empty | hand count: 1 | lib 44
+  Self BF:  Lotus Petal | Undercity Sewers | Island
+  Opp BF:   Swamp (T) | Underground Sea (T) | Island
+  Stack: Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
+  Opp exile:  Personal Tutor
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
+  Actions:
+   0: Dark Ritual
+   1: Dark Ritual
+  >> A/A: 0 (Dark Ritual)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 236 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 12)
+  Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Daze, Street Wraith | lib 44
   Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Lotus Petal | Undercity Sewers | Island
   Opp BF:   Swamp (T) | Underground Sea (T) | Island
@@ -4391,29 +4410,8 @@
    0: Exile Daze
   >> A/A: 0 (Exile Daze)
 --- Narrative ---
+  Player A pays 1 life
   Player A exiles Daze
-  Choose target for Force of Will:
-
---- Decision 236 ---
-  Priority: Player A (non-active)
-  Step: Draw (turn 12)
-  Self:  16 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Street Wraith | lib 44
-  Opp:   18 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Lotus Petal | Undercity Sewers | Island
-  Opp BF:   Swamp (T) | Underground Sea (T) | Island
-  Stack: Dark Ritual (spell, opponent) -> Dark Ritual (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Dark Ritual, Thoughtseize, Lotus Petal, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Dauthi Voidwalker, Doomsday, Daze, Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
-  Self exile: Daze
-  Opp exile:  Personal Tutor
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Island, Doomsday, Dark Ritual, Lotus Petal, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs, Dauthi Voidwalker
-  Actions:
-   0: Dark Ritual
-   1: Dark Ritual
-  >> A/A: 0 (Dark Ritual)
---- Narrative ---
-  Targeting choice 0
   Player A casts Force of Will targeting Dark Ritual
 
 --- Decision 237 ---

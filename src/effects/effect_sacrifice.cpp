@@ -152,6 +152,25 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // ValidTgts$ <Player> — a TARGETED-player sacrifice (Archon of Cruelty: "target opponent
+    // sacrifices a creature or planeswalker"). The targeted player, not the controller, chooses
+    // and sacrifices one of THEIR permanents (CR 701.16a). ab.target stays set so downstream
+    // Defined$ Targeted sub-abilities (discard / lose life) still resolve against that same
+    // player. Like an edict, it is mandatory for the targeted player when they have a matching
+    // permanent, so Optional$ does not apply here.
+    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
+        Zone::Ownership sacker =
+            (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        for (; rt.iter < ab.sac_count; ++rt.iter) {
+            bool suspended = false;
+            Entity sacked = sacrifice_one(ab, sacker, /*optional=*/false, orderer, ctx, suspended);
+            if (suspended) return HandlerResult::SUSPENDED;
+            if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+            if (sacked == 0) break;
+        }
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     for (; rt.iter < ab.sac_count; ++rt.iter) {
         bool suspended = false;
         Entity sacked = sacrifice_one(ab, ab.controller, ab.optional_choice, orderer, ctx, suspended);

@@ -2870,12 +2870,33 @@
    7: Tap Undercity Sewers for (B)
   >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
-  Player A pays 1 life
+  Choose target for Force of Will:
 
 --- Decision 149 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
-  Self:  14 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Daze, Street Wraith, Street Wraith | lib 45
+  Self:  15 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Daze, Street Wraith, Street Wraith | lib 45
+  Opp:   20 life | mana: empty | hand count: 2 | lib 47
+  Self BF:  Undercity Sewers | Island
+  Opp BF:   Knight of the Reliquary [5/5] (T) | Talon Gates of Madara
+  Stack: Wasteland (ability, opponent) -> Undercity Sewers (self, slot 0) -> Wasteland (ability, opponent) -> Undercity Sewers (self, slot 0) -> Knight of the Reliquary (ability, opponent) [amt=1] -> Green Sun's Zenith (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
+  Opp GY:  Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
+  Opp exile:  Noble Hierarch
+  Known opp hand: Windswept Heath
+  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: opp_revolt
+  Actions:
+   0: Green Sun's Zenith
+  >> A/A: 0 (Green Sun's Zenith)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 150 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 10)
+  Self:  15 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Daze, Street Wraith, Street Wraith | lib 45
   Opp:   20 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Undercity Sewers | Island
   Opp BF:   Knight of the Reliquary [5/5] (T) | Talon Gates of Madara
@@ -2890,30 +2911,8 @@
    0: Exile Daze
   >> A/A: 0 (Exile Daze)
 --- Narrative ---
+  Player A pays 1 life
   Player A exiles Daze
-  Choose target for Force of Will:
-
---- Decision 150 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  14 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Street Wraith, Street Wraith | lib 45
-  Opp:   20 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Undercity Sewers | Island
-  Opp BF:   Knight of the Reliquary [5/5] (T) | Talon Gates of Madara
-  Stack: Wasteland (ability, opponent) -> Undercity Sewers (self, slot 0) -> Wasteland (ability, opponent) -> Undercity Sewers (self, slot 0) -> Knight of the Reliquary (ability, opponent) [amt=1] -> Green Sun's Zenith (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Thoughtseize, Flooded Strand, Misty Rainforest, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
-  Opp GY:  Wasteland, Wasteland, Savannah, Keen-Eyed Curator, Swords to Plowshares, Green Sun's Zenith, Once Upon a Time
-  Self exile: Daze
-  Opp exile:  Noble Hierarch
-  Known opp hand: Windswept Heath
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_revolt
-  Actions:
-   0: Green Sun's Zenith
-  >> A/A: 0 (Green Sun's Zenith)
---- Narrative ---
-  Targeting choice 0
   Player A casts Force of Will targeting Green Sun's Zenith
 
 --- Decision 151 ---

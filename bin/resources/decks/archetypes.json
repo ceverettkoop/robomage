@@ -1,0 +1,31 @@
+{
+  "_comment": [
+    "Deck -> strategic archetype tags. Keys are deck stems relative to",
+    "bin/resources/decks/ (no '.dk'), exactly as decks are referenced on the",
+    "command line (e.g. 'league/ur_delver'). Values must be one of the",
+    "archetypes listed in train/archetypes.py (ARCHETYPES); an unmapped deck",
+    "falls back to the 'unknown' bucket, EXCEPT for league roster decks, which",
+    "must all be tagged here (train.py league() validates the roster loudly).",
+    "Keys starting with '_' are ignored."
+  ],
+
+  "league/ur_delver": "tempo",
+  "league/wrb_energy": "tempo",
+  "league/gw_maverick": "tempo",
+  "delver": "tempo",
+  "mav": "tempo",
+
+  "league/bug": "slow_midrange",
+  "league/bw_dnt": "slow_midrange",
+
+  "league/uw_control": "control",
+
+  "league/burn": "burn",
+
+  "league/lands": "lands",
+
+  "league/wubg_doomsday": "doomsday",
+  "doomsday": "doomsday",
+
+  "league/reanimator": "reanimator"
+}

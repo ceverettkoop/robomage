@@ -19,6 +19,11 @@ Usage:
       --mode explore --games 100 --seed 1 \
       --out /tmp/fuzz_delver_maverick_explore.txt
 
+Pass ``--bo3`` to run best-of-three MATCHES instead of single games: that is the
+only way the between-games sideboard phase (and the post-board decks) gets
+fuzzed — the explore tier weights the sideboard swap categories above SIDEBOARD_DONE,
+so it swaps a few cards before finishing each board.
+
 Decks are resolved relative to bin/resources/decks/ (e.g. league/ur_delver).
 The verbose transcript (all game narrative + decoded state + action menus) goes
 to --out; the one-line W/L/D summary is printed to stdout. Draws (step-cap
@@ -42,7 +47,11 @@ def main():
     p.add_argument("--deck-b", required=True, help="Player B deck name (relative to decks/)")
     p.add_argument("--mode", default="explore",
                    help="Scripted fuzzer tier: 'explore' (default) or 'explore:patient'")
-    p.add_argument("--games", type=int, default=100, help="Number of games to run")
+    p.add_argument("--games", type=int, default=100,
+                   help="Number of games (or bo3 matches, with --bo3) to run")
+    p.add_argument("--bo3", action="store_true",
+                   help="Run best-of-three MATCHES instead of single games, so the "
+                        "between-games sideboard phase (and post-board decks) is fuzzed too")
     p.add_argument("--seed", type=int, default=1, help="Base seed (game i uses seed+i)")
     p.add_argument("--max-decisions", type=int, default=None,
                    help="Optional per-game decision cap (default: run to completion)")
@@ -60,12 +69,13 @@ def main():
             ctrl_a, ctrl_b,
             label_a=f"A:{args.mode}", label_b=f"B:{args.mode}",
             binary_path=args.binary, deck_a=args.deck_a, deck_b=args.deck_b,
-            n_games=args.games, seed=args.seed, verbose=True,
+            n_games=args.games, bo3=args.bo3, seed=args.seed, verbose=True,
             max_decisions=args.max_decisions)
 
     total = wins + losses + draws
+    unit = "matches" if args.bo3 else "games"
     print(f"{args.deck_a} vs {args.deck_b} [{args.mode}] "
-          f"{args.games} games: {wins}W / {losses}L / {draws}D "
+          f"{args.games} {unit}: {wins}W / {losses}L / {draws}D "
           f"(completed {total}) -> {args.out}")
     return 0
 

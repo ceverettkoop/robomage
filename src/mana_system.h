@@ -89,12 +89,14 @@ bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>
                              Entity paid_for = 0);
 
 // Return the maximum total mana producible (pool + untapped sources) minus colored base cost
-// obligations; used for computing max X value
+// obligations; used for computing max X value. `exclude_entity` drops one permanent from the
+// count — pass the ability's source when its cost taps it, for the same reason can_pay_mana
+// takes it (the {T} is already spent, so the source cannot also be tapped for mana).
 // NOTE: a coarse upper bound — ignores color feasibility of the base cost's pips and counts
 // one ability per source entity. An overestimated X fails at payment and is absorbed by the
 // payment_fail_counts rewind, so the bound is deliberately cheap rather than exact.
 size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
-                          std::shared_ptr<Orderer> orderer);
+                          std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0);
 
 // Spend mana from player's pool (assumes can_afford was checked)
 // paid_for: the entity being paid for (used for diagnostics on insufficient mana)
@@ -147,9 +149,16 @@ std::vector<LegalAction> collect_mana_legal_actions(
 // side-effect-free simulate mode, so legality and actual payment can never disagree.
 // has_delve folds in graveyard instant/sorcery exiling; paid_for gates restricted mana
 // (Cavern of Souls) the same way the payer does.
+//
+// `exclude_entity` drops one permanent from the source pool. Pass the ability's SOURCE
+// when the ability's own cost taps it ({T} in the cost): that tap is already spoken for,
+// so counting the source's mana ability too would double-spend it and offer an ability
+// whose payment must then fail. The real payment never had this problem — by the time it
+// runs, the tap cost is already applied and the source reads as tapped — which is exactly
+// why only the LEGALITY side needs to be told.
 bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
                   Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                  bool has_improvise = false);
+                  bool has_improvise = false, Entity exclude_entity = 0);
 
 // Resolve a card's HYBRID pips (CR 107.4) against the caster's available mana. Each color-hybrid
 // pip ({W/U}) may be paid by one mana of either listed color; each twobrid pip ({2/W}) by one
@@ -165,12 +174,32 @@ bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& ba
                          std::shared_ptr<Orderer> orderer, bool has_delve = false,
                          bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr);
 
+// A permanent about to LEAVE the battlefield to pay a NON-mana cost (a spell's additional
+// sacrifice, an alternate cost's return-to-hand) takes its mana ability with it. CR 601.2g
+// lets the caster activate mana abilities before costs are paid, so the correct order is
+// "tap it, then lose it" — otherwise a Crop Rotation cast off a lone Savannah sacrifices
+// the land and is then unable to pay {G}.
+//
+// Taps `leaving` for mana toward `unpaid_cost` (the cast's still-unpaid mana cost) and
+// returns whether anything was floated; the mana sits in the pool for the payment that
+// follows. No-op when nothing is owed, when the pool already covers the cost, or when the
+// permanent has no mana ability usable for this payment. A PAINFUL ability (Ancient Tomb's
+// damage rider, Horizon Canopy's PayLife) is engaged only when the cost is unpayable
+// WITHOUT this permanent — the same "life is a resource" rule the auto-payer uses, so a
+// sacrifice never charges life for mana the payment did not need.
+bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,
+                                    std::shared_ptr<Orderer> orderer,
+                                    const ManaValue& unpaid_cost, Entity paid_for);
+
 // Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
 // On false, caller must restore from snapshot.
 // If has_delve is true, delve exile options are included alongside mana abilities for generic costs.
+// `spent_out` (when non-null) collects the exact colors of mana actually removed from the pool to
+// pay this cost — used by the cast flow to compute Converge (distinct colors spent, CR 702.90).
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue& cost,
                          Entity paid_for, std::shared_ptr<Orderer> orderer,
-                         bool has_delve = false, bool has_improvise = false);
+                         bool has_delve = false, bool has_improvise = false,
+                         ManaValue* spent_out = nullptr);
 
 // True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
 // pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from

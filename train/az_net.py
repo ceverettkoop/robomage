@@ -11,7 +11,9 @@ start it:
            feeding extractor._ActionScorer to score each candidate action from
            its OWN encoded per-action features (mirrors PerActionMaskablePolicy)
   value  = an MLP body (net_arch [256,256], Tanh) over the FULL trunk features,
-           -> Linear -> tanh scalar in [-1, 1]
+           -> Linear(latent, N_VALUE_BUCKETS): a MULTI-HEAD critic with one column
+           per (self archetype x opp archetype) value bucket. The column named by
+           the obs matchup tail's bucket index is gathered, then tanh -> [-1, 1].
 
 The policy/value bodies + scorer + value Linear are laid out to mirror a
 PerActionMaskablePolicy checkpoint 1:1 (mlp_extractor.policy_net /
@@ -58,23 +60,28 @@ except ImportError:  # pragma: no cover
 import extractor as _ex
 from extractor import CardGameExtractor, _ActionScorer
 try:
-    from env import OBS_SIZE, MAX_ACTIONS
+    from env import OBS_SIZE, MAX_ACTIONS, make_observation_space
     from card_costs import N_CARD_TYPES
     from cli_spec import EMBED_DIM, NET_ARCH
     from _enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
+    from archetypes import N_VALUE_BUCKETS
 except ImportError:  # pragma: no cover
-    from train.env import OBS_SIZE, MAX_ACTIONS
+    from train.env import OBS_SIZE, MAX_ACTIONS, make_observation_space
     from train.card_costs import N_CARD_TYPES
     from train.cli_spec import EMBED_DIM, NET_ARCH
     from train._enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
+    from train.archetypes import N_VALUE_BUCKETS
 
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "checkpoints", "az")
 
 
 def obs_space_from_const() -> gym.Space:
-    """The env's observation Box, built from OBS_SIZE without spawning an engine."""
-    return spaces.Box(low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32)
+    """The env's observation Box, built from OBS_SIZE without spawning an engine.
+
+    Delegates to env.make_observation_space so the per-dimension bounds (notably
+    the raw value-bucket slot) are identical to a live env's space."""
+    return make_observation_space()
 
 
 class ScriptTrunk(nn.Module):
@@ -101,10 +108,13 @@ class ScriptTrunk(nn.Module):
         "GY_END", "GY_SLOTS", "EXILE_START", "EXILE_END", "EXILE_SLOTS",
         "HAND_START", "HAND_END", "HAND_SLOTS", "OPP_KNOWN_HAND_START",
         "OPP_KNOWN_HAND_END", "OPP_KNOWN_HAND_SLOTS", "SELF_LIVE_LIB_START",
-        "SELF_LIVE_LIB_END", "OPP_DECK_MAIN_START", "OPP_DECK_MAIN_END",
+        "SELF_LIVE_LIB_END", "SELF_DECK_MAIN_START", "SELF_DECK_MAIN_END",
+        "SELF_DECK_SIDE_START", "SELF_DECK_SIDE_END",
+        "OPP_DECK_MAIN_START", "OPP_DECK_MAIN_END",
         "OPP_DECK_SIDE_START", "OPP_DECK_SIDE_END", "DECKLIST_MAIN_SLOTS",
         "DECKLIST_SIDE_SLOTS", "DECKLIST_SLOT_SIZE", "DECKLIST_CARD_OFF",
-        "DECKLIST_COUNT_OFF", "MAX_ACTIONS",
+        "DECKLIST_COUNT_OFF", "MAX_ACTIONS", "BUCKET_IDX",
+        "ARCH_ONEHOT_START", "ARCH_ONEHOT_END",
         "N_ENTITY_REF_SLOTS", "EMBED_DIM", "PER_ACTION_DIM",
         "features_dim", "per_action_offset", "per_action_slots", "per_action_dim",
     ]
@@ -176,6 +186,10 @@ class ScriptTrunk(nn.Module):
         self.OPP_KNOWN_HAND_SLOTS = int(_ex._OPP_KNOWN_HAND_SLOTS)
         self.SELF_LIVE_LIB_START = int(_ex._SELF_LIVE_LIB_START)
         self.SELF_LIVE_LIB_END = int(_ex._SELF_LIVE_LIB_END)
+        self.SELF_DECK_MAIN_START = int(_ex._SELF_DECK_MAIN_START)
+        self.SELF_DECK_MAIN_END = int(_ex._SELF_DECK_MAIN_END)
+        self.SELF_DECK_SIDE_START = int(_ex._SELF_DECK_SIDE_START)
+        self.SELF_DECK_SIDE_END = int(_ex._SELF_DECK_SIDE_END)
         self.OPP_DECK_MAIN_START = int(_ex._OPP_DECK_MAIN_START)
         self.OPP_DECK_MAIN_END = int(_ex._OPP_DECK_MAIN_END)
         self.OPP_DECK_SIDE_START = int(_ex._OPP_DECK_SIDE_START)
@@ -186,6 +200,10 @@ class ScriptTrunk(nn.Module):
         self.DECKLIST_CARD_OFF = int(_ex._DECKLIST_CARD_OFF)
         self.DECKLIST_COUNT_OFF = int(_ex._DECKLIST_COUNT_OFF)
         self.MAX_ACTIONS = int(_ex._MAX_ACTIONS)
+        # Matchup-tail offsets (env.py owns them; the extractor re-exports them).
+        self.BUCKET_IDX = int(_ex._BUCKET_IDX)
+        self.ARCH_ONEHOT_START = int(_ex._ARCH_ONEHOT_START)
+        self.ARCH_ONEHOT_END = int(_ex._ARCH_ONEHOT_END)
         self.N_ENTITY_REF_SLOTS = int(_ex.N_ENTITY_REF_SLOTS)
         self.EMBED_DIM = int(fe._embed_dim)
         self.PER_ACTION_DIM = int(fe.per_action_dim)
@@ -220,7 +238,11 @@ class ScriptTrunk(nn.Module):
         revealed = obs[:, self.REVEALED_START:self.REVEALED_END]
         pending = obs[:, self.PENDING_START:self.PENDING_END]
         extras = obs[:, self.EXTRAS_START:self.EXTRAS_END]
-        action_extras = obs[:, self.STATE_END:]
+        # Mirror the extractor: the action/cost block stops BEFORE the matchup
+        # tail's raw bucket float (stripped from the trunk input), and the two
+        # archetype one-hots enter the base cat right after it.
+        action_extras = obs[:, self.STATE_END:self.BUCKET_IDX]
+        arch_onehot = obs[:, self.ARCH_ONEHOT_START:self.ARCH_ONEHOT_END]
 
         hist_entries = hist_ctx.reshape(-1, self.HIST_ENTRIES, self.HIST_ENTRY_SIZE)
         recent = hist_entries[:, :self.HIST_RECENT_K]
@@ -245,6 +267,10 @@ class ScriptTrunk(nn.Module):
             -1, self.OPP_KNOWN_HAND_SLOTS, 1)
         top_lib = obs[:, self.KNOWN_TOP_LIB_START:self.KNOWN_TOP_LIB_END].reshape(
             -1, self.KNOWN_TOP_LIB_SLOTS, 1)
+        self_main = obs[:, self.SELF_DECK_MAIN_START:self.SELF_DECK_MAIN_END].reshape(
+            -1, self.DECKLIST_MAIN_SLOTS, self.DECKLIST_SLOT_SIZE)
+        self_side = obs[:, self.SELF_DECK_SIDE_START:self.SELF_DECK_SIDE_END].reshape(
+            -1, self.DECKLIST_SIDE_SLOTS, self.DECKLIST_SLOT_SIZE)
         self_lib = obs[:, self.SELF_LIVE_LIB_START:self.SELF_LIVE_LIB_END].reshape(
             -1, self.DECKLIST_MAIN_SLOTS, self.DECKLIST_SLOT_SIZE)
         opp_main = obs[:, self.OPP_DECK_MAIN_START:self.OPP_DECK_MAIN_END].reshape(
@@ -278,10 +304,16 @@ class ScriptTrunk(nn.Module):
         top_lib_emb_in, _ = self._embed_ids(top_lib[:, :, 0])
 
         self_lib_emb, self_lib_present = self._embed_ids(self_lib[:, :, self.DECKLIST_CARD_OFF])
+        self_main_emb, self_main_present = self._embed_ids(self_main[:, :, self.DECKLIST_CARD_OFF])
+        self_side_emb, self_side_present = self._embed_ids(self_side[:, :, self.DECKLIST_CARD_OFF])
         opp_main_emb, opp_main_present = self._embed_ids(opp_main[:, :, self.DECKLIST_CARD_OFF])
         opp_side_emb, opp_side_present = self._embed_ids(opp_side[:, :, self.DECKLIST_CARD_OFF])
         self_lib_in = torch.cat(
             [self_lib_emb, self_lib[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
+        self_main_in = torch.cat(
+            [self_main_emb, self_main[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
+        self_side_in = torch.cat(
+            [self_side_emb, self_side[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
         opp_main_in = torch.cat(
             [opp_main_emb, opp_main[:, :, self.DECKLIST_COUNT_OFF:self.DECKLIST_COUNT_OFF + 1]], dim=-1)
         opp_side_in = torch.cat(
@@ -295,6 +327,8 @@ class ScriptTrunk(nn.Module):
         opp_hand_emb = self.entity_encoder(opp_hand_emb_in)
         top_lib_emb = self.entity_encoder(top_lib_emb_in)
         self_lib_enc = self.decklist_encoder(self_lib_in)
+        self_main_enc = self.decklist_encoder(self_main_in)
+        self_side_enc = self.decklist_encoder(self_side_in)
         opp_main_enc = self.decklist_encoder(opp_main_in)
         opp_side_enc = self.decklist_encoder(opp_side_in)
 
@@ -307,13 +341,17 @@ class ScriptTrunk(nn.Module):
         top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)
         self_lib_agg = self._mean_max(self_lib_enc, self_lib_present)
+        self_main_agg = self._mean_max(self_main_enc, self_main_present)
+        self_side_agg = self._mean_max(self_side_enc, self_side_present)
         opp_main_agg = self._mean_max(opp_main_enc, opp_main_present)
         opp_side_agg = self._mean_max(opp_side_enc, opp_side_present)
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
                           revealed_agg, pending_feat, extras, action_extras,
+                          arch_onehot,
                           perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
-                          self_lib_agg, opp_main_agg, opp_side_agg], dim=-1)
+                          self_lib_agg, self_main_agg, self_side_agg,
+                          opp_main_agg, opp_side_agg], dim=-1)
 
         a0 = self.STATE_END
         cats = obs[:, a0:a0 + self.MAX_ACTIONS]
@@ -386,7 +424,13 @@ class AZNet(nn.Module):
         self.policy_body = _mlp_body(feat_dim, arch)
         self.value_body = _mlp_body(feat_dim, arch)
         self.action_scorer = _ActionScorer(latent_dim, self._pa_dim)
-        self.value_head = nn.Linear(latent_dim, 1)
+        # Multi-head critic, mirroring PerActionMaskablePolicy: one column per
+        # (self archetype x opp archetype) value bucket, gathered by the bucket
+        # index in the obs's matchup tail. AZ targets are already bounded [-1,1],
+        # so this is purely about separating matchup statistics in the last layer.
+        self.value_head = nn.Linear(latent_dim, N_VALUE_BUCKETS)
+        self._bucket_idx = int(self.trunk.BUCKET_IDX)
+        self._n_buckets = int(N_VALUE_BUCKETS)
 
     def forward(self, obs: torch.Tensor, mask: torch.Tensor):
         """(obs[B,OBS], mask[B,MAX_ACTIONS] bool) -> (masked logits, value[B]).
@@ -400,7 +444,11 @@ class AZNet(nn.Module):
         logits = self.action_scorer(latent_pi, pa)
         neg = -3.4028234663852886e+38   # float32 finfo().min (jit-safe literal)
         logits = torch.where(mask, logits, torch.full_like(logits, neg))
-        value = torch.tanh(self.value_head(latent_vf)).squeeze(-1)
+        # Gather this sample's archetype-bucket column, then squash.
+        bucket = torch.round(obs[:, self._bucket_idx]).long().clamp(
+            0, self._n_buckets - 1)
+        v_all = self.value_head(latent_vf)
+        value = torch.tanh(v_all.gather(1, bucket.unsqueeze(1))).squeeze(-1)
         return logits, value
 
     # ------------------------------------------------------------------
@@ -414,6 +462,7 @@ class AZNet(nn.Module):
             "OBS_SIZE": OBS_SIZE,
             "MAX_ACTIONS": MAX_ACTIONS,
             "N_CARD_TYPES": N_CARD_TYPES,
+            "N_VALUE_BUCKETS": N_VALUE_BUCKETS,
             "steps": int(steps),
         }
 
@@ -523,7 +572,8 @@ def load_az(path: str, map_location="cpu") -> "AZNet":
         with open(mp) as f:
             meta = json.load(f)
         for key, cur in (("OBS_SIZE", OBS_SIZE), ("MAX_ACTIONS", MAX_ACTIONS),
-                         ("N_CARD_TYPES", N_CARD_TYPES)):
+                         ("N_CARD_TYPES", N_CARD_TYPES),
+                         ("N_VALUE_BUCKETS", N_VALUE_BUCKETS)):
             if key in meta and int(meta[key]) != int(cur):
                 raise RuntimeError(
                     f"AZ checkpoint {path} layout mismatch: {key}={meta[key]} "
@@ -602,7 +652,20 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
                 if tk in net_sd and net_sd[tk].shape == v.shape:
                     net_sd[tk] = v.clone()
                     transferred.append(tk)
-        notes.append("value head copied from PPO value_net (now behind tanh)")
+        notes.append("multi-head value head copied 1:1 from PPO value_net "
+                     f"({N_VALUE_BUCKETS} archetype-bucket columns, now behind tanh)")
+        # A PopArt-trained PPO head predicts NORMALIZED values (its per-bucket
+        # (mu, sigma) live in policy buffers AZNet has no counterpart for), so its
+        # copied columns are on a different scale than AZ's tanh targets. Harmless
+        # (AZ re-fits the head from ±1 targets) but say so rather than hide it.
+        sigma = sd.get("popart_sigma")
+        mu = sd.get("popart_mu")
+        if sigma is not None and mu is not None and (
+                bool((sigma != 1.0).any()) or bool((mu != 0.0).any())):
+            notes.append("source checkpoint was trained with PopArt: the copied "
+                         "value head is in NORMALIZED value space (its per-bucket "
+                         "mu/sigma are not transferred) — AZ retrains it against "
+                         "its own [-1,1] targets")
     else:
         notes.append("stock MlpPolicy: policy/value heads start fresh "
                      "(shape-incompatible with the per-action AZ head)")

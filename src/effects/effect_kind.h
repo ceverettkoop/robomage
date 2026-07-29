@@ -55,8 +55,10 @@ enum class EffectKind {
     SacrificeAll,
     ImmediateTrigger,
     CopyPermanent,
+    Clone,
     Mobilize,
     SacrificeTokens,
+    ExileTokens,
     RepeatEach,
     GrantCast,
     NameCard,
@@ -73,6 +75,11 @@ enum class EffectKind {
     Storm,
     AddTurn,
     StoreSVar,
+    CopySpellAbility,
+    SuspendTick,
+    SetState,
+    WarpExile,
+    MiracleCast,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

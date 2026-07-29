@@ -52,8 +52,15 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"SacrificeAll", EffectKind::SacrificeAll},
         {"ImmediateTrigger", EffectKind::ImmediateTrigger},
         {"CopyPermanent", EffectKind::CopyPermanent},
+        // AB$ Clone (Thespian's Stage): the SOURCE permanent becomes a copy of a target land
+        // IN PLACE (same object), CR 706.2 — distinct from CopyPermanent, which spawns a token
+        // copy. See effect_copy_permanent.cpp.
+        {"Clone", EffectKind::Clone},
         {"Mobilize", EffectKind::Mobilize},
         {"SacrificeTokens", EffectKind::SacrificeTokens},
+        // Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft): exile
+        // each token in ab.targets still on the battlefield. See effect_token.cpp.
+        {"ExileTokens", EffectKind::ExileTokens},
         {"RepeatEach", EffectKind::RepeatEach},
         // AB$ Effect that grants "you may cast that card this turn" (Emry, Lurker of the
         // Loch). The transient continuous Effect object is modeled as a per-turn cast
@@ -118,6 +125,28 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // per-permanent scratch store (Permanent::stored_svars), read back by a CheckSVar trigger
         // gate. See effect_store_svar.cpp.
         {"StoreSVar", EffectKind::StoreSVar},
+        // DB$ CopySpellAbility (Chain Lightning): after the parent effect, a player may pay an
+        // UnlessCost$ to copy the parent spell (UnlessSwitched$ True = copy only if paid) and may
+        // choose new targets for the copy. Reuses the shared copy-a-spell machine + the unless-cost
+        // payment loop. See effect_copy_spell.cpp. CR 707.10 / 707.12.
+        {"CopySpellAbility", EffectKind::CopySpellAbility},
+        // Suspend upkeep tick (CR 702.62a): the synthesized "remove a time counter" trigger of a
+        // suspended card resolves here (see state_manager_triggers). Removes one suspend time
+        // counter from the exiled source and, when the last is removed, grants a FREE from_suspend
+        // impulse-cast permission (the free cast). See effect_suspend_tick.cpp.
+        {"SuspendTick", EffectKind::SuspendTick},
+        // DB$ SetState | Mode$ TurnFaceUp (The Creation of Avacyn chapter II): turn the Defined$
+        // card face up (clear its face-down flag). See effect_set_state.cpp.
+        {"SetState", EffectKind::SetState},
+        // Warp (a 2025 keyword): the synthesized "exile it at the next end step" delayed trigger of
+        // a warp-cast permanent resolves here — exile the source and grant its owner the lasting
+        // recast-from-exile permission (see mark_warp_permanent / effect_warp.cpp).
+        {"WarpExile", EffectKind::WarpExile},
+        // Miracle (CR 702.94a): the linked "when you reveal this card, you may cast it" triggered
+        // ability, synthesized and put on the stack when its owner reveals a freshly-drawn miracle
+        // card (see proc_mandatory_choice's miracle-reveal branch). On resolution it opens the
+        // miracle-cast window for the source card. See effect_miracle.cpp.
+        {"MiracleCast", EffectKind::MiracleCast},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

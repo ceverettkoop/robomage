@@ -21,6 +21,9 @@ struct Effect {
             SKIP_UNTAP,                 // 614.1d — a matching permanent doesn't untap during its controller's untap step (Choke)
             PREVENT_ETB_FROM_ZONES,     // 614.13/CantHappen — a creature card moving from a restricted origin zone to the battlefield doesn't enter; it stays put (Grafdigger's Cage)
             PRODUCE_MANA,               // 614.1 — replaces the mana a matching permanent produces when tapped (Damping Sphere: a land tapped for 2+ produces that much {C})
+            DISCARD_ELSE_GRAVEYARD,     // 614.1a self-replacement — as this card would enter, its owner MAY pay an additional discard cost (a matching card); if paid it enters, otherwise it goes to its owner's graveyard instead (Mox Diamond, Chrome Mox)
+            DRAW_EMPTY_WIN,             // 104.3a/121.4 — "if you would draw a card while your library has no cards in it, you win the game instead" (Jace, Wielder of Mysteries / Laboratory Maniac / Thassa's Oracle-adjacent). Applies to the CONTROLLER's empty-library draw.
+            DRAW_ADD,                   // 614.1 — a MODIFYING draw replacement: "if you would draw one or more cards, you draw that many plus K instead" (Quantum Riddler). Applies to the source controller's draws while an optional CheckSVar condition holds; adds draw_add cards to the draw event.
         };
         Kind kind = ENTERS_TAPPED;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself
@@ -34,6 +37,17 @@ struct Effect {
         // controller for the filter matcher to read.
         bool from_battlefield = false;      // ActiveZones$ Battlefield — a continuous battlefield static
         std::string valid_sa_filter = "";   // ValidSA$ spec the replacement protects from being countered
+        // CANT_BE_COUNTERED spell-mastery gate (Exquisite Firecraft: "this spell can't be
+        // countered if there are two or more instant and/or sorcery cards in your graveyard").
+        // When cant_counter_present is non-empty the SELF form is NOT stamped onto the spell at
+        // cast; instead the condition is re-evaluated as the counter would resolve (CR 614.13 —
+        // the replacement fires now), counting the caster-owned cards matching the comma-OR
+        // filter `cant_counter_present` in zone `cant_counter_zone` against `cant_counter_compare`.
+        // An empty filter is the unconditional self form ("This spell can't be countered", a
+        // cast-time stamp like Long Goodbye).
+        std::string cant_counter_present = "";   // IsPresent$ (e.g. "Instant.YouOwn,Sorcery.YouOwn")
+        std::string cant_counter_zone = "";      // PresentZone$ (e.g. "Graveyard")
+        std::string cant_counter_compare = "";   // PresentCompare$ (e.g. "GE2")
         std::string valid_subtype = "";     // SKIP_UNTAP: the (sub)type the untap-prevention applies to (e.g. "Island")
         // ENTERS_TAPPED conditional gating (Ba Sing Se: "enters tapped unless you control a
         // basic land"). The replacement applies only when the count of the controller's
@@ -59,6 +73,21 @@ struct Effect {
         std::string produce_valid_type = "";          // ValidCard$ type filter ("Land")
         int produce_min_amount = 1;                    // ManaAmount$ GEN — minimum produced amount that triggers
         Colors produce_replacement_color = COLORLESS;  // ReplaceMana$ color the production is converted to
+        // DISCARD_ELSE_GRAVEYARD (Mox Diamond / Chrome Mox): the type filter of the card the owner
+        // may discard as the additional cost to have this permanent enter (e.g. "Land"); if they
+        // don't (or can't), it is put into its owner's graveyard instead.
+        std::string discard_else_filter = "";
+        // DRAW_ADD (Quantum Riddler: "As long as you have one or fewer cards in hand, if you would
+        // draw one or more cards, you draw that many cards plus one instead."). draw_add is the
+        // number of EXTRA cards added to each draw event by the source's controller (K in "plus K",
+        // from ReplaceWith$ ...NumCards$ ReplaceCount$Number/Plus.K). The optional CheckSVar gate
+        // is evaluated for the drawing player at replacement time: draw_condition_count_expr is the
+        // resolved Count$ expression (e.g. "Count$ValidHand Card.YouOwn" = cards in your hand) and
+        // draw_condition_compare the Forge comparator (e.g. "LE1"). An empty count expr = the
+        // replacement always applies (unconditional additive draw). Read by replacement::draw_count_bonus.
+        int draw_add = 0;
+        std::string draw_condition_count_expr = "";
+        std::string draw_condition_compare = "";
     };
 };
 

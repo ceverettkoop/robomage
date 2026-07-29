@@ -48,6 +48,7 @@
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
+static void mark_warp_permanent(Entity entity, Permanent &perm);
 static void apply_global_addtype_statics(const std::set<Entity> &entities);
 static bool etb_ability_removal_applies(Entity entity, const std::set<Entity> &entities);
 static void remerge_animate_granted_abilities(Entity entity);
@@ -85,6 +86,31 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
     dt.fire_on_turn = cur_game.turn;
     cur_game.delayed_triggers.push_back(dt);
     game_log("%s is unearthed (haste; exiled at the next end step).\n", perm.name.c_str());
+}
+
+// Warp (a 2025 keyword; not in the checked-in CR snapshot): finalize a warp-cast permanent the
+// instant its Permanent is created. Registers a one-shot delayed triggered ability (CR 603.7b,
+// like Unearth) that fires at the beginning of the next end step and — via the WarpExile effect —
+// exiles this exact permanent and grants its owner a lasting cast-from-exile permission (recast for
+// its normal cost while it remains exiled). Unlike Unearth, warp grants NO haste and installs NO
+// leaves-the-battlefield → exile redirect: a warp-cast permanent that leaves before the end step
+// (dies, is bounced) simply follows normal rules. The delayed trigger fires on the next end step
+// whoever is active (warp is sorcery-speed on the caster's own turn, so that is this turn's end
+// step). General over any warp card.
+static void mark_warp_permanent(Entity entity, Permanent &perm) {
+    Ability fire_ab;
+    fire_ab.ability_type = Ability::TRIGGERED;
+    fire_ab.category = "WarpExile";
+    fire_ab.source = entity;
+
+    DelayedTrigger dt;
+    dt.ability = fire_ab;
+    dt.fire_on = Events::END_STEP_BEGAN;
+    dt.owner_entity = get_player_entity(perm.controller);
+    dt.fire_on_turn = cur_game.turn;
+    cur_game.delayed_triggers.push_back(dt);
+    game_log("%s was cast with warp (exiled at the next end step; castable from exile later).\n",
+             perm.name.c_str());
 }
 
 // Evaluate a continuous static's IsPresent$/PresentZone$/PresentCompare$ gate (CR 604.3 /
@@ -663,6 +689,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Unearth (CR 702.84): returned to the battlefield by its unearth ability — gains
                 // haste, gets the delayed end-step exile, and the leaves→exile redirect.
                 if (game.pending_unearthed.erase(entity)) mark_unearthed_permanent(entity, perm);
+                // Warp: cast for its warp alternate cost — register the delayed end-step exile that
+                // then grants the recast-from-exile permission (no haste, no leaves→exile redirect).
+                if (game.pending_warp.erase(entity)) mark_warp_permanent(entity, perm);
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
@@ -699,8 +728,16 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                             perm.equipped_to = enchanted;
                             game_log("%s is attached to %s.\n", perm.name.c_str(),
                                      entity_name(enchanted).c_str());
+                            game.pending_aura_target.erase(pat);
                         }
-                        game.pending_aura_target.erase(pat);
+                        // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4):
+                        // its enchant target is a creature card still in a graveyard, so it has no
+                        // Permanent to attach to yet — the aura enters UNATTACHED and its ETB
+                        // trigger reanimates the card and attaches. Leave the pending_aura_target
+                        // entry in place so (a) the trigger's Defined$ Enchanted can find the card
+                        // and (b) the "unattached aura" state-based action skips this aura until the
+                        // reanimation resolves (see state_manager.cpp). The entry is cleared by the
+                        // reanimating ChangeZone (Defined$ Enchanted) once the card is returned.
                     }
                 }
                 global_coordinator.AddComponent(entity, perm);
@@ -847,7 +884,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     ncr.is_attacking = true;
                     ncr.attack_target = pea->second;
                     ncr.is_blocked = false;
-                    game_log("%s is attacking (ninjutsu).\n", entity_name(entity).c_str());
+                    game_log("%s is attacking.\n", entity_name(entity).c_str());
                     game.pending_enters_attacking.erase(pea);
                 }
             }
@@ -1268,7 +1305,7 @@ static void apply_self_animate_statics() {
                     ncr.is_attacking = true;
                     ncr.attack_target = pea->second;
                     ncr.is_blocked = false;
-                    game_log("%s is attacking (ninjutsu).\n", entity_name(a.entity).c_str());
+                    game_log("%s is attacking.\n", entity_name(a.entity).c_str());
                     cur_game.pending_enters_attacking.erase(pea);
                 }
             }
@@ -1840,6 +1877,52 @@ void StateManager::apply_layer6_ability_grants() {
                 if (existing.identical_activated_ability(copy)) { dup = true; break; }
             }
             if (dup) continue;
+            abilities.push_back(copy);
+        }
+    }
+
+    // Phase 3: re-grant from each active AddTrigger$ static whose condition is met (The Tabernacle
+    // at Pendrell Vale: "All creatures have 'At the beginning of your upkeep, sacrifice this
+    // creature unless you pay {1}.'"). CR 613.1f (layer 6) / 603: the whole TRIGGERED ability is
+    // attached to every affected permanent. The granted trigger is placed in the recipient's
+    // ability list (which the trigger scan reads); it is controller-relative — ValidPlayer$ You
+    // gates it to fire only at the RECIPIENT's controller's upkeep, and Defined$ Self makes the
+    // destroy act on the recipient. Like Phase 2 it is rebuilt from scratch every pass (Phase 1
+    // stripped it), so the grant appears/disappears as creatures and the source enter/leave.
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;  // source lost all abilities (Humility)
+        if (a.sa->category != "Continuous") continue;
+        if (a.sa->add_trigger.empty()) continue;
+        if (!a.condition_met) continue;
+
+        std::vector<Entity> targets = ability_grant_targets(a, mEntities);
+        if (targets.empty()) continue;
+
+        // Materialize the granted trigger once (full trigger grammar + its Execute$ SVar), then
+        // attach a per-recipient copy tagged with the source static.
+        Ability granted = parse_granted_trigger(a.sa->add_trigger, a.sa->add_trigger_svar_name,
+                                                a.sa->add_trigger_svar);
+        if (granted.trigger_on == 0 && !granted.trigger_state_condition) continue;  // unparsable
+        granted.ability_type = Ability::TRIGGERED;
+        granted.granted_by_static = a.entity;
+
+        for (Entity e : targets) {
+            auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
+            // De-dupe: skip if this same static's trigger (same category + trigger_on) already
+            // sits on the recipient this pass.
+            bool dup = false;
+            for (auto &existing : abilities) {
+                if (existing.ability_type == Ability::TRIGGERED &&
+                    existing.granted_by_static == a.entity &&
+                    existing.category == granted.category &&
+                    existing.trigger_on == granted.trigger_on) {
+                    dup = true;
+                    break;
+                }
+            }
+            if (dup) continue;
+            Ability copy = granted;
+            copy.source = e;
             abilities.push_back(copy);
         }
     }

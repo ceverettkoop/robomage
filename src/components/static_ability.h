@@ -21,6 +21,18 @@ struct StaticAbility {
     // an Ability and attaches it to each affected permanent's ability list, de-duped per
     // source static so SBA repeats don't stack copies. Empty = no granted ability.
     std::string add_ability = "";
+    // AddTrigger$ <SVar> + AddSVar$ <SVar> (The Tabernacle at Pendrell Vale): a continuous static
+    // that GRANTS a whole TRIGGERED ability to every permanent the Affected$ filter designates —
+    // layer 6 (CR 613.1f / 603). add_trigger holds the resolved trigger line (e.g. "Mode$ Phase |
+    // Phase$ Upkeep | ValidPlayer$ You | Execute$ TabernacleDestroy"); add_trigger_svar_name /
+    // add_trigger_svar hold the Execute$ SVar it references (its name and resolved body, e.g.
+    // "DB$ Destroy | Defined$ Self | UnlessPayer$ You | UnlessCost$ 1"), needed to reparse the
+    // trigger's Execute at grant time. The layer-6 grant pass parses these to a TRIGGERED Ability
+    // (parse_granted_trigger) and attaches a copy to each affected permanent's ability list,
+    // deduped per source static. Empty = no granted trigger.
+    std::string add_trigger = "";
+    std::string add_trigger_svar_name = "";
+    std::string add_trigger_svar = "";
     std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
     // ETB counter fields (category = "EtbCounter"):
     std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters
@@ -98,10 +110,25 @@ struct StaticAbility {
     bool cant_cast_by_opponent = false;     // Caster$ Opponent — restricts the controller's opponents
                                             // (Voice of Victory: "your opponents can't cast spells
                                             // during your turn", gated by Condition$ PlayerTurn).
+    // OnlySorcerySpeed$ True (Teferi, Time Raveler: "Each opponent can cast spells only any time
+    // they could cast a sorcery"). NOT a blanket prohibition — a TIMING restriction. When set on
+    // a Caster$ Opponent CantBeCast static it forces the source controller's opponents to cast
+    // spells only at sorcery speed (their turn, a main phase, empty stack), regardless of the
+    // spell's own instant/flash type (CR 601.3a). cast_prohibited ignores this static (it is not
+    // a "can't cast at all"); the cast-speed gate enforces it via
+    // rules_mod::opponent_sorcery_speed_locked. Reusable by any future opponent sorcery-speed lock
+    // (e.g. Lavinia) alongside the same Caster$ Opponent CantBeCast path.
+    bool only_sorcery_speed = false;
     // Origin$ Graveyard,Library (Grafdigger's Cage): the restriction applies only to spells cast
     // from these zones (e.g. flashback). Both false = the restriction is zone-agnostic.
     bool cant_cast_from_graveyard = false;
     bool cant_cast_from_library = false;
+    // cmcGT$ Land (Lavinia, Azorius Renegade: "can't cast noncreature spells with mana value
+    // greater than the number of lands that player controls"). A DYNAMIC mana-value bound: the
+    // spell is prohibited when its mana value exceeds the number of lands the CASTER controls,
+    // computed at cast-legality time (not a static numeric bound). Combined with the ValidCard$
+    // filter (Card.nonCreature+nonLand) and Caster$ Opponent on the same static.
+    bool cant_cast_cmc_gt_land = false;
 
     // Type-changing fields (category = "Continuous", layer 4):
     std::string add_type = "";              // AddType$ Mountain — land subtype to set

@@ -70,7 +70,7 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
 }
 
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                          bool top_seen_by_owner) {
+                          bool top_seen_by_owner, bool exile_face_down) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
@@ -87,6 +87,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         replacement::dispatch(rev);
         if (rev.prevented) return;  // 614.13 — the move is prevented; the card remains in its origin zone
         destination = rev.destination;
+        // Mox Diamond / Chrome Mox additional cost: the affected player chose to discard a card as
+        // this permanent enters (dispatch has no orderer, so the discard is performed here). The
+        // land moves to its owner's graveyard; the permanent then enters normally (destination
+        // unchanged). The discarded card is a different entity, so moving it does not disturb
+        // `target_zone` (no component is added/removed — the packed arrays don't reallocate).
+        if (rev.pending_discard != 0 && rev.pending_discard != target)
+            add_to_zone(false, rev.pending_discard, Zone::GRAVEYARD);
     }
 
     // Unearth (CR 702.84): a permanent returned to the battlefield with its unearth ability is
@@ -155,6 +162,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
             lki.abilities_removed = p.abilities_removed;
             lki.cast_from_hand_by_controller = p.cast_from_hand_by_controller;
         }
+        // Snapshot the typed counters (CR 608.2h): an ability that counts counters on its own
+        // source AFTER the source has left play — Blast Zone is sacrificed as part of its
+        // activation cost, then destroys permanents with MV equal to its charge-counter count —
+        // reads the last-known count from here.
+        lki.counters.clear();
+        for (const auto &c : global_coordinator.GetComponent<Permanent>(target).counters)
+            lki.counters[c.first] = c.second;
         if (global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
             lki.power = static_cast<int>(cr.power);
@@ -250,6 +264,9 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // card is now either public, or a fresh hidden object). Reveal sites set this
     // flag again if the destination is a revealed hidden zone.
     target_zone.identity_known = false;
+    // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
+    // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
+    target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
 
     // A card moving from a PUBLIC zone into hand is watched moving by both players,
     // so its specific identity stays known to the opponent even though the hand is a
@@ -268,8 +285,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // single chokepoint covers casts (→STACK), ETB (→BATTLEFIELD), and
     // deaths/discards (→GRAVEYARD/EXILE). Moves to HAND or within LIBRARY are
     // hidden and intentionally skipped (tutor reveals are marked at their site).
-    if (destination == Zone::BATTLEFIELD || destination == Zone::STACK ||
-        destination == Zone::GRAVEYARD || destination == Zone::EXILE) {
+    // A card exiled FACE DOWN is the exception: entering exile does not make its identity public
+    // (CR 708.2), so it is NOT accumulated into the owner's revealed multi-hot until an effect
+    // turns it face up (the SetState$ TurnFaceUp site marks it revealed then).
+    if ((destination == Zone::BATTLEFIELD || destination == Zone::STACK ||
+         destination == Zone::GRAVEYARD || destination == Zone::EXILE) &&
+        !target_zone.is_face_down) {
         mark_card_revealed(target, target_zone.owner);
     }
 }
@@ -438,6 +459,13 @@ void Orderer::draw(Zone::Ownership player, size_t ct, bool fire_draw_event) {
     }
 }
 
+void Orderer::perform_draw_with_bonus(Zone::Ownership player, bool fire_draw_event) {
+    int draw_bonus = replacement::draw_count_bonus(player);
+    perform_draw(player, fire_draw_event);
+    for (int i = 0; i < draw_bonus && !cur_game.ended; i++)
+        perform_draw(player, fire_draw_event);
+}
+
 // actual effect here; replacement (dredge) handled here, triggers handled by callers
 void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     // Dredge replacement (rule 702.52a / 614.1a): the player may replace this draw
@@ -451,11 +479,16 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
         rev.affected_player = player;
         replacement::dispatch(rev);
         if (rev.draw_replaced) {
+            // The draw was replaced by a dredge, so no card is drawn — the additive bonus, which
+            // modifies the *draw*, does not apply. (No vocab card combines dredge with an additive
+            // draw replacement, so their 616.1 co-application order is not modeled.)
             apply_dredge(player, rev.dredge_source, rev.dredge_mill);
             return;
         }
     }
-    perform_draw(player, fire_draw_event);
+    // The non-dredge case draws the base card plus any additive-draw-replacement bonus
+    // through the shared helper (CR 614.1/614.5, Quantum Riddler).
+    perform_draw_with_bonus(player, fire_draw_event);
 }
 
 void Orderer::apply_dredge(Zone::Ownership player, Entity source, int mill_ct) {
@@ -484,15 +517,36 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     }
 
     if (!found) {
-        // Drew from an empty library: the drawing player loses.
-        if (player == Zone::PLAYER_A) {
-            printf("\nPlayer A decked - Player B wins!\n");
-            cur_game.winner = Zone::PLAYER_B;
-        } else {
-            printf("\nPlayer B decked - Player A wins!\n");
-            cur_game.winner = Zone::PLAYER_A;
+        // The game is already decided (e.g. a "wins the game" effect earlier in this same
+        // resolution): a further failed draw changes nothing — first game-ending event wins.
+        if (cur_game.ended) return;
+        // Draw-from-empty-library replacement (CR 104.3a/121.4): if the drawing player controls a
+        // live DRAW_EMPTY_WIN replacement (Jace, Wielder of Mysteries: "if you would draw a card
+        // while your library has no cards in it, you win the game instead"), they WIN instead of
+        // decking out. Scan the drawing player's battlefield permanents for the replacement.
+        for (auto e : mEntities) {
+            if (!is_battlefield_permanent(e, player)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            const auto &cd = global_coordinator.GetComponent<CardData>(e);
+            bool has_win = false;
+            for (const auto &r : cd.replacement_effects)
+                if (r.kind == Effect::Replacement::DRAW_EMPTY_WIN) { has_win = true; break; }
+            if (!has_win) continue;
+            printf("\n%s wins the game! (%s)\n", player_name(player).c_str(), cd.name.c_str());
+            game_log("%s wins the game!\n", player_name(player).c_str());
+            cur_game.winner = static_cast<int>(player);
+            cur_game.ended = true;
+            return;
         }
-        cur_game.ended = true;
+
+        // Attempted to draw from an empty library. CR 120.3 / 704.5c: the loss is NOT immediate —
+        // record the attempt and let the resolving effect finish (a "then if your library is empty,
+        // you win" sub-ability like Jace, Wielder of Mysteries' -8 decides the game first); the
+        // player loses at the next state-based-action check (state_based_effects).
+        Entity player_entity_deck =
+            (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        global_coordinator.GetComponent<Player>(player_entity_deck).attempted_draw_from_empty = true;
+        game_log("%s attempts to draw from an empty library.\n", player_name(player).c_str());
         return;
     }
 
@@ -506,6 +560,26 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     // closes the library gap, and updates the known-top-of-library cache.
     add_to_zone(false, top, Zone::HAND);
     pl.cards_drawn_this_turn.push_back(top);
+
+    // Miracle (CR 702.94): if this is the FIRST card its controller has drawn this turn and it
+    // carries the Miracle keyword, its owner may reveal it and cast it for its miracle
+    // (alternative) cost. Record the entity in the per-turn miracle window; can_afford_alt then
+    // offers the is_miracle alt cost while the card sits in that window (cleared each cleanup).
+    // General over any Miracle card. Gated on fire_draw_event so the opening-hand / mulligan
+    // draws (draw_hands, which pass fire_draw_event=false) don't count as a card "drawn this turn"
+    // (CR 702.94a — the opening hand is drawn during setup, not during a turn). The turn-based
+    // draw and every draw effect fire the event. (cards_drawn_this_turn was just pushed, so
+    // size()==1 ⇔ this is the first card drawn this turn.)
+    if (fire_draw_event && pl.cards_drawn_this_turn.size() == 1 &&
+        global_coordinator.GetComponent<CardData>(top).alt_cost.is_miracle) {
+        // Miracle (CR 702.94a): the first card drawn this turn is a miracle card. Its owner MAY
+        // reveal it "as they draw it" — a PRIVATE special action (off the stack, hidden from the
+        // opponent until they choose to reveal). Record the pending reveal here; the decision is
+        // presented to the owner before they proceed (proc_mandatory_choice's miracle-reveal
+        // branch). The card is NOT made public and NO cast window opens yet — only on reveal does
+        // the card become public and the linked "you may cast it" trigger go on the stack.
+        cur_game.miracle_reveal_pending = top;
+    }
 
     // Fire PLAYER_DREW_CARD for this individual draw. The "first card in the
     // drawer's draw step" is flagged so triggers like Orcish Bowmasters can

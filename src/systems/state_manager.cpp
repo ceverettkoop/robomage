@@ -116,6 +116,14 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
 
 // State-based actions are checked simultaneously and loop until stable (rule 704.3)
 void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orderer) {
+    // CR 104.1: once the game has ended, nothing further happens. No SBAs — the
+    // deck-out check below must not overturn a "wins the game" effect that
+    // already decided it (first game-ending event wins) — and no trigger
+    // collection/placement, which could otherwise park a decision under a
+    // finished game (the loop-exit "still parked" fatal). A resolution can end
+    // the game (deck-out, WinsGame) and still fall through to the post-advance
+    // SBE call, so this gate is load-bearing, not just belt-and-braces.
+    if (game.ended) return;
     for (;;) {
         // Continuous effects define the game state that SBAs evaluate
         apply_permanent_components(game, orderer);
@@ -144,6 +152,24 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         }
         if (player_b.life_total <= 0) {
             printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
+            game.ended = true;
+            game.winner = Zone::PLAYER_A;
+            return;
+        }
+
+        // 704.5c - a player who attempted to draw from an empty library since the last SBA check
+        // loses. Deferred here from Orderer::perform_draw (CR 120.3): the failed draw itself does
+        // not end the game, so the resolving effect finishes first and a "then if your library is
+        // empty, you win" sub-ability (Jace, Wielder of Mysteries' -8) can decide the game before
+        // this check ever runs.
+        if (player_a.attempted_draw_from_empty) {
+            printf("\nPlayer A decked - Player B wins!\n");
+            game.ended = true;
+            game.winner = Zone::PLAYER_B;
+            return;
+        }
+        if (player_b.attempted_draw_from_empty) {
+            printf("\nPlayer B decked - Player A wins!\n");
             game.ended = true;
             game.winner = Zone::PLAYER_A;
             return;
@@ -212,6 +238,12 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
             const auto &cd = global_coordinator.GetComponent<CardData>(entity);
             if (cd.enchant_filter.empty()) continue;  // not an Aura
+            // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4) awaiting its
+            // ETB reanimation: it entered unattached (its enchant target is still a graveyard card)
+            // and its trigger has not yet returned+attached the creature. Its pending_aura_target
+            // entry is retained (see state_manager_statics.cpp) to mark this window — skip the
+            // unattached-aura check until the reanimation resolves and attaches it.
+            if (game.pending_aura_target.count(entity)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
             Entity enchanted = perm.equipped_to;
             bool illegal = (enchanted == 0) || !is_battlefield_permanent(enchanted);

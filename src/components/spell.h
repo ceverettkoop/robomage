@@ -1,8 +1,10 @@
 #ifndef SPELL_H
 #define SPELL_H
 
+#include <set>
 #include <vector>
 
+#include "../classes/colors.h"
 #include "zone.h"
 
 // Present only while the entity is on the stack as a spell.
@@ -14,6 +16,7 @@ struct Spell {
     bool cast_with_escape = false;  // cast from the graveyard for its escape cost — the resulting permanent "escaped" (CR 702.139), read by an "if it escaped" clause (Uro)
     bool cast_with_offspring = false;  // Offspring additional cost paid — make a 1/1 token copy on ETB
     bool cast_with_impending = false;  // cast for its Impending alternate cost (CR 702.175) — the resulting permanent enters with time counters and isn't a creature until they're gone
+    bool cast_with_warp = false;       // cast for its Warp alternate cost — the resulting object is exiled at the next end step (a delayed trigger) and may then be cast from exile later for its normal cost
     bool cant_be_countered = false;
     int x_paid = 0;  // value chosen for {X} at cast time (Chalice of the Void enters with X charge counters)
     // Kicker (CR 702.33): one flag per CardData::kicker_costs entry — kicked[i] is true iff the
@@ -35,6 +38,17 @@ struct Spell {
     // countered) it ceases to exist rather than moving to a graveyard/library — the stack
     // manager destroys it instead of sending it to a zone. Set by run_copy_spell.
     bool is_copy = false;
+    // Total mana actually spent to cast this spell (the pip count of the mana cost paid, CR
+    // 106/601.2g). 0 for a spell cast for free or via an alternative cost that pays no mana
+    // (Force of Will's pitch+life, a 0-cost spell). Set at cast time in action_processor and read
+    // by a SpellCast trigger's ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no
+    // mana was spent"). Shared, general — Lavinia, Azorius Renegade reads the same field.
+    int mana_spent = 0;
+    // Converge (CR 702.90): the distinct COLORS of mana actually spent to cast this spell (WHITE..
+    // GREEN; colorless mana is not a color, CR 105.1). Set at cast time from the payment's spent
+    // colors; its size is the Converge count, restored into cur_game.converge at resolution and read
+    // by a Count$Converge amount/condition bound (Prismatic Ending). Empty for a free / no-mana cast.
+    std::set<Colors> colors_spent;
 };
 
 #endif /* SPELL_H */

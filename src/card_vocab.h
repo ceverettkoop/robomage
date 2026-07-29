@@ -207,6 +207,70 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Tamiyo, Inquisitive Student", 298}, {"Tamiyo, Seasoned Scholar", 299},
     {"Tropical Island", 300},
     {"Carpet of Flowers", 301},
+    {"Reanimate", 302},
+    {"Careful Study", 303},
+    {"Griselbrand", 304},
+    {"Otherworldly Gaze", 305},
+    {"Meticulous Archive", 306},
+    {"Spell Pierce", 307},
+    {"Tune the Narrative", 308},
+    {"Fiery Islet", 309},
+    {"Lava Spike", 310},
+    {"Exploration", 311},
+    {"Crop Rotation", 312},
+    {"Rishadan Port", 313},
+    {"Skateboard", 314},
+    {"Sphere of Resistance", 315},
+    {"Boseiju, Who Endures", 316},
+    {"Twinshot Sniper", 317},
+    {"Yavimaya, Cradle of Growth", 318},
+    {"Eidolon of the Great Revel", 319},
+    {"Exquisite Firecraft", 320},
+    {"Spell Snare", 321},
+    {"Goblin Guide", 322},
+    {"Archon of Cruelty", 323},
+    {"Blast Zone", 324},
+    {"Malevolent Rumble", 325},
+    {"Searing Blood", 327},
+    {"Geist of Saint Traft", 330},
+    // Dead//Gone is ONE split card (CR 709) → ONE vocab index (328), aliased under three names so
+    // it resolves under both name-normalization schemes. The deck-identity block matches by
+    // name_to_uid (lowercases, maps '/' to '_' like space/hyphen), so "Dead/Gone" → uid
+    // "dead_gone" lets a "1 Dead/Gone" decklist serialize — and is also the uid the engine loads
+    // the script under (cardsfolder/d/dead_gone.txt, Forge's underscore-joined split-card
+    // filename). The in-game observation matches by ascii_fold (case/punctuation-preserving), so
+    // the loaded front name "Dead" and the back-face cast name "Gone" each resolve to 328.
+    // "Dead/Gone" is listed LAST so the cost-matrix codegen (last-write-wins per index) prices 328
+    // off the name that resolves EXACTLY: "Dead"/"Gone" only reach a script through
+    // find_card_file's unverified prefix match, which can land on an unrelated dead*/gone* script,
+    // while "Dead/Gone" hits dead_gone.txt by exact filename on any machine.
+    {"Dead", 328},
+    {"Gone", 328},
+    {"Dead/Gone", 328},
+    {"Fireblast", 329},
+    {"Skewer the Critics", 339},
+    {"Light Up the Stage", 340},
+    {"Roiling Vortex", 341},
+    {"Rift Bolt", 342},
+    {"Echoing Truth", 331},
+    {"Show and Tell", 332},
+    {"Mox Diamond", 336},
+    {"Dark Depths", 334},
+    {"Thespian's Stage", 335},
+    {"The Tabernacle at Pendrell Vale", 337},
+    {"Chain Lightning", 326},
+    {"Prismatic Ending", 338},
+    {"Jace, Wielder of Mysteries", 333},
+    {"Maze of Ith", 343},
+    {"Teferi, Time Raveler", 344},
+    {"Lavinia, Azorius Renegade", 345},
+    {"Quantum Riddler", 346},
+    {"Atraxa, Grand Unifier", 347},
+    {"Animate Dead", 348},
+    {"The Creation of Avacyn", 349},
+    {"Triumph of Saint Katherine", 350},
+    {"Monastery Swiftspear", 351},
+    {"Raph & Mikey, Troublemakers", 352},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
@@ -246,6 +310,7 @@ inline constexpr TokenVocabEntry token_vocab_entries[] = {
     {"w_1_1_cat", "Cat", 913},                                       // Ocelot Pride
     {"w_2_1_cat_warrior", "Cat Warrior", 914},                       // Ajani, Nacatl Pariah
     {"w_1_1_monk_prowess", "Monk", 915},                             // Cori-Steel Cutter
+    {"w_4_4_angel_flying", "Angel", 916},                            // Geist of Saint Traft
 };
 
 inline constexpr int TOKEN_VOCAB_SIZE = sizeof(token_vocab_entries) / sizeof(token_vocab_entries[0]);

@@ -47,6 +47,12 @@ struct ReplacementEvent {
     Zone::ZoneValue destination = Zone::GRAVEYARD;     // caller seeds the natural destination; dispatch may redirect
     Zone::ZoneValue origin = Zone::LIBRARY;            // caller seeds the zone the card is leaving
     bool prevented = false;                            // 614.13/CantHappen — the move doesn't happen; the card stays in its origin zone (Grafdigger's Cage)
+    // DISCARD_ELSE_GRAVEYARD additional cost (Mox Diamond / Chrome Mox): the card the affected
+    // player chose to discard as this permanent enters. dispatch() has no orderer, so the caller
+    // (Orderer::add_to_zone) performs the discard when this is non-zero (destination stays
+    // battlefield). When the player declines/can't pay, dispatch redirects `destination` to the
+    // graveyard and leaves this 0.
+    Entity pending_discard = 0;
 
     // DRAW_CARD outcome (dredge, 702.52a / 614.1a)
     bool   draw_replaced = false;                      // a dredge replaced the draw — caller performs no draw
@@ -87,6 +93,16 @@ struct DrawReplacementOption {
 // draw_n_with_replacements).
 std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
                                                    std::vector<DrawReplacementOption> *opts);
+
+// Additive draw replacement (CR 614.1, Quantum Riddler): the number of EXTRA cards `player`
+// draws for a single "would draw a card" event, summed over every DRAW_ADD replacement on
+// `player`'s battlefield permanents whose CheckSVar condition currently holds ("as long as you
+// have one or fewer cards in hand"). 0 = no additive replacement applies (the common case). A
+// pure ECS read (battlefield scan + SVar evaluation) with no prompt, evaluated at the draw site
+// BEFORE the base draw so the condition sees the pre-draw hand. The caller performs `bonus`
+// extra plain draws after the base draw — those extra draws are part of the same replaced event
+// (614.5) and are NOT re-passed through this replacement.
+int draw_count_bonus(Zone::Ownership player);
 
 // Diagnostics: how many 616.1 choose-one-of-several-replacements prompts this
 // process has emitted. The choose_one prompt is the one remaining blocking

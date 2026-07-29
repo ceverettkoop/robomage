@@ -14,12 +14,13 @@
 //   float32[STATE_SIZE] state, int32[MAX_ACTIONS] cats,
 //   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl,
 //   float32[MAX_ACTIONS] pub, int32[MAX_ACTIONS] zone,
-//   int32[MAX_ACTIONS] refs.
+//   int32[MAX_ACTIONS] refs, int32[MAX_ACTIONS] ords.
 // Per-action metadata is padded to MAX_ACTIONS; only the first num_choices
 // entries are meaningful.
 //
 // The state vector (STATE_SIZE floats) is followed by:
-//   - N ActionCategory integers (values 0-46, see ActionCategory enum).
+//   - N ActionCategory integers (0 .. ACTION_CATEGORY_MAX, see the enum in
+//     src/classes/action.h).
 //   - N card vocab index floats: card_vocab_index / N_CARD_TYPES for card
 //     entities, or -1.0 / N_CARD_TYPES (-0.0009765625) as a null sentinel for
 //     non-card entities (players, confirm slots, fail-to-find, empty).
@@ -37,13 +38,17 @@
 //     entity-reference slot space (see below; -1 = no serialized entity). This is
 //     the action<->entity join — the policy can tell WHICH of two same-name
 //     permanents a targeting action refers to.
+//   - N option_ordinal integers: the choice's ordinal/value scalar (mode index, X
+//     value, color index, activated-ability index, ...; -1 = not applicable). See
+//     OPTION_ORDINAL_MAX below, the normalizer env.py divides these by.
 //
 // NOTE: ActionChoice.description is NOT emitted in the BQUERY payload.
 // It is stored in Query for human-readable display (CLI) only.
 //
 // The Python env pads the per-action arrays to MAX_ACTIONS slots; cats, ids,
-// ctrl, zone, and refs go into the observation (STATE_SIZE + 5*MAX_ACTIONS floats
-// plus cost features); pub stays a side-channel for observers.
+// ctrl, zone, refs, and ords go into the observation (STATE_SIZE +
+// N_ACTION_OBS_BLOCKS*MAX_ACTIONS floats plus cost features); pub stays a
+// side-channel for observers.
 //
 // State is always serialized from the PRIORITY PLAYER'S perspective ("self").
 // "Self" refers to the player who currently holds priority.
@@ -60,7 +65,7 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// Fixed-size state vector layout (STATE_SIZE = 6196 floats):
+// Fixed-size state vector layout (STATE_SIZE = 6329 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -207,7 +212,7 @@
 //                [5954] 1.0 if that source's controller is the viewer, else 0.0
 //                (e.g. 0.0 while choosing a card for the opponent's Thoughtseize).
 //
-//  [5955-5973]   Global extras (19 floats):
+//  [5955-5976]   Global extras (22 floats):
 //                  [5955] self lands_played_this_turn / 10
 //                  [5956] opp  lands_played_this_turn / 10
 //                  [5957] viewer_has_priority (1.0 = the viewer holds priority)
@@ -224,6 +229,21 @@
 //                  [5968-5973] MandatoryChoice one-hot x6 (NONE at index 0, then
 //                       DECLARE_ATTACKERS_CHOICE, DECLARE_BLOCKERS_CHOICE,
 //                       CLEANUP_DISCARD, CHOOSE_ENTITY, ASSIGN_COMBAT_DAMAGE_CHOICE)
+//                  [5974] self_plays_first — the viewer is the starting player of the
+//                       game this observation PERTAINS TO. In-game that is the current
+//                       game (Game::pregame.a_goes_first); during a bo3 between-games
+//                       sideboard phase it is the UPCOMING game, whose starting player
+//                       play_bo3_match has already decided (the loser of the game that
+//                       just ended) before either sideboard stage runs. Boarding plans
+//                       differ substantially on the play vs the draw, and at 1-1 the
+//                       upcoming starting player is otherwise unrecoverable from the
+//                       observation.
+//                  [5975] sideboard swaps completed this phase / SIDEBOARD_SWAP_CAP
+//                       (0.0 outside the phase)
+//                  [5976] sideboard maindeck drift, (d + 1) / 2 so -1/0/+1 map to
+//                       0.0/0.5/1.0 and "balanced" is the 0.5 midpoint. Always 0.5
+//                       outside the phase (and under the paired IN->OUT menu, which
+//                       never leaves the deck unbalanced at a decision point).
 //
 //  ── Deck-identity tail blocks ────────────────────────────────────────────────
 //  Each slot is (card_id, count): card_id via norm_card_id (empty slot = -1
@@ -232,19 +252,42 @@
 //  encoding byte-stable across actors). Overflow (more distinct names than slots)
 //  or a name absent from the vocab is a fatal_error, never a silent truncation.
 //
-//  [5974-6069]   Self LIVE library: 48 slots x (card_id, count) = 96.
+//  [5977-6072]   Self LIVE library: 48 slots x (card_id, count) = 96.
 //                The viewer's LIBRARY zone tallied live at serialization time, so
 //                cards leaving/returning to the library are always reflected.
 //                Viewer-only — the opponent's live library stays hidden.
 //
-//  [6070-6165]   Opponent-of-viewer STATIC maindeck: 48 slots x (card_id, count) = 96.
-//  [6166-6195]   Opponent-of-viewer STATIC sideboard: 15 slots x (card_id, count) = 30.
-//                The opponent's configured decklist (open-decklist ruleset), read
-//                from deck_state — the post-sideboard config for game 2+ of a bo3.
-//                Refreshed at game start; during the between-games sideboard phase
-//                itself the lists still show the just-played game's config.
+//  [6073-6168]   Self LIVE maindeck:  48 slots x (card_id, count) = 96.
+//  [6169-6200]   Self LIVE sideboard: 16 slots x (card_id, count) = 32.
+//                (16, not 15: a legal sideboard is 15 cards, but this block is
+//                also written mid-swap, when a cut card is momentarily the
+//                sideboard's 16th — see DECKLIST_SIDE_SLOTS in gamestate.h.)
+//                The viewer's OWN current 75 (deck_state's live store), which every
+//                player legitimately knows. Distinct from the live-library block
+//                above: that is the LIBRARY ZONE, which shrinks as you draw and is
+//                stale between games, whereas this is the deck CONFIGURATION —
+//                every card regardless of zone. It is the only place the observation
+//                shows what the sideboarding player is choosing between: mid-phase it
+//                tracks each completed swap, so the model can see its maindeck while
+//                picking a card to bring in and its remaining sideboard while picking
+//                a card to cut.
+//
+//  [6201-6296]   Opponent-of-viewer REGISTERED maindeck: 48 slots x (card_id, count) = 96.
+//  [6297-6328]   Opponent-of-viewer REGISTERED sideboard: 16 slots x (card_id, count) = 32.
+//                (Registered, so only 15 slots can ever fill; the width just
+//                follows DECKLIST_SIDE_SLOTS.)
+//                The opponent's decklist as REGISTERED at match start (open-decklist
+//                ruleset), read from deck_state. FROZEN for the whole match: a bo3's
+//                sideboard swaps never touch these blocks, so you know the opponent's
+//                registered 75 but NOT which 60 of it they boarded into for game 2+.
+//                That split is hidden information, and the MCTS determinizer models
+//                it as such (see `opp_sideboard_hidden` in search_server.cpp).
 
-static constexpr int STATE_SIZE             = 6196;
+static constexpr int STATE_SIZE             = 6329;
+// Max sideboard swaps a player may complete in one between-games phase. Both the
+// engine's phase cap and the normalizer for the serialized swaps-made scalar, so
+// the two can never drift apart.
+static constexpr int SIDEBOARD_SWAP_CAP     = 15;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
 static constexpr int OPTION_ORDINAL_MAX = 63;  // normalizer for the per-action option_ordinal scalar
                                                // (see LegalAction::option_ordinal): mode index, X
@@ -266,8 +309,43 @@ static constexpr int PERM_SLOT_SIZE    = 38;   // 11 stat/combat/type + 2 counte
 static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot
 static constexpr int STACK_TGT_SLOTS   = MAX_STACK_TGTS;  // serialized targets per stack slot (truncated)
 static constexpr int STACK_TGT_FIELDS  = 5;    // present + is_player + controller_is_self + slot_ref + card-id
-static constexpr int STACK_SLOT_SIZE   = 3 + 1 + 7 + STACK_MODE_SLOTS + STACK_TGT_SLOTS * STACK_TGT_FIELDS;
-static constexpr int GY_SLOT_SIZE      = 1;    // card-id float only
+
+// ── State-vector block widths (THE source of truth) ──────────────────────────
+// Every fixed-width block of the state vector, as a named constant. Four separate
+// reconstructions of this layout exist — serialize_state (machine_io.cpp), the
+// gym env (train/env.py), the policy extractor (train/extractor.py), and the C++
+// AZ actor (src/actor/obs_builder.cpp) — and each used to re-spell these widths as
+// bare literals. They are now single-sourced here and mirrored into Python by
+// codegen (train/gen_enums.py's _MACHINE_INTS -> train/_enums.py), so a width
+// change propagates to every consumer instead of being hand-copied four times.
+//
+// Why this matters beyond tidiness: the Python side's only structural guard was
+// `_EXTRAS_END == STATE_SIZE`, which catches a change to the TOTAL but NOT a
+// compensating one (a float moved from one block to another keeps the total and
+// silently misaligns every field in between). The OFFSET_CHAIN below closes that
+// hole on the C++ side by pinning each block's absolute start.
+static constexpr int PLAYER_BLOCK_SIZE = 10;   // life, hand_ct, poison, mana[WUBRGC], energy
+static constexpr int STEP_ONEHOT_SIZE  = 13;   // UNTAP..CLEANUP, incl. FIRST_STRIKE_DAMAGE
+static constexpr int HEADER_FLAGS      = 3;    // is_active + self_is_a + stack_size
+static constexpr int CARD_ID_SLOT_SIZE = 1;    // GY / exile / hand / known-top / known-opp-hand
+static constexpr int GY_SLOT_SIZE      = CARD_ID_SLOT_SIZE;
+static constexpr int STACK_HEAD_FIELDS = 3;    // controller_is_self + card id + is_spell
+static constexpr int STACK_XAMT_FIELDS = 1;    // x_or_amount / 10
+static constexpr int STACK_QUAL_FIELDS = 7;    // is_copy, kicked, flashback, evoke, escape, offspring, impending
+static constexpr int HIST_ENTRY_SIZE   = 4;    // category, card id, is_self, turn/50
+static constexpr int MATCH_CTX_SIZE    = 4;    // game#, self wins, opp wins, is_sideboard_phase
+static constexpr int LIBRARY_CTX_SIZE  = 3;    // self lib/60, opp lib/60, is_post_board
+static constexpr int CUR_TURN_SIZE     = 1;    // current turn / 50
+static constexpr int PENDING_DECISION_SIZE = 2; // source card id + ctrl_is_self
+static constexpr int EXTRAS_SCALARS    = 13;   // lands x2, priority, monarch x2, blessing x2,
+                                               // revolt x2, extra turns x2, is_day, is_night
+static constexpr int EXTRAS_SB_CTX_SIZE = 3;   // self_plays_first + swaps made + maindeck drift
+static constexpr int DECKLIST_SLOT_SIZE = 2;   // card id + count per decklist slot
+
+static constexpr int STATE_HEADER_SIZE = 2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + HEADER_FLAGS;
+static constexpr int STACK_SLOT_SIZE   = STACK_HEAD_FIELDS + STACK_XAMT_FIELDS +
+                                         STACK_QUAL_FIELDS + STACK_MODE_SLOTS +
+                                         STACK_TGT_SLOTS * STACK_TGT_FIELDS;
 static constexpr float TURN_NORMALIZER = 50.0f; // divisor for turn fields
 
 // Unified entity-reference slot space width (see the layout comment above):
@@ -275,6 +353,43 @@ static constexpr float TURN_NORMALIZER = 50.0f; // divisor for turn fields
 static constexpr int N_ENTITY_REF_SLOTS = 2 * MAX_BATTLEFIELD_SLOTS + MAX_STACK_DISPLAY;
 static_assert(N_ENTITY_REF_SLOTS == 108, "entity-ref space width documented as 108");
 static_assert(STACK_SLOT_SIZE == 37, "stack slot layout documented as 37 floats");
+static_assert(STATE_HEADER_SIZE == 36, "state header documented as 36 floats");
+
+// ── Absolute block offsets (OFFSET_CHAIN) ────────────────────────────────────
+// The state vector's blocks in serialization order, each derived from the widths
+// above. This is the C++ counterpart of train/env.py's offset chain (and the one
+// src/actor/obs_builder.cpp consumes, so the actor no longer keeps a third copy).
+// The closing static_assert against STATE_SIZE means an edit that adds, removes,
+// resizes, or REORDERS a block fails to compile unless STATE_SIZE moves with it.
+static constexpr int SELF_PERM_START      = STATE_HEADER_SIZE;
+static constexpr int OPP_PERM_START       = SELF_PERM_START + MAX_BATTLEFIELD_SLOTS * PERM_SLOT_SIZE;
+static constexpr int STACK_START          = OPP_PERM_START + MAX_BATTLEFIELD_SLOTS * PERM_SLOT_SIZE;
+static constexpr int GY_START             = STACK_START + MAX_STACK_DISPLAY * STACK_SLOT_SIZE;
+static constexpr int EXILE_START          = GY_START + 2 * MAX_GY_SLOTS * GY_SLOT_SIZE;
+static constexpr int HAND_START           = EXILE_START + 2 * MAX_GY_SLOTS * GY_SLOT_SIZE;
+static constexpr int HIST_START           = HAND_START + MAX_HAND_SLOTS * CARD_ID_SLOT_SIZE;
+static constexpr int MATCH_CTX_START      = HIST_START + ACTION_HISTORY_SIZE * HIST_ENTRY_SIZE;
+static constexpr int LIBRARY_CTX_START    = MATCH_CTX_START + MATCH_CTX_SIZE;
+static constexpr int CUR_TURN_IDX         = LIBRARY_CTX_START + LIBRARY_CTX_SIZE;
+static constexpr int KNOWN_TOP_LIB_START  = CUR_TURN_IDX + CUR_TURN_SIZE;
+static constexpr int REVEALED_START       = KNOWN_TOP_LIB_START + KNOWN_TOP_LIBRARY_SIZE * CARD_ID_SLOT_SIZE;
+static constexpr int OPP_KNOWN_HAND_START = REVEALED_START + N_CARD_TYPES;
+static constexpr int PENDING_DECISION_START = OPP_KNOWN_HAND_START + MAX_HAND_SLOTS * CARD_ID_SLOT_SIZE;
+static constexpr int EXTRAS_START         = PENDING_DECISION_START + PENDING_DECISION_SIZE;
+// Within the extras block: the MandatoryChoice one-hot, then the sideboard context.
+static constexpr int EXTRAS_MC_ONEHOT_START = EXTRAS_START + EXTRAS_SCALARS;
+static constexpr int EXTRAS_SB_CTX_START  = EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES;
+static constexpr int EXTRAS_END           = EXTRAS_SB_CTX_START + EXTRAS_SB_CTX_SIZE;
+static constexpr int SELF_LIVE_LIB_START  = EXTRAS_END;
+static constexpr int SELF_DECK_MAIN_START = SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int SELF_DECK_SIDE_START = SELF_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int OPP_DECK_MAIN_START  = SELF_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int OPP_DECK_SIDE_START  = OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
+static constexpr int OPP_DECK_SIDE_END    = OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
+static_assert(OPP_DECK_SIDE_END == STATE_SIZE,
+              "state-vector offset chain must end exactly at STATE_SIZE — a block "
+              "was added/resized/reordered without updating STATE_SIZE (and the "
+              "layout comment above, train/env.py, and train/extractor.py)");
 
 // Effective-keyword multi-hot vocabulary for the permanent slots (offsets [19-34]),
 // in serialized order. Exactly the engine-implemented keyword set; queried per slot

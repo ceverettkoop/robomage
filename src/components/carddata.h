@@ -36,7 +36,33 @@ struct AltCost {
     // becomes a creature when the last is gone. Cast for the NORMAL cost, none of this applies.
     bool is_impending = false;
     int impending_count = 0;            // N time counters the permanent enters with
+    // K:Spectacle:<cost> — Spectacle (CR 702.107). An ALTERNATIVE casting cost: the spell may
+    // be cast for `mana_cost` (the spectacle cost) instead of its normal mana cost, but only if
+    // an opponent of the caster lost life this turn (CR 702.107a). Gated in can_afford_alt on
+    // the opponent's Player::life_lost_this_turn; paid via the shared alt-cost path.
+    bool is_spectacle = false;
+    // K:Warp:<cost> — Warp (a 2025 keyword; not in the checked-in CR snapshot). An ALTERNATIVE
+    // casting cost: the spell may be cast from hand for `mana_cost` (the warp cost) instead of its
+    // normal mana cost. When cast this way, at the beginning of the NEXT end step the resulting
+    // object is exiled (a delayed triggered ability, mirroring Unearth), and for as long as it
+    // remains exiled this way its owner may cast it on a later turn for its NORMAL cost (a lasting
+    // cast-from-exile permission). Cast for the normal cost, none of this applies. The end-step
+    // exile + recast permission are keyed off Spell::cast_with_warp; see effect_warp.cpp.
+    bool is_warp = false;
+    // K:Miracle:<cost> — Miracle (CR 702.94). An ALTERNATIVE casting cost: when a player draws
+    // this card AS THE FIRST CARD they've drawn this turn, they may reveal it and cast it for
+    // `mana_cost` (the miracle cost) rather than its normal mana cost. Encoded on the shared
+    // AltCost (mana portion = <cost>) with the is_miracle flag. Unlike other alt costs it is NOT
+    // offered by can_afford_alt as a priority-menu cast — miracle runs as two mandatory-choice
+    // decisions (private reveal, then an immediate cast/do-not-cast) driven from the qualifying
+    // draw; see Game::miracle_reveal_pending / miracle_cast_pending and effect_miracle.cpp.
+    bool is_miracle = false;
     std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
+    // Sac<N/Type> count of an ALTERNATIVE casting cost (CR 118.9, e.g. Fireblast: "sacrifice two
+    // Mountains rather than pay this spell's mana cost"). sac_cost_spec holds the "Type" filter,
+    // this holds N. 0 = the alt cost has no sacrifice component. (The flashback sac path always
+    // sacrifices exactly one and doesn't read this; it's used only by the alt-cost cast path.)
+    int sac_cost_count = 0;
     // ExileFromGrave<X/<filter>/<label>> — exile any number of OTHER cards from the caster's
     // graveyard as an additional cost (CR 601.2f), constrained so the chosen set collectively
     // has at least `exile_grave_min_types` distinct card types (Escape: Nethergoyf). 0 = no such cost.
@@ -85,6 +111,13 @@ struct CardData{
     // is what enters and it does not flip in play. The back face is its own complete CardData in
     // `backside`. False for single-faced cards and for transform DFCs.
     bool is_modal_dfc = false;
+    // AlternateMode:Split — a SPLIT card (CR 709): two instant/sorcery halves printed on one
+    // card, each castable from hand for its own cost. The back half is a complete CardData in
+    // `backside` (like an MDFC), but unlike an MDFC neither half is a permanent — the whole card
+    // just goes to the graveyard on resolution. Both halves are offered from hand; the chosen
+    // half's characteristics are used while the spell is on the stack. Distinct from is_modal_dfc
+    // so split cards never pick up MDFC permanent-entering logic.
+    bool is_split = false;
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
     bool has_improvise = false;          // K:Improvise — tap untapped artifacts you control to pay {1} each (CR 702.126)
     int ward_cost = 0;                   // K:Ward:N — opponent's spell/ability targeting this is countered unless they pay {N} (CR 702.21)
@@ -111,6 +144,16 @@ struct CardData{
     bool is_reconfigure = false;         // has K:Reconfigure:<cost> line
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
     ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
+    // K:Suspend:<N>:<cost> — Suspend (CR 702.62). NOT an alternative casting cost; it is a special
+    // action usable from HAND, at the timing you could begin to cast the card (sorcery speed for a
+    // sorcery). Instead of casting, its owner may pay `suspend_cost` and exile the card with
+    // `suspend_count` time counters on it. At the beginning of its owner's upkeep a time counter is
+    // removed (a triggered ability, see state_manager_triggers); when the last is removed its owner
+    // may cast it without paying its mana cost (granted as a FREE from_suspend impulse-cast
+    // permission). General over any Suspend card.
+    bool has_suspend = false;
+    int suspend_count = 0;               // N time counters the card is exiled with
+    ManaValue suspend_cost;              // mana paid to begin the suspend process
     // K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise the
     // gift to an opponent (an optional choice, not a cost); if promised, the opponent receives the
     // gift as the spell resolves, before its other effects. gift_abilities holds the parsed gift

@@ -28,8 +28,10 @@ namespace effects {
 
 static bool search_reveals_card(const Ability &ab);
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
-                                        Zone::ZoneValue dest);
+                                        Zone::ZoneValue dest, bool exile_face_down = false);
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
+static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
+                                               FrameCtx &fctx);
 
 // Name an object for a log line / action label without assuming it is a card: a token has a
 // Permanent (and Token) but no CardData, so reading CardData on it crashes. Delegates to the
@@ -44,7 +46,7 @@ static std::string object_display_name(Entity e) { return entity_name(e); }
 // "moved to <dest>" log on the returned zone; when it differs from `dest` the replacement
 // dispatcher has already logged the reason for the divert, so no generic line is emitted.
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
-                                        Zone::ZoneValue dest) {
+                                        Zone::ZoneValue dest, bool exile_face_down) {
     // CR 110.4a / 712.10: only permanents exist on the battlefield. An effect that would put a
     // non-permanent card onto the battlefield can't — the card stays in its current zone. The
     // case that reaches here is a double-faced card returning from exile via a flicker (e.g.
@@ -59,7 +61,7 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
         !is_permanent_card(global_coordinator.GetComponent<CardData>(e))) {
         return global_coordinator.GetComponent<Zone>(e).location;
     }
-    orderer->add_to_zone(false, e, dest);
+    orderer->add_to_zone(false, e, dest, /*top_seen_by_owner=*/true, exile_face_down);
     return global_coordinator.GetComponent<Zone>(e).location;
 }
 
@@ -115,6 +117,63 @@ static bool search_reveals_card(const Ability &ab) {
     }
     bool specific_type = !ab.change_type.empty() && ab.change_type != "Card";
     return from_hidden && specific_type;
+}
+
+// Show and Tell family: DefinedPlayer$ Player — EACH player may put one matching card from THEIR
+// OWN hand onto the battlefield, in APNAP order (CR 101.4 / 405.6: active player first). It is a
+// "may" per player (each may decline), and each player chooses privately from their own hand. A
+// card put this way enters under its owner's control (CR 110.2a; no mana is paid — big creatures
+// like Griselbrand simply enter, they are not cast), and its ETB fires via the normal SBA pass.
+// Suspend-safe: only the player index persists (EachPlayerPutRt); each player's candidate menu is
+// re-derived from their live hand every pass (a card already put has left the hand).
+static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
+                                               FrameCtx &fctx) {
+    Zone::Ownership active = cur_game.player_a_active ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership nonactive = (active == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership order[2] = {active, nonactive};
+
+    EachPlayerPutRt local_rt;
+    EachPlayerPutRt &rt = fctx.can_suspend() ? fctx.rt<EachPlayerPutRt>() : local_rt;
+
+    MatchCtx mctx;
+    for (; rt.player_idx < 2; rt.player_idx++) {
+        Zone::Ownership p = order[rt.player_idx];
+        mctx.controller = p;
+        // Candidates: this player's own hand cards matching the ChangeType filter
+        // (Creature,Artifact,Enchantment,Land). Re-derived every pass so a resume rebuilds the
+        // identical menu (and a card already put no longer appears).
+        std::vector<Entity> cands;
+        for (auto e : orderer->get_hand(p)) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            // A hand card is matched by its PRINTED characteristics (card_matches_any), not the
+            // battlefield-permanent matcher — the card is not on the battlefield yet.
+            if (card_matches_any(e, ab.change_type, mctx)) cands.push_back(e);
+        }
+        if (cands.empty()) continue;  // no eligible card — this player puts nothing
+
+        std::vector<LegalAction> picks;
+        for (auto e : cands) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            LegalAction la(PASS_PRIORITY, e, std::string("Put ") + cd.name + " onto the battlefield");
+            la.category = ActionCategory::CHOOSE_CARD;
+            picks.push_back(la);
+        }
+        LegalAction none(PASS_PRIORITY, std::string("Put nothing"));
+        none.category = ActionCategory::CHOOSE_CARD;
+        picks.push_back(none);
+
+        int choice = fctx.ask(std::move(picks), p, ab.source);
+        if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+        if (choice < 0 || choice >= static_cast<int>(cands.size())) continue;  // declined
+        Entity chosen = cands[static_cast<size_t>(choice)];
+        std::string cname = global_coordinator.GetComponent<CardData>(chosen).name;
+        Zone::ZoneValue landed = change_zone_move(orderer, chosen, Zone::BATTLEFIELD);
+        if (landed == Zone::BATTLEFIELD) {
+            global_coordinator.GetComponent<Zone>(chosen).controller = p;  // owner's control (110.2a)
+            game_log("%s puts %s onto the battlefield\n", player_name(p).c_str(), cname.c_str());
+        }
+    }
+    return HandlerResult::DONE_RUN_SUBS;
 }
 
 HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
@@ -174,6 +233,14 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             owner = (ptgt == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     }
 
+    // DefinedPlayer$ Player — EACH player may put a matching card from THEIR OWN hand onto the
+    // battlefield (Show and Tell), in APNAP order. Not a search (no filter reveal / library
+    // shuffle) and not a caster-only put: it is a per-player "may". Routed here before the generic
+    // caster-scoped search path below, which would otherwise put only the caster's card.
+    if (ab.defined == "Player" && ab.origin == Zone::HAND && ab.destination == Zone::BATTLEFIELD &&
+        ab.valid_tgts == "N_A")
+        return each_player_put_from_hand(ab, orderer, fctx);
+
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
                            : ab.destination == Zone::LIBRARY   ? "top of library"
                            : ab.destination == Zone::GRAVEYARD ? "graveyard"
@@ -190,8 +257,28 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         } else if (ab.target != 0) {
             to_move.push_back(ab.target);
         }
+        // ConditionDefined$ Targeted with a dynamic mana-value bound (Prismatic Ending: exile the
+        // target only if its mana value <= Converge, the number of colors of mana spent — cmcLEY,
+        // Y = Count$Converge). CR 702.90 / 608.2b: the gate is enforced HERE at resolution (cast
+        // legality does not gate on condition_on_target), so a target whose MV exceeds the bound is
+        // simply not moved (the spell does nothing to it). General to any targeted ChangeZone whose
+        // ConditionPresent carries a cmcLE<svar> threshold resolved into dynamic_amount_expr.
+        int cmc_threshold = -1;
+        if (ab.condition_on_target && !ab.dynamic_amount_expr.empty() &&
+            ab.condition_present.find("cmcLE") != std::string::npos)
+            cmc_threshold = static_cast<int>(
+                evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target, ab.source));
+
         for (auto tgt : to_move) {
             if (!global_coordinator.entity_has_component<Zone>(tgt)) continue;
+            if (cmc_threshold >= 0 && global_coordinator.entity_has_component<CardData>(tgt)) {
+                int tgt_cmc = card_mana_value(global_coordinator.GetComponent<CardData>(tgt));
+                if (tgt_cmc > cmc_threshold) {
+                    game_log("%s has mana value %d (Converge %d) — not exiled\n",
+                             entity_name(tgt).c_str(), tgt_cmc, cmc_threshold);
+                    continue;
+                }
+            }
             // Pre-move origin zone — captured before the move for a Duration$ UntilHostLeavesPlay
             // exile so the return knows where the card came from (Sheltered by Ghosts / Static
             // Prison target a battlefield permanent: origin BATTLEFIELD).
@@ -248,12 +335,52 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         return HandlerResult::DONE_RUN_SUBS;
     }
 
+    // Defined$ Enchanted — move the object this Aura enchants (CR 303.4 / 608.2c). Animate Dead's
+    // ETB reanimation: the aura was cast "enchanting" a creature card in a graveyard (recorded at
+    // cast in pending_aura_target since the card had no Permanent to attach to), and this trigger
+    // returns THAT card to the battlefield under the aura controller's control (GainControl$) and
+    // remembers it (RememberChanged$) so the chained DB$ Attach re-attaches the aura to it. For a
+    // normal already-attached aura reading "enchanted", fall back to its live attachment link.
+    if (ab.defined == "Enchanted" && ab.source != 0) {
+        Entity enchanted = 0;
+        auto pat = cur_game.pending_aura_target.find(ab.source);
+        if (pat != cur_game.pending_aura_target.end())
+            enchanted = pat->second;
+        else if (global_coordinator.entity_has_component<Permanent>(ab.source))
+            enchanted = global_coordinator.GetComponent<Permanent>(ab.source).equipped_to;
+        if (enchanted != 0 && global_coordinator.entity_has_component<Zone>(enchanted)) {
+            std::string ename = entity_name(enchanted);
+            if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
+                cur_game.pending_enters_tapped.insert(enchanted);
+            Zone::ZoneValue landed = change_zone_move(orderer, enchanted, ab.destination);
+            if (landed == Zone::BATTLEFIELD)
+                // GainControl$ True: the card enters under the aura controller's control (CR 110.2a
+                // / 608.2). Without the gain-control flag it would enter under its owner's control.
+                global_coordinator.GetComponent<Zone>(enchanted).controller =
+                    ab.gain_control ? ab.controller
+                                    : global_coordinator.GetComponent<Zone>(enchanted).owner;
+            if (ab.remember_changed || ab.remember_lki)
+                cur_game.remembered_entities.push_back(enchanted);
+            if (landed == ab.destination)
+                game_log("%s is moved to %s\n", ename.c_str(), dest_str);
+        }
+        // The reanimation is done; drop the pending marker so the "unattached aura" state-based
+        // action resumes governing this aura (the immediately following apply_permanent_components
+        // pass finalizes the DB$ Attach that this chain queues, before that SBA runs).
+        cur_game.pending_aura_target.erase(ab.source);
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
     // Defined$ Self — move the source card directly (e.g. Talon Gates putting itself onto battlefield from hand)
     if (ab.defined_self && ab.source != 0) {
         std::string sname = entity_name(ab.source);
         if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
             cur_game.pending_enters_tapped.insert(ab.source);
         Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
+        // RememberChanged$ True — record the moved card so a later chained sub-ability can act on
+        // it via Card.IsRemembered / Count$RememberedSize (Triumph of Saint Katherine's self-exile
+        // head of its recursion pile, counted by the GE7 shuffle-back condition).
+        if (ab.remember_changed) cur_game.remembered_entities.push_back(ab.source);
         if (landed == Zone::BATTLEFIELD) {
             global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
             // Unearth (CR 702.84): flag the returning permanent so its Permanent is created
@@ -262,6 +389,50 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         }
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", sname.c_str(), dest_str);
+        return HandlerResult::DONE_RUN_SUBS;
+    }
+
+    // Defined$ ExiledWith — move the card the source Saga chapter I exiled face down (The Creation
+    // of Avacyn chapter III: "You may put the exiled card onto the battlefield if it's a creature
+    // card. If you don't, put it into its owner's hand."). The card is tracked in the Saga source's
+    // Permanent::exiled_with. This runs as a two-leg chain: DBReturn (Optional$, Destination$
+    // Battlefield, gated on ConditionPresent$ Creature) then DBChangeZone (Destination$ Hand). Each
+    // leg acts only while the card is still in its Origin$ (Exile) zone, so once one leg moves it the
+    // other naturally no-ops — declining the battlefield put (or a noncreature skipping the gated
+    // first leg) leaves it in exile for the hand leg.
+    if (ab.defined_exiled_with) {
+        Entity card = exiled_with_card(ab.source);
+        if (card == 0 || !global_coordinator.entity_has_component<Zone>(card))
+            return HandlerResult::DONE_RUN_SUBS;
+        Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(card).location;
+        bool in_origin = ab.origins.empty() ? (loc == ab.origin) : false;
+        for (auto z : ab.origins) if (z == loc) in_origin = true;
+        if (!in_origin) return HandlerResult::DONE_RUN_SUBS;  // already moved by the other leg
+
+        std::string cname = entity_name(card);
+        if (ab.optional_choice) {
+            std::vector<LegalAction> yn;
+            LegalAction decline(PASS_PRIORITY, std::string("Leave ") + cname + " in exile");
+            decline.category = ActionCategory::OPTIONAL_YESNO;
+            decline.option_ordinal = 0;
+            yn.push_back(decline);
+            LegalAction accept(PASS_PRIORITY, std::string("Put ") + cname + " onto the battlefield");
+            accept.category = ActionCategory::OPTIONAL_YESNO;
+            accept.option_ordinal = 1;
+            yn.push_back(accept);
+            int yc = fctx.ask(std::move(yn), ab.controller, ab.source);
+            if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+            if (yc == 0) return HandlerResult::DONE_RUN_SUBS;  // declined — stays in exile for the hand leg
+        }
+        if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
+            cur_game.pending_enters_tapped.insert(card);
+        Zone::ZoneValue landed = change_zone_move(orderer, card, ab.destination);
+        if (landed == Zone::BATTLEFIELD)
+            // The exiled card enters under its OWNER's control (CR 110.2a).
+            global_coordinator.GetComponent<Zone>(card).controller =
+                global_coordinator.GetComponent<Zone>(card).owner;
+        if (landed == ab.destination)
+            game_log("%s is moved to %s\n", cname.c_str(), dest_str);
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -529,7 +700,11 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             auto &chosen_zone = global_coordinator.GetComponent<Zone>(chosen);
             // Pre-move origin, for a Duration$ UntilHostLeavesPlay exile's linked return.
             Zone::ZoneValue chosen_origin = chosen_zone.location;
-            Zone::ZoneValue landed = change_zone_move(orderer, chosen, ab.destination);
+            // ExileFaceDown$ True (CR 708): thread the face-down intent into the move so add_to_zone
+            // both stamps Zone::is_face_down and withholds the card from the owner's public revealed
+            // multi-hot (a face-down exile is not public knowledge, CR 708.2).
+            Zone::ZoneValue landed = change_zone_move(orderer, chosen, ab.destination,
+                /*exile_face_down=*/ab.exile_face_down && ab.destination == Zone::EXILE);
             if (landed == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(chosen);
@@ -539,6 +714,16 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // Entwined): register the linked return, like the targeted branch above.
             if (ab.duration_until_host_leaves && landed == Zone::EXILE)
                 register_exile_until_host_leaves(ab.source, chosen, chosen_origin);
+            // Record the exiled card against the source's Permanent (the "cards exiled with this"
+            // association a Saga reads for its later chapters — The Creation of Avacyn's Defined$
+            // ExiledWith), mirroring the targeted-exile branch above.
+            if (landed == Zone::EXILE && ab.source != 0 &&
+                global_coordinator.entity_has_component<Permanent>(ab.source))
+                global_coordinator.GetComponent<Permanent>(ab.source).exiled_with.push_back(chosen);
+            // The move above (via change_zone_move → add_to_zone's exile_face_down param) already
+            // stamped Zone::is_face_down for a face-down exile; this just mirrors the condition for
+            // the private-vs-public logging below.
+            bool face_down = (ab.exile_face_down && landed == Zone::EXILE);
             if (ab.remember_changed) {
                 cur_game.remembered_entities.push_back(chosen);
             }
@@ -547,6 +732,12 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             if (landed != ab.destination) {
                 // A replacement effect diverted the move (Containment Priest → exile,
                 // Grafdigger's Cage → prevented) and already logged its reason; emit nothing.
+            } else if (face_down) {
+                // A face-down exile (CR 708.4): the searcher knows the card; the opponent sees only
+                // that a card was exiled face down. Report it privately, not as public knowledge.
+                game_log_private(owner, "%s exiles %s face down\n", player_name(owner).c_str(),
+                                 chosen_cd.name.c_str());
+                game_log_redacted(owner, "%s exiles a card face down\n", player_name(owner).c_str());
             } else if (dest_public) {
                 game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
             } else if (reveal) {
@@ -618,6 +809,11 @@ bool parse_change_zone(Ability &ab, const std::string &key, const std::string &v
         return true;
     } else if (key == "Transformed") {
         ab.enters_transformed = (value == "True");
+        return true;
+    } else if (key == "ExileFaceDown") {
+        // ExileFaceDown$ True — the card moved to exile is exiled face down (CR 708). The
+        // face-down flag is stamped on its Zone after the move (The Creation of Avacyn I).
+        ab.exile_face_down = (value == "True");
         return true;
     }
     return false;

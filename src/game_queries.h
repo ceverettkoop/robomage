@@ -130,6 +130,16 @@ inline bool type_set_passes_nontype(const std::string &spec, const std::set<Type
     return true;
 }
 
+// An Aura whose Enchant restriction names "inZoneGraveyard" (K:Enchant:Creature.inZoneGraveyard,
+// Animate Dead) enchants a creature CARD sitting in a graveyard rather than a battlefield
+// permanent (CR 303.4). The aura's cast-time target search must therefore look in graveyards, not
+// on the battlefield: setting Ability::target_in_graveyard routes both build_valid_targets and
+// is_legal_target through their graveyard branches. General over any "enchant a card in a
+// graveyard" aura, keyed on the filter token, not on a specific card.
+inline bool enchant_targets_graveyard(const std::string &enchant_filter) {
+    return enchant_filter.find("inZoneGraveyard") != std::string::npos;
+}
+
 // Unified "characteristic at the time it is read" accessors (CR 608.2h). Each returns the
 // object's effective value: read live from its battlefield components while it is in play
 // (so all applied continuous effects/counters are reflected — and, because every effective-P/T
@@ -299,6 +309,12 @@ Zone::Ownership last_known_controller(Entity e);
 //   Defined$ TargetedController -> the last-known controller of ab.target
 //   Defined$ TriggeredActivator -> the player bound when the trigger fired
 Zone::Ownership resolve_defined_player(const Ability &ab);
+
+// True if a turn-long "can't gain life" prohibition (CR 119.x) currently applies to this player
+// (Roiling Vortex's {R} ability, cur_game.cant_gain_life_this_turn). Defined out-of-line in
+// game_queries.cpp (needs cur_game). Consulted by player_gain_life so every life-gain site obeys
+// the prohibition.
+bool player_cant_gain_life(Entity player_entity);
 
 // True if the card has a permanent card type (CR 110.4a: artifact, battle, creature,
 // enchantment, land, planeswalker). Used by ValidCard$ Permanent zone-change filters
@@ -482,6 +498,18 @@ inline std::vector<Entity> battlefield_permanents(
 // (origin EXILE, destination != EXILE) and references that card counts as a return path. Defined in
 // game_queries.cpp (needs cur_game.delayed_triggers).
 Entity returnable_exiled_card(Entity host);
+
+// The card `source` exiled and still tracks via Permanent::exiled_with — the association a Saga
+// records at chapter I so its later chapters can act on "the card exiled with this" (Defined$
+// ExiledWith / ExiledWith$CardManaCost, The Creation of Avacyn). Returns the most-recently exiled
+// entry that still has a live Zone (skipping any that have since left the game), or 0 if none.
+inline Entity exiled_with_card(Entity source) {
+    if (source == 0 || !global_coordinator.entity_has_component<Permanent>(source)) return 0;
+    const auto &ew = global_coordinator.GetComponent<Permanent>(source).exiled_with;
+    for (auto it = ew.rbegin(); it != ew.rend(); ++it)
+        if (global_coordinator.entity_has_component<Zone>(*it)) return *it;
+    return 0;
+}
 
 // Unblocked attackers controlled by `ctrl` (CR 509.1h): battlefield creatures that are
 // attacking and were not blocked at declare-blockers. Used to gate and pay Ninjutsu
@@ -711,9 +739,32 @@ inline bool spell_has_variable_life_cost(const CardData &cd) {
 // Player-component entity. No-op for amount <= 0.
 inline void player_gain_life(Entity player_entity, int32_t amount) {
     if (amount <= 0 || !global_coordinator.entity_has_component<Player>(player_entity)) return;
+    // CR 119.x life-gain prohibition (Roiling Vortex): if this player can't gain life this turn,
+    // the gain is replaced with nothing — no life added and no life_gained_this_turn accrual.
+    if (player_cant_gain_life(player_entity)) return;
     auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     pl.life_total += amount;
     pl.life_gained_this_turn += amount;
+}
+
+// Single source for "a player loses life": lowers their life total and accumulates
+// life_lost_this_turn (the mirror of player_gain_life). Read by Spectacle (CR 702.107a,
+// "you may cast this spell for its spectacle cost … if an opponent lost life this turn").
+// Damage dealt to a player IS a loss of life (CR 120.3), so the damage-to-player sites
+// (combat + noncombat DealDamage) and the explicit "lose life" effects route through here
+// so the per-turn counter cannot drift from life_total. Life PAID as a cost is ALSO a loss
+// of life (CR 119.4, "If a player pays life, the player loses that much life"), so the
+// cost-payment sites (fetch/painland PayLife, Phyrexian pips, activation/alt/deferred life
+// costs, "unless you pay N life", Sylvan Library, enters-tapped-unless-pay) increment
+// life_lost_this_turn alongside their subtraction — inline rather than through this helper,
+// since most hold only a Player& and not the entity. That keeps Spectacle (Skewer the
+// Critics / Light Up the Stage) correct when an opponent pays life on your turn. Pass the
+// player's Player-component entity. No-op for amount <= 0.
+inline void player_lose_life(Entity player_entity, int32_t amount) {
+    if (amount <= 0 || !global_coordinator.entity_has_component<Player>(player_entity)) return;
+    auto &pl = global_coordinator.GetComponent<Player>(player_entity);
+    pl.life_total -= amount;
+    pl.life_lost_this_turn += amount;
 }
 
 // ── Player energy ({E}, CR 122.1c) ──────────────────────────────────────────

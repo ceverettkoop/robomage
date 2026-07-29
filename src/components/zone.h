@@ -18,6 +18,11 @@ struct Zone {
         // (e.g. revealed in hand by Duress/Thoughtseize, or a revealed tutor target
         // placed into hand). Reset on every zone change; only meaningful in HAND.
         bool identity_known = false;
+        // A card exiled FACE DOWN (CR 708 / 701.35 — e.g. The Creation of Avacyn chapter I
+        // "exile it face down"). While face down in exile its characteristics are hidden; a
+        // later effect (a SetState$ TurnFaceUp) turns it face up by clearing this flag. Reset
+        // on every zone change (a card that leaves exile is no longer the face-down object).
+        bool is_face_down = false;
 };
 
 #endif /* ZONE_H */

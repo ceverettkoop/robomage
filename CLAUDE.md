@@ -598,10 +598,35 @@ train/.venv/bin/python train/train.py sweep --deck delver                       
 train/.venv/bin/python train/train.py league                                          # train the decks/league/ roster
 train/.venv/bin/python train/train.py league --resume                                 # resume an interrupted league run
 
+# Archetype exploiters (AlphaStar-style main exploiters feeding the league pool)
+train/.venv/bin/python train/train.py exploiter --archetype burn                      # pilot the burn decks vs the FROZEN gen; saves exp_burn__*.zip
+train/.venv/bin/python train/train.py exploiter --archetype burn --resume             # resume that archetype's run
+
 # AlphaZero (MCTS-trained net, warm-started from the PPO gen checkpoint — run league first)
 train/.venv/bin/python train/train.py az --deck delver                                # one cycle: self-play -> train -> gate
 train/.venv/bin/python train/train.py az-league                                       # rotate AZ cycles across decks/league/
+
+# Curriculum: a multi-phase plan (league -> exploiter -> league -> az-league -> baseline) in one file
+train/.venv/bin/python train/train.py curriculum --plan q3 --dry-run                  # print each phase's composed command
+train/.venv/bin/python train/train.py curriculum --plan q3                            # run it (each phase is a subprocess)
+train/.venv/bin/python train/train.py curriculum --plan q3 --status                   # per-phase state from the progress file
+train/.venv/bin/python train/train.py curriculum --plan q3 --resume                   # continue after an interruption
 ```
+
+**Curricula.** A curriculum is an ordered list of phases whose `kind` is a `train.py`
+subcommand (`league`, `exploiter`, `az`, `az-league`, `baseline`), written as
+`train/checkpoints/curricula/<name>.plan.json` (`"version": 1`) and executed by
+`train.py curriculum` — one SUBPROCESS per phase, so PPO and AZ phases stay memory-isolated
+and each phase reuses its own `--resume` machinery. A phase carries a few convenience fields
+(`decks`, `steps`, `archetype`, `rotations`, `games`, `model`, `deck`) plus an `overrides`
+object whose keys are that subcommand's **`cli_spec` arg dests** — the spec IS the schema, so
+an unknown kind/override or a wrong value type fails loudly at load instead of at phase
+launch. Progress lives in `<name>.progress.json` next to the plan; `--resume` skips completed
+phases and relaunches the one that was in flight (with `--resume` of its own for the drivers
+that support it), refusing to run if an already-executed phase was edited while allowing free
+edits to the phases still ahead. The TUI's `curriculum` entry opens a plan builder screen
+(phase list + per-phase form generated from that kind's `cli_spec` Sub) with Save/Load/Run/
+Resume/Status. See `train/curriculum.py`.
 
 **League resume.** A `league` run persists its driver progress (roster, total budget,
 global steps done, current rotation, and every hyperparameter) to
@@ -635,6 +660,22 @@ that deck, or the newest `gen` snapshot if no `__final` yet) that is never evict
 **discretionary** `gen__v*` intermediates filled newest-first round-robin across decks. So every
 roster deck is always represented as an opponent — even a perennial-loser deck stays in the pool
 via the generalist's `__final` piloting it.
+
+**Archetype exploiters (`train.py exploiter --archetype <arch>`).** A dedicated run whose
+learner pilots ONE archetype's decks (every deck tagged with that archetype in
+`bin/resources/decks/archetypes.json`) against a **frozen** opponent pool pinned to the
+current `gen__final.zip` piloting the whole league roster — no snapshot rotation, no
+latest-self mirror, so the target never moves. It saves under its own checkpoint stem
+`exp_<archetype>` (`exp_burn__v{steps}.zip` / `exp_burn__final.zip`) and **never writes a
+`gen` file**; `exp_*`, like `gen`, is a reserved stem no deck may be named. Weights
+warm-start from `gen` (fresh step counter) unless `--fresh`; progress goes to
+`checkpoints/_exploiter_<archetype>_progress.json` so `exploiter --archetype <arch> --resume`
+continues an interrupted run. Later `league` runs then pick the exploiters up
+automatically: each archetype's newest exploiter is a never-evicted pool entry piloting that
+archetype's roster decks, older `exp_*__v*` compete for the discretionary budget, and
+`--exploiter-floor` (default 0.1) reserves a minimum share of episodes for them on top of
+their normal PFSP weight — so the generalist gets inoculated against burn/combo/control
+styles without having to discover them itself.
 
 **Snapshot promotion gate (`--promote-margin`, default 0.05).** The periodic
 `gen__v{steps}.zip` snapshots are only saved when the learner's *recent-window* win-rate
@@ -684,6 +725,7 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 [float32 × MAX_ACTIONS — action card_is_public flags (padded)]
 [int32   × MAX_ACTIONS — action zone_ref (ActionRefZone; padded)]
 [int32   × MAX_ACTIONS — action slot_ref (entity-reference slot, -1 = none; padded)]
+[int32   × MAX_ACTIONS — action option_ordinal (mode/X/color/ability index, -1 = n/a; padded)]
 ```
 - `N` = number of legal choices; the trailing `STATE_SIZE`/`MAX_ACTIONS` are a runtime
   layout handshake (the Python driver asserts them against its own imported constants so a
@@ -699,10 +741,26 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 - **State vector layout, `STATE_SIZE`, `N_CARD_TYPES`, per-slot field order** — the commented
   layout block and constants in `src/machine_io.h`. Card identity is a single normalized id
   float per slot (`norm_card_id`), *not* a one-hot.
+- **Every block WIDTH** (player block, step one-hot, match/library context, pending decision,
+  global extras, history entry, decklist slot, the stack sub-fields) — the "State-vector block
+  widths" block in `src/machine_io.h`, mirrored into `train/_enums.py` by `gen_enums.py`.
+  Never re-spell a width as a literal in `env.py`/`extractor.py`/`obs_builder.cpp`; import it.
+- **Every block's absolute OFFSET** — `machine_io.h`'s `OFFSET_CHAIN`, pinned by its own
+  `== STATE_SIZE` static_assert. `env.py` derives the same chain from the mirrored widths and
+  `ci_check.py`'s `actorobs` tier proves the two equal block-by-block; `extractor.py` asserts
+  itself against `env.py` at import. A block-by-block check, not a total-only one: a
+  compensating change (a float moved between adjacent blocks) keeps the total and would
+  otherwise misalign every field in between silently.
+- **Per-action metadata block positions in the obs** — `env.py`'s `ACT_CATS_START` /
+  `ACT_IDS_START` / `ACT_CTRL_START` / `ACT_ZONE_START` / `ACT_REFS_START` / `ACT_ORDS_START`.
+  Slice those, never a hand-counted `STATE_SIZE + k * MAX_ACTIONS`.
 - **`ActionCategory` values and meanings** — the enum in `src/classes/action.h` (mirrored to
   Python by codegen in `train/_enums.py`; `ACTION_CATEGORY_MAX` is generated from it).
-- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + 5*MAX_ACTIONS` metadata +
-  hand/battlefield cost features) — `train/env.py`.
+- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + N_ACTION_OBS_BLOCKS*MAX_ACTIONS`
+  metadata + hand/battlefield cost features + the matchup tail) — `train/env.py`.
+  `N_ACTION_OBS_BLOCKS` (`src/machine_io.h`) is the ONE source of truth for how many
+  per-action arrays are folded into the obs; `pub` is emitted in the BQUERY but stays a
+  side-channel and is not counted.
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 
@@ -768,6 +826,13 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
 - `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
 - `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
+- `train/curriculum.py` — multi-phase training plans behind `train.py curriculum`: the plan
+  schema (validated against `cli_spec`, which IS the schema), the composed per-phase argv, the
+  progress sidecar + resume/hash rules, and the subprocess runner. Stdlib-only, so `tui.py`'s
+  plan-builder screen imports it without torch. Regression: `train/test_curriculum.py`
+  (`make check` tier `curriculum`)
+- `train/progress_io.py` — the single crash-safe (write-temp + `os.replace`) JSON progress
+  sidecar reader/writer shared by the league, exploiter, az-league, and curriculum drivers
 - `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates games for a matchup, and inspects play (card importance, SHAP, value swings, regret, entropy, calibration, an interactive REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a GUI window) with terminal sparkline/bar fallbacks. The model is the one generalist (`gen`, an explicit `.zip`/`.pt` path, or `az:gen`/`azraw:gen`) and encodes **no deck**, so both the model's deck and the opponent's deck must be given explicitly with `--deck-a`/`--deck-b` for any model seat (a scripted opponent defaults to a mirror of `--deck-a`). (The older offline `.rmrec` recording subsystem and `train.py --record` were removed.)
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
 - `train/play.py` — interactive human-vs-model play (text mode, `--tui`, `--gui`, `--analysis`)
@@ -776,7 +841,9 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
 - `train/tui_game.py` / `train/gui_game.py` — the Textual and PySide6 boards over that driver
 - `train/tui.py` — the overall Textual control panel behind `./tui.sh` (deck management,
   training, league runs, observing games, launching play — composes `train.py`/`analysis.py`/
-  `play.py` as subprocesses, distinct from the `game_driver.py` boards)
+  `play.py` as subprocesses, distinct from the `game_driver.py` boards). `ArgFormMixin` builds
+  every input form from `cli_spec`; the `curriculum` entry pushes `CurriculumScreen`, the
+  multi-phase plan builder (phase list + per-phase form + Save/Load/Run/Resume/Status)
 - `train/gui_analysis.py` — the analysis window (worker thread, live MCTS table, branch chart,
   PV scrubber + MiniBoard)
 - `train/tui_analysis.py` — standalone Textual analysis browser (game list, board-state pager,

@@ -22,6 +22,7 @@ it); also runnable standalone::
 """
 import os
 import random
+import re
 import sys
 
 import numpy as np
@@ -31,8 +32,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import decode
 import runner
 from env import (
-    RoboMageEnv, STATE_SIZE, N_CARD_TYPES, N_ENTITY_REF_SLOTS, BIN_DIR,
+    RoboMageEnv, NarrativeEnv, STATE_SIZE, N_CARD_TYPES, N_ENTITY_REF_SLOTS, BIN_DIR,
     ACTION_CATEGORY_MAX, MAX_ACTIONS, OPTION_ORDINAL_MAX,
+    ACT_CATS_START, ACT_ORDS_START,
     _SELF_PERM_START, _OPP_PERM_START, _PERM_SLOTS, _PERM_SLOT_SIZE,
     _PERM_CHOSEN_NAME_OFF, _PERM_RETURNABLE_OFF, _PERM_CARD_OFF,
     _OFF_ATTACHED_TO, _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
@@ -44,13 +46,18 @@ from env import (
     _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END,
     _PENDING_DECISION_START, _HIST_START, _ACTION_HISTORY_SIZE,
     _ACTION_HISTORY_ENTRY, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
-    _EXTRAS_MC_ONEHOT_START, _SELF_BLOCK_START, _OPP_BLOCK_START,
+    _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
+    _SELF_BLOCK_START, _OPP_BLOCK_START,
     _PB_LIFE, _PB_HAND_CT, _LIBRARY_CTX_START, _REVEALED_START,
-    _SELF_LIVE_LIB_START, _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
-    _DECKLIST_SLOT_SIZE)
+    _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
+    _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
+    _DECKLIST_SLOT_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
 from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
-                    DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY)
+                    DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY,
+                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
+                    SIDEBOARD_SWAP_CAP)
 from opponents import make_controller
+from scripted_agent import scripted_action
 
 # Card-id decode: sentinel (empty/unknown) -> -1; a real id -> [0, N_CARD_TYPES).
 _CARD_ID_SENTINEL = -1
@@ -125,9 +132,11 @@ def _card_id_slots():
             yield name, s, start + s * _DECKLIST_SLOT_SIZE
 
 
-# The three deck-identity blocks: (name, start offset, slot count).
+# The deck-identity blocks: (name, start offset, slot count).
 _DECKLIST_BLOCKS = (
     ("self_live_lib", _SELF_LIVE_LIB_START, DECKLIST_MAIN_SLOTS),
+    ("self_deck_main", _SELF_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
+    ("self_deck_side", _SELF_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
     ("opp_deck_main", _OPP_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
     ("opp_deck_side", _OPP_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
 )
@@ -338,7 +347,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata
     # block, normalized (ord + 1) / (OPTION_ORDINAL_MAX + 1) so -1 (n/a) -> 0.0.
-    _ords_start = STATE_SIZE + 5 * MAX_ACTIONS
+    _ords_start = ACT_ORDS_START
     for i in range(MAX_ACTIONS):
         v = obs[_ords_start + i]
         if not np.isfinite(v):
@@ -412,7 +421,7 @@ def run_matchup(deck_a, deck_b, seed, companion_by_seat=None, max_decisions=None
     deck_block_by_seat = {}
 
     def on_query(d):
-        cats = np.round(d.obs[STATE_SIZE:STATE_SIZE + d.num_choices]
+        cats = np.round(d.obs[ACT_CATS_START:ACT_CATS_START + d.num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
         is_pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
         check_decision(d.index, d.obs, d.priority_is_a, companion_by_seat,
@@ -489,6 +498,503 @@ def check_walker_activation_ordinals():
         env.close()
 
 
+# Bo3 sideboard-check tuning: swaps each seat makes per sideboard phase, how many
+# post-board decisions are enough to prove the freeze held into game 2, and a hard
+# decision cap so a pathological match can never hang the tier.
+_SB_SWAPS_PER_PHASE = 2
+_SB_POST_BOARD_MIN = 40
+_SB_MAX_DECISIONS = 4000
+# The bo3 matchup the sideboard checks drive: both decks carry a real sideboard,
+# and the seed reaches a second game quickly.
+_SB_DECK_A, _SB_DECK_B, _SB_SEED = "league/ur_delver", "league/gw_maverick", 3
+
+
+def _decklist_diff(before, after):
+    """Short human-readable diff of two decoded decklist blocks."""
+    parts = []
+    for slot, (b, a) in enumerate(zip(before, after)):
+        if b != a:
+            parts.append(f"slot {slot}: (id={b[0]}, ct={b[1]}) -> (id={a[0]}, ct={a[1]})")
+        if len(parts) >= 4:
+            parts.append("...")
+            break
+    return "; ".join(parts) or "(no slot differs — length mismatch)"
+
+
+def _sideboard_action(obs, cats, swaps_left):
+    """Pick a move on the balanced delta menu. Returns (action, completed_a_swap),
+    or None when this is not a sideboard menu.
+
+    The scripted agent always answers Done (scripted_agent.py), so the bo3 sideboard
+    checks drive the swaps themselves — otherwise nothing would ever mutate a deck
+    and their assertions would pass vacuously.
+
+    A Done action means the deck is balanced: open a swap with a "+1" while budget
+    remains, else finish. With a move outstanding, Done is absent and only the
+    balancing direction is offered — complete the pair, avoiding the takeback (the
+    entry for the outstanding card itself, identified via the pending-decision
+    context) so a swap actually lands.
+    """
+    done_idx = next((i for i, c in enumerate(cats) if c == CAT_SIDEBOARD_DONE), None)
+    moves = [i for i, c in enumerate(cats)
+             if c in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT)]
+    if done_idx is None and not moves:
+        return None
+
+    if done_idx is not None:                       # balanced
+        if swaps_left > 0:
+            # Alternate which direction opens the swap so BOTH poles of the drift
+            # (+1 after an add, -1 after a cut) are exercised — the delta menu's
+            # order-freedom is the point, and a driver that always adds first would
+            # leave the cut-first half of the balancing mask untested.
+            want_in = (swaps_left % 2 == 0)
+            first = CAT_SIDEBOARD_IN if want_in else CAT_SIDEBOARD_OUT
+            for wanted in (first, CAT_SIDEBOARD_OUT if want_in else CAT_SIDEBOARD_IN):
+                picks = [i for i in moves if cats[i] == wanted]
+                if picks:
+                    return picks[0], False
+        return done_idx, False
+
+    # Unbalanced: the outstanding card is the pending-decision source.
+    pending_id = _decode_card_id(obs[_PENDING_DECISION_START])
+    ids = decode.action_card_ids(obs)
+    for i in moves:
+        if _decode_card_id(ids[i]) != pending_id:
+            return i, True                         # completes the pair
+    return moves[0], False                         # only the takeback is legal
+
+
+def _drive_bo3_sideboarding(env, seed=_SB_SEED, swaps_per_seat=_SB_SWAPS_PER_PHASE,
+                            max_decisions=_SB_MAX_DECISIONS):
+    """Yield (obs, num_choices, cats, seat) at every decision of a bo3 in which
+    BOTH seats really sideboard.
+
+    Shared by the bo3 sideboard checks below: each drives the same match and only
+    differs in what it asserts per decision. The caller owns the env (and its
+    close); breaking out of the loop early is fine.
+    """
+    obs, _ = env.reset(seed=seed)
+    swaps_left = {"A": swaps_per_seat, "B": swaps_per_seat}
+    for _ in range(max_decisions):
+        num = env._num_choices
+        seat = "A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"
+        cats = decode.action_categories(obs, num)
+        yield obs, num, cats, seat
+
+        picked = _sideboard_action(obs, cats, swaps_left[seat])
+        if picked is None:
+            action = scripted_action(obs, num)
+        else:
+            action, completed = picked
+            if completed:
+                swaps_left[seat] -= 1
+        obs, _r, terminated, truncated, _info = env.step(action)
+        if terminated or truncated:
+            return
+
+
+def check_opponent_decklist_frozen():
+    """The opponent decklist blocks must be the match's REGISTERED 75, FROZEN for
+    the whole bo3 — a sideboard swap must never leak into the view the other seat
+    sees (see src/classes/deck_state.h).
+
+    Drives a real bo3 in which BOTH seats actually sideboard, and asserts that for
+    each viewer seat the decoded opp_deck_main / opp_deck_side blocks are byte-
+    identical at every decision of every game, including the between-games
+    sideboard phases (where env's sideboard mask deliberately keeps them visible).
+    Returns (swaps_made, post_board_decisions)."""
+    env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
+                      auto_sideboard=False)
+    first = {}                        # seat -> (main_block, side_block) at first sight
+    swaps = 0
+    saw_sideboard = False
+    post_board = 0
+    try:
+        for obs, _num, cats, seat in _drive_bo3_sideboarding(env):
+            blocks = (
+                tuple(_decode_decklist_block(obs, _OPP_DECK_MAIN_START,
+                                             DECKLIST_MAIN_SLOTS)),
+                tuple(_decode_decklist_block(obs, _OPP_DECK_SIDE_START,
+                                             DECKLIST_SIDE_SLOTS)),
+            )
+            if seat not in first:
+                first[seat] = blocks
+            elif blocks != first[seat]:
+                which = "maindeck" if blocks[0] != first[seat][0] else "sideboard"
+                i = 0 if which == "maindeck" else 1
+                raise InvariantError(
+                    f"opponent {which} block changed mid-match for viewer seat "
+                    f"{seat} (it must stay the registered 75): "
+                    f"{_decklist_diff(first[seat][i], blocks[i])}")
+
+            # An unbalanced menu (sideboard moves offered but no Done) is answered
+            # with the pairing move by _sideboard_action, so each one is exactly one
+            # completed swap.
+            if any(c in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT) for c in cats) and \
+                    not any(c == CAT_SIDEBOARD_DONE for c in cats):
+                swaps += 1
+            if obs[_IS_SIDEBOARD_IDX] > 0.5:
+                saw_sideboard = True
+            elif saw_sideboard:
+                post_board += 1
+                if post_board >= _SB_POST_BOARD_MIN:
+                    break
+    finally:
+        env.close()
+
+    # Guard against a vacuous pass: without real swaps, and without decisions in a
+    # post-board game, the assertion above proves nothing.
+    if swaps == 0:
+        raise InvariantError("no sideboard swap was made — the frozen-block "
+                             "assertion would pass vacuously")
+    if post_board == 0:
+        raise InvariantError("the match never reached a post-board game — the "
+                             "frozen-block assertion would pass vacuously")
+    return swaps, post_board
+
+
+# "Sideboard in: 4x Lightning Bolt" / "Sideboard out: 1x Island" — the count is the
+# ground truth the per-action option_ordinal must reproduce.
+_SB_DESC_COUNT_RE = re.compile(r"^Sideboard (?:in|out): (\d+)x ")
+
+
+def check_sideboard_copy_ordinals():
+    """Every sideboard IN/OUT action must carry its COPY COUNT as option_ordinal.
+
+    Without it the policy sees "4x Lightning Bolt" and "1x Island" as the same
+    action — category + card id are otherwise the only non-null per-action features
+    at a sideboard root — so cutting one of four is indistinguishable from cutting a
+    singleton. Cross-checks the decoded ordinal against the count parsed out of the
+    engine's own action label (NarrativeEnv, which carries the descriptions), so
+    this is an exact check rather than a range assertion. Returns (actions_checked,
+    distinct_ordinals_seen)."""
+    env = NarrativeEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
+                       auto_sideboard=False)
+    checked = 0
+    seen_ordinals = set()
+    try:
+        for obs, num, cats, _seat in _drive_bo3_sideboarding(env):
+            if not any(c in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT) for c in cats):
+                continue
+            ords = decode.action_ordinals(obs, num)
+            descs = env._action_descriptions or []
+            for i in range(num):
+                if cats[i] not in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT):
+                    continue
+                desc = descs[i] if i < len(descs) else ""
+                m = _SB_DESC_COUNT_RE.match(desc)
+                if not m:
+                    raise InvariantError(
+                        f"sideboard action {i} has an unparseable label {desc!r} — "
+                        "the ordinal cross-check cannot verify it")
+                want = min(int(m.group(1)), OPTION_ORDINAL_MAX)
+                got = int(ords[i])
+                if got != want:
+                    raise InvariantError(
+                        f"sideboard action {i} ({desc!r}) has option_ordinal {got}, "
+                        f"expected the copy count {want}")
+                seen_ordinals.add(got)
+                checked += 1
+            # One phase's menus are plenty; stop as soon as we have both a
+            # multi-copy and a single-copy entry to prove the ordinal really varies.
+            if checked and len(seen_ordinals) >= 2:
+                break
+    finally:
+        env.close()
+
+    if checked == 0:
+        raise InvariantError("no sideboard IN/OUT action was ever offered — the "
+                             "ordinal assertion would pass vacuously")
+    if len(seen_ordinals) < 2:
+        raise InvariantError(
+            f"every sideboard action carried the same ordinal {seen_ordinals} — a "
+            "constant would satisfy the per-action check without encoding anything")
+    return checked, len(seen_ordinals)
+
+
+def _decode_sb_delta(obs):
+    """Maindeck drift from its phase-start size, from the serialized (d + 1) / 2."""
+    return int(round(float(obs[_EXTRAS_SB_DELTA]) * 2)) - 1
+
+
+def check_sideboard_delta_menu():
+    """Deck balance must be an ACTION-MASK invariant on the delta menu.
+
+    Each sideboard decision offers every distinct sideboard card as a "+1" and
+    every distinct maindeck card as a "-1", plus Done. The engine must never let
+    the model express an off-size deck:
+
+      (i)   the serialized drift is always one of -1 / 0 / +1;
+      (ii)  balanced (drift 0) => Done is offered AND both directions are, so the
+            model can lead with either a cut or an addition;
+      (iii) drift != 0 => Done is WITHHELD and ONLY the balancing direction is
+            offered (at +1 nothing may be added, at -1 nothing may be cut);
+      (iv)  a phase never exceeds the swap cap;
+      (v)   both an add-first and a cut-first opening actually occur, so the
+            order-freedom the menu exists for is exercised rather than assumed.
+
+    Returns (decisions_checked, unbalanced_decisions)."""
+    env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
+                      auto_sideboard=False)
+    checked = 0
+    unbalanced = 0
+    max_swaps_seen = 0
+    openings = set()
+    try:
+        for obs, _num, cats, seat in _drive_bo3_sideboarding(env):
+            if obs[_IS_SIDEBOARD_IDX] <= 0.5:
+                continue
+            checked += 1
+            drift = _decode_sb_delta(obs)
+            has_done = any(c == CAT_SIDEBOARD_DONE for c in cats)
+            has_add = any(c == CAT_SIDEBOARD_IN for c in cats)
+            has_cut = any(c == CAT_SIDEBOARD_OUT for c in cats)
+
+            # (i)
+            if drift not in (-1, 0, 1):
+                raise InvariantError(
+                    f"seat {seat}: sideboard drift {drift} outside {{-1,0,+1}}")
+
+            if drift == 0:
+                # (ii) — a balanced menu is the only place Done may appear, and it
+                # must show both lists at once (the point of the delta menu).
+                if not has_done:
+                    raise InvariantError(
+                        f"seat {seat}: balanced deck but Done is not offered — the "
+                        "phase could never end")
+                if not (has_add and has_cut):
+                    raise InvariantError(
+                        f"seat {seat}: balanced menu offers add={has_add} "
+                        f"cut={has_cut}; both directions must be available so the "
+                        "model can lead with either")
+            else:
+                # (iii) — with a move outstanding the mask must force it balanced.
+                unbalanced += 1
+                if has_done:
+                    raise InvariantError(
+                        f"seat {seat}: Done offered at drift {drift:+d} — the model "
+                        "could submit an off-size deck")
+                if drift > 0 and has_add:
+                    raise InvariantError(
+                        f"seat {seat}: deck is +1 but an add is still offered; only "
+                        "cuts may balance it")
+                if drift < 0 and has_cut:
+                    raise InvariantError(
+                        f"seat {seat}: deck is -1 but a cut is still offered; only "
+                        "additions may balance it")
+                openings.add("add-first" if drift > 0 else "cut-first")
+
+            # (iv) swaps completed so far, from the serialized counter.
+            max_swaps_seen = max(
+                max_swaps_seen,
+                int(round(float(obs[_EXTRAS_SB_SWAPS]) * SIDEBOARD_SWAP_CAP)))
+    finally:
+        env.close()
+
+    if checked == 0:
+        raise InvariantError("no sideboard decision occurred — these assertions "
+                             "would pass vacuously")
+    if unbalanced == 0:
+        raise InvariantError("no unbalanced decision occurred — the balancing mask "
+                             "(the whole point of the delta menu) was never tested")
+    # (v) both poles of the drift must have been reached, or half the balancing
+    # mask is unverified and the claimed order-freedom is untested.
+    if openings != {"add-first", "cut-first"}:
+        raise InvariantError(
+            f"only {sorted(openings)} opening(s) occurred; the delta menu exists so "
+            "a swap can start from EITHER direction, so both must be exercised")
+    if max_swaps_seen > SIDEBOARD_SWAP_CAP:
+        raise InvariantError(
+            f"a phase completed {max_swaps_seen} swaps, over the "
+            f"{SIDEBOARD_SWAP_CAP} cap")
+    return checked, unbalanced
+
+
+def check_sideboard_takeback():
+    """An outstanding move must be reversible in one ply, and the reversal must not
+    count as a swap or let the deck oscillate forever.
+
+    Under the old paired menu, choosing a card to bring in committed you to cutting
+    something — there was no cancel, so an exploratory pick was expensive. The delta
+    menu exempts the outstanding card from its own direction lock, making the move
+    undoable. This drives that path explicitly (the other checks deliberately avoid
+    it) and asserts:
+
+      (i)   at drift +1 the outstanding card IS offered as a cut (the takeback);
+      (ii)  taking it back restores drift 0 WITHOUT crediting a swap;
+      (iii) the taken-back card is then locked out of being added again, which is
+            what bounds the phase — otherwise add/undo could repeat forever.
+
+    Returns the vocab id of the card that was taken back."""
+    env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
+                      auto_sideboard=False)
+    obs, _ = env.reset(seed=_SB_SEED)
+    added_id = None
+    swaps_before = None
+    try:
+        for _ in range(_SB_MAX_DECISIONS):
+            num = env._num_choices
+            cats = decode.action_categories(obs, num)
+            ids = decode.action_card_ids(obs)
+            drift = _decode_sb_delta(obs)
+            swaps = int(round(float(obs[_EXTRAS_SB_SWAPS]) * SIDEBOARD_SWAP_CAP))
+            in_sb = obs[_IS_SIDEBOARD_IDX] > 0.5
+
+            if not in_sb:
+                obs, _r, term, trunc, _i = env.step(scripted_action(obs, num))
+                if term or trunc:
+                    break
+                continue
+
+            if added_id is None:
+                # Open a swap with the first available addition.
+                adds = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
+                if not adds:
+                    raise InvariantError("balanced sideboard menu offered no "
+                                         "addition to open a swap with")
+                added_id = _decode_card_id(ids[adds[0]])
+                swaps_before = swaps
+                action = adds[0]
+            elif drift > 0:
+                # (i) the outstanding card must be offered back as a cut.
+                back = [i for i in range(num)
+                        if cats[i] == CAT_SIDEBOARD_OUT
+                        and _decode_card_id(ids[i]) == added_id]
+                if not back:
+                    raise InvariantError(
+                        f"card {added_id} was added (drift +1) but is not offered "
+                        "as a cut — the takeback is unavailable and the model is "
+                        "forced to cut something else")
+                action = back[0]
+            else:
+                # (ii) drift is back to 0 and no swap was credited.
+                if swaps != swaps_before:
+                    raise InvariantError(
+                        f"takeback credited a swap ({swaps_before} -> {swaps}); "
+                        "reversing a move must not consume the swap budget")
+                # (iii) the card must now be locked out of being added again.
+                still_addable = [i for i in range(num)
+                                 if cats[i] == CAT_SIDEBOARD_IN
+                                 and _decode_card_id(ids[i]) == added_id]
+                if still_addable:
+                    raise InvariantError(
+                        f"card {added_id} is addable again after being taken back — "
+                        "add/undo could then repeat forever and the phase would not "
+                        "be guaranteed to terminate")
+                return added_id
+
+            obs, _r, term, trunc, _i = env.step(action)
+            if term or trunc:
+                break
+    finally:
+        env.close()
+    raise InvariantError("never reached a sideboard takeback — the assertions "
+                         "would pass vacuously")
+
+
+def _block_total(obs, start, n_slots):
+    """Total card count across a decoded decklist block (empty slots contribute 0)."""
+    return sum(ct for cid, ct in _decode_decklist_block(obs, start, n_slots) if cid >= 0)
+
+
+def check_sideboard_self_context():
+    """The sideboarding player must be able to see its OWN deck and the game it is
+    boarding for.
+
+    Before these blocks existed the phase observation showed neither: the self
+    live-library block is stale between games and the sideboard mask zeroes it, so
+    the player was configuring a 75 it could not observe. Asserts, across a real
+    bo3 with both seats sideboarding:
+
+      (i)   self_deck_main / self_deck_side are populated at every decision;
+      (ii)  the maindeck TOTAL is invariant across the whole match — swaps are 1:1,
+            so the deck can never change size;
+      (iii) the self-deck blocks actually MOVE during a sideboard phase (they are
+            the live view; the complement of the frozen opponent blocks);
+      (iv)  at a sideboard root the match context describes the UPCOMING game
+            (game_number advanced, is_post_board set), not the one that just ended;
+      (v)   the two seats disagree about self_plays_first at the same boundary —
+            exactly one of them is on the play next.
+
+    Returns (sideboard_decisions, self_deck_changes)."""
+    env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
+                      auto_sideboard=False)
+    main_total = None
+    last_self_deck = {}                  # seat -> (main_block, side_block)
+    changes = 0
+    sb_decisions = 0
+    plays_first_at_boundary = {}         # seat -> bool, first sideboard phase only
+    try:
+        for obs, _num, _cats, seat in _drive_bo3_sideboarding(env):
+            main_block = tuple(_decode_decklist_block(obs, _SELF_DECK_MAIN_START,
+                                                      DECKLIST_MAIN_SLOTS))
+            side_block = tuple(_decode_decklist_block(obs, _SELF_DECK_SIDE_START,
+                                                      DECKLIST_SIDE_SLOTS))
+            # (i) populated — a card id >= 0 in the first slot means real content.
+            if main_block[0][0] < 0:
+                raise InvariantError(
+                    f"seat {seat}: self_deck_main is empty — the sideboarding "
+                    "player cannot see its own maindeck")
+            if side_block[0][0] < 0:
+                raise InvariantError(
+                    f"seat {seat}: self_deck_side is empty — the sideboarding "
+                    "player cannot see its own sideboard")
+
+            # (ii) The maindeck size is its balanced baseline plus the SERIALIZED
+            # drift — so this cross-validates sb_delta against the actual block
+            # contents. Swaps are 1:1, so the only legal departures from the
+            # baseline are the +/-1 of a move awaiting its pair.
+            drift = _decode_sb_delta(obs)
+            total = _block_total(obs, _SELF_DECK_MAIN_START, DECKLIST_MAIN_SLOTS)
+            if main_total is None:
+                if drift != 0:
+                    raise InvariantError(
+                        f"seat {seat}: first observation already reports drift "
+                        f"{drift:+d}; a phase must begin balanced")
+                main_total = total
+            elif total != main_total + drift:
+                raise InvariantError(
+                    f"seat {seat}: maindeck total {total} but expected "
+                    f"{main_total} {drift:+d} = {main_total + drift}; the "
+                    "serialized sideboard delta must match the deck contents")
+
+            # (iii) the live view moves as swaps land.
+            if seat in last_self_deck and last_self_deck[seat] != (main_block, side_block):
+                changes += 1
+            last_self_deck[seat] = (main_block, side_block)
+
+            if obs[_IS_SIDEBOARD_IDX] > 0.5:
+                sb_decisions += 1
+                match = decode._decode_match_context(obs[:STATE_SIZE])
+                # (iv) boarding for game 2 means game_number 1 (0-based) and a
+                # post-board game ahead. Reading the ended game would give 0/False.
+                if match["game_number"] <= 0 or not match["is_post_board"]:
+                    raise InvariantError(
+                        f"seat {seat}: sideboard root reports game_number "
+                        f"{match['game_number']} / is_post_board "
+                        f"{match['is_post_board']} — it must describe the UPCOMING "
+                        "game, not the one that just ended")
+                plays_first_at_boundary.setdefault(
+                    seat, bool(obs[_EXTRAS_PLAYS_FIRST] > 0.5))
+    finally:
+        env.close()
+
+    if sb_decisions == 0:
+        raise InvariantError("no sideboard decision occurred — these assertions "
+                             "would pass vacuously")
+    if changes == 0:
+        raise InvariantError("the self-deck blocks never changed — they are meant "
+                             "to be the LIVE view and must track each swap")
+    # (v) exactly one seat is on the play in the upcoming game.
+    if len(plays_first_at_boundary) == 2 and \
+            plays_first_at_boundary["A"] == plays_first_at_boundary["B"]:
+        raise InvariantError(
+            f"both seats report self_plays_first="
+            f"{plays_first_at_boundary['A']} for the upcoming game; exactly one "
+            "of them starts it")
+    return sb_decisions, changes
+
+
 def main():
     yorion_deck = _write_yorion80_deck()
     matchups = list(_MATCHUPS) + [
@@ -516,6 +1022,46 @@ def main():
         return 1
     print(f"ok    walker activation ordinals: {n_loyal} distinct loyalty "
           "activations on one Jace", flush=True)
+
+    try:
+        n_swaps, n_post = check_opponent_decklist_frozen()
+    except InvariantError as e:
+        print(f"FAIL  opponent decklist frozen across bo3\n  {e}", flush=True)
+        return 1
+    print(f"ok    opponent decklist frozen across bo3: {n_swaps} swaps made, "
+          f"{n_post} post-board decisions checked", flush=True)
+
+    try:
+        n_acts, n_ords = check_sideboard_copy_ordinals()
+    except InvariantError as e:
+        print(f"FAIL  sideboard copy-count ordinals\n  {e}", flush=True)
+        return 1
+    print(f"ok    sideboard copy-count ordinals: {n_acts} actions checked, "
+          f"{n_ords} distinct counts", flush=True)
+
+    try:
+        n_sb, n_chg = check_sideboard_self_context()
+    except InvariantError as e:
+        print(f"FAIL  sideboard self-deck context\n  {e}", flush=True)
+        return 1
+    print(f"ok    sideboard self-deck context: {n_sb} sideboard decisions, "
+          f"{n_chg} live self-deck updates", flush=True)
+
+    try:
+        n_dec, n_unbal = check_sideboard_delta_menu()
+    except InvariantError as e:
+        print(f"FAIL  sideboard delta-menu balance\n  {e}", flush=True)
+        return 1
+    print(f"ok    sideboard delta-menu balance: {n_dec} decisions, {n_unbal} "
+          f"unbalanced (mask-forced)", flush=True)
+
+    try:
+        tb_id = check_sideboard_takeback()
+    except InvariantError as e:
+        print(f"FAIL  sideboard takeback\n  {e}", flush=True)
+        return 1
+    print(f"ok    sideboard takeback: card {tb_id} added, reversed, and locked out",
+          flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)

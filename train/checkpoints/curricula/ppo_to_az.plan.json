@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "name": "ppo_to_az",
+  "description": "Train the PPO generalist to a plateau across the full 7-archetype league roster (PopArt ON, since the diverse matchup value scales are exactly what per-bucket PopArt cancels), inoculate it against the two most distinct value landscapes (burn race, doomsday combo) via frozen-gen exploiters, consolidate them back into gen with a second league, gate the result vs scripted:hard across the whole field, then warm-start an AZ league that rotates mixed-matchup self-play indefinitely. The AZ phase is terminal (rotations:0) so it runs until you Ctrl-C it at ~24h; resume with `curriculum --plan ppo_to_az --resume` to extend it. Step budgets are scaled ~2.4x off the 10M-timestep midrange-only anchor because the roster now spans all 7 archetypes (up to 64 value buckets) rather than a few midrange cells; tune them after watching explained_variance.",
+  "phases": [
+    {
+      "kind": "league",
+      "decks": [
+        "all"
+      ],
+      "steps": 16000000,
+      "overrides": {
+        "promote_margin": 0.0,
+        "n_envs": 20,
+        "popart": true,
+        "bo3": true
+      }
+    },
+    {
+      "kind": "exploiter",
+      "label": "inoculate-burn",
+      "note": "exp_burn learner pilots the burn archetype vs the frozen gen; the next league folds it in as a never-evicted pool entry.",
+      "archetype": "burn",
+      "steps": 1000000,
+      "overrides": {
+        "popart": true,
+        "n_envs": 20
+      }
+    },
+    {
+      "kind": "exploiter",
+      "label": "inoculate-doomsday",
+      "note": "Combo axis: a value landscape very unlike the aggro/midrange bulk.",
+      "archetype": "doomsday",
+      "steps": 1000000,
+      "overrides": {
+        "popart": true,
+        "n_envs": 20
+      }
+    },
+    {
+      "kind": "league",
+      "label": "consolidate",
+      "note": "Fresh league run (auto-continues gen__final.zip) that now sees both exploiters in its opponent pool, hardening gen against burn/combo. Brings gen to ~24M total steps.",
+      "decks": "all",
+      "steps": 8000000,
+      "overrides": {
+        "popart": true,
+        "n_envs": 20
+      }
+    },
+    {
+      "kind": "baseline",
+      "label": "ppo-gate",
+      "note": "Full NxN round-robin of gen vs scripted:hard across the roster, appended to baseline_report.log. Sanity-check the PPO generalist BEFORE spending ~24h of MCTS warm-starting from it.",
+      "games": 50,
+      "overrides": {
+        "all": true
+      }
+    },
+    {
+      "kind": "az-league",
+      "label": "az-24h",
+      "note": "Warm-starts from the PPO gen. rotations:0 runs indefinitely over the full roster; mirror_frac 0.25 keeps ~75% of self-play games cross-deck (mixed matchups). bo3 by default. Ctrl-C at ~24h; --resume to extend.",
+      "decks": "all",
+      "rotations": 0,
+      "overrides": {
+        "mirror_frac": 0.25,
+        "workers": 28,
+        "sims": 128,
+        "actor": true
+      }
+    }
+  ]
+}

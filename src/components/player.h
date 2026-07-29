@@ -13,6 +13,7 @@
 struct Player {
     int32_t life_total = 20;
     int32_t life_gained_this_turn = 0;  // total life gained this turn (any source); reset each turn (Ocelot Pride end-step check)
+    int32_t life_lost_this_turn = 0;    // total life lost this turn (damage + lose-life effects); reset each turn (Spectacle "if an opponent lost life this turn", CR 702.107a)
     bool has_city_blessing = false;     // 702.131c: city's blessing designation, kept for the rest of the game once obtained
     // 122.1: every kind of counter a player can have, keyed by counter type. Poison lives
     // here under "POISON" (replacing the old dedicated poison_counters field); energy ({E})
@@ -33,6 +34,11 @@ struct Player {
     std::set<Colors> spell_colors_cast_this_turn;
     std::vector<Entity> cards_drawn_this_turn;
     size_t cards_drawn_this_draw_step = 0;  // reset each turn; used to detect the first draw of a draw step (Orcish Bowmasters)
+    // CR 120.3 / 704.5c: set when this player attempted to draw from an empty library (and no
+    // draw-empty replacement applied). The loss is NOT immediate — the resolving effect finishes
+    // first (so e.g. Jace, Wielder of Mysteries' -8 "then if your library is empty, you win" can
+    // decide the game) and the player loses at the next state-based-action check.
+    bool attempted_draw_from_empty = false;
     // creature subtypes in this player's deck: pair<list_index, all_subtypes_index>
     std::vector<std::pair<int, int>> creature_subtypes;
 

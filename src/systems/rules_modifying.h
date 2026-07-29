@@ -33,6 +33,23 @@ bool mana_activation_prohibited(Entity permanent);
 bool cast_prohibited(Zone::Ownership caster, const CardData &card,
                      Zone::ZoneValue cast_from = Zone::HAND);
 
+// Opponent sorcery-speed lock (Teferi, Time Raveler's static "Each opponent can cast spells only
+// any time they could cast a sorcery"): is `caster` currently forced to cast at sorcery speed by an
+// active OnlySorcerySpeed$ CantBeCast static an opponent controls? When true the cast-speed gate
+// requires the sorcery-speed timing window (the caster's turn, a main phase, empty stack) for EVERY
+// spell the caster casts — even instants/flash — regardless of the spell's own type (CR 601.3a).
+// This is NOT a prohibition (cast_prohibited ignores the static); it is a timing restriction applied
+// on top of the normal instant-speed check.
+bool opponent_sorcery_speed_locked(Zone::Ownership caster);
+
+// Cast-with-flash permission (Teferi, Time Raveler's +1 "you may cast sorcery spells as though they
+// had flash"): may `caster` cast `card` as though it had flash right now? True when an active
+// cur_game.cast_with_flash_permissions entry owned by `caster` covers the spell (its ValidCard$
+// filter matches, e.g. "Sorcery"). Lifts the sorcery-speed timing restriction for a matching spell
+// (CR 702.8). An opponent sorcery-speed lock, if also active against the caster, still overrides
+// this (the lock is applied after in the gate).
+bool cast_with_flash_active(Zone::Ownership caster, const CardData &card);
+
 // CantAttack (Ensnaring Bridge): may the creature `creature` NOT be declared as an attacker
 // right now (CR 509.1a)? True when any active CantAttack static's ValidCard$ filter matches it.
 // A dynamic power/toughness-vs-X qualifier (Ensnaring Bridge's Creature.powerGTX, "power greater

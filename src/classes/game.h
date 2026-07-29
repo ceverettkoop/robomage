@@ -77,6 +77,11 @@ struct DelayedTrigger {
     // shuffle into the library must NOT fire it). Empty = any departure ("leaves the
     // battlefield", e.g. the exile-until-host-leaves triggers).
     std::vector<Zone::ZoneValue> fire_dest_zones;
+    // ThisTurn$ True (Searing Blood's "When that creature dies this turn"): a leave-battlefield
+    // delayed trigger bounded to the turn it was registered. If the watched object has not left
+    // the battlefield by that turn's cleanup, the trigger is dropped unfired (CR 603.7b). The
+    // phase-based earthbend/exile-until-host-leaves triggers leave this false (they persist).
+    bool expires_end_of_turn = false;
     // RememberObjects$ RememberedLKI (CR 603.7a): objects this delayed trigger captured when it
     // was set up (the cards the preceding RememberChanged$ ChangeZone moved, e.g. the permanent
     // Flickerwisp/Phelia exiled). Restored into cur_game.remembered_entities before the fire
@@ -116,6 +121,11 @@ struct LastKnownInfo {
                                                 // Raptor's Card.wasCastFromYourHandByYou), read via
                                                 // LKI when the source left play before the trigger
                                                 // resolved (CR 603.10 / 608.2h).
+    std::map<std::string, int> counters;   // typed-counter counts snapshotted as the permanent left
+                                           // play, so an effect that counts counters on a source
+                                           // sacrificed as part of its own activation cost (Blast
+                                           // Zone: "MV equal to the number of charge counters on it")
+                                           // reads the last-known count (CR 608.2h).
 };
 
 enum MandatoryChoice {
@@ -126,6 +136,11 @@ enum MandatoryChoice {
     CHOOSE_ENTITY,  // Legend rule, replacement effect, choose card name, choose permanent
     ASSIGN_COMBAT_DAMAGE_CHOICE  // T3.10: attacker divides damage among 2+ blockers it can't all kill
 };
+// Width of the MandatoryChoice one-hot in the serialized state vector. Derived
+// from the enum's last value, so adding a choice kind widens the one-hot (and
+// shifts every later block via machine_io.h's offset chain) automatically.
+// Mirrored into Python by train/gen_enums.py, which counts the enum's members.
+static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
 
 struct ActionHistoryEntry {
     int category;        // ActionCategory value
@@ -212,6 +227,12 @@ struct Game {
         Entity monarch_entity = MAX_ENTITIES;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
+        // Converge (CR 702.90): the number of distinct COLORS of mana spent to cast the spell
+        // currently resolving. Restored from the resolving Spell::colors_spent by StackManager
+        // before its ability runs (mirrors x_paid), so a Count$Converge amount/condition bound
+        // (Prismatic Ending's cmcLEY exile threshold) reads this spell's value. 0 for anything not
+        // cast (abilities, copies) or cast with no colored mana.
+        int converge = 0;
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
                                             // permanent leaves the battlefield (CR 608.2h); read by the
                                             // effective_* accessors when the object is no longer in play
@@ -281,19 +302,22 @@ struct Game {
         // active == true from the CAST_SPELL action until the spell reaches
         // the stack (COPY_TARGETS end) or the payment cancel rewinds.
         struct PendingCast {
-            // Where the flow resumes. Steps run in today's exact statement
-            // order; unconverted steps pass through synchronously.
+            // Where the flow resumes. The enum is listed in RUN order, which follows
+            // CR 601.2: announce (601.2b) -> targets (601.2c) -> pay every cost
+            // (601.2f-h). Everything from ALT_PITCH to PAY_APPLY is the single payment
+            // phase: it CHOOSES each non-mana cost item first, then floats and pays
+            // mana, then applies the chosen items. Nothing irreversible happens before
+            // MANA_PAY commits, so its failure path rewinds the whole cast from
+            // mana_snap alone (see cost_removals).
             enum Step {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
-                ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
-                ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
                 KICKER,           // per-kicker optional-additional-cost y/n
                 REPLICATE,        // repeated replicate-cost y/n loop
                 CHOOSE_X,         // X-cost ladder
                 HYBRID,           // hybrid pips (machine auto-resolve; interactive stays blocking)
                 PHYREXIAN_PIP,    // per-pip colored-mana-or-2-life
-                LIFE_X,           // variable life X (Toxic Deluge's PayLife<X>)
-                SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
+                LIFE_X,           // variable life X ANNOUNCEMENT (Toxic Deluge's PayLife<X>;
+                                  // CR 601.2b announces the value, the life is paid at PAY_APPLY)
                 GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
                 CHARM_MODE,       // modal mode announcement (one pick per entry, CR 601.2b)
                 CHARM_TARGET,     // the just-picked mode's targets (before the next mode pick)
@@ -301,12 +325,18 @@ struct Game {
                 SUB_TARGET,       // targeting chained sub-abilities' targets (ends with AddComponent)
                 AURA_TARGET,      // aura enchant target (pc.enchant_ab)
                 ANNOUNCE,         // primary-template setup; dispatches into the announce steps
+                // ── payment phase (CR 601.2f-h), all of it after targets ──
+                ALT_PITCH,        // alt-cost exile-from-hand picks (Force of Will's pitch)
+                ALT_RETURN,       // alt-cost return-to-hand picks (Daze)
+                ALT_SAC,          // alt-cost sacrifice picks (Fireblast: sacrifice two Mountains)
+                SPELL_SAC,        // spell's own additional sacrifice cost (Natural Order)
                 DELVE_COUNT,      // delve exile count menu (CR 702.66)
                 DELVE_PICK,       // delve exile picks, one card at a time
-                MANA_PAY,         // deferred mana payment + life (interactive payer stays blocking)
                 DEF_SAC,          // deferred flashback sacrifice (Cabal Therapy)
                 DEF_EXILE_TYPES,  // escape exile-by-types picks (CR 702.139)
                 DEF_EXILE_COUNT,  // escape exile-by-count picks (Uro)
+                MANA_PAY,         // float doomed permanents, then pay mana (interactive payer stays blocking)
+                PAY_APPLY,        // apply the chosen cost items + life, once the mana committed
                 COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
                 FINISH            // spell to stack + cast events; seeds COPY_TARGETS
             };
@@ -351,6 +381,16 @@ struct Game {
             // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
             ManaValue deferred_mana_cost;
             bool deferred_mana_pending = false;
+            // Total mana pips actually paid to cast this spell (CR 106/601.2g). Captured from
+            // deferred_mana_cost at the MANA_PAY step (after any delve/improvise reduction) and
+            // copied onto the resulting Spell::mana_spent at FINISH. 0 for a free / no-mana
+            // alternative cost. Read by a SpellCast trigger's ValidSA$ Spell.ManaSpent filter.
+            int mana_spent = 0;
+            // Converge (CR 702.90): the exact COLORS of mana actually spent to cast this spell,
+            // accumulated by the payment (prompt_mana_payment's spent-sink) as pips leave the pool.
+            // The distinct real colors (WHITE..GREEN) are copied onto Spell::colors_spent at FINISH,
+            // then restored into cur_game.converge at resolution. Empty for a free / no-mana cast.
+            ManaValue mana_spent_colors;
             bool deferred_delve = false;
             bool deferred_improvise = false;
             // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
@@ -358,9 +398,33 @@ struct Game {
             // then every cost (601.2g/h). They are paid only after the deferred mana
             // payment commits, so a cancelled payment never costs life or a creature.
             int deferred_life_cost = 0;
+            // Variable life X (Toxic Deluge's PayLife<X>): the value ANNOUNCED at LIFE_X
+            // (CR 601.2b), paid at PAY_APPLY. Kept apart from deferred_life_cost only so
+            // the narrative can still say "pays N life (X = N)". -1 = no such cost.
+            int life_x_announced = -1;
             std::string deferred_sac_spec;
             int deferred_exile_min_types = 0;
             int deferred_exile_count = 0;
+            // Cost items that have been CHOSEN but not yet applied. Every non-mana cost
+            // that moves a card (the alt cost's pitch/bounce/sacrifice, a spell's
+            // additional sacrifice, flashback's sacrifice, escape's graveyard exiles) is
+            // picked before the mana payment and applied only after it commits, at
+            // PAY_APPLY. That split is what makes a failed payment a CLEAN rewind: when
+            // prompt_mana_payment returns false nothing irreversible has happened yet, so
+            // restoring mana_snap restores the whole cast (CR 601.2h lets the costs be
+            // paid in any order, and CR 733 wants the failure to leave no trace). It also
+            // lets the payment SEE the doomed permanents — MANA_PAY floats their mana
+            // before spending, since they are still on the battlefield at that point.
+            struct CostRemoval {
+                Entity entity = 0;
+                Zone::ZoneValue dest = Zone::GRAVEYARD;
+                // The narrative line, formatted at PICK time (while the card is still
+                // where it was) and emitted at PAY_APPLY, where the move happens. Held
+                // whole so each cost keeps its own wording ("sacrifices X", "returns X
+                // to hand", "exiles X from their graveyard").
+                std::string log;
+            };
+            std::vector<CostRemoval> cost_removals;
             // The half-built primary spell ability. The ENTITY's Ability
             // component is added at the same point as the blocking flow did
             // (at the end of SUB_TARGET, once every announce target is
@@ -394,6 +458,7 @@ struct Game {
             // — the pre-existing alt-cost order, kept for byte compatibility.
             int alt_pitch_done = 0;
             int alt_return_done = 0;
+            int alt_sac_done = 0;  // alt-cost Sac<N/Type> sacrifices completed (Fireblast)
             // Delve (CR 702.66): the chosen exile count, completed picks, and
             // the pre-delve priority seat (the blocking prompt seated both
             // delve stages on the caster and restored the seat afterwards;
@@ -555,6 +620,13 @@ struct Game {
         // permanent (the instant is in the graveyard), so it is recorded here and cleared at
         // cleanup. Consulted at counter-resolution time (effects::counter).
         std::set<Zone::Ownership> cant_counter_spells_of;
+        // Turn-long "can't gain life" prohibition (CR 119.x) created by a resolving activated
+        // ability (Roiling Vortex's {R}: AB$ Effect | StaticAbilities$ Mode$ CantGainLife |
+        // ValidPlayer$ Player.Opponent — "your opponents can't gain life this turn"). Each player
+        // in the set has all life gain replaced with nothing until cleanup. A sourceless turn-long
+        // grant (the effect belongs to no permanent), consulted centrally in player_gain_life and
+        // cleared at cleanup. General over any CantGainLife effect.
+        std::set<Zone::Ownership> cant_gain_life_this_turn;
         // Turn-long "hexproof from <color(s)>" grant for a player and the permanents they control
         // (Veil of Summer: "You and permanents you control gain hexproof from blue and from black
         // until end of turn", CR 702.11e). Each entry protects `player` (and any permanent they
@@ -579,13 +651,59 @@ struct Game {
             bool until_your_next_turn = false;
         };
         std::vector<PlayerProtectionFromEverything> player_protection_from_everything;
+        // Cast-timing permission "you may cast <filter> spells as though they had flash" (CR 702.8 /
+        // 601.3a; Teferi, Time Raveler's +1 "Until your next turn, you may cast sorcery spells as
+        // though they had flash."). While an entry is active, `controller` may cast a spell matching
+        // `filter` (e.g. "Sorcery") ignoring the sorcery-speed timing restriction. `until_your_next_turn`
+        // selects the duration: when true the grant lapses at the controller's next untap step; when
+        // false it lapses at cleanup (end of turn). A sourceless grant (the Effect belongs to no
+        // permanent). Consulted by the cast-speed gate (rules_mod::cast_with_flash_active).
+        struct CastWithFlashPermission {
+            Zone::Ownership controller = Zone::UNKNOWN;
+            std::string filter = "";  // ValidCard$ filter the flash permission applies to
+            bool until_your_next_turn = false;
+        };
+        std::vector<CastWithFlashPermission> cast_with_flash_permissions;
+        // Turn-scoped combat-damage prevention shield (CR 615) created by a resolving DB$ Effect |
+        // ReplacementEffects$ <Event$ DamageDone | Prevent$ True | IsCombat$ True | ValidSource$/
+        // ValidTarget$ Card.IsRemembered> (Maze of Ith's "Prevent all combat damage that would be
+        // dealt to and dealt by that creature this turn"). Each shield remembers one `creature`;
+        // while active, all COMBAT damage that creature would DEAL (prevent_as_source) and/or all
+        // combat damage that would be dealt TO it (prevent_as_target) is prevented. A sourceless
+        // turn-long grant (the Effect belongs to no permanent); consulted by deal_combat_damage
+        // via combat_damage_prevented() and cleared at cleanup. General over any DamageDone/Prevent
+        // Effect keyed on a remembered object (reusable by future fog/prevention cards).
+        struct CombatDamagePreventionShield {
+            Entity creature = 0;
+            bool prevent_as_source = false;  // ValidSource$ Card.IsRemembered — damage BY the creature
+            bool prevent_as_target = false;  // ValidTarget$ Card.IsRemembered — damage TO the creature
+        };
+        std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
+        // Miracle (CR 702.94) is modeled as two sequential decisions on the drawing player, both
+        // riding the mandatory-choice channel (proc_mandatory_choice):
+        //  1. miracle_reveal_pending: a first-of-turn miracle card was just drawn and awaits its
+        //     owner's PRIVATE reveal decision — the "you may reveal it as you draw it" special action
+        //     (off the stack, hidden from the opponent until they choose to reveal). Set in
+        //     Orderer::perform_draw. On reveal the card becomes public and the linked "you may cast
+        //     it" triggered ability (category MiracleCast) is put on the stack.
+        //  2. miracle_cast_pending: that triggered ability resolved (effect_miracle.cpp) and now the
+        //     owner makes a single immediate "cast it for the miracle cost / do not cast" decision —
+        //     the cast, if taken, happens right then (not a lingering window); if the miracle cost is
+        //     unaffordable only "do not cast" is offered.
+        // Both are 0 when nothing is pending and are cleared each cleanup (the opportunity lapses at
+        // end of turn). Miracle is never offered as a normal priority-menu cast (can_afford_alt
+        // returns false for it) — it is castable only through decision 2.
+        Entity miracle_reveal_pending = 0;
+        Entity miracle_cast_pending = 0;
         std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
         std::set<Entity> chosen_cards;  // permanents chosen/kept by a ChooseCard effect (Ajani -4); read by SacrificeAll's nonChosenCard filter, cleared by Cleanup ClearChosenCard$
         std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving
         int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
+        std::vector<Entity> imprinted_entities;  // the set of cards "imprinted" (recorded) by a resolving DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$. Distinct from remembered_entities (which holds the chosen cards taken to hand).
+        std::string chosen_type = "";  // the current card type set by a DB$ RepeatEach | RepeatTypesFrom$ loop (Atraxa: iterated per card type present among the imprinted cards); read by a ChooseCard Choices$ Card.ChosenType filter, cleared when the loop ends
         std::map<Entity, std::vector<std::string>> lk_battlefield_types;  // last-known type/subtype names of a permanent captured as it leaves the battlefield (603.10 look-back), so a "dies"/leaves trigger can match a token that has already ceased to exist by the time triggers are checked
         std::set<Entity> pending_enters_tapped;  // one-shot: a ChangeZone effect put this card onto the battlefield tapped; consumed when its Permanent is created
         std::map<Entity, Entity> pending_enters_attacking;  // one-shot: {ninja -> attack target} a K:Ninjutsu (CR 702.49e) put this card onto the battlefield attacking; consumed when its Creature component is created (a non-creature ninja, e.g. a planeswalker, drops the mark — it can't be a combatant)
@@ -606,12 +724,45 @@ struct Game {
         struct ImpulseCastPermission {
             // FREE = cast without paying any cost (Ugin, Eye of the Storms' -11: "cast those
             // cards without paying their mana costs", CR 118.9 / 601.2f). ENERGY/LIFE pay an
-            // alternative resource cost equal to `amount` (Amped Raptor's DB$ Play).
-            enum Resource { ENERGY, LIFE, FREE } resource = ENERGY;
-            int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE
+            // alternative resource cost equal to `amount` (Amped Raptor's DB$ Play). NORMAL =
+            // PLAY the card for its NORMAL cost (Light Up the Stage's "you may play those cards")
+            // — no alternative cost, and (if allow_land) a land among the cards may be played.
+            enum Resource { ENERGY, LIFE, FREE, NORMAL } resource = ENERGY;
+            int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE/NORMAL
             Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
+            bool allow_land = false;   // NORMAL "play" grants may also play a LAND card from exile
+            // persist_until_end_of_next_turn: the permission survives the cleanup of the turn it was
+            // granted; it is removed at the caster's NEXT turn's cleanup (CR "until the end of your
+            // next turn"). grant_turn records cur_game.turn at grant so game.cpp can detect that
+            // next-turn cleanup. Default (false) = the Forge default "this turn" (cleared every cleanup).
+            bool persist_until_end_of_next_turn = false;
+            size_t grant_turn = 0;
+            // from_suspend: granted by the last Suspend time counter being removed (CR 702.62).
+            // The card is cast without paying its mana cost as an effect of resolving a triggered
+            // ability, so it is offered regardless of the card's normal sorcery/instant timing
+            // (the caster already holds priority in their own upkeep). Ordinary free casts (Ugin)
+            // leave this false and keep their type-based timing.
+            bool from_suspend = false;
+            // warp: granted when a warp-cast object is exiled at the next end step. Unlike the
+            // per-turn grants above, a warp permission persists across turns FOR AS LONG AS the
+            // card remains in exile — it lapses only once the card leaves exile (cast, or moved
+            // by another effect). The recast keeps the card's normal sorcery/instant timing (a
+            // creature is recast at sorcery speed), so from_suspend stays false. See effect_warp.cpp.
+            bool warp = false;
         };
         std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
+        // Warp (a 2025 keyword): cards cast for their warp cost, pending the delayed end-step exile.
+        // Set from Spell::cast_with_warp as the spell resolves onto the battlefield (stack_manager),
+        // consumed when the permanent is created (apply_permanent_components) to register the
+        // one-shot "exile at the next end step" delayed triggered ability (mark_warp_permanent).
+        std::set<Entity> pending_warp;
+        // Suspend time counters (CR 702.62 / 122): a card exiled with suspend carries N time
+        // counters. It is NOT a permanent, so its counters can't live in Permanent::counters —
+        // they are tracked here, keyed by the exiled card entity. A card is "suspended" (702.62b)
+        // iff it is in this map with a positive count and still in the exile zone. Removed to 0 at
+        // its owner's upkeep (state_manager_triggers), at which point a FREE from_suspend
+        // impulse-cast permission is granted (the free cast, CR 702.62a third ability).
+        std::map<Entity, int> suspend_time_counters;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
         std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
         std::map<Entity, Entity> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
@@ -638,6 +789,11 @@ struct Game {
         void known_top_library_remove_pos(bool player_a_owner, int pos);
 
         bool ready_to_resolve();
+        // CR 615: is this combat damage prevented by an active combat-damage prevention shield?
+        // True when `source` is a shielded creature under a prevent-as-source shield (damage it
+        // would deal), or `target` is a shielded creature under a prevent-as-target shield (damage
+        // it would be dealt). Consulted at each combat-damage assignment in deal_combat_damage.
+        bool combat_damage_prevented(Entity source, Entity target) const;
         bool is_mandatory_choice_pending() const;
         void generate_players(const Deck &deck_a, const Deck &deck_b);
         bool advance_step(std::shared_ptr<class StackManager> stack_manager, std::shared_ptr<class Orderer> orderer);

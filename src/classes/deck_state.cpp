@@ -12,10 +12,16 @@
 #include "deck.h"
 #include "gamestate.h"  // DECKLIST_MAIN_SLOTS / DECKLIST_SIDE_SLOTS
 
-std::vector<DecklistEntry> g_deck_main_a;
-std::vector<DecklistEntry> g_deck_side_a;
-std::vector<DecklistEntry> g_deck_main_b;
-std::vector<DecklistEntry> g_deck_side_b;
+// Registered (frozen, opponent-visible) and live (own-view) stores — see the
+// header for why the two are kept apart.
+static std::vector<DecklistEntry> g_reg_main_a;
+static std::vector<DecklistEntry> g_reg_side_a;
+static std::vector<DecklistEntry> g_reg_main_b;
+static std::vector<DecklistEntry> g_reg_side_b;
+static std::vector<DecklistEntry> g_live_main_a;
+static std::vector<DecklistEntry> g_live_side_a;
+static std::vector<DecklistEntry> g_live_main_b;
+static std::vector<DecklistEntry> g_live_side_b;
 
 // Resolve a DECK-FILE card name to its vocab index. Deck files strip punctuation
 // (apostrophes, commas: "Dragons Rage Channeler", "Thalia Guardian of Thraben"),
@@ -58,43 +64,68 @@ static std::vector<DecklistEntry> build_block(
     return out;
 }
 
-void deck_state_set(Zone::Ownership owner, const Deck &deck) {
-    std::vector<DecklistEntry> main = build_block(deck.main_deck, DECKLIST_MAIN_SLOTS, "maindeck");
-    std::vector<DecklistEntry> side = build_block(deck.sideboard, DECKLIST_SIDE_SLOTS, "sideboard");
-    if (owner == Zone::PLAYER_A) {
-        g_deck_main_a = std::move(main);
-        g_deck_side_a = std::move(side);
-    } else if (owner == Zone::PLAYER_B) {
-        g_deck_main_b = std::move(main);
-        g_deck_side_b = std::move(side);
-    }
+// Build both blocks of `deck` into the caller's destination vectors.
+static void set_blocks(const Deck &deck, std::vector<DecklistEntry> &main_out,
+                       std::vector<DecklistEntry> &side_out) {
+    main_out = build_block(deck.main_deck, DECKLIST_MAIN_SLOTS, "maindeck");
+    side_out = build_block(deck.sideboard, DECKLIST_SIDE_SLOTS, "sideboard");
+}
+
+void deck_state_set_registered(Zone::Ownership owner, const Deck &deck) {
+    if (owner == Zone::PLAYER_A)
+        set_blocks(deck, g_reg_main_a, g_reg_side_a);
+    else if (owner == Zone::PLAYER_B)
+        set_blocks(deck, g_reg_main_b, g_reg_side_b);
+}
+
+void deck_state_set_live(Zone::Ownership owner, const Deck &deck) {
+    if (owner == Zone::PLAYER_A)
+        set_blocks(deck, g_live_main_a, g_live_side_a);
+    else if (owner == Zone::PLAYER_B)
+        set_blocks(deck, g_live_main_b, g_live_side_b);
 }
 
 void deck_state_reset() {
-    g_deck_main_a.clear();
-    g_deck_side_a.clear();
-    g_deck_main_b.clear();
-    g_deck_side_b.clear();
+    for (std::vector<DecklistEntry> *v :
+         {&g_reg_main_a, &g_reg_side_a, &g_reg_main_b, &g_reg_side_b,
+          &g_live_main_a, &g_live_side_a, &g_live_main_b, &g_live_side_b})
+        v->clear();
 }
 
-const std::vector<DecklistEntry> &deck_state_main(Zone::Ownership owner) {
-    return (owner == Zone::PLAYER_A) ? g_deck_main_a : g_deck_main_b;
+const std::vector<DecklistEntry> &deck_state_registered_main(Zone::Ownership owner) {
+    return (owner == Zone::PLAYER_A) ? g_reg_main_a : g_reg_main_b;
 }
 
-const std::vector<DecklistEntry> &deck_state_side(Zone::Ownership owner) {
-    return (owner == Zone::PLAYER_A) ? g_deck_side_a : g_deck_side_b;
+const std::vector<DecklistEntry> &deck_state_registered_side(Zone::Ownership owner) {
+    return (owner == Zone::PLAYER_A) ? g_reg_side_a : g_reg_side_b;
+}
+
+const std::vector<DecklistEntry> &deck_state_live_main(Zone::Ownership owner) {
+    return (owner == Zone::PLAYER_A) ? g_live_main_a : g_live_main_b;
+}
+
+const std::vector<DecklistEntry> &deck_state_live_side(Zone::Ownership owner) {
+    return (owner == Zone::PLAYER_A) ? g_live_side_a : g_live_side_b;
 }
 
 void deck_state_capture(DeckStateSnapshot &out) {
-    out.main_a = g_deck_main_a;
-    out.side_a = g_deck_side_a;
-    out.main_b = g_deck_main_b;
-    out.side_b = g_deck_side_b;
+    out.reg_main_a = g_reg_main_a;
+    out.reg_side_a = g_reg_side_a;
+    out.reg_main_b = g_reg_main_b;
+    out.reg_side_b = g_reg_side_b;
+    out.live_main_a = g_live_main_a;
+    out.live_side_a = g_live_side_a;
+    out.live_main_b = g_live_main_b;
+    out.live_side_b = g_live_side_b;
 }
 
 void deck_state_restore(const DeckStateSnapshot &in) {
-    g_deck_main_a = in.main_a;
-    g_deck_side_a = in.side_a;
-    g_deck_main_b = in.main_b;
-    g_deck_side_b = in.side_b;
+    g_reg_main_a = in.reg_main_a;
+    g_reg_side_a = in.reg_side_a;
+    g_reg_main_b = in.reg_main_b;
+    g_reg_side_b = in.reg_side_b;
+    g_live_main_a = in.live_main_a;
+    g_live_side_a = in.live_side_a;
+    g_live_main_b = in.live_main_b;
+    g_live_side_b = in.live_side_b;
 }

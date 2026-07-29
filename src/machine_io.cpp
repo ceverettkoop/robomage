@@ -13,6 +13,7 @@
 #include "error.h"
 #include "classes/deck_state.h"
 #include "classes/game.h"
+#include "classes/match_context.h"
 #include "classes/match_state.h"
 #include "components/ability.h"
 #include "components/carddata.h"
@@ -399,12 +400,16 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     for (int i = 0; i < DECKLIST_MAIN_SLOTS; i++) {
         gs->self_live_library_id[i] = -1;
         gs->self_live_library_ct[i] = 0;
+        gs->self_deck_main_id[i]    = -1;
+        gs->self_deck_main_ct[i]    = 0;
         gs->opp_deck_main_id[i]     = -1;
         gs->opp_deck_main_ct[i]     = 0;
     }
     for (int i = 0; i < DECKLIST_SIDE_SLOTS; i++) {
-        gs->opp_deck_side_id[i] = -1;
-        gs->opp_deck_side_ct[i] = 0;
+        gs->self_deck_side_id[i] = -1;
+        gs->self_deck_side_ct[i] = 0;
+        gs->opp_deck_side_id[i]  = -1;
+        gs->opp_deck_side_ct[i]  = 0;
     }
 
     Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
@@ -447,7 +452,13 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     extern int match_wins_a;
     extern int match_wins_b;
     extern bool sideboard_phase;
-    gs->match_game_number = match_game_number;
+    extern const SideboardPhaseState *sideboard_phase_state;
+    extern MatchContext g_match_ctx;
+    // During the between-games phase the observation is ABOUT the upcoming game, so
+    // report that game's index rather than the one that just ended (which left
+    // match_game_number behind). Without this the game-1->2 sideboard root reports
+    // game_number 0 and is_post_board 0, describing a game already over.
+    gs->match_game_number = sideboard_phase ? match_game_number + 1 : match_game_number;
     if (viewer == Zone::PLAYER_A) {
         gs->match_wins_self = match_wins_a;
         gs->match_wins_opp  = match_wins_b;
@@ -456,6 +467,18 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->match_wins_opp  = match_wins_a;
     }
     gs->is_sideboard_phase = sideboard_phase;
+
+    // Starting player of the game this observation pertains to. During the phase
+    // that is the UPCOMING game, whose starting player play_bo3_match already fixed
+    // (the loser of the game that just ended) before either sideboard stage ran.
+    const bool a_first = sideboard_phase ? g_match_ctx.a_goes_first
+                                         : cur_game.pregame.a_goes_first;
+    gs->self_plays_first = (a_first == (viewer == Zone::PLAYER_A));
+
+    // Sideboard-phase progress, read straight off the running phase state so it
+    // cannot drift from the phase's own bookkeeping (null outside the phase).
+    gs->sideboard_swaps_made = sideboard_phase_state ? sideboard_phase_state->sb_swaps : 0;
+    gs->sideboard_delta      = sideboard_phase_state ? sideboard_phase_state->delta : 0;
 
     // Viewer's known top-of-library cache
     const int* viewer_known = (viewer == Zone::PLAYER_A)
@@ -575,11 +598,16 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
 
             case Zone::EXILE:
                 // Collected per-owner in recency order, exactly like the graveyard.
-                // All exile is public in this engine, so both sides are serialized.
+                // Most exile is public, so both sides are serialized. The exception is a card
+                // exiled FACE DOWN (CR 708.2, The Creation of Avacyn chapter I): its identity is
+                // hidden from the opponent, so an opponent-owned face-down exile emits the unknown
+                // id sentinel (-1) — the viewer still sees a card is there, just not which. The
+                // owner (who exiled it from their own library) still sees its true identity.
                 // get_card_vocab_idx guards a missing CardData (a token that ever
                 // sits here resolves via its Token band / TOKEN_SENTINEL, no crash).
                 if (is_self) self_exile_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
-                else         opp_exile_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
+                else         opp_exile_items.push_back({zone.distance_from_top,
+                                 zone.is_face_down ? -1 : get_card_vocab_idx(e)});
                 break;
 
             case Zone::STACK:
@@ -678,12 +706,24 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         fill_decklist_block(gs->self_live_library_id, gs->self_live_library_ct,
                             DECKLIST_MAIN_SLOTS, live, "self live library");
     }
-    // Opponent-of-viewer STATIC decklist (maindeck + sideboard) from deck_state.
+    // Viewer's OWN current 75, from deck_state's LIVE store — the deck the viewer
+    // is actually piloting, tracking every sideboard swap as it lands.
+    fill_decklist_block(gs->self_deck_main_id, gs->self_deck_main_ct,
+                        DECKLIST_MAIN_SLOTS, deck_state_live_main(viewer),
+                        "self maindeck");
+    fill_decklist_block(gs->self_deck_side_id, gs->self_deck_side_ct,
+                        DECKLIST_SIDE_SLOTS, deck_state_live_side(viewer),
+                        "self sideboard");
+    // Opponent-of-viewer REGISTERED decklist (maindeck + sideboard). Frozen at
+    // the match's registered 75 — deliberately NOT the post-board split, which is
+    // hidden information in game 2+ (see deck_state.h).
     Zone::Ownership opp_owner = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
     fill_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct,
-                        DECKLIST_MAIN_SLOTS, deck_state_main(opp_owner), "opp maindeck");
+                        DECKLIST_MAIN_SLOTS, deck_state_registered_main(opp_owner),
+                        "opp maindeck");
     fill_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct,
-                        DECKLIST_SIDE_SLOTS, deck_state_side(opp_owner), "opp sideboard");
+                        DECKLIST_SIDE_SLOTS, deck_state_registered_side(opp_owner),
+                        "opp sideboard");
 }
 
 // ── populate_query ────────────────────────────────────────────────────────────
@@ -906,9 +946,10 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(norm_card_id(gs->pending_decision_card));
     state.push_back(gs->pending_decision_ctrl_is_self ? 1.0f : 0.0f);
 
-    // Global extras (19 floats): lands played, priority, monarch, city's blessing,
-    // revolt, pending extra turns, day/night, mandatory-choice one-hot. See the
-    // [5955-5973] block in machine_io.h.
+    // Global extras (22 floats): lands played, priority, monarch, city's blessing,
+    // revolt, pending extra turns, day/night, mandatory-choice one-hot, then
+    // self_plays_first and the two sideboard-phase progress scalars. See the
+    // [5955-5976] block in machine_io.h.
     state.push_back(static_cast<float>(gs->self.lands_played_this_turn) / 10.0f);
     state.push_back(static_cast<float>(gs->opponent.lands_played_this_turn) / 10.0f);
     state.push_back(gs->viewer_has_priority ? 1.0f : 0.0f);
@@ -922,11 +963,19 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(static_cast<float>(gs->opponent.extra_turns_pending) / 3.0f);
     state.push_back(gs->is_day ? 1.0f : 0.0f);
     state.push_back(gs->is_night ? 1.0f : 0.0f);
-    // MandatoryChoice one-hot x6, NONE at index 0 (see the enum in classes/game.h)
-    for (int i = 0; i < 6; i++)
+    // MandatoryChoice one-hot, NONE at index 0 (see the enum in classes/game.h).
+    // N_MANDATORY_CHOICES tracks the enum, so adding a choice kind widens this
+    // one-hot and machine_io.h's offset chain shifts every later block with it.
+    for (int i = 0; i < N_MANDATORY_CHOICES; i++)
         state.push_back(gs->pending_choice_kind == i ? 1.0f : 0.0f);
+    state.push_back(gs->self_plays_first ? 1.0f : 0.0f);
+    state.push_back(static_cast<float>(gs->sideboard_swaps_made) /
+                    static_cast<float>(SIDEBOARD_SWAP_CAP));
+    // Drift mapped to [0, 1] with "balanced" at the 0.5 midpoint, so the two
+    // unbalanced poles sit symmetrically either side of it.
+    state.push_back((static_cast<float>(gs->sideboard_delta) + 1.0f) / 2.0f);
 
-    // ── Deck-identity tail blocks (see machine_io.h [5974-6195]) ───────────────
+    // ── Deck-identity tail blocks (see machine_io.h [5977-6328]) ───────────────
     // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count
     // normalized /4.0. Slots are packed ascending by vocab id with no holes.
     auto push_decklist_block = [&](const int* ids, const int* counts, int n_slots) {
@@ -937,7 +986,10 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     };
     // Self LIVE library (48 x 2 = 96)
     push_decklist_block(gs->self_live_library_id, gs->self_live_library_ct, DECKLIST_MAIN_SLOTS);
-    // Opponent STATIC maindeck (48 x 2 = 96)
+    // Self LIVE deck configuration: maindeck (48 x 2 = 96) then sideboard (15 x 2 = 30)
+    push_decklist_block(gs->self_deck_main_id, gs->self_deck_main_ct, DECKLIST_MAIN_SLOTS);
+    push_decklist_block(gs->self_deck_side_id, gs->self_deck_side_ct, DECKLIST_SIDE_SLOTS);
+    // Opponent REGISTERED maindeck (48 x 2 = 96)
     push_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct, DECKLIST_MAIN_SLOTS);
     // Opponent STATIC sideboard (15 x 2 = 30)
     push_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct, DECKLIST_SIDE_SLOTS);

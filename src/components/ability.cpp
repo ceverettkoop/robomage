@@ -145,9 +145,12 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         }
     }
 
-    // Filter to matching cards; empty change_type means all cards match
+    // Filter to matching cards; empty change_type — or the catch-all "Card" (a bare "search for a
+    // card", The Creation of Avacyn / Demonic Tutor) — means every card matches, mirroring
+    // search_multi_zone. (No card object has a printed TYPE literally named "Card", so without this
+    // the type-name loop below would match nothing and the mandatory search would "fail to find".)
     std::vector<Entity> choices;
-    if (change_type.empty()) {
+    if (change_type.empty() || change_type == "Card") {
         choices = zone_contents;
     } else {
         // Check if any filter spec uses extended syntax (dot/plus qualifiers)
@@ -495,7 +498,7 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // executes at consume time, floats mana, and the loop re-arms the rebuilt menu.
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-    FrameCtx &ctx, bool &suspended, UnlessPayKind kind) {
+    FrameCtx &ctx, bool &suspended, UnlessPayKind kind, const ManaValue *cost_pips) {
     suspended = false;
 
     if (kind == UnlessPayKind::DISCARD) {
@@ -530,6 +533,7 @@ bool run_unless_loop(
         }
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             payer.life_total -= static_cast<int>(cost);
+            payer.life_lost_this_turn += static_cast<int>(cost);  // CR 119.4: paying life is losing life
             game_log("%s pays %zu life — spell is not countered\n",
                 player_name(controller).c_str(), cost);
             return false;
@@ -584,8 +588,12 @@ bool run_unless_loop(
     // time (mana floats), then the loop re-arms the rebuilt menu. Asks are
     // seated on `controller` through ctx.ask, replacing the old manual seat
     // swap around the whole loop.
+    // Exact colored pips (Chain Lightning: {R}{R}) when supplied; else `cost` generic pips.
     std::multiset<Colors> cond_cost;
-    for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
+    if (cost_pips && !cost_pips->empty())
+        cond_cost = *cost_pips;
+    else
+        for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
     while (true) {
         std::vector<LegalAction> unless_actions = collect_mana_legal_actions(controller, orderer);
@@ -842,9 +850,14 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         // through the shared comma-OR card filter. A standalone ability entity on the stack (an
         // Activated/Triggered alternative the script names explicitly — Stifle, Consign to
         // Memory) is not a card, so a card-shaped ValidTgts ("Card,Emblem") never filters it.
+        // A static numeric cmc qualifier (Spell Snare: ValidTgts$ Card.cmcEQ2) is deferred by
+        // the filter evaluator to ctx.cmc_bound, so seed it here or the comparator is a no-op
+        // and the counterspell would target any spell.
+        MatchCtx spell_ctx{caster, source};
+        extract_static_cmc_bound(vt, spell_ctx);
         if (vt != "N_A" && !vt.empty() &&
             global_coordinator.entity_has_component<Spell>(cand) &&
-            !card_matches_any(cand, vt, MatchCtx{caster, source}))
+            !card_matches_any(cand, vt, spell_ctx))
             return false;
         return true;
     }
@@ -1053,14 +1066,25 @@ size_t evaluate_dynamic_amount(
     // Count$CardCounters.<TYPE> — the number of <TYPE> counters on the ability's SOURCE permanent
     // (The One Ring: X = Count$CardCounters.BURDEN, read by its upkeep life-loss and its draw).
     // The counter type is the substring after the dot, up to any further qualifier delimiter.
-    if (expr.rfind("Count$CardCounters.", 0) == 0 && source != 0 &&
-        global_coordinator.entity_has_component<Permanent>(source)) {
+    if (expr.rfind("Count$CardCounters.", 0) == 0 && source != 0) {
         std::string ctype = expr.substr(std::string("Count$CardCounters.").size());
         size_t end = ctype.find_first_of(".+ ");
         if (end != std::string::npos) ctype = ctype.substr(0, end);
-        const auto &counters = global_coordinator.GetComponent<Permanent>(source).counters;
-        auto it = counters.find(ctype);
-        return (it != counters.end() && it->second > 0) ? static_cast<size_t>(it->second) : 0;
+        if (global_coordinator.entity_has_component<Permanent>(source)) {
+            const auto &counters = global_coordinator.GetComponent<Permanent>(source).counters;
+            auto it = counters.find(ctype);
+            return (it != counters.end() && it->second > 0) ? static_cast<size_t>(it->second) : 0;
+        }
+        // LKI fallback (CR 608.2h): the source has left the battlefield (Blast Zone is sacrificed
+        // as part of its own activation cost before this DestroyAll bound resolves) — use the
+        // counter count snapshotted as it left play.
+        auto li = cur_game.last_known_info.find(source);
+        if (li != cur_game.last_known_info.end()) {
+            auto ci = li->second.counters.find(ctype);
+            if (ci != li->second.counters.end() && ci->second > 0)
+                return static_cast<size_t>(ci->second);
+        }
+        return 0;
     }
     if (expr.find("Count$Devotion.") != std::string::npos) {
         // Count mana symbols of a given color in mana costs of permanents you control
@@ -1094,6 +1118,12 @@ size_t evaluate_dynamic_amount(
     // count and graveyard-exile cap). cur_game.x_paid is recorded at cast time.
     if (expr.find("xPaid") != std::string::npos) {
         return cur_game.x_paid;
+    }
+    // Count$Converge (CR 702.90) — the number of distinct colors of mana spent to cast the spell
+    // currently resolving (Prismatic Ending: the cmcLEY exile threshold). Restored into
+    // cur_game.converge by StackManager from the resolving Spell's colors_spent.
+    if (expr.find("Count$Converge") != std::string::npos) {
+        return cur_game.converge < 0 ? 0 : static_cast<size_t>(cur_game.converge);
     }
     if (expr.find("Count$InYourLibrary") != std::string::npos ||
         expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {
@@ -1267,6 +1297,16 @@ size_t evaluate_dynamic_amount(
         int p = effective_power(target);
         return static_cast<size_t>(p < 0 ? 0 : p);
     }
+    // ExiledWith$CardManaCost — the mana value of the card the source Saga exiled face down (The
+    // Creation of Avacyn chapter II: "you lose life equal to its mana value"). Resolved from the
+    // source's Permanent::exiled_with; an absent/gone card contributes 0.
+    if (expr.find("ExiledWith$CardManaCost") != std::string::npos) {
+        int mv = 0;
+        Entity ew = exiled_with_card(source);
+        if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew))
+            mv = card_mana_value(global_coordinator.GetComponent<CardData>(ew));
+        return static_cast<size_t>(mv < 0 ? 0 : mv);
+    }
     if (expr.find("Targeted$CardManaCost") != std::string::npos) {
         // The target's mana value (CR 202.3 / 107.14). Used by Karn, the Great Creator's +1
         // Animate (Power$/Toughness$ X, X = Targeted$CardManaCost): the animated permanent
@@ -1276,6 +1316,12 @@ size_t evaluate_dynamic_amount(
             mv = card_mana_value(global_coordinator.GetComponent<CardData>(target));
         return static_cast<size_t>(mv < 0 ? 0 : mv);
     }
+    // Count$RememberedSize / RememberedSize — the total number of currently-remembered objects
+    // (cur_game.remembered_entities), regardless of type. Triumph of Saint Katherine's recursion
+    // gates its shuffle-back on "RememberedSize GE7" — the self-exiled card plus the six milled
+    // cards. Distinct from Remembered$Valid, which filters by card characteristics.
+    if (expr == "Count$RememberedSize" || expr == "RememberedSize")
+        return cur_game.remembered_entities.size();
     // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
     // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek
     // Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each artifact or land card exiled
@@ -1293,8 +1339,14 @@ size_t evaluate_dynamic_amount(
         return count;
     }
     // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
-    // Ritual: X = 1 plus the sacrificed creature's mana value).
-    if (expr.find("Remembered$CardManaCost") != std::string::npos) {
+    // Ritual: X = 1 plus the sacrificed creature's mana value). The RememberedLKI$ variant
+    // reads the same remembered entity, but is populated by a RememberLKI$ ChangeZone that
+    // snapshots the card as last-known info once it has left its origin zone (Reanimate: you
+    // lose life equal to the reanimated creature's mana value — CR 608.2h last-known-info,
+    // since the card left the graveyard as it entered play). Both forms resolve identically
+    // here because the LKI snapshot is pushed to cur_game.remembered_entities all the same.
+    if (expr.find("Remembered$CardManaCost") != std::string::npos ||
+        expr.find("RememberedLKI$CardManaCost") != std::string::npos) {
         int base = 0;
         if (!cur_game.remembered_entities.empty()) {
             Entity r = cur_game.remembered_entities[0];
@@ -1598,23 +1650,41 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             std::string sname = global_coordinator.entity_has_component<Permanent>(source)
                                     ? global_coordinator.GetComponent<Permanent>(source).name
                                     : std::string("it");
-            std::vector<LegalAction> yn;
-            LegalAction decline(PASS_PRIORITY, std::string("Decline"));
-            decline.category = ActionCategory::OPTIONAL_YESNO;
-            decline.option_ordinal = 0;  // 0 = decline
-            yn.push_back(decline);
-            LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
-            accept.category = ActionCategory::OPTIONAL_YESNO;
-            accept.option_ordinal = 1;  // 1 = accept
-            yn.push_back(accept);
-            int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
-            if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
-            if (yc == 0) {
-                game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
-                return ResolveStatus::DONE;
+            bool on_bf = is_battlefield_permanent(source);
+            if (mandatory) {
+                // Cost$ Mandatory Sac<1/CARDNAME> (Dark Depths: "sacrifice it. If you do, create
+                // Marit Lage."). The sacrifice is not optional — no prompt. Honor the "If you do"
+                // clause: only run the effect (the token creation) if the source was actually on
+                // the battlefield to be sacrificed (CR 603.8 fired, but the permanent may already
+                // have left). A source no longer on the battlefield → no sacrifice, no effect.
+                if (!on_bf) {
+                    game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
+                    return ResolveStatus::DONE;
+                }
+                orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+                game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
+            } else {
+                // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost (The Fantasticar):
+                // the Sac<.../CARDNAME> cost makes the whole effect optional — prompt, sacrifice on
+                // accept, do nothing (skip the effect and its subabilities) on decline.
+                std::vector<LegalAction> yn;
+                LegalAction decline(PASS_PRIORITY, std::string("Decline"));
+                decline.category = ActionCategory::OPTIONAL_YESNO;
+                decline.option_ordinal = 0;  // 0 = decline
+                yn.push_back(decline);
+                LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
+                accept.category = ActionCategory::OPTIONAL_YESNO;
+                accept.option_ordinal = 1;  // 1 = accept
+                yn.push_back(accept);
+                int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
+                if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
+                if (yc == 0) {
+                    game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
+                    return ResolveStatus::DONE;
+                }
+                orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+                game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
             }
-            orderer->add_to_zone(false, source, Zone::GRAVEYARD);
-            game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
         }
         phase = 2;
     }
@@ -1628,8 +1698,14 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         if (!ctx.resuming()) {
             // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
             // longer true the ability is removed from the stack and does nothing — not even its
-            // subabilities fire (unlike a ConditionCheckSVar gate).
-            if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
+            // subabilities fire (unlike a ConditionCheckSVar gate). EXCEPTION: a Mode$ Always
+            // state-triggered ability (CR 603.8) uses its IsPresent$ as the TRIGGER condition,
+            // evaluated by the state-trigger scan when it fires — it is NOT an intervening-if to be
+            // re-checked at resolution. Dark Depths' "sacrifice it, if you do create Marit Lage" must
+            // still create the token even though the sacrifice it just performed makes the "no ice
+            // counters" condition read false (the source has left the battlefield).
+            if (intervening_if && !trigger_state_condition &&
+                !evaluate_present_condition(*this, controller, orderer)) {
                 game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
                 return ResolveStatus::DONE;
             }
@@ -1734,6 +1810,11 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // reads the property off the source's permanent state. Failure skips this body but still
         // chains subabilities.
         if (condition_passed && condition_on_triggered_card)
+            condition_passed = evaluate_present_condition(*this, controller, orderer);
+        // ConditionDefined$ ExiledWith gate (The Creation of Avacyn II & III): the body runs only
+        // if the card the source Saga exiled matches the condition (ConditionPresent$ Creature).
+        // Failure skips this body but still chains subabilities (the noncreature → hand fallthrough).
+        if (condition_passed && condition_on_exiled_with)
             condition_passed = evaluate_present_condition(*this, controller, orderer);
         // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
         // controller has the city's blessing (702.131). Failure still chains subabilities.

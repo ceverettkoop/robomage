@@ -64,8 +64,9 @@ bool deal_damage_to_player(Entity source, Entity player_entity, size_t amount) {
         return false;
     }
 
-    auto &player = coord.GetComponent<Player>(player_entity);
-    player.life_total -= static_cast<int32_t>(amount);
+    // Damage dealt to a player is a loss of that much life (CR 120.3); routed through the
+    // shared helper so Spectacle's life_lost_this_turn tracker stays in sync with life_total.
+    player_lose_life(player_entity, static_cast<int32_t>(amount));
 
     // Lifelink: the source's controller gains life equal to the damage dealt.
     if (amount > 0 && source_has_keyword(source, "Lifelink") &&

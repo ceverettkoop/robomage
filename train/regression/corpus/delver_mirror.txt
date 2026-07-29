@@ -245,8 +245,27 @@
    1: Cast Daze (alternate cost)  [#1]
    2: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 13 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Scalding Tarn, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 7 | lib 52
+  Self BF:  Island (T)
+  Stack: Mishra's Bauble (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Ponder, Misty Rainforest
+  Known top: Dragon's Rage Channeler, Unholy Heat, ?, ?, ?
+  Opp revealed: Mishra's Bauble
+  Actions:
+   0: Mishra's Bauble
+  >> A/A: 0 (Mishra's Bauble)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 14 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Scalding Tarn, Wasteland | lib 51
@@ -261,24 +280,6 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target for Daze:
-
---- Decision 14 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Island, Scalding Tarn, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Stack: Mishra's Bauble (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Ponder, Misty Rainforest
-  Known top: Dragon's Rage Channeler, Unholy Heat, ?, ?, ?
-  Opp revealed: Mishra's Bauble
-  Extras: self_revolt
-  Actions:
-   0: Mishra's Bauble
-  >> A/A: 0 (Mishra's Bauble)
---- Narrative ---
-  Targeting choice 0
   Player A casts Daze targeting Mishra's Bauble
   Resolving ability (category: Counter)
   Mishra's Bauble's controller may pay {1} to save it:
@@ -553,8 +554,29 @@
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
   >> A/A: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 27 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 50
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
+  Self BF:  Island
+  Opp BF:   Island (T)
+  Stack: Ponder (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Daze, Ponder, Misty Rainforest
+  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
+  Known top: Unholy Heat, ?, ?, ?, ?
+  Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Mishra's Bauble
+  Actions:
+   0: Ponder
+  >> A/A: 0 (Ponder)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 28 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 50
@@ -571,26 +593,6 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target for Daze:
-
---- Decision 28 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Island, Scalding Tarn, Wasteland | lib 50
-  Opp:   19 life | mana: empty | hand count: 6 | lib 49
-  Opp BF:   Island (T)
-  Stack: Ponder (spell, opponent)
-  Pending: Daze (self)
-  Self GY: Daze, Ponder, Misty Rainforest
-  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
-  Known top: Unholy Heat, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Mishra's Bauble
-  Extras: self_revolt
-  Actions:
-   0: Ponder
-  >> A/A: 0 (Ponder)
---- Narrative ---
-  Targeting choice 0
   Player A casts Daze targeting Ponder
 
 --- Decision 29 ---
@@ -610,8 +612,31 @@
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
   >> B/B: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
 
 --- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Island (T)
+  Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
+  Pending: Daze (self)
+  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
+  Opp GY:  Daze, Ponder, Misty Rainforest
+  Known top: Delver of Secrets, ?, ?, ?, ?
+  Known opp hand: Island
+  Opp revealed: Misty Rainforest, Ponder, Daze, Island
+  Extras: opp_revolt
+  Actions:
+   0: Daze
+   1: Ponder
+  >> B/B: 0 (Daze)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 31 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn | lib 49
@@ -629,27 +654,6 @@
   >> B/B: 0 (Return Island)
 --- Narrative ---
   Player B returns Island to hand
-  Choose target for Daze:
-
---- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Island, Flooded Strand, Volcanic Island, Scalding Tarn | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Stack: Daze (spell, opponent) -> Ponder (self, slot 97) -> Ponder (spell, self)
-  Pending: Daze (self)
-  Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
-  Opp GY:  Daze, Ponder, Misty Rainforest
-  Known top: Delver of Secrets, ?, ?, ?, ?
-  Known opp hand: Island
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  Extras: self_revolt, opp_revolt
-  Actions:
-   0: Daze
-   1: Ponder
-  >> B/B: 0 (Daze)
---- Narrative ---
-  Targeting choice 0
   Player B casts Daze targeting Daze
   Resolving ability (category: Counter)
   Daze's controller may pay {1} to save it:

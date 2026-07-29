@@ -6,11 +6,18 @@ independently testable and importable from a headless context. The GUI
 here touches Qt.
 
 Images are the real Scryfall "normal" art (488x680 — sharp at both the ~112 px
-board card size and a larger oracle-popup), cached under
-``bin/resources/card_images/`` as ``<uid>.jpg`` (uid via ``decode._name_to_uid``,
-mirroring the engine's card filenames). Tokens are keyed with their power and
-toughness (``token_<uid>_<p>_<t>``) so different-sized same-name tokens don't
-collide.
+board card size and a larger oracle-popup) of the card's ORIGINAL (oldest)
+printing, cached under ``bin/resources/card_images/`` as ``<uid>.jpg`` (uid via
+``decode._name_to_uid``, mirroring the engine's card filenames). Tokens are keyed
+with their power and toughness (``token_<uid>_<p>_<t>``) so different-sized
+same-name tokens don't collide.
+
+Printing selection: ``/cards/named`` returns Scryfall's *default* printing, which
+is its newest one — so a card's art would silently change as new reprints ship.
+We instead canonicalize the name via ``/cards/named`` (robust to fuzzy input and
+DFC front-only names) and then re-search the card's ``oracle_id`` released-
+ascending, taking the first printing's art. (Already-cached ``<uid>.jpg`` files
+are not re-downloaded — delete them, and ``misses.json``, to refresh.)
 
 Politeness: a single daemon worker thread drains a FIFO queue (with a dedup set)
 and a monotonic-clock throttle enforces >=120 ms between HTTP requests (Scryfall
@@ -194,8 +201,34 @@ def _image_url_from_card(card, face_name):
     return None
 
 
+def _oldest_print_url(oracle_id, face_name):
+    """Return the 'normal' image URL of the ORIGINAL (oldest) printing of the card
+    with this Scryfall ``oracle_id``, or None. Searches every printing released-
+    ascending and returns the first that yields a usable image."""
+    if not oracle_id:
+        return None
+    status, data = _get_json(_API + "/cards/search",
+                             params={"q": f"oracleid:{oracle_id}",
+                                     "unique": "prints",
+                                     "order": "released", "dir": "asc"})
+    if status != 200 or not isinstance(data, dict):
+        return None
+    for card in data.get("data") or []:
+        if isinstance(card, dict):
+            url = _image_url_from_card(card, face_name)
+            if url:
+                return url
+    return None
+
+
 def _lookup_named(name):
-    """Resolve a named card's image URL. Returns (url, definitive_miss)."""
+    """Resolve a named card's image URL. Returns (url, definitive_miss).
+
+    Two steps: ``/cards/named`` (exact then fuzzy) canonicalizes the name — robust
+    to fuzzy input and DFC front-only names — then the resolved card's oracle_id is
+    re-searched released-ascending so we fetch the ORIGINAL printing's art rather
+    than ``/cards/named``'s default (Scryfall's newest printing). Falls back to the
+    resolved card's own image if the print search yields nothing."""
     status, data = _get_json(_API + "/cards/named", params={"exact": name})
     if status is None:                       # network error — transient
         return None, False
@@ -204,7 +237,9 @@ def _lookup_named(name):
         if status is None:
             return None, False
     if status == 200 and isinstance(data, dict):
-        url = _image_url_from_card(data, name)
+        url = _oldest_print_url(data.get("oracle_id"), name)
+        if url is None:
+            url = _image_url_from_card(data, name)   # fallback: default printing
         if url:
             return url, False
         return None, True                    # card found but no usable image
@@ -222,7 +257,8 @@ def _lookup_token(name, token_pt):
     queries.append(f'!"{name}" t:token')
     saw_definitive_empty = False
     for q in queries:
-        status, data = _get_json(_API + "/cards/search", params={"q": q})
+        status, data = _get_json(_API + "/cards/search",
+                                 params={"q": q, "order": "released", "dir": "asc"})
         if status is None:                   # transient
             return None, False
         if status == 200 and isinstance(data, dict):

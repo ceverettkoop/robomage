@@ -17,7 +17,7 @@ Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 looked up in a learned nn.Embedding. This decouples the observation size from the
 vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slots.
 
-Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 5974):
+Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6329):
   obs[0:36]            global context (player stats, step, flags, stack size)
   obs[36:3684]         96 permanent slots × 38 floats
                          slots 0-47: self; slots 48-95: opponent
@@ -54,12 +54,19 @@ Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 5974):
   obs[4919:5943]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
   obs[5943:5953]       10 known opponent-hand slots × 1 float (card id)
   obs[5953:5955]       pending-decision context (source card id + ctrl_is_self)
-  obs[5955:5974]       global extras (self/opp lands played, viewer_has_priority,
+  obs[5955:5977]       global extras (self/opp lands played, viewer_has_priority,
                          self/opp monarch, city's blessing, revolt, pending extra
-                         turns, is_day, is_night, MandatoryChoice one-hot(6))
-  obs[5974:]           action metadata (cats|ids|ctrl|zone|refs) + cost features
-                         (appended by env.py; refs are normalized entity-slot
-                         references, (idx+1)/108 with 0.0 = none)
+                         turns, is_day, is_night, MandatoryChoice one-hot(6),
+                         self_plays_first, sideboard swaps made, sideboard delta)
+  obs[5977:6073]       48 self live-library slots × (card id, count)
+  obs[6073:6201]       the viewer's own live 75: 48 maindeck + 16 sideboard slots
+                         × (card id, count). 16, not 15: mid-swap a cut card is
+                         momentarily the sideboard's 16th (DECKLIST_SIDE_SLOTS).
+  obs[6201:6329]       the opponent's REGISTERED 75 (frozen at match start):
+                         48 maindeck + 16 sideboard slots × (card id, count)
+  obs[6329:]           action metadata (cats|ids|ctrl|zone|refs|ords) + cost
+                         features (appended by env.py; refs are normalized
+                         entity-slot references, (idx+1)/108 with 0.0 = none)
 """
 
 from functools import partial
@@ -80,10 +87,24 @@ except ImportError:
 # per-action logit head. Same source of truth env.py uses for the action block.
 try:
     from _enums import (ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
-                        DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS)
+                        DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
+                        MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY, MAX_STACK_MODES,
+                        MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
+                        KNOWN_TOP_LIBRARY_SIZE, ACTION_HISTORY_SIZE,
+                        CARD_ID_SLOT_SIZE, STACK_HEAD_FIELDS, STACK_XAMT_FIELDS,
+                        STACK_QUAL_FIELDS, STACK_TGT_FIELDS, HIST_ENTRY_SIZE,
+                        PENDING_DECISION_SIZE, EXTRAS_SCALARS,
+                        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE)
 except ImportError:
     from train._enums import (ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
-                             DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS)
+                             DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
+                             MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY, MAX_STACK_MODES,
+                             MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
+                             KNOWN_TOP_LIBRARY_SIZE, ACTION_HISTORY_SIZE,
+                             CARD_ID_SLOT_SIZE, STACK_HEAD_FIELDS, STACK_XAMT_FIELDS,
+                             STACK_QUAL_FIELDS, STACK_TGT_FIELDS, HIST_ENTRY_SIZE,
+                             PENDING_DECISION_SIZE, EXTRAS_SCALARS,
+                             EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE)
 
 
 def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -117,7 +138,11 @@ def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
 # round(val * N_CARD_TYPES) and look up in self.card_emb.
 # (_GLOBAL_SIZE is derived from env._GLOBAL_SIZE just below, after that import.)
 
-_PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
+# Every width below comes from _enums (generated from src/machine_io.h +
+# src/classes/gamestate.h), never a bare literal — this module keeps its OWN
+# offset chain, so a hand-copied width here silently misreads the observation.
+# The chain is cross-checked block-by-block against env.py's at the bottom.
+_PERM_SLOTS      = 2 * MAX_BATTLEFIELD_SLOTS  # 48 self + 48 opponent (unified: creatures, lands, other)
 # 11 status (incl. loyalty) + 2 counters + 4 entity refs + is_blocked +
 # is_phased_out + keyword multi-hot + chosen-name id + returnable-exile id +
 # card id (LAST) = 38
@@ -127,43 +152,44 @@ _PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3  # 35 (chosen-name id, 3rd-last)
 _PERM_RETURNABLE_OFF  = _PERM_SLOT_SIZE - 2  # 36 (returnable-exile id, 2nd-last)
 _PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 37 (card id is always LAST)
 
-_STACK_SLOTS      = 12
-_STACK_XAMT_OFF   = 3   # x_or_amount / 10 within a stack slot
-_STACK_QUALS      = 7   # cast qualifiers (is_copy, kicked, flashback, evoke, ...)
-_STACK_MODE_SLOTS = 6   # chosen-mode multi-hot width per stack slot
-_STACK_MODE_OFF   = _STACK_XAMT_OFF + 1 + _STACK_QUALS      # 11
-_STACK_TGT_SLOTS  = 4   # announced-target sub-slots per stack slot
-_STACK_TGT_FIELDS = 5   # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
+_STACK_SLOTS      = MAX_STACK_DISPLAY
+_STACK_XAMT_OFF   = STACK_HEAD_FIELDS   # x_or_amount / 10 within a stack slot
+_STACK_QUALS      = STACK_QUAL_FIELDS   # cast qualifiers (is_copy, kicked, flashback, evoke, ...)
+_STACK_MODE_SLOTS = MAX_STACK_MODES     # chosen-mode multi-hot width per stack slot
+_STACK_MODE_OFF   = _STACK_XAMT_OFF + STACK_XAMT_FIELDS + _STACK_QUALS  # 11
+_STACK_TGT_SLOTS  = MAX_STACK_TGTS      # announced-target sub-slots per stack slot
+_STACK_TGT_FIELDS = STACK_TGT_FIELDS    # present + is_player + ctrl_is_self + slot_ref + card id (LAST)
 _STACK_TGT_OFF    = _STACK_MODE_OFF + _STACK_MODE_SLOTS     # 17
 # ctrl(1) + card id(1) + is_spell(1) + x_or_amount + qualifiers + modes +
 # target sub-slots (37 total)
 _STACK_SLOT_SIZE  = _STACK_TGT_OFF + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 
-_GY_SLOTS        = 128  # 64 self + 64 opponent
-_GY_SLOT_SIZE    = 1    # card id only
+_GY_SLOTS        = 2 * MAX_GY_SLOTS  # 64 self + 64 opponent
+_GY_SLOT_SIZE    = CARD_ID_SLOT_SIZE # card id only
 
-_EXILE_SLOTS     = 128  # 64 self + 64 opponent (same layout as graveyard)
-_EXILE_SLOT_SIZE = 1    # card id only
+_EXILE_SLOTS     = 2 * MAX_GY_SLOTS  # 64 self + 64 opponent (same layout as graveyard)
+_EXILE_SLOT_SIZE = CARD_ID_SLOT_SIZE # card id only
 
-_HAND_SLOTS      = 10
-_HAND_SLOT_SIZE  = 1    # card id only
+_HAND_SLOTS      = MAX_HAND_SLOTS
+_HAND_SLOT_SIZE  = CARD_ID_SLOT_SIZE # card id only
 
-_HIST_ENTRIES    = 128  # action history entries (newest first)
-_HIST_ENTRY_SIZE = 4    # category_norm, card_id_norm, is_self, turn/50
+_HIST_ENTRIES    = ACTION_HISTORY_SIZE  # action history entries (newest first)
+_HIST_ENTRY_SIZE = HIST_ENTRY_SIZE      # category_norm, card_id_norm, is_self, turn/50
 
-_KNOWN_TOP_LIB_SLOTS     = 5   # known top-of-library cards
-_KNOWN_TOP_LIB_SLOT_SIZE = 1   # card id per slot
+_KNOWN_TOP_LIB_SLOTS     = KNOWN_TOP_LIBRARY_SIZE  # known top-of-library cards
+_KNOWN_TOP_LIB_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
 _REVEALED_SIZE           = N_CARD_TYPES  # opponent revealed-cards multi-hot (dense, not one-hot-per-slot)
-_OPP_KNOWN_HAND_SLOTS    = 10  # known opponent-hand card identities
-_OPP_KNOWN_HAND_SLOT_SIZE = 1  # card id per slot
+_OPP_KNOWN_HAND_SLOTS    = MAX_HAND_SLOTS  # known opponent-hand card identities
+_OPP_KNOWN_HAND_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
 
-# Deck-identity tail blocks (mirror machine_io.h [5974-6195] / env.py): three
-# (card_id, count) slot blocks — the viewer's live LIBRARY tally, and the
-# opponent's STATIC maindeck + sideboard. card id first (norm_card_id, -1 empty
-# sentinel), count second (/4.0). All three share one decklist_encoder.
-_DECKLIST_MAIN_SLOTS = DECKLIST_MAIN_SLOTS   # 48 (self live lib, opp main)
-_DECKLIST_SIDE_SLOTS = DECKLIST_SIDE_SLOTS   # 15 (opp side)
-_DECKLIST_SLOT_SIZE  = 2                      # card id + count per slot
+# Deck-identity tail blocks (mirror machine_io.h [5977-6328] / env.py): five
+# (card_id, count) slot blocks — the viewer's live LIBRARY tally, the viewer's own
+# LIVE maindeck + sideboard, and the opponent's REGISTERED maindeck + sideboard.
+# card id first (norm_card_id, -1 empty sentinel), count second (/4.0). All five
+# share one decklist_encoder.
+_DECKLIST_MAIN_SLOTS = DECKLIST_MAIN_SLOTS   # 48 (self live lib, self/opp main)
+_DECKLIST_SIDE_SLOTS = DECKLIST_SIDE_SLOTS   # 16 (self/opp side)
+_DECKLIST_SLOT_SIZE  = DECKLIST_SLOT_SIZE     # card id + count per slot
 _DECKLIST_CARD_OFF   = 0                      # card id first within a slot
 _DECKLIST_COUNT_OFF  = 1                      # count second
 
@@ -184,11 +210,29 @@ _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 # MAX_ACTIONS and STATE_SIZE come from env.py (single source of truth for the
 # action-block layout the engine emits).
 try:
+    # The module itself too, so the block-by-block chain comparison at the bottom
+    # can getattr() env's offsets by name instead of importing 18 more aliases.
+    import env as _env_mod
     from env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
-                     _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS)
+                     _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS,
+                     OBS_SIZE as _ENV_OBS_SIZE, BUCKET_IDX as _BUCKET_IDX,
+                     ARCH_ONEHOT_START as _ARCH_ONEHOT_START,
+                     ARCH_ONEHOT_END as _ARCH_ONEHOT_END)
 except ImportError:
+    import train.env as _env_mod
     from train.env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
-                           _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS)
+                           _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS,
+                           OBS_SIZE as _ENV_OBS_SIZE, BUCKET_IDX as _BUCKET_IDX,
+                           ARCH_ONEHOT_START as _ARCH_ONEHOT_START,
+                           ARCH_ONEHOT_END as _ARCH_ONEHOT_END)
+try:
+    from archetypes import N_VALUE_BUCKETS
+except ImportError:
+    from train.archetypes import N_VALUE_BUCKETS
+# Width of the matchup tail's trunk-visible part (the two archetype one-hots) and
+# of the whole tail. Both derived from env.py's offsets — never re-typed here.
+_ARCH_ONEHOT_FEATS  = _ARCH_ONEHOT_END - _ARCH_ONEHOT_START
+_MATCHUP_TAIL_FEATS = _ARCH_ONEHOT_END - _BUCKET_IDX
 _GLOBAL_SIZE = _ENV_GLOBAL_SIZE   # header width (single source of truth: env.py)
 try:
     from _enums import REF_ZONE_MAX, N_REF_ZONES
@@ -230,25 +274,67 @@ _OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNO
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (sentinel = none) + its controller-is-viewer flag.
 _PENDING_START        = _OPP_KNOWN_HAND_END
-_PENDING_SIZE         = 2
+_PENDING_SIZE         = PENDING_DECISION_SIZE
 _PENDING_END          = _PENDING_START + _PENDING_SIZE
-# Global extras (machine_io.h [5955:5974]): self/opp lands played, priority,
-# monarch, city's blessing, revolt, pending extra turns, day/night flags, plus
-# the MandatoryChoice one-hot. Cheap scalar facts — passed through raw.
+# Global extras: self/opp lands played, priority, monarch, city's blessing,
+# revolt, pending extra turns, day/night flags, the MandatoryChoice one-hot, then
+# self_plays_first and the two sideboard-progress scalars (swaps made, maindeck
+# drift). Cheap scalar facts — passed through raw.
 _EXTRAS_START         = _PENDING_END
-_EXTRAS_SIZE          = 13 + N_MANDATORY_CHOICES              # 19
+_EXTRAS_SIZE          = EXTRAS_SCALARS + N_MANDATORY_CHOICES + EXTRAS_SB_CTX_SIZE  # 22
 _EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE
-# Deck-identity tail blocks: self live library, opponent static main + side.
+# Deck-identity tail blocks: self live library, the viewer's own live 75, then the
+# opponent's registered main + side.
 _SELF_LIVE_LIB_START  = _EXTRAS_END
 _SELF_LIVE_LIB_END    = _SELF_LIVE_LIB_START + _DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
-_OPP_DECK_MAIN_START  = _SELF_LIVE_LIB_END
+_SELF_DECK_MAIN_START = _SELF_LIVE_LIB_END
+_SELF_DECK_MAIN_END   = _SELF_DECK_MAIN_START + _DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_SELF_DECK_SIDE_START = _SELF_DECK_MAIN_END
+_SELF_DECK_SIDE_END   = _SELF_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_MAIN_START  = _SELF_DECK_SIDE_END
 _OPP_DECK_MAIN_END    = _OPP_DECK_MAIN_START + _DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
 _OPP_DECK_SIDE_START  = _OPP_DECK_MAIN_END
 _OPP_DECK_SIDE_END    = _OPP_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
 _STATE_END            = _OPP_DECK_SIDE_END
-# obs[_STATE_END:] = action metadata + cost features appended by env.py
-# Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE).
+# obs[_STATE_END:] = action metadata + cost features + matchup tail (env.py)
+# Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE and
+# the obs tail offsets; these asserts are the mirror check).
 assert _STATE_END == _ENV_STATE_SIZE, (_STATE_END, _ENV_STATE_SIZE)
+assert _ARCH_ONEHOT_END == _ENV_OBS_SIZE, (_ARCH_ONEHOT_END, _ENV_OBS_SIZE)
+assert _BUCKET_IDX > _STATE_END, (_BUCKET_IDX, _STATE_END)
+
+# ...and compare the two chains BLOCK BY BLOCK, not just on their total. A
+# total-only assert passes a compensating change (a float moved from one block
+# into the next) while every field between the two blocks reads from the wrong
+# offset — a silent, training-corrupting failure rather than a loud one. env.py
+# is in turn checked against src/machine_io.h's OFFSET_CHAIN by ci_check.py's
+# `actorobs` tier, so all three reconstructions are transitively pinned.
+_ENV_CHAIN_PAIRS = [
+    ("_GLOBAL_SIZE",          _GLOBAL_SIZE),
+    ("_STACK_START",          _STACK_START),
+    ("_GY_START",             _GY_START),
+    ("_EXILE_START",          _EXILE_START),
+    ("_HAND_START",           _HAND_START),
+    ("_HIST_START",           _HIST_START),
+    ("_MATCH_CTX_START",      _MATCH_CTX_START),
+    ("_CUR_TURN_IDX",         _CUR_TURN_IDX),
+    ("_KNOWN_TOP_LIB_START",  _KNOWN_TOP_LIB_START),
+    ("_REVEALED_START",       _REVEALED_START),
+    ("_OPP_KNOWN_HAND_START", _OPP_KNOWN_HAND_START),
+    ("_EXTRAS_START",         _EXTRAS_START),
+    ("_EXTRAS_END",           _EXTRAS_END),
+    ("_SELF_LIVE_LIB_START",  _SELF_LIVE_LIB_START),
+    ("_SELF_DECK_MAIN_START", _SELF_DECK_MAIN_START),
+    ("_SELF_DECK_SIDE_START", _SELF_DECK_SIDE_START),
+    ("_OPP_DECK_MAIN_START",  _OPP_DECK_MAIN_START),
+    ("_OPP_DECK_SIDE_START",  _OPP_DECK_SIDE_START),
+]
+for _name, _mine in _ENV_CHAIN_PAIRS:
+    _theirs = getattr(_env_mod, _name)
+    assert _mine == _theirs, (
+        f"extractor.py and env.py disagree on {_name}: {_mine} vs {_theirs} — "
+        "the two state-vector offset chains have drifted")
+del _name, _mine, _theirs
 
 
 class CardGameExtractor(BaseFeaturesExtractor):
@@ -278,6 +364,9 @@ class CardGameExtractor(BaseFeaturesExtractor):
       pending_feat(card_emb+1: what's asking for the current choice) +
       extras(19 raw: lands played, priority, monarch, ..., MandatoryChoice one-hot) +
       action_extras(action metadata cats|ids|ctrl|zone|refs + cost feats) +
+      arch_onehot(2*N_ARCH raw: one-hot self archetype | one-hot opp archetype;
+                  the tail's raw bucket index is stripped and stashed as
+                  ``self.last_bucket`` for the multi-head critic) +
       perm_agg(embed*2: masked mean+max) + stack_agg(embed//2 * 2) +
       graveyard_agg(embed*2: masked mean+max) + exile_agg(embed*2: masked mean+max) +
       hand_agg(embed*2: masked mean+max) + opp_known_hand_agg(embed*2: masked mean+max) +
@@ -307,8 +396,13 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim                                  # known-top library mean
             + embed_dim                                  # opponent revealed-cards multi-hot
             + card_embed_dim + 1                         # pending-decision source embed + ctrl flag
-            + _EXTRAS_SIZE                               # 19 global extras (raw passthrough)
-            + (observation_space.shape[0] - _STATE_END)  # action extras (6 blocks incl. refs + ords + costs)
+            + _EXTRAS_SIZE                               # 22 global extras (raw passthrough)
+            # action extras (6 blocks incl. refs + ords + costs): everything after
+            # the state EXCEPT the matchup tail, which is handled separately.
+            + (observation_space.shape[0] - _STATE_END - _MATCHUP_TAIL_FEATS)
+            + _ARCH_ONEHOT_FEATS                         # self/opp archetype one-hots
+                                                         # (the raw bucket float is
+                                                         # stripped, see forward)
             + embed_dim * 2                              # perm masked mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
             + embed_dim * 2                              # graveyard masked-mean + max
@@ -316,12 +410,18 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim * 2                              # hand masked-mean + max
             + embed_dim * 2                              # known opponent-hand masked-mean + max
             + embed_dim * 2                              # self live-library masked-mean + max
+            + embed_dim * 2                              # self maindeck masked-mean + max
+            + embed_dim * 2                              # self sideboard masked-mean + max
             + embed_dim * 2                              # opponent maindeck masked-mean + max
             + embed_dim * 2                              # opponent sideboard masked-mean + max
         )
         # When the per-action logit head is enabled, the encoded per-action tensor
         # (MAX_ACTIONS × _PER_ACTION_DIM) is appended at the END of the returned
         # features so PerActionMaskablePolicy can slice it back out by offset.
+        assert observation_space.shape[0] == _ENV_OBS_SIZE, (
+            f"CardGameExtractor got an obs of {observation_space.shape[0]} floats but "
+            f"this build's OBS_SIZE is {_ENV_OBS_SIZE} — a checkpoint saved against a "
+            f"different observation layout cannot be loaded (retrain from scratch)")
         self.per_action_head = per_action_head
         if per_action_head:
             self.per_action_slots = _MAX_ACTIONS
@@ -331,6 +431,12 @@ class CardGameExtractor(BaseFeaturesExtractor):
         else:
             features_dim = base_features_dim
         super().__init__(observation_space, features_dim=features_dim)
+
+        # Side-channel set by every forward(): the (B,) long tensor of value-bucket
+        # indices sliced off the matchup tail. PerActionMaskablePolicy reads it to
+        # pick each sample's column out of the multi-head value_net. Not a buffer —
+        # it is per-batch scratch, never part of the checkpoint.
+        self.last_bucket = None
 
         # Shared card-identity embedding. Slot id -1 (empty) maps to padding row 0;
         # real ids 0..N_CARD_TYPES-1 map to rows 1..N_CARD_TYPES.
@@ -426,7 +532,14 @@ class CardGameExtractor(BaseFeaturesExtractor):
         revealed      = obs[:, _REVEALED_START:_REVEALED_END]   # opponent revealed-cards multi-hot
         pending       = obs[:, _PENDING_START:_PENDING_END]     # pending-decision source id + ctrl flag
         extras        = obs[:, _EXTRAS_START:_EXTRAS_END]       # 19 global extras (raw passthrough)
-        action_extras = obs[:, _STATE_END:]                     # action cats|ids|ctrl|zone|refs + cost features
+        action_extras = obs[:, _STATE_END:_BUCKET_IDX]          # action cats|ids|ctrl|zone|refs + cost features
+        # Matchup tail: the raw value-bucket index is STRIPPED here (a bucket id is
+        # a meaningless magnitude to the trunk) and stashed for the policy's
+        # multi-head critic to gather with; the two archetype one-hots DO feed the
+        # trunk as explicit matchup conditioning.
+        self.last_bucket = torch.round(obs[:, _BUCKET_IDX]).long().clamp_(
+            0, N_VALUE_BUCKETS - 1)
+        arch_onehot   = obs[:, _ARCH_ONEHOT_START:_ARCH_ONEHOT_END]
 
         # Embedded recent history: card ids as raw floats are unlearnable (vocab
         # order is meaningless), so the K most recent entries get their card id
@@ -457,6 +570,10 @@ class CardGameExtractor(BaseFeaturesExtractor):
             -1, _KNOWN_TOP_LIB_SLOTS, _KNOWN_TOP_LIB_SLOT_SIZE)
         self_lib  = obs[:, _SELF_LIVE_LIB_START:_SELF_LIVE_LIB_END].reshape(
             -1, _DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE)
+        self_main = obs[:, _SELF_DECK_MAIN_START:_SELF_DECK_MAIN_END].reshape(
+            -1, _DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE)
+        self_side = obs[:, _SELF_DECK_SIDE_START:_SELF_DECK_SIDE_END].reshape(
+            -1, _DECKLIST_SIDE_SLOTS, _DECKLIST_SLOT_SIZE)
         opp_main  = obs[:, _OPP_DECK_MAIN_START:_OPP_DECK_MAIN_END].reshape(
             -1, _DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE)
         opp_side  = obs[:, _OPP_DECK_SIDE_START:_OPP_DECK_SIDE_END].reshape(
@@ -496,10 +613,16 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # Deck-identity blocks: embed the card id, append the normalized count,
         # encode with the shared decklist_encoder, pool masked mean+max per block.
         self_lib_emb, self_lib_present = self._embed_ids(self_lib[:, :, _DECKLIST_CARD_OFF])
+        self_main_emb, self_main_present = self._embed_ids(self_main[:, :, _DECKLIST_CARD_OFF])
+        self_side_emb, self_side_present = self._embed_ids(self_side[:, :, _DECKLIST_CARD_OFF])
         opp_main_emb, opp_main_present = self._embed_ids(opp_main[:, :, _DECKLIST_CARD_OFF])
         opp_side_emb, opp_side_present = self._embed_ids(opp_side[:, :, _DECKLIST_CARD_OFF])
         self_lib_in = torch.cat(
             [self_lib_emb, self_lib[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+        self_main_in = torch.cat(
+            [self_main_emb, self_main[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+        self_side_in = torch.cat(
+            [self_side_emb, self_side[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
         opp_main_in = torch.cat(
             [opp_main_emb, opp_main[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
         opp_side_in = torch.cat(
@@ -514,6 +637,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
         opp_hand_emb = self.entity_encoder(opp_hand_emb_in)  # (B, 10, embed)  — shared weights
         top_lib_emb = self.entity_encoder(top_lib_emb_in)  # (B, 5, embed)  — shared weights
         self_lib_enc = self.decklist_encoder(self_lib_in)  # (B, 48, embed)  — shared weights
+        self_main_enc = self.decklist_encoder(self_main_in)  # (B, 48, embed) — shared weights
+        self_side_enc = self.decklist_encoder(self_side_in)  # (B, 15, embed) — shared weights
         opp_main_enc = self.decklist_encoder(opp_main_in)  # (B, 48, embed)  — shared weights
         opp_side_enc = self.decklist_encoder(opp_side_in)  # (B, 15, embed)  — shared weights
 
@@ -530,13 +655,17 @@ class CardGameExtractor(BaseFeaturesExtractor):
         top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)  # (B, embed) dense multi-hot encoding
         self_lib_agg = _masked_mean_max(self_lib_enc, self_lib_present)
+        self_main_agg = _masked_mean_max(self_main_enc, self_main_present)
+        self_side_agg = _masked_mean_max(self_side_enc, self_side_present)
         opp_main_agg = _masked_mean_max(opp_main_enc, opp_main_present)
         opp_side_agg = _masked_mean_max(opp_side_enc, opp_side_present)
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
                           revealed_agg, pending_feat, extras, action_extras,
+                          arch_onehot,
                           perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
-                          self_lib_agg, opp_main_agg, opp_side_agg], dim=-1)
+                          self_lib_agg, self_main_agg, self_side_agg,
+                          opp_main_agg, opp_side_agg], dim=-1)
         if not self.per_action_head:
             return base
 
@@ -613,6 +742,13 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
     from ``_ActionScorer`` so each action's own encoded features (category, target
     card embedding, controller_is_self) drive its logit.
 
+    The critic is MULTI-HEAD: ``value_net`` has one column per
+    (self archetype x opp archetype) value bucket, and each sample's column is
+    gathered by the bucket index the extractor sliced off the observation's
+    matchup tail. Upstream (GAE, value loss) still sees one scalar per sample, but
+    a burn race's value statistics no longer fight a control grind's in the last
+    layer.
+
     Prototype: enabling this changes the network shape, so it is NOT
     checkpoint-compatible with the stock MlpPolicy models.
     """
@@ -627,6 +763,24 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         self._pa_offset = fe.per_action_offset
         self._pa_slots = fe.per_action_slots
         self._pa_dim = fe.per_action_dim
+        # Per-archetype-bucket critic: replace the stock single-output value head
+        # with one column per bucket (~N_VALUE_BUCKETS * latent params — trivial).
+        self.value_net = nn.Linear(self.mlp_extractor.latent_dim_vf, N_VALUE_BUCKETS)
+        if self.ortho_init:
+            self.value_net.apply(partial(self.init_weights, gain=1.0))
+        # Per-bucket PopArt statistics (Hessel et al. 2019). ALWAYS present as
+        # buffers — they ride in the checkpoint, and at (mu=0, sigma=1) the
+        # de-normalization below is the identity, so a run without --popart
+        # behaves exactly as if they weren't here. Only PopArtMaskablePPO
+        # (train/popart.py) ever updates them.
+        self.register_buffer("popart_mu", torch.zeros(N_VALUE_BUCKETS))
+        self.register_buffer("popart_sigma", torch.ones(N_VALUE_BUCKETS))
+        self.register_buffer("popart_count", torch.zeros(N_VALUE_BUCKETS))
+        # When True, _bucket_values returns the head's NORMALIZED output instead of
+        # the de-normalized value. The PopArt algorithm flips this for the duration
+        # of its value-loss computation (where the targets are normalized too);
+        # rollout collection always sees real-scale values so GAE is unaffected.
+        self.popart_normalized_out = False
         self.action_scorer = _ActionScorer(self.mlp_extractor.latent_dim_pi, self._pa_dim)
         if self.ortho_init:
             self.action_scorer.out.apply(partial(self.init_weights, gain=0.01))
@@ -639,6 +793,77 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         pa = features[:, self._pa_offset:self._pa_offset + self._pa_slots * self._pa_dim]
         return pa.reshape(pa.shape[0], self._pa_slots, self._pa_dim)
 
+    def _current_buckets(self, n_samples: int) -> torch.Tensor:
+        """The (B,) bucket indices the extractor stashed for the current batch."""
+        bucket = self.features_extractor.last_bucket
+        assert bucket is not None and bucket.shape[0] == n_samples, (
+            "multi-head critic: the features extractor did not stash a value-bucket "
+            f"index for this batch ({None if bucket is None else tuple(bucket.shape)} "
+            f"vs {n_samples} samples) — extract_features() must run first")
+        return bucket
+
+    def _bucket_values(self, latent_vf: torch.Tensor) -> torch.Tensor:
+        """Value per sample, gathered from its archetype-bucket head column.
+
+        Uses the bucket index the shared features extractor sliced off the obs's
+        matchup tail during the extract_features() call that produced
+        ``latent_vf`` — so every caller MUST run extract_features first (all three
+        entry points below do). Returns (B, 1), exactly like the stock scalar head.
+
+        The head's output is in NORMALIZED value space and is de-normalized here
+        with that bucket's PopArt (mu, sigma) — the identity while PopArt is off.
+        """
+        all_values = self.value_net(latent_vf)                 # (B, N_VALUE_BUCKETS)
+        bucket = self._current_buckets(all_values.shape[0])
+        v_norm = all_values.gather(1, bucket.view(-1, 1))      # (B, 1)
+        if self.popart_normalized_out:
+            return v_norm
+        return v_norm * self.popart_sigma[bucket].view(-1, 1) \
+            + self.popart_mu[bucket].view(-1, 1)
+
+    @torch.no_grad()
+    def popart_update(self, buckets, means, second_moments, counts,
+                      beta: float = 0.99, eps: float = 1e-4):
+        """Fold a batch's per-bucket return statistics into the PopArt stats.
+
+        ``buckets`` are the bucket indices present in the batch; ``means`` /
+        ``second_moments`` their return mean and mean-of-squares; ``counts`` the
+        per-bucket sample counts (unused for weighting beyond the first update,
+        kept for the debias/first-update rule). For every updated bucket the head
+        column is rescaled so the network's OUTPUT is preserved across the stats
+        change (Hessel et al. 2019, the "art" half of PopArt):
+
+            w <- w * sigma_old / sigma_new
+            b <- (b * sigma_old + mu_old - mu_new) / sigma_new
+
+        Returns ``(mu_new, sigma_new)`` (full-length tensors) so the caller can
+        normalize its targets with exactly the values the head was rescaled to.
+        """
+        idx = torch.as_tensor(buckets, dtype=torch.long, device=self.popart_mu.device)
+        m = torch.as_tensor(means, dtype=self.popart_mu.dtype, device=idx.device)
+        s2 = torch.as_tensor(second_moments, dtype=self.popart_mu.dtype, device=idx.device)
+        n = torch.as_tensor(counts, dtype=self.popart_mu.dtype, device=idx.device)
+        mu_old = self.popart_mu[idx].clone()
+        sigma_old = self.popart_sigma[idx].clone()
+        # First update of a bucket adopts the batch statistics outright (no decay
+        # bias); later updates fold them in with decay `beta`.
+        first = self.popart_count[idx] == 0
+        b = torch.where(first, torch.zeros_like(m), torch.full_like(m, float(beta)))
+        mu_new = (1.0 - b) * m + b * mu_old
+        nu_old = sigma_old ** 2 + mu_old ** 2          # running second moment
+        nu_new = (1.0 - b) * s2 + b * nu_old
+        sigma_new = torch.sqrt(torch.clamp(nu_new - mu_new ** 2, min=eps ** 2))
+        sigma_new = torch.clamp(sigma_new, min=eps, max=1e6)
+        # Output-preserving rescale of the affected head columns.
+        scale = (sigma_old / sigma_new).view(-1, 1)
+        self.value_net.weight[idx] = self.value_net.weight[idx] * scale
+        self.value_net.bias[idx] = (self.value_net.bias[idx] * sigma_old
+                                    + mu_old - mu_new) / sigma_new
+        self.popart_mu[idx] = mu_new
+        self.popart_sigma[idx] = sigma_new
+        self.popart_count[idx] = self.popart_count[idx] + n
+        return self.popart_mu, self.popart_sigma
+
     def _dist_from(self, features, latent_pi, action_masks):
         logits = self.action_scorer(latent_pi, self._slice_per_action(features))
         distribution = self.action_dist.proba_distribution(action_logits=logits)
@@ -649,7 +874,7 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
     def forward(self, obs, deterministic=False, action_masks=None):
         features = self.extract_features(obs)
         latent_pi, latent_vf = self.mlp_extractor(features)
-        values = self.value_net(latent_vf)
+        values = self._bucket_values(latent_vf)
         distribution = self._dist_from(features, latent_pi, action_masks)
         actions = distribution.get_actions(deterministic=deterministic)
         log_prob = distribution.log_prob(actions)
@@ -659,8 +884,18 @@ class PerActionMaskablePolicy(MaskableActorCriticPolicy):
         features = self.extract_features(obs)
         latent_pi, latent_vf = self.mlp_extractor(features)
         distribution = self._dist_from(features, latent_pi, action_masks)
-        values = self.value_net(latent_vf)
+        values = self._bucket_values(latent_vf)
         return values, distribution.log_prob(actions), distribution.entropy()
+
+    def predict_values(self, obs):
+        """Critic-only pass (SB3 calls this for the GAE bootstrap value).
+
+        Overridden so the value comes from the sample's archetype-bucket column;
+        it must run extract_features itself to stash that bucket index.
+        """
+        features = self.extract_features(obs)
+        latent_vf = self.mlp_extractor.forward_critic(features)
+        return self._bucket_values(latent_vf)
 
     def get_distribution(self, obs, action_masks=None):
         features = self.extract_features(obs)

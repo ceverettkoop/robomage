@@ -337,12 +337,28 @@
    1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
-  Player B pays 1 life
+  Choose target for Force of Will:
 
 --- Decision 17 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
-  Self:  19 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Self:  20 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Talon Gates of Madara
+  Stack: Once Upon a Time (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
+  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Actions:
+   0: Once Upon a Time
+  >> B/B: 0 (Once Upon a Time)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 18 ---
+  Priority: Player B (non-active)
+  Step: Draw (turn 3)
+  Self:  20 life | mana: empty | hand(5): Force of Will, Dark Ritual, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Talon Gates of Madara
   Stack: Once Upon a Time (spell, opponent)
@@ -352,25 +368,8 @@
    0: Exile Ponder
   >> B/B: 0 (Exile Ponder)
 --- Narrative ---
+  Player B pays 1 life
   Player B exiles Ponder
-  Choose target for Force of Will:
-
---- Decision 18 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 3)
-  Self:  19 life | mana: empty | hand(4): Force of Will, Dark Ritual, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Talon Gates of Madara
-  Stack: Once Upon a Time (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
-  Self exile: Ponder
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Actions:
-   0: Once Upon a Time
-  >> B/B: 0 (Once Upon a Time)
---- Narrative ---
-  Targeting choice 0
   Player B casts Force of Will targeting Once Upon a Time
   Resolving ability (category: Counter)
   Once Upon a Time is countered

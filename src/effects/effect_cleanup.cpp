@@ -10,6 +10,7 @@ HandlerResult cleanup(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     (void)orderer;
     if (ab.clear_remembered) cur_game.remembered_entities.clear();
     if (ab.clear_chosen) cur_game.chosen_cards.clear();
+    if (ab.clear_imprinted) cur_game.imprinted_entities.clear();
     return HandlerResult::DONE_RUN_SUBS;
 }
 

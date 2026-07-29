@@ -53,8 +53,10 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::SacrificeAll:    return &sacrifice_all;
         case EffectKind::ImmediateTrigger: return &immediate_trigger;
         case EffectKind::CopyPermanent:   return &copy_permanent;
+        case EffectKind::Clone:           return &clone;
         case EffectKind::Mobilize:        return &mobilize;
         case EffectKind::SacrificeTokens: return &sacrifice_tokens;
+        case EffectKind::ExileTokens:     return &exile_tokens;
         case EffectKind::RepeatEach:      return &repeat_each;
         case EffectKind::GrantCast:       return &grant_cast;
         case EffectKind::NameCard:        return &name_card;
@@ -71,6 +73,11 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Storm:           return &storm;
         case EffectKind::AddTurn:         return &add_turn;
         case EffectKind::StoreSVar:       return &store_svar;
+        case EffectKind::CopySpellAbility: return &copy_spell_ability;
+        case EffectKind::SuspendTick:     return &suspend_tick;
+        case EffectKind::SetState:        return &set_state;
+        case EffectKind::WarpExile:       return &warp_exile;
+        case EffectKind::MiracleCast:     return &miracle_cast;
         default:                          return nullptr;
     }
 }
@@ -97,7 +104,8 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_dig_until(ab, key, value)
         || parse_play(ab, key, value)
         || parse_animate_all(ab, key, value)
-        || parse_store_svar(ab, key, value);
+        || parse_store_svar(ab, key, value)
+        || parse_set_state(ab, key, value);
 }
 
 }  // namespace effects
