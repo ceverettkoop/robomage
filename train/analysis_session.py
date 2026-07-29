@@ -7,6 +7,9 @@ fully responsive while MCTS grinds here on a worker thread. The analysis engine
 is kept in lockstep lazily: each real decision's StateUpdate carries the
 primary's action-history length, and sync() replays just the delta before a new
 analysis, verifying the replayed obs byte-equals the decision being analyzed.
+A request for an EARLIER decision than the engine currently holds (reviewing a
+move already played — the window's "opponent's last decision") is served by
+respawning the engine at that history prefix, since replay only runs forward.
 
 analyze() runs an mcts.IncrementalSearch in caller-paced chunks (live UI
 updates via on_update, cancellation via a threading.Event) and leaves the
@@ -151,12 +154,16 @@ class AnalysisSession:
             return f"analysis engine unavailable: {self._dead}"
 
     def sync(self, req: AnalysisRequest) -> Optional[str]:
-        """Close any open search, replay the real-action delta into the
-        analysis engine, and verify it matches the request's obs. Returns None
-        on success, else the error (session marked dead)."""
-        err = self.ensure_engine(req)
-        if err:
-            return err
+        """Close any open search, bring the analysis engine to this request's
+        position, and verify it matches the request's obs. Returns None on
+        success, else the error (session marked dead).
+
+        Forward is the common case: replay the real-action delta. A request
+        BEHIND the engine — reviewing a decision the game has already moved
+        past — drops the engine and respawns it at that history prefix, since
+        an engine process only replays forward."""
+        if self._dead:
+            return f"analysis engine unavailable: {self._dead}"
         if self._search is not None:
             try:
                 self._search.close()     # restore + release BEFORE real steps
@@ -164,10 +171,11 @@ class AnalysisSession:
                 self._dead = f"search close failed: {e}"
                 return f"analysis engine unavailable: {self._dead}"
             self._search = None
-        if req.history_len < self._synced_len:
-            self._dead = (f"history went backwards ({self._synced_len} -> "
-                          f"{req.history_len}); primary was reset?")
-            return f"analysis engine unavailable: {self._dead}"
+        if self._env is not None and req.history_len < self._synced_len:
+            self._drop_engine()          # rewind: respawn at the older prefix
+        err = self.ensure_engine(req)
+        if err:
+            return err
         try:
             delta = self._primary._action_history[self._synced_len:req.history_len]
             for a in delta:
@@ -180,10 +188,9 @@ class AnalysisSession:
             self._dead = str(e)
             return f"analysis engine unavailable: {self._dead}"
 
-    def respawn(self) -> None:
-        """Recovery action: drop the (possibly dead) engine + search; the next
-        analyze() spawns a fresh engine by full history replay."""
-        self._search = None                 # its env is going away with it
+    def _drop_engine(self) -> None:
+        """Close the analysis engine (any open search must already be closed).
+        The next ensure_engine() spawns a fresh one at the requested prefix."""
         if self._env is not None:
             try:
                 self._env.close()
@@ -191,6 +198,12 @@ class AnalysisSession:
                 pass
         self._env = None
         self._synced_len = 0
+
+    def respawn(self) -> None:
+        """Recovery action: drop the (possibly dead) engine + search; the next
+        analyze() spawns a fresh engine by full history replay."""
+        self._search = None                 # its env is going away with it
+        self._drop_engine()
         self._dead = None
 
     # ----- the search -----
