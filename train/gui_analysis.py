@@ -157,6 +157,7 @@ class AnalysisBridge(QObject):
 
     stats_update = Signal(object)   # (tag, LiveStats) after every chunk
     status = Signal(object)         # (state_key, text) for the status line
+    evaluator_note = Signal(str)    # evaluator caveat after a run ("" = none)
     run_done = Signal(object)       # (tag, LiveStats|None) when a run ends
     branches_ready = Signal(object)  # (tag, [BranchSeries]) after a run
     walk_ready = Signal(object)     # (tag, action, world, [WalkNode], labels)
@@ -266,6 +267,7 @@ class AnalysisWorker(threading.Thread):
             stats = self._session.analyze(
                 req, stop=stop,
                 on_update=lambda s: bridge.stats_update.emit((tag, s)))
+            bridge.evaluator_note.emit(self._session.evaluator_note() or "")
             state = "stopped" if stop.is_set() else "done"
             bridge.status.emit((state,
                                 f"{'stopped' if state == 'stopped' else 'done'}"
@@ -520,6 +522,7 @@ class AnalysisWindow(QMainWindow):
         self._bridge = AnalysisBridge()
         self._bridge.stats_update.connect(self._on_stats)
         self._bridge.status.connect(self._on_status)
+        self._bridge.evaluator_note.connect(self._on_evaluator_note)
         self._bridge.run_done.connect(self._on_run_done)
         self._bridge.branches_ready.connect(self._on_branches)
         self._bridge.walk_ready.connect(self._on_walk)
@@ -549,6 +552,16 @@ class AnalysisWindow(QMainWindow):
 
         self._values = QLabel("net —  ·  search —  ·  0 sims")
         v.addWidget(self._values)
+
+        # Evaluator caveat (e.g. an AZ value column that was never trained for
+        # this matchup). Hidden until a run reports one — a silent constant
+        # value would otherwise read as a confident 50%.
+        self._eval_note = QLabel("")
+        self._eval_note.setObjectName("analysisWarning")
+        self._eval_note.setWordWrap(True)
+        self._eval_note.setStyleSheet("color: #d8a12a;")
+        self._eval_note.hide()
+        v.addWidget(self._eval_note)
 
         controls = QHBoxLayout()
         self._analyze_btn = QPushButton("Analyze (F5)")
@@ -909,6 +922,10 @@ class AnalysisWindow(QMainWindow):
     def _on_status(self, payload) -> None:
         state, text = payload
         self._set_status(state, text)
+
+    def _on_evaluator_note(self, note: str) -> None:
+        self._eval_note.setText(f"⚠ {note}" if note else "")
+        self._eval_note.setVisible(bool(note))
 
     def _on_run_done(self, payload) -> None:
         tag, stats = payload

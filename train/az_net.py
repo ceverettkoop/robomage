@@ -44,6 +44,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from typing import Optional, Tuple
 
 import numpy as np
@@ -64,16 +65,45 @@ try:
     from card_costs import N_CARD_TYPES
     from cli_spec import EMBED_DIM, NET_ARCH
     from _enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
-    from archetypes import N_VALUE_BUCKETS
+    from archetypes import N_VALUE_BUCKETS, bucket_name
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, make_observation_space
     from train.card_costs import N_CARD_TYPES
     from train.cli_spec import EMBED_DIM, NET_ARCH
     from train._enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
-    from train.archetypes import N_VALUE_BUCKETS
+    from train.archetypes import N_VALUE_BUCKETS, bucket_name
 
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "checkpoints", "az")
+
+# Parameters whose rows/columns are SELECTED PER SAMPLE — the multi-head critic's
+# archetype-bucket columns and the embedding tables. Only the row a sample picks
+# receives a task gradient, so any row absent from the training window would take
+# nothing but weight decay; ``decay_exempt_param_groups`` keeps those out of the
+# decayed group. (Left in place, Adam's L2 is folded into the gradient and then
+# normalized by its own RMS, so a decay-only parameter marches to zero at ~lr per
+# step — ~100 steps to erase a column, whatever its magnitude.)
+SPARSE_PARAM_PREFIXES = ("value_head.", "trunk.card_emb", "trunk.action_cat_emb",
+                         "trunk.zone_emb")
+
+# Below this weight-column norm a value bucket is treated as UNTRAINED: it has
+# either never been trained or been decayed away, and it can no longer vary with
+# the state.
+_DEAD_COLUMN_TOL = 1e-6
+
+
+def decay_exempt_param_groups(net, weight_decay: float) -> list:
+    """Adam param groups that apply ``weight_decay`` to everything EXCEPT the
+    per-sample-selected parameters (see SPARSE_PARAM_PREFIXES).
+
+    Without this, training one matchup erases every other matchup's critic
+    column and every card embedding absent from the window — the parameter is
+    still decayed when its task gradient is exactly zero."""
+    decayed, exempt = [], []
+    for name, p in net.named_parameters():
+        (exempt if name.startswith(SPARSE_PARAM_PREFIXES) else decayed).append(p)
+    return [{"params": decayed, "weight_decay": float(weight_decay)},
+            {"params": exempt, "weight_decay": 0.0}]
 
 
 def obs_space_from_const() -> gym.Space:
@@ -455,6 +485,22 @@ class AZNet(nn.Module):
     # Checkpoint I/O
     # ------------------------------------------------------------------
 
+    def dead_value_buckets(self, tol: float = _DEAD_COLUMN_TOL):
+        """Boolean mask over the value head's buckets: True where that matchup's
+        column carries no state information any more (see _DEAD_COLUMN_TOL).
+
+        A dead column's value is a constant — ``tanh(bias)``, and 0.0 once the
+        bias has decayed too — which is indistinguishable from a confident
+        "50%" downstream, so callers should surface it rather than use it."""
+        with torch.no_grad():
+            return (self.value_head.weight.norm(dim=1) <= tol).cpu().numpy()
+
+    def obs_value_bucket(self, obs) -> int:
+        """The value bucket an observation selects — the same round+clamp of the
+        matchup tail that :meth:`forward` gathers with."""
+        raw = float(np.asarray(obs).reshape(-1)[self._bucket_idx])
+        return int(min(max(int(round(raw)), 0), self._n_buckets - 1))
+
     def meta(self, steps: int = 0) -> dict:
         return {
             "embed_dim": self.embed_dim,
@@ -691,14 +737,42 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
 
 class AZEvaluator:
     """mcts.Evaluator over an AZNet: softmax(masked logits[:num_choices]) priors
-    and the tanh value passthrough (already in [-1,1], current-mover view)."""
+    and the tanh value passthrough (already in [-1,1], current-mover view).
 
-    def __init__(self, net: "AZNet", device: str = "cpu"):
+    Guards the multi-head critic: the value is only as real as the archetype
+    bucket this matchup gathers. When that column is dead (never trained, or
+    decayed away — see AZNet.dead_value_buckets) the net returns a constant that
+    reads downstream as a confident 50%, so the evaluator warns once per bucket
+    and publishes ``untrained_bucket`` for a UI to surface. The priors are
+    unaffected — the policy head is shared across matchups."""
+
+    def __init__(self, net: "AZNet", device: str = "cpu", warn: bool = True):
         self._net = net.to(device).eval()
         self._device = device
         self._mask = np.zeros(MAX_ACTIONS, dtype=bool)
+        self._dead = net.dead_value_buckets()
+        self._warn = bool(warn)
+        self._warned: set = set()
+        # Bucket of the LAST evaluate() when its critic column is dead, else
+        # None. Read by the analysis window (AnalysisSession.evaluator_note).
+        self.untrained_bucket: Optional[int] = None
+
+    def _check_bucket(self, obs: np.ndarray) -> None:
+        bucket = self._net.obs_value_bucket(obs)
+        if not bool(self._dead[bucket]):
+            self.untrained_bucket = None
+            return
+        self.untrained_bucket = bucket
+        if self._warn and bucket not in self._warned:
+            self._warned.add(bucket)
+            print(f"[az-net] value head UNTRAINED for bucket {bucket} "
+                  f"({bucket_name(bucket)}): its critic column carries no state "
+                  "information, so every value in this matchup is a constant. "
+                  "Priors are still real; train this matchup (az-league) before "
+                  "trusting the value.", file=sys.stderr, flush=True)
 
     def evaluate(self, obs: np.ndarray, num_choices: int):
+        self._check_bucket(obs)
         self._mask[:] = False
         self._mask[:num_choices] = True
         with torch.no_grad():

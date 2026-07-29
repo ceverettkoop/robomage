@@ -208,6 +208,23 @@ class AnalysisSession:
 
     # ----- the search -----
 
+    def evaluator_note(self) -> Optional[str]:
+        """A caveat about the last analysis's evaluator, or None when it has
+        none. Today that is the AZ net's multi-head critic reporting that THIS
+        matchup's value column was never trained (or was decayed away), so its
+        values are a constant that would otherwise read as a confident 50%."""
+        bucket = getattr(self._evaluator, "untrained_bucket", None)
+        if bucket is None:
+            return None
+        try:
+            from archetypes import bucket_name
+            what = bucket_name(int(bucket))
+        except Exception:  # noqa: BLE001 — the caveat matters, the name doesn't
+            what = f"bucket {bucket}"
+        return (f"value head untrained for this matchup ({what}) — the net's "
+                "win% is a constant here; only the priors and terminals inform "
+                "this search")
+
     def _ensure_evaluator(self):
         if self._evaluator is None:
             self._evaluator, self.evaluator_label = load_analysis_evaluator(

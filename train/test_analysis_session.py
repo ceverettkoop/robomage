@@ -427,6 +427,42 @@ def test_cancellation():
         _rm(paths)
 
 
+def test_evaluator_note():
+    """An evaluator that reports an untrained value bucket surfaces a caveat
+    (the AZ multi-head critic's dead-column guard); a plain one reports none."""
+
+    class _Flagging(UniformEvaluator):
+        untrained_bucket = None
+
+    deck_a, deck_b, paths = _write_decks()
+    cfg = AnalysisConfig(evaluator_spec="uniform", worlds=2, chunk_sims=4,
+                         max_sims=4, seed=SEARCH_SEED)
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b)
+        ev = _Flagging()
+        session = AnalysisSession(env, cfg, evaluator=ev,
+                                  evaluator_label="uniform")
+        try:
+            env.reset(options={"engine_seed": SEED})
+            _drive_to_safe(env)
+            session.analyze(_req(env))
+            if session.evaluator_note() is not None:
+                raise AnalysisTestError("note reported for a healthy evaluator")
+            ev.untrained_bucket = 0
+            note = session.evaluator_note()
+            if not note or "untrained" not in note:
+                raise AnalysisTestError(f"no untrained-bucket note: {note!r}")
+            if "tempo_vs_tempo" not in note:
+                raise AnalysisTestError(
+                    f"note doesn't name the matchup bucket: {note!r}")
+            return f"note surfaced: {note[:48]}…"
+        finally:
+            session.close()
+            env.close()
+    finally:
+        _rm(paths)
+
+
 def test_opp_result_hook():
     """SearchController.on_result fires after a searched decision with a
     SearchResult carrying the new q/world_values fields, an obs copy, and the
@@ -492,6 +528,7 @@ TESTS = [
     ("session_lockstep_bo3", test_session_lockstep_bo3),
     ("rewind_to_earlier_decision", test_rewind_to_earlier_decision),
     ("cancellation", test_cancellation),
+    ("evaluator_note", test_evaluator_note),
     ("opp_result_hook", test_opp_result_hook),
 ]
 

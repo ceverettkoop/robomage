@@ -170,7 +170,7 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
              ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 0) -> dict:
     import torch
     import torch.nn.functional as F
-    from az_net import az_checkpoint_path
+    from az_net import az_checkpoint_path, decay_exempt_param_groups
 
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)
@@ -183,7 +183,13 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
     net, prior_steps, prov = _init_net(from_ppo, fresh)
     print(f"[az-train] net: {prov}")
     net.train()
-    opt = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=weight_decay)
+    # Weight decay applies to everything EXCEPT the per-sample-selected
+    # parameters (the critic's archetype-bucket columns, the embedding tables).
+    # Those get a task gradient only for the rows a batch actually uses, and
+    # Adam's normalization turns decay-without-gradient into a ~lr/step march to
+    # zero — so a single-matchup cycle would erase every other matchup's critic
+    # column (and every card absent from the window) in ~100 batches.
+    opt = torch.optim.Adam(decay_exempt_param_groups(net, weight_decay), lr=lr)
 
     obs_t = torch.as_tensor(obs)
     pi_t = torch.as_tensor(pi)
