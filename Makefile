@@ -70,6 +70,18 @@ $(ODIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) -c -o $@ $< $(IFLAGS) $(CFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
+# NOTE: this actor-specific pattern rule MUST stay defined before the generic
+# $(ODIR)/%.o: $(SRCDIR)/%.cpp rule below. Apple's bundled GNU Make (3.81, the
+# last GPLv2 release — macOS never ships GNU Make 4.x) resolves competing
+# pattern rules by definition order rather than by shortest/most-specific stem
+# as newer make and the GNU Make manual describe. If the generic rule comes
+# first, `make actor` on macOS silently compiles src/actor/*.cpp with the
+# engine's IFLAGS/CXXFLAGS instead of ACTOR_IFLAGS/ACTOR_CXXFLAGS, dropping
+# -I$(SRCDIR) (breaking `#include "classes/..."`) and leaving -fno-exceptions on.
+$(ODIR)/actor/%.o: $(SRCDIR)/actor/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(ACTOR_IFLAGS) $(ACTOR_CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
 $(ODIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
@@ -150,10 +162,6 @@ TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/incl
 # includes and -I$(SRCDIR) (actor TUs use non-relative engine includes).
 ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
 ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
-
-$(ODIR)/actor/%.o: $(SRCDIR)/actor/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) -c -o $@ $< $(ACTOR_IFLAGS) $(ACTOR_CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
 actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
 	@mkdir -p $(BINDIR)
