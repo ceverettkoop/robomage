@@ -7,9 +7,13 @@
   incumbent) is written ONLY by the ``az_eval`` promotion gate — training never
   touches it.
 - ``az_eval`` : candidate-vs-incumbent gating via ``run_match`` with ``az``
-  controllers at low sims over a SAMPLE of roster matchups (mirror + cross-deck),
-  seats alternating (half the games each way); promote the candidate to
-  ``gen__azfinal.pt`` on aggregate win-rate, printing a per-matchup breakdown.
+  controllers at low sims over a ROSTER-WIDE panel (a mirror for every roster
+  deck, so every deck the net must pilot is measured, plus direction-balanced
+  cross pairings), seats alternating (half the games each way); promote the
+  candidate to ``gen__azfinal.pt`` on aggregate win-rate, subject to a per-deck
+  floor veto (a candidate that collapsed at piloting any one deck is rejected
+  even when its aggregate clears the bar), printing a per-matchup and
+  per-piloted-deck breakdown.
 - ``az_cycle`` : one sequential generate -> train -> eval iteration.
 
 Exposed to ``train.py`` as the ``az-train`` / ``az-eval`` / ``az`` subcommands.
@@ -52,6 +56,21 @@ _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 # P(opponent deck == focus deck) per self-play game (mirror vs cross-deck roster).
 DEFAULT_MIRROR_FRAC = 0.25
+
+# Promotion-gate defaults. The gate panel is ROSTER-WIDE: a candidate-vs-incumbent
+# mirror for every roster deck (so a piloting regression on ANY deck shows up in
+# the aggregate — the old focus-only gate could not see one), plus
+# DEFAULT_GATE_CROSS_PAIRS cross pairings each played in BOTH directions so a
+# lopsided deck matchup cancels out of the aggregate. A candidate is floor-vetoed
+# when any piloted deck with >= DEFAULT_GATE_FLOOR_MIN matches sits below
+# DEFAULT_GATE_FLOOR win-rate vs the incumbent, even if the aggregate clears the
+# promote threshold. With the default eval budget (56 matches over a 10-deck
+# roster: 14 matchups x 4) every deck is piloted in >= 4 mirror matches, so the
+# floor triggers only on a 0-for-4 wipeout — deliberate: per-deck samples are
+# tiny, so the floor is a catastrophic-collapse tripwire, not a fine measure.
+DEFAULT_GATE_FLOOR = 0.2
+DEFAULT_GATE_FLOOR_MIN = 4
+DEFAULT_GATE_CROSS_PAIRS = 2
 
 
 # ----------------------------------------------------------------------
@@ -258,21 +277,29 @@ def _normalize_focus(deck, default_roster) -> list:
     return [deck]
 
 
-def _gate_matchups(focus_decks, roster, cross: int, seed: int) -> list:
-    """The matchup SAMPLE the gate plays: for EACH focus deck, its mirror plus up
-    to ``cross`` cross matchups (focus vs a distinct roster deck), seeded/
-    reproducible and de-duplicated (order-preserving). Each entry is a
-    (deck_x, deck_y) pair; the candidate always pilots deck_x and the incumbent
-    deck_y, with seats alternating within the pair."""
-    rng = np.random.default_rng(seed)
-    matchups = []
-    for focus in focus_decks:
-        matchups.append((focus, focus))
-        pool = [d for d in (roster or []) if d != focus]
-        if pool and cross > 0:
-            k = min(cross, len(pool))
-            idx = rng.choice(len(pool), size=int(k), replace=False)
-            matchups += [(focus, pool[int(i)]) for i in idx]
+def _gate_matchups(focus_decks, roster, cross_pairs: int, seed: int) -> list:
+    """The ROSTER-WIDE matchup panel the gate plays: a candidate-vs-incumbent
+    MIRROR for every deck in focus + roster (de-duplicated, order-preserving), so
+    every deck the one gen net must pilot is measured every gate — a regression
+    on a non-focus deck is visible, which the old focus-only sample was blind to.
+    Plus ``cross_pairs`` seeded cross pairings, each added in BOTH directions
+    ((x, y) AND (y, x)): the candidate always pilots deck_x, so an unpaired cross
+    matchup would credit/penalize the candidate for raw deck strength (a 90-10
+    deck matchup swamps any net difference); playing both directions cancels
+    that out of the aggregate. Each entry is a (deck_x, deck_y) pair; the
+    candidate pilots deck_x and the incumbent deck_y, seats alternating within
+    the pair."""
+    decks = []
+    for d in list(focus_decks or []) + list(roster or []):
+        if d not in decks:
+            decks.append(d)
+    matchups = [(d, d) for d in decks]
+    if len(decks) >= 2 and cross_pairs > 0:
+        rng = np.random.default_rng(seed)
+        for _ in range(int(cross_pairs)):
+            i, j = rng.choice(len(decks), size=2, replace=False)
+            matchups += [(decks[int(i)], decks[int(j)]),
+                         (decks[int(j)], decks[int(i)])]
     seen, out = set(), []
     for m in matchups:
         if m not in seen:
@@ -282,20 +309,29 @@ def _gate_matchups(focus_decks, roster, cross: int, seed: int) -> list:
 
 
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
-            games: int = 20, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
+            games: int = 56, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
             sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
             promote_threshold: float = 0.55, promote: bool = False,
-            roster: Optional[list] = None, cross_matchups: int = 2,
+            roster: Optional[list] = None,
+            cross_pairs: int = DEFAULT_GATE_CROSS_PAIRS,
+            gate_floor: float = DEFAULT_GATE_FLOOR,
+            floor_min_matches: int = DEFAULT_GATE_FLOOR_MIN,
             ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True) -> dict:
-    """AGGREGATE gate: play ``candidate`` vs ``incumbent`` over a SAMPLE of
-    matchups (for each focus deck in ``deck`` — a str or list — its mirror plus
-    cross matchups drawn from ``roster``), both nets piloting the SAME matchup,
-    seats alternating. With ``bo3`` (default) each contest is a best-of-three MATCH
-    and the gate is decided on the aggregate MATCH win-rate. Promote the candidate
-    to ``gen__azfinal.pt`` when ``promote`` and the AGGREGATE win-rate across all
-    matchups >= ``promote_threshold``. Prints a per-matchup W-L-D breakdown. The
-    no-incumbent-yet fallback (vs scripted) is preserved."""
+    """ROSTER-WIDE gate: play ``candidate`` vs ``incumbent`` over a panel of
+    matchups covering EVERY deck in ``roster`` (default: the whole decks/league/
+    roster) as pilot — a mirror per deck plus direction-balanced cross pairings
+    (see :func:`_gate_matchups`) — seats alternating. With ``bo3`` (default) each
+    contest is a best-of-three MATCH and the gate is decided on the aggregate
+    MATCH win-rate. Promote the candidate to ``gen__azfinal.pt`` when
+    ``promote``, the AGGREGATE win-rate across all matchups >=
+    ``promote_threshold``, AND no per-deck floor veto fires: a deck the candidate
+    piloted in >= ``floor_min_matches`` matches at a win-rate below
+    ``gate_floor`` blocks promotion (``gate_floor=0`` disables the veto). A veto
+    only delays promotion by a cycle — training continues from snapshots either
+    way — so a rare unlucky veto is much cheaper than promoting a net that
+    forgot how to pilot a deck. Prints per-matchup and per-piloted-deck W-L-D
+    breakdowns. The no-incumbent-yet fallback (vs scripted) is preserved."""
     from runner import run_match
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
@@ -312,8 +348,9 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     have_inc = os.path.exists(inc_path)
     opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
 
-    focus_decks = _normalize_focus(deck, roster or _default_az_league_roster())
-    matchups = _gate_matchups(focus_decks, roster, cross_matchups, seed)
+    roster = list(roster) if roster else _default_az_league_roster()
+    focus_decks = _normalize_focus(deck, roster)
+    matchups = _gate_matchups(focus_decks, roster, cross_pairs, seed)
     per = max(2, games // len(matchups))   # matches per matchup (>=2 so seats alternate)
     unit = "matches" if bo3 else "games"
     print(f"[az-eval] {len(matchups)} matchup(s) x {per} {unit} "
@@ -323,6 +360,7 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
 
     w = l = d = 0
     breakdown = []
+    per_deck: dict = {}   # piloted deck -> [w, l, d] from the candidate's view
     for mi, (dx, dy) in enumerate(matchups):
         half = per // 2
         mw = ml = md = 0
@@ -336,6 +374,8 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
                           games=half, bo3=bo3, seed=mseed + per, transcript="quiet")
             mw += r.losses; ml += r.wins; md += r.draws
         w += mw; l += ml; d += md
+        t = per_deck.setdefault(dx, [0, 0, 0])
+        t[0] += mw; t[1] += ml; t[2] += md
         tag = f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
         breakdown.append((tag, mw, ml, md))
         print(f"[az-eval]   {tag}: {mw}W-{ml}L-{md}D")
@@ -343,8 +383,22 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     wr = w / max(1, w + l + d)
     print(f"[az-eval] AGGREGATE candidate {w}W-{l}L-{d}D (win_rate={wr:.3f})")
 
+    # Per-deck floor veto: any deck the candidate piloted in >= floor_min_matches
+    # matches at a win-rate below gate_floor blocks promotion.
+    vetoes = []
+    if gate_floor > 0:
+        for pd, (pw, pl, pdr) in per_deck.items():
+            n = pw + pl + pdr
+            if n >= floor_min_matches and pw / n < gate_floor:
+                vetoes.append(pd)
+    print("[az-eval] per piloted deck (candidate's view):")
+    for pd, (pw, pl, pdr) in per_deck.items():
+        n = max(1, pw + pl + pdr)
+        flag = "  FLOOR-VETO" if pd in vetoes else ""
+        print(f"[az-eval]   {pd}: {pw}W-{pl}L-{pdr}D ({pw / n:.2f}){flag}")
+
     promoted = False
-    if promote and wr >= promote_threshold:
+    if promote and wr >= promote_threshold and not vetoes:
         final = az_checkpoint_path(None, ckpt_dir)
         for src, dst in ((cand_path, final),
                          (_meta_of(cand_path), _meta_of(final))):
@@ -353,10 +407,15 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
                 shutil.copyfile(src, dst)
         promoted = True
         print(f"[az-eval] PROMOTED candidate -> {final} (>= {promote_threshold:.2f})")
+    elif promote and vetoes:
+        print(f"[az-eval] not promoted (per-deck floor {gate_floor:.2f} veto: "
+              f"{', '.join(vetoes)}; aggregate {wr:.3f})")
     elif promote:
         print(f"[az-eval] not promoted (win_rate {wr:.3f} < {promote_threshold:.2f})")
     return {"wins": w, "losses": l, "draws": d, "win_rate": wr,
-            "promoted": promoted, "breakdown": breakdown}
+            "promoted": promoted, "breakdown": breakdown,
+            "per_deck": {k: list(v) for k, v in per_deck.items()},
+            "vetoes": vetoes}
 
 
 def _meta_of(path: str) -> str:
@@ -373,10 +432,11 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
              sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
              workers: Optional[int] = None, batches: int = 500,
              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
-             eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
+             eval_games: int = 56, eval_sims: int = 32, eval_worlds: int = 2,
              promote_threshold: float = 0.55, seed: int = 1,
              use_actor: Optional[bool] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
+             gate_floor: float = DEFAULT_GATE_FLOOR,
              roster: Optional[list] = None, bo3: bool = True) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
@@ -411,7 +471,8 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
     ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
                  worlds=eval_worlds, sb_sims=sb_sims, sb_worlds=sb_worlds,
                  sb_max_depth=sb_max_depth, promote_threshold=promote_threshold,
-                 promote=True, seed=seed, roster=roster, bo3=bo3)
+                 promote=True, seed=seed, roster=roster, gate_floor=gate_floor,
+                 bo3=bo3)
     return {"generate": gen, "train": tr, "eval": ev}
 
 
@@ -461,9 +522,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
               workers: Optional[int] = None, batches: int = 500,
               batch_size: int = 256, lr: float = 1e-3, window: int = 50,
-              eval_games: int = 20, eval_sims: int = 32, eval_worlds: int = 2,
+              eval_games: int = 56, eval_sims: int = 32, eval_worlds: int = 2,
               promote_threshold: float = 0.55, seed: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
+              matrix: bool = False, gate_floor: float = DEFAULT_GATE_FLOOR,
               use_actor: Optional[bool] = None, resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
@@ -473,6 +535,14 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     slot to run. ``resume=True`` restores the roster, budgets, and every knob
     from the sidecar and continues from that slot (all other flags are ignored
     on resume, mirroring ``league --resume``).
+
+    ``matrix=True`` replaces the one-deck-per-slot focus rotation with the full
+    deck x deck MATRIX every slot: each cycle's self-play draws its focus deck
+    uniformly from the whole roster per game (``az_cycle`` with a list focus), so
+    the training window stays stationary across slots instead of sweeping one
+    deck's distribution at a time — the per-deck rotation is where the
+    catastrophic-forgetting pressure came from. A "rotation" then counts
+    ``cycles_per_deck`` matrix cycles instead of a roster pass.
 
     ``rotations=0`` runs INDEFINITELY: slots keep generating until the process
     is interrupted. The sidecar still advances after every completed slot, so an
@@ -511,6 +581,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         promote_threshold = float(p.get("promote_threshold", promote_threshold))
         seed = int(p.get("seed", seed))
         mirror_frac = float(p.get("mirror_frac", mirror_frac))
+        # Older sidecars predate these knobs; .get keeps them resumable.
+        matrix = bool(p.get("matrix", False))
+        gate_floor = float(p.get("gate_floor", gate_floor))
         use_actor = p.get("use_actor", use_actor)
         bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
@@ -531,8 +604,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         assert_not_reserved_deck(_d)
 
     # rotations == 0 -> indefinite: no materialized slot list; slot i maps to
-    # (rotation, deck, cycle) by index arithmetic and total stays None.
-    per_rotation = len(roster) * cycles_per_deck
+    # (rotation, deck, cycle) by index arithmetic and total stays None. In
+    # matrix mode every slot is a whole-roster cycle, so a rotation is just
+    # cycles_per_deck slots.
+    per_rotation = cycles_per_deck if matrix else len(roster) * cycles_per_deck
     total = None if rotations == 0 else rotations * per_rotation
 
     base_state = {
@@ -547,7 +622,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "batches": batches, "batch_size": batch_size, "lr": lr,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
-            "seed": seed, "mirror_frac": mirror_frac, "use_actor": use_actor,
+            "seed": seed, "mirror_frac": mirror_frac, "matrix": matrix,
+            "gate_floor": gate_floor, "use_actor": use_actor,
             "bo3": bo3,
         },
     }
@@ -555,12 +631,15 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     print(f"AZ league roster: {', '.join(roster)}")
     rotations_txt = "indefinite" if total is None else str(rotations)
     total_txt = "unbounded" if total is None else str(total)
+    focus_txt = ("matrix (whole-roster focus every slot)" if matrix
+                 else "per-deck rotation")
     print(f"  rotations={rotations_txt}  cycles_per_deck={cycles_per_deck}  "
-          f"slots={total_txt}  (starting at slot {slot_index})")
+          f"slots={total_txt}  focus={focus_txt}  (starting at slot {slot_index})")
     print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
           f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth}  "
           f"batches={batches} window={window}  "
-          f"eval_games={eval_games} promote>={promote_threshold}")
+          f"eval_games={eval_games} promote>={promote_threshold} "
+          f"gate_floor={gate_floor}")
 
     def save_progress(next_slot: int):
         _write_az_league_state(ckpt_dir, {
@@ -577,33 +656,44 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     si = slot_index
     while total is None or si < total:
         r, rem = divmod(si, per_rotation)
-        di, c = divmod(rem, cycles_per_deck)
-        deck = roster[di]
+        if matrix:
+            c = rem
+            focus = list(roster)
+            deck_label = f"matrix[{len(roster)} decks]"
+        else:
+            di, c = divmod(rem, cycles_per_deck)
+            focus = roster[di]
+            deck_label = focus
         slot_seed = seed + si
         slot_txt = f"{si + 1}" if total is None else f"{si + 1}/{total}"
         rot_txt = f"{r + 1}" if total is None else f"{r + 1}/{rotations}"
         print(f"\n{'='*60}")
         print(f"[az-league slot {slot_txt}] rotation {rot_txt}  "
-              f"deck={deck}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})")
+              f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})")
         print(f"{'='*60}")
-        res = az_cycle(deck, games=games, sims=sims, worlds=worlds,
+        res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
                        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
                        workers=workers,
                        batches=batches, batch_size=batch_size, lr=lr, window=window,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
-                       mirror_frac=mirror_frac, roster=roster, bo3=bo3)
+                       mirror_frac=mirror_frac, gate_floor=gate_floor,
+                       roster=roster, bo3=bo3)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
-        print(f"[az-league] slot {slot_txt} deck={deck}: "
+        veto_txt = (f" (floor-veto: {', '.join(ev['vetoes'])})"
+                    if ev.get("vetoes") else "")
+        print(f"[az-league] slot {slot_txt} deck={deck_label}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
               f"train_loss {tr['first_loss']:.3f}->{tr['last_loss']:.3f}  "
               f"gate {ev['wins']}W-{ev['losses']}L-{ev['draws']}D "
               f"wr={ev['win_rate']:.3f} "
-              f"{'PROMOTED' if ev['promoted'] else 'kept-incumbent'}")
-        results.append({"slot": si, "deck": deck, "rotation": r, "cycle": c,
+              f"{'PROMOTED' if ev['promoted'] else 'kept-incumbent' + veto_txt}")
+        results.append({"slot": si, "deck": deck_label, "rotation": r, "cycle": c,
                         "samples": gen["samples"], "shards": len(gen["shards"]),
-                        "gate_win_rate": ev["win_rate"], "promoted": ev["promoted"]})
+                        "gate_win_rate": ev["win_rate"], "promoted": ev["promoted"],
+                        "gate_per_deck": ev.get("per_deck"),
+                        "gate_vetoes": ev.get("vetoes")})
         del results[:-_AZ_LEAGUE_MAX_RESULTS]
         save_progress(si + 1)
         si += 1
@@ -640,6 +730,7 @@ def run_eval(args) -> None:
             sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
             sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
             promote_threshold=args.promote_threshold, promote=args.promote,
+            gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
             seed=args.seed if args.seed is not None else 1,
             bo3=not getattr(args, "bo1", False))
 
@@ -670,6 +761,7 @@ def run_cycle(args) -> None:
              promote_threshold=args.promote_threshold,
              seed=args.seed if args.seed is not None else 1,
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+             gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args))
 
@@ -687,6 +779,8 @@ def run_league(args) -> None:
               promote_threshold=args.promote_threshold,
               seed=args.seed if args.seed is not None else 1,
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+              matrix=getattr(args, "matrix", False),
+              gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
               use_actor=_resolve_use_actor(args), resume=args.resume,
               bo3=not getattr(args, "bo1", False))
 
@@ -712,7 +806,7 @@ if __name__ == "__main__":
     e.add_argument("--deck", default="delver")
     e.add_argument("--candidate", required=True)
     e.add_argument("--incumbent", default=None)
-    e.add_argument("--games", type=int, default=20)
+    e.add_argument("--games", type=int, default=56)
     e.add_argument("--sims", type=int, default=32)
     e.add_argument("--worlds", type=int, default=2)
     e.add_argument("--sb-sims", type=int, default=32,
@@ -722,6 +816,9 @@ if __name__ == "__main__":
     e.add_argument("--sb-max-depth", type=int, default=200,
                    help="Rollout depth at a bo3 sideboard root (bo3 only)")
     e.add_argument("--promote-threshold", type=float, default=0.55)
+    e.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
+                   help="Per-piloted-deck win-rate floor; a deck below it "
+                        "vetoes promotion (0 disables)")
     e.add_argument("--promote", action="store_true")
     e.add_argument("--seed", type=int, default=1)
     e.add_argument("--bo1", action="store_true",
@@ -744,10 +841,12 @@ if __name__ == "__main__":
     c.add_argument("--batch-size", type=int, default=256)
     c.add_argument("--lr", type=float, default=1e-3)
     c.add_argument("--window", type=int, default=50)
-    c.add_argument("--eval-games", type=int, default=20)
+    c.add_argument("--eval-games", type=int, default=56)
     c.add_argument("--eval-sims", type=int, default=32)
     c.add_argument("--eval-worlds", type=int, default=2)
     c.add_argument("--promote-threshold", type=float, default=0.55)
+    c.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
+                   help="Per-piloted-deck gate floor (0 disables the veto)")
     c.add_argument("--seed", type=int, default=1)
     c.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                    help="P(opponent deck == focus deck) per self-play game "
@@ -786,10 +885,15 @@ if __name__ == "__main__":
     lg.add_argument("--batch-size", type=int, default=256)
     lg.add_argument("--lr", type=float, default=1e-3)
     lg.add_argument("--window", type=int, default=50)
-    lg.add_argument("--eval-games", type=int, default=20)
+    lg.add_argument("--eval-games", type=int, default=56)
     lg.add_argument("--eval-sims", type=int, default=32)
     lg.add_argument("--eval-worlds", type=int, default=2)
     lg.add_argument("--promote-threshold", type=float, default=0.55)
+    lg.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
+                    help="Per-piloted-deck gate floor (0 disables the veto)")
+    lg.add_argument("--matrix", action="store_true",
+                    help="Whole-roster focus MATRIX every slot instead of the "
+                         "per-deck focus rotation")
     lg.add_argument("--seed", type=int, default=1)
     lg.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                     help="P(opponent deck == focus deck) per self-play game "

@@ -679,15 +679,18 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("baseline", "Evaluate model win rate vs the scripted HARD agent (mirror match)", items=[
         Arg("model", "str", required=False, suggest="checkpoint",
-            help="Model to evaluate: 'gen' or a .zip path (omit with --all)"),
+            help="Model to evaluate: 'gen', a .zip/.pt path (e.g. an exp_* "
+                 "exploiter checkpoint), or a search spec ('az:gen', 'mcts:gen', "
+                 "'azraw:gen', with the usual ?sims=... knobs). With --all it "
+                 "picks the model round-robined (default: gen)"),
         Arg("--games", "int", default=None,
             help="Games per matchup (default: 100 for a single model, 50 per opponent "
                  "with --all)"),
         Arg("--all", "flag",
-            help="Round-robin the generalist (gen__final.zip) on every league deck vs "
-                 "scripted:hard on every league deck (including the mirror): an N-deck "
-                 "roster runs N×N matchups of --games each, and the per-matchup win "
-                 "rates are appended to the report log"),
+            help="Round-robin the model (default: the generalist gen__final.zip) on "
+                 "every league deck vs scripted:hard on every league deck (including "
+                 "the mirror): an N-deck roster runs N×N matchups of --games each, "
+                 "and the per-matchup win rates are appended to the report log"),
         Arg("--log", "str", default=None,
             help="Report file for --all (default: checkpoints/baseline_report.log, appended)"),
         Arg("--deck", "str", default=None, suggest="deck",
@@ -751,11 +754,17 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Candidate AZ .pt ('gen' or a path)"),
         Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
             help="Incumbent AZ .pt (default: gen__azfinal.pt; scripted if none yet)"),
-        Arg("--games", "int", default=20),
+        Arg("--games", "int", default=56,
+            help="Total gate matches, split over the roster-wide panel (a mirror "
+                 "per roster deck + direction-balanced cross pairs)"),
         Arg("--sims", "int", default=32),
         Arg("--worlds", "int", default=2),
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
+        Arg("--gate-floor", "float", default=0.2,
+            help="Per-piloted-deck win-rate floor: a deck the candidate piloted "
+                 "in >=4 gate matches below this vetoes promotion even when the "
+                 "aggregate clears the bar (0 disables)"),
         Arg("--seed", "int", default=1),
         Arg("--bo1", "flag",
             help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
@@ -789,10 +798,17 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--batch-size", "int", default=256),
         Arg("--lr", "float", default=1e-3),
         Arg("--window", "int", default=50),
-        Arg("--eval-games", "int", default=20),
+        Arg("--eval-games", "int", default=56,
+            help="Total gate matches, split over the roster-wide panel (a mirror "
+                 "per roster deck + direction-balanced cross pairs; default 56 "
+                 "= 4 per matchup on a 10-deck roster)"),
         Arg("--eval-sims", "int", default=32),
         Arg("--eval-worlds", "int", default=2),
         Arg("--promote-threshold", "float", default=0.55),
+        Arg("--gate-floor", "float", default=0.2,
+            help="Per-piloted-deck gate floor: a deck the candidate piloted in "
+                 ">=4 gate matches below this win-rate vetoes promotion (0 "
+                 "disables)"),
         Arg("--seed", "int", default=1),
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per self-play game (default 0.25); "
@@ -834,10 +850,23 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--batch-size", "int", default=256),
         Arg("--lr", "float", default=1e-3),
         Arg("--window", "int", default=50),
-        Arg("--eval-games", "int", default=20),
+        Arg("--eval-games", "int", default=56,
+            help="Total gate matches, split over the roster-wide panel (a mirror "
+                 "per roster deck + direction-balanced cross pairs; default 56 "
+                 "= 4 per matchup on a 10-deck roster)"),
         Arg("--eval-sims", "int", default=32),
         Arg("--eval-worlds", "int", default=2),
         Arg("--promote-threshold", "float", default=0.55),
+        Arg("--gate-floor", "float", default=0.2,
+            help="Per-piloted-deck gate floor: a deck the candidate piloted in "
+                 ">=4 gate matches below this win-rate vetoes promotion (0 "
+                 "disables)"),
+        Arg("--matrix", "flag",
+            help="Whole-roster focus MATRIX every slot instead of the per-deck "
+                 "focus rotation: each cycle's self-play draws its focus deck "
+                 "uniformly from the roster per game, keeping the training "
+                 "window stationary (no one-deck-at-a-time forgetting sweep). "
+                 "A rotation then counts --cycles-per-deck matrix cycles."),
         Arg("--seed", "int", default=1,
             help="Base RNG seed (slot i uses seed+i)"),
         Arg("--mirror-frac", "float", default=0.25,
