@@ -797,14 +797,16 @@ controller). The engine is always a `--machine` subprocess; the opponent control
   analysis run delivered stats.
 
 **The analysis window** (`train/gui_analysis.py`, GUI only; enable via the launcher checkbox or
-`play.py --gui --analysis`; F9 toggles, F5 analyzes, Shift+F5 stops): live MCTS evaluation of
+`play.py --gui --analysis`; F9 toggles, F5 analyzes, F6 reviews the opponent's last decision,
+Shift+F5 stops): live MCTS evaluation of
 the current decision, chess-engine style. It runs `mcts.IncrementalSearch` — a chunked,
 cancellable, resumable search bit-identical to `run_search` for the same world seeds, which
 holds its root snapshot open so `pv()`/`walk()` can browse afterwards — on a **detached
 analysis engine** (`SearchRoboMageEnv.spawn_detached_mirror`): a caller-owned engine copy that
 is *never* registered in the live env's mirror pool and is kept in lockstep lazily by replaying
 the primary's action-history delta (so the live game never blocks, and the analysis engine may
-lag and only ever replays forward). Displays: per-action table (prior / visits / visit% / Q as
+lag and only ever replays forward — a request for an EARLIER decision, i.e. the F6 review below,
+is served by respawning the engine at that history prefix). Displays: per-action table (prior / visits / visit% / Q as
 win%), a branch value chart (bold mean per top branch + thin per-world lines for the
 determinization spread, always in the human's perspective), and a PV scrubber that walks a
 branch's principal variation on the analysis engine and renders each hypothetical future board
@@ -815,7 +817,12 @@ loop-safe and a legal search root — the greyed-out state remains only for the 
 residual `safe=0` prompts (see docs/alphazero_status.md's safe-window section); opponent-decision analysis
 sits behind an explicit reveal toggle (it exposes hidden information), where a search opponent's
 own per-decision `SearchResult` is surfaced for free via the `SearchController.on_result` hook
-and other opponents are analyzed retrospectively on the analysis engine. The Qt-free session
+and other opponents are analyzed retrospectively on the analysis engine. **Opponent's last
+decision** (the F6 button, reveal toggle required) reviews a move already made: the analysis
+engine rewinds to just before the opponent's most recent real decision, searches it from their
+perspective, and marks the action they actually played `▶` (read from the live env's action
+history); the live game keeps running and the engine catches up by forward replay at the next
+analysis. The Qt-free session
 core lives in `train/analysis_session.py`; regression tests in `train/test_analysis_session.py`
 run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make check`):
 `train/.venv/bin/python train/ci_check.py --tier analysis`.

@@ -72,8 +72,9 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           bit-identical to run_search (pinned world seeds), pv/walk browse and
           replay lines then hand the engine back clean (driver discipline), an
           AnalysisSession's detached mirror stays in lockstep across a bo3
-          sideboard boundary by delta replay, and a cross-thread stop event
-          cancels within one chunk (train/test_analysis_session.py).
+          sideboard boundary by delta replay, rewinds to an already-played
+          decision by respawn, and a cross-thread stop event cancels within one
+          chunk (train/test_analysis_session.py).
           Torch-free; needs bin/robomage.
 
 Draw classification (per repo policy — draws are not acceptable, but the two
@@ -357,7 +358,8 @@ def tier_analysis(rep):
 
     Runs train/test_analysis_session.py: chunked-vs-plain search bit-parity,
     pv/walk driver discipline, AnalysisSession detached-mirror lockstep across
-    a bo3 sideboard boundary, and cancellation. Torch-free; needs bin/robomage."""
+    a bo3 sideboard boundary, rewind-to-an-earlier-decision, and cancellation.
+    Torch-free; needs bin/robomage."""
     r = subprocess.run([sys.executable, "train/test_analysis_session.py"],
                        cwd=_REPO_ROOT, capture_output=True, text=True)
     print(r.stdout, end="", flush=True)
