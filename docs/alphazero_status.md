@@ -13,8 +13,21 @@ phases, decisions, risks) is summarized at the bottom.
 > identity — so self-play
 > is **mirrors + cross-deck** (a focus deck vs a mirror with `--mirror-frac`,
 > default 0.25, else a uniform roster opponent), shards pool into **`az_data/gen/`**,
-> and the promotion gate is an **aggregate win-rate over a sample of roster
-> matchups** (per-matchup breakdown printed). Controller specs are `az:gen` /
+> and the promotion gate is an **aggregate win-rate over a ROSTER-WIDE panel**
+> (a candidate-vs-incumbent mirror for every roster deck + direction-balanced
+> cross pairs, per-matchup and per-piloted-deck breakdowns printed) with a
+> **per-deck floor veto** (`--gate-floor`, default 0.2 at >=4 matches — a
+> candidate that collapsed at piloting any one deck is rejected even when its
+> aggregate clears 0.55). `az-league --matrix` replaces the one-deck-per-slot
+> focus rotation with the whole-roster focus matrix every slot (stationary
+> training window; no per-deck forgetting sweep). `--expert-decks <decks>`
+> (az / az-league; standalone via `az-selfplay --expert`) additionally writes
+> **expert demonstration shards** each cycle — scripted:hard piloting both
+> seats, `pi` = one-hot on the expert's action, same shard schema — so the
+> trainer behavior-clones hand-coded combo lines (the doomsday fix: the
+> warm-started value net scores mid-combo states as lost, so search prunes the
+> line before sampling it; demonstrations put prior mass on the line and price
+> those states by games the combo wins). Controller specs are `az:gen` /
 > `azraw:gen` / `mcts:gen` (a bare deck shorthand is rejected; the deck travels as a
 > separate explicit parameter). The per-deck `{deck}__az*` naming, mirror-only
 > self-play, and `az_data/{deck}/` sharding described below are historical; commit
@@ -147,8 +160,10 @@ All Phase C deliverables are on the branch (landed across the WIP commits
   `CE(pi, masked_log_softmax) + c_v*MSE(v,z)` over a last-M-shards window from the
   pooled `az_data/gen/` dir; saves CANDIDATE snapshots only. **`gen__azfinal`
   advances exclusively through the `az-eval` promotion gate** (candidate vs
-  incumbent over a SAMPLE of roster matchups — mirror + cross-deck — seats
-  alternating, promote on aggregate win-rate >= 0.55 with a per-matchup breakdown;
+  incumbent over a ROSTER-WIDE panel — a mirror per roster deck plus
+  direction-balanced cross pairs, seats alternating — promote on aggregate
+  win-rate >= 0.55 AND no per-deck floor veto (`--gate-floor`), with per-matchup
+  and per-piloted-deck breakdowns persisted to the az-league sidecar;
   vs `scripted` when no incumbent exists yet). The trainer resumes the candidate
   line (newest `gen__azv`, `resolve_az_checkpoint(prefer="snapshot")`); self-play
   and the `az:` opponent spec default to the incumbent.

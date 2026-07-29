@@ -42,7 +42,8 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import (AZNet, obs_space_from_const, load_az, AZEvaluator,
-                    save_torchscript, torchscript_export_path)
+                    decay_exempt_param_groups, save_torchscript,
+                    torchscript_export_path)
 from env import OBS_SIZE, MAX_ACTIONS
 from cli_spec import BIN_DIR
 import az_selfplay
@@ -171,7 +172,9 @@ def _train_trajectory(obs, pi, z, mask):
     rng = np.random.default_rng(TRAIN_SEED)
     net = AZNet(obs_space_from_const())
     net.train()
-    opt = torch.optim.Adam(net.parameters(), lr=TRAIN_LR, weight_decay=1e-4)
+    # Same decay-exempt param groups as train_az (the sparse, per-sample-selected
+    # parameters stay out of weight decay) so this stays a faithful mirror.
+    opt = torch.optim.Adam(decay_exempt_param_groups(net, 1e-4), lr=TRAIN_LR)
 
     obs_t = torch.as_tensor(obs)
     pi_t = torch.as_tensor(pi)

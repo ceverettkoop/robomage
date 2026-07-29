@@ -1979,11 +1979,18 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     print(f"\nAlternate training complete: {total_timesteps:,} total timesteps over {round_num} rounds.")
 
 
-def baseline(binary_path: str, model_path: str, n_games: int = 100,
+def baseline(binary_path: str, model, n_games: int = 100,
              deck: str | None = None, opp_deck: str | None = None,
              seed: int | None = None, quiet: bool = False, bo3: bool = False,
              split_out: dict | None = None):
-    """Evaluate the generalist's win rate vs the scripted HARD agent.
+    """Evaluate a model's win rate vs the scripted HARD agent.
+
+    ``model`` is any ``opponents.make_controller`` model spec — ``'gen'`` (the
+    PPO generalist), an explicit ``.zip``/``.pt`` path (e.g. an ``exp_*``
+    exploiter checkpoint), or a search spec (``az:gen``, ``mcts:gen``,
+    ``azraw:gen``, with the usual ``?sims=...`` knobs) — or a pre-built
+    ``Controller`` instance (``baseline_all`` passes one so the checkpoint loads
+    once for the whole round-robin).
 
     The model pilots ``deck`` (REQUIRED — a checkpoint no longer encodes a deck;
     the one generalist pilots whatever deck you name) and faces scripted:hard
@@ -2007,7 +2014,7 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
     Returns ``(wins, losses, draws)`` from the model's perspective.
     """
     import runner
-    from opponents import ModelController, ScriptedController
+    from opponents import make_controller, ScriptedController
     from scripted_agent import make_agent
 
     if not deck:
@@ -2015,10 +2022,11 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
             "baseline: --deck is required — a checkpoint no longer encodes the "
             "deck it pilots. Pass the deck the generalist should play "
             "(e.g. baseline gen --deck league/ur_delver).")
-    model = MaskablePPO.load(model_path)
+    model_name = model if isinstance(model, str) else getattr(model, "label", "model")
+    ctrl_model = make_controller(model, checkpoint_resolver=_resolve_model,
+                                 deterministic=True)
     if opp_deck is None:
         opp_deck = deck
-    ctrl_model = ModelController(model, label="Model", deterministic=True)
     ctrl_scripted = ScriptedController(make_agent("scripted:hard"), label="Scripted")
     wins = losses = draws = 0
     # Per-game-index tallies in the MODEL's perspective. tally_per_game scores for
@@ -2059,7 +2067,7 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
         print()
         vs = (f"scripted:hard ({opp_deck})" if opp_deck != deck else "scripted:hard")
         unit = "matches" if bo3 else "games"
-        print(f"{os.path.basename(model_path)} ({deck or 'default deck'}) vs "
+        print(f"{os.path.basename(model_name)} ({deck or 'default deck'}) vs "
               f"{vs} over {n_games} {unit}: {wins}W / {losses}L / {draws}D "
               f"({100 * wins / n_games:.1f}% win rate)")
         for line in runner.format_per_game_split(per_game, subject="model"):
@@ -2087,37 +2095,53 @@ def _wld_line(w: int, l: int, d: int) -> str:
 
 
 def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
-                 log_path: str | None = None, bo3: bool = False):
-    """Round-robin the one generalist over every league matchup vs scripted:hard.
+                 log_path: str | None = None, bo3: bool = False,
+                 model: str | None = None):
+    """Round-robin a model over every league matchup vs scripted:hard.
 
-    There is a single generalist checkpoint (``gen__final.zip``); this runs it
-    piloting *each* league deck (decks/league/*.dk) against scripted:hard
-    piloting *each* league deck — the full N×N cross product, mirrors included —
-    for ``n_games`` per matchup (default 50). The report records every matchup's
-    win rate plus aggregate win rates per model deck (vs the whole scripted
-    field) and per opponent deck (against every model deck); all win rates are
-    from the model's perspective. It is appended to ``log_path`` (default
+    ``model`` is any ``make_controller`` model spec — default ``'gen'`` (the one
+    PPO generalist), or e.g. ``az:gen`` (the AZ net under search), ``azraw:gen``
+    (AZ policy argmax, cheap), ``mcts:gen``, or an explicit ``.zip``/``.pt``
+    path such as an ``exp_*`` exploiter checkpoint. The model pilots *each*
+    league deck (decks/league/*.dk) against scripted:hard piloting *each* league
+    deck — the full N×N cross product, mirrors included — for ``n_games`` per
+    matchup (default 50). The report records every matchup's win rate plus
+    aggregate win rates per model deck (vs the whole scripted field) and per
+    opponent deck (against every model deck); all win rates are from the model's
+    perspective. It is appended to ``log_path`` (default
     checkpoints/baseline_report.log) and printed to stdout.
     """
     import runner
+    from opponents import make_controller
 
     roster = _league_roster()
     if not roster:
         print(f"No league decks found under {_LEAGUE_DECKS_DIR}")
         return
 
-    # One generalist checkpoint pilots every deck.
-    ckpt = _resolve_model(GEN_STEM)
-    if not ckpt or not os.path.exists(ckpt):
-        print(f"No generalist checkpoint ({GEN_STEM}__final.zip / {GEN_STEM}__v*.zip) "
-              f"found under {_CHECKPOINT_ABS}. Train one first.")
-        return
+    # One model pilots every deck. Resolve plain checkpoint specs up front for a
+    # friendly miss + provenance in the header; search specs (az:/mcts:/azraw:)
+    # resolve inside make_controller.
+    spec = model or GEN_STEM
+    display = spec
+    if ":" not in spec:
+        ckpt = _resolve_model(spec)
+        if not ckpt or not os.path.exists(ckpt):
+            print(f"No checkpoint found for model spec '{spec}' under "
+                  f"{_CHECKPOINT_ABS}. Train one first.")
+            return
+        display = spec if spec == os.path.basename(ckpt) else \
+            f"{spec} ({os.path.basename(ckpt)})"
+    # Build the controller ONCE (loads the checkpoint once); baseline() accepts
+    # a pre-built Controller and reuses it for every matchup.
+    ctrl = make_controller(spec, checkpoint_resolver=_resolve_model,
+                           deterministic=True)
 
     if log_path is None:
         log_path = os.path.join(_CHECKPOINT_ABS, "baseline_report.log")
 
     stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    header = (f"=== generalist ({os.path.basename(ckpt)}) baseline round-robin vs "
+    header = (f"=== {display} baseline round-robin vs "
               f"scripted:hard ({len(roster)}x{len(roster)} matchups) — {stamp} — "
               f"{n_games} {'matches' if bo3 else 'games'}/matchup, seed={seed} ===")
     lines = [header]
@@ -2139,14 +2163,15 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
     for deck in roster:
         row_cells = []
         for opp in roster:
-            print(f"\n  gen (model) piloting {deck} vs {opp} (scripted:hard):", flush=True)
-            w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
+            print(f"\n  {spec} (model) piloting {deck} vs {opp} (scripted:hard):",
+                  flush=True)
+            w, l, d = baseline(binary_path, ctrl, n_games=n_games, deck=deck,
                                opp_deck=opp, seed=seed, bo3=bo3,
                                split_out=per_game_all)
             total = w + l + d
             pct = 100 * w / total if total else 0
             row_cells.append(f"{opp}={w}W/{l}L/{d}D({pct:.0f}%)")
-            lines.append(f"gen piloting {deck:<22} vs scripted:hard {opp:<22} "
+            lines.append(f"{spec} piloting {deck:<22} vs scripted:hard {opp:<22} "
                          + _wld_line(w, l, d))
             bucket = archetypes.bucket_index(deck, opp)
             for tally in (per_model_deck[deck], per_opp_deck[opp],
@@ -2154,7 +2179,7 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
                 tally[0] += w
                 tally[1] += l
                 tally[2] += d
-        lines.append(f"  [gen {deck}] " + "  ".join(row_cells))
+        lines.append(f"  [{spec} {deck}] " + "  ".join(row_cells))
 
     lines.append("")
     # Pre-board vs post-board: game 1 is played on the registered decks and cannot
@@ -2163,7 +2188,7 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
     if split:
         lines.extend(split)
         lines.append("")
-    lines.append("per model deck (gen piloting it vs the whole scripted field):")
+    lines.append(f"per model deck ({spec} piloting it vs the whole scripted field):")
     for deck, (w, l, d) in per_model_deck.items():
         lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
     lines.append("per opponent deck (scripted:hard piloting it vs every model deck; "
@@ -2445,20 +2470,24 @@ if __name__ == "__main__":
         # (--bo3 is accepted as a redundant no-op for backward compatibility).
         if args.all:
             baseline_all(args.binary, n_games=args.games or 50, seed=args.seed,
-                         log_path=args.log, bo3=not args.bo1)
+                         log_path=args.log, bo3=not args.bo1, model=args.model)
         elif args.model is None:
-            parser.error("baseline: give a model checkpoint (e.g. 'gen'), or --all "
-                         "to round-robin the generalist over every league matchup")
+            parser.error("baseline: give a model spec ('gen', 'az:gen', a .zip/.pt "
+                         "path), or --all to round-robin it over every league "
+                         "matchup")
         elif not args.deck:
             parser.error("baseline: --deck is required — a checkpoint no longer "
                          "encodes the deck it pilots. Pass the deck the generalist "
                          "should play (e.g. baseline gen --deck league/ur_delver).")
         else:
+            from opponents import make_controller
             try:
-                model_path = _resolve_model(args.model)
+                # Build here so a bad spec dies as a usage error, not mid-run.
+                ctrl = make_controller(args.model, checkpoint_resolver=_resolve_model,
+                                       deterministic=True)
             except ValueError as exc:
                 parser.error(str(exc))
-            baseline(args.binary, model_path, args.games or 100,
+            baseline(args.binary, ctrl, args.games or 100,
                      deck=args.deck, seed=args.seed, bo3=not args.bo1)
     elif args.command == "az-selfplay":
         import az_selfplay

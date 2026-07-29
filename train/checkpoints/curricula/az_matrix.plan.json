@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "name": "az_matrix",
+  "description": "Doomsday-aware AZ matrix run. PRE-FLIGHT: mv train/checkpoints/az/gen__az* aside first \u2014 see the phase-3 note (pre-fix snapshots carry dead critic columns; the run should warm-start from the PPO gen under the decay-exempt optimizer). Phase 1 pre-seeds the trainer window with a large expert demonstration dose (scripted:hard vs scripted:hard wubg_doomsday matches recorded as one-hot-pi BC shards) so the FIRST training pass already sees the combo line instead of ~100 pre-BC self-play shards. Phase 2 snapshots a pre-training reference: the AZ net's raw policy (azraw:gen \u2014 argmax, no search) round-robined over the full roster vs scripted:hard, appended to baseline_report.log; azraw keeps the NxN tractable (an az:gen search round-robin would take days \u2014 spot-check search strength on single matchups with observe). Phase 3 is the terminal matrix az-league: whole-roster focus every slot (stationary window, no per-deck forgetting sweep), roster-wide promotion gate with the per-deck floor veto, and a fresh 16-match expert dose for wubg_doomsday every slot; self-play/sideboard sims default to 256 now. rotations:0 runs until Ctrl-C (~3h/slot at 256 sims); resume with `curriculum --plan az_matrix --resume`. After stopping, measure progress by re-running the phase-2 baseline by hand (train.py baseline azraw:gen --all --games 50) and diffing the wubg_doomsday rows.",
+  "phases": [
+    {
+      "kind": "az-selfplay",
+      "decks": "league/wubg_doomsday",
+      "games": 50,
+      "overrides": {
+        "expert": true
+      }
+    },
+    {
+      "kind": "baseline",
+      "games": 50,
+      "overrides": {
+        "all": true
+      }
+    },
+    {
+      "kind": "az-league",
+      "rotations": 0,
+      "games": 50,
+      "overrides": {
+        "workers": 28,
+        "matrix": true,
+        "gate_every": 3,
+        "expert_decks": [
+          "league/wubg_doomsday"
+        ]
+      }
+    }
+  ]
+}

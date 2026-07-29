@@ -17,4 +17,15 @@ bool snapshot_slot_live(int slot);  // slot holds a snapshot
 bool snapshot_slot_is_match(int slot);      // slot holds a live MATCH-scoped snapshot
 bool snapshot_any_match_scope_live();       // any slot holds a live MATCH-scoped snapshot
 void snapshot_release_all();        // drop all snapshots
+
+// Post-restore hook, run at the end of every successful snapshot_restore().
+// The snapshot covers only AUTHORITATIVE state; DERIVED global state
+// (g_active_statics — the rule-613 continuous-effects registry) is normally
+// re-derived by the next SBE pass, but a restore that lands on a parked
+// pending-query re-emits the suspended flow BEFORE any SBE pass runs, so the
+// resumed cast/payment would read the PREVIOUS simulation's statics (e.g. a
+// "can't activate" hoser another sim resolved) and diverge — the az_mcts
+// world-consistency violation. init_ecs registers apply_continuous_effects
+// here so every restore re-derives the statics at the same choke point.
+void snapshot_set_post_restore_hook(void (*hook)());
 #endif

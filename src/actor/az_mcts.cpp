@@ -46,6 +46,15 @@ struct Node {
     std::vector<int64_t> N;       // visit counts
     std::vector<double> W;        // value sums (this node's perspective)
     std::unordered_map<int, Node*> children;
+#ifndef NDEBUG
+    // Debug builds only: the menu's per-action metadata (cat / card id / ctrl /
+    // zone / slot ref / ordinal, from the obs blocks) recorded at node creation,
+    // so a world-consistency mismatch can report WHAT changed in the menu
+    // instead of only the count. Compiled out under -DNDEBUG (BUILD=RELEASE).
+    std::vector<float> dbg_menu;   // 6 floats per action
+    std::vector<float> dbg_state;  // state header (36) + self/opp library cts
+
+#endif
 
     Node(int nc, std::vector<double> priors, bool is_a)
         : num_choices(nc), self_is_a(is_a), P(std::move(priors)),
@@ -164,6 +173,70 @@ struct AZMcts::Impl {
         return pool.back().get();
     }
 
+#ifndef NDEBUG
+    // Debug builds only (see Node::dbg_menu): record the per-action metadata
+    // blocks of `o`'s menu into `out`.
+    static void capture_menu(const float* o, int nc, std::vector<float>& out) {
+        out.resize(static_cast<size_t>(nc) * 6);
+        for (int i = 0; i < nc; i++)
+            for (int b = 0; b < 6; b++)
+                out[static_cast<size_t>(i) * 6 + static_cast<size_t>(b)] =
+                    o[STATE_SIZE + b * MAX_ACTIONS + i];
+    }
+
+    // Debug builds only: the compact state fingerprint printed by the
+    // world-consistency dump — the 36-float header plus both library counts.
+    static void capture_state(const float* o, std::vector<float>& out) {
+        out.assign(o, o + STATE_HEADER_SIZE);
+        out.push_back(o[LIBRARY_CTX_START]);
+        out.push_back(o[LIBRARY_CTX_START + 1]);
+    }
+
+    static std::string fmt_state(const std::vector<float>& s) {
+        if (s.size() < STATE_HEADER_SIZE + 2u) return "  (no state capture)\n";
+        auto r = [&](int i, double scale) {
+            return std::to_string(static_cast<int>(std::lround(
+                static_cast<double>(s[static_cast<size_t>(i)]) * scale)));
+        };
+        int step = 0;
+        for (int i = 0; i < STEP_ONEHOT_SIZE; i++)
+            if (s[static_cast<size_t>(2 * PLAYER_BLOCK_SIZE + i)] > 0.5f) step = i;
+        std::string mana;
+        for (int i = 0; i < 6; i++) mana += r(3 + i, 10) + (i < 5 ? "/" : "");
+        return "  self: life=" + r(0, 20) + " hand=" + r(1, 10) +
+               " mana(WUBRGC)=" + mana + " lib=" + r(STATE_HEADER_SIZE, 60) +
+               " | opp: life=" + r(PLAYER_BLOCK_SIZE, 20) +
+               " hand=" + r(PLAYER_BLOCK_SIZE + 1, 10) +
+               " lib=" + r(STATE_HEADER_SIZE + 1, 60) +
+               " | step=" + std::to_string(step) +
+               " is_active=" + r(2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE, 1) +
+               " self_is_a=" + r(2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + 1, 1) +
+               " stack=" + std::to_string(
+                   s[static_cast<size_t>(2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + 2)]) +
+               "\n";
+    }
+
+    // Undo the env.py normalizations (see obs_builder.cpp's per-block contract)
+    // so the dump prints raw enum/int values.
+    static std::string fmt_menu(const std::vector<float>& m) {
+        auto denorm = [](float v, double scale, int bias) {
+            return static_cast<int>(std::lround(static_cast<double>(v) * scale)) - bias;
+        };
+        std::string s;
+        for (size_t i = 0; i * 6 < m.size(); i++) {
+            s += "  [" + std::to_string(i) + "] cat=" +
+                 std::to_string(denorm(m[i * 6 + 0], ACTION_CATEGORY_MAX, 0)) +
+                 " id=" + std::to_string(denorm(m[i * 6 + 1], N_CARD_TYPES, 0)) +
+                 " ctrl=" + std::to_string(static_cast<int>(m[i * 6 + 2])) +
+                 " zone=" + std::to_string(denorm(m[i * 6 + 3], static_cast<int>(REF_PLAYER_OPP), 0)) +
+                 " ref=" + std::to_string(denorm(m[i * 6 + 4], N_ENTITY_REF_SLOTS, 1)) +
+                 " ord=" + std::to_string(denorm(m[i * 6 + 5], OPTION_ORDINAL_MAX + 1, 1)) +
+                 "\n";
+        }
+        return s;
+    }
+#endif  // !NDEBUG
+
     void backup(const std::vector<PathEntry>& p, double leaf_value, bool leaf_seat_is_a) {
         for (const PathEntry& e : p) {
             e.node->N[static_cast<size_t>(e.action)] += 1;
@@ -219,6 +292,10 @@ struct AZMcts::Impl {
         } else {
             cur_root = make_node(root_n, root_priors, root_is_a);
         }
+#ifndef NDEBUG
+        capture_menu(root_obs.data(), root_n, cur_root->dbg_menu);
+        capture_state(root_obs.data(), cur_root->dbg_state);
+#endif
     }
 
     int start_descent() {
@@ -271,6 +348,11 @@ struct AZMcts::Impl {
             if (pl.parent->children.find(pl.action) == pl.parent->children.end()) {
                 pl.parent->children[pl.action] =
                     make_node(pl.num_choices, res[static_cast<size_t>(i)].priors, is_a);
+#ifndef NDEBUG
+                capture_menu(pl.obs.data(), pl.num_choices,
+                             pl.parent->children[pl.action]->dbg_menu);
+                capture_state(pl.obs.data(), pl.parent->children[pl.action]->dbg_state);
+#endif
             }
             backup(pl.path, res[static_cast<size_t>(i)].value, is_a);
         }
@@ -350,16 +432,62 @@ struct AZMcts::Impl {
             }
             AZEvalResultD r = eval_one(o, nc);
             parent->children[paction] = make_node(nc, r.priors, leaf_is_a);
+#ifndef NDEBUG
+            capture_menu(o, nc, parent->children[paction]->dbg_menu);
+            capture_state(o, parent->children[paction]->dbg_state);
+#endif
             backup(path, r.value, leaf_is_a);
             finish_sim();
             return 0;
         }
         Node* child = it->second;
+#ifndef NDEBUG
+        // Debug builds: strengthened world-consistency check — same world + same
+        // path must re-derive the same MENU, not merely the same count. Content
+        // divergence (a card-list menu with different cards) precedes a count
+        // mismatch by several plies, so compare the full metadata capture and
+        // dump both menus decoded. Release builds keep only the O(1) count check
+        // below (the cheap tripwire).
+        std::vector<float> got;
+        capture_menu(o, nc, got);
+        if (child->num_choices != nc || child->dbg_menu != got) {
+            std::string path_s;
+            for (const PathEntry& e : path) path_s += std::to_string(e.action) + " ";
+            // The stored menus of every node ALONG the path localize where the
+            // states diverged invisibly (identical menus can mask different
+            // hidden state, e.g. a scry prompt over a different card).
+            std::string chain;
+            for (size_t k = 0; k < path.size(); k++) {
+                chain += "  path node " + std::to_string(k) + " (took action " +
+                         std::to_string(path[k].action) + "):\n" +
+                         fmt_state(path[k].node->dbg_state) +
+                         fmt_menu(path[k].node->dbg_menu);
+            }
+            std::vector<float> got_state;
+            capture_state(o, got_state);
+            fatal_error("az_mcts: world-consistency violation: node expected " +
+                        std::to_string(child->num_choices) + " choices, engine gave " +
+                        std::to_string(nc) +
+                        "\n  root#" + std::to_string(this_root) +
+                        " move=" + std::to_string(move_counter) +
+                        " world=" + std::to_string(cur_world) +
+                        " (seed=" + std::to_string(cur_world_seed) + ")" +
+                        " sim=" + std::to_string(cur_sim) +
+                        " depth=" + std::to_string(path.size()) +
+                        " sideboard=" + std::to_string(sideboard_phase ? 1 : 0) +
+                        "\n  path actions: " + path_s +
+                        "\n" + chain +
+                        "  node menu (at creation):\n" + fmt_state(child->dbg_state) +
+                        fmt_menu(child->dbg_menu) +
+                        "  engine menu (now):\n" + fmt_state(got_state) + fmt_menu(got));
+        }
+#else
         if (child->num_choices != nc) {
             fatal_error("az_mcts: world-consistency violation: node expected " +
                         std::to_string(child->num_choices) + " choices, engine gave " +
                         std::to_string(nc));
         }
+#endif
         // Descend into the existing child (node = child). Depth cap: value-only.
         if (static_cast<int>(path.size()) >= cur_max_depth) {
             AZEvalResultD r = eval_one(o, nc);
@@ -387,6 +515,10 @@ struct AZMcts::Impl {
         }
         if (cfg.batch > 1 && static_cast<int>(pending.size()) >= cfg.batch) flush_pending();
         determinize_hidden_state(cur_world_seed);
+#ifndef NDEBUG
+        // Sim delimiter for reading interleaved sim narratives in debug logs.
+        std::fprintf(stderr, "[sim] root=%d world=%d sim=%d\n", this_root, cur_world, cur_sim);
+#endif
         int a = start_descent();
         phase = DESCENDING;
         return a;

@@ -18,7 +18,11 @@ Proves the guarantees the analysis window relies on:
      follows a scripted bo3 by delta replay (including across the sideboard
      boundary), analyzing at several stops, each analysis leaving the live env
      untouched.
-  4. cancellation — a cross-thread stop event ends an unlimited analyze()
+  4. rewind — a request for a decision the engine has already moved PAST (the
+     window's "opponent's last decision" review) respawns the analysis engine
+     at that history prefix, analyzes there without touching the live env, and
+     then follows the live game forward again.
+  5. cancellation — a cross-thread stop event ends an unlimited analyze()
      within one chunk; the parked search stays browsable; a re-analyze at the
      same decision succeeds.
 
@@ -318,6 +322,60 @@ def test_session_lockstep_bo3():
         _rm(paths)
 
 
+def test_rewind_to_earlier_decision():
+    """The analysis engine can be sent BACKWARDS: after following the live game
+    forward, an AnalysisRequest for an EARLIER decision (the window's
+    "opponent's last decision" review) respawns the engine at that history
+    prefix and analyzes there, leaving the live env untouched; the engine then
+    follows the live game forward again."""
+    deck_a, deck_b, paths = _write_decks()
+    cfg = AnalysisConfig(evaluator_spec="uniform", worlds=2, chunk_sims=4,
+                         max_sims=8, seed=SEARCH_SEED)
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b)
+        session = AnalysisSession(env, cfg, evaluator=UniformEvaluator(),
+                                  evaluator_label="uniform")
+        try:
+            env.reset(options={"engine_seed": SEED})
+            _drive_to_safe(env)
+            old = _req(env)
+            session.analyze(old)              # engine synced at `old`
+
+            # Advance the live game well past that decision.
+            agent = make_agent("scripted")
+            agent.new_game()
+            for _ in range(8):
+                _, _, term, trunc, _ = env.step(
+                    agent.act(env._obs, env._num_choices))
+                if term or trunc:
+                    raise AnalysisTestError("game ended before the rewind test")
+            _drive_to_safe(env)
+            new = _req(env)
+            if new.history_len <= old.history_len:
+                raise AnalysisTestError("live game did not advance")
+            session.analyze(new)              # forward delta
+
+            before = env._obs.copy()
+            stats = session.analyze(old)      # <- the rewind
+            if stats.sims_run != cfg.max_sims:
+                raise AnalysisTestError(
+                    f"rewound analyze ran {stats.sims_run} != {cfg.max_sims}")
+            if not np.array_equal(env._obs, before):
+                raise AnalysisTestError("rewind touched the LIVE env's state")
+            # And forward again from the rewound engine.
+            stats2 = session.analyze(new)
+            if stats2.sims_run != cfg.max_sims:
+                raise AnalysisTestError(
+                    f"re-forward analyze ran {stats2.sims_run}")
+            return (f"rewound {new.history_len} -> {old.history_len} and "
+                    "forward again, live env untouched")
+        finally:
+            session.close()
+            env.close()
+    finally:
+        _rm(paths)
+
+
 def test_cancellation():
     """A cross-thread stop event ends an unlimited analyze() promptly; the
     parked search stays browsable; re-analyzing the same decision works."""
@@ -362,6 +420,42 @@ def test_cancellation():
                 raise AnalysisTestError(f"re-analyze ran {stats2.sims_run} != 8")
             return (f"cancelled after {stats.sims_run} sims, pv browsable, "
                     "re-analyze ok")
+        finally:
+            session.close()
+            env.close()
+    finally:
+        _rm(paths)
+
+
+def test_evaluator_note():
+    """An evaluator that reports an untrained value bucket surfaces a caveat
+    (the AZ multi-head critic's dead-column guard); a plain one reports none."""
+
+    class _Flagging(UniformEvaluator):
+        untrained_bucket = None
+
+    deck_a, deck_b, paths = _write_decks()
+    cfg = AnalysisConfig(evaluator_spec="uniform", worlds=2, chunk_sims=4,
+                         max_sims=4, seed=SEARCH_SEED)
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b)
+        ev = _Flagging()
+        session = AnalysisSession(env, cfg, evaluator=ev,
+                                  evaluator_label="uniform")
+        try:
+            env.reset(options={"engine_seed": SEED})
+            _drive_to_safe(env)
+            session.analyze(_req(env))
+            if session.evaluator_note() is not None:
+                raise AnalysisTestError("note reported for a healthy evaluator")
+            ev.untrained_bucket = 0
+            note = session.evaluator_note()
+            if not note or "untrained" not in note:
+                raise AnalysisTestError(f"no untrained-bucket note: {note!r}")
+            if "tempo_vs_tempo" not in note:
+                raise AnalysisTestError(
+                    f"note doesn't name the matchup bucket: {note!r}")
+            return f"note surfaced: {note[:48]}…"
         finally:
             session.close()
             env.close()
@@ -432,7 +526,9 @@ TESTS = [
     ("parallel_merge_fields", test_parallel_merge_fields),
     ("pv_walk_discipline", test_pv_walk_discipline),
     ("session_lockstep_bo3", test_session_lockstep_bo3),
+    ("rewind_to_earlier_decision", test_rewind_to_earlier_decision),
     ("cancellation", test_cancellation),
+    ("evaluator_note", test_evaluator_note),
     ("opp_result_hook", test_opp_result_hook),
 ]
 

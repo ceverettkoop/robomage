@@ -7,6 +7,12 @@ analysis engine (see train/analysis_session.py) and renders a per-action table
 — prior, visits, visit share, and Q as a win% — refreshed after every chunk,
 chess-engine style, until the sims cap, the Stop button, or the human acting.
 
+"Opponent's last decision" (F6, reveal toggle on) reviews a move already made:
+the analysis engine rewinds to the position just before the opponent's most
+recent real decision and searches it from their perspective, with the move they
+played marked ▶. The live game keeps running throughout — the side engine
+catches back up by forward replay at the next analysis.
+
 Threading: one persistent worker thread (`AnalysisWorker`) owns the
 AnalysisSession (and therefore the analysis engine + evaluator); the UI talks
 to it through a command queue + a stop event, and results come back through
@@ -29,7 +35,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from PySide6.QtCore import QObject, Qt, Signal
+from PySide6.QtCore import QObject, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QKeySequence, QPainter, QPen, QShortcut
 from PySide6.QtWidgets import (QCheckBox, QHBoxLayout, QHeaderView, QLabel,
                                QMainWindow, QPushButton, QSlider, QSpinBox,
@@ -38,7 +44,7 @@ from PySide6.QtWidgets import (QCheckBox, QHBoxLayout, QHeaderView, QLabel,
 
 import decode
 from analysis_session import (AnalysisError, AnalysisRequest, AnalysisSession)
-from env import _SELF_IS_A_IDX
+from env import STATE_SIZE, _SELF_IS_A_IDX
 from game_driver import decode_human_frame, menu_label
 
 # How deep a principal variation is read out / walked, and how many branches
@@ -50,10 +56,45 @@ MAX_BRANCHES = 4
 # board palette; index parallels the sorted top-branch order.
 _BRANCH_COLORS = ("#d8a12a", "#33d17a", "#3a9ad9", "#e05555")
 
+# Controller wording for an OPPONENT-perspective menu. decode renders an obs in
+# its own mover's frame, so on the opponent's decision THEIR permanents come out
+# tagged "own" and yours "opp" — which reads backwards next to a board that is
+# always drawn in your frame ("Target Thespian's Stage (own)" is THEIR Stage).
+# Spell the possessives out so the row is unambiguous either way.
+_OPP_CTRL_LABELS = {"own": "theirs", "opp": "yours",
+                    "self": "them", "opponent": "you"}
+# decode's metadata-only player-target wording is likewise in the mover's frame
+# (the engine's authored descriptions aren't available for an obs we only hold a
+# copy of), so translate those two phrases to the viewer's frame as well.
+_OPP_PHRASES = (("Target yourself", "Target themselves"),
+                ("Target opponent", "Target you"))
+
+
+def opp_menu_labels(obs, num_choices) -> dict:
+    """Action-index -> label for an OPPONENT-perspective decision, worded so a
+    human reading it cannot mistake whose permanent each choice names."""
+    menu = decode.decode_actions_from_obs(obs, num_choices,
+                                          labels=_OPP_CTRL_LABELS)
+    labels = {}
+    for a in menu:
+        desc = a["description"]
+        for old, new in _OPP_PHRASES:
+            desc = desc.replace(old, new)
+        labels[a["index"]] = desc
+    return labels
+
 
 def _win_pct(v: float) -> str:
     """A [-1,1] mover-perspective value as a win percentage."""
     return f"{(v + 1.0) * 50.0:.1f}%"
+
+
+def _req_step(req) -> str:
+    """The game step an AnalysisRequest sits at, for status text."""
+    try:
+        return decode.decode_game_state(req.obs[:STATE_SIZE])["step"]
+    except Exception:  # noqa: BLE001 — status text, never worth crashing for
+        return "?"
 
 
 @dataclass
@@ -116,6 +157,7 @@ class AnalysisBridge(QObject):
 
     stats_update = Signal(object)   # (tag, LiveStats) after every chunk
     status = Signal(object)         # (state_key, text) for the status line
+    evaluator_note = Signal(str)    # evaluator caveat after a run ("" = none)
     run_done = Signal(object)       # (tag, LiveStats|None) when a run ends
     branches_ready = Signal(object)  # (tag, [BranchSeries]) after a run
     walk_ready = Signal(object)     # (tag, action, world, [WalkNode], labels)
@@ -225,6 +267,7 @@ class AnalysisWorker(threading.Thread):
             stats = self._session.analyze(
                 req, stop=stop,
                 on_update=lambda s: bridge.stats_update.emit((tag, s)))
+            bridge.evaluator_note.emit(self._session.evaluator_note() or "")
             state = "stopped" if stop.is_set() else "done"
             bridge.status.emit((state,
                                 f"{'stopped' if state == 'stopped' else 'done'}"
@@ -448,6 +491,7 @@ class AnalysisWindow(QMainWindow):
         self.setAttribute(Qt.WA_ShowWithoutActivating, True)
         self._cfg = cfg
         self._opp_is_a = opp_is_a
+        self._primary = primary_env  # live env (read-only: action history)
         self._update = None          # latest analyzable StateUpdate (or None)
         self._labels = {}            # action index -> menu label for _update
         self._tag = 0                # run id; stale signals are dropped
@@ -455,21 +499,30 @@ class AnalysisWindow(QMainWindow):
         self._last_stats_time = None
         self._last_sims = 0
         self.smoke_ok = False        # ROBOMAGE_ANALYSIS_SMOKE: first stats seen
+        self.smoke_review_ok = False  # …and the opponent-review rewind ran
         self._smoke = bool(os.environ.get("ROBOMAGE_ANALYSIS_SMOKE"))
+        self._smoke_reviewed = False
         # Branch lines / PV walk state (phase 3).
         self._branches = []          # [BranchSeries] for the last finished run
         self._walk = None            # (action, world, [WalkNode], labels)
         # Opponent-analysis state (phase 4). _run_is_opp marks the current
         # run/display as an OPPONENT decision (values are theirs; the branch
         # chart flips them to the human's perspective). _last_req_len keeps
-        # analysis requests monotonic in history length — the analysis engine
-        # only ever replays forward.
+        # AUTOMATIC analysis requests monotonic in history length, so the live
+        # stream never makes the engine rewind; an explicit review (F6) may.
         self._run_is_opp = False
         self._last_req_len = 0
+        # The opponent's most recent analyzable decision, kept so it can be
+        # reviewed AFTER they act (F6 rewinds the analysis engine to it), plus
+        # the action they played there — marked ▶ in the table.
+        self._opp_last = None        # AnalysisRequest or None
+        self._chosen_action = None   # played action for the displayed run
+        self._run_is_review = False  # the current run is such a review
 
         self._bridge = AnalysisBridge()
         self._bridge.stats_update.connect(self._on_stats)
         self._bridge.status.connect(self._on_status)
+        self._bridge.evaluator_note.connect(self._on_evaluator_note)
         self._bridge.run_done.connect(self._on_run_done)
         self._bridge.branches_ready.connect(self._on_branches)
         self._bridge.walk_ready.connect(self._on_walk)
@@ -482,6 +535,7 @@ class AnalysisWindow(QMainWindow):
             self._reveal.setChecked(True)   # exercise the opponent path too
         QShortcut(QKeySequence("F5"), self, activated=self.request_analyze)
         QShortcut(QKeySequence("Shift+F5"), self, activated=self.request_stop)
+        QShortcut(QKeySequence("F6"), self, activated=self.request_opp_last)
 
     # ----- layout -----
 
@@ -498,6 +552,16 @@ class AnalysisWindow(QMainWindow):
 
         self._values = QLabel("net —  ·  search —  ·  0 sims")
         v.addWidget(self._values)
+
+        # Evaluator caveat (e.g. an AZ value column that was never trained for
+        # this matchup). Hidden until a run reports one — a silent constant
+        # value would otherwise read as a confident 50%.
+        self._eval_note = QLabel("")
+        self._eval_note.setObjectName("analysisWarning")
+        self._eval_note.setWordWrap(True)
+        self._eval_note.setStyleSheet("color: #d8a12a;")
+        self._eval_note.hide()
+        v.addWidget(self._eval_note)
 
         controls = QHBoxLayout()
         self._analyze_btn = QPushButton("Analyze (F5)")
@@ -529,7 +593,17 @@ class AnalysisWindow(QMainWindow):
             "Analyze the opponent's decisions too, from THEIR perspective — "
             "including their hidden hand. A search opponent's own search is "
             "shown for free; other opponents are analyzed on the side engine.")
+        self._reveal.toggled.connect(self._sync_opp_last_enabled)
+        self._opp_last_btn = QPushButton("Opponent's last decision (F6)")
+        self._opp_last_btn.setEnabled(False)
+        self._opp_last_btn.setToolTip(
+            "Rewind the side analysis engine to just BEFORE the opponent's most "
+            "recent real decision and search it from their perspective — what "
+            "each of their options was worth, with the move they actually "
+            "played marked ▶. Needs the reveal toggle (it shows their hand).")
+        self._opp_last_btn.clicked.connect(self.request_opp_last)
         controls2.addWidget(self._reveal)
+        controls2.addWidget(self._opp_last_btn)
         controls2.addStretch(1)
         v.addLayout(controls2)
 
@@ -604,10 +678,12 @@ class AnalysisWindow(QMainWindow):
 
         Human decisions cancel any running analysis (the engine should be free
         for the new position) and arm/auto-start a new one when analyzable.
-        Opponent decisions (reveal toggle on) start a THEIR-perspective run on
-        the side engine without cancelling anything — the analysis engine
-        simply lags the live game and catches up at the next sync. Autopass
-        stream updates (human seat, not acting) touch nothing."""
+        Opponent decisions are remembered (so the last one can be reviewed
+        after the fact via F6) and, with the reveal toggle on, start a
+        THEIR-perspective run on the side engine without cancelling anything —
+        the analysis engine simply lags the live game and catches up at the
+        next sync. Autopass stream updates (human seat, not acting) touch
+        nothing."""
         if u.human_turn:
             self._worker.cancel()
             eligible = bool(u.search_safe) and u.num_choices > 1
@@ -628,9 +704,14 @@ class AnalysisWindow(QMainWindow):
             if self._auto.isChecked() and (self.isVisible() or self._smoke):
                 self.request_analyze()
             return
-        if (u.opp_perspective and self._reveal.isChecked()
-                and self._auto.isChecked() and not self._running
-                and bool(u.search_safe) and u.num_choices > 1
+        if not (u.opp_perspective and bool(u.search_safe) and u.num_choices > 1):
+            return
+        # A real opponent decision: keep it as the F6 review root (its obs is
+        # already a private copy) before they act on it.
+        self._opp_last = AnalysisRequest.from_update(u)
+        self._sync_opp_last_enabled()
+        if (self._reveal.isChecked() and self._auto.isChecked()
+                and not self._running
                 and u.history_len >= self._last_req_len
                 and (self.isVisible() or self._smoke)):
             self._start_opp_analysis(u)
@@ -656,14 +737,15 @@ class AnalysisWindow(QMainWindow):
         obs, num, result, chosen = payload
         self._tag += 1              # invalidate stale branch/walk signals
         self._run_is_opp = True
-        menu = decode.decode_actions_from_obs(obs, num)
-        self._labels = {a["index"]: a["description"] for a in menu}
+        self._run_is_review = False
+        self._chosen_action = chosen
+        self._labels = opp_menu_labels(obs, num)
         self._clear_lines()
         q = result.q if result.q is not None else np.zeros(num)
         self._values.setText(
             f"opponent's search — their win% {_win_pct(result.root_value)}  ·  "
             f"{result.sims_run} sims")
-        self._fill_table(num, result.visits, result.priors, q, chosen=chosen)
+        self._fill_table(num, result.visits, result.priors, q)
         self._set_status("idle",
                          "opponent's own search for the move they played "
                          "(▶ = chosen)")
@@ -686,6 +768,8 @@ class AnalysisWindow(QMainWindow):
         self._tag += 1
         self._running = True
         self._run_is_opp = False
+        self._run_is_review = False
+        self._chosen_action = None
         self._last_stats_time = None
         self._last_sims = 0
         self._last_req_len = self._update.history_len
@@ -702,16 +786,75 @@ class AnalysisWindow(QMainWindow):
         self._tag += 1
         self._running = True
         self._run_is_opp = True
+        self._run_is_review = False
+        self._chosen_action = None      # they haven't answered it yet
         self._last_stats_time = None
         self._last_sims = 0
         self._last_req_len = u.history_len
-        menu = decode.decode_actions_from_obs(u.obs, u.num_choices)
-        self._labels = {a["index"]: a["description"] for a in menu}
+        self._labels = opp_menu_labels(u.obs, u.num_choices)
         self._stop_btn.setEnabled(True)
         self._clear_lines()
         self._set_status("busy",
                          "analyzing OPPONENT decision (values are theirs)…")
         self._worker.submit_analyze(self._tag, AnalysisRequest.from_update(u))
+
+    def request_opp_last(self) -> None:
+        """Review the opponent's most recent real decision (F6).
+
+        Rewinds the side analysis engine to the position just BEFORE that
+        decision — a respawn at its history prefix, see AnalysisSession.sync —
+        and searches it from THEIR perspective, so the table reads as "what
+        their options were worth", with the move they went on to play marked ▶.
+        The live game is untouched and keeps running; the engine catches back up
+        by forward replay at the next analysis."""
+        req = self._opp_last
+        if req is None:
+            return
+        if not self._reveal.isChecked():
+            self._set_status(
+                "idle", "tick 'Show opponent analysis' first — reviewing their "
+                        "decision reveals their hidden information")
+            return
+        self._tag += 1
+        self._running = True
+        self._run_is_opp = True
+        self._run_is_review = True
+        self._chosen_action = self._played_action(req)
+        self._last_stats_time = None
+        self._last_sims = 0
+        self._labels = opp_menu_labels(req.obs, req.num_choices)
+        self._stop_btn.setEnabled(True)
+        self._clear_lines()
+        played = ("" if self._chosen_action is None
+                  else f" — they played: "
+                       f"{self._labels.get(self._chosen_action, '?')}")
+        self._set_status(
+            "busy",
+            f"rewinding to the opponent's last decision ({_req_step(req)})"
+            f"{played}")
+        self._worker.submit_analyze(self._tag, req)
+
+    def _played_action(self, req: AnalysisRequest):
+        """The action the opponent actually took at `req`'s decision: the
+        history entry recorded when they answered it, or None if they haven't
+        yet. A bounded read of the primary env's append-only list (GIL-safe,
+        same discipline as AnalysisSession's delta replay)."""
+        hist = getattr(self._primary, "_action_history", None)
+        if not hist or req.history_len >= len(hist):
+            return None
+        return int(hist[req.history_len])
+
+    def _smoke_review(self) -> None:
+        """Headless smoke: drive the F6 opponent review once, if a decision of
+        theirs has been seen (an all-autopass smoke may never see one)."""
+        if self._smoke_reviewed or self._opp_last is None:
+            return
+        self._smoke_reviewed = True
+        self.request_opp_last()
+
+    def _sync_opp_last_enabled(self) -> None:
+        self._opp_last_btn.setEnabled(self._opp_last is not None
+                                      and self._reveal.isChecked())
 
     def request_stop(self) -> None:
         self._worker.cancel()
@@ -742,10 +885,16 @@ class AnalysisWindow(QMainWindow):
         self._fill_table(stats.num_choices, stats.visits, stats.priors, stats.q)
         if stats.sims_run > 0:
             self.smoke_ok = True
+            if self._smoke and self._run_is_review and not self.smoke_review_ok:
+                self.smoke_review_ok = True
+                print("ANALYSIS SMOKE: reviewed the opponent's last decision "
+                      f"({stats.sims_run} sims)", flush=True)
 
-    def _fill_table(self, num_choices, visits, priors, q, chosen=None) -> None:
-        """Render root-action stats, sorted by visits. `chosen` (opponent hook
-        results) marks the action that was actually played."""
+    def _fill_table(self, num_choices, visits, priors, q) -> None:
+        """Render root-action stats, sorted by visits. When the run's root is a
+        decision that was already answered (a reviewed opponent decision, or an
+        opponent hook result), the action actually played is marked ▶."""
+        chosen = self._chosen_action
         order = np.argsort(-np.asarray(visits), kind="stable")
         total = float(np.sum(visits)) or 1.0
         self._table.setRowCount(num_choices)
@@ -774,12 +923,24 @@ class AnalysisWindow(QMainWindow):
         state, text = payload
         self._set_status(state, text)
 
+    def _on_evaluator_note(self, note: str) -> None:
+        self._eval_note.setText(f"⚠ {note}" if note else "")
+        self._eval_note.setVisible(bool(note))
+
     def _on_run_done(self, payload) -> None:
         tag, stats = payload
         if tag != self._tag:
             return
         self._running = False
         self._stop_btn.setEnabled(False)
+        if self._run_is_review and stats is not None:
+            # Restore the review's framing over the worker's generic "done"
+            # (queued ahead of this signal) — values are the OPPONENT's.
+            self._set_status(
+                "done",
+                f"reviewed the opponent's last decision — {stats.sims_run} sims, "
+                "values in THEIR perspective; ▶ = the move they actually played "
+                "(their own agent's pick, not this search's)")
         # Read the top branches' PV series off the parked search for the
         # chart/scrubber (tree-only; cheap).
         if stats is not None and stats.sims_run > 0:
@@ -857,6 +1018,9 @@ class AnalysisWindow(QMainWindow):
         if self._smoke:
             print(f"ANALYSIS SMOKE: walked {len(nodes)} steps "
                   f"(action {action}, world {world})", flush=True)
+            # Exercise the opponent-review rewind (F6) too, once, after the
+            # walk — best effort: the smoke may auto-play on before it lands.
+            QTimer.singleShot(0, self._smoke_review)
         self._walk = (action, world, nodes, labels)
         self._slider.setEnabled(True)
         self._slider.setRange(0, len(nodes) - 1)

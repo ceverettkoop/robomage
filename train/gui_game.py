@@ -1044,7 +1044,8 @@ class GameWindow(QMainWindow):
                 "hold q or right-click a card = oracle text, </> = resize log, "
                 "ctrl+q = quit.")
         if self._analysis is not None:
-            keys += "  F9 = analysis window (F5 analyze, Shift+F5 stop)."
+            keys += ("  F9 = analysis window (F5 analyze, F6 review the "
+                     "opponent's last decision, Shift+F5 stop).")
         self._append_log(keys)
 
     # ----- layout -----
