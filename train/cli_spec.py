@@ -732,6 +732,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "uniform league-roster draw"),
         Arg("--out", "str", default=None, help="Output dir (default az_data/gen)"),
         Arg("--seed", "int", default=1, help="Base RNG seed"),
+        Arg("--expert", "flag",
+            help="Write EXPERT demonstration shards instead of self-play: "
+                 "scripted:hard pilots both seats and pi is a one-hot on the "
+                 "expert's action (always bo3 to match the pooled shard window; "
+                 "sims/worlds/checkpoint are ignored)"),
         _actor_mode(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
@@ -809,6 +814,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
                  ">=4 gate matches below this win-rate vetoes promotion (0 "
                  "disables)"),
+        Arg("--expert-decks", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated decks to ALSO write scripted:hard EXPERT "
+                 "demonstration shards for each cycle (pi = one-hot expert "
+                 "action): behavior-cloning targets for hand-coded combo lines "
+                 "(e.g. league/wubg_doomsday) that neither PPO exploration nor "
+                 "prior-guided search discovers"),
+        Arg("--expert-games", "int", default=16,
+            help="Expert matches per expert deck per cycle"),
         Arg("--seed", "int", default=1),
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per self-play game (default 0.25); "
@@ -867,6 +880,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "uniformly from the roster per game, keeping the training "
                  "window stationary (no one-deck-at-a-time forgetting sweep). "
                  "A rotation then counts --cycles-per-deck matrix cycles."),
+        Arg("--expert-decks", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated decks to ALSO write scripted:hard EXPERT "
+                 "demonstration shards for each slot (pi = one-hot expert "
+                 "action): behavior-cloning targets for hand-coded combo lines "
+                 "(e.g. league/wubg_doomsday) that neither PPO exploration nor "
+                 "prior-guided search discovers"),
+        Arg("--expert-games", "int", default=16,
+            help="Expert matches per expert deck per slot"),
         Arg("--seed", "int", default=1,
             help="Base RNG seed (slot i uses seed+i)"),
         Arg("--mirror-frac", "float", default=0.25,

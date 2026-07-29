@@ -16,6 +16,11 @@ decision belonged to — not the match result. Samples are written to
 Run standalone (``az_selfplay.py --deck delver --games 2 --sims 12 --worlds 2``)
 or via ``train.py az-selfplay`` (bo1); the ``train.py az`` / ``az-league`` cycles
 drive it in bo3.
+
+:func:`generate_expert` additionally writes EXPERT demonstration shards —
+scripted:hard piloting both seats, pi = one-hot on the expert's action — in the
+same shard format, so the trainer behavior-clones hand-coded lines (e.g. the
+Doomsday combo) that neither PPO exploration nor prior-guided search discovers.
 """
 
 from __future__ import annotations
@@ -860,6 +865,132 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
 
 
 # ----------------------------------------------------------------------
+# Expert demonstrations (scripted:hard BC shards)
+# ----------------------------------------------------------------------
+
+def _play_match_expert(env, agent, seed):
+    """Play one match with scripted:hard piloting BOTH seats, recording every
+    multi-choice decision as a behavior-cloning sample: pi is a ONE-HOT on the
+    expert's chosen action (vs self-play's visit distribution), z is the usual
+    per-game outcome from the mover's perspective. Unlike :func:`_play_match`,
+    non-search-safe prompts are recorded too — a one-hot target is valid
+    anywhere, and those prompts are exactly the ones the net answers by raw
+    policy at self-play time, so BC coverage there raises fallback quality.
+    Returns (samples, game_winners, dropped) with the same boundary/truncation
+    semantics as :func:`_play_match` (kept separate: that function is pinned by
+    the actor trains-identically gate and must not grow branches)."""
+    env.reset(seed=seed)
+    agent.new_game()
+    samples = []
+    game_winners = []
+    game_idx = 0
+    done = False
+    dropped = 0
+    while not done:
+        num_choices = env._num_choices
+        if num_choices > 1:
+            priority_is_a = bool(env._obs[_SELF_IS_A_IDX] > 0.5)
+            action = int(agent.act(env._obs, num_choices))
+            pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
+            pi[action] = 1.0
+            mask = np.zeros(MAX_ACTIONS, dtype=bool)
+            mask[:num_choices] = True
+            samples.append({"obs": env._obs.copy(), "pi": pi, "mask": mask,
+                            "mover_is_a": priority_is_a, "game_idx": game_idx})
+        else:
+            action = 0
+        _, reward, terminated, truncated, info = env.step(action)
+        boundary = bool(info.get("game_result"))
+        if boundary:
+            game_winners.append("A" if reward > 0 else ("B" if reward < 0 else None))
+            game_idx += 1
+            agent.new_game()
+        if terminated or truncated:
+            done = True
+            if terminated and not boundary:
+                game_winners.append(
+                    "A" if reward > 0 else ("B" if reward < 0 else None))
+            if truncated:
+                n_done = len(game_winners)
+                kept = [s for s in samples if s["game_idx"] < n_done]
+                dropped = len(samples) - len(kept)
+                samples = kept
+    return samples, game_winners, dropped
+
+
+def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
+                    mirror_frac: float = DEFAULT_MIRROR_FRAC, bo3: bool = True,
+                    seed: int = 1, out_dir: Optional[str] = None) -> dict:
+    """Write EXPERT demonstration shards: scripted:hard vs scripted:hard matches
+    over the same seeded focus-vs-roster schedule self-play uses, packed into the
+    trainer-compatible ``shard_*.npz`` format (pi = one-hot expert action).
+
+    Rationale (the doomsday fix): a deck whose win condition is a long exact
+    combo line is invisible to both PPO exploration and MCTS — the warm-started
+    value net scores every mid-combo state as lost (the policy never wins with
+    the deck), so search prunes the line before sampling it. The scripted agent
+    has those combo lines hand-coded; recording its games as ordinary replay
+    shards puts prior mass on the line AND prices mid-combo states by games the
+    combo actually wins, breaking the chicken-and-egg so search can extend the
+    line from there. ``decks`` (str or list) is the focus pool — the deck(s)
+    needing demonstrations; opponents follow ``mirror_frac``/``roster`` like
+    self-play. Torch-free and fast (no search), so it runs serially."""
+    from search_env import SearchRoboMageEnv
+    from scripted_agent import make_agent
+
+    focus = [decks] if isinstance(decks, str) else list(decks)
+    roster = list(roster) if roster else league_roster()
+    out_dir = out_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
+    os.makedirs(out_dir, exist_ok=True)
+    if bo3:
+        _discard_pre_bo3_shards(out_dir)
+
+    schedule = build_matchup_schedule(focus, roster, games, mirror_frac, seed)
+    print(f"[az-expert] focus={','.join(focus)} matches={games} "
+          f"bo3={bo3} mirror_frac={mirror_frac} (scripted:hard both seats)")
+    print(f"[az-expert] matchups: {_schedule_summary(schedule)}")
+    print(f"[az-expert] out_dir={out_dir}")
+
+    da0, db0 = schedule[0] if schedule else (None, None)
+    env = SearchRoboMageEnv(deck_a=da0, deck_b=db0, bo3=bo3, auto_sideboard=False)
+    # ScriptedAgent is seat-aware (keys its state and deck name off the obs's
+    # self-is-A flag), so ONE shared hard-tier agent pilots both seats.
+    agent = make_agent("scripted:hard")
+    total_samples = 0
+    shards = []
+    buf = []
+    shard_n = 0
+    stats = {"wins_a": 0, "wins_b": 0, "draws": 0, "games": 0, "dropped": 0}
+    try:
+        for m, (da, db) in enumerate(schedule):
+            env._deck_a, env._deck_b = da, db
+            agent.set_deck_names(da, db)
+            samples, game_winners, dropped = _play_match_expert(
+                env, agent, seed=seed + m)
+            buf.append(_backfill_and_pack(samples, game_winners))
+            total_samples += len(samples)
+            stats["games"] += len(game_winners)
+            stats["dropped"] += dropped
+            mwinner = _match_winner(game_winners)
+            stats["wins_a"] += int(mwinner == "A")
+            stats["wins_b"] += int(mwinner == "B")
+            stats["draws"] += int(mwinner == "DRAW")
+            if sum(len(b[2]) for b in buf) >= FLUSH_SAMPLES:
+                shards.append(_write_shard(out_dir, _concat(buf), shard_n))
+                shard_n += 1
+                buf = []
+        if buf:
+            shards.append(_write_shard(out_dir, _concat(buf), shard_n))
+    finally:
+        env.close()
+    print(f"[az-expert] done: {total_samples} samples, {len(shards)} shard(s)  "
+          f"A={stats['wins_a']} B={stats['wins_b']} draws={stats['draws']}"
+          + (f"  dropped={stats['dropped']}" if stats["dropped"] else ""))
+    return {"samples": total_samples, "shards": shards, "stats": stats,
+            "out_dir": out_dir}
+
+
+# ----------------------------------------------------------------------
 # CLI
 # ----------------------------------------------------------------------
 
@@ -874,6 +1005,14 @@ def _resolve_use_actor(args) -> Optional[bool]:
 
 def run(args) -> None:
     """train.py dispatch entry."""
+    if getattr(args, "expert", False):
+        # Expert shards are always bo3: the pooled az_data/gen window is bo3
+        # (see _discard_pre_bo3_shards) and bo1 shards would mix silently.
+        generate_expert(args.deck, games=args.games,
+                        mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+                        bo3=True, out_dir=args.out,
+                        seed=args.seed if args.seed is not None else 1)
+        return
     generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
              workers=args.workers, checkpoint=args.checkpoint,
              temp_moves=args.temp_moves, seed=args.seed if args.seed is not None else 1,
@@ -913,6 +1052,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                          "else a uniform league-roster draw" % DEFAULT_MIRROR_FRAC)
     ap.add_argument("--out", default=None, help="Output dir (default az_data/gen)")
     ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--expert", action="store_true",
+                    help="Write EXPERT demonstration shards instead of self-play: "
+                         "scripted:hard both seats, pi = one-hot expert action "
+                         "(always bo3; sims/worlds/checkpoint ignored)")
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--actor", action="store_true",
                    help="Force the C++ az_actor self-play backend (error if not built)")

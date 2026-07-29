@@ -437,10 +437,18 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
              use_actor: Optional[bool] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              gate_floor: float = DEFAULT_GATE_FLOOR,
+             expert_decks: Optional[list] = None, expert_games: int = 16,
              roster: Optional[list] = None, bo3: bool = True) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
+
+    ``expert_decks`` (the doomsday fix) additionally writes
+    :func:`az_selfplay.generate_expert` demonstration shards each cycle —
+    ``expert_games`` scripted:hard matches per listed deck, pi = one-hot on the
+    expert's action — into the same shard pool the trainer reads, so the net
+    behavior-clones hand-coded combo lines (and prices mid-combo states by games
+    the combo wins) that self-play search cannot discover on its own.
 
     ``deck`` is the FOCUS pool — a str (single focus), a list of stems (a
     deck×opponent matrix), or None (default: the whole decks/league/ roster). Each
@@ -464,6 +472,13 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
                                workers=workers, seed=seed, use_actor=use_actor,
                                roster=roster, focus_decks=focus,
                                mirror_frac=mirror_frac, bo3=bo3)
+    if expert_decks:
+        # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
+        # demonstrations; written AFTER self-play so both land inside the window.
+        print("=== az cycle: expert demonstrations (scripted:hard) ===")
+        gen["expert"] = az_selfplay.generate_expert(
+            list(expert_decks), games=expert_games * len(expert_decks),
+            roster=roster, mirror_frac=mirror_frac, bo3=bo3, seed=seed)
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
                   window=window, seed=seed)
@@ -526,6 +541,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               promote_threshold: float = 0.55, seed: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
               matrix: bool = False, gate_floor: float = DEFAULT_GATE_FLOOR,
+              expert_decks: Optional[list] = None, expert_games: int = 16,
               use_actor: Optional[bool] = None, resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
@@ -584,6 +600,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         # Older sidecars predate these knobs; .get keeps them resumable.
         matrix = bool(p.get("matrix", False))
         gate_floor = float(p.get("gate_floor", gate_floor))
+        expert_decks = p.get("expert_decks", None)
+        expert_games = int(p.get("expert_games", expert_games))
         use_actor = p.get("use_actor", use_actor)
         bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
@@ -602,6 +620,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     # 'gen' is the reserved generalist stem — a roster deck may not collide with it.
     for _d in roster:
         assert_not_reserved_deck(_d)
+    if expert_decks and isinstance(expert_decks, str):
+        expert_decks = [d.strip() for d in expert_decks.split(",") if d.strip()]
+    expert_decks = list(expert_decks) if expert_decks else None
 
     # rotations == 0 -> indefinite: no materialized slot list; slot i maps to
     # (rotation, deck, cycle) by index arithmetic and total stays None. In
@@ -623,7 +644,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
             "seed": seed, "mirror_frac": mirror_frac, "matrix": matrix,
-            "gate_floor": gate_floor, "use_actor": use_actor,
+            "gate_floor": gate_floor, "expert_decks": expert_decks,
+            "expert_games": expert_games, "use_actor": use_actor,
             "bo3": bo3,
         },
     }
@@ -640,6 +662,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
           f"batches={batches} window={window}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
           f"gate_floor={gate_floor}")
+    if expert_decks:
+        print(f"  expert demonstrations: {', '.join(expert_decks)} "
+              f"({expert_games} scripted:hard matches per deck per slot)")
 
     def save_progress(next_slot: int):
         _write_az_league_state(ckpt_dir, {
@@ -679,6 +704,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
                        mirror_frac=mirror_frac, gate_floor=gate_floor,
+                       expert_decks=expert_decks, expert_games=expert_games,
                        roster=roster, bo3=bo3)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         veto_txt = (f" (floor-veto: {', '.join(ev['vetoes'])})"
@@ -762,6 +788,8 @@ def run_cycle(args) -> None:
              seed=args.seed if args.seed is not None else 1,
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
+             expert_decks=_split_decks(getattr(args, "expert_decks", None)),
+             expert_games=getattr(args, "expert_games", 16),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args))
 
@@ -781,6 +809,8 @@ def run_league(args) -> None:
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
               matrix=getattr(args, "matrix", False),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
+              expert_decks=_split_decks(getattr(args, "expert_decks", None)),
+              expert_games=getattr(args, "expert_games", 16),
               use_actor=_resolve_use_actor(args), resume=args.resume,
               bo3=not getattr(args, "bo1", False))
 
@@ -847,6 +877,12 @@ if __name__ == "__main__":
     c.add_argument("--promote-threshold", type=float, default=0.55)
     c.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
                    help="Per-piloted-deck gate floor (0 disables the veto)")
+    c.add_argument("--expert-decks", default=None,
+                   help="Comma-separated decks to also write scripted:hard "
+                        "EXPERT demonstration shards for each cycle (BC "
+                        "targets for combo lines search can't discover)")
+    c.add_argument("--expert-games", type=int, default=16,
+                   help="Expert matches per expert deck per cycle")
     c.add_argument("--seed", type=int, default=1)
     c.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                    help="P(opponent deck == focus deck) per self-play game "
@@ -894,6 +930,12 @@ if __name__ == "__main__":
     lg.add_argument("--matrix", action="store_true",
                     help="Whole-roster focus MATRIX every slot instead of the "
                          "per-deck focus rotation")
+    lg.add_argument("--expert-decks", default=None,
+                    help="Comma-separated decks to also write scripted:hard "
+                         "EXPERT demonstration shards for each slot (BC "
+                         "targets for combo lines search can't discover)")
+    lg.add_argument("--expert-games", type=int, default=16,
+                    help="Expert matches per expert deck per slot")
     lg.add_argument("--seed", type=int, default=1)
     lg.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                     help="P(opponent deck == focus deck) per self-play game "

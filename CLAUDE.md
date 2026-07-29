@@ -606,6 +606,7 @@ train/.venv/bin/python train/train.py exploiter --archetype burn --resume       
 # AlphaZero (MCTS-trained net, warm-started from the PPO gen checkpoint — run league first)
 train/.venv/bin/python train/train.py az --deck delver                                # one cycle: self-play -> train -> gate
 train/.venv/bin/python train/train.py az-league                                       # rotate AZ cycles across decks/league/
+train/.venv/bin/python train/train.py az-league --matrix --expert-decks league/wubg_doomsday  # whole-roster focus matrix + scripted:hard expert (BC) shards for the combo deck each slot
 
 # Curriculum: a multi-phase plan (league -> exploiter -> league -> az-league -> baseline) in one file
 train/.venv/bin/python train/train.py curriculum --plan q3 --dry-run                  # print each phase's composed command

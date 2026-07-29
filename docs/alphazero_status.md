@@ -20,7 +20,14 @@ phases, decisions, risks) is summarized at the bottom.
 > candidate that collapsed at piloting any one deck is rejected even when its
 > aggregate clears 0.55). `az-league --matrix` replaces the one-deck-per-slot
 > focus rotation with the whole-roster focus matrix every slot (stationary
-> training window; no per-deck forgetting sweep). Controller specs are `az:gen` /
+> training window; no per-deck forgetting sweep). `--expert-decks <decks>`
+> (az / az-league; standalone via `az-selfplay --expert`) additionally writes
+> **expert demonstration shards** each cycle — scripted:hard piloting both
+> seats, `pi` = one-hot on the expert's action, same shard schema — so the
+> trainer behavior-clones hand-coded combo lines (the doomsday fix: the
+> warm-started value net scores mid-combo states as lost, so search prunes the
+> line before sampling it; demonstrations put prior mass on the line and price
+> those states by games the combo wins). Controller specs are `az:gen` /
 > `azraw:gen` / `mcts:gen` (a bare deck shorthand is rejected; the deck travels as a
 > separate explicit parameter). The per-deck `{deck}__az*` naming, mirror-only
 > self-play, and `az_data/{deck}/` sharding described below are historical; commit
