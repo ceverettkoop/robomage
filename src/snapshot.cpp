@@ -9,6 +9,7 @@
 #include "classes/game.h"
 #include "classes/match_context.h"
 #include "classes/match_state.h"
+#include "components/player.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "ecs/entity.h"
@@ -64,6 +65,10 @@ struct GameSnapshot {
 
 GameSnapshot g_slots[N_SNAPSHOT_SLOTS];
 
+// See snapshot_set_post_restore_hook (snapshot.h): re-derives the rule-613
+// derived state after every restore, before a resumed suspended flow reads it.
+void (*g_post_restore_hook)() = nullptr;
+
 static bool valid_slot(int slot);
 
 static bool valid_slot(int slot) { return slot >= 0 && slot < N_SNAPSHOT_SLOTS; }
@@ -96,6 +101,18 @@ bool snapshot_save(int slot) {
     s.sideboard_phase_player = sideboard_phase_player;
     s.sim_seed_salt = g_sim_seed_salt;
     s.live = true;
+#ifndef NDEBUG
+    // Counterpart of the [restore] trace: every save, so an overwritten search
+    // slot (a save between a root's sims) is visible in the log.
+    fprintf(stderr, "[save] slot=%d scope=%s step=%d lifeA=%d lifeB=%d mir=%u/%u\n",
+            slot, s.scope == SnapScope::MATCH ? "MATCH" : "GAME",
+            static_cast<int>(cur_game.cur_step),
+            global_coordinator.entity_has_component<Player>(cur_game.player_a_entity)
+                ? global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total : -99,
+            global_coordinator.entity_has_component<Player>(cur_game.player_b_entity)
+                ? global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total : -99,
+            cur_game.miracle_reveal_pending, cur_game.miracle_cast_pending);
+#endif
     return true;
 }
 
@@ -129,8 +146,33 @@ bool snapshot_restore(int slot) {
     sideboard_phase = s.sideboard_phase;
     sideboard_phase_player = s.sideboard_phase_player;
     g_sim_seed_salt = s.sim_seed_salt;
+    if (g_post_restore_hook) g_post_restore_hook();
+#ifndef NDEBUG
+    // Debug trace for the az_mcts world-consistency hunt: what suspended-flow
+    // state each restore hands back to the loop, plus enough authoritative
+    // fields (lives, step, miracle flags) to see whether the slot's CONTENT
+    // changed between two restores of the same search (an overwritten slot).
+    fprintf(stderr,
+            "[restore] slot=%d pq(tag=%d act=%d ans=%d) pc=%d pa=%d pd=%d res=%d "
+            "step=%d lifeA=%d lifeB=%d mir=%u/%u\n",
+            slot, static_cast<int>(cur_game.pending_query.tag),
+            cur_game.pending_query.active ? 1 : 0,
+            cur_game.pending_query.answered ? 1 : 0,
+            cur_game.pending_cast.active ? 1 : 0,
+            cur_game.pending_activation.active ? 1 : 0,
+            cur_game.pending_draw.active ? 1 : 0,
+            cur_game.resolution.active ? 1 : 0,
+            static_cast<int>(cur_game.cur_step),
+            global_coordinator.entity_has_component<Player>(cur_game.player_a_entity)
+                ? global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total : -99,
+            global_coordinator.entity_has_component<Player>(cur_game.player_b_entity)
+                ? global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total : -99,
+            cur_game.miracle_reveal_pending, cur_game.miracle_cast_pending);
+#endif
     return true;
 }
+
+void snapshot_set_post_restore_hook(void (*hook)()) { g_post_restore_hook = hook; }
 
 bool snapshot_slot_live(int slot) { return valid_slot(slot) && g_slots[slot].live; }
 

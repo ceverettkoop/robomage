@@ -94,6 +94,16 @@ const char* need_arg(int argc, char const* argv[], int& i, const char* flag) {
 }  // namespace
 
 int main(int argc, char const* argv[]) {
+#ifndef NDEBUG
+    // Debug builds carry the az_mcts world-consistency menu instrumentation
+    // (per-node menu capture + full-content compare on every descent step),
+    // which costs search throughput. Say so up front, so a slow production run
+    // is traceable to the build type. Build with `make actor BUILD=RELEASE`.
+    std::fprintf(stderr,
+                 "az_actor: DEBUG build (world-consistency menu instrumentation "
+                 "active; searches run slower) — use `make actor BUILD=RELEASE` "
+                 "for production self-play\n");
+#endif
     ActorConfig cfg;
     for (int i = 1; i < argc; i++) {
         std::string a = argv[i];
@@ -184,6 +194,12 @@ int main(int argc, char const* argv[]) {
     // enable_log=false: no decision log (millions of decisions).
     machine_mode = true;
     narrative_mode = false;
+    // Opt-in debugging: ROBOMAGE_ACTOR_NARRATIVE=1 prints the full game_log
+    // narrative (normally suppressed under the machine schedule) for every
+    // line INCLUDING search simulations — the transition story right before a
+    // world-consistency FATAL names the exact divergent event. Output is huge;
+    // use only on a pinned single-matchup repro.
+    if (std::getenv("ROBOMAGE_ACTOR_NARRATIVE")) narrative_mode = true;
     // deck_b defaults to deck (mirror); a distinct --deck-b drives a cross-deck
     // self-play matchup (the generalist net values every state, so cross-deck
     // negamax backup in MCTS is sound).

@@ -3765,14 +3765,26 @@ void resume_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer) {
 // the miracle-cast window, so the owner makes the actual cast decision at their following priority.
 static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     Entity card = game.miracle_reveal_pending;
-    game.miracle_reveal_pending = 0;  // consume up front — a single, one-shot decision
+    // The pending flag is the ONLY state that lets a restored loop re-derive this
+    // prompt (is_mandatory_choice_pending -> proc_mandatory_choice re-asks), so it
+    // must stay SET across the get_input below: the ask is a loop-safe MCTS search
+    // root, and a snapshot taken there with the flag already cleared restores into
+    // a state that silently forgets the question — every post-restore simulation
+    // then spends the root's action on an unrelated query (the az_mcts
+    // world-consistency violation). Consume it AFTER the answer (or on the
+    // validity bail-outs below).
     // The card must still be in its owner's hand to be miracle-revealed (nothing runs between the
     // draw and this decision today, but guard against a vanished/moved entity regardless).
-    if (!global_coordinator.entity_has_component<Zone>(card)) return;
+    if (!global_coordinator.entity_has_component<Zone>(card)) {
+        game.miracle_reveal_pending = 0;
+        return;
+    }
     auto &z = global_coordinator.GetComponent<Zone>(card);
-    if (z.location != Zone::HAND) return;
+    if (z.location != Zone::HAND || (z.owner != Zone::PLAYER_A && z.owner != Zone::PLAYER_B)) {
+        game.miracle_reveal_pending = 0;
+        return;
+    }
     Zone::Ownership owner = z.owner;
-    if (owner != Zone::PLAYER_A && owner != Zone::PLAYER_B) return;
     const std::string nm = global_coordinator.entity_has_component<CardData>(card)
                                ? global_coordinator.GetComponent<CardData>(card).name
                                : "the card";
@@ -3797,6 +3809,10 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     int choice = InputLogger::instance().get_input(yn);
     search_set_loop_safe(false);
     game.player_a_has_priority = prev_priority;
+    // Answer consumed — NOW the one-shot decision is spent (see the flag note above).
+    // On a search unwind the restore overwrites the flag from the snapshot (still
+    // set), so the restored line re-derives this same prompt.
+    game.miracle_reveal_pending = 0;
 
     if (choice != 1) return;  // declined — the card stays hidden in hand, no cast opportunity
 
@@ -3821,13 +3837,22 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
 // (process_action -> run_cast_flow), so payment / targets / X behave exactly like any other cast.
 static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer) {
     Entity card = game.miracle_cast_pending;
-    game.miracle_cast_pending = 0;  // consume up front — a single, one-shot decision
-    if (!global_coordinator.entity_has_component<Zone>(card)) return;
+    // Keep the pending flag SET across the ask, exactly like proc_miracle_reveal
+    // above: the get_input below is a loop-safe search root, and only this flag
+    // lets a snapshot-restored loop re-derive the same prompt. Consume it after
+    // the answer / on the validity bail-outs.
+    if (!global_coordinator.entity_has_component<Zone>(card)) {
+        game.miracle_cast_pending = 0;
+        return;
+    }
     auto &z = global_coordinator.GetComponent<Zone>(card);
-    if (z.location != Zone::HAND) return;  // left hand (e.g. countered reveal) — nothing to cast
+    if (z.location != Zone::HAND ||  // left hand (e.g. countered reveal) — nothing to cast
+        (z.owner != Zone::PLAYER_A && z.owner != Zone::PLAYER_B) ||
+        !global_coordinator.entity_has_component<CardData>(card)) {
+        game.miracle_cast_pending = 0;
+        return;
+    }
     Zone::Ownership owner = z.owner;
-    if (owner != Zone::PLAYER_A && owner != Zone::PLAYER_B) return;
-    if (!global_coordinator.entity_has_component<CardData>(card)) return;
     const CardData &card_data = global_coordinator.GetComponent<CardData>(card);
     const std::string nm = card_data.name;
 
@@ -3854,6 +3879,9 @@ static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer) {
     search_set_loop_safe(true);
     int choice = InputLogger::instance().get_input(menu);
     search_set_loop_safe(false);
+    // Answer consumed — the one-shot decision is spent (a search unwind's restore
+    // brings the still-set flag back from the snapshot, re-deriving this prompt).
+    game.miracle_cast_pending = 0;
 
     if (choice != 1) {
         game.player_a_has_priority = prev_priority;  // declined (or unaffordable) — restore priority

@@ -121,6 +121,13 @@ public:
     void process_turn_based_actions(Game& game, std::shared_ptr<Orderer> orderer);
     std::vector<LegalAction> determine_legal_actions(const Game& game, std::shared_ptr<Orderer> orderer,
                                                       std::shared_ptr<StackManager> stack_manager);
+    // Continuous-effects engine (rule 613): the single layer-ordered driver
+    // (src/systems/state_manager_layers.cpp) that rebuilds ALL derived state
+    // (g_active_statics, granted keywords/abilities, P/T) from the authoritative
+    // components. Public because the snapshot post-restore hook (game_driver's
+    // init_ecs registration; see snapshot.h) must re-derive after a restore —
+    // every other caller reaches it through state_based_effects.
+    void apply_continuous_effects(Game& game);
 
 private:
     void apply_permanent_components(Game& game, std::shared_ptr<Orderer> orderer);
@@ -130,11 +137,10 @@ private:
     void deal_combat_damage(Game& game, bool first_strike_only);
     void check_triggered_abilities(Game& game, std::shared_ptr<Orderer> orderer);
 
-    // Continuous-effects engine (rule 613). apply_continuous_effects is the single
-    // ordered driver (src/systems/state_manager_layers.cpp); the per-layer appliers
-    // and the gather preamble live in state_manager_statics.cpp where the keyword
-    // helpers are defined. See continuous_effects.h for the data model.
-    void apply_continuous_effects(Game& game);    // layer-ordered driver
+    // Continuous-effects engine internals (rule 613): the per-layer appliers and
+    // the gather preamble live in state_manager_statics.cpp where the keyword
+    // helpers are defined. See continuous_effects.h for the data model; the
+    // public apply_continuous_effects above is the only entry point.
     void gather_active_statics(Game& game);       // preamble: reset bonuses (incl. keyword rebuild-from-base), build g_active_statics, eval conditions
     void suppress_removed_statics(Game& game);    // layer 6 (613.1f): mark statics on objects that lose all abilities (Humility) as suppressed
     void apply_type_changing_effects();           // layer 4 (613.1d)

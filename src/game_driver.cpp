@@ -51,6 +51,7 @@ static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from
 // lives in cur_game.pregame (snapshot-covered), so a RESTORE targeting any
 // pregame decision re-derives it at the gate.
 static void run_pregame_step(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b);
+static void post_restore_recompute_statics();
 static void pregame_mull_decide(EcsSystems &sys);
 static void pregame_mull_bottom(EcsSystems &sys);
 static void pregame_fiat_setup(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b);
@@ -136,6 +137,14 @@ uint64_t g_card_db_generation = 0;
 static bool g_in_main_loop = false;
 bool in_main_loop() { return g_in_main_loop; }
 
+// The StateManager the post-restore hook recomputes through; rebound by every
+// init_ecs so the hook always targets the current game's system instance.
+static std::shared_ptr<StateManager> g_hook_state_manager;
+
+static void post_restore_recompute_statics() {
+    if (g_hook_state_manager) g_hook_state_manager->apply_continuous_effects(cur_game);
+}
+
 EcsSystems init_ecs() {
     card_db.clear();
     ++g_card_db_generation;
@@ -157,6 +166,13 @@ EcsSystems init_ecs() {
     Orderer::init();
     StateManager::init();
     StackManager::init();
+
+    // A snapshot restore must re-derive the rule-613 derived state
+    // (g_active_statics) before a restored parked decision resumes — the parked
+    // re-emission path deliberately runs no SBE pass, so without this the resumed
+    // cast/payment reads the PREVIOUS simulation's statics (see snapshot.h).
+    g_hook_state_manager = state_manager;
+    snapshot_set_post_restore_hook(post_restore_recompute_statics);
 
     return {orderer, state_manager, stack_manager};
 }
