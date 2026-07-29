@@ -30,11 +30,15 @@ BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resou
 # The balanced delta menu offers every sideboard card AND every maindeck card at
 # once — ~33 children on a league deck, up to ~39 — so 32 sims was roughly ONE
 # visit per child: the visit distribution the policy trains on was essentially
-# noise, and could not rank cards at all. 128 gives ~3-4 visits per child, which
-# is the minimum for the ordering to mean anything. This affects only the AZ /
-# search paths (az_selfplay, bin/az_actor, az*/eval, the analysis window); PPO
-# training does no search, so its cost is unchanged.
-DEFAULT_SB_SIMS = 128
+# noise, and could not rank cards at all. 256 gives ~6-8 visits per child (split
+# over DEFAULT_SB_WORLDS trees), enough for the ordering to be meaningful rather
+# than borderline. This affects only the AZ / search paths (az_selfplay,
+# bin/az_actor, az*/eval, the analysis window); PPO training does no search, so
+# its cost is unchanged. NOTE: the az / az-league / az-selfplay CLI args MUST
+# reference this constant, not a literal — argparse always supplies the CLI
+# default, so a drifted literal silently overrides this "one home" (that bug
+# shipped runs at sb_sims=32 while this constant said 128).
+DEFAULT_SB_SIMS = 256
 DEFAULT_SB_WORLDS = 4
 DEFAULT_SB_MAX_DEPTH = 200
 
@@ -710,7 +714,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Focus deck (.dk stem); its opponent is a mirror with "
                  "P=--mirror-frac, else a uniform league-roster draw"),
         Arg("--games", "int", default=50, help="Games to generate"),
-        Arg("--sims", "int", default=128, help="PUCT simulations per decision"),
+        Arg("--sims", "int", default=256,
+            help="PUCT simulations per decision, TOTAL across --worlds"),
         Arg("--worlds", "int", default=4, help="Determinized worlds per search"),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
@@ -719,9 +724,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "ckpt, else gen PPO warm-start, else random init)"),
         Arg("--temp-moves", "int", default=20,
             help="Sample from visit counts for the first N real decisions, then argmax"),
-        Arg("--sb-sims", "int", default=32,
+        Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help="PUCT sims at a bo3 sideboard root (bo3 only; heavier per step "
-                 "than an in-game decision; default 32)"),
+                 f"than an in-game decision; default {DEFAULT_SB_SIMS})"),
         Arg("--sb-worlds", "int", default=4,
             help="Determinized worlds at a bo3 sideboard root (default 4)"),
         Arg("--sb-max-depth", "int", default=200,
@@ -790,10 +795,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "each; per game the opponent is the mirror with P=--mirror-frac, "
                  "else a uniform draw from this pool."),
         Arg("--games", "int", default=50, help="Self-play games this cycle"),
-        Arg("--sims", "int", default=64, help="Self-play PUCT sims"),
+        Arg("--sims", "int", default=256,
+            help="Self-play PUCT sims, TOTAL across --worlds (256/4 = 64 per "
+                 "determinized world tree)"),
         Arg("--worlds", "int", default=4),
-        Arg("--sb-sims", "int", default=32,
-            help="PUCT sims at a bo3 sideboard root (bo3 only; default 32)"),
+        Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
+            help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
         Arg("--sb-worlds", "int", default=4,
             help="Determinized worlds at a bo3 sideboard root (default 4)"),
         Arg("--sb-max-depth", "int", default=200,
@@ -849,10 +856,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--cycles-per-deck", "int", default=1,
             help="az cycles to run per deck per rotation"),
         Arg("--games", "int", default=50, help="Self-play games per cycle"),
-        Arg("--sims", "int", default=64, help="Self-play PUCT sims"),
+        Arg("--sims", "int", default=256,
+            help="Self-play PUCT sims, TOTAL across --worlds (256/4 = 64 per "
+                 "determinized world tree)"),
         Arg("--worlds", "int", default=4),
-        Arg("--sb-sims", "int", default=32,
-            help="PUCT sims at a bo3 sideboard root (bo3 only; default 32)"),
+        Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
+            help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
         Arg("--sb-worlds", "int", default=4,
             help="Determinized worlds at a bo3 sideboard root (default 4)"),
         Arg("--sb-max-depth", "int", default=200,

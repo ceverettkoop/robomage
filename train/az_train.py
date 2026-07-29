@@ -427,7 +427,7 @@ def _meta_of(path: str) -> str:
 # One full cycle: generate -> train -> eval
 # ----------------------------------------------------------------------
 
-def az_cycle(deck=None, *, games: int = 50, sims: int = 64, worlds: int = 4,
+def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
              sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
              sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
              workers: Optional[int] = None, batches: int = 500,
@@ -532,7 +532,7 @@ def _default_az_league_roster() -> list:
 
 
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
-              games: int = 50, sims: int = 64, worlds: int = 4,
+              games: int = 50, sims: int = 256, worlds: int = 4,
               sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
               sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
               workers: Optional[int] = None, batches: int = 500,
@@ -839,7 +839,7 @@ if __name__ == "__main__":
     e.add_argument("--games", type=int, default=56)
     e.add_argument("--sims", type=int, default=32)
     e.add_argument("--worlds", type=int, default=2)
-    e.add_argument("--sb-sims", type=int, default=32,
+    e.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                    help="PUCT sims at a bo3 sideboard root (bo3 only)")
     e.add_argument("--sb-worlds", type=int, default=4,
                    help="Determinized worlds at a bo3 sideboard root (bo3 only)")
@@ -858,9 +858,10 @@ if __name__ == "__main__":
     c = sub.add_parser("cycle", help="One generate->train->eval cycle")
     c.add_argument("--deck", default="delver")
     c.add_argument("--games", type=int, default=50)
-    c.add_argument("--sims", type=int, default=64)
+    c.add_argument("--sims", type=int, default=256,
+                   help="Self-play PUCT sims, TOTAL across --worlds")
     c.add_argument("--worlds", type=int, default=4)
-    c.add_argument("--sb-sims", type=int, default=32,
+    c.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                    help="PUCT sims at a bo3 sideboard root (bo3 only)")
     c.add_argument("--sb-worlds", type=int, default=4,
                    help="Determinized worlds at a bo3 sideboard root")
@@ -908,9 +909,10 @@ if __name__ == "__main__":
                          "until interrupted)")
     lg.add_argument("--cycles-per-deck", type=int, default=1)
     lg.add_argument("--games", type=int, default=50)
-    lg.add_argument("--sims", type=int, default=64)
+    lg.add_argument("--sims", type=int, default=256,
+                    help="Self-play PUCT sims, TOTAL across --worlds")
     lg.add_argument("--worlds", type=int, default=4)
-    lg.add_argument("--sb-sims", type=int, default=32,
+    lg.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                     help="PUCT sims at a bo3 sideboard root (bo3 only)")
     lg.add_argument("--sb-worlds", type=int, default=4,
                     help="Determinized worlds at a bo3 sideboard root")

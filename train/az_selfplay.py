@@ -433,7 +433,7 @@ def _discard_pre_bo3_shards(out_dir: str) -> None:
         fh.write(time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
 
 
-def generate(deck: str, *, games: int = 10, sims: int = 128, worlds: int = 4,
+def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
              workers: Optional[int] = None, checkpoint: Optional[str] = None,
              temp_moves: int = DEFAULT_TEMP_MOVES,
              root_noise_eps: float = DEFAULT_ROOT_NOISE_EPS,
@@ -1029,7 +1029,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                     help="Focus deck (.dk stem) — its opponent is a mirror with "
                          "P=--mirror-frac, else a uniform league-roster draw")
     ap.add_argument("--games", type=int, default=10)
-    ap.add_argument("--sims", type=int, default=128)
+    ap.add_argument("--sims", type=int, default=256,
+                    help="PUCT sims per decision, TOTAL across --worlds")
     ap.add_argument("--worlds", type=int, default=4)
     ap.add_argument("--workers", type=int, default=None,
                     help="Worker processes (default max(1, cpu-2))")
