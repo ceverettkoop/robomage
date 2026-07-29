@@ -772,9 +772,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
         Arg("--gate-floor", "float", default=0.2,
-            help="Per-piloted-deck win-rate floor: a deck the candidate piloted "
-                 "in >=4 gate matches below this vetoes promotion even when the "
-                 "aggregate clears the bar (0 disables)"),
+            help="Per-piloted-deck gate floor: a deck the candidate piloted in "
+                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
+                 "LIKE pairings falls below 2*floor-1 vetoes promotion even "
+                 "when the aggregate clears the bar (0 disables; on mirrors "
+                 "alone this equals win-rate < floor)"),
         Arg("--seed", "int", default=1),
         Arg("--bo1", "flag",
             help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
@@ -819,8 +821,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--gate-floor", "float", default=0.2,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
-                 ">=4 gate matches below this win-rate vetoes promotion (0 "
-                 "disables)"),
+                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
+                 "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
+                 "disables; on mirrors alone this equals win-rate < floor)"),
         Arg("--expert-decks", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated decks to ALSO write scripted:hard EXPERT "
                  "demonstration shards for each cycle (pi = one-hot expert "
@@ -881,8 +884,15 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--promote-threshold", "float", default=0.55),
         Arg("--gate-floor", "float", default=0.2,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
-                 ">=4 gate matches below this win-rate vetoes promotion (0 "
-                 "disables)"),
+                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
+                 "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
+                 "disables; on mirrors alone this equals win-rate < floor)"),
+        Arg("--gate-every", "int", default=1,
+            help="Run the eval/gate every K slots instead of every slot: the "
+                 "candidate accumulates K cycles of training (and "
+                 "candidate-generated self-play) between promotions, and the "
+                 "gate's wall-clock cost is paid 1/K as often. Candidate "
+                 "snapshots still save every slot."),
         Arg("--matrix", "flag",
             help="Whole-roster focus MATRIX every slot instead of the per-deck "
                  "focus rotation: each cycle's self-play draws its focus deck "

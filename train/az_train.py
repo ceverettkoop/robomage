@@ -61,16 +61,27 @@ DEFAULT_MIRROR_FRAC = 0.25
 # mirror for every roster deck (so a piloting regression on ANY deck shows up in
 # the aggregate — the old focus-only gate could not see one), plus
 # DEFAULT_GATE_CROSS_PAIRS cross pairings each played in BOTH directions so a
-# lopsided deck matchup cancels out of the aggregate. A candidate is floor-vetoed
-# when any piloted deck with >= DEFAULT_GATE_FLOOR_MIN matches sits below
-# DEFAULT_GATE_FLOOR win-rate vs the incumbent, even if the aggregate clears the
-# promote threshold. With the default eval budget (56 matches over a 10-deck
-# roster: 14 matchups x 4) every deck is piloted in >= 4 mirror matches, so the
-# floor triggers only on a 0-for-4 wipeout — deliberate: per-deck samples are
+# lopsided deck matchup cancels out of the aggregate. The per-deck floor veto is
+# a LIKE-PAIRING comparison (see az_eval): a piloted deck with >=
+# DEFAULT_GATE_FLOOR_MIN candidate matches is vetoed when the candidate's pooled
+# win-rate sits more than (1 - 2*DEFAULT_GATE_FLOOR) below the INCUMBENT's
+# win-rate piloting the same deck on the same pairings — on mirrors alone that
+# is exactly "candidate mirror win-rate < DEFAULT_GATE_FLOOR", so the intended
+# trigger stays a 0-for-4 wipeout; a lopsided cross matchup the incumbent also
+# loses no longer counts against the deck. Deliberate: per-deck samples are
 # tiny, so the floor is a catastrophic-collapse tripwire, not a fine measure.
 DEFAULT_GATE_FLOOR = 0.2
 DEFAULT_GATE_FLOOR_MIN = 4
 DEFAULT_GATE_CROSS_PAIRS = 2
+
+# az-league gates (az_eval + promotion) run every DEFAULT_GATE_EVERY slots. One
+# slot of training between gates is a small weight delta against a >=55%
+# aggregate bar, and each gate costs real wall-clock (56 searched matches), so
+# gating every K>1 slots lets the candidate accumulate K cycles of training —
+# and K slots of CANDIDATE-generated self-play (resolve_source prefers the
+# snapshot line) — before paying for an eval. Promotion cadence, not training,
+# is all that changes: candidate snapshots still save every slot.
+DEFAULT_GATE_EVERY = 1
 
 
 # ----------------------------------------------------------------------
@@ -314,6 +325,50 @@ def _gate_matchups(focus_decks, roster, cross_pairs: int, seed: int) -> list:
     return out
 
 
+def _like_pairing_floor(per_matchup: dict, gate_floor: float,
+                        floor_min_matches: int) -> tuple:
+    """The per-deck floor veto, computed on LIKE PAIRINGS (see az_eval's
+    docstring). ``per_matchup`` maps (deck_x, deck_y) -> [w, l, d] from the
+    CANDIDATE's view piloting deck_x. For each piloted deck, pool the
+    candidate's record against the incumbent's record piloting the SAME deck on
+    the same pairings, and veto on a pooled win-rate deficit below
+    ``2*gate_floor - 1``. The incumbent's record needs no extra games: a mirror
+    is candidate-vs-incumbent on the same deck already (flip it), and a cross
+    pairing's reverse direction — which _gate_matchups always schedules — has
+    the incumbent piloting this deck (flip that). A cross pairing whose reverse
+    is missing is skipped rather than read one-sided. Returns
+    (vetoes, deck_floor) with deck_floor[deck] = (cand_wr, inc_wr, n_cand)."""
+    vetoes: list = []
+    deck_floor: dict = {}
+    decks = {dx for (dx, _dy) in per_matchup}
+    for pd in decks:
+        cw = cn = iw = inn = 0
+        for (dx, dy), (mw, ml, md) in per_matchup.items():
+            if dx != pd:
+                continue
+            n = mw + ml + md
+            if n == 0:
+                continue
+            if dx == dy:
+                cw += mw; cn += n
+                iw += ml; inn += n          # incumbent-as-pd = flip of the mirror
+            elif (dy, dx) in per_matchup:
+                rw, rl, rd = per_matchup[(dy, dx)]
+                rn = rw + rl + rd
+                if rn == 0:
+                    continue
+                cw += mw; cn += n
+                iw += rl; inn += rn         # incumbent-as-pd = flip of the reverse
+        if cn == 0 or inn == 0:
+            continue
+        cand_wr, inc_wr = cw / cn, iw / inn
+        deck_floor[pd] = (cand_wr, inc_wr, cn)
+        if gate_floor > 0 and cn >= floor_min_matches and \
+                cand_wr - inc_wr < 2 * gate_floor - 1:
+            vetoes.append(pd)
+    return vetoes, deck_floor
+
+
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = 56, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
@@ -331,13 +386,26 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     contest is a best-of-three MATCH and the gate is decided on the aggregate
     MATCH win-rate. Promote the candidate to ``gen__azfinal.pt`` when
     ``promote``, the AGGREGATE win-rate across all matchups >=
-    ``promote_threshold``, AND no per-deck floor veto fires: a deck the candidate
-    piloted in >= ``floor_min_matches`` matches at a win-rate below
-    ``gate_floor`` blocks promotion (``gate_floor=0`` disables the veto). A veto
-    only delays promotion by a cycle — training continues from snapshots either
-    way — so a rare unlucky veto is much cheaper than promoting a net that
-    forgot how to pilot a deck. Prints per-matchup and per-piloted-deck W-L-D
-    breakdowns. The no-incumbent-yet fallback (vs scripted) is preserved."""
+    ``promote_threshold``, AND no per-deck floor veto fires.
+
+    The floor veto is a LIKE-PAIRING comparison: for each piloted deck the
+    candidate's win-rate is measured against the INCUMBENT's win-rate piloting
+    the same deck on the same pairings (mirror: the incumbent's record is the
+    flip of the candidate's; cross pairing (x, y): the incumbent-as-x record is
+    the flip of the reverse pairing (y, x), which the panel always plays). A
+    deck with >= ``floor_min_matches`` candidate matches whose pooled win-rate
+    deficit vs the incumbent falls below ``2*gate_floor - 1`` blocks promotion
+    (``gate_floor=0`` disables the veto). On mirrors alone this reduces to the
+    old absolute rule (candidate mirror win-rate < ``gate_floor``); the
+    difference is that a LOPSIDED deck matchup — where the incumbent piloting
+    the same deck loses just as badly — now cancels out of the deck's tally
+    instead of counting as candidate collapse (the old absolute floor read one
+    side of a 90-10 matchup as a regression). A veto only delays promotion by a
+    gate — training continues from snapshots either way — so a rare unlucky
+    veto is much cheaper than promoting a net that forgot how to pilot a deck.
+    Prints per-matchup and per-piloted-deck breakdowns. The no-incumbent-yet
+    fallback (vs scripted) is preserved (the like-pairing baseline is then the
+    scripted opponent piloting the same deck)."""
     from runner import run_match
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
@@ -366,7 +434,8 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
 
     w = l = d = 0
     breakdown = []
-    per_deck: dict = {}   # piloted deck -> [w, l, d] from the candidate's view
+    per_deck: dict = {}      # piloted deck -> [w, l, d] from the candidate's view
+    per_matchup: dict = {}   # (dx, dy) -> [w, l, d], candidate piloting dx
     for mi, (dx, dy) in enumerate(matchups):
         half = per // 2
         mw = ml = md = 0
@@ -382,6 +451,7 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
         w += mw; l += ml; d += md
         t = per_deck.setdefault(dx, [0, 0, 0])
         t[0] += mw; t[1] += ml; t[2] += md
+        per_matchup[(dx, dy)] = [mw, ml, md]
         tag = f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
         breakdown.append((tag, mw, ml, md))
         print(f"[az-eval]   {tag}: {mw}W-{ml}L-{md}D")
@@ -389,19 +459,16 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     wr = w / max(1, w + l + d)
     print(f"[az-eval] AGGREGATE candidate {w}W-{l}L-{d}D (win_rate={wr:.3f})")
 
-    # Per-deck floor veto: any deck the candidate piloted in >= floor_min_matches
-    # matches at a win-rate below gate_floor blocks promotion.
-    vetoes = []
-    if gate_floor > 0:
-        for pd, (pw, pl, pdr) in per_deck.items():
-            n = pw + pl + pdr
-            if n >= floor_min_matches and pw / n < gate_floor:
-                vetoes.append(pd)
-    print("[az-eval] per piloted deck (candidate's view):")
+    vetoes, deck_floor = _like_pairing_floor(per_matchup, gate_floor,
+                                             floor_min_matches)
+    print("[az-eval] per piloted deck (candidate's view; floor compares vs the "
+          "incumbent on like pairings):")
     for pd, (pw, pl, pdr) in per_deck.items():
         n = max(1, pw + pl + pdr)
         flag = "  FLOOR-VETO" if pd in vetoes else ""
-        print(f"[az-eval]   {pd}: {pw}W-{pl}L-{pdr}D ({pw / n:.2f}){flag}")
+        cand_wr, inc_wr, cn = deck_floor.get(pd, (pw / n, float("nan"), 0))
+        print(f"[az-eval]   {pd}: {pw}W-{pl}L-{pdr}D ({pw / n:.2f})  "
+              f"like-pairing cand {cand_wr:.2f} vs inc {inc_wr:.2f}{flag}")
 
     promoted = False
     if promote and wr >= promote_threshold and not vetoes:
@@ -444,10 +511,16 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              gate_floor: float = DEFAULT_GATE_FLOOR,
              expert_decks: Optional[list] = None, expert_games: int = 16,
-             roster: Optional[list] = None, bo3: bool = True) -> dict:
+             roster: Optional[list] = None, bo3: bool = True,
+             gate: bool = True) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
+
+    ``gate=False`` skips the eval/gate stage entirely (the returned ``eval`` is
+    None) — az-league uses it to gate every K slots (``--gate-every``) instead
+    of every slot, letting the candidate accumulate several cycles of training
+    (and candidate-generated self-play) between promotions.
 
     ``expert_decks`` (the doomsday fix) additionally writes
     :func:`az_selfplay.generate_expert` demonstration shards each cycle —
@@ -488,6 +561,9 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
                   window=window, seed=seed)
+    if not gate:
+        print("=== az cycle: eval/gate skipped (gated every K slots) ===")
+        return {"generate": gen, "train": tr, "eval": None}
     print("=== az cycle: eval/gate (aggregate) ===")
     ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
                  worlds=eval_worlds, sb_sims=sb_sims, sb_worlds=sb_worlds,
@@ -547,6 +623,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               promote_threshold: float = 0.55, seed: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
               matrix: bool = False, gate_floor: float = DEFAULT_GATE_FLOOR,
+              gate_every: int = DEFAULT_GATE_EVERY,
               expert_decks: Optional[list] = None, expert_games: int = 16,
               use_actor: Optional[bool] = None, resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
@@ -606,6 +683,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         # Older sidecars predate these knobs; .get keeps them resumable.
         matrix = bool(p.get("matrix", False))
         gate_floor = float(p.get("gate_floor", gate_floor))
+        gate_every = int(p.get("gate_every", gate_every))
         expert_decks = p.get("expert_decks", None)
         expert_games = int(p.get("expert_games", expert_games))
         use_actor = p.get("use_actor", use_actor)
@@ -650,7 +728,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
             "seed": seed, "mirror_frac": mirror_frac, "matrix": matrix,
-            "gate_floor": gate_floor, "expert_decks": expert_decks,
+            "gate_floor": gate_floor, "gate_every": gate_every,
+            "expert_decks": expert_decks,
             "expert_games": expert_games, "use_actor": use_actor,
             "bo3": bo3,
         },
@@ -663,11 +742,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                  else "per-deck rotation")
     print(f"  rotations={rotations_txt}  cycles_per_deck={cycles_per_deck}  "
           f"slots={total_txt}  focus={focus_txt}  (starting at slot {slot_index})")
+    gate_every = max(1, int(gate_every))
     print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
           f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth}  "
           f"batches={batches} window={window}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
-          f"gate_floor={gate_floor}")
+          f"gate_floor={gate_floor} gate_every={gate_every}")
     if expert_decks:
         print(f"  expert demonstrations: {', '.join(expert_decks)} "
               f"({expert_games} scripted:hard matches per deck per slot)")
@@ -696,11 +776,15 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             focus = roster[di]
             deck_label = focus
         slot_seed = seed + si
+        # Gate on the LAST slot of each gate_every group (slot-index arithmetic,
+        # so an interrupted run resumes onto the same cadence).
+        do_gate = ((si + 1) % gate_every == 0)
         slot_txt = f"{si + 1}" if total is None else f"{si + 1}/{total}"
         rot_txt = f"{r + 1}" if total is None else f"{r + 1}/{rotations}"
         print(f"\n{'='*60}")
         print(f"[az-league slot {slot_txt}] rotation {rot_txt}  "
-              f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})")
+              f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})"
+              f"{'' if do_gate else f'  [gate deferred: every {gate_every} slots]'}")
         print(f"{'='*60}")
         res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
                        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
@@ -711,21 +795,26 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        seed=slot_seed, use_actor=use_actor,
                        mirror_frac=mirror_frac, gate_floor=gate_floor,
                        expert_decks=expert_decks, expert_games=expert_games,
-                       roster=roster, bo3=bo3)
+                       roster=roster, bo3=bo3, gate=do_gate)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
-        veto_txt = (f" (floor-veto: {', '.join(ev['vetoes'])})"
-                    if ev.get("vetoes") else "")
+        if ev is None:
+            gate_txt = "gate deferred"
+        else:
+            veto_txt = (f" (floor-veto: {', '.join(ev['vetoes'])})"
+                        if ev.get("vetoes") else "")
+            gate_txt = (f"gate {ev['wins']}W-{ev['losses']}L-{ev['draws']}D "
+                        f"wr={ev['win_rate']:.3f} "
+                        f"{'PROMOTED' if ev['promoted'] else 'kept-incumbent' + veto_txt}")
         print(f"[az-league] slot {slot_txt} deck={deck_label}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
               f"train_loss {tr['first_loss']:.3f}->{tr['last_loss']:.3f}  "
-              f"gate {ev['wins']}W-{ev['losses']}L-{ev['draws']}D "
-              f"wr={ev['win_rate']:.3f} "
-              f"{'PROMOTED' if ev['promoted'] else 'kept-incumbent' + veto_txt}")
+              f"{gate_txt}")
         results.append({"slot": si, "deck": deck_label, "rotation": r, "cycle": c,
                         "samples": gen["samples"], "shards": len(gen["shards"]),
-                        "gate_win_rate": ev["win_rate"], "promoted": ev["promoted"],
-                        "gate_per_deck": ev.get("per_deck"),
-                        "gate_vetoes": ev.get("vetoes")})
+                        "gate_win_rate": ev["win_rate"] if ev else None,
+                        "promoted": ev["promoted"] if ev else None,
+                        "gate_per_deck": ev.get("per_deck") if ev else None,
+                        "gate_vetoes": ev.get("vetoes") if ev else None})
         del results[:-_AZ_LEAGUE_MAX_RESULTS]
         save_progress(si + 1)
         si += 1
@@ -815,6 +904,7 @@ def run_league(args) -> None:
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
               matrix=getattr(args, "matrix", False),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
+              gate_every=getattr(args, "gate_every", DEFAULT_GATE_EVERY),
               expert_decks=_split_decks(getattr(args, "expert_decks", None)),
               expert_games=getattr(args, "expert_games", 16),
               use_actor=_resolve_use_actor(args), resume=args.resume,

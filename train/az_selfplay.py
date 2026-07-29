@@ -118,9 +118,16 @@ def _schedule_summary(schedule: list) -> str:
 
 def resolve_source(deck: str, checkpoint: Optional[str]) -> dict:
     """Pick the net source for the ONE generalist AZ net: an explicit AZ/PPO
-    checkpoint, else the generalist AZ checkpoint (``gen__azfinal`` / newest
-    ``gen__azv*``), else a warm-start from the generalist PPO checkpoint
-    (``gen__final``), else random init.
+    checkpoint, else the generalist AZ checkpoint (newest ``gen__azv*``
+    CANDIDATE snapshot, falling back to ``gen__azfinal``), else a warm-start
+    from the generalist PPO checkpoint (``gen__final``), else random init.
+
+    Self-play prefers the CANDIDATE line (AlphaZero-style: the latest net
+    generates the data), not the gate-promoted incumbent: with the incumbent as
+    generator, every gate rejection froze the data distribution, so a stretch
+    of kept-incumbent cycles just re-distilled a fixed policy. ``gen__azfinal``
+    remains what serving/eval specs (``az:gen``) and the gate opponent resolve
+    to — only the data generator tracks the candidate.
 
     ``deck`` (the FOCUS deck) is not used for net resolution — the net is the
     single generalist, and the deck it pilots travels through the matchup
@@ -136,7 +143,7 @@ def resolve_source(deck: str, checkpoint: Optional[str]) -> dict:
             az = resolve_az_checkpoint(checkpoint) or checkpoint
             return {"mode": "az", "path": az}
         return {"mode": "ppo", "path": resolve_checkpoint(checkpoint)}
-    az = resolve_az_checkpoint(GEN_STEM)
+    az = resolve_az_checkpoint(GEN_STEM, prefer="snapshot")
     if az:
         return {"mode": "az", "path": az}
     ppo = resolve_checkpoint(GEN_STEM)
