@@ -77,8 +77,8 @@ from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 import decode
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
-from cli_spec import (ANALYSIS_TOOL, apply_to_parser, DEFAULT_SB_SIMS,
-                      DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH)
+from cli_spec import (ANALYSIS_TOOL, append_spec_knob, apply_to_parser,
+                      DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
@@ -561,6 +561,35 @@ def _load_az_analysis_model(spec):
     return _AZModelAdapter(from_ppo(ppo_path)), ppo_path
 
 
+def _apply_search_budget_flags(args):
+    """Fold the --think-time / --match-clock convenience flags into the specs.
+
+    Mirrors play.py's flags of the same names, but applies to EVERY seat whose
+    spec is a search spec (az:/mcts: model or --opponent) — appended last so
+    they override any time=/clock= knob already in the spec. Rewrites
+    ``args.model`` / ``args.opponent`` in place (and clears the flags, so a
+    second call — e.g. an args namespace reused across a re-simulate — is a
+    no-op instead of appending the knobs again)."""
+    think_time = getattr(args, "think_time", None)
+    match_clock = getattr(args, "match_clock", None)
+    if think_time is None and match_clock is None:
+        return
+    seats = [s for s in ("model", "opponent") if _is_search_spec(getattr(args, s))]
+    if not seats:
+        print("--think-time/--match-clock only apply to a search seat "
+              "(an az:/mcts: model or --opponent spec).", file=sys.stderr)
+        sys.exit(1)
+    for seat in seats:
+        spec = getattr(args, seat)
+        if think_time is not None:
+            spec = append_spec_knob(spec, "time", think_time)
+        if match_clock is not None:
+            spec = append_spec_knob(spec, "clock", match_clock)
+        setattr(args, seat, spec)
+        print(f"  {seat} search budget: {spec}")
+    args.think_time = args.match_clock = None
+
+
 def _load_model_and_env(args):
     """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
     try:
@@ -568,6 +597,7 @@ def _load_model_and_env(args):
     except ImportError:
         from stable_baselines3 import PPO as MaskablePPO
 
+    _apply_search_budget_flags(args)
     binary = getattr(args, "binary", BINARY)
 
     # The INSPECTION net loads from the search-prefix/query-stripped spec (an
@@ -731,6 +761,17 @@ def _controllers_for(model, opp_model, model_is_a, env=None):
     return ctrl_a, ctrl_b, ctrl_model
 
 
+def _ctrl_clock_stats(ctrl):
+    """(bank, remaining) seconds from a clocked SearchController's stats, or
+    (None, None) when the seat has no match clock (raw-policy/scripted seats
+    included). Read before a decision (on_query fires before the controller
+    acts) ``remaining`` is the bank the seat carries INTO that decision."""
+    stats = getattr(ctrl, "stats", None)
+    if not stats or "clock_bank" not in stats:
+        return None, None
+    return stats.get("clock_bank"), stats.get("clock_remaining")
+
+
 def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
     """Play n_games and collect per-step (obs, value, action) traces.
 
@@ -772,6 +813,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         obs, engine_seed = _reset_for_game(env, model_is_a)
         ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model,
                                                       model_is_a, env)
+        ctrl_opp = ctrl_b if ctrl_model is ctrl_a else ctrl_a
 
         trace_obs = []
         trace_vals = []
@@ -780,6 +822,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         trace_num_choices = []
         trace_probs = []
         trace_opp_actions = []
+        trace_clock = []
         prefix_len = []
 
         def on_query(d):
@@ -795,6 +838,9 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             trace_interp.append(_extract_interpretable(d.obs))
             trace_num_choices.append(d.num_choices)
             trace_probs.append(_get_policy_probs(model, d.obs, d.num_choices))
+            # Match-clock bank the model carries INTO this decision (None when
+            # the seat has no clock= knob).
+            trace_clock.append(_ctrl_clock_stats(ctrl_model)[1])
             prefix_len.append(d.index)   # actions fed before this model step
 
         def on_action(d, action):
@@ -803,9 +849,12 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             else:
                 # Decode now (obs is from the opponent's perspective and is not
                 # kept) so the replay can interleave opponent actions later.
+                # "clock" is the opponent's match-clock bank AFTER this decision
+                # (choose() has debited it by now); None for unclocked seats.
                 trace_opp_actions.append({
                     "desc": _action_desc(d.obs, action),
                     "before_model_step": len(trace_obs),
+                    "clock": _ctrl_clock_stats(d.controller)[1],
                 })
 
         rec = runner.drive_game(env, obs, ctrl_a, ctrl_b,
@@ -825,6 +874,12 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             "prefix_len": prefix_len,
             "result": model_reward,
             "model_is_a": model_is_a,
+            # Match-clock context (all None unless the seat's spec carries a
+            # clock= knob): per-model-decision bank on entry, plus each seat's
+            # whole-match bank for a "remaining / bank" display.
+            "clock_remaining": trace_clock,
+            "clock_bank": _ctrl_clock_stats(ctrl_model)[0],
+            "opp_clock_bank": _ctrl_clock_stats(ctrl_opp)[0],
         })
         if verbose:
             result_str = "W" if model_reward > 0 else ("L" if model_reward < 0 else "D")
@@ -853,11 +908,15 @@ def _report_search_stats(model, opp_model):
         ctrl = getattr(m, "_search_ctrl", None) if m is not None else None
         stats = getattr(ctrl, "stats", None) if ctrl is not None else None
         if stats is not None:
+            clock = ""
+            bank, remaining = _ctrl_clock_stats(ctrl)
+            if bank is not None:
+                clock = f" clock={remaining:.1f}/{bank:g}s"
             print(f"  {who} MCTS [{getattr(ctrl, 'label', 'mcts')}]: "
                   f"searched={stats.get('searched', 0)} "
                   f"sb_searched={stats.get('sb_searched', 0)} "
                   f"fallback={stats.get('fallback', 0)} "
-                  f"sims={stats.get('sims', 0)}", flush=True)
+                  f"sims={stats.get('sims', 0)}{clock}", flush=True)
 
 
 def _game_is_replayable(game):
@@ -922,7 +981,7 @@ def _rollout_from(model, env, opp_model, obs, model_is_a, first_action,
 
     branch_vals = []
     trace = ({"observations": [], "interp": [], "num_choices": [], "probs": [],
-              "actions": [], "opp_actions": [], "prefix_idx": []}
+              "actions": [], "opp_actions": [], "prefix_idx": [], "clock": []}
              if record else None)
     total_reward = 0.0
     obs, reward, terminated, truncated, _ = env.step(first_action)
@@ -945,6 +1004,9 @@ def _rollout_from(model, env, opp_model, obs, model_is_a, first_action,
                 trace["num_choices"].append(d.num_choices)
                 trace["probs"].append(_get_policy_probs(model, d.obs, d.num_choices))
                 trace["prefix_idx"].append(d.index)
+                # NB: _controllers_for re-bind_env'd the seat, which resets a
+                # match clock — a recorded branch restarts from a full bank.
+                trace["clock"].append(_ctrl_clock_stats(ctrl_model)[1])
 
         on_action = None
         if record:
@@ -955,6 +1017,7 @@ def _rollout_from(model, env, opp_model, obs, model_is_a, first_action,
                     trace["opp_actions"].append({
                         "desc": _action_desc(d.obs, action),
                         "before_model_step": len(trace["observations"]),
+                        "clock": _ctrl_clock_stats(d.controller)[1],
                     })
 
         rec = runner.drive_game(env, obs, ctrl_a, ctrl_b,
@@ -992,8 +1055,11 @@ def _assemble_branch_trace(game, game_idx, step, branch, t):
     opp_actions = [dict(oa) for oa in game.get("opp_actions", [])
                    if oa["before_model_step"] <= step]
     opp_actions += [{"desc": oa["desc"],
-                     "before_model_step": oa["before_model_step"] + n_pre}
+                     "before_model_step": oa["before_model_step"] + n_pre,
+                     "clock": oa.get("clock")}
                     for oa in t["opp_actions"]]
+    prefix_clock = list(game.get("clock_remaining") or [])[:n_pre]
+    prefix_clock += [None] * (n_pre - len(prefix_clock))
     return {
         "observations": list(game["observations"][:n_pre]) + t["observations"],
         "values": list(game["values"][:n_pre]) + branch["values"],
@@ -1008,6 +1074,9 @@ def _assemble_branch_trace(game, game_idx, step, branch, t):
                        + [prefix + 1 + ix for ix in t["prefix_idx"]]),
         "result": branch["result"],
         "model_is_a": game["model_is_a"],
+        "clock_remaining": prefix_clock + t.get("clock", []),
+        "clock_bank": game.get("clock_bank"),
+        "opp_clock_bank": game.get("opp_clock_bank"),
         "whatif": {"src_game": game_idx, "step": step,
                    "action": branch["action"], "desc": branch["desc"]},
     }
