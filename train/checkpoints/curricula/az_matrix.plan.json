@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "name": "az_matrix",
+  "description": "Doomsday-aware AZ matrix run. Phase 1 pre-seeds the trainer window with a large expert demonstration dose (scripted:hard vs scripted:hard wubg_doomsday matches recorded as one-hot-pi BC shards) so the FIRST training pass already sees the combo line instead of ~100 pre-BC self-play shards. Phase 2 snapshots a pre-training reference: the AZ net's raw policy (azraw:gen — argmax, no search) round-robined over the full roster vs scripted:hard, appended to baseline_report.log; azraw keeps the NxN tractable (an az:gen search round-robin would take days — spot-check search strength on single matchups with observe). Phase 3 is the terminal matrix az-league: whole-roster focus every slot (stationary window, no per-deck forgetting sweep), roster-wide promotion gate with the per-deck floor veto, and a fresh 16-match expert dose for wubg_doomsday every slot; self-play/sideboard sims default to 256 now. rotations:0 runs until Ctrl-C (~3h/slot at 256 sims); resume with `curriculum --plan az_matrix --resume`. After stopping, measure progress by re-running the phase-2 baseline by hand (train.py baseline azraw:gen --all --games 50) and diffing the wubg_doomsday rows.",
+  "phases": [
+    {
+      "kind": "az-selfplay",
+      "label": "demonstration-dose",
+      "note": "32 expert bo3 matches (~15k BC samples, torch-free, a few minutes). The net's weights are untouched here; this only stocks az_data/gen.",
+      "decks": ["league/wubg_doomsday"],
+      "games": 32,
+      "overrides": {
+        "expert": true
+      }
+    },
+    {
+      "kind": "baseline",
+      "label": "az-pre-baseline",
+      "note": "Pre-training reference of the AZ net's raw policy across the full NxN vs scripted:hard. Expect the wubg_doomsday pilot rows near the PPO gen's 13.6% — that is the number the matrix phase should move.",
+      "model": "azraw:gen",
+      "games": 50,
+      "overrides": {
+        "all": true
+      }
+    },
+    {
+      "kind": "az-league",
+      "label": "az-matrix",
+      "note": "Terminal phase: matrix focus + roster-wide gate (eval_games 56, gate_floor 0.2) + per-slot expert dose for doomsday. Weights continue from the newest gen__azv* snapshot automatically.",
+      "rotations": 0,
+      "overrides": {
+        "matrix": true,
+        "expert_decks": "league/wubg_doomsday",
+        "workers": 28,
+        "actor": true
+      }
+    }
+  ]
+}

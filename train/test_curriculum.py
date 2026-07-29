@@ -103,6 +103,14 @@ def test_compose_az_league():
           f"az-league argv: {got}")
 
 
+def test_compose_az_selfplay():
+    print("az-selfplay phase")
+    got = argv_of({"kind": "az-selfplay", "decks": ["league/wubg_doomsday"],
+                   "games": 32, "overrides": {"expert": True}})
+    check(got == ["az-selfplay", "--deck", "league/wubg_doomsday", "--games",
+                  "32", "--expert"], f"az-selfplay argv: {got}")
+
+
 def test_compose_baseline():
     print("baseline phase")
     got = argv_of({"kind": "baseline", "model": "gen", "deck": "league/bug",
@@ -310,6 +318,7 @@ def main():
         test_compose_exploiter()
         test_compose_az()
         test_compose_az_league()
+        test_compose_az_selfplay()
         test_compose_baseline()
         test_override_beats_alias()
         test_validation_errors()

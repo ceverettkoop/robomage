@@ -61,7 +61,7 @@ PROGRESS_SUFFIX = ".progress.json"
 
 # Phase kinds == train.py subcommands. Adding one is a single entry here plus
 # its convenience-field aliases below; its flags come from cli_spec.
-PHASE_KINDS = ("league", "exploiter", "az", "az-league", "baseline")
+PHASE_KINDS = ("league", "exploiter", "az", "az-league", "az-selfplay", "baseline")
 
 # Kinds whose subcommand has its own progress sidecar and --resume: a phase of
 # one of these that was interrupted mid-way is RELAUNCHED with --resume (it then
@@ -82,6 +82,7 @@ PHASE_FIELDS = {
     "exploiter": {"archetype": "archetype", "steps": "steps", "decks": "decks"},
     "az":        {"decks": "deck", "games": "games"},
     "az-league": {"decks": "decks", "rotations": "rotations", "games": "games"},
+    "az-selfplay": {"decks": "deck", "games": "games"},
     "baseline":  {"model": "model", "deck": "deck", "games": "games"},
 }
 
