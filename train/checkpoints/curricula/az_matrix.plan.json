@@ -25,6 +25,7 @@
       "overrides": {
         "workers": 28,
         "matrix": true,
+        "gate_every": 3,
         "expert_decks": [
           "league/wubg_doomsday"
         ]
