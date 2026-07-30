@@ -103,7 +103,7 @@ if __name__ == "__main__":
     import os as _os
 
     # Flags come from cli_spec.PLAY_TOOL (single source shared with the TUI).
-    from cli_spec import PLAY_TOOL, apply_to_parser
+    from cli_spec import PLAY_TOOL, append_spec_knob, apply_to_parser
     parser = argparse.ArgumentParser()
     apply_to_parser(parser, PLAY_TOOL.subs[0])
     args = parser.parse_args()
@@ -125,31 +125,31 @@ if __name__ == "__main__":
                          "(--model az:<ckpt> or mcts:<ckpt>)")
         # Append the knobs to the spec's query; appended-last wins over any
         # sims=/worlds= already present (later keys overwrite in the parser).
-        knobs = [f"sims={args.sims}"] if args.sims is not None else []
+        if args.sims is not None:
+            model_path = append_spec_knob(model_path, "sims", args.sims)
         if args.worlds is not None:
-            knobs.append(f"worlds={args.worlds}")
-        model_path += ("&" if "?" in model_path else "?") + "&".join(knobs)
+            model_path = append_spec_knob(model_path, "worlds", args.worlds)
     if args.think_time is not None:
         if not is_search_spec:
             parser.error("--think-time only applies to a search opponent "
                          "(--model az:<ckpt> or mcts:<ckpt>)")
         # Wall-clock per-decision budget: the search runs as many sims as fit in
         # this many seconds. Appended last so it wins over any time= in the spec.
-        model_path += ("&" if "?" in model_path else "?") + f"time={args.think_time}"
+        model_path = append_spec_knob(model_path, "time", args.think_time)
     if args.search_procs is not None:
         if not is_search_spec:
             parser.error("--search-procs only applies to a search opponent "
                          "(--model az:<ckpt> or mcts:<ckpt>)")
         # World-parallel search across N engine processes. Appended last so it
         # wins over any procs= already present in the spec.
-        model_path += ("&" if "?" in model_path else "?") + f"procs={args.search_procs}"
+        model_path = append_spec_knob(model_path, "procs", args.search_procs)
     if args.match_clock is not None:
         if not is_search_spec:
             parser.error("--match-clock only applies to a search opponent "
                          "(--model az:<ckpt> or mcts:<ckpt>)")
         # Whole-match chess-clock bank; per-decision budgets are allocated from
         # it. Appended last so it wins over any clock= already in the spec.
-        model_path += ("&" if "?" in model_path else "?") + f"clock={args.match_clock}"
+        model_path = append_spec_knob(model_path, "clock", args.match_clock)
     if args.paced and args.no_paced:
         parser.error("--paced and --no-paced are mutually exclusive")
     if (args.paced or args.no_paced) and not is_search_spec:
@@ -164,9 +164,9 @@ if __name__ == "__main__":
                                or args.think_time is not None
                                or "clock=" in model_path or "time=" in model_path)
         if args.no_paced:
-            model_path += ("&" if "?" in model_path else "?") + "paced=0"
+            model_path = append_spec_knob(model_path, "paced", 0)
         elif args.paced or has_variable_budget:
-            model_path += ("&" if "?" in model_path else "?") + "paced=1"
+            model_path = append_spec_knob(model_path, "paced", 1)
     if args.scripted:
         # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
         model_path = "scripted"

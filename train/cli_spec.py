@@ -393,6 +393,39 @@ def _actor_mode():
             "built, else the pure-Python backend")
 
 
+def append_spec_knob(spec: str, key, value) -> str:
+    """Append ``key=value`` to a controller spec's ``?query`` knobs.
+
+    Appended LAST so it wins over any ``key=`` already present in the spec
+    (later keys overwrite in opponents.py's knob parser). Shared by play.py's
+    and analysis.py's convenience flags (--think-time/--match-clock/...)."""
+    return spec + ("&" if "?" in spec else "?") + f"{key}={value}"
+
+
+def search_budget_args():
+    """--think-time / --match-clock convenience flags for the analysis sim args.
+
+    Mirror play.py's flags of the same names, but where play.py has one search
+    seat these apply to EVERY seat whose spec is a search spec (az:/mcts: model
+    or --opponent), appended last so they override any time=/clock= knob already
+    in the spec. For per-seat budgets, put the knobs in the specs directly and
+    skip the flags."""
+    return [
+        Arg("--think-time", "float", default=None,
+            help="Search seats only (az:/mcts: model or --opponent): wall-clock "
+                 "seconds per decision — the search runs as many simulations as "
+                 "fit in this budget. Applied to every search-spec seat, "
+                 "overriding any time= already in the spec (put time= knobs in "
+                 "the specs instead for per-seat budgets)."),
+        Arg("--match-clock", "float", default=None,
+            help="Search seats only: whole-match chess-clock bank in seconds "
+                 "(1500 = 25 min for a bo3); each decision draws a variable "
+                 "budget from it. Applied to every search-spec seat, overriding "
+                 "any clock= already in the spec (put clock= knobs in the specs "
+                 "instead for per-seat clocks)."),
+    ]
+
+
 def sim_args():
     """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
     return [
@@ -932,12 +965,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
 ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
     Sub("report", "Run the standard battery and emit a single HTML report", items=[
         *sim_args(),
+        *search_budget_args(),
         Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
     ]),
     Sub("interactive",
         "Interactive session: simulate games then inspect replays, board states, "
         "value charts, SHAP, counterfactual whatif, and more", mode="interactive", items=[
             *sim_args(),
+            *search_budget_args(),
             Arg("--n-games", "int", default=20,
                 help="Games to pre-simulate before entering session (default: 20; 0 = skip)"),
             Arg("--n-samples", "int", default=200, help="SHAP sample count (default: 200)"),
@@ -979,6 +1014,7 @@ ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, sub
         "clickable V(s) histogram, plus every analysis view", mode="interactive",
         items=[
             *[a for a in sim_args() if a.name not in ("--out", "--show")],
+            *search_budget_args(),
             Arg("--n-games", "int", default=20,
                 help="Games to simulate on startup (default: 20)"),
         ]),

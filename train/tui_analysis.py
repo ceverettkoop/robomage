@@ -941,8 +941,12 @@ class AnalysisApp(App):
     def _decision_text(self, g, step, obs) -> Text:
         """The model's decision at this step: every legal action with its
         recorded policy probability (sorted most-likely first, chosen action
-        marked), then the opponent's actions since the previous decision."""
+        marked), then the opponent's actions since the previous decision.
+        Clocked seats (a clock= spec knob) get a match-clock line on top."""
         out = Text()
+        clock_line = self._clock_line(g, step)
+        if clock_line:
+            out.append(clock_line + "\n", style="dim")
         num_ch = g["num_choices"][step] if step < len(g["num_choices"]) else 0
         chosen = g["actions"][step] if step < len(g.get("actions", [])) else None
         probs = None
@@ -972,6 +976,31 @@ class AnalysisApp(App):
             for ln in opp_lines:
                 out.append(f"  opp → {ln}\n", style="dim")
         return out
+
+    @staticmethod
+    def _clock_line(g, step) -> str:
+        """Match-clock strip for the decision panel: each clocked seat's bank
+        entering this model decision, as 'remaining / bank' seconds. Empty when
+        neither seat played under a match clock (no clock= knob in its spec).
+        The model's reading is recorded at each of its decisions; the
+        opponent's is the last reading its actions left at or before this step
+        (its full bank before it has acted)."""
+        def fmt(remaining, bank):
+            rem = f"{remaining:.1f}s" if remaining is not None else "?"
+            return f"{rem} / {bank:g}s"
+        parts = []
+        if g.get("clock_bank") is not None:
+            rems = g.get("clock_remaining") or []
+            rem = rems[step] if step < len(rems) else None
+            parts.append("model " + fmt(rem, g["clock_bank"]))
+        if g.get("opp_clock_bank") is not None:
+            opp_rem = g["opp_clock_bank"]
+            for oa in g.get("opp_actions", []):
+                if (oa["before_model_step"] <= step
+                        and oa.get("clock") is not None):
+                    opp_rem = oa["clock"]
+            parts.append("opp " + fmt(opp_rem, g["opp_clock_bank"]))
+        return "⏱ clock: " + " · ".join(parts) if parts else ""
 
     def _refresh_hist_subtitle(self) -> None:
         hist = self.query_one("#vhist", ValueHistogram)
