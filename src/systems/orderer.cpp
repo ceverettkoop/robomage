@@ -106,6 +106,19 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         destination = Zone::EXILE;
     }
 
+    // One-shot cast-time ETB markers (Amped Raptor's cast_from_hand, a modal back face's
+    // pending_enters_transformed) describe THIS cast's eventual battlefield entry; they are set
+    // when the cast begins and consumed when the resolved permanent is created. A spell leaving
+    // the stack for anywhere else — countered (CR 701.5a), fizzled (608.2b), a resolved
+    // instant/sorcery — ends that cast without a battlefield entry, so the markers must die with
+    // it: a stale entry would mark a later NON-cast entry of the same card as this cast (Animate
+    // Dead reanimating a countered Amped Raptor wrongly fired its "if you cast it from your
+    // hand" impulse clause).
+    if (target_zone.location == Zone::STACK && destination != Zone::BATTLEFIELD) {
+        cur_game.cast_from_hand.erase(target);
+        cur_game.pending_enters_transformed.erase(target);
+    }
+
     // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
     {
         Entity owner_entity = target_zone.owner == Zone::PLAYER_A

@@ -35,11 +35,37 @@
 
 static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out);
 static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
+                                          std::shared_ptr<Orderer> orderer);
 static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
                                         Zone::Ownership priority_player,
                                         std::shared_ptr<Orderer> orderer, bool stack_empty);
 static std::string loyalty_cost_label(const Ability &ab);
 static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> orderer);
+
+// An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so EVERY
+// cast-offering path — hand, modal back face, flashback, escape, a cast-from-graveyard
+// permission (Emry), an impulse/free cast from exile (Amped Raptor, suspend) — may only offer
+// it while a legal object matching its Enchant restriction exists. Builds the same transient
+// targeting ability the cast flow's AURA_TARGET step uses, so the offer gate and the cast-time
+// target menu can never disagree. The enchant filter is controller-relative (Sheltered by
+// Ghosts: Enchant Creature.YouCtrl), so the transient ability MUST carry the actual caster as
+// controller — has_legal_targets evaluates YouCtrl/OppCtrl from ability_perspective_player,
+// which defaults to PLAYER_A when left unset. Returns true for non-Auras.
+// (This gate was originally inlined only in the hand-cast loop; an Amped Raptor impulse grant
+// exiling Animate Dead off an empty-graveyard board then offered the cast ungated and crashed
+// AURA_TARGET's empty target menu — CR 601.2c requires the gate on every offering path.)
+static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
+                                          std::shared_ptr<Orderer> orderer) {
+    if (card_data.enchant_filter.empty()) return true;  // not an Aura
+    Ability enchant_ab;
+    enchant_ab.controller = caster;
+    enchant_ab.valid_tgts = card_data.enchant_filter;
+    // "Enchant creature card in a graveyard" (Animate Dead): search graveyards, not the
+    // battlefield, for a legal enchant target (CR 303.4).
+    enchant_ab.target_in_graveyard = enchant_targets_graveyard(card_data.enchant_filter);
+    return has_legal_targets(enchant_ab, orderer);
+}
 
 // Chosen targets of every stack object that would destroy or exile a battlefield
 // permanent (category "Destroy", or "ChangeZone" battlefield->exile). Player-entity
@@ -489,6 +515,8 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
             break;
         }
         if (!tgt_ok || !condition_ok) continue;
+        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
+        if (!aura_enchant_target_available(back, priority_player, orderer)) continue;
 
         if (rules_mod::cast_prohibited(priority_player, back)) continue;
 
@@ -663,24 +691,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 condition_ok = evaluate_present_condition(ab, priority_player, orderer);
             break;
         }
-        // An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so it
-        // can only be cast if a legal object matching its Enchant restriction exists. Build a
-        // transient targeting ability from the enchant filter and reuse the standard check.
-        // The enchant filter is controller-relative (Sheltered by Ghosts: Enchant Creature.YouCtrl),
-        // so the transient ability MUST carry the actual caster as controller — has_legal_targets
-        // evaluates YouCtrl/OppCtrl from ability_perspective_player, which defaults to PLAYER_A when
-        // left unset. Without this, an aura enchanting "a creature you control" cast by Player B was
-        // gated against Player A's creatures and offered with no legal target, crashing the empty
-        // target menu at cast (CR 601.2c).
-        if (tgt_ok && !card_data.enchant_filter.empty()) {
-            Ability enchant_ab;
-            enchant_ab.controller = priority_player;
-            enchant_ab.valid_tgts = card_data.enchant_filter;
-            // "Enchant creature card in a graveyard" (Animate Dead): search graveyards, not the
-            // battlefield, for a legal enchant target (CR 303.4).
-            enchant_ab.target_in_graveyard = enchant_targets_graveyard(card_data.enchant_filter);
-            tgt_ok = has_legal_targets(enchant_ab, orderer);
-        }
+        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
+        if (tgt_ok)
+            tgt_ok = aura_enchant_target_available(card_data, priority_player, orderer);
         // Machine mode only: action-masking optimization — don't offer a conditional-destroy
         // spell to the RL agent when no target on the board would currently pass the
         // condition (e.g. Fatal Push: only show if a creature with mana value <= the current
@@ -839,6 +852,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             break;
         }
         if (!tgt_ok) continue;
+        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
+        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
 
         // Check affordability: flashback mana cost (floored — flashback is an alternative
         // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost
@@ -896,6 +911,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             break;
         }
         if (!tgt_ok) continue;
+        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
+        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
 
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
         if (!can_pay_mana(priority_player, floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
@@ -956,6 +973,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             break;
         }
         if (!tgt_ok) continue;
+        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
+        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
 
         if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD))
             continue;
@@ -1061,6 +1080,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             break;
         }
         if (!tgt_ok) continue;
+        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
+        // The concrete crash this fixes: Animate Dead reanimates the opponent's Amped Raptor
+        // (emptying the graveyard), the Raptor's impulse exiles a SECOND Animate Dead and
+        // grants this energy-cast permission — which must not be offered while no creature
+        // card is in any graveyard.
+        if (!aura_enchant_target_available(ecd, priority_player, orderer)) continue;
 
         if (rules_mod::cast_prohibited(priority_player, ecd, Zone::EXILE))
             continue;
