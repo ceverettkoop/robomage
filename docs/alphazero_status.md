@@ -438,9 +438,11 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
   (covered by the snapshot-tier world-variation test).
 - **Sideboard-root search budget** — the sideboard root gets its own heavier, deeper
   budget: `sb_sims=256` / `sb_worlds=4` / `sb_max_depth=200` / `sb_rollout_turns=12`
-  (the `DEFAULT_SB_*` constants in `cli_spec.py`; the horizon is game-long, so it is
-  deeper than an in-game decision, and leaf rollouts — see the 2026-07-31 update
-  below — carry each sim to turn 12 of the sampled next game). Inert for bo1.
+  / `sb_persist=1` (the `DEFAULT_SB_*` constants in `cli_spec.py`; the horizon is
+  game-long, so it is deeper than an in-game decision, leaf rollouts — see the
+  2026-07-31 update below — carry each sim to turn 12 of the sampled next game, and
+  boundary persistence shares one set of trees + a rollout memo across a boundary's
+  picks). Inert for bo1.
 - **Actor parity + next-game flush** — the C++ actor mirrors the Python match loop
   exactly: `--bo3` treats each `--games` unit as a match (match seeds spaced by 3),
   it searches the sideboard root with the same `--sb-sims`/`--sb-worlds`/
@@ -459,7 +461,45 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
 --sb-max-depth N     descent depth cap at a bo3 sideboard root (default 200)
 --sb-rollout-turns N leaf-rollout horizon in player turns of the next game
                      (default 12; 0 = off — see the 2026-07-31 update below)
+--sb-persist 0|1     persist trees + rollout memo across a sideboard boundary
+                     (default 1 — see the boundary-persistence update below)
 ```
+
+> **Update (2026-07-31, later): sideboard-boundary persistence + rollout
+> memo.** A boundary is one seat's contiguous run of ~10-20 pick decisions,
+> and leaf rollouts multiplied their cost — each pick was a fresh full-budget
+> search re-simulating futures the previous pick already explored. With
+> `--sb-persist 1` (default) the per-world trees now SURVIVE across a
+> boundary's picks: world seeds are pinned to the boundary's first searched
+> root (mandatory — at a sb root the seed IS the sampled next-game deal), each
+> next pick re-roots every world at the actually-played action's child
+> (walking searched picks, the finalize-chosen action, and nc==1 forced
+> actions alike; a failed walk re-roots that world fresh, never killing the
+> boundary), the re-rooted node's P is overwritten with the fresh clean/noised
+> root priors, and the search only tops up to `sb_sims` CUMULATIVE root visits
+> (`sims_run` counts new sims; the training pi target keeps the inherited
+> mass — deliberately, it is real signal). A per-boundary **rollout memo**
+> additionally keys finished rollouts by (pinned world seed, leaf seat, sorted
+> multiset of (cat, card id, seat) picks since the boundary root), so permuted
+> pick orders reaching the same net configuration reuse one playout. The memo
+> is a deliberate approximation: engine deck-vector order is mutation-history
+> dependent, so a hit substitutes the first-seen ordering's value (a
+> different-but-equally-random deal / completion of the same cards); paths
+> containing a takeback are never memoized (direction locks genuinely
+> diverge). Boundary identity = `mcts.sb_root_key` (seat + upcoming game
+> number); all shared rules live in `train/mcts.py` (`world_seeds_for`,
+> `sb_root_key`, `sb_pick_descriptor`, `walk_reuse_root`, `rollout_memo_*`)
+> and are mirrored bit-exactly in `az_mcts.cpp`. `test_mcts_parity.py` runs
+> the sb gate both ways (`bo3-sb-persist` + the persist-off baseline), all
+> bit-exact. Out of scope (fresh searches): the analysis window /
+> `IncrementalSearch`, `procs>1` mirror-pool search, `run_search_parallel`.
+>
+> Measured on one full boundary (ur_delver vs gw_maverick, 256/4/200/12,
+> PPO-warm-start evaluator, Python path): fresh per-pick searches 19 picks at
+> **79.3 s/pick** (4864 sims, 563k engine steps); persistence **44.0 s/pick**
+> (1.8x, 46% fewer new sims, 1728 inherited visits; the memo added 25 hits
+> and left the pick sequence identical). The C++ actor (production self-play)
+> is far faster per step; the ratios carry over.
 
 > **Update (2026-07-31): leaf rollouts at sideboard roots.** Depth benchmarking
 > showed the PUCT tree alone never reaches the next game: at `sb_sims=256` the

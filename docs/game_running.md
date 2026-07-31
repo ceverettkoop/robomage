@@ -59,9 +59,9 @@ harness, the TUI, and `play.py` — accepts:
 - `"az:<gen-or-path>"` / `"mcts:<ckpt>"` (MCTS search) or `"azraw:<gen-or-path>"`
   (raw AZ policy) — `SearchController`/`AZRawController`. The search specs take a
   `?k=v&…` query: `sims`/`worlds`/`c`/`temp`/`seed` (in-game search) plus
-  `sb_sims`/`sb_worlds`/`sb_max_depth`/`sb_rollout_turns` — the **bo3
-  sideboard-root** budget (defaults `256`/`4`/`200`/`12`, the `DEFAULT_SB_*`
-  constants in `cli_spec.py`). A sideboard prompt is a valid MCTS root but its
+  `sb_sims`/`sb_worlds`/`sb_max_depth`/`sb_rollout_turns`/`sb_persist` — the
+  **bo3 sideboard-root** budget (defaults `256`/`4`/`200`/`12`/`1`, the
+  `DEFAULT_SB_*` constants in `cli_spec.py`). A sideboard prompt is a valid MCTS root but its
   horizon spans the whole next game, so `SearchController` switches to the
   sideboard budget there rather than the in-game one (whose `max_depth` default is
   60), and **leaf rollouts** are on by default: each sim plays the raw policy
@@ -69,7 +69,15 @@ harness, the TUI, and `play.py` — accepts:
   `sb_rollout_turns` of the sampled next game and backs up THAT state's net value,
   so the swap ranking sees concrete simulated futures instead of only the net's
   static read of the decklist (`sb_rollout_turns=0` restores in-place leaf
-  evaluation). e.g. `az:gen?sims=64&worlds=4&sb_sims=128&sb_rollout_turns=8`.
+  evaluation). `sb_persist=1` (default) additionally persists the per-world
+  trees **across a sideboard boundary's consecutive picks** — seeds pinned to
+  the boundary's first searched root, each next pick re-rooted at the played
+  action's child and topped up to `sb_sims` cumulative visits — plus a
+  rollout-value memo over the boundary's pick multisets; `sb_persist=0`
+  restores per-pick fresh searches. (Persistence applies on the single-engine
+  path only: `procs>1` sideboard searches, the analysis window, and
+  `run_search_parallel` stay fresh.) e.g.
+  `az:gen?sims=64&worlds=4&sb_sims=128&sb_rollout_turns=8`.
   - `time=<seconds>` sets a **wall-clock per-decision budget** instead of a fixed
     sim count: the search interleaves its `worlds` round-robin and runs as many
     simulations as fit in that many seconds, then stops (more time = stronger
