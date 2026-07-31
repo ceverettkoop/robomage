@@ -283,7 +283,8 @@ def run_search(
     def _one_sim(w: int) -> None:
         nonlocal sims_run, sim_steps
         env.restore(snapshot_slot)
-        env.determinize(seeds[w])
+        q = env.determinize(seeds[w])
+        _check_root_query(q, root_n, w)
         v = _simulate(env, evaluator, roots[w], c_puct, max_depth)
         sims_run += 1
         sim_steps += v[1]
@@ -516,6 +517,26 @@ def run_search_parallel(
     )
 
 
+def _check_root_query(q: SimQuery, root_n: int, world: int) -> None:
+    """Restore+determinize must re-derive the exact decision the search rooted
+    on. A different menu size means the engine's snapshot round-trip diverged
+    (or determinization touched information the root menu depends on) — selecting
+    from the stale root arrays would then send the engine an out-of-menu index,
+    so fail loudly here instead."""
+    if q.num_choices != root_n:
+        derived = ""
+        try:  # decode the re-derived menu for the report; never mask the error
+            import decode
+            menu = decode.decode_actions_from_obs(q.obs, q.num_choices)
+            derived = " — re-derived menu: " + " | ".join(str(m) for m in menu)
+        except Exception:
+            pass
+        raise RuntimeError(
+            f"world-consistency violation at root (world {world}): search root "
+            f"has {root_n} choices but restore+determinize re-derived "
+            f"{q.num_choices}{derived}")
+
+
 def _simulate(
     env: SearchRoboMageEnv,
     evaluator: Evaluator,
@@ -673,7 +694,8 @@ class IncrementalSearch:
             w = self._next_world
             self._next_world = (w + 1) % self._worlds
             env.restore(self._slot)
-            env.determinize(self.seeds[w])
+            q = env.determinize(self.seeds[w])
+            _check_root_query(q, self.num_choices, w)
             _, steps = _simulate(env, self._evaluator, self.roots[w],
                                  self._c_puct, self._max_depth)
             self.sims_run += 1

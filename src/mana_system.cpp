@@ -48,6 +48,10 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit = true, bool has_improvise = false,
                           Entity exclude_entity = 0);
+static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
+                                  Entity paid_for, std::shared_ptr<Orderer> orderer,
+                                  bool has_delve, bool commit, bool has_improvise,
+                                  Entity exclude_entity, bool max_yield_only);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
@@ -858,9 +862,50 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
 // zone moves, activation counters, uncounterable flag) are skipped. None of these are
 // re-read to drive the payment decision — reuse is gated by the local `tapped_entities`
 // set — so the decision sequence is identical to a real payment.
+// The greedy payer runs pain-averse by default: painless sources engage before painful
+// ones (Ancient Tomb). That preference can strand a payment when one permanent carries
+// BOTH a painless low-yield and a painful high-yield mana ability (a Tomb made a Forest
+// by Yavimaya: painless {G} vs painful {C}{C}) — the painless tier burns the permanent's
+// single tap on the small ability and the total then falls short. So auto_pay_mana first
+// tries the normal strategy, and only if that fails retries with `max_yield_only`, which
+// keeps just the highest-yield ability per permanent so the tap realizes the permanent's
+// full potential. The retry strictly widens what is payable; a payment the pain-averse
+// pass can complete is still paid painlessly. Simulate picks the strategy; a commit run
+// replays the winning strategy so legality and payment stay in lockstep.
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit, bool has_improvise, Entity exclude_entity) {
+    ManaValue trial = remaining;
+    if (auto_pay_mana_attempt(controller, trial, paid_for, orderer, has_delve,
+                              /*commit=*/false, has_improvise, exclude_entity,
+                              /*max_yield_only=*/false)) {
+        if (!commit) {
+            remaining = trial;
+            return true;
+        }
+        return auto_pay_mana_attempt(controller, remaining, paid_for, orderer, has_delve,
+                                     /*commit=*/true, has_improvise, exclude_entity,
+                                     /*max_yield_only=*/false);
+    }
+    trial = remaining;
+    if (auto_pay_mana_attempt(controller, trial, paid_for, orderer, has_delve,
+                              /*commit=*/false, has_improvise, exclude_entity,
+                              /*max_yield_only=*/true)) {
+        if (!commit) {
+            remaining = trial;
+            return true;
+        }
+        return auto_pay_mana_attempt(controller, remaining, paid_for, orderer, has_delve,
+                                     /*commit=*/true, has_improvise, exclude_entity,
+                                     /*max_yield_only=*/true);
+    }
+    return false;
+}
+
+static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
+                                  Entity paid_for, std::shared_ptr<Orderer> orderer,
+                                  bool has_delve, bool commit, bool has_improvise,
+                                  Entity exclude_entity, bool max_yield_only) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -944,6 +989,32 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         }
         if (replaced) continue;
         valid_sources.push_back({entity, ab, ab.color, is_multi});
+    }
+
+    // max_yield_only (the retry strategy — see auto_pay_mana): a permanent taps once, so
+    // collapse each entity to its single highest-yield entry ACROSS colors (the loop above
+    // already collapsed within a color). First-seen wins a yield tie, keeping the pass
+    // deterministic.
+    if (max_yield_only) {
+        std::vector<SourceInfo> best;
+        for (auto &si : valid_sources) {
+            size_t amt = eval_mana_amount(si.ability, controller, orderer);
+            bool merged = false;
+            for (auto &existing : best) {
+                if (existing.entity != si.entity) continue;
+                if (amt > eval_mana_amount(existing.ability, controller, orderer)) {
+                    existing.ability = si.ability;
+                    existing.color = si.color;
+                }
+                merged = true;
+                break;
+            }
+            if (!merged) {
+                si.is_multi_color = false;  // one entry per entity now
+                best.push_back(si);
+            }
+        }
+        valid_sources = std::move(best);
     }
 
     // Candidate ordering: within every preference tier below, engage first the source

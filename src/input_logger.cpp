@@ -22,6 +22,7 @@ extern Game cur_game;
 
 static int get_int_input();
 static void record_chosen_action(const std::vector<LegalAction> &actions, int choice);
+static void check_machine_choice(const std::vector<LegalAction> &actions, int choice);
 static std::vector<std::string> parse_flag_tokens(const std::string &flags_line);
 static std::string read_header_field(std::ifstream &file, const std::string &key);
 static std::string read_embedded_deck(std::ifstream &file, const std::string &deck_key);
@@ -250,6 +251,22 @@ const std::vector<std::string> &InputLogger::get_replay_flags() const {
     return replay_flags;
 }
 
+// Machine-mode divergence guard: an index outside the live menu means the driver's
+// view of this decision has drifted from the engine's (e.g. a search tree replaying
+// a stale menu after a world-consistency break). Fail here with full context instead
+// of letting the caller index legal_actions out of bounds (which reads garbage and
+// segfaults copying it — the exact failure this replaced).
+static void check_machine_choice(const std::vector<LegalAction> &actions, int choice) {
+    if (choice >= 0 && choice < static_cast<int>(actions.size())) return;
+    std::string menu;
+    for (size_t i = 0; i < actions.size(); i++)
+        menu += "\n  [" + std::to_string(i) + "] " + actions[i].description;
+    fatal_error("machine input out of range: got index " + std::to_string(choice) +
+                " but menu has " + std::to_string(actions.size()) + " actions (turn=" +
+                std::to_string(cur_game.turn) + " step=" +
+                std::string(step_to_string(cur_game.cur_step)) + ")" + menu);
+}
+
 static void record_chosen_action(const std::vector<LegalAction> &actions, int choice) {
     if (choice < 0 || choice >= static_cast<int>(actions.size())) return;
     const LegalAction &la = actions[static_cast<size_t>(choice)];
@@ -321,6 +338,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
             if (choice == -1 && !actions.empty()) {
                 choice = static_cast<int>(actions.size()) - 1;
             }
+            check_machine_choice(actions, choice);
             commit_choice(actions, choice);
             return choice;
         }
@@ -343,6 +361,22 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
             if (search_server_mode) {
                 printf("SEARCHINFO safe=%d\n", search_loop_safe() ? 1 : 0);
             }
+#ifndef NDEBUG
+            // Emission-side counterpart of the [dec] commit trace: log the menu as
+            // queried while a search snapshot is live, so a root re-derived after a
+            // RESTORE (whose action is never committed when the driver detects a
+            // divergence) is still visible for diffing.
+            if (search_server_mode && search_any_snapshot_live()) {
+                std::string menu;
+                for (const auto &a : actions) {
+                    menu += a.description;
+                    menu += '|';
+                }
+                fprintf(stderr, "[emit] t=%zu s=%d n=%zu %s\n", cur_game.turn,
+                        static_cast<int>(cur_game.cur_step), actions.size(),
+                        menu.c_str());
+            }
+#endif
             cli_emit_machine_query(&q, &gs);
 
             char line[128];
@@ -371,6 +405,22 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         if (choice == -1 && !actions.empty()) {
             choice = static_cast<int>(actions.size()) - 1;
         }
+        check_machine_choice(actions, choice);
+#ifndef NDEBUG
+        // Per-decision search trace (debug builds): one line per committed decision
+        // while a search sim is running, so two sims' transcripts can be diffed to
+        // find the first divergent menu after a world-consistency break.
+        if (search_server_mode && search_any_snapshot_live()) {
+            std::string menu;
+            for (const auto &a : actions) {
+                menu += a.description;
+                menu += '|';
+            }
+            fprintf(stderr, "[dec] t=%zu s=%d n=%zu c=%d %s\n", cur_game.turn,
+                    static_cast<int>(cur_game.cur_step), actions.size(), choice,
+                    menu.c_str());
+        }
+#endif
         commit_choice(actions, choice);
         return choice;
     }

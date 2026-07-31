@@ -1367,6 +1367,40 @@ static void apply_global_addtype_statics(const std::set<Entity> &entities) {
     }
 }
 
+// Layer-4 epilogue: make each battlefield land's SUBTYPE-DERIVED mana abilities a pure
+// function of its CURRENT basic land subtypes, within the same pass that set those
+// subtypes. Without this, a type grant (Yavimaya's "each land is a Forest") only produced
+// its mana ability on the NEXT pass (apply_land_abilities runs in apply_permanent_components,
+// before the layer run adds the subtype), and a grant that lapsed left a STALE derived
+// ability behind. That one-pass lag made derived state depend on pass history — the same
+// snapshot re-derived a different ability set after a search restore than the live line had
+// (the az_eval reanimator/lands world-consistency break), and a stale ability misprices
+// affordability. Strips only `subtype_derived` entries; scripted abilities are untouched.
+void StateManager::sync_subtype_mana_abilities() {
+    for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        bool is_land = false;
+        for (auto &t : perm.types)
+            if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
+        if (!is_land) continue;
+        std::set<Colors> subtype_colors;
+        for (auto &t : perm.types) {
+            if (t.kind != SUBTYPE) continue;
+            Colors c = mana_color_for_subtype(t.name);
+            if (c != NO_COLOR) subtype_colors.insert(c);
+        }
+        auto &abilities = perm.abilities;
+        abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
+                                       [&](const Ability &ab) {
+                                           return ab.subtype_derived &&
+                                                  subtype_colors.count(ab.color) == 0;
+                                       }),
+                        abilities.end());
+        if (!subtype_colors.empty()) apply_land_abilities(entity);
+    }
+}
+
 void StateManager::apply_type_changing_effects() {
     // Layer 4 reapply of DB$ Animate "becomes ..." type grants (Guide of Souls). These are
     // baked onto each permanent (animate_added_types) by the Animate effect rather than sourced
@@ -1427,6 +1461,7 @@ void StateManager::apply_type_changing_effects() {
         // No land-subtype changers, but a general AddType static (Mycosynth Lattice) may still
         // apply card types to every permanent. Run it and return.
         apply_global_addtype_statics(mEntities);
+        sync_subtype_mana_abilities();
         return;
     }
 
@@ -1501,6 +1536,7 @@ void StateManager::apply_type_changing_effects() {
     // General additive AddType statics run AFTER the land-subtype changer so a permanent whose
     // land subtypes were just reset (Blood Moon) still gains its global type (Mycosynth's Artifact).
     apply_global_addtype_statics(mEntities);
+    sync_subtype_mana_abilities();
 }
 
 // Preamble for the continuous-effects engine: rebuild the g_active_statics cache from
