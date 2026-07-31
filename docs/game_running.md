@@ -59,16 +59,24 @@ harness, the TUI, and `play.py` — accepts:
 - `"az:<gen-or-path>"` / `"mcts:<ckpt>"` (MCTS search) or `"azraw:<gen-or-path>"`
   (raw AZ policy) — `SearchController`/`AZRawController`. The search specs take a
   `?k=v&…` query: `sims`/`worlds`/`c`/`temp`/`seed` (in-game search) plus
-  `sb_sims`/`sb_worlds`/`sb_max_depth` — the **bo3 sideboard-root** budget
-  (defaults `128`/`4`/`200`). A sideboard prompt is a valid MCTS root but its
+  `sb_sims`/`sb_worlds`/`sb_max_depth`/`sb_rollout_turns` — the **bo3
+  sideboard-root** budget (defaults `256`/`4`/`200`/`12`, the `DEFAULT_SB_*`
+  constants in `cli_spec.py`). A sideboard prompt is a valid MCTS root but its
   horizon spans the whole next game, so `SearchController` switches to the
   sideboard budget there rather than the in-game one (whose `max_depth` default is
-  60). e.g. `az:gen?sims=64&worlds=4&sb_sims=128`.
+  60), and **leaf rollouts** are on by default: each sim plays the raw policy
+  (argmax priors, both seats) from the expanded leaf to the end of player-turn
+  `sb_rollout_turns` of the sampled next game and backs up THAT state's net value,
+  so the swap ranking sees concrete simulated futures instead of only the net's
+  static read of the decklist (`sb_rollout_turns=0` restores in-place leaf
+  evaluation). e.g. `az:gen?sims=64&worlds=4&sb_sims=128&sb_rollout_turns=8`.
   - `time=<seconds>` sets a **wall-clock per-decision budget** instead of a fixed
     sim count: the search interleaves its `worlds` round-robin and runs as many
     simulations as fit in that many seconds, then stops (more time = stronger
     play). The one budget applies to both in-game and sideboard roots (the
-    `sb_max_depth` split still applies). It overrides `sims` as the terminator —
+    `sb_max_depth`/`sb_rollout_turns` split still applies; note the deadline is
+    checked between sims, so a rolled sideboard sim can overshoot it by up to one
+    rollout). It overrides `sims` as the terminator —
     `sims`/`sb_sims`, when explicitly pinned alongside `time=`, act only as a hard
     cap. A floor of one sim per world always runs. e.g. `az:gen?time=5&worlds=4`.
     `play.py --think-time <seconds>` is the CLI front door that appends this knob.

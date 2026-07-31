@@ -437,12 +437,14 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
   by the *next* game's seed, so the K sampled worlds vary correctly game-to-game
   (covered by the snapshot-tier world-variation test).
 - **Sideboard-root search budget** — the sideboard root gets its own heavier, deeper
-  budget: `sb_sims=32` / `sb_worlds=4` / `sb_max_depth=200` (the rollout horizon is
-  game-long, so it is deeper than an in-game decision). These are inert for bo1.
+  budget: `sb_sims=256` / `sb_worlds=4` / `sb_max_depth=200` / `sb_rollout_turns=12`
+  (the `DEFAULT_SB_*` constants in `cli_spec.py`; the horizon is game-long, so it is
+  deeper than an in-game decision, and leaf rollouts — see the 2026-07-31 update
+  below — carry each sim to turn 12 of the sampled next game). Inert for bo1.
 - **Actor parity + next-game flush** — the C++ actor mirrors the Python match loop
   exactly: `--bo3` treats each `--games` unit as a match (match seeds spaced by 3),
   it searches the sideboard root with the same `--sb-sims`/`--sb-worlds`/
-  `--sb-max-depth` budget, and it **flushes** each game's samples priced by that
+  `--sb-max-depth`/`--sb-rollout-turns` budget, and it **flushes** each game's samples priced by that
   game's winner while sideboard samples recorded between a game's backfill and the
   next game's start stay buffered and are priced by the NEXT game (matching Python's
   `game_idx == k+1` sideboard samples). All obs + MCTS visits stay bit-exact with the
@@ -452,10 +454,35 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
 `az-eval`, all bo3 by default with `--bo1` to opt out):
 
 ```
---sb-sims N        PUCT sims at a bo3 sideboard root (default 128, was 32)
---sb-worlds N      determinized worlds at a bo3 sideboard root (default 4)
---sb-max-depth N   rollout depth cap at a bo3 sideboard root (default 200)
+--sb-sims N          PUCT sims at a bo3 sideboard root (default 256; was 32, then 128)
+--sb-worlds N        determinized worlds at a bo3 sideboard root (default 4)
+--sb-max-depth N     descent depth cap at a bo3 sideboard root (default 200)
+--sb-rollout-turns N leaf-rollout horizon in player turns of the next game
+                     (default 12; 0 = off — see the 2026-07-31 update below)
 ```
+
+> **Update (2026-07-31): leaf rollouts at sideboard roots.** Depth benchmarking
+> showed the PUCT tree alone never reaches the next game: at `sb_sims=256` the
+> most-visited line is ~3 decisions deep (max 8 — still inside the swap picks),
+> and even 4096 sims (~40 s/root) reach only ~turn 1, because the ~33-child swap
+> menu with diffuse priors spreads visits sideways (~+3 PV depth per sims
+> doubling). So a freshly expanded leaf now **plays the determinized world
+> forward** with the argmax-greedy raw policy (both seats, no rng) to the end of
+> player-turn `--sb-rollout-turns` of the sampled next game — through the
+> remaining sideboard picks and mulligans — and backs up THAT state's net value
+> (or the true terminal ±1). Pure rollout-end value, no leaf mixing; rolled-out
+> states are never added to the tree; a hard cap of `40 * turns` rollout steps
+> (`mcts.ROLLOUT_STEPS_PER_TURN`, mirrored in `az_mcts.cpp`) bounds pathological
+> lines. Measured at a real sideboard root (ur_delver vs gw_maverick, 256 sims,
+> PPO-warm-start evaluator): steps/sim 2.0 → 100.0 — every sim now sees ~12
+> player turns of the sampled game — at ~75 s/root in Python (the C++ actor is
+> substantially faster). The mechanism is a general `run_search(...,
+> rollout_turns=)` option (in-game roots keep 0 by default, anchor = the root's
+> own turn), mirrored bit-exactly in the C++ actor as a new ROLLOUT phase
+> (`--rollout-turns`/`--sb-rollout-turns`, -1 = inherit; rollouts force the
+> immediate leaf-eval path even under `--batch K>1`). `test_mcts_parity.py`
+> gained a rolled bo3-sb gate at `sb_rollout_turns=3`; the bo1 and
+> inherited-budget bo3 gates stay rollout-free as the unrolled baseline.
 
 > **Update (2026-07-26).** `--sb-sims` default raised 32 → **128**. The 32 was
 > chosen when a sideboard decision was the old paired IN→OUT menu; the balanced
@@ -502,25 +529,27 @@ root** correctly:
 
 - **`SearchController` selects the sideboard budget at sideboard roots.** When the
   current decision is a bo3 sideboard prompt (`obs[_IS_SIDEBOARD_IDX] > 0.5`) the
-  controller searches it with `sb_sims` / `sb_worlds` / `sb_max_depth` (defaults
-  `32` / `4` / `200`) instead of the in-game budget. This mirrors `az_selfplay`:
+  controller searches it with `sb_sims` / `sb_worlds` / `sb_max_depth` /
+  `sb_rollout_turns` (the `DEFAULT_SB_*` constants, currently `256`/`4`/`200`/`12`)
+  instead of the in-game budget. This mirrors `az_selfplay`:
   in-game roots keep `run_search`'s default `max_depth=60`, which at a sideboard
   root would be swallowed by the remaining sideboard/mulligan prompts and land the
   leaf value on a masked between-game observation (weak signal). The sideboard vs
   in-game searched split is tallied separately in `stats["sb_searched"]`.
-- **Shared constants, no duplication.** `DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH` live in
-  `cli_spec.py` (the single home, imported by `az_selfplay`, `SearchController`,
-  and the CLI flag defaults); the sideboard-flag index `_IS_SIDEBOARD_IDX` is a
-  named constant in `env.py`.
+- **Shared constants, no duplication.** `DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH/
+  ROLLOUT_TURNS` live in `cli_spec.py` (the single home, imported by
+  `az_selfplay`, `SearchController`, and the CLI flag defaults); the
+  sideboard-flag index `_IS_SIDEBOARD_IDX` is a named constant in `env.py`.
 - **Spec query knobs.** `az:`/`azraw:`/`mcts:` specs accept
-  `?sb_sims=&sb_worlds=&sb_max_depth=` (alongside `sims=`/`worlds=`), so any tool
-  taking a controller spec (observe `--player-a`, play `--model`) can tune the
-  sideboard budget inline.
-- **`analysis.py search`** gained `--sb-sims`/`--sb-worlds`/`--sb-max-depth` and
-  reports how many searched roots were sideboard roots (`N searched (K at bo3
-  sideboard roots)`); its recording sub-controller applies the same budget split.
-- **`az_eval` / `eval_search_gate.py`** thread `--sb-sims`/`--sb-worlds`/
-  `--sb-max-depth` into the `az:`/`mcts:` spec they build, so the gate prices
+  `?sb_sims=&sb_worlds=&sb_max_depth=&sb_rollout_turns=` (alongside
+  `sims=`/`worlds=`), so any tool taking a controller spec (observe
+  `--player-a`, play `--model`) can tune the sideboard budget inline.
+- **`analysis.py search`** gained `--sb-sims`/`--sb-worlds`/`--sb-max-depth`/
+  `--sb-rollout-turns` and reports how many searched roots were sideboard roots
+  (`N searched (K at bo3 sideboard roots)`); its recording sub-controller
+  applies the same budget split.
+- **`az_eval` / `eval_search_gate.py`** thread the same four `--sb-*` flags
+  into the `az:`/`mcts:` spec they build, so the gate prices
   sideboard roots explicitly rather than inheriting them silently.
 
 Verified end-to-end (`league/ur_delver` vs `league/gw_maverick`, `az:gen`): observe
@@ -543,7 +572,9 @@ deadline (so a timed cutoff never biases visits toward the first world), with a
 floor of one sim per world; `sims`/`sb_sims` become an optional hard cap. When
 `time=` is absent the original per-world sequential loop is **byte-for-byte
 unchanged** (actor visit-parity holds). The one budget applies to both in-game and
-sideboard roots (the `sb_max_depth` split still applies). `runner.run_games` now
+sideboard roots (the `sb_max_depth`/`sb_rollout_turns` split still applies; the
+deadline is checked between sims, so a rolled sideboard sim can overshoot it by
+up to one rollout). `runner.run_games` now
 prints a per-side search-effort line (roots searched, sideboard split, total and
 mean sims/decision) so the effort spent is visible. Measured with `az:gen` on
 `league/ur_delver` vs `league/gw_maverick`: `time=2&worlds=4` ≈ 190 mean
@@ -647,7 +678,7 @@ conventions). Example:
 train/.venv/bin/python train/analysis.py search az:league/ur_delver \
     --deck-a league/ur_delver --deck-b league/ur_delver \
     --n-games 4 --sims 64 --worlds 4 --top 8 \
-    --bo3 --sb-sims 32 --sb-worlds 4 --sb-max-depth 200   # sb-* apply at bo3 sideboard roots
+    --bo3 --sb-sims 32 --sb-worlds 4 --sb-rollout-turns 4   # sb-* apply at bo3 sideboard roots
 ```
 
 Both are surfaced in the TUI for free: the `search` subcommand is declared in
