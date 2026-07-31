@@ -30,8 +30,16 @@ from typing import Optional, Protocol, Sequence
 
 import numpy as np
 
-from env import _SELF_IS_A_IDX
+from env import _CUR_TURN_IDX, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX
 from search_env import SearchRoboMageEnv, SimQuery
+
+# Leaf-rollout step cap, per horizon turn: a rollout may take at most
+# ROLLOUT_STEPS_PER_TURN * rollout_turns engine decisions before it is cut off
+# and evaluated where it stands (measured: reaching turn 12 takes 46-92
+# decisions across league matchups, so 40/turn is a comfortable bound).
+# MIRRORED as kRolloutStepsPerTurn in src/actor/az_mcts.cpp — the C++ actor
+# must cut off at the same step or visit parity breaks.
+ROLLOUT_STEPS_PER_TURN = 40
 
 
 class Evaluator(Protocol):
@@ -208,6 +216,7 @@ def run_search(
     worlds: int = 4,
     c_puct: float = 1.5,
     max_depth: int = 60,
+    rollout_turns: int = 0,
     root_noise_eps: float = 0.0,
     root_noise_alpha: float = 1.0,
     rng: Optional[np.random.Generator] = None,
@@ -220,6 +229,16 @@ def run_search(
     loop-safe decision (env.last_search_safe). On return the env is back at
     that same decision with all snapshots released, ready for the chosen real
     step().
+
+    ``rollout_turns`` (default 0 = off): leaf rollouts. Each freshly expanded
+    leaf is played forward argmax-greedily by the raw policy (both seats) to
+    the end of player-turn ``anchor + rollout_turns`` — anchor is the ROOT's
+    turn for an in-game root, or 0 (of the sampled NEXT game) at a bo3
+    sideboard root — and the reached state's net value (or true terminal ±1)
+    is backed up instead of the leaf's. Callers default this ON at sideboard
+    roots (DEFAULT_SB_ROLLOUT_TURNS). Rollouts draw no rng and add no tree
+    nodes, so ``rollout_turns=0`` remains byte-for-byte identical to the
+    pre-rollout search — the parity guarantees below are unaffected.
 
     ``world_seeds`` (optional): when given, the per-world determinize seeds are
     consumed from it in order instead of drawn from ``rng`` — used for
@@ -255,6 +274,7 @@ def run_search(
     root_n = env._num_choices
     root_is_a = bool(root_obs[_SELF_IS_A_IDX] > 0.5)
     root_priors, _ = evaluator.evaluate(root_obs, root_n)
+    rollout_anchor = _rollout_anchor(root_obs)
 
     env.snapshot(snapshot_slot)
 
@@ -285,7 +305,8 @@ def run_search(
         env.restore(snapshot_slot)
         q = env.determinize(seeds[w])
         _check_root_query(q, root_n, w)
-        v = _simulate(env, evaluator, roots[w], c_puct, max_depth)
+        v = _simulate(env, evaluator, roots[w], c_puct, max_depth,
+                      rollout_turns, rollout_anchor)
         sims_run += 1
         sim_steps += v[1]
 
@@ -378,6 +399,7 @@ def run_search_parallel(
     worlds: int = 4,
     c_puct: float = 1.5,
     max_depth: int = 60,
+    rollout_turns: int = 0,
     root_noise_eps: float = 0.0,
     root_noise_alpha: float = 1.0,
     rng: Optional[np.random.Generator] = None,
@@ -417,7 +439,8 @@ def run_search_parallel(
         # draw happens inside run_search from the same rng).
         return run_search(
             envs[0], evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
-            max_depth=max_depth, root_noise_eps=root_noise_eps,
+            max_depth=max_depth, rollout_turns=rollout_turns,
+            root_noise_eps=root_noise_eps,
             root_noise_alpha=root_noise_alpha, rng=rng, time_budget_s=time_budget_s,
             time_budget_min_s=time_budget_min_s)
 
@@ -462,7 +485,8 @@ def run_search_parallel(
             sims_i = 0  # clock alone terminates
         return run_search(
             usable[i], locked, sims=sims_i, worlds=k_i, c_puct=c_puct,
-            max_depth=max_depth, root_noise_eps=0.0, rng=None,
+            max_depth=max_depth, rollout_turns=rollout_turns,
+            root_noise_eps=0.0, rng=None,
             world_seeds=seeds_i, time_budget_s=time_budget_s,
             time_budget_min_s=time_budget_min_s)
 
@@ -537,15 +561,84 @@ def _check_root_query(q: SimQuery, root_n: int, world: int) -> None:
             f"{q.num_choices}{derived}")
 
 
+def _rollout_anchor(root_obs: np.ndarray) -> int:
+    """The turn the rollout horizon counts from: 0 at a bo3 sideboard root
+    (the horizon is "through player-turn N of the sampled NEXT game"), else
+    the root's own turn (an in-game rollout extends N turns past the root).
+    Mirrored by the C++ actor's latch in begin_or_fallback (az_mcts.cpp)."""
+    if root_obs[_IS_SIDEBOARD_IDX] > 0.5:
+        return 0
+    return int(round(float(root_obs[_CUR_TURN_IDX]) * 50))
+
+
+def _rollout_stop(obs: np.ndarray, anchor: int, rollout_turns: int) -> bool:
+    """True when a rollout state has reached the end-of-turn horizon. The
+    is_sideboard gate exempts a sideboard-root sim's sideboard/mulligan prefix,
+    where the obs turn field still holds the ENDED game's turn; once the next
+    game starts the turn counter restarts at 0 and the comparison is live.
+    (Inert for in-game roots — a bo3 in-game sim ends at SIM_RESULT before it
+    can re-enter a sideboard phase.)"""
+    if obs[_IS_SIDEBOARD_IDX] > 0.5:
+        return False
+    turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
+    return turn >= anchor + rollout_turns
+
+
+def _rollout(
+    env: SearchRoboMageEnv,
+    evaluator: Evaluator,
+    query: SimQuery,
+    priors: np.ndarray,
+    value: float,
+    seat_is_a: bool,
+    anchor: int,
+    rollout_turns: int,
+    root_is_a: bool,
+) -> tuple[float, bool, int]:
+    """Argmax-greedy playout from a freshly expanded leaf to the end-of-turn
+    horizon (or terminal / step cap), on the current determinized world.
+
+    `query`/`priors`/`value`/`seat_is_a` describe the LEAF state (whose
+    evaluation the caller already paid for); each further state costs exactly
+    one evaluate(), whose priors pick the next action (first-max argmax, no
+    rng — parity with the C++ actor's strict-> tie-break) and whose value is
+    what gets backed up if the state is where the rollout stops. Rolled-out
+    states are never added to the tree. Returns (leaf_value, leaf_seat_is_a,
+    engine steps taken) for the unchanged backup loop."""
+    cap = ROLLOUT_STEPS_PER_TURN * rollout_turns
+    steps = 0
+    while True:
+        if steps >= cap or _rollout_stop(query.obs, anchor, rollout_turns):
+            return value, seat_is_a, steps
+        query = env.sim_step(int(np.argmax(priors)))
+        steps += 1
+        if query.terminal is not None:
+            if query.terminal == "DRAW":
+                return 0.0, root_is_a, steps
+            won = (query.terminal == "A") == root_is_a
+            return (1.0 if won else -1.0), root_is_a, steps
+        seat_is_a = bool(query.obs[_SELF_IS_A_IDX] > 0.5)
+        priors, value = evaluator.evaluate(query.obs, query.num_choices)
+
+
 def _simulate(
     env: SearchRoboMageEnv,
     evaluator: Evaluator,
     root: _Node,
     c_puct: float,
     max_depth: int,
+    rollout_turns: int = 0,
+    rollout_anchor: int = 0,
 ) -> tuple[float, int]:
     """One PUCT descent from the (already restored+determinized) root.
-    Returns (leaf value in root-node mover perspective, engine steps used)."""
+    Returns (leaf value in root-node mover perspective, engine steps used).
+
+    With ``rollout_turns > 0`` a freshly expanded leaf is not evaluated in
+    place: the raw policy plays the world forward to the end-of-turn horizon
+    (``rollout_anchor + rollout_turns``) and THAT state's net value (or a true
+    terminal ±1) is backed up instead. Only the expansion leaf rolls out — the
+    max_depth cutoff below keeps its in-place evaluation (it bounds tree
+    descent, not the horizon)."""
     node = root
     path: list[tuple[_Node, int]] = []
     steps = 0
@@ -572,7 +665,13 @@ def _simulate(
             child_is_a = bool(query.obs[_SELF_IS_A_IDX] > 0.5)
             priors, value = evaluator.evaluate(query.obs, query.num_choices)
             node.children[action] = _Node(query.num_choices, priors, child_is_a)
-            leaf_value, leaf_seat_is_a = value, child_is_a
+            if rollout_turns > 0:
+                leaf_value, leaf_seat_is_a, extra = _rollout(
+                    env, evaluator, query, priors, value, child_is_a,
+                    rollout_anchor, rollout_turns, root.self_is_a)
+                steps += extra
+            else:
+                leaf_value, leaf_seat_is_a = value, child_is_a
             break
 
         # Same world + same path must re-derive the same menu; a mismatch means
@@ -652,6 +751,7 @@ class IncrementalSearch:
 
     def __init__(self, env: SearchRoboMageEnv, evaluator: Evaluator, *,
                  worlds: int = 4, c_puct: float = 1.5, max_depth: int = 60,
+                 rollout_turns: int = 0,
                  rng: Optional[np.random.Generator] = None,
                  snapshot_slot: int = 0,
                  world_seeds: Optional[Sequence[int]] = None):
@@ -663,6 +763,7 @@ class IncrementalSearch:
         self._evaluator = evaluator
         self._c_puct = c_puct
         self._max_depth = max_depth
+        self._rollout_turns = rollout_turns
         self._slot = snapshot_slot
         self._worlds = worlds
         self.root_obs = env._obs.copy()
@@ -671,6 +772,7 @@ class IncrementalSearch:
         priors, net_value = evaluator.evaluate(self.root_obs, self.num_choices)
         self.priors = priors
         self.net_value = float(net_value)
+        self._rollout_anchor = _rollout_anchor(self.root_obs)
         env.snapshot(snapshot_slot)
         self.seeds: list[int] = []
         self.roots: list[_Node] = []
@@ -697,7 +799,8 @@ class IncrementalSearch:
             q = env.determinize(self.seeds[w])
             _check_root_query(q, self.num_choices, w)
             _, steps = _simulate(env, self._evaluator, self.roots[w],
-                                 self._c_puct, self._max_depth)
+                                 self._c_puct, self._max_depth,
+                                 self._rollout_turns, self._rollout_anchor)
             self.sims_run += 1
             self.sim_steps += steps
         return self.stats()
