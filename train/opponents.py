@@ -26,7 +26,7 @@ from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
                     CAT_CONFIRM_BLOCKERS)
 from cli_spec import (DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
-                      DEFAULT_SB_ROLLOUT_TURNS)
+                      DEFAULT_SB_ROLLOUT_TURNS, DEFAULT_SB_PERSIST)
 from scripted_agent import ScriptedAgent, make_agent
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
@@ -473,6 +473,7 @@ class SearchController:
                  sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
                  sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
                  sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+                 sb_persist: bool = bool(DEFAULT_SB_PERSIST),
                  time_budget: float | None = None,
                  sims_cap: int = 0, sb_sims_cap: int = 0, procs: int = 1,
                  clock: float | None = None, clock_t_min: float = 0.5,
@@ -497,6 +498,7 @@ class SearchController:
         self._sb_worlds = sb_worlds
         self._sb_max_depth = sb_max_depth
         self._sb_rollout_turns = sb_rollout_turns
+        self._sb_persist = bool(sb_persist)
         # Wall-clock per-decision budget (seconds). When set, the deadline
         # terminates each search; sims_cap/sb_sims_cap are the OPTIONAL hard caps
         # (0 => clock is the sole terminator, i.e. run as many sims as fit).
@@ -527,6 +529,20 @@ class SearchController:
         self._followed_trees = None
         self._followed_hist_len = 0
         self._followed_fp = None
+        # Sideboard-boundary persistence (sb_persist): one set of per-world
+        # trees + one rollout memo shared across a boundary's consecutive
+        # picks. key = mcts.sb_root_key identity; seeds = the pinned per-world
+        # determinize seeds (latched from the boundary's first search); roots =
+        # the previous search's SearchResult.roots (walked down the history
+        # delta at the next pick); picks = descriptors of the real picks since
+        # the boundary root (the memo key base). Single-env path only —
+        # procs>1 sb searches stay fresh.
+        self._sbp_key = None
+        self._sbp_seeds = None
+        self._sbp_roots = None
+        self._sbp_hist_len = 0
+        self._sbp_memo: dict = {}
+        self._sbp_picks: list = []
         # Optional observer hook: called after every SEARCHED decision with
         # (obs_copy, num_choices, SearchResult, chosen_action). Fires on the
         # caller's (driver) thread; the GUI analysis window uses it to display
@@ -536,6 +552,7 @@ class SearchController:
         self.on_result = None
         self.stats = {"searched": 0, "fallback": 0, "trivial": 0, "followed": 0,
                       "sims": 0, "sim_steps": 0, "sb_searched": 0,
+                      "sb_reused_visits": 0, "sb_memo_hits": 0,
                       "pool_procs": procs, "early_stops": 0}
         if self._clock is not None:
             self.stats["clock_bank"] = self._clock.bank
@@ -546,6 +563,7 @@ class SearchController:
         self._followed_trees = None
         self._followed_hist_len = 0
         self._followed_fp = None
+        self._drop_boundary()
         # bind_env fires once per match (runner.run_games / tui_game.run), so
         # this is the one-bank-per-match reset point.
         if self._clock is not None:
@@ -602,6 +620,27 @@ class SearchController:
     def _drop_trees(self) -> None:
         self._followed_trees = None
         self._followed_fp = None
+
+    def _drop_boundary(self) -> None:
+        self._sbp_key = None
+        self._sbp_seeds = None
+        self._sbp_roots = None
+        self._sbp_hist_len = 0
+        self._sbp_memo = {}
+        self._sbp_picks = []
+
+    def _sbp_latch(self, obs, chosen: int) -> None:
+        """Record the chosen action's pick descriptor while a boundary is
+        armed (mirrors the C++ actor latching in finalize + its fallback path;
+        the walk itself consumes the env action history, so only the memo's
+        descriptors need choose-time capture — non-pick actions contribute
+        none)."""
+        if self._sbp_roots is None:
+            return
+        from mcts import sb_pick_descriptor
+        d = sb_pick_descriptor(obs, int(chosen))
+        if d is not None:
+            self._sbp_picks.append(d)
 
     def _try_follow_tree(self, obs, num_choices):
         """Answer from the previous search's trees while the real game stays on
@@ -690,6 +729,13 @@ class SearchController:
         from mcts import run_search, run_search_parallel
         from decode import menu_is_interchangeable
 
+        # Sideboard-boundary identity of this decision (None off the sideboard
+        # phase or with persistence disabled).
+        sbp_key = None
+        if self._sb_persist:
+            from mcts import sb_root_key
+            sbp_key = sb_root_key(obs)
+
         # An interchangeable menu (four "Play Mountain" from a hand of
         # duplicates, N identical untapped basics to tap) offers the same
         # choice N times — search or evaluation would only spend wall clock
@@ -697,15 +743,20 @@ class SearchController:
         # first instantly; paced mode's floor pad still masks the timing.
         if menu_is_interchangeable(obs, num_choices):
             self.stats["trivial"] += 1
+            self._sbp_latch(obs, 0)
             return 0
 
         # While the game keeps matching the previous search's expected lines,
         # play on from those trees rather than recalculating (spends none of
         # the match clock); the first divergence falls through to a search.
-        followed = self._try_follow_tree(obs, num_choices)
-        if followed is not None:
-            self.stats["followed"] += 1
-            return followed
+        # At a PERSISTED sideboard root the follow-only answer is skipped —
+        # the boundary path below re-roots those same trees and tops them up
+        # with fresh sims instead of answering from stale visits.
+        if sbp_key is None:
+            followed = self._try_follow_tree(obs, num_choices)
+            if followed is not None:
+                self.stats["followed"] += 1
+                return followed
 
         env = self._env
         searchable = (
@@ -716,7 +767,9 @@ class SearchController:
         if not searchable:
             self.stats["fallback"] += 1
             priors, _ = self._evaluator.evaluate(obs, num_choices)
-            return int(np.argmax(priors))
+            chosen = int(np.argmax(priors))
+            self._sbp_latch(obs, chosen)
+            return chosen
         # Mirror pool: with procs>1 the worlds fan out across procs-1 extra engine
         # processes (interactive only; duck-typed so a plain env is tolerated).
         # envs is None => procs==1 (or no mirror support) => the original
@@ -757,15 +810,56 @@ class SearchController:
             tmin_s = min(tmin_s, tb)
         timed = tb is not None
         if is_sb:
-            result = _search(
+            kw = dict(
                 sims=(self._sb_sims_cap if timed else self._sb_sims),
                 worlds=self._sb_worlds, c_puct=self._c_puct,
                 max_depth=self._sb_max_depth,
                 rollout_turns=self._sb_rollout_turns,
                 rng=self._rng, time_budget_s=tb,
                 time_budget_min_s=tmin_s)
+            persist_here = sbp_key is not None and envs is None
+            if persist_here:
+                # Boundary continue: same identity AND every action since the
+                # previous search is our own (the engine runs one seat's picks
+                # contiguously, so any foreign action means the boundary is
+                # over). On continue the previous trees are walked down the
+                # history delta and topped up under the pinned seeds; else a
+                # fresh boundary starts (seeds latched from this search).
+                from mcts import walk_reuse_root
+                cont = False
+                hist = getattr(env, "_action_history", None)
+                meta = getattr(env, "_action_meta", None)
+                self_is_a = bool(obs[_SELF_IS_A_IDX] > 0.5)
+                if (self._sbp_roots is not None and self._sbp_key == sbp_key
+                        and self._sbp_seeds is not None
+                        and hist is not None and meta is not None
+                        and len(meta) == len(hist)
+                        and all(a_is_a == self_is_a for a_is_a, _c in
+                                meta[self._sbp_hist_len:])):
+                    delta = hist[self._sbp_hist_len:]
+                    kw.update(
+                        world_seeds=self._sbp_seeds,
+                        reuse_roots=[walk_reuse_root(r, delta, num_choices,
+                                                     self_is_a)
+                                     for r in self._sbp_roots])
+                    cont = True
+                if not cont:
+                    self._drop_boundary()
+                kw.update(rollout_memo=self._sbp_memo,
+                          memo_picks=tuple(self._sbp_picks))
+            elif sbp_key is not None:
+                self._drop_boundary()  # procs>1: no persistence, stay fresh
+            result = _search(**kw)
             self.stats["sb_searched"] += 1
+            if persist_here:
+                self._sbp_key = sbp_key
+                self._sbp_seeds = result.seeds
+                self._sbp_roots = result.roots
+                self._sbp_hist_len = len(getattr(env, "_action_history", []))
+                self.stats["sb_reused_visits"] += result.reused_visits
+                self.stats["sb_memo_hits"] += result.memo_hits
         else:
+            self._drop_boundary()
             result = _search(
                 sims=(self._sims_cap if timed else self._sims),
                 worlds=self._worlds, c_puct=self._c_puct,
@@ -776,9 +870,11 @@ class SearchController:
         # Arm tree-following from this search's per-world trees: the next
         # decisions are answered from them for as long as the real game walks
         # a line the sims explored and reveals nothing new (the fingerprint
-        # captured here is the reveal baseline).
+        # captured here is the reveal baseline). Persisted sideboard roots
+        # skip arming — the boundary machinery owns those trees, and a
+        # follow-only answer would bypass the next pick's top-up search.
         hist = getattr(env, "_action_history", None)
-        if result.roots and hist is not None:
+        if result.roots and hist is not None and sbp_key is None:
             from decode import hidden_info_fingerprint
             self._followed_trees = result.roots
             self._followed_hist_len = len(hist)
@@ -792,6 +888,7 @@ class SearchController:
         else:
             pi = result.policy_target(self._temperature)
             chosen = int(self._rng.choice(len(pi), p=pi))
+        self._sbp_latch(obs, chosen)
         if self.on_result is not None:
             try:
                 self.on_result(np.array(obs, copy=True), int(num_choices),
@@ -1183,7 +1280,8 @@ def _make_search_controller(spec: str, *,
     sims as the terminator), procs (world-parallel engine processes for
     interactive search; default 1), the bo3 sideboard-root budget sb_sims /
     sb_worlds / sb_max_depth / sb_rollout_turns (leaf-rollout horizon in
-    player turns, 0 = off), and the match-clock knobs clock (whole-match
+    player turns, 0 = off) / sb_persist (persist trees + rollout memo across
+    a boundary's picks, 1/0), and the match-clock knobs clock (whole-match
     wall-clock bank in seconds, allocated per decision) / tmin / tmax /
     sb_tmax / paced (response-timing masking for human play).
     """
@@ -1202,6 +1300,7 @@ def _make_search_controller(spec: str, *,
     sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
     sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
                                   DEFAULT_SB_ROLLOUT_TURNS, int, spec)
+    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
     time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
     clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
 
@@ -1218,6 +1317,7 @@ def _make_search_controller(spec: str, *,
                             sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth,
                             sb_rollout_turns=sb_rollout_turns,
+                            sb_persist=bool(sb_persist),
                             time_budget=time_budget,
                             sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
                             clock=clock, clock_t_min=tmin, clock_t_max=tmax,
@@ -1263,7 +1363,7 @@ def _load_az_evaluator(base: str):
 def _make_az_controller(spec: str, *, search: bool):
     """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
 
-    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=&sb_rollout_turns=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
+    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=&sb_rollout_turns=&sb_persist=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
     where <base> is an AZ checkpoint path / deck shorthand (falls back to a PPO
     warm-start). ``time=<seconds>`` sets a wall-clock per-decision budget (runs
     as many sims as fit, overriding sims as the terminator). ``procs=<n>`` fans
@@ -1291,6 +1391,7 @@ def _make_az_controller(spec: str, *, search: bool):
     sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
     sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
                                   DEFAULT_SB_ROLLOUT_TURNS, int, spec)
+    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
     time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
     clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
@@ -1299,6 +1400,7 @@ def _make_az_controller(spec: str, *, search: bool):
                             rng_seed=rng_seed, sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth,
                             sb_rollout_turns=sb_rollout_turns,
+                            sb_persist=bool(sb_persist),
                             time_budget=time_budget,
                             sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
                             clock=clock, clock_t_min=tmin, clock_t_max=tmax,

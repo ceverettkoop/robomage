@@ -52,6 +52,15 @@ DEFAULT_SB_MAX_DEPTH = 200
 # leaf evaluation, the pre-rollout behavior). The per-turn step cap lives in
 # mcts.ROLLOUT_STEPS_PER_TURN (mirrored in src/actor/az_mcts.cpp).
 DEFAULT_SB_ROLLOUT_TURNS = 12
+# Sideboard-boundary persistence (1 = on): a boundary's ~10-20 pick decisions
+# share one set of per-world trees (seeds pinned to the boundary's first
+# searched root, each pick re-rooted at the played action's child and topped up
+# to sb_sims total visits — reported visit targets are CUMULATIVE) plus a
+# rollout-value memo keyed on the order-insensitive pick multiset (an accepted
+# approximation across permuted orders; takeback paths excluded). Cuts the
+# per-boundary search cost from ~picks×sb_sims fresh sims to roughly one
+# boundary-wide budget. 0 restores per-pick fresh searches.
+DEFAULT_SB_PERSIST = 1
 
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
@@ -779,6 +788,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
             help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
                  f"of the next game (0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
+        Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
+            help="Persist per-world trees + rollout memo across a bo3 sideboard "
+                 f"boundary's picks (1/0; default {DEFAULT_SB_PERSIST})"),
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per game (default 0.25); else a "
                  "uniform league-roster draw"),
@@ -857,6 +869,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
             help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
                  f"(0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
+        Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
+            help="Persist trees + rollout memo across a bo3 sideboard boundary "
+                 f"(1/0; default {DEFAULT_SB_PERSIST})"),
         Arg("--workers", "int", default=None),
         Arg("--batches", "int", default=500),
         Arg("--batch-size", "int", default=256),
@@ -922,6 +937,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
             help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
                  f"(0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
+        Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
+            help="Persist trees + rollout memo across a bo3 sideboard boundary "
+                 f"(1/0; default {DEFAULT_SB_PERSIST})"),
         Arg("--workers", "int", default=None,
             help="Self-play worker processes (default max(1, cpu-2))"),
         Arg("--batches", "int", default=500),
@@ -1016,6 +1034,9 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
             Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
                 help="bo3 sideboard-root leaf-rollout horizon in player turns "
                      f"(0 = off; default: {DEFAULT_SB_ROLLOUT_TURNS})"),
+            Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
+                help="Persist trees + rollout memo across a bo3 sideboard "
+                     f"boundary (1/0; default: {DEFAULT_SB_PERSIST})"),
             Arg("--c", "float", default=1.5, help="PUCT exploration constant c_puct (default: 1.5)"),
             Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
             Arg("--top", "int", default=8,

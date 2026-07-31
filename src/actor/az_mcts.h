@@ -86,7 +86,9 @@ struct MCTSConfig {
     // root) — an ACCEPTED approximation across permuted pick orders; paths
     // containing a takeback are never memoized. Both behaviors must match
     // train/mcts.py's boundary consumers bit-exactly (test_mcts_parity).
-    bool sb_tree_persist = false;
+    // Default mirrors cli_spec.DEFAULT_SB_PERSIST (production callers pass
+    // --sb-persist explicitly either way).
+    bool sb_tree_persist = true;
 
     // ── self-play (--selfplay) ──────────────────────────────────────────────
     // When `selfplay` is set, each SEARCHED root stores a training sample and the

@@ -99,11 +99,12 @@ def main() -> int:
     rng = np.random.default_rng(SEED)
     failures = 0
     try:
-        samples, game_winners, searched, fallback, dropped = _play_match(
+        samples, game_winners, searched, fallback, dropped, sb_stats = _play_match(
             env, UniformEvaluator(), rng, sims=SIMS, worlds=WORLDS,
             temp_moves=TEMP_MOVES, root_noise_eps=0.0, root_noise_alpha=1.0,
             seed=SEED, sb_sims=SB_SIMS, sb_worlds=SB_WORLDS,
-            sb_max_depth=SB_MAX_DEPTH, sb_rollout_turns=SB_ROLLOUT_TURNS)
+            sb_max_depth=SB_MAX_DEPTH, sb_rollout_turns=SB_ROLLOUT_TURNS,
+            sb_persist=True)
     finally:
         env.close()
 

@@ -62,7 +62,8 @@ struct ActorConfig {
     int rollout_turns = 0;
     int sb_rollout_turns = -1;
     // Sideboard-boundary tree persistence + rollout memo (see az_mcts.h).
-    int sb_persist = 0;
+    // Default mirrors cli_spec.DEFAULT_SB_PERSIST.
+    int sb_persist = 1;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
     double noise_eps = 0.25;
