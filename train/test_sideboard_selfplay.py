@@ -53,6 +53,11 @@ WORLDS = 2
 SB_SIMS = 8
 SB_WORLDS = 2
 SB_MAX_DEPTH = 200
+# Pinned small (not the shipped DEFAULT_SB_ROLLOUT_TURNS) to bound the tier's
+# runtime while still exercising the leaf-rollout path at every searched
+# sideboard root (uniform-evaluator rollouts argmax to action 0 and are bounded
+# by the 40/turn step cap).
+SB_ROLLOUT_TURNS = 2
 TEMP_MOVES = 20
 SEED = 7
 
@@ -98,7 +103,7 @@ def main() -> int:
             env, UniformEvaluator(), rng, sims=SIMS, worlds=WORLDS,
             temp_moves=TEMP_MOVES, root_noise_eps=0.0, root_noise_alpha=1.0,
             seed=SEED, sb_sims=SB_SIMS, sb_worlds=SB_WORLDS,
-            sb_max_depth=SB_MAX_DEPTH)
+            sb_max_depth=SB_MAX_DEPTH, sb_rollout_turns=SB_ROLLOUT_TURNS)
     finally:
         env.close()
 

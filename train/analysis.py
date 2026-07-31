@@ -78,7 +78,8 @@ import decode
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import (ANALYSIS_TOOL, append_spec_knob, apply_to_parser,
-                      DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH)
+                      DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
+                      DEFAULT_SB_ROLLOUT_TURNS)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
@@ -4201,7 +4202,8 @@ def _build_search_evaluator(spec):
 
 def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed,
                                     sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
-                                    sb_max_depth=DEFAULT_SB_MAX_DEPTH):
+                                    sb_max_depth=DEFAULT_SB_MAX_DEPTH,
+                                    sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS):
     """A SearchController that also RECORDS (priors, visit_dist, net_value,
     root_value, obs) for every searched root, for the search-vs-raw report."""
     from opponents import SearchController
@@ -4211,7 +4213,8 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
             super().__init__(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                              temperature=0.0, label="search-compare", rng_seed=rng_seed,
                              sb_sims=sb_sims, sb_worlds=sb_worlds,
-                             sb_max_depth=sb_max_depth)
+                             sb_max_depth=sb_max_depth,
+                             sb_rollout_turns=sb_rollout_turns)
             self.records = []
 
         def choose(self, obs, num_choices, action_masks=None, decoded_actions=None):
@@ -4229,7 +4232,9 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 result = run_search(env, self._evaluator, sims=self._sb_sims,
                                     worlds=self._sb_worlds, c_puct=self._c_puct,
-                                    max_depth=self._sb_max_depth, rng=self._rng)
+                                    max_depth=self._sb_max_depth,
+                                    rollout_turns=self._sb_rollout_turns,
+                                    rng=self._rng)
                 self.stats["sb_searched"] += 1
             else:
                 result = run_search(env, self._evaluator, sims=self._sims,
@@ -4349,7 +4354,7 @@ def _run_search_compare_batch(payload):
     ``(batch_id, n_games, records, stats, elapsed)``."""
     (batch_id, model_spec, opponent_spec, deck_a, deck_b, n_games, seed,
      sims, worlds, c_puct, binary_path, bo3,
-     sb_sims, sb_worlds, sb_max_depth) = payload
+     sb_sims, sb_worlds, sb_max_depth, sb_rollout_turns) = payload
     t0 = time.time()
     try:
         import torch
@@ -4362,7 +4367,8 @@ def _run_search_compare_batch(payload):
     evaluator, _ = _build_search_evaluator(model_spec)
     ctrl_model = _make_search_compare_controller(
         evaluator, sims=sims, worlds=worlds, c_puct=c_puct, rng_seed=seed,
-        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth)
+        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+        sb_rollout_turns=sb_rollout_turns)
     ctrl_opp = make_controller(opponent_spec)
     runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
                      binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
@@ -4411,7 +4417,8 @@ def cmd_search_compare(args):
         ctrl_model = _make_search_compare_controller(
             evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
             rng_seed=args.seed, sb_sims=args.sb_sims, sb_worlds=args.sb_worlds,
-            sb_max_depth=args.sb_max_depth)
+            sb_max_depth=args.sb_max_depth,
+            sb_rollout_turns=args.sb_rollout_turns)
         ctrl_opp = make_controller(args.opponent)
 
         print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c}) "
@@ -4445,7 +4452,7 @@ def cmd_search_compare(args):
     payloads = [
         (i, args.model, args.opponent, deck_a, deck_b, count, args.seed + start,
          args.sims, args.worlds, args.c, args.binary, bo3,
-         args.sb_sims, args.sb_worlds, args.sb_max_depth)
+         args.sb_sims, args.sb_worlds, args.sb_max_depth, args.sb_rollout_turns)
         for i, (start, count) in enumerate(batches)
     ]
     print(f"Search-compare (parallel): {deck_a} (search {args.sims}x{args.worlds}, "

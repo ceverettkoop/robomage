@@ -45,6 +45,7 @@ BO3_WORLDS = 2
 BO3_SB_SIMS = 8
 BO3_SB_WORLDS = 2
 BO3_SB_MAX_DEPTH = 200
+BO3_SB_ROLLOUT_TURNS = 2  # small pin: exercises the actor's leaf-rollout path cheaply
 # is_sideboard_phase flag in the obs (env's _MATCH_CTX layout: game_number,
 # self_wins, opp_wins, sideboard_phase).
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
@@ -72,6 +73,7 @@ def _run_selfplay_bo3(ts_path, out_dir):
            "--games", str(GAMES), "--sims", str(BO3_SIMS), "--worlds",
            str(BO3_WORLDS), "--sb-sims", str(BO3_SB_SIMS), "--sb-worlds",
            str(BO3_SB_WORLDS), "--sb-max-depth", str(BO3_SB_MAX_DEPTH),
+           "--sb-rollout-turns", str(BO3_SB_ROLLOUT_TURNS),
            "--model", ts_path, "--out-dir", out_dir]
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)

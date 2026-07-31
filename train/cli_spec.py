@@ -41,6 +41,17 @@ BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resou
 DEFAULT_SB_SIMS = 256
 DEFAULT_SB_WORLDS = 4
 DEFAULT_SB_MAX_DEPTH = 200
+# Leaf-rollout horizon at sideboard roots, in player turns of the sampled next
+# game (12 = 6 full turn cycles). Measured (2026-07): the PUCT tree alone never
+# reaches the game — at sb_sims=256 the PV is ~3 decisions deep (the 33-child
+# swap menu spreads visits sideways), and even 4096 sims reach only ~turn 1 —
+# while a rollout covers turn 12 in 46-92 decisions, linear cost. Each sim
+# plays the raw policy forward to end-of-turn-12 and backs up THAT state's net
+# value, so the swap ranking is informed by concrete simulated futures instead
+# of the net's static read of the decklist features. 0 disables (pure in-place
+# leaf evaluation, the pre-rollout behavior). The per-turn step cap lives in
+# mcts.ROLLOUT_STEPS_PER_TURN (mirrored in src/actor/az_mcts.cpp).
+DEFAULT_SB_ROLLOUT_TURNS = 12
 
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
@@ -760,11 +771,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help="PUCT sims at a bo3 sideboard root (bo3 only; heavier per step "
                  f"than an in-game decision; default {DEFAULT_SB_SIMS})"),
-        Arg("--sb-worlds", "int", default=4,
-            help="Determinized worlds at a bo3 sideboard root (default 4)"),
-        Arg("--sb-max-depth", "int", default=200,
-            help="Rollout depth cap at a bo3 sideboard root (game-long horizon; "
-                 "default 200)"),
+        Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
+            help=f"Determinized worlds at a bo3 sideboard root (default {DEFAULT_SB_WORLDS})"),
+        Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
+            help="Descent depth cap at a bo3 sideboard root "
+                 f"(default {DEFAULT_SB_MAX_DEPTH})"),
+        Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
+            help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
+                 f"of the next game (0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per game (default 0.25); else a "
                  "uniform league-roster draw"),
@@ -836,10 +850,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--worlds", "int", default=4),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
-        Arg("--sb-worlds", "int", default=4,
-            help="Determinized worlds at a bo3 sideboard root (default 4)"),
-        Arg("--sb-max-depth", "int", default=200,
-            help="Rollout depth cap at a bo3 sideboard root (default 200)"),
+        Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
+            help=f"Determinized worlds at a bo3 sideboard root (default {DEFAULT_SB_WORLDS})"),
+        Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
+            help=f"Descent depth cap at a bo3 sideboard root (default {DEFAULT_SB_MAX_DEPTH})"),
+        Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
+            help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
+                 f"(0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
         Arg("--workers", "int", default=None),
         Arg("--batches", "int", default=500),
         Arg("--batch-size", "int", default=256),
@@ -898,10 +915,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--worlds", "int", default=4),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
-        Arg("--sb-worlds", "int", default=4,
-            help="Determinized worlds at a bo3 sideboard root (default 4)"),
-        Arg("--sb-max-depth", "int", default=200,
-            help="Rollout depth cap at a bo3 sideboard root (default 200)"),
+        Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
+            help=f"Determinized worlds at a bo3 sideboard root (default {DEFAULT_SB_WORLDS})"),
+        Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
+            help=f"Descent depth cap at a bo3 sideboard root (default {DEFAULT_SB_MAX_DEPTH})"),
+        Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
+            help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
+                 f"(0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
         Arg("--workers", "int", default=None,
             help="Self-play worker processes (default max(1, cpu-2))"),
         Arg("--batches", "int", default=500),
@@ -992,7 +1012,10 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
             Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
                 help=f"bo3 sideboard-root determinized worlds (default: {DEFAULT_SB_WORLDS})"),
             Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
-                help=f"bo3 sideboard-root rollout depth (default: {DEFAULT_SB_MAX_DEPTH})"),
+                help=f"bo3 sideboard-root descent depth cap (default: {DEFAULT_SB_MAX_DEPTH})"),
+            Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
+                help="bo3 sideboard-root leaf-rollout horizon in player turns "
+                     f"(0 = off; default: {DEFAULT_SB_ROLLOUT_TURNS})"),
             Arg("--c", "float", default=1.5, help="PUCT exploration constant c_puct (default: 1.5)"),
             Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
             Arg("--top", "int", default=8,

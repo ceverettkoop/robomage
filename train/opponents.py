@@ -25,7 +25,8 @@ from env import (MAX_ACTIONS, STATE_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
 from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
                     CAT_CONFIRM_BLOCKERS)
-from cli_spec import DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH
+from cli_spec import (DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
+                      DEFAULT_SB_ROLLOUT_TURNS)
 from scripted_agent import ScriptedAgent, make_agent
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
@@ -471,6 +472,7 @@ class SearchController:
                  label: str = "mcts", rng_seed: int = 0,
                  sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
                  sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
+                 sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
                  time_budget: float | None = None,
                  sims_cap: int = 0, sb_sims_cap: int = 0, procs: int = 1,
                  clock: float | None = None, clock_t_min: float = 0.5,
@@ -494,6 +496,7 @@ class SearchController:
         self._sb_sims = sb_sims
         self._sb_worlds = sb_worlds
         self._sb_max_depth = sb_max_depth
+        self._sb_rollout_turns = sb_rollout_turns
         # Wall-clock per-decision budget (seconds). When set, the deadline
         # terminates each search; sims_cap/sb_sims_cap are the OPTIONAL hard caps
         # (0 => clock is the sole terminator, i.e. run as many sims as fit).
@@ -757,7 +760,9 @@ class SearchController:
             result = _search(
                 sims=(self._sb_sims_cap if timed else self._sb_sims),
                 worlds=self._sb_worlds, c_puct=self._c_puct,
-                max_depth=self._sb_max_depth, rng=self._rng, time_budget_s=tb,
+                max_depth=self._sb_max_depth,
+                rollout_turns=self._sb_rollout_turns,
+                rng=self._rng, time_budget_s=tb,
                 time_budget_min_s=tmin_s)
             self.stats["sb_searched"] += 1
         else:
@@ -1177,7 +1182,8 @@ def _make_search_controller(spec: str, *,
     time (wall-clock seconds/decision — runs as many sims as fit, overriding
     sims as the terminator), procs (world-parallel engine processes for
     interactive search; default 1), the bo3 sideboard-root budget sb_sims /
-    sb_worlds / sb_max_depth, and the match-clock knobs clock (whole-match
+    sb_worlds / sb_max_depth / sb_rollout_turns (leaf-rollout horizon in
+    player turns, 0 = off), and the match-clock knobs clock (whole-match
     wall-clock bank in seconds, allocated per decision) / tmin / tmax /
     sb_tmax / paced (response-timing masking for human play).
     """
@@ -1194,6 +1200,8 @@ def _make_search_controller(spec: str, *,
     sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
     sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
     sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
+    sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
+                                  DEFAULT_SB_ROLLOUT_TURNS, int, spec)
     time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
     clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
 
@@ -1208,7 +1216,9 @@ def _make_search_controller(spec: str, *,
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                             temperature=temperature, label=label, rng_seed=rng_seed,
                             sb_sims=sb_sims, sb_worlds=sb_worlds,
-                            sb_max_depth=sb_max_depth, time_budget=time_budget,
+                            sb_max_depth=sb_max_depth,
+                            sb_rollout_turns=sb_rollout_turns,
+                            time_budget=time_budget,
                             sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
                             clock=clock, clock_t_min=tmin, clock_t_max=tmax,
                             clock_sb_t_max=sb_tmax, paced=paced)
@@ -1253,12 +1263,16 @@ def _load_az_evaluator(base: str):
 def _make_az_controller(spec: str, *, search: bool):
     """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
 
-    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
+    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=&sb_rollout_turns=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
     where <base> is an AZ checkpoint path / deck shorthand (falls back to a PPO
     warm-start). ``time=<seconds>`` sets a wall-clock per-decision budget (runs
     as many sims as fit, overriding sims as the terminator). ``procs=<n>`` fans
     the worlds across n engine processes (world-parallel interactive search;
-    default 1). sb_* set the bo3 sideboard-root search budget. ``clock=<seconds>``
+    default 1). sb_* set the bo3 sideboard-root search budget
+    (``sb_rollout_turns`` the leaf-rollout horizon in player turns, 0 = off —
+    note a rolled sim costs a rollout's worth of wall clock, so ``time=``/
+    ``clock=`` deadlines, checked between sims, can overshoot by up to one
+    rollout). ``clock=<seconds>``
     arms a whole-match chess-clock bank (per-decision allocation bounded by
     tmin/tmax, sideboard roots by sb_tmax); ``paced=1`` masks response-timing
     tells for human play (small jittered floor + occasional fake-think beats)."""
@@ -1275,13 +1289,17 @@ def _make_az_controller(spec: str, *, search: bool):
     sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
     sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
     sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
+    sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
+                                  DEFAULT_SB_ROLLOUT_TURNS, int, spec)
     time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
     clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
     return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                             temperature=temperature,
                             label=f"az:{base}({_effort_label(sims, worlds, time_budget, clock)})",
                             rng_seed=rng_seed, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                            sb_max_depth=sb_max_depth, time_budget=time_budget,
+                            sb_max_depth=sb_max_depth,
+                            sb_rollout_turns=sb_rollout_turns,
+                            time_budget=time_budget,
                             sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
                             clock=clock, clock_t_min=tmin, clock_t_max=tmax,
                             clock_sb_t_max=sb_tmax, paced=paced)
