@@ -163,15 +163,23 @@ class SearchResult:
 
 
 class _Node:
-    __slots__ = ("num_choices", "P", "N", "W", "children", "self_is_a")
+    __slots__ = ("num_choices", "P", "N", "W", "children", "self_is_a",
+                 "pick_meta")
 
-    def __init__(self, num_choices: int, priors: np.ndarray, self_is_a: bool):
+    def __init__(self, num_choices: int, priors: np.ndarray, self_is_a: bool,
+                 pick_meta: Optional[tuple] = None):
         self.num_choices = num_choices
         self.P = priors
         self.N = np.zeros(num_choices, dtype=np.int64)
         self.W = np.zeros(num_choices, dtype=np.float64)
         self.children: dict[int, _Node] = {}
         self.self_is_a = self_is_a  # which seat moves at this node
+        # Per-action sideboard-pick descriptors (sb_pick_descriptor or None),
+        # captured from this node's obs at CREATION — the descent has no obs in
+        # hand when re-selecting from interior nodes (mirrors the C++ actor,
+        # whose AWAITING_ROOT phase never builds one). Populated only when the
+        # search runs with a rollout memo; None otherwise.
+        self.pick_meta = pick_meta
 
     def select(self, c_puct: float) -> int:
         # Q is stored in this node's mover perspective, so plain argmax is
@@ -235,6 +243,8 @@ def run_search(
     snapshot_slot: int = 0,
     world_seeds: Optional[Sequence[int]] = None,
     reuse_roots: Optional[Sequence] = None,
+    rollout_memo: Optional[dict] = None,
+    memo_picks: tuple = (),
     time_budget_s: Optional[float] = None,
     time_budget_min_s: Optional[float] = None,
 ) -> SearchResult:
@@ -254,6 +264,15 @@ def run_search(
     reported ``visits`` are CUMULATIVE (``sims_run`` counts new sims only;
     ``reused_visits`` reports the inherited mass). ``None`` (the default)
     keeps every path byte-identical to the pre-reuse search.
+
+    ``rollout_memo`` (optional, sideboard boundaries only): the boundary's
+    rollout-value memo dict, shared across the boundary's searches;
+    ``memo_picks`` are the descriptors (:func:`sb_pick_descriptor`) of the
+    REAL picks played since the boundary root. Rollouts from leaves still in
+    the sideboard phase are stored/reused keyed on the pinned world seed and
+    the order-insensitive pick multiset (takeback-containing paths excluded).
+    A hit backs up the stored result with 0 engine steps; ``memo_hits``
+    reports the count. ``None`` disables (byte-identical default).
 
     ``rollout_turns`` (default 0 = off): leaf rollouts. Each freshly expanded
     leaf is played forward argmax-greedily by the raw policy (both seats) to
@@ -318,6 +337,13 @@ def run_search(
     # path shares one priors array across worlds) and noise is re-mixed in the
     # same per-world rng position a fresh root would use; its N/W/children are
     # kept, and its budget is topped up to sims_per_world total visits.
+    memo_ctx = None
+    root_pm = None
+    if rollout_memo is not None:
+        root_pm = pick_meta_for(root_obs, root_n)
+        memo_ctx = {"table": rollout_memo, "base_picks": tuple(memo_picks),
+                    "world_seed": 0, "hits": 0}
+
     seeds: list[int] = []
     roots: list[_Node] = []
     budgets: list[int] = []
@@ -333,12 +359,14 @@ def run_search(
         reused = reuse_roots[w] if reuse_roots is not None else None
         if reused is not None:
             reused.P = np.array(priors, copy=True)
+            if root_pm is not None and reused.pick_meta is None:
+                reused.pick_meta = root_pm
             n_have = int(reused.N.sum())
             reused_visits += n_have
             roots.append(reused)
             budgets.append(max(0, sims_per_world - n_have))
         else:
-            roots.append(_Node(root_n, priors, root_is_a))
+            roots.append(_Node(root_n, priors, root_is_a, pick_meta=root_pm))
             budgets.append(sims_per_world)
 
     def _one_sim(w: int) -> None:
@@ -346,8 +374,10 @@ def run_search(
         env.restore(snapshot_slot)
         q = env.determinize(seeds[w])
         _check_root_query(q, root_n, w)
+        if memo_ctx is not None:
+            memo_ctx["world_seed"] = seeds[w]
         v = _simulate(env, evaluator, roots[w], c_puct, max_depth,
-                      rollout_turns, rollout_anchor)
+                      rollout_turns, rollout_anchor, memo_ctx)
         sims_run += 1
         sim_steps += v[1]
 
@@ -417,6 +447,7 @@ def run_search(
         roots=roots,
         seeds=seeds,
         reused_visits=reused_visits,
+        memo_hits=memo_ctx["hits"] if memo_ctx is not None else 0,
     )
 
 
@@ -668,6 +699,34 @@ def sb_pick_descriptor(obs: np.ndarray, action: int) -> Optional[tuple[int, int,
     return (cat, _obs_action_card_id(obs, action), seat)
 
 
+def pick_meta_for(obs: np.ndarray, num_choices: int) -> tuple:
+    """The per-action sb_pick_descriptor tuple stored on a _Node at creation
+    (memo-enabled searches only)."""
+    return tuple(sb_pick_descriptor(obs, a) for a in range(num_choices))
+
+
+def rollout_memo_key(world_seed: int, leaf_seat_is_a: bool, picks) -> tuple:
+    """Memo key for a rollout from a leaf still inside the sideboard phase:
+    the pinned world seed (the sampled next-game deal), the leaf's mover seat,
+    and the SORTED multiset of pick descriptors accumulated from the boundary
+    root to the leaf — order-insensitive, so permuted pick orders reaching the
+    same net configuration collide (deliberately: an accepted approximation,
+    see docs/alphazero_status.md)."""
+    return (int(world_seed), bool(leaf_seat_is_a), tuple(sorted(picks)))
+
+
+def rollout_memo_eligible(picks) -> bool:
+    """False when any (card, seat) appears in BOTH pick directions — a
+    takeback changes the one-shot direction locks without changing the deck,
+    so the greedy completion (and therefore the rollout) genuinely diverges
+    between orderings; such keys are never memoized."""
+    ins: set = set()
+    outs: set = set()
+    for cat, cid, seat in picks:
+        (ins if cat == CAT_SIDEBOARD_IN else outs).add((cid, seat))
+    return not (ins & outs)
+
+
 def walk_reuse_root(root: "_Node", actions, num_choices: int,
                     seat_is_a: bool) -> Optional["_Node"]:
     """Walk a stored world tree down the actually-played actions since the
@@ -705,19 +764,22 @@ def _rollout(
     rng — parity with the C++ actor's strict-> tie-break) and whose value is
     what gets backed up if the state is where the rollout stops. Rolled-out
     states are never added to the tree. Returns (leaf_value, leaf_seat_is_a,
-    engine steps taken) for the unchanged backup loop."""
+    engine steps taken, terminal) for the unchanged backup loop; ``terminal``
+    is "A"/"B"/"DRAW" when the playout hit game end (its value is already
+    root-relative), else None (net value at the horizon, mover perspective) —
+    the tag the rollout memo stores."""
     cap = ROLLOUT_STEPS_PER_TURN * rollout_turns
     steps = 0
     while True:
         if steps >= cap or _rollout_stop(query.obs, anchor, rollout_turns):
-            return value, seat_is_a, steps
+            return value, seat_is_a, steps, None
         query = env.sim_step(int(np.argmax(priors)))
         steps += 1
         if query.terminal is not None:
             if query.terminal == "DRAW":
-                return 0.0, root_is_a, steps
+                return 0.0, root_is_a, steps, query.terminal
             won = (query.terminal == "A") == root_is_a
-            return (1.0 if won else -1.0), root_is_a, steps
+            return (1.0 if won else -1.0), root_is_a, steps, query.terminal
         seat_is_a = bool(query.obs[_SELF_IS_A_IDX] > 0.5)
         priors, value = evaluator.evaluate(query.obs, query.num_choices)
 
@@ -730,6 +792,7 @@ def _simulate(
     max_depth: int,
     rollout_turns: int = 0,
     rollout_anchor: int = 0,
+    memo_ctx: Optional[dict] = None,
 ) -> tuple[float, int]:
     """One PUCT descent from the (already restored+determinized) root.
     Returns (leaf value in root-node mover perspective, engine steps used).
@@ -739,15 +802,28 @@ def _simulate(
     (``rollout_anchor + rollout_turns``) and THAT state's net value (or a true
     terminal ±1) is backed up instead. Only the expansion leaf rolls out — the
     max_depth cutoff below keeps its in-place evaluation (it bounds tree
-    descent, not the horizon)."""
+    descent, not the horizon).
+
+    ``memo_ctx`` (rollout memo, sideboard boundaries only): dict with keys
+    ``table`` (the boundary's memo), ``base_picks`` (descriptors of the REAL
+    picks since the boundary root), ``world_seed`` (this sim's pinned seed,
+    set per sim by the caller) and ``hits``. Sim-path picks are accumulated
+    from each node's creation-time ``pick_meta``; an eligible leaf still in
+    the sideboard phase reuses a stored rollout result instead of playing
+    out (adding 0 engine steps)."""
     node = root
     path: list[tuple[_Node, int]] = []
     steps = 0
     leaf_value = 0.0       # in the perspective of `leaf_seat_is_a`
     leaf_seat_is_a = root.self_is_a
+    picks = list(memo_ctx["base_picks"]) if memo_ctx is not None else None
 
     while True:
         action = node.select(c_puct)
+        if picks is not None and node.pick_meta is not None:
+            d = node.pick_meta[action]
+            if d is not None:
+                picks.append(d)
         query: SimQuery = env.sim_step(action)
         steps += 1
         path.append((node, action))
@@ -765,12 +841,37 @@ def _simulate(
         if child is None:
             child_is_a = bool(query.obs[_SELF_IS_A_IDX] > 0.5)
             priors, value = evaluator.evaluate(query.obs, query.num_choices)
-            node.children[action] = _Node(query.num_choices, priors, child_is_a)
+            pm = (pick_meta_for(query.obs, query.num_choices)
+                  if picks is not None else None)
+            node.children[action] = _Node(query.num_choices, priors, child_is_a,
+                                          pick_meta=pm)
             if rollout_turns > 0:
-                leaf_value, leaf_seat_is_a, extra = _rollout(
+                key = None
+                if (picks is not None and query.obs[_IS_SIDEBOARD_IDX] > 0.5
+                        and rollout_memo_eligible(picks)):
+                    key = rollout_memo_key(memo_ctx["world_seed"], child_is_a,
+                                           picks)
+                    hit = memo_ctx["table"].get(key)
+                    if hit is not None:
+                        memo_ctx["hits"] += 1
+                        if hit[0] == "t":
+                            leaf_seat_is_a = root.self_is_a
+                            if hit[1] == "DRAW":
+                                leaf_value = 0.0
+                            else:
+                                won = (hit[1] == "A") == root.self_is_a
+                                leaf_value = 1.0 if won else -1.0
+                        else:
+                            leaf_value, leaf_seat_is_a = hit[1], hit[2]
+                        break
+                lv, ls, extra, term = _rollout(
                     env, evaluator, query, priors, value, child_is_a,
                     rollout_anchor, rollout_turns, root.self_is_a)
                 steps += extra
+                if key is not None:
+                    memo_ctx["table"][key] = (("t", term) if term is not None
+                                              else ("v", lv, ls))
+                leaf_value, leaf_seat_is_a = lv, ls
             else:
                 leaf_value, leaf_seat_is_a = value, child_is_a
             break
