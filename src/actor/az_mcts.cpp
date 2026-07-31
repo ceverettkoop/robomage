@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "az_evaluator.h"
+#include "classes/game.h"     // cur_game.turn (rollout horizon check)
 #include "components/zone.h"  // Zone::PLAYER_A / PLAYER_B
 #include "error.h"
 #include "obs_builder.h"      // build_obs, ACTOR_OBS_SIZE, ACTOR_SELF_IS_A_IDX
@@ -29,6 +30,11 @@ static constexpr int SELF_IS_A_IDX = ACTOR_SELF_IS_A_IDX;
 
 // The single snapshot slot the search reserves (matches mcts.py's snapshot_slot=0).
 static constexpr int SEARCH_SLOT = 0;
+
+// Leaf-rollout step cap per horizon turn. MIRRORS mcts.py's
+// ROLLOUT_STEPS_PER_TURN — a cap-triggered cutoff must fire at the same step on
+// both sides or visit parity breaks.
+static constexpr long kRolloutStepsPerTurn = 40;
 
 namespace {
 
@@ -96,7 +102,7 @@ struct PendingLeaf {
 }  // namespace
 
 struct AZMcts::Impl {
-    enum Phase { IDLE, DESCENDING, AWAITING_ROOT };
+    enum Phase { IDLE, DESCENDING, ROLLOUT, AWAITING_ROOT };
 
     MCTSConfig cfg;
     AZEvaluator* eval;  // null → uniform evaluator (torch-free)
@@ -120,6 +126,14 @@ struct AZMcts::Impl {
     int cur_sims = 0;
     int cur_worlds = 0;
     int cur_max_depth = 0;
+    // Leaf-rollout budget in force for THIS search (latched at root setup like
+    // the sims/worlds/depth budget above; mirrors run_search's rollout_turns /
+    // _rollout_anchor). rollout_steps counts the actions of the rollout
+    // currently in flight (mirrors mcts.py::_rollout's `steps`).
+    int cur_rollout_turns = 0;
+    int cur_rollout_anchor = 0;
+    long cur_rollout_cap = 0;
+    long rollout_steps = 0;
     int cur_world = 0;
     int cur_sim = 0;  // index of the simulation currently running within cur_world
     uint32_t cur_world_seed = 0;
@@ -359,6 +373,44 @@ struct AZMcts::Impl {
         pending.clear();
     }
 
+    // ── leaf-rollout helpers ───────────────────────────────────────────────
+    // First-max argmax over float64 priors (numpy argmax tie-break) — the raw-
+    // policy action, shared by the fallback path and the rollout playout.
+    static int argmax_priors(const std::vector<double>& priors, int nc) {
+        int best = 0;
+        for (int i = 1; i < nc; i++)
+            if (priors[static_cast<size_t>(i)] > priors[static_cast<size_t>(best)]) best = i;
+        return best;
+    }
+
+    // True when the CURRENT engine state has reached the rollout horizon
+    // (mirrors mcts.py::_rollout_stop, which reads the same fields from the
+    // obs: is_sideboard_phase serializes `sideboard_phase`, turn serializes
+    // `cur_game.turn`). The sideboard gate exempts a sideboard-root sim's
+    // sideboard/mulligan prefix, where the turn still belongs to the ENDED game.
+    bool rollout_stop_here() const {
+        return !sideboard_phase &&
+               static_cast<int>(cur_game.turn) >= cur_rollout_anchor + cur_rollout_turns;
+    }
+
+    // One ROLLOUT-phase provider call (mirrors one mcts.py::_rollout loop
+    // iteration): the engine sits at the state reached by the previous rollout
+    // action. Evaluate it once; at the horizon / step cap back its value up
+    // (the state's own mover perspective), else play its argmax action.
+    // Terminals never reach here — they fire on_game_end. The tree `path` is
+    // NOT extended by rollout steps.
+    int rollout_step(const float* o, int nc) {
+        rollout_steps += 1;
+        AZEvalResultD r = eval_one(o, nc);
+        if (rollout_steps >= cur_rollout_cap || rollout_stop_here()) {
+            backup(path, r.value, o[SELF_IS_A_IDX] > 0.5f);
+            finish_sim();
+            return 0;
+        }
+        sim_steps += 1;
+        return argmax_priors(r.priors, nc);
+    }
+
     // ── phase handlers ─────────────────────────────────────────────────────
     int begin_or_fallback(const float* o, int nc) {
         bool searchable = search_loop_safe() && nc > 1;
@@ -367,11 +419,7 @@ struct AZMcts::Impl {
             // fallback. It still counts as one real move for the tau schedule.
             move_counter += 1;
             if (nc <= 1) return 0;
-            std::vector<double> priors = eval_priors(o, nc);
-            int best = 0;
-            for (int i = 1; i < nc; i++)
-                if (priors[static_cast<size_t>(i)] > priors[static_cast<size_t>(best)]) best = i;
-            return best;
+            return argmax_priors(eval_priors(o, nc), nc);
         }
         // BEGIN SEARCH (mirrors mcts.py::run_search setup). Capture the CLEAN root
         // obs (the state the net saw for base priors) before any determinize —
@@ -388,6 +436,13 @@ struct AZMcts::Impl {
         cur_sims = (sb && cfg.sb_sims >= 0) ? cfg.sb_sims : cfg.sims;
         cur_worlds = (sb && cfg.sb_worlds >= 0) ? cfg.sb_worlds : cfg.worlds;
         cur_max_depth = (sb && cfg.sb_max_depth >= 0) ? cfg.sb_max_depth : cfg.max_depth;
+        // Leaf-rollout budget + anchor (mirrors run_search's rollout_turns and
+        // _rollout_anchor: 0 at a sideboard root — the horizon is "through
+        // player-turn N of the sampled NEXT game" — else the root's own turn).
+        cur_rollout_turns =
+            (sb && cfg.sb_rollout_turns >= 0) ? cfg.sb_rollout_turns : cfg.rollout_turns;
+        cur_rollout_anchor = sb ? 0 : static_cast<int>(cur_game.turn);
+        cur_rollout_cap = kRolloutStepsPerTurn * cur_rollout_turns;
         visit_totals.assign(static_cast<size_t>(nc), 0);
         value_acc = 0.0;
         sims_run = 0;
@@ -416,9 +471,10 @@ struct AZMcts::Impl {
         int paction = pe.action;
         auto it = parent->children.find(paction);
         if (it == parent->children.end()) {
-            // New leaf.
+            // New leaf. Rollouts force the immediate (batch=1) eval path —
+            // a deferred PendingLeaf cannot drive a playout.
             bool leaf_is_a = o[SELF_IS_A_IDX] > 0.5f;
-            if (cfg.batch > 1) {
+            if (cfg.batch > 1 && cur_rollout_turns == 0) {
                 PendingLeaf pl;
                 pl.obs.assign(o, o + ACTOR_OBS_SIZE);
                 pl.num_choices = nc;
@@ -436,6 +492,17 @@ struct AZMcts::Impl {
             capture_menu(o, nc, parent->children[paction]->dbg_menu);
             capture_state(o, parent->children[paction]->dbg_state);
 #endif
+            // Leaf rollout (mirrors mcts.py::_rollout with the leaf as state 0):
+            // unless the leaf already meets the horizon, play the raw policy
+            // forward instead of backing up the leaf's value. The engine state
+            // at this moment IS the leaf state, so check the stop condition on
+            // the live globals (identical to Python's read of the leaf obs).
+            if (cur_rollout_turns > 0 && !rollout_stop_here()) {
+                rollout_steps = 0;
+                phase = ROLLOUT;
+                sim_steps += 1;
+                return argmax_priors(r.priors, nc);
+            }
             backup(path, r.value, leaf_is_a);
             finish_sim();
             return 0;
@@ -596,6 +663,8 @@ struct AZMcts::Impl {
                 return begin_or_fallback(o, nc);
             case DESCENDING:
                 return descend_step(o, nc);
+            case ROLLOUT:
+                return rollout_step(o, nc);
             case AWAITING_ROOT:
                 break;  // handled above
         }
@@ -604,9 +673,10 @@ struct AZMcts::Impl {
     }
 
     bool on_game_end(int winner) {
-        // A simulated line reached game over (only fires during DESCENDING with a
-        // live snapshot and no pending restore). Mirror mcts.py's terminal
-        // convention: value ±1 vs the ROOT seat, DRAW 0, leaf_seat = root seat.
+        // A simulated line reached game over (fires during DESCENDING or ROLLOUT
+        // with a live snapshot and no pending restore). Mirror mcts.py's terminal
+        // convention: value ±1 vs the ROOT seat, DRAW 0, leaf_seat = root seat —
+        // identical for a descent terminal and a rollout terminal.
         double leaf_value;
         if (winner == static_cast<int>(Zone::PLAYER_A) ||
             winner == static_cast<int>(Zone::PLAYER_B)) {

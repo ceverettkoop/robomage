@@ -56,6 +56,12 @@ SEED_BASE = 42
 SB_SIMS = 8
 SB_WORLDS = 2
 SB_MAX_DEPTH = 200
+# Leaf-rollout horizon for the sb-budget case. 3 (not the shipped default 12)
+# keeps the gate fast while still exercising every rollout mechanism path:
+# the turn anchor, the sideboard-prefix gating, rollout terminals, and the
+# cross-language argmax/eval lockstep. The bo1 and inherited-budget bo3 cases
+# stay rollout-free as the unrolled baseline.
+SB_ROLLOUT_TURNS = 3
 # is_sideboard_phase flag in the state vector (env's _MATCH_CTX layout:
 # game_number, self_wins, opp_wins, sideboard_phase).
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
@@ -135,7 +141,8 @@ class ParitySearchController:
         is_sb = bool(obs[_IS_SIDEBOARD_IDX] > 0.5)
         if self.sb_budget and is_sb:
             result = run_search(env, self.ev, sims=SB_SIMS, worlds=SB_WORLDS,
-                                max_depth=SB_MAX_DEPTH, c_puct=C_PUCT,
+                                max_depth=SB_MAX_DEPTH,
+                                rollout_turns=SB_ROLLOUT_TURNS, c_puct=C_PUCT,
                                 world_seeds=world_seeds_for(r))
         else:
             result = run_search(env, self.ev, sims=SIMS, worlds=WORLDS,
@@ -173,7 +180,7 @@ def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None):
         cmd.append("--bo3")
     if sb is not None:
         cmd += ["--sb-sims", str(sb[0]), "--sb-worlds", str(sb[1]),
-                "--sb-max-depth", str(sb[2])]
+                "--sb-max-depth", str(sb[2]), "--sb-rollout-turns", str(sb[3])]
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
     if proc.returncode != 0:
@@ -293,7 +300,8 @@ def main():
         # still be bit-exact between the actor and the reference.
         dump_sb = os.path.join(td, "visits_b1_bo3_sb.bin")
         actor_sb = _run_actor(ts_path, dump_sb, batch=1, bo3=True,
-                              sb=(SB_SIMS, SB_WORLDS, SB_MAX_DEPTH))
+                              sb=(SB_SIMS, SB_WORLDS, SB_MAX_DEPTH,
+                                  SB_ROLLOUT_TURNS))
         if actor_sb is None:
             return 1
         py_sb, is_sb_sb = _python_reference(ts_path, bo3=True, sb_budget=True)
@@ -304,7 +312,8 @@ def main():
         print(f"PASS [bo3-sb]: MCTS visit-count parity exact over {len(actor_sb)} "
               f"searched roots ({total_sims} total root visits) "
               f"[in-game sims={SIMS} worlds={WORLDS}; sideboard sims={SB_SIMS} "
-              f"worlds={SB_WORLDS} max_depth={SB_MAX_DEPTH}]")
+              f"worlds={SB_WORLDS} max_depth={SB_MAX_DEPTH} "
+              f"rollout_turns={SB_ROLLOUT_TURNS}]")
         # Gate #4: prove the budget split took effect — a sideboard root's total
         # visits equal its sims_run, so it reads SIMS under the inherited budget
         # and SB_SIMS under the explicit sb budget.

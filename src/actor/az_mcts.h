@@ -58,6 +58,22 @@ struct MCTSConfig {
     int sb_worlds = -1;
     int sb_max_depth = -1;
 
+    // ── leaf rollouts (mirrors mcts.py's rollout_turns) ─────────────────────
+    // When the budget in force has rollout_turns > 0, a freshly expanded leaf is
+    // not evaluated in place: the raw policy (argmax of the evaluator's priors,
+    // both seats, no rng) plays the determinized world forward to the end of
+    // player-turn `anchor + rollout_turns` — anchor is the ROOT's turn for an
+    // in-game root, 0 (of the sampled NEXT game) at a sideboard root — and THAT
+    // state's net value (or a true terminal ±1) is backed up. Rolled-out states
+    // are never added to the tree; the max_depth cap still bounds tree descent
+    // only (a depth-cap leaf does NOT roll out, matching mcts.py). sb_rollout
+    // -1 = inherit rollout_turns, same idiom as the sb_* budget above. NOTE:
+    // when the root's budget has rollouts on, leaf evaluation always takes the
+    // immediate (batch=1) path even under batch>1 — deferred PendingLeaf
+    // evaluation cannot drive a playout.
+    int rollout_turns = 0;
+    int sb_rollout_turns = -1;
+
     // ── self-play (--selfplay) ──────────────────────────────────────────────
     // When `selfplay` is set, each SEARCHED root stores a training sample and the
     // first `temp_moves` real moves sample the real action from the visit

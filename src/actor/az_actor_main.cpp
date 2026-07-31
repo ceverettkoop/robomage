@@ -57,6 +57,10 @@ struct ActorConfig {
     int sb_sims = -1;
     int sb_worlds = -1;
     int sb_max_depth = -1;
+    // Leaf-rollout horizon in player turns (see az_mcts.h). 0 = off;
+    // sb value -1 = inherit --rollout-turns.
+    int rollout_turns = 0;
+    int sb_rollout_turns = -1;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
     double noise_eps = 0.25;
@@ -78,6 +82,8 @@ void print_usage(const char* prog) {
                  "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n"
                  "       [--sb-sims N] [--sb-worlds N] [--sb-max-depth N] "
                  "(bo3 sideboard-root budget; -1=inherit)\n"
+                 "       [--rollout-turns N] [--sb-rollout-turns N] "
+                 "(leaf-rollout horizon in player turns; 0=off, sb -1=inherit)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
                  "[--temp-moves N] [--out-dir <dir>] [--rng-seed N]]\n",
                  prog);
@@ -144,6 +150,10 @@ int main(int argc, char const* argv[]) {
             cfg.sb_worlds = std::stoi(need_arg(argc, argv, i, "--sb-worlds"));
         } else if (a == "--sb-max-depth") {
             cfg.sb_max_depth = std::stoi(need_arg(argc, argv, i, "--sb-max-depth"));
+        } else if (a == "--rollout-turns") {
+            cfg.rollout_turns = std::stoi(need_arg(argc, argv, i, "--rollout-turns"));
+        } else if (a == "--sb-rollout-turns") {
+            cfg.sb_rollout_turns = std::stoi(need_arg(argc, argv, i, "--sb-rollout-turns"));
         } else if (a == "--selfplay") {
             cfg.selfplay = true;
             cfg.search = true;  // self-play implies MCTS search
@@ -234,6 +244,8 @@ int main(int argc, char const* argv[]) {
         mc.sb_sims = cfg.sb_sims;              // -1 = inherit in-game sims
         mc.sb_worlds = cfg.sb_worlds;          // -1 = inherit in-game worlds
         mc.sb_max_depth = cfg.sb_max_depth;    // -1 = inherit in-game max_depth
+        mc.rollout_turns = cfg.rollout_turns;
+        mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = inherit rollout_turns
         mc.selfplay = cfg.selfplay;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
         mc.noise_alpha = cfg.noise_alpha;
