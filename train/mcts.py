@@ -30,7 +30,9 @@ from typing import Optional, Protocol, Sequence
 
 import numpy as np
 
-from env import _CUR_TURN_IDX, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX
+from _enums import CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT
+from env import (_CUR_TURN_IDX, _IS_SIDEBOARD_IDX, _MATCH_CTX_START,
+                 _SELF_IS_A_IDX, _obs_action_category, _obs_action_card_id)
 from search_env import SearchRoboMageEnv, SimQuery
 
 # Leaf-rollout step cap, per horizon turn: a rollout may take at most
@@ -135,6 +137,16 @@ class SearchResult:
     #                                           (SearchController follows the
     #                                           real game down these trees while
     #                                           it matches the searched line).
+    seeds: Optional[list] = None              # per-world determinize seeds the
+    #                                           search actually used, world order
+    #                                           (drawn or passed through) — the
+    #                                           handle a sideboard boundary
+    #                                           latches to pin its worlds.
+    reused_visits: int = 0                    # Σ over worlds of root N.sum() at
+    #                                           search ENTRY (reuse_roots); the
+    #                                           reported visits are cumulative,
+    #                                           sims_run counts new sims only.
+    memo_hits: int = 0                        # rollout-memo hits this search
 
     def best_action(self) -> int:
         return int(np.argmax(self.visits))
@@ -222,6 +234,7 @@ def run_search(
     rng: Optional[np.random.Generator] = None,
     snapshot_slot: int = 0,
     world_seeds: Optional[Sequence[int]] = None,
+    reuse_roots: Optional[Sequence] = None,
     time_budget_s: Optional[float] = None,
     time_budget_min_s: Optional[float] = None,
 ) -> SearchResult:
@@ -229,6 +242,18 @@ def run_search(
     loop-safe decision (env.last_search_safe). On return the env is back at
     that same decision with all snapshots released, ready for the chosen real
     step().
+
+    ``reuse_roots`` (optional, boundary persistence): a per-world list of
+    previously-searched ``_Node`` trees (or ``None`` entries) to adopt as this
+    search's roots instead of building fresh ones — the caller obtains them by
+    walking the previous ``SearchResult.roots`` down the actually-played
+    actions (:func:`walk_reuse_root`) and MUST pass the same pinned
+    ``world_seeds`` the trees were built under (at a sideboard root the seed IS
+    the sampled next-game deal). A reused world only runs
+    ``max(0, sims_per_world - existing_visits)`` new sims (top-up) and the
+    reported ``visits`` are CUMULATIVE (``sims_run`` counts new sims only;
+    ``reused_visits`` reports the inherited mass). ``None`` (the default)
+    keeps every path byte-identical to the pre-reuse search.
 
     ``rollout_turns`` (default 0 = off): leaf rollouts. Each freshly expanded
     leaf is played forward argmax-greedily by the raw policy (both seats) to
@@ -287,9 +312,16 @@ def run_search(
     # Derive per-world seeds and root nodes up front. The derivation order
     # (world_seed then optional dirichlet noise, for w=0..worlds-1) is identical
     # to the historical inline loop, so the ``rng`` consumption sequence is
-    # unchanged — the fixed-budget path below stays bit-exact.
+    # unchanged — the fixed-budget path below stays bit-exact. A reused root
+    # (boundary persistence) is adopted in place of a fresh _Node: its P is
+    # overwritten with the fresh CLEAN root priors (copied — the fresh-root
+    # path shares one priors array across worlds) and noise is re-mixed in the
+    # same per-world rng position a fresh root would use; its N/W/children are
+    # kept, and its budget is topped up to sims_per_world total visits.
     seeds: list[int] = []
     roots: list[_Node] = []
+    budgets: list[int] = []
+    reused_visits = 0
     for w in range(worlds):
         world_seed = (int(world_seeds[w]) if world_seeds is not None
                       else int(rng.integers(1, 2**31 - 1)))
@@ -298,7 +330,16 @@ def run_search(
             noise = rng.dirichlet([root_noise_alpha] * root_n)
             priors = (1.0 - root_noise_eps) * root_priors + root_noise_eps * noise
         seeds.append(world_seed)
-        roots.append(_Node(root_n, priors, root_is_a))
+        reused = reuse_roots[w] if reuse_roots is not None else None
+        if reused is not None:
+            reused.P = np.array(priors, copy=True)
+            n_have = int(reused.N.sum())
+            reused_visits += n_have
+            roots.append(reused)
+            budgets.append(max(0, sims_per_world - n_have))
+        else:
+            roots.append(_Node(root_n, priors, root_is_a))
+            budgets.append(sims_per_world)
 
     def _one_sim(w: int) -> None:
         nonlocal sims_run, sim_steps
@@ -313,9 +354,10 @@ def run_search(
     stopped_early = False
     if time_budget_s is None:
         # UNCHANGED sequential per-world loop (parity corpus / self-play depend
-        # on this exact order and count).
+        # on this exact order and count; budgets[w] == sims_per_world for every
+        # world when reuse_roots is None, so the iteration is byte-identical).
         for w in range(worlds):
-            for _ in range(sims_per_world):
+            for _ in range(budgets[w]):
                 _one_sim(w)
     else:
         deadline = time.monotonic() + float(time_budget_s)
@@ -373,6 +415,8 @@ def run_search(
         w_sum=w_totals,
         world_values=world_values,
         roots=roots,
+        seeds=seeds,
+        reused_visits=reused_visits,
     )
 
 
@@ -582,6 +626,63 @@ def _rollout_stop(obs: np.ndarray, anchor: int, rollout_turns: int) -> bool:
         return False
     turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
     return turn >= anchor + rollout_turns
+
+
+# ── Sideboard-boundary helpers (persistent trees + rollout memo) ──────────────
+# A bo3 sideboard BOUNDARY is one seat's contiguous run of pick decisions
+# between two games. These rules are shared by every boundary consumer
+# (SearchController, az_selfplay, test_mcts_parity) and MIRRORED in
+# src/actor/az_mcts.cpp — the two sides must derive identical seeds, boundary
+# identity, pick descriptors, and walk outcomes or visit parity breaks.
+
+def world_seeds_for(base: int, root_index: int, n: int) -> list[int]:
+    """The C++ actor's per-world determinize seed formula (az_mcts.cpp
+    begin_world). Under boundary persistence `root_index` is the BOUNDARY's
+    first searched root, frozen for every top-up search of that boundary."""
+    return [(base + 100003 * root_index + w) & 0xFFFFFFFF for w in range(n)]
+
+
+def sb_root_key(obs: np.ndarray) -> Optional[tuple[bool, int]]:
+    """Boundary identity of a sideboard root: (seat, upcoming game number), or
+    None when the decision is not a sideboard prompt. Seat is required because
+    both seats' pick runs share one sideboard phase back-to-back; the game
+    number distinguishes the g1->g2 boundary from g2->g3. C++ mirror reads the
+    same engine globals the obs serializes (sideboard_phase, viewer seat,
+    match_game_number + 1)."""
+    if obs[_IS_SIDEBOARD_IDX] <= 0.5:
+        return None
+    return (bool(obs[_SELF_IS_A_IDX] > 0.5),
+            int(round(float(obs[_MATCH_CTX_START]) * 3)))
+
+
+def sb_pick_descriptor(obs: np.ndarray, action: int) -> Optional[tuple[int, int, int]]:
+    """Order-insensitive description of a sideboard pick action: (category,
+    card vocab id, acting seat as 0/1), or None for non-pick actions (Done,
+    anything in-game). Menu INDICES are mutation-history-dependent, so keys and
+    memo entries are built from these descriptors, never from indices. ord and
+    ctrl metadata are deliberately excluded (live copy count / null sentinel)."""
+    cat = _obs_action_category(obs, action)
+    if cat not in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT):
+        return None
+    seat = 1 if obs[_SELF_IS_A_IDX] > 0.5 else 0
+    return (cat, _obs_action_card_id(obs, action), seat)
+
+
+def walk_reuse_root(root: "_Node", actions, num_choices: int,
+                    seat_is_a: bool) -> Optional["_Node"]:
+    """Walk a stored world tree down the actually-played actions since the
+    previous search. Returns the reached node when it exists and matches the
+    new root's menu size and seat, else None (that world re-roots fresh; a
+    failed walk never invalidates the whole boundary). Along the real
+    deterministic line indices are stable, so child-by-index is exact."""
+    node = root
+    for a in actions:
+        node = node.children.get(int(a))
+        if node is None:
+            return None
+    if node.num_choices != num_choices or node.self_is_a != seat_is_a:
+        return None
+    return node
 
 
 def _rollout(
