@@ -61,6 +61,8 @@ struct ActorConfig {
     // sb value -1 = inherit --rollout-turns.
     int rollout_turns = 0;
     int sb_rollout_turns = -1;
+    // Sideboard-boundary tree persistence + rollout memo (see az_mcts.h).
+    int sb_persist = 0;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
     double noise_eps = 0.25;
@@ -84,6 +86,8 @@ void print_usage(const char* prog) {
                  "(bo3 sideboard-root budget; -1=inherit)\n"
                  "       [--rollout-turns N] [--sb-rollout-turns N] "
                  "(leaf-rollout horizon in player turns; 0=off, sb -1=inherit)\n"
+                 "       [--sb-persist 0|1] (persist trees + rollout memo across a "
+                 "bo3 sideboard boundary)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
                  "[--temp-moves N] [--out-dir <dir>] [--rng-seed N]]\n",
                  prog);
@@ -154,6 +158,8 @@ int main(int argc, char const* argv[]) {
             cfg.rollout_turns = std::stoi(need_arg(argc, argv, i, "--rollout-turns"));
         } else if (a == "--sb-rollout-turns") {
             cfg.sb_rollout_turns = std::stoi(need_arg(argc, argv, i, "--sb-rollout-turns"));
+        } else if (a == "--sb-persist") {
+            cfg.sb_persist = std::stoi(need_arg(argc, argv, i, "--sb-persist"));
         } else if (a == "--selfplay") {
             cfg.selfplay = true;
             cfg.search = true;  // self-play implies MCTS search
@@ -246,6 +252,7 @@ int main(int argc, char const* argv[]) {
         mc.sb_max_depth = cfg.sb_max_depth;    // -1 = inherit in-game max_depth
         mc.rollout_turns = cfg.rollout_turns;
         mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = inherit rollout_turns
+        mc.sb_tree_persist = cfg.sb_persist != 0;
         mc.selfplay = cfg.selfplay;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
         mc.noise_alpha = cfg.noise_alpha;

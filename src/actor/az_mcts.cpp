@@ -1,9 +1,11 @@
 #include "az_mcts.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <map>
 #include <memory>
 #include <random>
 #include <string>
@@ -23,6 +25,11 @@
 // budget at root setup — do NOT use match_game_number, which reflects the just-
 // ended game at a g1->g2 sideboard root.
 extern bool sideboard_phase;
+
+// Index of the game currently in progress (0-based); the obs serializes
+// match_game_number + 1 during a sideboard phase (the UPCOMING game), which is
+// the boundary-identity component mcts.py's sb_root_key reads back out.
+extern int match_game_number;
 
 // Observation float "self is Player A" (mirrors train/env.py::_SELF_IS_A_IDX).
 // Determines which seat moves at a node.
@@ -52,6 +59,13 @@ struct Node {
     std::vector<int64_t> N;       // visit counts
     std::vector<double> W;        // value sums (this node's perspective)
     std::unordered_map<int, Node*> children;
+    // Per-action (category, card id) captured from this node's obs at CREATION
+    // (mirrors mcts.py _Node.pick_meta) — the descent has no obs in hand when
+    // re-selecting from interior nodes (AWAITING_ROOT never builds one), so
+    // the rollout memo's pick descriptors come from these. Filled only when a
+    // persistent sideboard-boundary search is active; empty otherwise.
+    std::vector<int16_t> menu_cat;
+    std::vector<int16_t> menu_id;
 #ifndef NDEBUG
     // Debug builds only: the menu's per-action metadata (cat / card id / ctrl /
     // zone / slot ref / ordinal, from the obs blocks) recorded at node creation,
@@ -138,6 +152,44 @@ struct AZMcts::Impl {
     int cur_sim = 0;  // index of the simulation currently running within cur_world
     uint32_t cur_world_seed = 0;
     Node* cur_root = nullptr;
+
+    // ── sideboard-boundary persistence (mirrors mcts.py's boundary consumers:
+    // sb_root_key / walk_reuse_root / rollout_memo_*) ──────────────────────
+    std::vector<Node*> world_roots;    // this search's per-world roots
+    std::vector<Node*> walked_roots;   // boundary walk results (nullptr = fresh)
+    std::vector<int> cur_budgets;      // per-world NEW-sim budgets (top-up)
+    long reused_visits = 0;            // inherited root visits at search entry
+    bool memo_active = false;          // this search persists + memoizes
+    bool sb_active = false;            // a boundary is latched
+    bool sb_seat_is_a = false;         // boundary identity: seat...
+    int sb_game = 0;                   // ...and upcoming game number
+    int sb_seed_root = 0;              // first searched root's index (pins seeds)
+    std::vector<Node*> sb_roots;       // previous searched root's world trees
+    std::vector<int> sb_played;        // actions since the previous searched root
+    // Real picks since the BOUNDARY root, as (cat, card id, seat) descriptors —
+    // the memo key's base; sim_picks extends it with the sim path's picks.
+    std::vector<std::array<int16_t, 3>> sb_picks;
+    std::vector<std::array<int16_t, 3>> sim_picks;
+    struct MemoKey {
+        uint32_t seed;
+        bool seat;
+        std::vector<std::array<int16_t, 3>> picks;  // sorted
+        bool operator<(const MemoKey& o) const {
+            if (seed != o.seed) return seed < o.seed;
+            if (seat != o.seat) return seat < o.seat;
+            return picks < o.picks;  // lexicographic == Python sorted-tuple order
+        }
+    };
+    struct MemoVal {
+        bool terminal;   // true: `winner` holds the engine winner (0 draw)
+        double value;    // horizon net value (mover perspective) when !terminal
+        bool seat_is_a;  // the horizon state's mover when !terminal
+        int winner;
+    };
+    std::map<MemoKey, MemoVal> rollout_memo;  // cleared at boundary end
+    bool memo_pending = false;                // a missed rollout is in flight
+    MemoKey memo_pending_key;
+    int memo_hits = 0;
 
     std::vector<std::unique_ptr<Node>> pool;  // owns every node this search
     std::vector<PathEntry> path;              // current descent
@@ -277,14 +329,26 @@ struct AZMcts::Impl {
 
     // ── world / sim lifecycle ──────────────────────────────────────────────
     void begin_world(int w) {
-        cur_world_seed = cfg.world_seed_base +
-                         100003u * static_cast<uint32_t>(this_root) +
-                         static_cast<uint32_t>(w);
+        // Under an active boundary the seeds are pinned to the boundary's
+        // FIRST searched root (mcts.py: the caller passes the latched
+        // world_seeds back in) — at a sideboard root the seed IS the sampled
+        // next-game deal, so a re-rooted tree is only coherent under the seed
+        // it was built with.
+        cur_world_seed =
+            cfg.world_seed_base +
+            100003u * static_cast<uint32_t>(sb_active ? sb_seed_root : this_root) +
+            static_cast<uint32_t>(w);
         // Root Dirichlet noise, redrawn per world over the shared base priors —
         // mcts.py: priors = (1-eps)*root_priors + eps*dirichlet(alpha*[1]*nc).
         // eps=0 (parity default) reuses the base priors verbatim. A standard
         // Dirichlet is gamma(alpha) per component normalized by the sum, drawn
-        // from the per-run RNG (no cross-language parity required).
+        // from the per-run RNG (no cross-language parity required). A REUSED
+        // root (boundary walk survivor) keeps its N/W/children but its P is
+        // overwritten with the fresh clean/noised priors, exactly like
+        // run_search's reuse_roots adoption.
+        Node* reused = (w < static_cast<int>(walked_roots.size()))
+                           ? walked_roots[static_cast<size_t>(w)]
+                           : nullptr;
         if (cfg.noise_eps > 0.0) {
             std::gamma_distribution<double> gamma(cfg.noise_alpha, 1.0);
             std::vector<double> noise(static_cast<size_t>(root_n));
@@ -302,10 +366,21 @@ struct AZMcts::Impl {
                     (1.0 - cfg.noise_eps) * root_priors[static_cast<size_t>(i)] +
                     cfg.noise_eps * d;
             }
-            cur_root = make_node(root_n, priors, root_is_a);
+            if (reused != nullptr) {
+                reused->P = std::move(priors);
+                cur_root = reused;
+            } else {
+                cur_root = make_node(root_n, priors, root_is_a);
+            }
+        } else if (reused != nullptr) {
+            reused->P = root_priors;
+            cur_root = reused;
         } else {
             cur_root = make_node(root_n, root_priors, root_is_a);
         }
+        if (memo_active && cur_root->menu_cat.empty())
+            fill_pick_meta(cur_root, root_obs.data(), root_n);
+        world_roots[static_cast<size_t>(w)] = cur_root;
 #ifndef NDEBUG
         capture_menu(root_obs.data(), root_n, cur_root->dbg_menu);
         capture_state(root_obs.data(), cur_root->dbg_state);
@@ -314,10 +389,38 @@ struct AZMcts::Impl {
 
     int start_descent() {
         path.clear();
+        if (memo_active) sim_picks = sb_picks;
         int a = cur_root->select(cfg.c_puct);
+        if (memo_active) note_pick(cur_root, a, sim_picks);
         path.push_back({cur_root, a});
         sim_steps += 1;
         return a;
+    }
+
+    // Enter worlds from cur_world onward: allocate/adopt each world's root,
+    // start its first sim if it has top-up budget, else fold its (inherited)
+    // visits into the totals and move on. Returns the first sim's action, or
+    // -1 when no remaining world has budget (caller finalizes). Mirrors
+    // run_search's `for _ in range(budgets[w])` loop, where a fully-inherited
+    // world runs zero sims but still reports cumulative visits.
+    int start_next_world_sim() {
+        while (cur_world < cur_worlds) {
+            begin_world(cur_world);
+            cur_sim = 0;
+            if (cur_budgets[static_cast<size_t>(cur_world)] > 0) {
+                determinize_hidden_state(cur_world_seed);
+#ifndef NDEBUG
+                std::fprintf(stderr, "[sim] root=%d world=%d sim=%d\n", this_root,
+                             cur_world, cur_sim);
+#endif
+                int a = start_descent();
+                phase = DESCENDING;
+                return a;
+            }
+            accumulate_world();
+            cur_world += 1;
+        }
+        return -1;
     }
 
     void finish_sim() {
@@ -373,6 +476,95 @@ struct AZMcts::Impl {
         pending.clear();
     }
 
+    // ── sideboard-boundary helpers (mirror mcts.py's shared helpers) ───────
+    static long nsum(const Node* n) {
+        long s = 0;
+        for (int64_t v : n->N) s += v;
+        return s;
+    }
+
+    // mcts.py::pick_meta_for — (cat, id) per action from the obs blocks,
+    // captured at node creation. Only meaningful when memo_active.
+    void fill_pick_meta(Node* n, const float* o, int nc) {
+        if (!memo_active) return;
+        n->menu_cat.resize(static_cast<size_t>(nc));
+        n->menu_id.resize(static_cast<size_t>(nc));
+        for (int i = 0; i < nc; i++) {
+            n->menu_cat[static_cast<size_t>(i)] = static_cast<int16_t>(
+                std::lround(static_cast<double>(o[STATE_SIZE + 0 * MAX_ACTIONS + i]) *
+                            ACTION_CATEGORY_MAX));
+            n->menu_id[static_cast<size_t>(i)] = static_cast<int16_t>(
+                std::lround(static_cast<double>(o[STATE_SIZE + 1 * MAX_ACTIONS + i]) *
+                            N_CARD_TYPES));
+        }
+    }
+
+    // mcts.py::sb_pick_descriptor for the edge (n, a): appended to `out` when
+    // the action is a sideboard pick (IN/OUT; Done and in-game actions carry
+    // no descriptor).
+    static void note_pick(const Node* n, int a,
+                          std::vector<std::array<int16_t, 3>>& out) {
+        if (n->menu_cat.empty()) return;
+        int16_t cat = n->menu_cat[static_cast<size_t>(a)];
+        if (cat != static_cast<int16_t>(ActionCategory::SIDEBOARD_IN) &&
+            cat != static_cast<int16_t>(ActionCategory::SIDEBOARD_OUT))
+            return;
+        out.push_back({cat, n->menu_id[static_cast<size_t>(a)],
+                       static_cast<int16_t>(n->self_is_a ? 1 : 0)});
+    }
+
+    // The same descriptor read straight from an obs (for latching REAL picks:
+    // the finalize-chosen action and fallback/forced actions).
+    static void note_pick_from_obs(const float* o, int a,
+                                   std::vector<std::array<int16_t, 3>>& out) {
+        int cat = static_cast<int>(std::lround(
+            static_cast<double>(o[STATE_SIZE + 0 * MAX_ACTIONS + a]) *
+            ACTION_CATEGORY_MAX));
+        if (cat != static_cast<int>(ActionCategory::SIDEBOARD_IN) &&
+            cat != static_cast<int>(ActionCategory::SIDEBOARD_OUT))
+            return;
+        int16_t cid = static_cast<int16_t>(std::lround(
+            static_cast<double>(o[STATE_SIZE + 1 * MAX_ACTIONS + a]) * N_CARD_TYPES));
+        out.push_back({static_cast<int16_t>(cat), cid,
+                       static_cast<int16_t>(o[SELF_IS_A_IDX] > 0.5f ? 1 : 0)});
+    }
+
+    // mcts.py::rollout_memo_eligible — a takeback ((card, seat) in BOTH
+    // directions) diverges the one-shot direction locks, so such paths are
+    // never memoized.
+    static bool memo_eligible(const std::vector<std::array<int16_t, 3>>& picks) {
+        for (size_t i = 0; i < picks.size(); i++)
+            for (size_t j = 0; j < picks.size(); j++)
+                if (picks[i][0] != picks[j][0] && picks[i][1] == picks[j][1] &&
+                    picks[i][2] == picks[j][2])
+                    return false;
+        return true;
+    }
+
+    MemoKey make_memo_key(bool leaf_seat_is_a) const {
+        MemoKey k;
+        k.seed = cur_world_seed;
+        k.seat = leaf_seat_is_a;
+        k.picks = sim_picks;
+        std::sort(k.picks.begin(), k.picks.end());
+        return k;
+    }
+
+    // mcts.py::walk_reuse_root — child-by-played-action; the survivor must
+    // match the new root's menu size and seat.
+    static Node* walk_node(Node* root, const std::vector<int>& actions,
+                           int num_choices, bool seat_is_a) {
+        Node* n = root;
+        for (int a : actions) {
+            auto it = n->children.find(a);
+            if (it == n->children.end()) return nullptr;
+            n = it->second;
+        }
+        if (n->num_choices != num_choices || n->self_is_a != seat_is_a)
+            return nullptr;
+        return n;
+    }
+
     // ── leaf-rollout helpers ───────────────────────────────────────────────
     // First-max argmax over float64 priors (numpy argmax tie-break) — the raw-
     // policy action, shared by the fallback path and the rollout playout.
@@ -403,7 +595,12 @@ struct AZMcts::Impl {
         rollout_steps += 1;
         AZEvalResultD r = eval_one(o, nc);
         if (rollout_steps >= cur_rollout_cap || rollout_stop_here()) {
-            backup(path, r.value, o[SELF_IS_A_IDX] > 0.5f);
+            bool seat = o[SELF_IS_A_IDX] > 0.5f;
+            if (memo_pending) {
+                rollout_memo[memo_pending_key] = {false, r.value, seat, 0};
+                memo_pending = false;
+            }
+            backup(path, r.value, seat);
             finish_sim();
             return 0;
         }
@@ -418,8 +615,17 @@ struct AZMcts::Impl {
             // A trivial / unsafe real decision: not stored, evaluator-argmax
             // fallback. It still counts as one real move for the tau schedule.
             move_counter += 1;
-            if (nc <= 1) return 0;
-            return argmax_priors(eval_priors(o, nc), nc);
+            int a = 0;
+            if (nc > 1) a = argmax_priors(eval_priors(o, nc), nc);
+            // A forced/fallback action inside an active boundary (direction
+            // locks can prune a sideboard menu to one entry) still advances
+            // the real line — latch it so the next search's walk stays exact
+            // (mirrors the Python consumers latching every stepped action).
+            if (sb_active) {
+                sb_played.push_back(a);
+                note_pick_from_obs(o, a, sb_picks);
+            }
+            return a;
         }
         // BEGIN SEARCH (mirrors mcts.py::run_search setup). Capture the CLEAN root
         // obs (the state the net saw for base priors) before any determinize —
@@ -447,19 +653,68 @@ struct AZMcts::Impl {
         value_acc = 0.0;
         sims_run = 0;
         sim_steps = 0;
+        memo_hits = 0;
+        memo_pending = false;
+        reused_visits = 0;
         sims_per_world = std::max(1, cur_sims / std::max(1, cur_worlds));
-        pool.clear();
+
+        // Sideboard-boundary continue / start / end (mirrors mcts.py's
+        // sb_root_key identity — seat + upcoming game number — plus the walk
+        // of every action played since the previous searched root). On
+        // continue the node pool SURVIVES (the walked subtrees live in it);
+        // everywhere else it is cleared as before.
+        bool cont = false;
+        walked_roots.assign(static_cast<size_t>(cur_worlds), nullptr);
+        if (cfg.sb_tree_persist && sb) {
+            memo_active = true;
+            int game = match_game_number + 1;
+            if (sb_active && root_is_a == sb_seat_is_a && game == sb_game &&
+                static_cast<int>(sb_roots.size()) == cur_worlds) {
+                cont = true;
+                for (int w = 0; w < cur_worlds; w++) {
+                    Node* n = walk_node(sb_roots[static_cast<size_t>(w)],
+                                        sb_played, nc, root_is_a);
+                    walked_roots[static_cast<size_t>(w)] = n;
+                    if (n != nullptr) reused_visits += nsum(n);
+                }
+            } else {
+                pool.clear();
+                sb_roots.clear();
+                rollout_memo.clear();
+                sb_picks.clear();
+                sb_active = true;
+                sb_seat_is_a = root_is_a;
+                sb_game = game;
+                sb_seed_root = this_root;
+            }
+        } else {
+            pool.clear();
+            sb_roots.clear();
+            rollout_memo.clear();
+            sb_picks.clear();
+            sb_active = false;
+            memo_active = false;
+        }
         pending.clear();
         path.clear();
+        world_roots.assign(static_cast<size_t>(cur_worlds), nullptr);
+        cur_budgets.assign(static_cast<size_t>(cur_worlds), sims_per_world);
+        if (cont) {
+            for (int w = 0; w < cur_worlds; w++) {
+                Node* n = walked_roots[static_cast<size_t>(w)];
+                if (n != nullptr)
+                    cur_budgets[static_cast<size_t>(w)] = std::max(
+                        0, sims_per_world - static_cast<int>(nsum(n)));
+            }
+        }
         cur_world = 0;
         cur_sim = 0;
-        begin_world(0);
-        // Sim 0 of world 0: the snapshot IS the current (clean) root state, so
-        // determinize directly — no intervening restore (mcts.py restores before
-        // every sim, but restore-immediately-after-snapshot is a no-op).
-        determinize_hidden_state(cur_world_seed);
-        int a = start_descent();
-        phase = DESCENDING;
+        // Sim 0: the snapshot IS the current (clean) root state, so determinize
+        // directly — no intervening restore (mcts.py restores before every sim,
+        // but restore-immediately-after-snapshot is a no-op). A fully-inherited
+        // search (every world's budget 0) finalizes immediately.
+        int a = start_next_world_sim();
+        if (a < 0) return finalize();
         return a;
     }
 
@@ -488,6 +743,7 @@ struct AZMcts::Impl {
             }
             AZEvalResultD r = eval_one(o, nc);
             parent->children[paction] = make_node(nc, r.priors, leaf_is_a);
+            fill_pick_meta(parent->children[paction], o, nc);
 #ifndef NDEBUG
             capture_menu(o, nc, parent->children[paction]->dbg_menu);
             capture_state(o, parent->children[paction]->dbg_state);
@@ -497,11 +753,47 @@ struct AZMcts::Impl {
             // forward instead of backing up the leaf's value. The engine state
             // at this moment IS the leaf state, so check the stop condition on
             // the live globals (identical to Python's read of the leaf obs).
-            if (cur_rollout_turns > 0 && !rollout_stop_here()) {
-                rollout_steps = 0;
-                phase = ROLLOUT;
-                sim_steps += 1;
-                return argmax_priors(r.priors, nc);
+            if (cur_rollout_turns > 0) {
+                // Rollout memo (mirrors _simulate's lookup-before-rollout):
+                // eligible when the leaf is still inside the sideboard phase
+                // and the accumulated pick multiset contains no takeback.
+                memo_pending = false;
+                if (memo_active && sideboard_phase && memo_eligible(sim_picks)) {
+                    MemoKey key = make_memo_key(leaf_is_a);
+                    auto hit = rollout_memo.find(key);
+                    if (hit != rollout_memo.end()) {
+                        memo_hits += 1;
+                        const MemoVal& v = hit->second;
+                        if (v.terminal) {
+                            double lv = 0.0;
+                            if (v.winner == static_cast<int>(Zone::PLAYER_A) ||
+                                v.winner == static_cast<int>(Zone::PLAYER_B)) {
+                                bool a_won =
+                                    v.winner == static_cast<int>(Zone::PLAYER_A);
+                                lv = (a_won == root_is_a) ? 1.0 : -1.0;
+                            }
+                            backup(path, lv, root_is_a);
+                        } else {
+                            backup(path, v.value, v.seat_is_a);
+                        }
+                        finish_sim();
+                        return 0;
+                    }
+                    memo_pending = true;
+                    memo_pending_key = std::move(key);
+                }
+                if (!rollout_stop_here()) {
+                    rollout_steps = 0;
+                    phase = ROLLOUT;
+                    sim_steps += 1;
+                    return argmax_priors(r.priors, nc);
+                }
+                // Leaf already at the horizon: its own value IS the rollout
+                // result (mcts.py stores this zero-step case too).
+                if (memo_pending) {
+                    rollout_memo[memo_pending_key] = {false, r.value, leaf_is_a, 0};
+                    memo_pending = false;
+                }
             }
             backup(path, r.value, leaf_is_a);
             finish_sim();
@@ -563,6 +855,7 @@ struct AZMcts::Impl {
             return 0;
         }
         int a = child->select(cfg.c_puct);
+        if (memo_active) note_pick(child, a, sim_picks);
         path.push_back({child, a});
         sim_steps += 1;
         return a;
@@ -572,13 +865,13 @@ struct AZMcts::Impl {
         // We are back at the restored true root. The just-finished sim was
         // (cur_world, cur_sim); advance to the next sim / world / finalize.
         cur_sim += 1;
-        if (cur_sim >= sims_per_world) {
+        if (cur_sim >= cur_budgets[static_cast<size_t>(cur_world)]) {
             if (cfg.batch > 1) flush_pending();
             accumulate_world();
             cur_world += 1;
-            if (cur_world >= cur_worlds) return finalize();
-            begin_world(cur_world);
-            cur_sim = 0;
+            int a = start_next_world_sim();  // skips fully-inherited worlds
+            if (a < 0) return finalize();
+            return a;
         }
         if (cfg.batch > 1 && static_cast<int>(pending.size()) >= cfg.batch) flush_pending();
         determinize_hidden_state(cur_world_seed);
@@ -608,6 +901,8 @@ struct AZMcts::Impl {
         sr.root_value = total > 0 ? value_acc / static_cast<double>(total) : 0.0;
         sr.sims_run = sims_run;
         sr.sim_steps = sim_steps;
+        sr.reused_visits = reused_visits;
+        sr.memo_hits = memo_hits;
         results.push_back(std::move(sr));
 
         int best = 0;
@@ -644,7 +939,18 @@ struct AZMcts::Impl {
         }
 
         phase = IDLE;
-        pool.clear();
+        if (sb_active) {
+            // Boundary continues past this real pick: keep the pool (the next
+            // search re-roots into it) and latch the chosen action for the
+            // walk + its descriptor for the memo key base (mirrors the Python
+            // consumers latching each stepped action at choose time).
+            sb_roots = world_roots;
+            sb_played.clear();
+            sb_played.push_back(chosen);
+            note_pick_from_obs(root_obs.data(), chosen, sb_picks);
+        } else {
+            pool.clear();
+        }
         pending.clear();
         path.clear();
         return chosen;
@@ -676,7 +982,14 @@ struct AZMcts::Impl {
         // A simulated line reached game over (fires during DESCENDING or ROLLOUT
         // with a live snapshot and no pending restore). Mirror mcts.py's terminal
         // convention: value ±1 vs the ROOT seat, DRAW 0, leaf_seat = root seat —
-        // identical for a descent terminal and a rollout terminal.
+        // identical for a descent terminal and a rollout terminal. A rollout
+        // terminal with a memo entry pending stores the raw winner (converted
+        // vs the HITTING search's root seat at lookup, matching Python's
+        // ("t", winner) tag); descent terminals are never memoized.
+        if (phase == ROLLOUT && memo_pending) {
+            rollout_memo[memo_pending_key] = {true, 0.0, false, winner};
+            memo_pending = false;
+        }
         double leaf_value;
         if (winner == static_cast<int>(Zone::PLAYER_A) ||
             winner == static_cast<int>(Zone::PLAYER_B)) {

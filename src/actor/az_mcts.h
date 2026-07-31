@@ -74,6 +74,20 @@ struct MCTSConfig {
     int rollout_turns = 0;
     int sb_rollout_turns = -1;
 
+    // ── sideboard-boundary persistence (mirrors mcts.py's reuse_roots /
+    // rollout_memo consumers) ───────────────────────────────────────────────
+    // A bo3 sideboard BOUNDARY is one seat's contiguous run of pick decisions.
+    // When enabled, the per-world trees survive across the boundary's searched
+    // roots (world seeds pinned to the boundary's FIRST searched root, each
+    // next root re-rooted at the played action's child and topped up to the
+    // sims budget; reported visits are CUMULATIVE, sims_run counts new sims),
+    // and rollouts from leaves still inside the sideboard phase are memoized
+    // by (world seed, leaf seat, sorted multiset of picks since the boundary
+    // root) — an ACCEPTED approximation across permuted pick orders; paths
+    // containing a takeback are never memoized. Both behaviors must match
+    // train/mcts.py's boundary consumers bit-exactly (test_mcts_parity).
+    bool sb_tree_persist = false;
+
     // ── self-play (--selfplay) ──────────────────────────────────────────────
     // When `selfplay` is set, each SEARCHED root stores a training sample and the
     // first `temp_moves` real moves sample the real action from the visit
@@ -100,9 +114,12 @@ struct SearchRootResult {
     int root_index;                // 0-based counter over searched roots this game
     int num_choices;               // root menu width
     std::vector<int64_t> visits;   // summed root visit counts across worlds
+    //                                (CUMULATIVE under boundary persistence)
     double root_value;             // visit-weighted root Q (root mover perspective)
-    int sims_run;
+    int sims_run;                  // NEW sims this search (excludes inherited)
     long sim_steps;                // total engine sim decisions consumed (cost metric)
+    long reused_visits = 0;        // inherited root visits at search entry
+    int memo_hits = 0;             // rollout-memo hits this search
 };
 
 class AZMcts {
