@@ -515,6 +515,7 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
              promote_threshold: float = 0.55, seed: int = 1,
              use_actor: Optional[bool] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
+             scripted_opponent_frac: float = 0.0,
              gate_floor: float = DEFAULT_GATE_FLOOR,
              expert_decks: Optional[list] = None, expert_games: int = 16,
              roster: Optional[list] = None, bo3: bool = True,
@@ -540,6 +541,13 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
     game one focus deck is drawn and plays a mirror (P=``mirror_frac``) or a draw
     from ``roster`` (the opponent pool, default: the whole league roster).
 
+    ``scripted_opponent_frac`` (0..1, default 0) hands that fraction of the
+    self-play games' OPPONENT seat to the rule-based scripted:hard agent, with the
+    net+MCTS on the focus seat and only the net seat's decisions sampled; 1.0
+    trains the cycle entirely against the scripted agent. It forces the Python
+    self-play backend (the C++ actor is pure self-play) and does NOT change the
+    gate, which stays candidate-vs-incumbent.
+
     ``use_actor`` chooses the self-play backend (None=AUTO: the C++ actor iff
     built, else Python; see :func:`az_selfplay.generate`)."""
     import az_selfplay
@@ -558,7 +566,9 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
                                sb_persist=bool(sb_persist),
                                workers=workers, seed=seed, use_actor=use_actor,
                                roster=roster, focus_decks=focus,
-                               mirror_frac=mirror_frac, bo3=bo3)
+                               mirror_frac=mirror_frac,
+                               scripted_opponent_frac=scripted_opponent_frac,
+                               bo3=bo3)
     if expert_decks:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
@@ -634,6 +644,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               eval_games: int = 56, eval_sims: int = 32, eval_worlds: int = 2,
               promote_threshold: float = 0.55, seed: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
+              scripted_opponent_frac: float = 0.0,
               matrix: bool = False, gate_floor: float = DEFAULT_GATE_FLOOR,
               gate_every: int = DEFAULT_GATE_EVERY,
               expert_decks: Optional[list] = None, expert_games: int = 16,
@@ -697,6 +708,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         seed = int(p.get("seed", seed))
         mirror_frac = float(p.get("mirror_frac", mirror_frac))
         # Older sidecars predate these knobs; .get keeps them resumable.
+        scripted_opponent_frac = float(
+            p.get("scripted_opponent_frac", scripted_opponent_frac))
         matrix = bool(p.get("matrix", False))
         gate_floor = float(p.get("gate_floor", gate_floor))
         gate_every = int(p.get("gate_every", gate_every))
@@ -744,7 +757,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "batches": batches, "batch_size": batch_size, "lr": lr,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
-            "seed": seed, "mirror_frac": mirror_frac, "matrix": matrix,
+            "seed": seed, "mirror_frac": mirror_frac,
+            "scripted_opponent_frac": scripted_opponent_frac, "matrix": matrix,
             "gate_floor": gate_floor, "gate_every": gate_every,
             "expert_decks": expert_decks,
             "expert_games": expert_games, "use_actor": use_actor,
@@ -766,6 +780,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
           f"batches={batches} window={window}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
           f"gate_floor={gate_floor} gate_every={gate_every}")
+    if scripted_opponent_frac:
+        print(f"  scripted_opponent_frac={scripted_opponent_frac} "
+              f"(scripted:hard on the opponent seat that share of self-play "
+              f"games; Python backend)")
     if expert_decks:
         print(f"  expert demonstrations: {', '.join(expert_decks)} "
               f"({expert_games} scripted:hard matches per deck per slot)")
@@ -812,7 +830,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
-                       mirror_frac=mirror_frac, gate_floor=gate_floor,
+                       mirror_frac=mirror_frac,
+                       scripted_opponent_frac=scripted_opponent_frac,
+                       gate_floor=gate_floor,
                        expert_decks=expert_decks, expert_games=expert_games,
                        roster=roster, bo3=bo3, gate=do_gate)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
@@ -907,6 +927,7 @@ def run_cycle(args) -> None:
              promote_threshold=args.promote_threshold,
              seed=args.seed if args.seed is not None else 1,
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+             scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
              gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
              expert_decks=_split_decks(getattr(args, "expert_decks", None)),
              expert_games=getattr(args, "expert_games", 16),
@@ -930,6 +951,7 @@ def run_league(args) -> None:
               promote_threshold=args.promote_threshold,
               seed=args.seed if args.seed is not None else 1,
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+              scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
               matrix=getattr(args, "matrix", False),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
               gate_every=getattr(args, "gate_every", DEFAULT_GATE_EVERY),
@@ -1020,6 +1042,10 @@ if __name__ == "__main__":
     c.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                    help="P(opponent deck == focus deck) per self-play game "
                         "(else uniform league-roster draw)")
+    c.add_argument("--scripted-opponent-frac", type=float, default=0.0,
+                   help="Fraction of self-play games (0..1) whose opponent seat "
+                        "is piloted by scripted:hard (net+MCTS on the focus "
+                        "seat, net samples only). Forces the Python backend")
     c.add_argument("--bo1", action="store_true",
                    help="Run bo1 self-play + gate (default: bo3 with per-game value)")
     cg = c.add_mutually_exclusive_group()
@@ -1078,6 +1104,10 @@ if __name__ == "__main__":
     lg.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                     help="P(opponent deck == focus deck) per self-play game "
                          "(else uniform league-roster draw)")
+    lg.add_argument("--scripted-opponent-frac", type=float, default=0.0,
+                    help="Fraction of self-play games (0..1) whose opponent seat "
+                         "is piloted by scripted:hard (net+MCTS on the focus "
+                         "seat, net samples only). Forces the Python backend")
     lg.add_argument("--bo1", action="store_true",
                     help="Run bo1 self-play + gate (default: bo3 with per-game value)")
     lgg = lg.add_mutually_exclusive_group()

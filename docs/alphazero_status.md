@@ -27,7 +27,20 @@ phases, decisions, risks) is summarized at the bottom.
 > trainer behavior-clones hand-coded combo lines (the doomsday fix: the
 > warm-started value net scores mid-combo states as lost, so search prunes the
 > line before sampling it; demonstrations put prior mass on the line and price
-> those states by games the combo wins). Controller specs are `az:gen` /
+> those states by games the combo wins). `--scripted-opponent-frac <f>` (az /
+> az-league, default 0 = pure self-play) hands that fraction of the self-play
+> games' **opponent seat** to the rule-based **scripted:hard** agent while the
+> net+MCTS pilots the focus seat; only the net seat's decisions are searched and
+> stored as samples (the scripted seat is environment, not a policy to imitate,
+> and `z` is already priced per-mover so a one-seat sample stream needs no
+> special handling). `1.0` trains entirely against the scripted agent — useful
+> when self-play has collapsed into a narrow equilibrium and you want the net
+> re-anchored against the hand-coded baseline. It forces the **Python** self-play
+> backend (`bin/az_actor` is pure self-play; combining it with an explicit
+> `--actor` is a loud error), is drawn per match from a dedicated seeded RNG
+> stream (reproducible, worker-count-independent) and is persisted in the
+> az-league resume sidecar. The **promotion gate is unchanged** (candidate vs
+> incumbent over the roster-wide panel). Controller specs are `az:gen` /
 > `azraw:gen` / `mcts:gen` (a bare deck shorthand is rejected; the deck travels as a
 > separate explicit parameter). The per-deck `{deck}__az*` naming, mirror-only
 > self-play, and `az_data/{deck}/` sharding described below are historical; commit

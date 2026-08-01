@@ -901,6 +901,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per self-play game (default 0.25); "
                  "else a uniform league-roster draw"),
+        Arg("--scripted-opponent-frac", "float", default=0.0,
+            help="Fraction of self-play games (0..1) whose opponent seat is "
+                 "piloted by the rule-based scripted:hard agent while the "
+                 "net+MCTS pilots the focus seat (only the net seat's decisions "
+                 "become training samples). Forces the Python backend; 1.0 = "
+                 "every game vs scripted hard. Default 0 = pure self-play."),
         Arg("--bo1", "flag",
             help="Run bo1 self-play + gate. The az cycle defaults to bo3 matches "
                  "with a per-game value target; this opts back into single games"),
@@ -983,6 +989,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--mirror-frac", "float", default=0.25,
             help="P(opponent deck == focus deck) per self-play game (default 0.25); "
                  "else a uniform league-roster draw"),
+        Arg("--scripted-opponent-frac", "float", default=0.0,
+            help="Fraction of self-play games (0..1) whose opponent seat is "
+                 "piloted by the rule-based scripted:hard agent while the "
+                 "net+MCTS pilots the focus seat (only the net seat's decisions "
+                 "become training samples). Forces the Python backend; 1.0 = "
+                 "every game vs scripted hard. Default 0 = pure self-play "
+                 "(persisted in the resume sidecar)."),
         Arg("--bo1", "flag",
             help="Run bo1 self-play + gate for every slot. The league defaults to "
                  "bo3 matches with a per-game value target; this opts back into "
