@@ -10,7 +10,7 @@ or change a flag in one place and both stay in sync.
 """
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from archetypes import ARCHETYPES
 
@@ -1057,10 +1057,30 @@ ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, sub
         "Full-screen analysis browser: page through board states with a "
         "clickable V(s) histogram, plus every analysis view", mode="interactive",
         items=[
-            *[a for a in sim_args() if a.name not in ("--out", "--show")],
+            # The model positional doubles as the shard mode's value-net spec,
+            # so it gets a 'gen' default (live mode resolves that to the one
+            # generalist anyway).
+            *[replace(a, required=False, default="gen") if a.name == "model"
+              else a
+              for a in sim_args() if a.name not in ("--out", "--show")],
             *search_budget_args(),
             Arg("--n-games", "int", default=20,
-                help="Games to simulate on startup (default: 20)"),
+                help="Games to simulate on startup (default: 20); in --shards "
+                     "mode, the max recorded matches to load"),
+            Arg("--shards", "str", default=None,
+                help="Browse recorded AZ self-play instead of simulating: "
+                     "directory of shard_*.npz files (e.g. train/az_data/gen). "
+                     "Steps are the searched decision roots; pi (the search's "
+                     "visit posterior) fills the policy column, and the model "
+                     "spec is loaded as the V(s) net. whatif/run need a live "
+                     "env and stay disabled."),
+            Arg("--seat", "choice", choices=("A", "B"), default="A",
+                help="Shard mode: viewpoint seat — that seat's searched "
+                     "decisions are the browsable steps, the other seat's are "
+                     "summarized as opponent actions (default: A)"),
+            Arg("--no-net", "flag",
+                help="Shard mode: skip loading the value net; V(s) falls back "
+                     "to each step's recorded game outcome z (torch-free)"),
         ]),
 ])
 

@@ -31,6 +31,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from az_net import AZNet, obs_space_from_const, save_torchscript, torchscript_export_path
 from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _MATCH_CTX_START
 from cli_spec import BIN_DIR
+# Write-order shard sort lives in shard_replay (shared with the browse path).
+from shard_replay import shard_sort_key as _shard_sort_key
 import az_train
 
 DECK = "league/ur_delver"
@@ -82,17 +84,6 @@ def _run_selfplay_bo3(ts_path, out_dir):
               + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
         return None
     return proc.stdout.decode("utf-8", "replace")
-
-
-def _shard_sort_key(path):
-    """Order pooled shards by write order: (mtime, numeric suffix n) from the
-    shard_{ts}_{pid}_{n}.npz name (a lexicographic sort misorders n>=10)."""
-    base = os.path.basename(path)
-    try:
-        n = int(base.rsplit("_", 1)[1].split(".")[0])
-    except (IndexError, ValueError):
-        n = 0
-    return (os.path.getmtime(path), n)
 
 
 def _load_pooled(out_dir):

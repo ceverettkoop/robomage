@@ -33,6 +33,12 @@ analysis.py — this front end covers the text/interactive tools.
 Run from the repo root (same simulation args as `analysis.py interactive`):
     train/.venv/bin/python train/tui_analysis.py <model.zip|deck> \
         --opponent scripted [--deck-b mav] [--n-games 20] [--bo3]
+
+Shard replay — browse recorded AZ self-play instead of simulating (see
+shard_replay.py; the model spec becomes the V(s) net, --no-net keeps the
+recorded outcome z, and whatif/run stay disabled without a live env):
+    train/.venv/bin/python train/tui_analysis.py gen \
+        --shards train/az_data/gen [--seat A|B] [--no-net] [--n-games 20]
 """
 
 import argparse
@@ -644,6 +650,9 @@ class AnalysisApp(App):
 
     @work(thread=True, group="engine")
     def _load_and_collect(self, n_games: int) -> None:
+        if getattr(self._args, "shards", None):
+            self._load_shards(n_games)
+            return
         try:
             buf = io.StringIO()
             with _CAPTURE_LOCK, redirect_stdout(buf):
@@ -654,6 +663,38 @@ class AnalysisApp(App):
                 f"model/env load failed: {exc!r}\n{traceback.format_exc()}"))
             return
         self._collect_games(n_games)
+
+    def _load_shards(self, n_games: int) -> None:
+        """Shard-replay startup: reconstruct match records from recorded AZ
+        self-play instead of simulating. No env is created (self._env stays
+        None, so the whatif/run entries stay gated); the model spec is loaded
+        only as the V(s) net, unless --no-net keeps values at the recorded z.
+        Runs inside the engine worker thread."""
+        import shard_replay
+        try:
+            buf = io.StringIO()
+            with _CAPTURE_LOCK, redirect_stdout(buf):
+                model = None
+                if not getattr(self._args, "no_net", False):
+                    model = shard_replay.load_value_model(self._args.model)
+                records = shard_replay.load_records(
+                    self._args.shards,
+                    viewpoint_is_a=getattr(self._args, "seat", "A") != "B",
+                    limit=n_games or None,
+                    interp_fn=an._extract_interpretable)
+                if model is not None:
+                    shard_replay.apply_net_values(model, records)
+                print(f"{len(records)} match record(s) from {self._args.shards} "
+                      f"(seat {getattr(self._args, 'seat', 'A')}, "
+                      + ("net V(s))" if model is not None else "z values)"))
+            self.post_message(EnvReady(buf.getvalue()))
+            for g in records:
+                self.post_message(GameAdded(g))
+        except BaseException as exc:
+            self.post_message(LoadFailed(
+                f"shard load failed: {exc!r}\n{traceback.format_exc()}"))
+        finally:
+            self.post_message(EngineIdle())
 
     def _collect_games(self, n: int) -> None:
         """Simulate n games one at a time (posting each so the UI fills live).
@@ -718,10 +759,16 @@ class AnalysisApp(App):
     # ----- message handlers -----
 
     def on_env_ready(self, message: EnvReady) -> None:
-        deck_a = getattr(self._args, "deck_a", None) or "?"
-        deck_b = getattr(self._args, "deck_b", None) or "?"
-        self.sub_title = (f"{deck_a} (model)  vs  {deck_b} ({self._args.opponent})"
-                          + ("  · bo3" if getattr(self._args, "bo3", False) else ""))
+        if getattr(self._args, "shards", None):
+            net = ("z values" if getattr(self._args, "no_net", False)
+                   else f"V(s): {self._args.model}")
+            self.sub_title = (f"shard replay: {self._args.shards} · "
+                              f"seat {getattr(self._args, 'seat', 'A')} · {net}")
+        else:
+            deck_a = getattr(self._args, "deck_a", None) or "?"
+            deck_b = getattr(self._args, "deck_b", None) or "?"
+            self.sub_title = (f"{deck_a} (model)  vs  {deck_b} ({self._args.opponent})"
+                              + ("  · bo3" if getattr(self._args, "bo3", False) else ""))
         if message.startup_text.strip():
             self._log_output("startup", message.startup_text)
         self._refresh_summary(loading=True)
@@ -746,6 +793,8 @@ class AnalysisApp(App):
             side = "A" if g["model_is_a"] else "B"
             label = (f"{i:>3}  {_result_str(g):<4} {sc_str:<4} "
                      f"{len(g['values']):>4}d  {side}")
+            if g.get("shard"):
+                label += "  ⛁"
         self.query_one("#games", OptionList).add_option(Option(label, id=str(i)))
         self._refresh_summary(loading=self._engine_busy)
         if self._cur_game is None:
@@ -975,6 +1024,11 @@ class AnalysisApp(App):
             out.append(f"\nOpponent since decision {step - 1}:\n", style="italic")
             for ln in opp_lines:
                 out.append(f"  opp → {ln}\n", style="dim")
+        if g.get("shard"):
+            out.append("\n⛁ shard replay: chosen = argmax(visits) — sampled, "
+                       "not exact, inside each game's temperature window; "
+                       "unsearched (fallback) decisions are not recorded\n",
+                       style="dim italic")
         return out
 
     @staticmethod
@@ -1041,7 +1095,11 @@ class AnalysisApp(App):
     def _run_menu_entry(self, key: str) -> None:
         if key in ("whatif", "run5", "run20"):
             if self._env is None or self._model is None:
-                self.notify("Live env not ready.", severity="warning")
+                msg = ("Not available in shard replay — branching/simulating "
+                       "needs a live env."
+                       if getattr(self._args, "shards", None)
+                       else "Live env not ready.")
+                self.notify(msg, severity="warning")
                 return
             if self._engine_busy:
                 self.notify("Engine is busy (simulating or branching) — try again "

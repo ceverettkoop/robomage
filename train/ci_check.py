@@ -74,7 +74,10 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           AnalysisSession's detached mirror stays in lockstep across a bo3
           sideboard boundary by delta replay, rewinds to an already-played
           decision by respawn, and a cross-thread stop event cancels within one
-          chunk (train/test_analysis_session.py).
+          chunk (train/test_analysis_session.py). Also the shard-replay
+          reconstruction behind tui_analysis --shards: recorded scripted
+          matches round-trip through synthetic shard_*.npz files into
+          browsable match records (train/test_shard_replay.py).
           Torch-free; needs bin/robomage.
 
 Draw classification (per repo policy — draws are not acceptable, but the two
@@ -366,6 +369,16 @@ def tier_analysis(rep):
     if r.returncode != 0:
         rep.error("analysis", "analysis-session violation "
                               f"(test_analysis_session.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
+    # Shard-replay reconstruction (tui_analysis --shards): recorded scripted
+    # matches round-trip through synthetic shards into browsable match records.
+    # Torch-free; needs bin/robomage.
+    r = subprocess.run([sys.executable, "train/test_shard_replay.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("analysis", "shard-replay violation "
+                              f"(test_shard_replay.py exit {r.returncode}):\n"
                               f"{r.stdout}{r.stderr}")
 
 
