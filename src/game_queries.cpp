@@ -267,6 +267,9 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "nonBasic")     return v.types && !has_basic_supertype(*v.types);
     if (q == "Colorless")    return !view_has_any_color(v);  // CR 105.2c
     if (q == "hasXCost")     return v.has_x_cost;       // {X} in the printed mana cost (Gaddock Teeg)
+    // hasABasicLandType — the object's subtypes include one of the five basic land types
+    // (CR 305.6; Boseiju, Who Endures' compensation search "a land card with a basic land type").
+    if (q == "hasABasicLandType") return v.types && has_a_basic_land_type(*v.types);
     // mana-value family (dynamic bound applied once by the caller) --------------
     if (q.rfind("cmc", 0) == 0) {
         if (q == "cmcLEX") return v.cmc <= static_cast<int>(cur_game.x_paid);

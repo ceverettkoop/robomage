@@ -693,6 +693,20 @@ inline bool is_basic_land_subtype(const std::string &name) {
            name == "Island" || name == "Swamp" || name == "Wastes";
 }
 
+// True when the type list carries at least one of the FIVE basic land types —
+// Plains/Island/Swamp/Mountain/Forest (CR 205.3i / 305.6). Wastes is deliberately
+// excluded here: it is a basic land with NO basic land type, even though
+// is_basic_land_subtype() lists it for the innate-mana-ability rule. A basic
+// Mountain qualifies (subtype Mountain), a dual like Scrubland qualifies
+// (Plains Swamp), a subtype-less utility land (Wasteland) does not. Drives the
+// `hasABasicLandType` filter qualifier (Boseiju, Who Endures' compensation search).
+inline bool has_a_basic_land_type(const std::set<Type> &types) {
+    for (const auto &t : types)
+        if (t.kind == SUBTYPE && t.name != "Wastes" && is_basic_land_subtype(t.name))
+            return true;
+    return false;
+}
+
 // Battlefield permanents controlled by `player` matching the ';'-delimited `spec` used by
 // Sacrifice-a-<type> / Return-a-<type> activation costs (e.g. "Forest;Plains", "Creature",
 // "Creature.Other", "Creature.Green"). Drives both Sacrifice-a-<type> and Return-a-<type>
