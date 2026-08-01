@@ -1,0 +1,2530 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Thoughtseize
+  Player A draws Archon of Cruelty
+  Player A draws Force of Will
+  Player A draws Thoughtseize
+  Player A draws Thoughtseize
+  Player A draws Polluted Delta
+  Player A draws Ponder
+  Player B draws Arid Mesa
+  Player B draws Orcish Bowmasters
+  Player B draws Swords to Plowshares
+  Player B draws Static Prison
+  Player B draws Guide of Souls
+  Player B draws Goblin Bombardment
+  Player B draws Ajani, Nacatl Pariah
+  Player A hand:
+  Archon of Cruelty
+  Force of Will
+  Polluted Delta
+  Ponder
+  Thoughtseize
+  Thoughtseize
+  Thoughtseize
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Force of Will, Polluted Delta, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Ajani, Nacatl Pariah
+  Arid Mesa
+  Goblin Bombardment
+  Guide of Souls
+  Orcish Bowmasters
+  Static Prison
+  Swords to Plowshares
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Arid Mesa, Goblin Bombardment, Guide of Souls, Orcish Bowmasters, Static Prison, Swords to Plowshares | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 1 (Mulligan)
+--- Narrative ---
+  Player B mulligans.
+  Player B draws Plateau
+  Player B draws Swords to Plowshares
+  Player B draws Ocelot Pride
+  Player B draws Ocelot Pride
+  Player B draws Amped Raptor
+  Player B draws Arid Mesa
+  Player B draws Voice of Victory
+  Player B hand:
+  Amped Raptor
+  Arid Mesa
+  Ocelot Pride
+  Ocelot Pride
+  Plateau
+  Swords to Plowshares
+  Voice of Victory
+
+--- Decision 3 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Amped Raptor, Arid Mesa, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 6-card hand.
+  Player B: Choose card to put on library bottom (1 remaining):
+
+--- Decision 4 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Amped Raptor, Arid Mesa, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Amped Raptor
+   1: Arid Mesa
+   2: Ocelot Pride
+   3: Ocelot Pride
+   4: Plateau
+   5: Swords to Plowshares
+   6: Voice of Victory
+  >> B/B: 0 (Amped Raptor)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Archon of Cruelty, Force of Will, Polluted Delta, Ponder, Thoughtseize, Thoughtseize, Thoughtseize
+  PB: Amped Raptor, Arid Mesa, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Force of Will, Polluted Delta, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Archon of Cruelty, Force of Will, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Polluted Delta
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Force of Will, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Swamp
+   3: Undercity Sewers
+   4: Undercity Sewers
+   5: Underground Sea
+   6: Underground Sea
+   7: Underground Sea
+   8: Underground Sea
+  >> A/A: 1 (Island)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Island to the battlefield
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Force of Will, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 67
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Island
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+  >> A/A: 1 (Cast Ponder)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Force of Will, Thoughtseize, Thoughtseize, Thoughtseize | lib 67
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Show and Tell  [#2]
+   1: Lotus Petal  [#2]
+   2: Brainstorm  [#2]
+  >> A/A: 0 (Show and Tell)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Force of Will, Thoughtseize, Thoughtseize, Thoughtseize | lib 67
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Lotus Petal  [#1]
+   1: Brainstorm  [#1]
+  >> A/A: 0 (Lotus Petal)
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Force of Will, Thoughtseize, Thoughtseize, Thoughtseize | lib 67
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Polluted Delta
+  Known top: Brainstorm, Lotus Petal, Show and Tell, ?, ?
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Brainstorm
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Cabal Therapy
+--- Turn 2 (Player B) ---
+  PA: Archon of Cruelty, Force of Will, Thoughtseize, Thoughtseize, Thoughtseize
+  PB: Arid Mesa, Cabal Therapy, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Arid Mesa, Cabal Therapy, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 66
+  Opp BF:   Island (T)
+  Opp GY:  Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island
+  Actions:
+   0: Pass priority
+   1: Play Arid Mesa
+   2: Play Plateau
+  >> B/B: 1 (Play Arid Mesa)
+--- Narrative ---
+  Player B played Arid Mesa
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Cabal Therapy, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 66
+  Self BF:  Arid Mesa
+  Opp BF:   Island (T)
+  Opp GY:  Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Arid Mesa (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Arid Mesa (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Arid Mesa
+  Player B's Arid Mesa ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Cabal Therapy, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 66
+  Opp BF:   Island (T)
+  Stack: Arid Mesa (ability, self)
+  Pending: Arid Mesa (self)
+  Self GY: Arid Mesa
+  Opp GY:  Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Badlands
+   2: Elegant Parlor
+   3: Plains
+   4: Plateau
+   5: Scrubland
+   6: Scrubland
+   7: Shadowy Backstreet
+  >> B/B: 1 (Badlands)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Badlands to the battlefield
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Cabal Therapy, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 66
+  Self BF:  Badlands
+  Opp BF:   Island (T)
+  Self GY: Arid Mesa
+  Opp GY:  Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy  [#0]
+  >> B/B: 1 (Cast Cabal Therapy)
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 16 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Cabal Therapy, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 66
+  Self BF:  Badlands
+  Opp BF:   Island (T)
+  Pending: Cabal Therapy (self)
+  Self GY: Arid Mesa
+  Opp GY:  Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Player A (19 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Cabal Therapy
+
+--- Decision 17 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Brainstorm, Force of Will, Thoughtseize, Thoughtseize, Thoughtseize | lib 66
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Badlands (T)
+  Stack: Cabal Therapy (spell, opponent) -> self (player)
+  Self GY: Ponder, Polluted Delta
+  Opp GY:  Arid Mesa
+  Known top: Lotus Petal, Show and Tell, ?, ?, ?
+  Opp revealed: Arid Mesa, Badlands, Cabal Therapy
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 18 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Brainstorm, Force of Will, Thoughtseize, Thoughtseize, Thoughtseize | lib 66
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Badlands (T)
+  Stack: Cabal Therapy (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
+  Self GY: Ponder, Polluted Delta
+  Opp GY:  Arid Mesa
+  Known top: Lotus Petal, Show and Tell, ?, ?, ?
+  Opp revealed: Arid Mesa, Badlands, Cabal Therapy
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Cabal Therapy
+  >> A/A: 0 (Cabal Therapy)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 19 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Brainstorm, Force of Will, Thoughtseize, Thoughtseize, Thoughtseize | lib 66
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Badlands (T)
+  Stack: Cabal Therapy (spell, opponent) -> self (player)
+  Self GY: Ponder, Polluted Delta
+  Opp GY:  Arid Mesa
+  Known top: Lotus Petal, Show and Tell, ?, ?, ?
+  Opp revealed: Arid Mesa, Badlands, Cabal Therapy
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Exile Brainstorm
+  >> A/A: 0 (Exile Brainstorm)
+--- Narrative ---
+  Player A pays 1 life
+  Player A exiles Brainstorm
+  Player A casts Force of Will targeting Cabal Therapy
+  Resolving ability (category: Counter)
+  Cabal Therapy is countered
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Lotus Petal
+--- Turn 3 (Player A) ---
+  PA: Archon of Cruelty, Lotus Petal, Thoughtseize, Thoughtseize, Thoughtseize
+  PB: Cabal Therapy, Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 20 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Archon of Cruelty, Lotus Petal, Thoughtseize, Thoughtseize, Thoughtseize | lib 65
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Island
+  Opp BF:   Badlands (T)
+  Self GY: Force of Will, Ponder, Polluted Delta
+  Opp GY:  Cabal Therapy, Arid Mesa
+  Self exile: Brainstorm
+  Known top: Show and Tell, ?, ?, ?, ?
+  Opp revealed: Arid Mesa, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Cast Lotus Petal  [#0]
+  >> A/A: 1 (Cast Lotus Petal)
+--- Narrative ---
+  Player A casts Lotus Petal
+  Lotus Petal enters the battlefield
+
+--- Decision 21 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Thoughtseize | lib 65
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Island | Lotus Petal
+  Opp BF:   Badlands (T)
+  Self GY: Force of Will, Ponder, Polluted Delta
+  Opp GY:  Cabal Therapy, Arid Mesa
+  Self exile: Brainstorm
+  Known top: Show and Tell, ?, ?, ?, ?
+  Opp revealed: Arid Mesa, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Cast Thoughtseize  [#0]
+   2: Cast Thoughtseize  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> A/A: 1 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 22 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Thoughtseize | lib 65
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Island | Lotus Petal
+  Opp BF:   Badlands (T)
+  Pending: Thoughtseize (self)
+  Self GY: Force of Will, Ponder, Polluted Delta
+  Opp GY:  Cabal Therapy, Arid Mesa
+  Self exile: Brainstorm
+  Known top: Show and Tell, ?, ?, ?, ?
+  Opp revealed: Arid Mesa, Badlands, Cabal Therapy
+  Actions:
+   0: Player B (19 life)
+   1: Player A (18 life)
+  >> A/A: 0 (Player B (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Lotus Petal
+  Player A activated Lotus Petal for 1(B)
+  Player A casts Thoughtseize targeting Player B
+  Resolving ability (category: Discard)
+  Player B reveals their hand:
+    Ocelot Pride
+    Ocelot Pride
+    Plateau
+    Swords to Plowshares
+    Voice of Victory
+  Player A chooses a card to discard:
+
+--- Decision 23 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(3): Archon of Cruelty, Thoughtseize, Thoughtseize | lib 65
+  Opp:   19 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Island
+  Opp BF:   Badlands (T)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Cabal Therapy, Arid Mesa
+  Self exile: Brainstorm
+  Known top: Show and Tell, ?, ?, ?, ?
+  Known opp hand: Ocelot Pride, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+  Opp revealed: Swords to Plowshares, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Badlands, Cabal Therapy
+  Extras: self_revolt
+  Actions:
+   0: Ocelot Pride
+   1: Ocelot Pride
+   2: Swords to Plowshares
+   3: Voice of Victory
+  >> A/A: 3 (Voice of Victory)
+--- Narrative ---
+  Player B discards Voice of Victory
+  Resolving ability (category: LoseLife, amount: 2)
+  Player A loses 2 life (now at 16)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Scrubland
+--- Turn 4 (Player B) ---
+  PA: Archon of Cruelty, Thoughtseize, Thoughtseize
+  PB: Ocelot Pride, Ocelot Pride, Plateau, Scrubland, Swords to Plowshares
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Ocelot Pride, Ocelot Pride, Plateau, Scrubland, Swords to Plowshares | lib 51
+  Opp:   16 life | mana: empty | hand count: 3 | lib 65
+  Self BF:  Badlands
+  Opp BF:   Island
+  Self GY: Voice of Victory, Cabal Therapy, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp exile:  Brainstorm
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal
+  Actions:
+   0: Pass priority
+   1: Play Plateau
+   2: Play Scrubland
+  >> B/B: 1 (Play Plateau)
+--- Narrative ---
+  Player B played Plateau
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(4): Ocelot Pride, Ocelot Pride, Scrubland, Swords to Plowshares | lib 51
+  Opp:   16 life | mana: empty | hand count: 3 | lib 65
+  Self BF:  Badlands | Plateau
+  Opp BF:   Island
+  Self GY: Voice of Victory, Cabal Therapy, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp exile:  Brainstorm
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Cast Ocelot Pride  [#0]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Plateau for 1(W)
+  Player B casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(3): Ocelot Pride, Scrubland, Swords to Plowshares | lib 51
+  Opp:   16 life | mana: empty | hand count: 3 | lib 65
+  Self BF:  Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Island
+  Self GY: Voice of Victory, Cabal Therapy, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp exile:  Brainstorm
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+  >> B/B: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(3): Ocelot Pride, Scrubland, Swords to Plowshares | lib 51
+  Opp:   16 life | mana: empty | hand count: 3 | lib 65
+  Self BF:  Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Island
+  Pending: Cabal Therapy (self)
+  Self GY: Voice of Victory, Cabal Therapy, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp exile:  Brainstorm
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (16 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (16 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(3): Ocelot Pride, Scrubland, Swords to Plowshares | lib 51
+  Opp:   16 life | mana: empty | hand count: 3 | lib 65
+  Self BF:  Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Island
+  Self GY: Voice of Victory, Cabal Therapy, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp exile:  Brainstorm
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal
+  Extras: self_lands_played=1
+  Actions:
+   0: Sacrifice Ocelot Pride
+  >> B/B: 0 (Sacrifice Ocelot Pride)
+--- Narrative ---
+  Player B sacrifices Ocelot Pride
+  Player B casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(3): Ocelot Pride, Scrubland, Swords to Plowshares | lib 51
+  Opp:   16 life | mana: empty | hand count: 3 | lib 65
+  Self BF:  Badlands | Plateau (T)
+  Opp BF:   Island
+  Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
+  Pending: Cabal Therapy (self)
+  Self GY: Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp exile:  Brainstorm
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Guide of Souls
+   3: Name card: Leyline of the Void
+   4: Name card: Ocelot Pride
+   5: Name card: Swords to Plowshares
+   6: Name card: Thoughtseize
+   7: Name card: Voice of Victory
+   8: Name card: Cabal Therapy
+   9: Name card: Orcish Bowmasters
+  10: Name card: Containment Priest
+  11: Name card: Goblin Bombardment
+  12: Name card: Pyroblast
+  13: Name card: Clarion Conqueror
+  14: Name card: Damping Sphere
+  15: Name card: Deafening Silence
+  16: Name card: Disruptor Flute
+  17: Name card: Hexing Squelcher
+  18: Name card: Null Rod
+  19: Name card: Static Prison
+  20: Name card: Stony Silence
+  21: Name card: Wrath of the Skies
+  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B names card: Ajani, Nacatl Pariah
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Archon of Cruelty
+    Thoughtseize
+    Thoughtseize
+  No matching cards to discard.
+  Cabal Therapy is exiled (flashback)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+  Player A draws Show and Tell
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Ajani, Nacatl Pariah
+--- Turn 6 (Player B) ---
+  PA: Archon of Cruelty, Thoughtseize, Thoughtseize
+  PB: Ajani, Nacatl Pariah, Ocelot Pride, Scrubland, Swords to Plowshares
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Ocelot Pride, Scrubland, Swords to Plowshares | lib 50
+  Opp:   16 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Badlands | Plateau
+  Opp BF:   Island
+  Self GY: Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+   2: Cast Ajani, Nacatl Pariah  [#0]
+   3: Cast Ocelot Pride  [#0]
+  >> B/B: 2 (Cast Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B activated Plateau for 1(W)
+  Player B activated Badlands for 1(R)
+  Player B casts Ajani, Nacatl Pariah
+  Ajani, Nacatl Pariah enters the battlefield
+  Ajani, Nacatl Pariah triggered
+  Resolving ability (category: Token)
+  Token created: 2/1 Cat Warrior
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(3): Ocelot Pride, Scrubland, Swords to Plowshares | lib 50
+  Opp:   16 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Badlands (T) | Plateau (T) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Island
+  Self GY: Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> B/B: 1 (Play Scrubland)
+--- Narrative ---
+  Player B played Scrubland
+
+--- Decision 32 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(2): Ocelot Pride, Swords to Plowshares | lib 50
+  Opp:   16 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Badlands (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] (SICK)
+  Opp BF:   Island
+  Self GY: Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Scrubland for 1(W)
+  Player B casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+  Player A draws Flow State
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: Archon of Cruelty, Thoughtseize, Thoughtseize
+  PB: Swords to Plowshares
+
+--- Decision 33 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 8)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 50
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Arid Mesa
+
+--- Decision 34 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  19 life | mana: empty | hand(2): Arid Mesa, Swords to Plowshares | lib 49
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 35 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(2): Arid Mesa, Swords to Plowshares | lib 49
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Play Arid Mesa
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Play Arid Mesa)
+--- Narrative ---
+  Player B played Arid Mesa
+
+--- Decision 36 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 49
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Arid Mesa | Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Arid Mesa (ChangeZone)  [#0]
+  >> B/B: 2 (Activate Arid Mesa (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Arid Mesa
+  Player B's Arid Mesa ability is on the stack
+
+--- Decision 37 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 49
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Stack: Arid Mesa (ability, self)
+  Self GY: Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 38 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 49
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Stack: Arid Mesa (ability, self)
+  Pending: Arid Mesa (self)
+  Self GY: Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Elegant Parlor
+   2: Plains
+   3: Plateau
+   4: Scrubland
+   5: Shadowy Backstreet
+  >> B/B: 1 (Elegant Parlor)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Elegant Parlor to the battlefield
+  Elegant Parlor enters tapped.
+  Elegant Parlor triggered
+
+--- Decision 39 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 48
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Stack: Elegant Parlor (ability, self) [amt=1]
+  Self GY: Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Amped Raptor
+
+--- Decision 40 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 48
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Stack: Elegant Parlor (ability, self) [amt=1]
+  Pending: Elegant Parlor (self)
+  Self GY: Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Put Amped Raptor on top of library  [#0]
+   1: Put Amped Raptor into graveyard
+  >> B/B: 1 (Put Amped Raptor into graveyard)
+--- Narrative ---
+  Player B puts Amped Raptor into their graveyard.
+
+--- Decision 41 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 42 ---
+  Priority: Player B (active)
+  Step: Begin Combat (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 43 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Ajani, Nacatl Pariah [1/2]
+   1: Ocelot Pride [1/1]
+   2: Cat Warrior token [2/1]
+   3: Confirm attackers
+  >> B/B: 0 (Ajani, Nacatl Pariah [1/2])
+--- Narrative ---
+  Ajani, Nacatl Pariah attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+
+--- Decision 44 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Ocelot Pride [1/1]
+   1: Cat Warrior token [2/1]
+   2: Confirm attackers
+  >> B/B: 0 (Ocelot Pride [1/1])
+--- Narrative ---
+  Ocelot Pride attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+
+--- Decision 45 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 46 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plateau | Scrubland | Cat Warrior [2/1] (ATK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ajani, Nacatl Pariah -> Player A
+    Ocelot Pride -> Player A
+    Cat Warrior token -> Player A
+
+--- Decision 47 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 48 ---
+  Priority: Player B (active)
+  Step: Declare Blk (turn 8)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Ocelot Pride deals 1 damage to Player A
+    Player B gains 1 life (lifelink)
+  --- End First Strike Combat Damage ---
+
+--- Decision 49 ---
+  Priority: Player B (active)
+  Step: First Strike Dmg (turn 8)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   15 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Ajani, Nacatl Pariah deals 1 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+  --- End Combat Damage ---
+
+--- Decision 50 ---
+  Priority: Player B (active)
+  Step: Combat Dmg (turn 8)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 51 ---
+  Priority: Player B (active)
+  Step: End Combat (turn 8)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 52 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 8)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Ocelot Pride triggered
+
+--- Decision 53 ---
+  Priority: Player B (active)
+  Step: End Step (turn 8)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T)
+  Opp BF:   Island
+  Stack: Ocelot Pride (ability, self)
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Token)
+  Token created: 1/1 Cat
+  Resolving ability (category: CopyPermanent)
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: End Step (turn 8)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: Archon of Cruelty, Thoughtseize, Thoughtseize
+  PB: Swords to Plowshares
+
+--- Decision 55 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Atraxa, Grand Unifier
+
+--- Decision 56 ---
+  Priority: Player B (non-active)
+  Step: Draw (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 57 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 58 ---
+  Priority: Player B (non-active)
+  Step: Begin Combat (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 59 ---
+  Priority: Player B (non-active)
+  Step: Declare Atk (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 60 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 61 ---
+  Priority: Player B (non-active)
+  Step: Combat Dmg (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 62 ---
+  Priority: Player B (non-active)
+  Step: End Combat (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 63 ---
+  Priority: Player B (non-active)
+  Step: Second Main (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 64 ---
+  Priority: Player B (non-active)
+  Step: End Step (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 10 (Player B) --------
+--- Turn 10 (Player B) ---
+  PA: Archon of Cruelty, Thoughtseize, Thoughtseize
+  PB: Swords to Plowshares
+
+--- Decision 65 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Arid Mesa
+
+--- Decision 66 ---
+  Priority: Player B (active)
+  Step: Draw (turn 10)
+  Self:  19 life | mana: empty | hand(2): Arid Mesa, Swords to Plowshares | lib 46
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 67 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  19 life | mana: empty | hand(2): Arid Mesa, Swords to Plowshares | lib 46
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Actions:
+   0: Pass priority
+   1: Play Arid Mesa
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Play Arid Mesa)
+--- Narrative ---
+  Player B played Arid Mesa
+
+--- Decision 68 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Arid Mesa | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Arid Mesa (ChangeZone)  [#0]
+  >> B/B: 2 (Activate Arid Mesa (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Arid Mesa
+  Player B's Arid Mesa ability is on the stack
+
+--- Decision 69 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Stack: Arid Mesa (ability, self)
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 70 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Stack: Arid Mesa (ability, self)
+  Pending: Arid Mesa (self)
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Plains
+   2: Plateau
+   3: Scrubland
+   4: Shadowy Backstreet
+  >> B/B: 1 (Plains)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Plains to the battlefield
+
+--- Decision 71 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 72 ---
+  Priority: Player B (active)
+  Step: Begin Combat (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 73 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Ajani, Nacatl Pariah [1/2]
+   1: Ocelot Pride [1/1]
+   2: Cat Warrior token [2/1]
+   3: Cat token [1/1]
+   4: Confirm attackers
+  >> B/B: 0 (Ajani, Nacatl Pariah [1/2])
+--- Narrative ---
+  Ajani, Nacatl Pariah attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+
+--- Decision 74 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Ocelot Pride [1/1]
+   1: Cat Warrior token [2/1]
+   2: Cat token [1/1]
+   3: Confirm attackers
+  >> B/B: 0 (Ocelot Pride [1/1])
+--- Narrative ---
+  Ocelot Pride attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+
+--- Decision 75 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Cat token [1/1]
+   2: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 76 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (ATK) | Cat [1/1]
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Cat token [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+    [attacking] Cat token [1/1] -> Player A
+
+--- Decision 77 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ajani, Nacatl Pariah -> Player A
+    Ocelot Pride -> Player A
+    Cat Warrior token -> Player A
+    Cat token -> Player A
+
+--- Decision 78 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 79 ---
+  Priority: Player B (active)
+  Step: Declare Blk (turn 10)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   12 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Ocelot Pride deals 1 damage to Player A
+    Player B gains 1 life (lifelink)
+  --- End First Strike Combat Damage ---
+
+--- Decision 80 ---
+  Priority: Player B (active)
+  Step: First Strike Dmg (turn 10)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   11 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Ajani, Nacatl Pariah deals 1 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+    Cat token deals 1 damage to Player A
+  --- End Combat Damage ---
+
+--- Decision 81 ---
+  Priority: Player B (active)
+  Step: Combat Dmg (turn 10)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 82 ---
+  Priority: Player B (active)
+  Step: End Combat (turn 10)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T,ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 83 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 10)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Ocelot Pride triggered
+
+--- Decision 84 ---
+  Priority: Player B (active)
+  Step: End Step (turn 10)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T)
+  Opp BF:   Island
+  Stack: Ocelot Pride (ability, self)
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Token)
+  Token created: 1/1 Cat
+  Resolving ability (category: CopyPermanent)
+  Player B gets the city's blessing.
+  Token copy created: 1/1 Cat
+
+--- Decision 85 ---
+  Priority: Player B (active)
+  Step: End Step (turn 10)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 11 (Player A) --------
+--- Turn 11 (Player A) ---
+  PA: Archon of Cruelty, Thoughtseize, Thoughtseize
+  PB: Swords to Plowshares
+
+--- Decision 86 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_citys_blessing
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Lotus Petal
+
+--- Decision 87 ---
+  Priority: Player B (non-active)
+  Step: Draw (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 7 | lib 61
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_citys_blessing
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 88 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  7 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Flow State, Lotus Petal, Thoughtseize, Thoughtseize, Show and Tell | lib 61
+  Opp:   19 life | mana: empty | hand count: 1 | lib 45
+  Self BF:  Island
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Self GY: Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Self exile: Brainstorm
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Plains, Swords to Plowshares, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: opp_citys_blessing
+  Actions:
+   0: Pass priority
+   1: Cast Lotus Petal  [#0]
+  >> A/A: 1 (Cast Lotus Petal)
+--- Narrative ---
+  Player A casts Lotus Petal
+
+--- Decision 89 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 6 | lib 61
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Island
+  Stack: Lotus Petal (spell, opponent)
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Archon of Cruelty
+  Extras: self_citys_blessing
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Lotus Petal enters the battlefield
+
+--- Decision 90 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  7 life | mana: empty | hand(6): Archon of Cruelty, Atraxa, Grand Unifier, Flow State, Thoughtseize, Thoughtseize, Show and Tell | lib 61
+  Opp:   19 life | mana: empty | hand count: 1 | lib 45
+  Self BF:  Island | Lotus Petal
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Self GY: Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Self exile: Brainstorm
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Plains, Swords to Plowshares, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: opp_citys_blessing
+  Actions:
+   0: Pass priority
+   1: Cast Flow State  [#0]
+   2: Cast Thoughtseize  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> A/A: 1 (Cast Flow State)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A sacrifices Lotus Petal
+  Player A activated Lotus Petal for 1(W)
+  Player A casts Flow State
+
+--- Decision 91 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 5 | lib 61
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Island (T)
+  Stack: Flow State (spell, opponent)
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Flow State, Archon of Cruelty
+  Extras: self_citys_blessing, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Dig)
+  Player A looks at the top 3 card(s) of their library.
+
+--- Decision 92 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  7 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Thoughtseize, Thoughtseize, Show and Tell | lib 61
+  Opp:   19 life | mana: empty | hand count: 1 | lib 45
+  Self BF:  Island (T)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Self exile: Brainstorm
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Plains, Swords to Plowshares, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: opp_citys_blessing, self_revolt
+  Actions:
+   0: Underground Sea
+   1: Show and Tell
+   2: Underground Sea
+  >> A/A: 1 (Show and Tell)
+
+--- Decision 93 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  7 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Thoughtseize, Thoughtseize, Show and Tell | lib 61
+  Opp:   19 life | mana: empty | hand count: 1 | lib 45
+  Self BF:  Island (T)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Self exile: Brainstorm
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Plains, Swords to Plowshares, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: opp_citys_blessing, self_revolt
+  Actions:
+   0: Underground Sea
+   1: Underground Sea
+  >> A/A: 1 (Underground Sea)
+--- Narrative ---
+  Player A puts Show and Tell into hand.
+  Player A puts Underground Sea into hand.
+  Player A puts 1 card(s) on the bottom of their library.
+
+--- Decision 94 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  7 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Thoughtseize, Thoughtseize, Underground Sea, Show and Tell, Show and Tell | lib 59
+  Opp:   19 life | mana: empty | hand count: 1 | lib 45
+  Self BF:  Island (T)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Self GY: Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Self exile: Brainstorm
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Plains, Swords to Plowshares, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: opp_citys_blessing, self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+  >> A/A: 1 (Play Underground Sea)
+--- Narrative ---
+  Player A played Underground Sea
+
+--- Decision 95 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  7 life | mana: empty | hand(6): Archon of Cruelty, Atraxa, Grand Unifier, Thoughtseize, Thoughtseize, Show and Tell, Show and Tell | lib 59
+  Opp:   19 life | mana: empty | hand count: 1 | lib 45
+  Self BF:  Island (T) | Underground Sea
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Self GY: Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Self exile: Brainstorm
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Plains, Swords to Plowshares, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: self_lands_played=1, opp_citys_blessing, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Thoughtseize  [#0]
+   2: Cast Thoughtseize  [#0]
+  >> A/A: 1 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 96 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  7 life | mana: empty | hand(6): Archon of Cruelty, Atraxa, Grand Unifier, Thoughtseize, Thoughtseize, Show and Tell, Show and Tell | lib 59
+  Opp:   19 life | mana: empty | hand count: 1 | lib 45
+  Self BF:  Island (T) | Underground Sea
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Pending: Thoughtseize (self)
+  Self GY: Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Self exile: Brainstorm
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Plains, Swords to Plowshares, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: self_lands_played=1, opp_citys_blessing, self_revolt
+  Actions:
+   0: Player B (19 life)
+   1: Player A (7 life)
+  >> A/A: 0 (Player B (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Underground Sea for 1(B)
+  Player A casts Thoughtseize targeting Player B
+
+--- Decision 97 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   7 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Island (T) | Underground Sea (T)
+  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Self GY: Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: opp_lands_played=1, self_citys_blessing, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Discard)
+  Player B reveals their hand:
+    Swords to Plowshares
+  Player A chooses a card to discard:
+
+--- Decision 98 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  7 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Thoughtseize, Show and Tell, Show and Tell | lib 59
+  Opp:   19 life | mana: empty | hand count: 1 | lib 45
+  Self BF:  Island (T) | Underground Sea (T)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Plateau | Scrubland | Cat Warrior [2/1] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Opp GY:  Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Self exile: Brainstorm
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Plains, Swords to Plowshares, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: self_lands_played=1, opp_citys_blessing, self_revolt
+  Actions:
+   0: Swords to Plowshares
+  >> A/A: 0 (Swords to Plowshares)
+--- Narrative ---
+  Player B discards Swords to Plowshares
+  Resolving ability (category: LoseLife, amount: 2)
+  Player A loses 2 life (now at 5)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 12 (Player B) --------
+  Player B draws Marsh Flats
+--- Turn 12 (Player B) ---
+  PA: Archon of Cruelty, Atraxa, Grand Unifier, Thoughtseize, Show and Tell, Show and Tell
+  PB: Marsh Flats
+
+--- Decision 99 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  19 life | mana: empty | hand(1): Marsh Flats | lib 44
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_citys_blessing
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 100 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  19 life | mana: empty | hand(0): (empty) | lib 44
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Marsh Flats | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 101 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 44
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats, Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt
+  Actions:
+   0: Fail to find
+   1: Plateau
+   2: Scrubland
+   3: Shadowy Backstreet
+  >> B/B: 1 (Plateau)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Plateau to the battlefield
+  --- Declare Attackers (Player B) ---
+
+--- Decision 102 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Marsh Flats, Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Ajani, Nacatl Pariah [1/2]
+   1: Ocelot Pride [1/1]
+   2: Cat Warrior token [2/1]
+   3: Cat token [1/1]
+   4: Cat token [1/1]
+   5: Cat token [1/1]
+   6: Confirm attackers
+  >> B/B: 0 (Ajani, Nacatl Pariah [1/2])
+--- Narrative ---
+  Ajani, Nacatl Pariah attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+
+--- Decision 103 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Plateau | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Marsh Flats, Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Ocelot Pride [1/1]
+   1: Cat Warrior token [2/1]
+   2: Cat token [1/1]
+   3: Cat token [1/1]
+   4: Cat token [1/1]
+   5: Confirm attackers
+  >> B/B: 0 (Ocelot Pride [1/1])
+--- Narrative ---
+  Ocelot Pride attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+
+--- Decision 104 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plains | Plateau | Plateau | Scrubland | Cat Warrior [2/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Marsh Flats, Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Cat token [1/1]
+   2: Cat token [1/1]
+   3: Cat token [1/1]
+   4: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 105 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plains | Plateau | Plateau | Scrubland | Cat Warrior [2/1] (ATK) | Cat [1/1] | Cat [1/1] | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Marsh Flats, Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Cat token [1/1]
+   1: Cat token [1/1]
+   2: Cat token [1/1]
+   3: Confirm attackers
+  >> B/B: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+    [attacking] Cat token [1/1] -> Player A
+
+--- Decision 106 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plains | Plateau | Plateau | Scrubland | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat [1/1] | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Marsh Flats, Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Cat token [1/1]
+   1: Cat token [1/1]
+   2: Confirm attackers
+  >> B/B: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+    [attacking] Cat token [1/1] -> Player A
+    [attacking] Cat token [1/1] -> Player A
+
+--- Decision 107 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plains | Plateau | Plateau | Scrubland | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat [1/1] (ATK) | Cat [1/1]
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Marsh Flats, Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Cat token [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Ocelot Pride [1/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+    [attacking] Cat token [1/1] -> Player A
+    [attacking] Cat token [1/1] -> Player A
+    [attacking] Cat token [1/1] -> Player A
+
+--- Decision 108 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   5 life | mana: empty | hand count: 5 | lib 59
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Plains | Plateau | Plateau | Scrubland | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat [1/1] (ATK) | Cat [1/1] (ATK)
+  Opp BF:   Island (T) | Underground Sea (T)
+  Self GY: Marsh Flats, Swords to Plowshares, Arid Mesa, Amped Raptor, Arid Mesa, Ocelot Pride, Voice of Victory, Arid Mesa
+  Opp GY:  Thoughtseize, Flow State, Lotus Petal, Thoughtseize, Lotus Petal, Force of Will, Ponder, Polluted Delta
+  Self exile: Cabal Therapy
+  Opp exile:  Brainstorm
+  Known opp hand: Archon of Cruelty, Thoughtseize
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Underground Sea, Flow State, Archon of Cruelty
+  Extras: self_lands_played=1, self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ajani, Nacatl Pariah -> Player A
+    Ocelot Pride -> Player A
+    Cat Warrior token -> Player A
+    Cat token -> Player A
+    Cat token -> Player A
+    Cat token -> Player A
+  No creatures eligible to block.
+  --- First Strike Combat Damage ---
+    Ocelot Pride deals 1 damage to Player A
+    Player B gains 1 life (lifelink)
+  --- End First Strike Combat Damage ---
+  --- Combat Damage ---
+    Ajani, Nacatl Pariah deals 1 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+    Cat token deals 1 damage to Player A
+    Cat token deals 1 damage to Player A
+    Cat token deals 1 damage to Player A
+  --- End Combat Damage ---
+  Player A has -2 life - Player B wins!
+
+=== B/B wins ===

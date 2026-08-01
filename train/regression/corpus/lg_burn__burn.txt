@@ -1,0 +1,723 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Fiery Islet
+  Player A draws Rift Bolt
+  Player A draws Rift Bolt
+  Player A draws Mountain
+  Player A draws Price of Progress
+  Player A draws Mountain
+  Player A draws Mountain
+  Player B draws Mountain
+  Player B draws Mountain
+  Player B draws Price of Progress
+  Player B draws Mountain
+  Player B draws Goblin Guide
+  Player B draws Eidolon of the Great Revel
+  Player B draws Lightning Bolt
+  Player A hand:
+  Fiery Islet
+  Mountain
+  Mountain
+  Mountain
+  Price of Progress
+  Rift Bolt
+  Rift Bolt
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Eidolon of the Great Revel
+  Goblin Guide
+  Lightning Bolt
+  Mountain
+  Mountain
+  Mountain
+  Price of Progress
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
+  PB: Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Pass priority
+   1: Play Fiery Islet
+   2: Play Mountain
+   3: Play Mountain
+   4: Play Mountain
+  >> A/A: 1 (Play Fiery Islet)
+--- Narrative ---
+  Player A played Fiery Islet
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Fiery Islet
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Suspend Rift Bolt
+   2: Suspend Rift Bolt
+  >> A/A: 1 (Suspend Rift Bolt)
+--- Narrative ---
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(R)
+  Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Mountain
+--- Turn 2 (Player B) ---
+  PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
+  PB: Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Price of Progress
+
+--- Decision 5 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+   4: Play Mountain
+  >> B/B: 1 (Play Mountain)
+--- Narrative ---
+  Player B played Mountain
+
+--- Decision 6 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Mountain
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Goblin Guide  [#0]
+   2: Cast Lightning Bolt  [#0]
+  >> B/B: 1 (Cast Goblin Guide)
+--- Narrative ---
+  Player B activated Mountain for 1(R)
+  Player B casts Goblin Guide
+  Goblin Guide enters the battlefield
+  --- Declare Attackers (Player B) ---
+
+--- Decision 7 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 2)
+  Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Goblin Guide [2/2] [Haste] (SICK) | Mountain (T)
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Goblin Guide [2/2]
+   1: Confirm attackers
+  >> B/B: 0 (Goblin Guide [2/2])
+--- Narrative ---
+  Goblin Guide attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Goblin Guide [2/2] -> Player A
+
+--- Decision 8 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 2)
+  Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK,SICK) | Mountain (T)
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Goblin Guide -> Player A
+  Goblin Guide triggered
+  Resolving ability (category: Dig)
+  Player A looks at the top 1 card(s) of their library.
+  Player A reveals Chain Lightning from the top of their library.
+  Player A puts 1 card(s) on the top of their library.
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Goblin Guide deals 2 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Rift Bolt triggers: remove a time counter (suspend).
+  Resolving ability (category: SuspendTick)
+  Removed a time counter from Rift Bolt (0 remaining).
+  Player A may cast Rift Bolt without paying its mana cost (suspend).
+--- Turn 3 (Player A) ---
+  PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 3)
+  Self:  17 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Fiery Islet
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Self exile: Rift Bolt
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Cast Rift Bolt (from exile, no cost)  [#7]
+  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+--- Narrative ---
+  Player A casts Rift Bolt without paying its mana cost
+  Choose target for Rift Bolt:
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 3)
+  Self:  17 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Fiery Islet
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Pending: Rift Bolt (self)
+  Self exile: Rift Bolt
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Player B (20 life)
+   1: Player A (17 life)
+   2: Goblin Guide
+  >> A/A: 0 (Player B (20 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Rift Bolt targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 17 life)
+  Player A draws Chain Lightning
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  17 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   17 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Fiery Islet
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Self GY: Rift Bolt
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+   4: Cast Chain Lightning  [#0]
+   5: Suspend Rift Bolt
+  >> A/A: 4 (Cast Chain Lightning)
+--- Narrative ---
+  Choose target for Chain Lightning:
+
+--- Decision 12 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  17 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   17 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Fiery Islet
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Pending: Chain Lightning (self)
+  Self GY: Rift Bolt
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Player B (17 life)
+   1: Player A (17 life)
+   2: Goblin Guide
+  >> A/A: 0 (Player B (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(R)
+  Player A casts Chain Lightning targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 14 life)
+  Resolving ability (category: CopySpellAbility)
+  Player B may pay to copy Chain Lightning:
+
+--- Decision 13 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  14 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   16 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Opp BF:   Fiery Islet (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Opp GY:  Rift Bolt
+  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Don't pay (spell is countered))
+
+--- Decision 14 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  16 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   14 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Fiery Islet (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+
+--- Decision 15 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  16 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   14 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Fiery Islet (T) | Mountain
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Goblin Guide
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Suspend Rift Bolt
+  >> A/A: 1 (Suspend Rift Bolt)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress
+
+--- Decision 16 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 4)
+  Self:  14 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   16 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Lightning Bolt  [#0]
+  >> B/B: 1 (Cast Lightning Bolt)
+--- Narrative ---
+  Choose target for Lightning Bolt:
+
+--- Decision 17 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 4)
+  Self:  14 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   16 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Pending: Lightning Bolt (self)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Player A (16 life)
+   1: Player B (14 life)
+   2: Goblin Guide
+  >> B/B: 0 (Player A (16 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Mountain for 1(R)
+  Player B casts Lightning Bolt targeting Player A
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 13 life)
+  Player B draws Lava Spike
+
+--- Decision 18 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(6): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   13 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Lightning Bolt
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+  >> B/B: 1 (Play Mountain)
+--- Narrative ---
+  Player B played Mountain
+
+--- Decision 19 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   13 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Lightning Bolt
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Lava Spike  [#0]
+  >> B/B: 1 (Cast Lava Spike)
+--- Narrative ---
+  Choose target for Lava Spike:
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   13 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Pending: Lava Spike (self)
+  Self GY: Lightning Bolt
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (13 life)
+   1: Player B (14 life)
+  >> B/B: 0 (Player A (13 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Mountain for 1(R)
+  Player B casts Lava Spike targeting Player A
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 10 life)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  14 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   10 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Lava Spike, Lightning Bolt
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Goblin Guide [2/2]
+   1: Confirm attackers
+  >> B/B: 0 (Goblin Guide [2/2])
+--- Narrative ---
+  Goblin Guide attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Goblin Guide [2/2] -> Player A
+
+--- Decision 22 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  14 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   10 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Lava Spike, Lightning Bolt
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Goblin Guide -> Player A
+  Goblin Guide triggered
+  Resolving ability (category: Dig)
+  Player A looks at the top 1 card(s) of their library.
+  Player A reveals Exquisite Firecraft from the top of their library.
+  Player A puts 1 card(s) on the top of their library.
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Goblin Guide deals 2 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+  Rift Bolt triggers: remove a time counter (suspend).
+--- Turn 5 (Player A) ---
+  PA: Mountain, Mountain, Price of Progress
+  PB: Eidolon of the Great Revel, Mountain, Mountain, Price of Progress
+
+--- Decision 23 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  8 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
+  Opp:   14 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Stack: Rift Bolt (ability, self)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Rift Bolt
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Cast Price of Progress  [#0]
+   2: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Cast Price of Progress)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(U)
+  Player A casts Price of Progress
+  Resolving ability (category: RepeatEach)
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to player (now at 5 life)
+  Resolving ability (category: DealDamage, amount: 0)
+  Dealt 0 damage to player (now at 14 life)
+  Resolving ability (category: SuspendTick)
+  Removed a time counter from Rift Bolt (0 remaining).
+  Player A may cast Rift Bolt without paying its mana cost (suspend).
+
+--- Decision 24 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  5 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   14 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Rift Bolt
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Cast Rift Bolt (from exile, no cost)  [#7]
+  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+--- Narrative ---
+  Player A casts Rift Bolt without paying its mana cost
+  Choose target for Rift Bolt:
+
+--- Decision 25 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  5 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   14 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Pending: Rift Bolt (self)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Rift Bolt
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Player B (14 life)
+   1: Player A (5 life)
+   2: Goblin Guide
+  >> A/A: 0 (Player B (14 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Rift Bolt targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 11 life)
+  Player A draws Exquisite Firecraft
+
+--- Decision 26 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  5 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
+  Opp:   11 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Lava Spike, Lightning Bolt
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Exquisite Firecraft, Mountain, Mountain
+  PB: Eidolon of the Great Revel, Mountain, Mountain, Price of Progress
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  11 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   5 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain | Mountain
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self GY: Lava Spike, Lightning Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Price of Progress  [#0]
+  >> B/B: 1 (Cast Price of Progress)
+--- Narrative ---
+  Player B activated Mountain for 1(R)
+  Player B activated Mountain for 1(R)
+  Player B casts Price of Progress
+  Resolving ability (category: RepeatEach)
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to player (now at 3 life)
+  Resolving ability (category: DealDamage, amount: 0)
+  Dealt 0 damage to player (now at 11 life)
+  Player B draws Chain Lightning
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  11 life | mana: empty | hand(4): Chain Lightning, Eidolon of the Great Revel, Mountain, Mountain | lib 50
+  Opp:   3 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self GY: Price of Progress, Lava Spike, Lightning Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+  >> B/B: 1 (Play Mountain)
+--- Narrative ---
+  Player B played Mountain
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  11 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
+  Opp:   3 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self GY: Price of Progress, Lava Spike, Lightning Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Chain Lightning  [#0]
+  >> B/B: 1 (Cast Chain Lightning)
+--- Narrative ---
+  Choose target for Chain Lightning:
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  11 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
+  Opp:   3 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Pending: Chain Lightning (self)
+  Self GY: Price of Progress, Lava Spike, Lightning Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (3 life)
+   1: Player B (11 life)
+   2: Goblin Guide
+  >> B/B: 0 (Player A (3 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Mountain for 1(R)
+  Player B casts Chain Lightning targeting Player A
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 0 life)
+  Resolving ability (category: CopySpellAbility)
+  Player A may pay to copy Chain Lightning:
+
+--- Decision 31 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  0 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Opp:   11 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Price of Progress, Lava Spike, Lightning Bolt
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Extras: opp_lands_played=1
+  Actions:
+   0: Tap Mountain for (R)
+   1: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Mountain for (R))
+--- Narrative ---
+  Player A tapped Mountain for {R}
+
+--- Decision 32 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  0 life | mana: 1R | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Opp:   11 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Price of Progress, Lava Spike, Lightning Bolt
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Extras: opp_lands_played=1
+  Actions:
+   0: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Don't pay (spell is countered))
+--- Narrative ---
+  Player A has 0 life - Player B wins!
+
+=== B/B wins ===

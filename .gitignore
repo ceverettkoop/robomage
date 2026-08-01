@@ -29,6 +29,11 @@ obj/*/*.d
 obj/*.d
 train/replays/*
 corpus/
+# ...but the replay-regression corpus IS tracked (the CI replay tier diffs
+# against it); without this exception new scenario files stay silently
+# unstaged after a re-record.
+!train/regression/corpus/
+!train/regression/corpus/**
 
 # ci_check.py transcript/draw-log output directory, and stray draw logs runner.py
 # writes to cwd on a stall (ci_check relocates them into --out-dir).

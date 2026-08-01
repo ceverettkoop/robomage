@@ -1,0 +1,3017 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Dark Depths
+  Player A draws Wasteland
+  Player A draws Urza's Saga
+  Player A draws Mox Diamond
+  Player A draws Urza's Saga
+  Player A draws Mox Diamond
+  Player A draws Skateboard
+  Player B draws Ocelot Pride
+  Player B draws Scrubland
+  Player B draws Voice of Victory
+  Player B draws Swords to Plowshares
+  Player B draws Cabal Therapy
+  Player B draws Amped Raptor
+  Player B draws Marsh Flats
+  Player A hand:
+  Dark Depths
+  Mox Diamond
+  Mox Diamond
+  Skateboard
+  Urza's Saga
+  Urza's Saga
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Amped Raptor
+  Cabal Therapy
+  Marsh Flats
+  Ocelot Pride
+  Scrubland
+  Swords to Plowshares
+  Voice of Victory
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland
+  PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Pass priority
+   1: Play Dark Depths
+   2: Play Urza's Saga
+   3: Play Urza's Saga
+   4: Play Wasteland
+   5: Cast Mox Diamond  [#0]
+   6: Cast Mox Diamond  [#0]
+  >> A/A: 2 (Play Urza's Saga)
+--- Narrative ---
+  Player A played Urza's Saga
+  Urza's Saga gets 1 lore counter (now 1).
+  Urza's Saga chapter 1 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Urza's Saga [lore:1]
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Mox Diamond  [#0]
+   2: Cast Mox Diamond  [#0]
+   3: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Mox Diamond)
+--- Narrative ---
+  Player A casts Mox Diamond
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Dark Depths, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Urza's Saga [lore:1]
+  Stack: Mox Diamond (ability, self)
+  Extras: self_lands_played=1
+  Actions:
+   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
+   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+   2: Discard Wasteland (put Mox Diamond onto the battlefield)
+   3: Don't discard (put Mox Diamond into graveyard)
+  >> A/A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
+--- Narrative ---
+  Player A discards Dark Depths.
+  Mox Diamond enters the battlefield
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(4): Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Mox Diamond | Urza's Saga [lore:1]
+  Self GY: Dark Depths
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Mox Diamond  [#0]
+   2: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Mox Diamond)
+--- Narrative ---
+  Player A casts Mox Diamond
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(3): Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Mox Diamond | Urza's Saga [lore:1]
+  Stack: Mox Diamond (ability, self)
+  Self GY: Dark Depths
+  Extras: self_lands_played=1
+  Actions:
+   0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+   1: Discard Wasteland (put Mox Diamond onto the battlefield)
+   2: Don't discard (put Mox Diamond into graveyard)
+  >> A/A: 0 (Discard Urza's Saga (put Mox Diamond onto the battlefield))
+--- Narrative ---
+  Player A discards Urza's Saga.
+  Mox Diamond enters the battlefield
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(2): Skateboard, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Mox Diamond | Mox Diamond | Urza's Saga [lore:1]
+  Self GY: Urza's Saga, Dark Depths
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Skateboard)
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A casts Skateboard
+  Skateboard enters the battlefield
+  Choose target for Skateboard:
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(1): Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Pending: Skateboard (self)
+  Self GY: Urza's Saga, Dark Depths
+  Extras: self_lands_played=1
+  Actions:
+   0: Mox Diamond
+   1: Mox Diamond
+   2: Skateboard
+   3: Urza's Saga
+  >> A/A: 0 (Mox Diamond)
+--- Narrative ---
+  Targeting choice 0
+  Skateboard triggered
+  Resolving ability (category: Tap)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Thoughtseize
+--- Turn 2 (Player B) ---
+  PA: Wasteland
+  PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 10 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Scrubland
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 11 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Marsh Flats
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Badlands
+   2: Elegant Parlor
+   3: Plains
+   4: Plateau
+   5: Plateau
+   6: Scrubland
+   7: Shadowy Backstreet
+  >> B/B: 1 (Badlands)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Badlands to the battlefield
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Badlands
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Self GY: Marsh Flats
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy  [#0]
+   2: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Cabal Therapy)
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Badlands
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Pending: Cabal Therapy (self)
+  Self GY: Marsh Flats
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Player A (20 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (20 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Badlands (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
+  Pending: Cabal Therapy (self)
+  Self GY: Marsh Flats
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Guide of Souls
+   3: Name card: Leyline of the Void
+   4: Name card: Ocelot Pride
+   5: Name card: Swords to Plowshares
+   6: Name card: Thoughtseize
+   7: Name card: Voice of Victory
+   8: Name card: Cabal Therapy
+   9: Name card: Orcish Bowmasters
+  10: Name card: Containment Priest
+  11: Name card: Goblin Bombardment
+  12: Name card: Pyroblast
+  13: Name card: Clarion Conqueror
+  14: Name card: Damping Sphere
+  15: Name card: Deafening Silence
+  16: Name card: Disruptor Flute
+  17: Name card: Hexing Squelcher
+  18: Name card: Null Rod
+  19: Name card: Static Prison
+  20: Name card: Stony Silence
+  21: Name card: Wrath of the Skies
+  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B names card: Ajani, Nacatl Pariah
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Wasteland
+  No matching cards to discard.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Boseiju, Who Endures
+--- Turn 3 (Player A) ---
+  PA: Boseiju, Who Endures, Wasteland
+  PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 16 ---
+  Priority: Player A (active)
+  Step: Draw (turn 3)
+  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Opp BF:   Badlands (T)
+  Self GY: Urza's Saga, Dark Depths
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Urza's Saga gets 1 lore counter (now 2).
+  Urza's Saga chapter 2 triggers.
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
+  Opp BF:   Badlands (T)
+  Stack: Urza's Saga (ability, self)
+  Self GY: Urza's Saga, Dark Depths
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
+  >> A/A: 1 (Activate Boseiju, Who Endures from hand (Destroy))
+--- Narrative ---
+  Choose target for this ability:
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
+  Opp BF:   Badlands (T)
+  Stack: Urza's Saga (ability, self)
+  Self GY: Urza's Saga, Dark Depths
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Actions:
+   0: Badlands
+  >> A/A: 0 (Badlands)
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Mox Diamond for 1(G)
+  Player A activated Mox Diamond for 1(W)
+  Player A discards Boseiju, Who Endures
+  Player A activates Boseiju, Who Endures from hand targeting Badlands
+  Resolving ability (category: Destroy)
+  Badlands is destroyed
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 19 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   20 life | mana: empty | hand count: 1 | lib 52
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Stack: Boseiju, Who Endures (ability, opponent) -> Badlands (self) -> Urza's Saga (ability, opponent)
+  Pending: Boseiju, Who Endures (opp)
+  Self GY: Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_revolt
+  Actions:
+   0: Fail to find
+   1: Elegant Parlor
+   2: Plains
+   3: Plateau
+   4: Plateau
+   5: Scrubland
+   6: Shadowy Backstreet
+  >> B/B: 1 (Elegant Parlor)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Elegant Parlor to the battlefield
+  Elegant Parlor enters tapped.
+  Elegant Parlor triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Silent Clearing
+
+--- Decision 20 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   20 life | mana: empty | hand count: 1 | lib 52
+  Self BF:  Elegant Parlor (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Stack: Elegant Parlor (ability, self) [amt=1] -> Urza's Saga (ability, opponent)
+  Pending: Elegant Parlor (self)
+  Self GY: Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_revolt
+  Actions:
+   0: Put Silent Clearing on top of library  [#0]
+   1: Put Silent Clearing into graveyard
+  >> B/B: 1 (Put Silent Clearing into graveyard)
+--- Narrative ---
+  Player B puts Silent Clearing into their graveyard.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+
+--- Decision 21 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(1): Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Opp BF:   Elegant Parlor (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy, Silent Clearing
+  Extras: opp_revolt
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 22 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] | Wasteland
+  Opp BF:   Elegant Parlor (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 23 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 49
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] | Wasteland
+  Opp BF:   Elegant Parlor (T)
+  Pending: Wasteland (self)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Elegant Parlor
+   1: Urza's Saga
+   2: Wasteland
+  >> A/A: 0 (Elegant Parlor)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Elegant Parlor is on the stack
+  Resolving ability (category: Destroy)
+  Elegant Parlor is destroyed
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Marsh Flats
+--- Turn 4 (Player B) ---
+  PA: (empty)
+  PB: Amped Raptor, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 48
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Self GY: Elegant Parlor, Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Scrubland
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 48
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Marsh Flats
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Self GY: Elegant Parlor, Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 48
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Plains
+   2: Plateau
+   3: Plateau
+   4: Scrubland
+   5: Shadowy Backstreet
+  >> B/B: 1 (Plains)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Plains to the battlefield
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Plains
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Self GY: Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Plains for 1(W)
+  Player B casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(5): Amped Raptor, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plains (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Self GY: Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+  >> B/B: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(5): Amped Raptor, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plains (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Pending: Cabal Therapy (self)
+  Self GY: Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Player A (20 life)
+   1: Player B (18 life)
+  >> B/B: 0 (Player A (20 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(5): Amped Raptor, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plains (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Self GY: Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Cabal Therapy, Marsh Flats
+  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Sacrifice Ocelot Pride
+  >> B/B: 0 (Sacrifice Ocelot Pride)
+--- Narrative ---
+  Player B sacrifices Ocelot Pride
+  Player B casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(5): Amped Raptor, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Plains (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
+  Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
+  Pending: Cabal Therapy (self)
+  Self GY: Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Guide of Souls
+   3: Name card: Leyline of the Void
+   4: Name card: Ocelot Pride
+   5: Name card: Swords to Plowshares
+   6: Name card: Thoughtseize
+   7: Name card: Voice of Victory
+   8: Name card: Cabal Therapy
+   9: Name card: Orcish Bowmasters
+  10: Name card: Containment Priest
+  11: Name card: Goblin Bombardment
+  12: Name card: Pyroblast
+  13: Name card: Clarion Conqueror
+  14: Name card: Damping Sphere
+  15: Name card: Deafening Silence
+  16: Name card: Disruptor Flute
+  17: Name card: Hexing Squelcher
+  18: Name card: Null Rod
+  19: Name card: Static Prison
+  20: Name card: Stony Silence
+  21: Name card: Wrath of the Skies
+  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B names card: Ajani, Nacatl Pariah
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+  No matching cards to discard.
+  Cabal Therapy is exiled (flashback)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: (empty)
+  PB: Amped Raptor, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
+  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
+  Opp BF:   Plains (T)
+  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Activate Urza's Saga (Token)  [#1]
+  >> A/A: 1 (Activate Urza's Saga (Token))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Mox Diamond for 1(W)
+  Player A's Urza's Saga ability is on the stack
+  Resolving ability (category: Token)
+  Token created: 0/0 Construct
+  Construct token gains (always)
+  Player A draws Dark Depths
+  Urza's Saga gets 1 lore counter (now 3).
+  Urza's Saga chapter 3 triggers.
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T) | Construct [4/4] (SICK)
+  Opp BF:   Plains (T)
+  Stack: Urza's Saga (ability, self) [amt=1]
+  Pending: Urza's Saga (self)
+  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Fail to find
+   1: Expedition Map
+   2: Grafdigger's Cage
+   3: Mox Diamond
+   4: Mox Diamond
+   5: Pithing Needle
+  >> A/A: 1 (Expedition Map)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Expedition Map to the battlefield
+  Urza's Saga is sacrificed (final chapter completed).
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 50
+  Opp:   18 life | mana: empty | hand count: 5 | lib 47
+  Self BF:  Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
+  Opp BF:   Plains (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Dark Depths
+  >> A/A: 1 (Play Dark Depths)
+--- Narrative ---
+  Player A played Dark Depths
+  Dark Depths enters with 10 ICE counter(s).
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Dark Depths
+  PB: Amped Raptor, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 35 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  18 life | mana: empty | hand(5): Amped Raptor, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Plains
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
+  Self GY: Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Cabal Therapy
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Swords to Plowshares)
+--- Narrative ---
+  Choose target for Swords to Plowshares:
+
+--- Decision 36 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  18 life | mana: empty | hand(5): Amped Raptor, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Plains
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
+  Pending: Swords to Plowshares (self)
+  Self GY: Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Cabal Therapy
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Construct token
+  >> B/B: 0 (Construct token)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Plains for 1(W)
+  Player B casts Swords to Plowshares targeting Construct token
+  Resolving ability (category: ChangeZone)
+  Construct token is moved to exile
+  Resolving ability (category: GainLife, amount: 5)
+  Player A gains 5 life (now at 25)
+  Construct (token) is put into exile and ceases to exist.
+  Player B draws Ajani, Nacatl Pariah
+
+--- Decision 37 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Amped Raptor, Scrubland, Thoughtseize, Voice of Victory | lib 46
+  Opp:   25 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Plains (T)
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard
+  Self GY: Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Cabal Therapy
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: opp_revolt
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> B/B: 1 (Play Scrubland)
+--- Narrative ---
+  Player B played Scrubland
+
+--- Decision 38 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Amped Raptor, Thoughtseize, Voice of Victory | lib 46
+  Opp:   25 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Plains (T) | Scrubland
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard
+  Self GY: Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Cabal Therapy
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 39 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Amped Raptor, Thoughtseize, Voice of Victory | lib 46
+  Opp:   25 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Plains (T) | Scrubland
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard
+  Pending: Thoughtseize (self)
+  Self GY: Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Cabal Therapy
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Player A (25 life)
+   1: Player B (18 life)
+  >> B/B: 0 (Player A (25 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Scrubland for 1(B)
+  Player B casts Thoughtseize targeting Player A
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+  No valid cards to discard.
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 16)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: (empty)
+  PB: Ajani, Nacatl Pariah, Amped Raptor, Thoughtseize, Voice of Victory
+
+--- Decision 40 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  25 life | mana: empty | hand(0): (empty) | lib 50
+  Opp:   16 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Plains (T) | Scrubland (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Thespian's Stage
+
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: Draw (turn 7)
+  Self:  25 life | mana: empty | hand(1): Thespian's Stage | lib 49
+  Opp:   16 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Plains (T) | Scrubland (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  25 life | mana: empty | hand(1): Thespian's Stage | lib 49
+  Opp:   16 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Plains (T) | Scrubland (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Play Thespian's Stage
+   2: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 1 (Play Thespian's Stage)
+--- Narrative ---
+  Player A played Thespian's Stage
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  25 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   16 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Thespian's Stage
+  Opp BF:   Plains (T) | Scrubland (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Dark Depths (RemoveCounter)  [#0]
+   2: Activate Expedition Map (ChangeZone)  [#0]
+   3: Activate Thespian's Stage (Clone)  [#1]
+  >> A/A: 3 (Activate Thespian's Stage (Clone))
+--- Narrative ---
+  Choose target for Thespian's Stage:
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  25 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   16 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Thespian's Stage
+  Opp BF:   Plains (T) | Scrubland (T)
+  Pending: Thespian's Stage (self)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Plains
+   1: Scrubland
+   2: Dark Depths
+   3: Thespian's Stage
+  >> A/A: 2 (Dark Depths)
+--- Narrative ---
+  Targeting choice 2
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Mox Diamond for 1(W)
+  Player A's Thespian's Stage ability targeting Dark Depths is on the stack
+  Resolving ability (category: Clone)
+  Thespian's Stage becomes a copy of Dark Depths.
+  Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  25 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   16 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Dark Depths (T)
+  Opp BF:   Plains (T) | Scrubland (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Keep Dark Depths
+   1: Keep Dark Depths
+  >> A/A: 1 (Keep Dark Depths)
+--- Narrative ---
+  Dark Depths is put into the graveyard (legend rule)
+  Dark Depths triggered
+  Player A sacrifices Dark Depths.
+  Resolving ability (category: Token)
+  Token created: 20/20 Marit Lage
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+  Player B draws Swords to Plowshares
+--- Turn 8 (Player B) ---
+  PA: (empty)
+  PB: Ajani, Nacatl Pariah, Amped Raptor, Swords to Plowshares, Voice of Victory
+
+--- Decision 46 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  16 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 45
+  Opp:   25 life | mana: empty | hand count: 0 | lib 49
+  Self BF:  Plains | Scrubland
+  Opp BF:   Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Marit Lage [20/20] [Flying, Indestructible] (SICK)
+  Self GY: Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp GY:  Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Cabal Therapy
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Swords to Plowshares)
+--- Narrative ---
+  Choose target for Swords to Plowshares:
+
+--- Decision 47 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  16 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 45
+  Opp:   25 life | mana: empty | hand count: 0 | lib 49
+  Self BF:  Plains | Scrubland
+  Opp BF:   Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Marit Lage [20/20] [Flying, Indestructible] (SICK)
+  Pending: Swords to Plowshares (self)
+  Self GY: Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp GY:  Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Cabal Therapy
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Actions:
+   0: Marit Lage token
+  >> B/B: 0 (Marit Lage token)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Plains for 1(W)
+  Player B casts Swords to Plowshares targeting Marit Lage token
+  Resolving ability (category: ChangeZone)
+  Marit Lage token is moved to exile
+  Resolving ability (category: GainLife, amount: 20)
+  Player A gains 20 life (now at 45)
+  Marit Lage (token) is put into exile and ceases to exist.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: (empty)
+  PB: Ajani, Nacatl Pariah, Amped Raptor, Swords to Plowshares, Voice of Victory
+
+--- Decision 48 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 9)
+  Self:  45 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   16 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Expedition Map | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Plains (T) | Scrubland
+  Self GY: Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Swords to Plowshares, Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Bojuka Bog
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  45 life | mana: empty | hand(1): Bojuka Bog | lib 48
+  Opp:   16 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Expedition Map | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Plains (T) | Scrubland
+  Self GY: Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Swords to Plowshares, Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 50 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  45 life | mana: empty | hand(1): Bojuka Bog | lib 48
+  Opp:   16 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Expedition Map | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Plains (T) | Scrubland
+  Self GY: Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Swords to Plowshares, Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Play Bojuka Bog
+   2: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 1 (Play Bojuka Bog)
+--- Narrative ---
+  Player A played Bojuka Bog
+  Bojuka Bog enters tapped.
+  Choose target for Bojuka Bog:
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  45 life | mana: empty | hand(0): (empty) | lib 48
+  Opp:   16 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Bojuka Bog (T) | Expedition Map | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Plains (T) | Scrubland
+  Pending: Bojuka Bog (self)
+  Self GY: Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Swords to Plowshares, Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Player B (16 life)
+   1: Player A (45 life)
+  >> A/A: 0 (Player B (16 life))
+--- Narrative ---
+  Targeting choice 0
+  Bojuka Bog triggered
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  45 life | mana: empty | hand(0): (empty) | lib 48
+  Opp:   16 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Bojuka Bog (T) | Expedition Map | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Plains (T) | Scrubland
+  Stack: Bojuka Bog (ability, self) -> opponent (player)
+  Self GY: Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Swords to Plowshares, Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Expedition Map (ChangeZone))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Mox Diamond for 1(W)
+  Player A sacrifices Expedition Map
+  Player A's Expedition Map ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 53 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  45 life | mana: empty | hand(0): (empty) | lib 48
+  Opp:   16 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Bojuka Bog (T) | Mox Diamond (T) | Mox Diamond (T) | Skateboard
+  Opp BF:   Plains (T) | Scrubland
+  Stack: Expedition Map (ability, self) [amt=1] -> Bojuka Bog (ability, self) -> opponent (player)
+  Pending: Expedition Map (self)
+  Self GY: Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Swords to Plowshares, Thoughtseize, Swords to Plowshares, Ocelot Pride, Marsh Flats, Elegant Parlor, Silent Clearing, Badlands, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Ancient Tomb
+   2: Blast Zone
+   3: Boseiju, Who Endures
+   4: Forest
+   5: Ghost Quarter
+   6: Karakas
+   7: Maze of Ith
+   8: Rishadan Port
+   9: Rishadan Port
+  10: Savannah
+  11: Savannah
+  12: The Tabernacle at Pendrell Vale
+  13: Thespian's Stage
+  14: Thespian's Stage
+  15: Thespian's Stage
+  16: Urza's Saga
+  17: Urza's Saga
+  18: Wasteland
+  19: Wasteland
+  20: Wasteland
+  21: Yavimaya, Cradle of Growth
+  22: Yavimaya, Cradle of Growth
+  >> A/A: 16 (Urza's Saga)
+--- Narrative ---
+  Player A shuffles their library
+  Player A reveals Urza's Saga and puts it to hand
+  Resolving ability (category: ChangeZoneAll)
+  Player B moves Badlands to exile
+  Player B moves Elegant Parlor to exile
+  Player B moves Marsh Flats to exile
+  Player B moves Marsh Flats to exile
+  Player B moves Ocelot Pride to exile
+  Player B moves Silent Clearing to exile
+  Player B moves Swords to Plowshares to exile
+  Player B moves Swords to Plowshares to exile
+  Player B moves Thoughtseize to exile
+  Player B moves 9 card(s) to exile
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 10 (Player B) --------
+  Player B draws Plateau
+--- Turn 10 (Player B) ---
+  PA: (empty)
+  PB: Ajani, Nacatl Pariah, Amped Raptor, Plateau, Voice of Victory
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  16 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Amped Raptor, Plateau, Voice of Victory | lib 44
+  Opp:   45 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Plains | Scrubland
+  Opp BF:   Bojuka Bog (T) | Mox Diamond (T) | Mox Diamond (T) | Skateboard
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Known opp hand: Urza's Saga
+  Opp revealed: Wasteland, Bojuka Bog, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Plateau
+   2: Cast Ajani, Nacatl Pariah  [#0]
+   3: Cast Voice of Victory  [#0]
+  >> B/B: 2 (Cast Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B activated Plains for 1(W)
+  Player B activated Scrubland for 1(W)
+  Player B casts Ajani, Nacatl Pariah
+  Ajani, Nacatl Pariah enters the battlefield
+  Ajani, Nacatl Pariah triggered
+  Resolving ability (category: Token)
+  Token created: 2/1 Cat Warrior
+
+--- Decision 55 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  16 life | mana: empty | hand(3): Amped Raptor, Plateau, Voice of Victory | lib 44
+  Opp:   45 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Plains (T) | Scrubland (T) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Bojuka Bog (T) | Mox Diamond (T) | Mox Diamond (T) | Skateboard
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Known opp hand: Urza's Saga
+  Opp revealed: Wasteland, Bojuka Bog, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Plateau
+  >> B/B: 1 (Play Plateau)
+--- Narrative ---
+  Player B played Plateau
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+  Player A draws Pithing Needle
+--- Turn 11 (Player A) ---
+  PA: Pithing Needle, Urza's Saga
+  PB: Amped Raptor, Plateau, Voice of Victory
+
+--- Decision 56 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  45 life | mana: empty | hand(2): Pithing Needle, Urza's Saga | lib 46
+  Opp:   16 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Bojuka Bog | Mox Diamond | Mox Diamond | Skateboard
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Plains (T) | Plateau | Scrubland (T) | Cat Warrior [2/1] (SICK)
+  Self GY: Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Play Urza's Saga
+   2: Cast Pithing Needle  [#0]
+  >> A/A: 1 (Play Urza's Saga)
+--- Narrative ---
+  Player A played Urza's Saga
+  Urza's Saga gets 1 lore counter (now 1).
+  Urza's Saga chapter 1 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+
+--- Decision 57 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  45 life | mana: empty | hand(1): Pithing Needle | lib 46
+  Opp:   16 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Bojuka Bog | Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Plains (T) | Plateau | Scrubland (T) | Cat Warrior [2/1] (SICK)
+  Self GY: Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Pithing Needle  [#0]
+  >> A/A: 1 (Cast Pithing Needle)
+--- Narrative ---
+  Player A activated Bojuka Bog for 1(B)
+  Player A casts Pithing Needle
+  Pithing Needle enters the battlefield
+  Choose a card name for Pithing Needle:
+
+--- Decision 58 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  45 life | mana: empty | hand(0): (empty) | lib 46
+  Opp:   16 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle | Skateboard | Urza's Saga [lore:1]
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Plains (T) | Plateau | Scrubland (T) | Cat Warrior [2/1] (SICK)
+  Self GY: Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Arid Mesa
+   3: Name card: Guide of Souls
+   4: Name card: Leyline of the Void
+   5: Name card: Marsh Flats
+   6: Name card: Ocelot Pride
+   7: Name card: Swords to Plowshares
+   8: Name card: Thoughtseize
+   9: Name card: Voice of Victory
+  10: Name card: Wasteland
+  11: Name card: Cabal Therapy
+  12: Name card: Orcish Bowmasters
+  13: Name card: Containment Priest
+  14: Name card: Goblin Bombardment
+  15: Name card: Plateau
+  16: Name card: Pyroblast
+  17: Name card: Scrubland
+  18: Name card: Badlands
+  19: Name card: Clarion Conqueror
+  20: Name card: Damping Sphere
+  21: Name card: Deafening Silence
+  22: Name card: Disruptor Flute
+  23: Name card: Elegant Parlor
+  24: Name card: Hexing Squelcher
+  25: Name card: Karakas
+  26: Name card: Null Rod
+  27: Name card: Plains
+  28: Name card: Shadowy Backstreet
+  29: Name card: Silent Clearing
+  30: Name card: Static Prison
+  31: Name card: Stony Silence
+  32: Name card: Wrath of the Skies
+  >> A/A: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player A names card: Ajani, Nacatl Pariah
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 12 (Player B) --------
+  Player B draws Ajani, Nacatl Pariah
+--- Turn 12 (Player B) ---
+  PA: (empty)
+  PB: Ajani, Nacatl Pariah, Amped Raptor, Voice of Victory
+
+--- Decision 59 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  16 life | mana: empty | hand(3): Ajani, Nacatl Pariah, Amped Raptor, Voice of Victory | lib 43
+  Opp:   45 life | mana: empty | hand count: 0 | lib 46
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Cast Ajani, Nacatl Pariah  [#0]
+   2: Cast Amped Raptor  [#0]
+   3: Cast Voice of Victory  [#0]
+  >> B/B: 1 (Cast Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B activated Plains for 1(W)
+  Player B activated Plateau for 1(R)
+  Player B casts Ajani, Nacatl Pariah
+  Ajani, Nacatl Pariah enters the battlefield
+  Legend rule: Player B controls 2 copies of Ajani, Nacatl Pariah; choose one to keep.
+
+--- Decision 60 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   45 life | mana: empty | hand count: 0 | lib 46
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Ajani, Nacatl Pariah [1/2] (SICK) | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Actions:
+   0: Keep Ajani, Nacatl Pariah
+   1: Keep Ajani, Nacatl Pariah
+  >> B/B: 0 (Keep Ajani, Nacatl Pariah)
+--- Narrative ---
+  Ajani, Nacatl Pariah is put into the graveyard (legend rule)
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 61 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   45 life | mana: empty | hand count: 0 | lib 46
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1]
+  Opp BF:   Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Extras: self_revolt
+  Actions:
+   0: Ajani, Nacatl Pariah (ChangeZone)  [#0]
+   1: Ajani, Nacatl Pariah (Token)  [#1]
+  >> B/B: 0 (Ajani, Nacatl Pariah (ChangeZone))
+--- Narrative ---
+  Ajani, Nacatl Pariah triggered
+  Ajani, Nacatl Pariah triggered
+  Resolving ability (category: Token)
+  Token created: 2/1 Cat Warrior
+
+--- Decision 62 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   45 life | mana: empty | hand count: 0 | lib 46
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1] (SICK)
+  Opp BF:   Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Stack: Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Extras: self_revolt
+  Actions:
+   0: Decline  [#0]
+   1: Accept  [#1]
+  >> B/B: 0 (Decline)
+--- Narrative ---
+  Player B declines the optional triggered ability.
+  --- Declare Attackers (Player B) ---
+
+--- Decision 63 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   45 life | mana: empty | hand count: 0 | lib 46
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1] (SICK)
+  Opp BF:   Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Extras: self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Ajani, Nacatl Pariah [1/2]
+   1: Cat Warrior token [2/1]
+   2: Confirm attackers
+  >> B/B: 0 (Ajani, Nacatl Pariah [1/2])
+--- Narrative ---
+  Ajani, Nacatl Pariah attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+
+--- Decision 64 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   45 life | mana: empty | hand count: 0 | lib 46
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1] (SICK)
+  Opp BF:   Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Extras: self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 65 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   45 life | mana: empty | hand count: 0 | lib 46
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] (ATK) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  Extras: self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ajani, Nacatl Pariah -> Player A
+    Cat Warrior token -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Ajani, Nacatl Pariah deals 1 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 13 (Player A) --------
+  Player A draws Crop Rotation
+--- Turn 13 (Player A) ---
+  PA: Crop Rotation
+  PB: Amped Raptor, Voice of Victory
+
+--- Decision 66 ---
+  Priority: Player A (active)
+  Step: Draw (turn 13)
+  Self:  42 life | mana: empty | hand(1): Crop Rotation | lib 45
+  Opp:   16 life | mana: empty | hand count: 2 | lib 43
+  Self BF:  Bojuka Bog | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (SICK)
+  Self GY: Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Cast Crop Rotation  [#0]
+  >> A/A: 1 (Cast Crop Rotation)
+
+--- Decision 67 ---
+  Priority: Player A (active)
+  Step: Draw (turn 13)
+  Self:  42 life | mana: empty | hand(1): Crop Rotation | lib 45
+  Opp:   16 life | mana: empty | hand count: 2 | lib 43
+  Self BF:  Bojuka Bog | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (SICK)
+  Self GY: Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Sacrifice Bojuka Bog
+   1: Sacrifice Urza's Saga
+  >> A/A: 0 (Sacrifice Bojuka Bog)
+--- Narrative ---
+  Player A activated Bojuka Bog for 1(B)
+  Player A activated Mox Diamond for 1(G)
+  Player A sacrifices Bojuka Bog
+  Player A casts Crop Rotation
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 68 ---
+  Priority: Player A (active)
+  Step: Draw (turn 13)
+  Self:  42 life | mana: 1B | hand(0): (empty) | lib 45
+  Opp:   16 life | mana: empty | hand count: 2 | lib 43
+  Self BF:  Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (SICK)
+  Stack: Crop Rotation (spell, self)
+  Pending: Crop Rotation (self)
+  Self GY: Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_revolt
+  Actions:
+   0: Fail to find
+   1: Ancient Tomb
+   2: Blast Zone
+   3: Boseiju, Who Endures
+   4: Forest
+   5: Ghost Quarter
+   6: Karakas
+   7: Maze of Ith
+   8: Rishadan Port
+   9: Rishadan Port
+  10: Savannah
+  11: Savannah
+  12: The Tabernacle at Pendrell Vale
+  13: Thespian's Stage
+  14: Thespian's Stage
+  15: Thespian's Stage
+  16: Urza's Saga
+  17: Wasteland
+  18: Wasteland
+  19: Wasteland
+  20: Yavimaya, Cradle of Growth
+  21: Yavimaya, Cradle of Growth
+  >> A/A: 12 (The Tabernacle at Pendrell Vale)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts The Tabernacle at Pendrell Vale to the battlefield
+  Urza's Saga gets 1 lore counter (now 2).
+  Urza's Saga chapter 2 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 14 (Player B) --------
+  Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+--- Turn 14 (Player B) ---
+  PA: (empty)
+  PB: Amped Raptor, Voice of Victory
+
+--- Decision 69 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Ajani, Nacatl Pariah (Destroy)  [#0]
+   1: Cat Warrior token (Destroy)  [#1]
+   2: Cat Warrior token (Destroy)  [#2]
+  >> B/B: 0 (Ajani, Nacatl Pariah (Destroy))
+--- Narrative ---
+  Ajani, Nacatl Pariah triggered
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 70 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Stack: Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Cat Warrior token (Destroy)  [#0]
+   1: Cat Warrior token (Destroy)  [#1]
+  >> B/B: 0 (Cat Warrior token (Destroy))
+--- Narrative ---
+  Cat Warrior token triggered
+  Cat Warrior token triggered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Cat Warrior token from being destroyed:
+
+--- Decision 71 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Plains for (W)
+   1: Tap Plateau for (R)
+   2: Tap Plateau for (W)
+   3: Tap Scrubland for (W)
+   4: Tap Scrubland for (B)
+   5: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Plains for (W))
+--- Narrative ---
+  Player B tapped Plains for {W}
+
+--- Decision 72 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: 1W | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Plateau for (R)
+   1: Tap Plateau for (W)
+   2: Tap Scrubland for (W)
+   3: Tap Scrubland for (B)
+   4: Pay {1} (spell is not countered)  [#1]
+   5: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Plateau for (R))
+--- Narrative ---
+  Player B tapped Plateau for {R}
+
+--- Decision 73 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: 1W, 1R | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Scrubland for (W)
+   1: Tap Scrubland for (B)
+   2: Pay {1} (spell is not countered)  [#1]
+   3: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Scrubland for (W))
+--- Narrative ---
+  Player B tapped Scrubland for {W}
+
+--- Decision 74 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: 2W, 1R | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Cat Warrior token from being destroyed:
+
+--- Decision 75 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: 1W, 1R | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 4) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Ajani, Nacatl Pariah from being destroyed:
+
+--- Decision 76 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 14)
+  Self:  16 life | mana: 1R | hand(2): Amped Raptor, Voice of Victory | lib 43
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Stack: Ajani, Nacatl Pariah (ability, self) -> Ajani, Nacatl Pariah (self, slot 0)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Player B draws Cabal Therapy
+  --- Declare Attackers (Player B) ---
+
+--- Decision 77 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 14)
+  Self:  16 life | mana: empty | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Ajani, Nacatl Pariah [1/2]
+   1: Cat Warrior token [2/1]
+   2: Cat Warrior token [2/1]
+   3: Confirm attackers
+  >> B/B: 0 (Ajani, Nacatl Pariah [1/2])
+--- Narrative ---
+  Ajani, Nacatl Pariah attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+
+--- Decision 78 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 14)
+  Self:  16 life | mana: empty | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Cat Warrior token [2/1]
+   2: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 79 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 14)
+  Self:  16 life | mana: empty | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (ATK) | Cat Warrior [2/1]
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 80 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 14)
+  Self:  16 life | mana: empty | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   42 life | mana: empty | hand count: 0 | lib 44
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (ATK) | Cat Warrior [2/1] (ATK)
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ajani, Nacatl Pariah -> Player A
+    Cat Warrior token -> Player A
+    Cat Warrior token -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Ajani, Nacatl Pariah deals 1 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 15 (Player A) --------
+--- Turn 15 (Player A) ---
+  PA: (empty)
+  PB: Amped Raptor, Cabal Therapy, Voice of Victory
+
+--- Decision 81 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 15)
+  Self:  37 life | mana: empty | hand(0): (empty) | lib 44
+  Opp:   16 life | mana: empty | hand count: 3 | lib 42
+  Self BF:  Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Activate Urza's Saga (Token)  [#1]
+  >> A/A: 1 (Activate Urza's Saga (Token))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Mox Diamond for 1(W)
+  Player A's Urza's Saga ability is on the stack
+  Resolving ability (category: Token)
+  Token created: 0/0 Construct
+  Construct token gains (always)
+  Player A draws Savannah
+  Urza's Saga gets 1 lore counter (now 3).
+  Urza's Saga chapter 3 triggers.
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 82 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  37 life | mana: empty | hand(1): Savannah | lib 43
+  Opp:   16 life | mana: empty | hand count: 3 | lib 42
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Urza's Saga [lore:3] (T) | Construct [5/5] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Urza's Saga (ability, self) [amt=1]
+  Pending: Urza's Saga (self)
+  Self GY: Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Fail to find
+   1: Grafdigger's Cage
+   2: Mox Diamond
+   3: Mox Diamond
+  >> A/A: 1 (Grafdigger's Cage)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Grafdigger's Cage to the battlefield
+  Urza's Saga is sacrificed (final chapter completed).
+
+--- Decision 83 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  37 life | mana: empty | hand(1): Savannah | lib 42
+  Opp:   16 life | mana: empty | hand count: 3 | lib 42
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | The Tabernacle at Pendrell Vale | Construct [6/6] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Savannah
+  >> A/A: 1 (Play Savannah)
+--- Narrative ---
+  Player A played Savannah
+
+--- Decision 84 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  37 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   16 life | mana: empty | hand count: 3 | lib 42
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah | Skateboard | The Tabernacle at Pendrell Vale | Construct [6/6] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Equip Skateboard  [#32]
+  >> A/A: 1 (Equip Skateboard)
+--- Narrative ---
+  Player A activated Savannah for 1(G)
+  Choose creature to equip:
+
+--- Decision 85 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  37 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   16 life | mana: empty | hand count: 3 | lib 42
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard | The Tabernacle at Pendrell Vale | Construct [6/6] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Construct [6/6]
+  >> A/A: 0 (Construct [6/6])
+--- Narrative ---
+  Skateboard equipped to Construct.
+  Construct token gains 1/0 Haste (always)
+  --- Declare Attackers (Player A) ---
+
+--- Decision 86 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 15)
+  Self:  37 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   16 life | mana: empty | hand count: 3 | lib 42
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [7/6]
+   1: Confirm attackers
+  >> A/A: 0 (Construct token [7/6])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Construct token [7/6] -> Player B
+
+--- Decision 87 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 15)
+  Self:  37 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   16 life | mana: empty | hand count: 3 | lib 42
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (ATK,SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Construct token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Construct token deals 7 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 16 (Player B) --------
+  Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+--- Turn 16 (Player B) ---
+  PA: (empty)
+  PB: Amped Raptor, Cabal Therapy, Voice of Victory
+
+--- Decision 88 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 16)
+  Self:  9 life | mana: empty | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Ajani, Nacatl Pariah (Destroy)  [#0]
+   1: Cat Warrior token (Destroy)  [#1]
+   2: Cat Warrior token (Destroy)  [#2]
+  >> B/B: 0 (Ajani, Nacatl Pariah (Destroy))
+--- Narrative ---
+  Ajani, Nacatl Pariah triggered
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 89 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 16)
+  Self:  9 life | mana: empty | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Stack: Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Cat Warrior token (Destroy)  [#0]
+   1: Cat Warrior token (Destroy)  [#1]
+  >> B/B: 0 (Cat Warrior token (Destroy))
+--- Narrative ---
+  Cat Warrior token triggered
+  Cat Warrior token triggered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Cat Warrior token from being destroyed:
+
+--- Decision 90 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 16)
+  Self:  9 life | mana: empty | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Plains for (W)
+   1: Tap Plateau for (R)
+   2: Tap Plateau for (W)
+   3: Tap Scrubland for (W)
+   4: Tap Scrubland for (B)
+   5: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Plains for (W))
+--- Narrative ---
+  Player B tapped Plains for {W}
+
+--- Decision 91 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 16)
+  Self:  9 life | mana: 1W | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Plateau for (R)
+   1: Tap Plateau for (W)
+   2: Tap Scrubland for (W)
+   3: Tap Scrubland for (B)
+   4: Pay {1} (spell is not countered)  [#1]
+   5: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Plateau for (R))
+--- Narrative ---
+  Player B tapped Plateau for {R}
+
+--- Decision 92 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 16)
+  Self:  9 life | mana: 1W, 1R | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Scrubland for (W)
+   1: Tap Scrubland for (B)
+   2: Pay {1} (spell is not countered)  [#1]
+   3: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Scrubland for (W))
+--- Narrative ---
+  Player B tapped Scrubland for {W}
+
+--- Decision 93 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 16)
+  Self:  9 life | mana: 2W, 1R | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Cat Warrior token from being destroyed:
+
+--- Decision 94 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 16)
+  Self:  9 life | mana: 1W, 1R | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 4) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Ajani, Nacatl Pariah from being destroyed:
+
+--- Decision 95 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 16)
+  Self:  9 life | mana: 1R | hand(3): Amped Raptor, Cabal Therapy, Voice of Victory | lib 42
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Stack: Ajani, Nacatl Pariah (ability, self) -> Ajani, Nacatl Pariah (self, slot 0)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Player B draws Guide of Souls
+  --- Declare Attackers (Player B) ---
+
+--- Decision 96 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 16)
+  Self:  9 life | mana: empty | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Ajani, Nacatl Pariah [1/2]
+   1: Cat Warrior token [2/1]
+   2: Cat Warrior token [2/1]
+   3: Confirm attackers
+  >> B/B: 0 (Ajani, Nacatl Pariah [1/2])
+--- Narrative ---
+  Ajani, Nacatl Pariah attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+
+--- Decision 97 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 16)
+  Self:  9 life | mana: empty | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Cat Warrior token [2/1]
+   2: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 98 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 16)
+  Self:  9 life | mana: empty | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (ATK) | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 99 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 16)
+  Self:  9 life | mana: empty | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   37 life | mana: empty | hand count: 0 | lib 42
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (ATK) | Cat Warrior [2/1] (ATK)
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T,SICK)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ajani, Nacatl Pariah -> Player A
+    Cat Warrior token -> Player A
+    Cat Warrior token -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Ajani, Nacatl Pariah deals 1 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 17 (Player A) --------
+  Construct token triggered
+  Resolving ability (category: Destroy)
+  Player A may pay to prevent Construct token from being destroyed:
+--- Turn 17 (Player A) ---
+  PA: (empty)
+  PB: Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory
+
+--- Decision 100 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 17)
+  Self:  32 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   9 life | mana: empty | hand count: 4 | lib 41
+  Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Construct (ability, self) -> Construct (self, slot 7)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Tap Mox Diamond for (W)
+   1: Tap Mox Diamond for (U)
+   2: Tap Mox Diamond for (B)
+   3: Tap Mox Diamond for (R)
+   4: Tap Mox Diamond for (G)
+   5: Tap Mox Diamond for (W)
+   6: Tap Mox Diamond for (U)
+   7: Tap Mox Diamond for (B)
+   8: Tap Mox Diamond for (R)
+   9: Tap Mox Diamond for (G)
+  10: Tap Savannah for (G)
+  11: Tap Savannah for (W)
+  12: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Mox Diamond for (W))
+--- Narrative ---
+  Player A tapped Mox Diamond for {W}
+
+--- Decision 101 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 17)
+  Self:  32 life | mana: 1W | hand(0): (empty) | lib 42
+  Opp:   9 life | mana: empty | hand count: 4 | lib 41
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Construct (ability, self) -> Construct (self, slot 7)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Tap Mox Diamond for (W)
+   1: Tap Mox Diamond for (U)
+   2: Tap Mox Diamond for (B)
+   3: Tap Mox Diamond for (R)
+   4: Tap Mox Diamond for (G)
+   5: Tap Savannah for (G)
+   6: Tap Savannah for (W)
+   7: Pay {1} (spell is not countered)  [#1]
+   8: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Mox Diamond for (W))
+--- Narrative ---
+  Player A tapped Mox Diamond for {W}
+
+--- Decision 102 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 17)
+  Self:  32 life | mana: 2W | hand(0): (empty) | lib 42
+  Opp:   9 life | mana: empty | hand count: 4 | lib 41
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Construct (ability, self) -> Construct (self, slot 7)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Tap Savannah for (G)
+   1: Tap Savannah for (W)
+   2: Pay {1} (spell is not countered)  [#1]
+   3: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Savannah for (G))
+--- Narrative ---
+  Player A tapped Savannah for {G}
+
+--- Decision 103 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 17)
+  Self:  32 life | mana: 2W, 1G | hand(0): (empty) | lib 42
+  Opp:   9 life | mana: empty | hand count: 4 | lib 41
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Construct (ability, self) -> Construct (self, slot 7)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player A pays {1} — spell is not countered
+  Player A draws Life from the Loam
+  --- Declare Attackers (Player A) ---
+
+--- Decision 104 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 17)
+  Self:  32 life | mana: empty | hand(1): Life from the Loam | lib 41
+  Opp:   9 life | mana: empty | hand count: 4 | lib 41
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [7/6]
+   1: Confirm attackers
+  >> A/A: 0 (Construct token [7/6])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Construct token [7/6] -> Player B
+
+--- Decision 105 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 17)
+  Self:  32 life | mana: empty | hand(1): Life from the Loam | lib 41
+  Opp:   9 life | mana: empty | hand count: 4 | lib 41
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (ATK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Construct token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Construct token deals 7 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 18 (Player B) --------
+  Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+--- Turn 18 (Player B) ---
+  PA: Life from the Loam
+  PB: Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory
+
+--- Decision 106 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 18)
+  Self:  2 life | mana: empty | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Ajani, Nacatl Pariah (Destroy)  [#0]
+   1: Cat Warrior token (Destroy)  [#1]
+   2: Cat Warrior token (Destroy)  [#2]
+  >> B/B: 0 (Ajani, Nacatl Pariah (Destroy))
+--- Narrative ---
+  Ajani, Nacatl Pariah triggered
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 107 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 18)
+  Self:  2 life | mana: empty | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Stack: Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Cat Warrior token (Destroy)  [#0]
+   1: Cat Warrior token (Destroy)  [#1]
+  >> B/B: 0 (Cat Warrior token (Destroy))
+--- Narrative ---
+  Cat Warrior token triggered
+  Cat Warrior token triggered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Cat Warrior token from being destroyed:
+
+--- Decision 108 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 18)
+  Self:  2 life | mana: empty | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Plains for (W)
+   1: Tap Plateau for (R)
+   2: Tap Plateau for (W)
+   3: Tap Scrubland for (W)
+   4: Tap Scrubland for (B)
+   5: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Plains for (W))
+--- Narrative ---
+  Player B tapped Plains for {W}
+
+--- Decision 109 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 18)
+  Self:  2 life | mana: 1W | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Plateau for (R)
+   1: Tap Plateau for (W)
+   2: Tap Scrubland for (W)
+   3: Tap Scrubland for (B)
+   4: Pay {1} (spell is not countered)  [#1]
+   5: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Plateau for (R))
+--- Narrative ---
+  Player B tapped Plateau for {R}
+
+--- Decision 110 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 18)
+  Self:  2 life | mana: 1W, 1R | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Tap Scrubland for (W)
+   1: Tap Scrubland for (B)
+   2: Pay {1} (spell is not countered)  [#1]
+   3: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Scrubland for (W))
+--- Narrative ---
+  Player B tapped Scrubland for {W}
+
+--- Decision 111 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 18)
+  Self:  2 life | mana: 2W, 1R | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 5) -> Cat Warrior (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Cat Warrior token from being destroyed:
+
+--- Decision 112 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 18)
+  Self:  2 life | mana: 1W, 1R | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Stack: Cat Warrior (ability, self) -> Cat Warrior (self, slot 4) -> Ajani, Nacatl Pariah (ability, self)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Resolving ability (category: Destroy)
+  Player B may pay to prevent Ajani, Nacatl Pariah from being destroyed:
+
+--- Decision 113 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 18)
+  Self:  2 life | mana: 1R | hand(4): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory | lib 41
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Stack: Ajani, Nacatl Pariah (ability, self) -> Ajani, Nacatl Pariah (self, slot 0)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player B pays {1} — spell is not countered
+  Player B draws Voice of Victory
+  --- Declare Attackers (Player B) ---
+
+--- Decision 114 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 18)
+  Self:  2 life | mana: empty | hand(5): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory, Voice of Victory | lib 40
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Ajani, Nacatl Pariah [1/2]
+   1: Cat Warrior token [2/1]
+   2: Cat Warrior token [2/1]
+   3: Confirm attackers
+  >> B/B: 0 (Ajani, Nacatl Pariah [1/2])
+--- Narrative ---
+  Ajani, Nacatl Pariah attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+
+--- Decision 115 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 18)
+  Self:  2 life | mana: empty | hand(5): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory, Voice of Victory | lib 40
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Cat Warrior token [2/1]
+   2: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 116 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 18)
+  Self:  2 life | mana: empty | hand(5): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory, Voice of Victory | lib 40
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (ATK) | Cat Warrior [2/1]
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Cat Warrior token [2/1]
+   1: Confirm attackers
+  >> B/B: 0 (Cat Warrior token [2/1])
+--- Narrative ---
+  Cat Warrior token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ajani, Nacatl Pariah [1/2] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+    [attacking] Cat Warrior token [2/1] -> Player A
+
+--- Decision 117 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 18)
+  Self:  2 life | mana: empty | hand(5): Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory, Voice of Victory | lib 40
+  Opp:   32 life | mana: empty | hand count: 1 | lib 41
+  Self BF:  Ajani, Nacatl Pariah [1/2] (ATK) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (ATK) | Cat Warrior [2/1] (ATK)
+  Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (T)
+  Self GY: Ajani, Nacatl Pariah
+  Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Wasteland, Savannah, Grafdigger's Cage, Bojuka Bog, Pithing Needle, Expedition Map, Urza's Saga, Crop Rotation, Skateboard, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ajani, Nacatl Pariah -> Player A
+    Cat Warrior token -> Player A
+    Cat Warrior token -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Ajani, Nacatl Pariah deals 1 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+    Cat Warrior token deals 2 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 19 (Player A) --------
+  Construct token triggered
+  Resolving ability (category: Destroy)
+  Player A may pay to prevent Construct token from being destroyed:
+--- Turn 19 (Player A) ---
+  PA: Life from the Loam
+  PB: Amped Raptor, Cabal Therapy, Guide of Souls, Voice of Victory, Voice of Victory
+
+--- Decision 118 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 19)
+  Self:  27 life | mana: empty | hand(1): Life from the Loam | lib 41
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Construct (ability, self) -> Construct (self, slot 7)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Tap Mox Diamond for (W)
+   1: Tap Mox Diamond for (U)
+   2: Tap Mox Diamond for (B)
+   3: Tap Mox Diamond for (R)
+   4: Tap Mox Diamond for (G)
+   5: Tap Mox Diamond for (W)
+   6: Tap Mox Diamond for (U)
+   7: Tap Mox Diamond for (B)
+   8: Tap Mox Diamond for (R)
+   9: Tap Mox Diamond for (G)
+  10: Tap Savannah for (G)
+  11: Tap Savannah for (W)
+  12: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Mox Diamond for (W))
+--- Narrative ---
+  Player A tapped Mox Diamond for {W}
+
+--- Decision 119 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 19)
+  Self:  27 life | mana: 1W | hand(1): Life from the Loam | lib 41
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Construct (ability, self) -> Construct (self, slot 7)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Tap Mox Diamond for (W)
+   1: Tap Mox Diamond for (U)
+   2: Tap Mox Diamond for (B)
+   3: Tap Mox Diamond for (R)
+   4: Tap Mox Diamond for (G)
+   5: Tap Savannah for (G)
+   6: Tap Savannah for (W)
+   7: Pay {1} (spell is not countered)  [#1]
+   8: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Mox Diamond for (W))
+--- Narrative ---
+  Player A tapped Mox Diamond for {W}
+
+--- Decision 120 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 19)
+  Self:  27 life | mana: 2W | hand(1): Life from the Loam | lib 41
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Construct (ability, self) -> Construct (self, slot 7)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Tap Savannah for (G)
+   1: Tap Savannah for (W)
+   2: Pay {1} (spell is not countered)  [#1]
+   3: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Savannah for (G))
+--- Narrative ---
+  Player A tapped Savannah for {G}
+
+--- Decision 121 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 19)
+  Self:  27 life | mana: 2W, 1G | hand(1): Life from the Loam | lib 41
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Construct (ability, self) -> Construct (self, slot 7)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player A pays {1} — spell is not countered
+  Player A draws Savannah
+
+--- Decision 122 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  27 life | mana: empty | hand(2): Life from the Loam, Savannah | lib 40
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Actions:
+   0: Pass priority
+   1: Play Savannah
+  >> A/A: 1 (Play Savannah)
+--- Narrative ---
+  Player A played Savannah
+
+--- Decision 123 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  27 life | mana: empty | hand(1): Life from the Loam | lib 40
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Savannah | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Equip Skateboard  [#32]
+  >> A/A: 1 (Equip Skateboard)
+--- Narrative ---
+  Player A activated Savannah for 1(G)
+  Choose creature to equip:
+
+--- Decision 124 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  27 life | mana: empty | hand(1): Life from the Loam | lib 40
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1
+  Actions:
+   0: Construct [7/6]
+  >> A/A: 0 (Construct [7/6])
+--- Narrative ---
+  Skateboard equipped to Construct.
+  --- Declare Attackers (Player A) ---
+
+--- Decision 125 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  27 life | mana: empty | hand(1): Life from the Loam | lib 40
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [7/6]
+   1: Confirm attackers
+  >> A/A: 0 (Construct token [7/6])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Construct token [7/6] -> Player B
+
+--- Decision 126 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  27 life | mana: empty | hand(1): Life from the Loam | lib 40
+  Opp:   2 life | mana: empty | hand count: 5 | lib 40
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Savannah (T) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (ATK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
+  Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Dark Depths, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ajani, Nacatl Pariah
+  Opp exile:  Thoughtseize, Swords to Plowshares, Swords to Plowshares, Silent Clearing, Ocelot Pride, Marsh Flats, Marsh Flats, Elegant Parlor, Badlands, Cabal Therapy
+  Opp revealed: Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Construct token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Construct token deals 7 damage to Player B
+  --- End Combat Damage ---
+  Player B has -5 life - Player A wins!
+
+=== A/A wins ===

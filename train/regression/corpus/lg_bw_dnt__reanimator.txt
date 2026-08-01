@@ -1,0 +1,2168 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Phelia, Exuberant Shepherd
+  Player A draws Pre-War Formalwear
+  Player A draws Wasteland
+  Player A draws Aether Vial
+  Player A draws Aether Vial
+  Player A draws Orcish Bowmasters
+  Player A draws Scrubland
+  Player B draws Griselbrand
+  Player B draws Polluted Delta
+  Player B draws Force of Negation
+  Player B draws Force of Will
+  Player B draws Polluted Delta
+  Player B draws Reanimate
+  Player B draws Island
+  Player A hand:
+  Aether Vial
+  Aether Vial
+  Orcish Bowmasters
+  Phelia, Exuberant Shepherd
+  Pre-War Formalwear
+  Scrubland
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland | lib 73
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Force of Will
+  Griselbrand
+  Island
+  Polluted Delta
+  Polluted Delta
+  Reanimate
+  Force of Negation
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate, Force of Negation | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 73
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland
+  PB: Force of Will, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate, Force of Negation
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland | lib 73
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+   2: Play Wasteland
+  >> A/A: 1 (Play Scrubland)
+--- Narrative ---
+  Player A played Scrubland
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Self BF:  Scrubland
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Aether Vial  [#0]
+   2: Cast Aether Vial  [#0]
+  >> A/A: 1 (Cast Aether Vial)
+--- Narrative ---
+  Player A activated Scrubland for 1(W)
+  Player A casts Aether Vial
+
+--- Decision 5 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate, Force of Negation | lib 68
+  Opp:   20 life | mana: empty | hand count: 5 | lib 73
+  Opp BF:   Scrubland (T)
+  Stack: Aether Vial (spell, opponent)
+  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: opp_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Force of Negation (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 6 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate, Force of Negation | lib 68
+  Opp:   20 life | mana: empty | hand count: 5 | lib 73
+  Opp BF:   Scrubland (T)
+  Stack: Aether Vial (spell, opponent)
+  Pending: Force of Will (self)
+  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: opp_lands_played=1
+  Actions:
+   0: Aether Vial
+  >> B/B: 0 (Aether Vial)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 7 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate, Force of Negation | lib 68
+  Opp:   20 life | mana: empty | hand count: 5 | lib 73
+  Opp BF:   Scrubland (T)
+  Stack: Aether Vial (spell, opponent)
+  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: opp_lands_played=1
+  Actions:
+   0: Exile Force of Negation
+  >> B/B: 0 (Exile Force of Negation)
+--- Narrative ---
+  Player B pays 1 life
+  Player B exiles Force of Negation
+  Player B casts Force of Will targeting Aether Vial
+  Resolving ability (category: Counter)
+  Aether Vial is countered
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Flow State
+--- Turn 2 (Player B) ---
+  PA: Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
+  PB: Flow State, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate
+
+--- Decision 8 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Flow State, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate | lib 67
+  Opp:   20 life | mana: empty | hand count: 5 | lib 73
+  Opp BF:   Scrubland (T)
+  Self GY: Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Polluted Delta
+   3: Play Polluted Delta
+  >> B/B: 1 (Play Island)
+--- Narrative ---
+  Player B played Island
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Wasteland
+--- Turn 3 (Player A) ---
+  PA: Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland
+  PB: Flow State, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(6): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Scrubland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+   3: Cast Aether Vial  [#0]
+  >> A/A: 3 (Cast Aether Vial)
+--- Narrative ---
+  Player A activated Scrubland for 1(W)
+  Player A casts Aether Vial
+  Aether Vial enters the battlefield
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial | Scrubland (T)
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+   3: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Aether Vial (ChangeZone))
+--- Narrative ---
+  Player A's Aether Vial ability is on the stack
+
+--- Decision 12 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Stack: Aether Vial (ability, self)
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
+
+--- Decision 13 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Stack: Aether Vial (ability, self)
+  Pending: Aether Vial (self)
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Fail to find
+  >> A/A: 0 (Fail to find)
+--- Narrative ---
+  Player A fails to find
+
+--- Decision 14 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 15 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 16 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: Combat Dmg (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 19 ---
+  Priority: Player A (active)
+  Step: End Combat (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 20 ---
+  Priority: Player A (active)
+  Step: Second Main (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 21 ---
+  Priority: Player A (active)
+  Step: End Step (turn 3)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
+  PB: Flow State, Griselbrand, Island, Polluted Delta, Polluted Delta, Reanimate
+
+--- Decision 22 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 5 | lib 67
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Underground Sea
+
+--- Decision 23 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   19 life | mana: empty | hand count: 6 | lib 66
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Self GY: Aether Vial
+  Opp GY:  Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Force of Will, Island, Force of Negation
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Flow State, Griselbrand, Polluted Delta, Polluted Delta, Reanimate, Underground Sea | lib 66
+  Opp:   20 life | mana: empty | hand count: 4 | lib 72
+  Self BF:  Island
+  Opp BF:   Aether Vial (T) | Scrubland (T) | Wasteland
+  Self GY: Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Polluted Delta
+   3: Play Underground Sea
+  >> B/B: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player B played Polluted Delta
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Flow State, Griselbrand, Polluted Delta, Reanimate, Underground Sea | lib 66
+  Opp:   20 life | mana: empty | hand count: 4 | lib 72
+  Self BF:  Island | Polluted Delta
+  Opp BF:   Aether Vial (T) | Scrubland (T) | Wasteland
+  Self GY: Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Polluted Delta
+  Player B's Polluted Delta ability is on the stack
+
+--- Decision 26 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 66
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island
+  Stack: Polluted Delta (ability, opponent)
+  Self GY: Aether Vial
+  Opp GY:  Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Force of Negation
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(5): Flow State, Griselbrand, Polluted Delta, Reanimate, Underground Sea | lib 66
+  Opp:   20 life | mana: empty | hand count: 4 | lib 72
+  Self BF:  Island
+  Opp BF:   Aether Vial (T) | Scrubland (T) | Wasteland
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Swamp
+   2: Undercity Sewers
+   3: Undercity Sewers
+   4: Underground Sea
+   5: Underground Sea
+   6: Underground Sea
+  >> B/B: 1 (Swamp)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Swamp to the battlefield
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(5): Flow State, Griselbrand, Polluted Delta, Reanimate, Underground Sea | lib 65
+  Opp:   20 life | mana: empty | hand count: 4 | lib 72
+  Self BF:  Island | Swamp
+  Opp BF:   Aether Vial (T) | Scrubland (T) | Wasteland
+  Self GY: Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Flow State  [#0]
+  >> B/B: 1 (Cast Flow State)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Swamp for 1(B)
+  Player B casts Flow State
+
+--- Decision 29 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 4 | lib 65
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Flow State (spell, opponent)
+  Self GY: Aether Vial
+  Opp GY:  Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Dig)
+  Player B looks at the top 3 card(s) of their library.
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(4): Griselbrand, Polluted Delta, Reanimate, Underground Sea | lib 65
+  Opp:   20 life | mana: empty | hand count: 4 | lib 72
+  Self BF:  Island (T) | Swamp (T)
+  Opp BF:   Aether Vial (T) | Scrubland (T) | Wasteland
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Lotus Petal
+   1: Brainstorm
+   2: Lotus Petal
+  >> B/B: 1 (Brainstorm)
+--- Narrative ---
+  Player B puts Brainstorm into hand.
+  Player B puts 2 card(s) on the bottom of their library.
+
+--- Decision 31 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 32 ---
+  Priority: Player A (non-active)
+  Step: Begin Combat (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 33 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 34 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 35 ---
+  Priority: Player A (non-active)
+  Step: Combat Dmg (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 36 ---
+  Priority: Player A (non-active)
+  Step: End Combat (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 37 ---
+  Priority: Player A (non-active)
+  Step: Second Main (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 38 ---
+  Priority: Player A (non-active)
+  Step: End Step (turn 4)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 5 (Player A) --------
+  Aether Vial triggered
+--- Turn 5 (Player A) ---
+  PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
+  PB: Griselbrand, Polluted Delta, Reanimate, Underground Sea
+
+--- Decision 39 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial | Scrubland | Wasteland
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Aether Vial (ability, self)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Cast Orcish Bowmasters  [#0]
+   2: Cast Phelia, Exuberant Shepherd  [#0]
+   3: Activate Aether Vial (ChangeZone)  [#0]
+   4: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Cast Orcish Bowmasters)
+--- Narrative ---
+  Player A activated Scrubland for 1(B)
+  Player A activated Wasteland for 1(C)
+  Player A casts Orcish Bowmasters
+
+--- Decision 40 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial | Scrubland (T) | Wasteland (T)
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Orcish Bowmasters (spell, self) -> Aether Vial (ability, self)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Orcish Bowmasters enters the battlefield
+  Choose target for Orcish Bowmasters:
+
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T)
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Aether Vial (ability, self)
+  Pending: Orcish Bowmasters (self)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Player B (18 life)
+   1: Player A (20 life)
+   2: Orcish Bowmasters
+  >> A/A: 0 (Player B (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   18 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T)
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player) -> Aether Vial (ability, self)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 17 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 1/1.
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Aether Vial (ability, self)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Aether Vial (ability, self)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Decline  [#0]
+   1: Accept  [#1]
+  >> A/A: 1 (Accept)
+--- Narrative ---
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 CHARGE counter(s) on Aether Vial (now 1).
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Witch Enchanter
+
+--- Decision 46 ---
+  Priority: Player A (active)
+  Step: Draw (turn 5)
+  Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 47 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Witch-Blessed Meadow
+   3: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 48 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Aether Vial (ChangeZone))
+--- Narrative ---
+  Player A's Aether Vial ability is on the stack
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Aether Vial (ability, self)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
+
+--- Decision 50 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Aether Vial (ability, self)
+  Pending: Aether Vial (self)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Fail to find
+  >> A/A: 0 (Fail to find)
+--- Narrative ---
+  Player A fails to find
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 53 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 54 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 55 ---
+  Priority: Player A (active)
+  Step: Combat Dmg (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 56 ---
+  Priority: Player A (active)
+  Step: End Combat (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 57 ---
+  Priority: Player A (active)
+  Step: Second Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 58 ---
+  Priority: Player A (active)
+  Step: End Step (turn 5)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp (T)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Swamp, Force of Negation, Flow State
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
+  PB: Brainstorm, Griselbrand, Polluted Delta, Reanimate, Underground Sea
+
+--- Decision 59 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  17 life | mana: empty | hand(5): Brainstorm, Griselbrand, Polluted Delta, Reanimate, Underground Sea | lib 64
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Self GY: Flow State, Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Brainstorm
+
+--- Decision 60 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Brainstorm (spell, opponent)
+  Self GY: Aether Vial
+  Opp GY:  Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Undercity Sewers
+  Player B draws Careful Study
+  Player B draws Ponder
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 61 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  17 life | mana: empty | hand(7): Careful Study, Griselbrand, Polluted Delta, Ponder, Reanimate, Undercity Sewers, Underground Sea | lib 61
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Flow State, Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Actions:
+   0: Careful Study
+   1: Griselbrand
+   2: Polluted Delta
+   3: Ponder
+   4: Reanimate
+   5: Undercity Sewers
+   6: Underground Sea
+  >> B/B: 3 (Ponder)
+--- Narrative ---
+  Player B puts Ponder to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 62 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  17 life | mana: empty | hand(6): Careful Study, Griselbrand, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 62
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Flow State, Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Actions:
+   0: Careful Study
+   1: Griselbrand
+   2: Polluted Delta
+   3: Reanimate
+   4: Undercity Sewers
+   5: Underground Sea
+  >> B/B: 0 (Careful Study)
+--- Narrative ---
+  Player B puts Careful Study to top of library
+  Player A orders 3 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 63 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Orcish Bowmasters (DealDamage, targeted)  [#0]
+   1: Orcish Bowmasters (DealDamage, targeted)  [#1]
+   2: Orcish Bowmasters (DealDamage, targeted)  [#2]
+  >> A/A: 0 (Orcish Bowmasters (DealDamage, targeted))
+--- Narrative ---
+  Choose target for Orcish Bowmasters:
+
+--- Decision 64 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Pending: Orcish Bowmasters (self)
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Player B (17 life)
+   1: Player A (20 life)
+   2: Orcish Bowmasters
+   3: Orc Army token
+  >> A/A: 0 (Player B (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 65 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Orcish Bowmasters (DealDamage, targeted)  [#0]
+   1: Orcish Bowmasters (DealDamage, targeted)  [#1]
+  >> A/A: 0 (Orcish Bowmasters (DealDamage, targeted))
+--- Narrative ---
+  Choose target for Orcish Bowmasters:
+
+--- Decision 66 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Pending: Orcish Bowmasters (self)
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Player B (17 life)
+   1: Player A (20 life)
+   2: Orcish Bowmasters
+   3: Orc Army token
+  >> A/A: 0 (Player B (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Choose target for Orcish Bowmasters:
+
+--- Decision 67 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player) -> Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Pending: Orcish Bowmasters (self)
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Player B (17 life)
+   1: Player A (20 life)
+   2: Orcish Bowmasters
+   3: Orc Army token
+  >> A/A: 0 (Player B (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+
+--- Decision 68 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   17 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player) -> Orcish Bowmasters (ability, self) [amt=1] -> opponent (player) -> Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 16 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 2/2.
+
+--- Decision 69 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   16 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [2/2] [+1/+1:2] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player) -> Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 15 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 3/3.
+
+--- Decision 70 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   15 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [3/3] [+1/+1:3] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 14 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 4/4.
+
+--- Decision 71 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   14 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Careful Study
+
+--- Decision 72 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   14 life | mana: empty | hand count: 6 | lib 62
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Aether Vial
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 73 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  14 life | mana: empty | hand(6): Careful Study, Griselbrand, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 62
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
+  Self GY: Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Undercity Sewers
+   3: Play Underground Sea
+  >> B/B: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player B played Polluted Delta
+
+--- Decision 74 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  14 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 62
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island (T) | Polluted Delta | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
+  Self GY: Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Polluted Delta
+  Player B's Polluted Delta ability is on the stack
+
+--- Decision 75 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   13 life | mana: empty | hand count: 5 | lib 62
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Polluted Delta (ability, opponent)
+  Self GY: Aether Vial
+  Opp GY:  Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 76 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  13 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 62
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Aether Vial
+  Self exile: Force of Negation
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Undercity Sewers
+   2: Underground Sea
+   3: Underground Sea
+   4: Underground Sea
+  >> B/B: 1 (Undercity Sewers)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Undercity Sewers to the battlefield
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+
+--- Decision 77 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   13 life | mana: empty | hand count: 5 | lib 61
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
+  Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
+  Stack: Undercity Sewers (ability, opponent) [amt=1]
+  Self GY: Aether Vial
+  Opp GY:  Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 78 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   13 life | mana: empty | hand count: 5 | lib 61
+  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
+  Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
+  Stack: Undercity Sewers (ability, opponent) [amt=1]
+  Pending: Wasteland (self)
+  Self GY: Aether Vial
+  Opp GY:  Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Undercity Sewers
+   1: Scrubland
+   2: Wasteland
+   3: Wasteland
+  >> A/A: 0 (Undercity Sewers)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Undercity Sewers is on the stack
+  Resolving ability (category: Destroy)
+  Undercity Sewers is destroyed
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Raph & Mikey, Troublemakers
+
+--- Decision 79 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  13 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 61
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
+  Self GY: Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Put Raph & Mikey, Troublemakers on top of library  [#0]
+   1: Put Raph & Mikey, Troublemakers into graveyard
+  >> B/B: 1 (Put Raph & Mikey, Troublemakers into graveyard)
+--- Narrative ---
+  Player B puts Raph & Mikey, Troublemakers into their graveyard.
+
+--- Decision 80 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  13 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 60
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
+  Self GY: Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Reanimate  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 81 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 6)
+  Self:  13 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 60
+  Opp:   20 life | mana: empty | hand count: 3 | lib 71
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
+  Self GY: Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Reanimate  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 7 (Player A) --------
+  Aether Vial triggered
+--- Turn 7 (Player A) ---
+  PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
+  PB: Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea
+
+--- Decision 82 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Stack: Aether Vial (ability, self)
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Phelia, Exuberant Shepherd  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+   3: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Cast Phelia, Exuberant Shepherd)
+--- Narrative ---
+  Player A activated Scrubland for 1(W)
+  Player A activated Wasteland for 1(C)
+  Player A casts Phelia, Exuberant Shepherd
+
+--- Decision 83 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Stack: Phelia, Exuberant Shepherd (spell, self) -> Aether Vial (ability, self)
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Phelia, Exuberant Shepherd enters the battlefield
+
+--- Decision 84 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Stack: Aether Vial (ability, self)
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 85 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Stack: Aether Vial (ability, self)
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Actions:
+   0: Decline  [#0]
+   1: Accept  [#1]
+  >> A/A: 1 (Accept)
+--- Narrative ---
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 CHARGE counter(s) on Aether Vial (now 2).
+
+--- Decision 86 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws White Orchid Phantom
+
+--- Decision 87 ---
+  Priority: Player A (active)
+  Step: Draw (turn 7)
+  Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 88 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Play Witch-Blessed Meadow
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 1 (Play Witch-Blessed Meadow)
+--- Narrative ---
+  Player A played Witch-Blessed Meadow
+
+--- Decision 89 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Decline: pay 3 life so it enters untapped  [#0]
+   1: Accept: pay 3 life so it enters untapped  [#1]
+  >> A/A: 0 (Decline: pay 3 life so it enters untapped)
+--- Narrative ---
+  Witch Enchanter enters tapped.
+  Witch Enchanter transforms into Witch-Blessed Meadow!
+
+--- Decision 90 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Aether Vial (ChangeZone))
+--- Narrative ---
+  Player A's Aether Vial ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
+
+--- Decision 91 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Stack: Aether Vial (ability, self)
+  Pending: Aether Vial (self)
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Fail to find
+   1: White Orchid Phantom
+  >> A/A: 1 (White Orchid Phantom)
+--- Narrative ---
+  Player A puts White Orchid Phantom to the battlefield
+  Choose target for White Orchid Phantom:
+
+--- Decision 92 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Pending: White Orchid Phantom (self)
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: No target
+   1: Scrubland
+   2: Wasteland
+   3: Witch-Blessed Meadow
+  >> A/A: 0 (No target)
+--- Narrative ---
+  Targeting choice 0
+  White Orchid Phantom triggered
+  Resolving ability (category: Destroy)
+  Destroy: no target chosen
+  Resolving ability (category: ChangeZone)
+  --- Declare Attackers (Player A) ---
+
+--- Decision 93 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [4/4]
+   2: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 94 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Orc Army token [4/4]
+   1: Confirm attackers
+  >> A/A: 0 (Orc Army token [4/4])
+--- Narrative ---
+  Orc Army token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orc Army token [4/4] -> Player B
+
+--- Decision 95 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
+  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (ATK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orcish Bowmasters -> Player B
+    Orc Army token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Orcish Bowmasters deals 1 damage to Player B
+    Orc Army token deals 4 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+  Player B draws Underground Sea
+--- Turn 8 (Player B) ---
+  PA: Pre-War Formalwear
+  PB: Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea, Underground Sea
+
+--- Decision 96 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  8 life | mana: empty | hand(6): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea, Underground Sea | lib 59
+  Opp:   20 life | mana: empty | hand count: 1 | lib 70
+  Self BF:  Island | Swamp
+  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
+  Self GY: Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  Actions:
+   0: Pass priority
+   1: Play Undercity Sewers
+   2: Play Underground Sea
+   3: Play Underground Sea
+   4: Cast Careful Study  [#0]
+   5: Cast Reanimate  [#0]
+  >> B/B: 4 (Cast Careful Study)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Careful Study
+  Resolving ability (category: Draw, amount: 2)
+  Player B draws The Creation of Avacyn
+  Player B draws Flow State
+  Resolving ability (category: Discard)
+  Player B chooses a card to discard:
+
+--- Decision 97 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  8 life | mana: empty | hand(7): Flow State, Griselbrand, Reanimate, Undercity Sewers, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Opp:   20 life | mana: empty | hand count: 1 | lib 70
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  Actions:
+   0: Flow State
+   1: Griselbrand
+   2: Reanimate
+   3: Undercity Sewers
+   4: Underground Sea
+   5: Underground Sea
+   6: The Creation of Avacyn
+  >> B/B: 1 (Griselbrand)
+--- Narrative ---
+  Player B discards Griselbrand
+  Player B chooses a card to discard:
+
+--- Decision 98 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  8 life | mana: empty | hand(6): Flow State, Reanimate, Undercity Sewers, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Opp:   20 life | mana: empty | hand count: 1 | lib 70
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  Actions:
+   0: Flow State
+   1: Reanimate
+   2: Undercity Sewers
+   3: Underground Sea
+   4: Underground Sea
+   5: The Creation of Avacyn
+  >> B/B: 2 (Undercity Sewers)
+--- Narrative ---
+  Player B discards Undercity Sewers
+  Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 99 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
+  Opp:   8 life | mana: empty | hand count: 5 | lib 57
+  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Careful Study, Griselbrand, Raph & Mikey, Troublemakers
+  Actions:
+   0: Orcish Bowmasters (DealDamage, targeted)  [#0]
+   1: Orcish Bowmasters (DealDamage, targeted)  [#1]
+  >> A/A: 0 (Orcish Bowmasters (DealDamage, targeted))
+--- Narrative ---
+  Choose target for Orcish Bowmasters:
+
+--- Decision 100 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
+  Opp:   8 life | mana: empty | hand count: 5 | lib 57
+  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
+  Opp BF:   Island (T) | Swamp
+  Pending: Orcish Bowmasters (self)
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Careful Study, Griselbrand, Raph & Mikey, Troublemakers
+  Actions:
+   0: Player B (8 life)
+   1: Player A (20 life)
+   2: Orcish Bowmasters
+   3: Phelia, Exuberant Shepherd
+   4: White Orchid Phantom
+   5: Orc Army token
+  >> A/A: 0 (Player B (8 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Choose target for Orcish Bowmasters:
+
+--- Decision 101 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
+  Opp:   8 life | mana: empty | hand count: 5 | lib 57
+  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
+  Opp BF:   Island (T) | Swamp
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Pending: Orcish Bowmasters (self)
+  Self GY: Wasteland, Aether Vial
+  Opp GY:  Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp exile:  Force of Negation
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Careful Study, Griselbrand, Raph & Mikey, Troublemakers
+  Actions:
+   0: Player B (8 life)
+   1: Player A (20 life)
+   2: Orcish Bowmasters
+   3: Phelia, Exuberant Shepherd
+   4: White Orchid Phantom
+   5: Orc Army token
+  >> A/A: 0 (Player B (8 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 7 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 5/5.
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 6 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 6/6.
+
+--- Decision 102 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  6 life | mana: empty | hand(5): Flow State, Reanimate, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Opp:   20 life | mana: empty | hand count: 1 | lib 70
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
+  Self GY: Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Play Underground Sea
+   3: Cast Reanimate  [#0]
+  >> B/B: 3 (Cast Reanimate)
+--- Narrative ---
+  Choose target for Reanimate:
+
+--- Decision 103 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  6 life | mana: empty | hand(5): Flow State, Reanimate, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Opp:   20 life | mana: empty | hand count: 1 | lib 70
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
+  Pending: Reanimate (self)
+  Self GY: Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  Actions:
+   0: Griselbrand
+   1: Raph & Mikey, Troublemakers
+  >> B/B: 1 (Raph & Mikey, Troublemakers)
+--- Narrative ---
+  Targeting choice 1
+  Player B activated Swamp for 1(B)
+  Player B casts Reanimate targeting Raph & Mikey, Troublemakers
+  Resolving ability (category: ChangeZone)
+  Raph & Mikey, Troublemakers is moved to the battlefield
+  Resolving ability (category: LoseLife, amount: 7)
+  Player B loses 7 life (now at -1)
+  Resolving ability (category: Cleanup)
+  Player B has -1 life - Player A wins!
+
+=== A/A wins ===

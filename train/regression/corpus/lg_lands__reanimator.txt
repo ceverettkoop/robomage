@@ -1,0 +1,1056 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Dark Depths
+  Player A draws Wasteland
+  Player A draws Urza's Saga
+  Player A draws Mox Diamond
+  Player A draws Urza's Saga
+  Player A draws Mox Diamond
+  Player A draws Skateboard
+  Player B draws Atraxa, Grand Unifier
+  Player B draws Fatal Push
+  Player B draws Reanimate
+  Player B draws Raph & Mikey, Troublemakers
+  Player B draws Flow State
+  Player B draws Dark Ritual
+  Player B draws Animate Dead
+  Player A hand:
+  Dark Depths
+  Mox Diamond
+  Mox Diamond
+  Skateboard
+  Urza's Saga
+  Urza's Saga
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Animate Dead
+  Atraxa, Grand Unifier
+  Dark Ritual
+  Flow State
+  Raph & Mikey, Troublemakers
+  Reanimate
+  Fatal Push
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Animate Dead, Atraxa, Grand Unifier, Dark Ritual, Flow State, Raph & Mikey, Troublemakers, Reanimate, Fatal Push | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 1 (Mulligan)
+--- Narrative ---
+  Player B mulligans.
+  Player B draws Force of Will
+  Player B draws Consign to Memory
+  Player B draws Scalding Tarn
+  Player B draws Marsh Flats
+  Player B draws Atraxa, Grand Unifier
+  Player B draws Ponder
+  Player B draws Force of Will
+  Player B hand:
+  Atraxa, Grand Unifier
+  Force of Will
+  Force of Will
+  Marsh Flats
+  Ponder
+  Scalding Tarn
+  Consign to Memory
+
+--- Decision 3 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 6-card hand.
+  Player B: Choose card to put on library bottom (1 remaining):
+
+--- Decision 4 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Atraxa, Grand Unifier
+   1: Force of Will
+   2: Force of Will
+   3: Marsh Flats
+   4: Ponder
+   5: Scalding Tarn
+   6: Consign to Memory
+  >> B/B: 0 (Atraxa, Grand Unifier)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland
+  PB: Atraxa, Grand Unifier, Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 69
+  Actions:
+   0: Pass priority
+   1: Play Dark Depths
+   2: Play Urza's Saga
+   3: Play Urza's Saga
+   4: Play Wasteland
+   5: Cast Mox Diamond  [#0]
+   6: Cast Mox Diamond  [#0]
+  >> A/A: 2 (Play Urza's Saga)
+--- Narrative ---
+  Player A played Urza's Saga
+  Urza's Saga gets 1 lore counter (now 1).
+  Urza's Saga chapter 1 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 69
+  Self BF:  Urza's Saga [lore:1]
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Mox Diamond  [#0]
+   2: Cast Mox Diamond  [#0]
+   3: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Mox Diamond)
+--- Narrative ---
+  Player A casts Mox Diamond
+
+--- Decision 7 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 69
+  Opp:   20 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Urza's Saga [lore:1]
+  Stack: Mox Diamond (spell, opponent)
+  Opp revealed: Urza's Saga, Mox Diamond
+  Extras: opp_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 8 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 69
+  Opp:   20 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Urza's Saga [lore:1]
+  Stack: Mox Diamond (spell, opponent)
+  Pending: Force of Will (self)
+  Opp revealed: Urza's Saga, Mox Diamond
+  Extras: opp_lands_played=1
+  Actions:
+   0: Mox Diamond
+  >> B/B: 0 (Mox Diamond)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 9 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 69
+  Opp:   20 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Urza's Saga [lore:1]
+  Stack: Mox Diamond (spell, opponent)
+  Opp revealed: Urza's Saga, Mox Diamond
+  Extras: opp_lands_played=1
+  Actions:
+   0: Exile Force of Will
+   1: Exile Ponder
+   2: Exile Consign to Memory
+  >> B/B: 0 (Exile Force of Will)
+--- Narrative ---
+  Player B pays 1 life
+  Player B exiles Force of Will
+  Player B casts Force of Will targeting Mox Diamond
+  Resolving ability (category: Counter)
+  Mox Diamond is countered
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Dark Depths, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   19 life | mana: empty | hand count: 4 | lib 69
+  Self BF:  Urza's Saga [lore:1]
+  Self GY: Mox Diamond
+  Opp GY:  Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Mox Diamond  [#0]
+   2: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Mox Diamond)
+--- Narrative ---
+  Player A casts Mox Diamond
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(4): Dark Depths, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   19 life | mana: empty | hand count: 4 | lib 69
+  Self BF:  Urza's Saga [lore:1]
+  Stack: Mox Diamond (ability, self)
+  Self GY: Mox Diamond
+  Opp GY:  Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will
+  Extras: self_lands_played=1
+  Actions:
+   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
+   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+   2: Discard Wasteland (put Mox Diamond onto the battlefield)
+   3: Don't discard (put Mox Diamond into graveyard)
+  >> A/A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
+--- Narrative ---
+  Player A discards Dark Depths.
+  Mox Diamond enters the battlefield
+
+--- Decision 12 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(3): Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   19 life | mana: empty | hand count: 4 | lib 69
+  Self BF:  Mox Diamond | Urza's Saga [lore:1]
+  Self GY: Dark Depths, Mox Diamond
+  Opp GY:  Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Skateboard)
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A casts Skateboard
+  Skateboard enters the battlefield
+  Choose target for Skateboard:
+
+--- Decision 13 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(2): Urza's Saga, Wasteland | lib 53
+  Opp:   19 life | mana: empty | hand count: 4 | lib 69
+  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
+  Pending: Skateboard (self)
+  Self GY: Dark Depths, Mox Diamond
+  Opp GY:  Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will
+  Extras: self_lands_played=1
+  Actions:
+   0: Mox Diamond
+   1: Skateboard
+   2: Urza's Saga
+  >> A/A: 0 (Mox Diamond)
+--- Narrative ---
+  Targeting choice 0
+  Skateboard triggered
+  Resolving ability (category: Tap)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Show and Tell
+--- Turn 2 (Player B) ---
+  PA: Urza's Saga, Wasteland
+  PB: Marsh Flats, Ponder, Scalding Tarn, Consign to Memory, Show and Tell
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(5): Marsh Flats, Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 68
+  Opp:   20 life | mana: empty | hand count: 2 | lib 53
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
+  Self GY: Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Scalding Tarn
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(4): Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 68
+  Opp:   20 life | mana: empty | hand count: 2 | lib 53
+  Self BF:  Marsh Flats
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
+  Self GY: Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 16 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  18 life | mana: empty | hand(4): Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 68
+  Opp:   20 life | mana: empty | hand count: 2 | lib 53
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats, Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Swamp
+   2: Undercity Sewers
+   3: Undercity Sewers
+   4: Underground Sea
+   5: Underground Sea
+   6: Underground Sea
+   7: Underground Sea
+  >> B/B: 1 (Swamp)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Swamp to the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Boseiju, Who Endures
+  Urza's Saga gets 1 lore counter (now 2).
+  Urza's Saga chapter 2 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+--- Turn 3 (Player A) ---
+  PA: Boseiju, Who Endures, Urza's Saga, Wasteland
+  PB: Ponder, Scalding Tarn, Consign to Memory, Show and Tell
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Urza's Saga, Wasteland | lib 52
+  Opp:   18 life | mana: empty | hand count: 4 | lib 67
+  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2]
+  Opp BF:   Swamp
+  Self GY: Dark Depths, Mox Diamond
+  Opp GY:  Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Play Boseiju, Who Endures
+   2: Play Urza's Saga
+   3: Play Wasteland
+  >> A/A: 2 (Play Urza's Saga)
+--- Narrative ---
+  Player A played Urza's Saga
+  Urza's Saga gets 1 lore counter (now 1).
+  Urza's Saga chapter 1 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
+  Opp:   18 life | mana: empty | hand count: 4 | lib 67
+  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2] | Urza's Saga [lore:1]
+  Opp BF:   Swamp
+  Self GY: Dark Depths, Mox Diamond
+  Opp GY:  Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will, Swamp, Marsh Flats
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Urza's Saga (Token)  [#1]
+  >> A/A: 1 (Activate Urza's Saga (Token))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Urza's Saga for 1(C)
+  Player A's Urza's Saga ability is on the stack
+  Resolving ability (category: Token)
+  Token created: 0/0 Construct
+  Construct token gains (always)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws The Creation of Avacyn
+--- Turn 4 (Player B) ---
+  PA: Boseiju, Who Endures, Wasteland
+  PB: Ponder, Scalding Tarn, Consign to Memory, Show and Tell, The Creation of Avacyn
+
+--- Decision 19 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(5): Ponder, Scalding Tarn, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 66
+  Opp:   20 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Swamp
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
+  Self GY: Marsh Flats, Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+  >> B/B: 1 (Play Scalding Tarn)
+--- Narrative ---
+  Player B played Scalding Tarn
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(4): Ponder, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 66
+  Opp:   20 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Scalding Tarn | Swamp
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
+  Self GY: Marsh Flats, Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Scalding Tarn
+  Player B's Scalding Tarn ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Ponder, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 66
+  Opp:   20 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Swamp
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
+  Stack: Scalding Tarn (ability, self)
+  Pending: Scalding Tarn (self)
+  Self GY: Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Undercity Sewers
+   3: Undercity Sewers
+   4: Underground Sea
+   5: Underground Sea
+   6: Underground Sea
+   7: Underground Sea
+  >> B/B: 1 (Island)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Island to the battlefield
+
+--- Decision 22 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Ponder, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 65
+  Opp:   20 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Island | Swamp
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
+  Self GY: Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+  >> B/B: 1 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 23 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(3): Consign to Memory, Show and Tell, The Creation of Avacyn | lib 65
+  Opp:   20 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Lotus Petal  [#2]
+   1: Force of Negation  [#2]
+   2: Atraxa, Grand Unifier  [#2]
+  >> B/B: 0 (Lotus Petal)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(3): Consign to Memory, Show and Tell, The Creation of Avacyn | lib 65
+  Opp:   20 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Force of Negation  [#1]
+   1: Atraxa, Grand Unifier  [#1]
+  >> B/B: 0 (Force of Negation)
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(3): Consign to Memory, Show and Tell, The Creation of Avacyn | lib 65
+  Opp:   20 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Known top: Atraxa, Grand Unifier, Force of Negation, Lotus Petal, ?, ?
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Atraxa, Grand Unifier
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Boseiju, Who Endures, Wasteland
+  PB: Consign to Memory, Show and Tell, The Creation of Avacyn
+
+--- Decision 26 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2] | Urza's Saga [lore:1] | Construct [3/3]
+  Opp BF:   Island (T) | Swamp
+  Self GY: Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Activate Urza's Saga (Token)  [#1]
+  >> A/A: 1 (Activate Urza's Saga (Token))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Urza's Saga for 1(C)
+  Player A's Urza's Saga ability is on the stack
+  Resolving ability (category: Token)
+  Token created: 0/0 Construct
+  Construct token gains (always)
+  Player A draws Dark Depths
+  Urza's Saga gets 1 lore counter (now 3).
+  Urza's Saga gets 1 lore counter (now 2).
+  Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 27 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Dark Depths, Wasteland | lib 51
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T) | Urza's Saga [lore:2] (T) | Construct [4/4] | Construct [4/4] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Urza's Saga (chapter 3)  [#0]
+   1: Urza's Saga (chapter 2)  [#1]
+  >> A/A: 0 (Urza's Saga (chapter 3))
+--- Narrative ---
+  Urza's Saga chapter 3 triggers.
+  Urza's Saga chapter 2 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 28 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Dark Depths, Wasteland | lib 51
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T) | Urza's Saga [lore:2] (T) | Construct [4/4] | Construct [4/4] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Urza's Saga (ability, self) [amt=1]
+  Pending: Urza's Saga (self)
+  Self GY: Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Fail to find
+   1: Expedition Map
+   2: Grafdigger's Cage
+   3: Mox Diamond
+   4: Mox Diamond
+   5: Pithing Needle
+  >> A/A: 1 (Expedition Map)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Expedition Map to the battlefield
+  Urza's Saga is sacrificed (final chapter completed).
+
+--- Decision 29 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Dark Depths, Wasteland | lib 50
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Expedition Map | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [5/5] | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Boseiju, Who Endures
+   2: Play Dark Depths
+   3: Play Wasteland
+  >> A/A: 1 (Play Boseiju, Who Endures)
+--- Narrative ---
+  Player A played Boseiju, Who Endures
+
+--- Decision 30 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Boseiju, Who Endures | Expedition Map | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [5/5] | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Equip Skateboard  [#32]
+  >> A/A: 1 (Equip Skateboard)
+--- Narrative ---
+  Player A activated Boseiju, Who Endures for 1(G)
+  Choose creature to equip:
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [5/5] | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Construct [5/5]
+   1: Construct [5/5]
+  >> A/A: 0 (Construct [5/5])
+--- Narrative ---
+  Skateboard equipped to Construct.
+  Construct token gains 1/0 Haste (always)
+  --- Declare Attackers (Player A) ---
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [6/5] [Haste] (eq:Skateboard) | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [6/5]
+   1: Confirm attackers
+  >> A/A: 0 (Construct token [6/5])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Construct token [6/5] -> Player B
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
+  Opp:   17 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [6/5] [Haste] (eq:Skateboard) (ATK) | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Construct token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Construct token deals 6 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Force of Negation
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Dark Depths, Wasteland
+  PB: Consign to Memory, Show and Tell, The Creation of Avacyn
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
+  Opp:   11 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Boseiju, Who Endures | Expedition Map | Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:2] | Construct [6/5] [Haste] (eq:Skateboard) | Construct [5/5]
+  Opp BF:   Island | Swamp
+  Self GY: Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Activate Expedition Map (ChangeZone)  [#0]
+   2: Activate Urza's Saga (Token)  [#1]
+  >> A/A: 2 (Activate Urza's Saga (Token))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Boseiju, Who Endures for 1(G)
+  Player A's Urza's Saga ability is on the stack
+  Resolving ability (category: Token)
+  Token created: 0/0 Construct
+  Construct token gains (always)
+  Player A draws Crop Rotation
+  Urza's Saga gets 1 lore counter (now 3).
+  Urza's Saga chapter 3 triggers.
+
+--- Decision 35 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(5): Atraxa, Grand Unifier, Consign to Memory, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   20 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island | Swamp
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Stack: Urza's Saga (ability, opponent) [amt=1]
+  Self GY: Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Cast Consign to Memory  [#0]
+  >> B/B: 1 (Cast Consign to Memory)
+
+--- Decision 36 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(5): Atraxa, Grand Unifier, Consign to Memory, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   20 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island | Swamp
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Stack: Urza's Saga (ability, opponent) [amt=1]
+  Self GY: Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Decline: pay replicate cost for Consign to Memory (paid 0)  [#0]
+   1: Accept: pay replicate cost for Consign to Memory (paid 0)  [#1]
+  >> B/B: 0 (Decline: pay replicate cost for Consign to Memory (paid 0))
+--- Narrative ---
+  Choose target for Consign to Memory:
+
+--- Decision 37 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(5): Atraxa, Grand Unifier, Consign to Memory, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   20 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island | Swamp
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Stack: Urza's Saga (ability, opponent) [amt=1]
+  Pending: Consign to Memory (self)
+  Self GY: Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Urza's Saga's ability
+  >> B/B: 0 (Urza's Saga's ability)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Island for 1(U)
+  Player B casts Consign to Memory targeting Urza's Saga's ability
+
+--- Decision 38 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(4): Atraxa, Grand Unifier, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   20 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Stack: Consign to Memory (spell, self) -> Urza's Saga (opponent, slot 97) -> Urza's Saga (ability, opponent) [amt=1]
+  Self GY: Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Cast Force of Negation (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Negation (alternate cost))
+--- Narrative ---
+  Choose target for Force of Negation:
+
+--- Decision 39 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(4): Atraxa, Grand Unifier, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   20 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Stack: Consign to Memory (spell, self) -> Urza's Saga (opponent, slot 97) -> Urza's Saga (ability, opponent) [amt=1]
+  Pending: Force of Negation (self)
+  Self GY: Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Consign to Memory
+  >> B/B: 0 (Consign to Memory)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 40 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(4): Atraxa, Grand Unifier, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   20 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Stack: Consign to Memory (spell, self) -> Urza's Saga (opponent, slot 97) -> Urza's Saga (ability, opponent) [amt=1]
+  Self GY: Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Exile Atraxa, Grand Unifier
+   1: Exile Show and Tell
+  >> B/B: 0 (Exile Atraxa, Grand Unifier)
+--- Narrative ---
+  Player B exiles Atraxa, Grand Unifier
+  Player B casts Force of Negation targeting Consign to Memory
+  Resolving ability (category: Counter)
+  Consign to Memory is countered
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(3): Crop Rotation, Dark Depths, Wasteland | lib 49
+  Opp:   11 life | mana: empty | hand count: 2 | lib 63
+  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Stack: Urza's Saga (ability, self) [amt=1]
+  Pending: Urza's Saga (self)
+  Self GY: Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Force of Negation, Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Consign to Memory, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Force of Negation, Marsh Flats, Consign to Memory, Atraxa, Grand Unifier
+  Actions:
+   0: Fail to find
+   1: Grafdigger's Cage
+   2: Mox Diamond
+   3: Mox Diamond
+   4: Pithing Needle
+  >> A/A: 1 (Grafdigger's Cage)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Grafdigger's Cage to the battlefield
+  Urza's Saga is sacrificed (final chapter completed).
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(3): Crop Rotation, Dark Depths, Wasteland | lib 48
+  Opp:   11 life | mana: empty | hand count: 2 | lib 63
+  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Force of Negation, Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Consign to Memory, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Force of Negation, Marsh Flats, Consign to Memory, Atraxa, Grand Unifier
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Dark Depths
+   2: Play Wasteland
+  >> A/A: 1 (Play Dark Depths)
+--- Narrative ---
+  Player A played Dark Depths
+  Dark Depths enters with 10 ICE counter(s).
+  --- Declare Attackers (Player A) ---
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(2): Crop Rotation, Wasteland | lib 48
+  Opp:   11 life | mana: empty | hand count: 2 | lib 63
+  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Force of Negation, Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Consign to Memory, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Force of Negation, Marsh Flats, Consign to Memory, Atraxa, Grand Unifier
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [8/7]
+   1: Construct token [7/7]
+   2: Confirm attackers
+  >> A/A: 0 (Construct token [8/7])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Construct token [8/7] -> Player B
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(2): Crop Rotation, Wasteland | lib 48
+  Opp:   11 life | mana: empty | hand count: 2 | lib 63
+  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (ATK) | Construct [7/7] | Construct [7/7] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Force of Negation, Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Consign to Memory, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Force of Negation, Marsh Flats, Consign to Memory, Atraxa, Grand Unifier
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [7/7]
+   1: Confirm attackers
+  >> A/A: 0 (Construct token [7/7])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Construct token [8/7] -> Player B
+    [attacking] Construct token [7/7] -> Player B
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(2): Crop Rotation, Wasteland | lib 48
+  Opp:   11 life | mana: empty | hand count: 2 | lib 63
+  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (ATK) | Construct [7/7] (ATK) | Construct [7/7] (SICK)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
+  Opp GY:  Force of Negation, Ponder, Scalding Tarn, Marsh Flats, Force of Will
+  Opp exile:  Consign to Memory, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Force of Negation, Marsh Flats, Consign to Memory, Atraxa, Grand Unifier
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Construct token -> Player B
+    Construct token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Construct token deals 8 damage to Player B
+    Construct token deals 7 damage to Player B
+  --- End Combat Damage ---
+  Player B has -4 life - Player A wins!
+
+=== A/A wins ===

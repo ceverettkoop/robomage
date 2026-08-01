@@ -1,0 +1,2579 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Flow State
+  Player A draws Wasteland
+  Player A draws Verdant Catacombs
+  Player A draws Polluted Delta
+  Player A draws Underground Sea
+  Player A draws Polluted Delta
+  Player A draws Sheoldred's Edict
+  Player B draws Atraxa, Grand Unifier
+  Player B draws Fatal Push
+  Player B draws Reanimate
+  Player B draws Raph & Mikey, Troublemakers
+  Player B draws Flow State
+  Player B draws Dark Ritual
+  Player B draws Animate Dead
+  Player A hand:
+  Flow State
+  Polluted Delta
+  Polluted Delta
+  Sheoldred's Edict
+  Underground Sea
+  Verdant Catacombs
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 1 (Mulligan)
+--- Narrative ---
+  Player A mulligans.
+  Player A draws Sheoldred's Edict
+  Player A draws Tropical Island
+  Player A draws Polluted Delta
+  Player A draws Polluted Delta
+  Player A draws Brainstorm
+  Player A draws Fatal Push
+  Player A draws Wasteland
+  Player B hand:
+  Animate Dead
+  Atraxa, Grand Unifier
+  Dark Ritual
+  Flow State
+  Raph & Mikey, Troublemakers
+  Reanimate
+  Fatal Push
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Animate Dead, Atraxa, Grand Unifier, Dark Ritual, Flow State, Raph & Mikey, Troublemakers, Reanimate, Fatal Push | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 1 (Mulligan)
+--- Narrative ---
+  Player B mulligans.
+  Player B draws Echoing Truth
+  Player B draws Otherworldly Gaze
+  Player B draws Lotus Petal
+  Player B draws Archon of Cruelty
+  Player B draws Brainstorm
+  Player B draws Dark Ritual
+  Player B draws Underground Sea
+  Player A hand:
+  Brainstorm
+  Fatal Push
+  Polluted Delta
+  Polluted Delta
+  Sheoldred's Edict
+  Tropical Island
+  Wasteland
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Polluted Delta, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 6-card hand.
+  Player A: Choose card to put on library bottom (1 remaining):
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Polluted Delta, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Brainstorm
+   1: Fatal Push
+   2: Polluted Delta
+   3: Polluted Delta
+   4: Sheoldred's Edict
+   5: Tropical Island
+   6: Wasteland
+  >> A/A: 0 (Brainstorm)
+--- Narrative ---
+  Player B hand:
+  Archon of Cruelty
+  Brainstorm
+  Dark Ritual
+  Lotus Petal
+  Otherworldly Gaze
+  Underground Sea
+  Echoing Truth
+
+--- Decision 5 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Brainstorm, Dark Ritual, Lotus Petal, Otherworldly Gaze, Underground Sea, Echoing Truth | lib 68
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 6-card hand.
+  Player B: Choose card to put on library bottom (1 remaining):
+
+--- Decision 6 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Brainstorm, Dark Ritual, Lotus Petal, Otherworldly Gaze, Underground Sea, Echoing Truth | lib 68
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Actions:
+   0: Archon of Cruelty
+   1: Brainstorm
+   2: Dark Ritual
+   3: Lotus Petal
+   4: Otherworldly Gaze
+   5: Underground Sea
+   6: Echoing Truth
+  >> B/B: 0 (Archon of Cruelty)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Fatal Push, Polluted Delta, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland
+  PB: Archon of Cruelty, Brainstorm, Dark Ritual, Lotus Petal, Otherworldly Gaze, Underground Sea, Echoing Truth
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Fatal Push, Polluted Delta, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland | lib 54
+  Opp:   20 life | mana: empty | hand count: 6 | lib 69
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Polluted Delta
+   3: Play Tropical Island
+   4: Play Wasteland
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Fatal Push, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland | lib 54
+  Opp:   20 life | mana: empty | hand count: 6 | lib 69
+  Self BF:  Polluted Delta
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Fatal Push, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland | lib 54
+  Opp:   20 life | mana: empty | hand count: 6 | lib 69
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Bayou
+   2: Island
+   3: Swamp
+   4: Tropical Island
+   5: Tropical Island
+   6: Undercity Sewers
+   7: Underground Sea
+   8: Underground Sea
+  >> A/A: 1 (Bayou)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Bayou to the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Flusterstorm
+--- Turn 2 (Player B) ---
+  PA: Fatal Push, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland
+  PB: Brainstorm, Dark Ritual, Lotus Petal, Otherworldly Gaze, Underground Sea, Echoing Truth, Flusterstorm
+
+--- Decision 10 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Brainstorm, Dark Ritual, Lotus Petal, Otherworldly Gaze, Underground Sea, Echoing Truth, Flusterstorm | lib 68
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Bayou
+  Opp GY:  Polluted Delta
+  Opp revealed: Polluted Delta, Bayou
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Lotus Petal  [#0]
+  >> B/B: 2 (Cast Lotus Petal)
+--- Narrative ---
+  Player B casts Lotus Petal
+  Lotus Petal enters the battlefield
+
+--- Decision 11 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Otherworldly Gaze, Underground Sea, Echoing Truth, Flusterstorm | lib 68
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Lotus Petal
+  Opp BF:   Bayou
+  Opp GY:  Polluted Delta
+  Opp revealed: Polluted Delta, Bayou
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Brainstorm  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Cast Otherworldly Gaze  [#0]
+  >> B/B: 2 (Cast Brainstorm)
+--- Narrative ---
+  Player B sacrifices Lotus Petal
+  Player B activated Lotus Petal for 1(U)
+  Player B casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Consign to Memory
+  Player B draws Thoughtseize
+  Player B draws Thoughtseize
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Dark Ritual, Otherworldly Gaze, Thoughtseize, Thoughtseize, Underground Sea, Consign to Memory, Echoing Truth, Flusterstorm | lib 65
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Bayou
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Lotus Petal
+  Opp GY:  Polluted Delta
+  Opp revealed: Polluted Delta, Bayou
+  Extras: self_revolt
+  Actions:
+   0: Dark Ritual
+   1: Otherworldly Gaze
+   2: Thoughtseize
+   3: Thoughtseize
+   4: Underground Sea
+   5: Consign to Memory
+   6: Echoing Truth
+   7: Flusterstorm
+  >> B/B: 0 (Dark Ritual)
+--- Narrative ---
+  Player B puts Dark Ritual to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Otherworldly Gaze, Thoughtseize, Thoughtseize, Underground Sea, Consign to Memory, Echoing Truth, Flusterstorm | lib 66
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Bayou
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Lotus Petal
+  Opp GY:  Polluted Delta
+  Known top: Dark Ritual, ?, ?, ?, ?
+  Opp revealed: Polluted Delta, Bayou
+  Extras: self_revolt
+  Actions:
+   0: Otherworldly Gaze
+   1: Thoughtseize
+   2: Thoughtseize
+   3: Underground Sea
+   4: Consign to Memory
+   5: Echoing Truth
+   6: Flusterstorm
+  >> B/B: 0 (Otherworldly Gaze)
+--- Narrative ---
+  Player B puts Otherworldly Gaze to top of library
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Thoughtseize, Thoughtseize, Underground Sea, Consign to Memory, Echoing Truth, Flusterstorm | lib 67
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Bayou
+  Self GY: Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta
+  Known top: Otherworldly Gaze, Dark Ritual, ?, ?, ?
+  Opp revealed: Polluted Delta, Bayou
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+  >> B/B: 1 (Play Underground Sea)
+--- Narrative ---
+  Player B played Underground Sea
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Thoughtseize, Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 67
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Underground Sea
+  Opp BF:   Bayou
+  Self GY: Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta
+  Known top: Otherworldly Gaze, Dark Ritual, ?, ?, ?
+  Opp revealed: Polluted Delta, Bayou
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Thoughtseize  [#0]
+   2: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 16 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Thoughtseize, Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 67
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Underground Sea
+  Opp BF:   Bayou
+  Pending: Thoughtseize (self)
+  Self GY: Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta
+  Known top: Otherworldly Gaze, Dark Ritual, ?, ?, ?
+  Opp revealed: Polluted Delta, Bayou
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Player A (19 life)
+   1: Player B (20 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Underground Sea for 1(B)
+  Player B casts Thoughtseize targeting Player A
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Fatal Push
+    Polluted Delta
+    Sheoldred's Edict
+    Tropical Island
+    Wasteland
+  Player B chooses a card to discard:
+
+--- Decision 17 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(4): Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 67
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta
+  Known top: Otherworldly Gaze, Dark Ritual, ?, ?, ?
+  Known opp hand: Fatal Push, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Fatal Push, Bayou, Sheoldred's Edict, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fatal Push
+   1: Sheoldred's Edict
+  >> B/B: 1 (Sheoldred's Edict)
+--- Narrative ---
+  Player A discards Sheoldred's Edict
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 18)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Force of Will
+--- Turn 3 (Player A) ---
+  PA: Fatal Push, Force of Will, Polluted Delta, Tropical Island, Wasteland
+  PB: Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(5): Fatal Push, Force of Will, Polluted Delta, Tropical Island, Wasteland | lib 52
+  Opp:   18 life | mana: empty | hand count: 4 | lib 67
+  Self BF:  Bayou
+  Opp BF:   Underground Sea (T)
+  Self GY: Sheoldred's Edict, Polluted Delta
+  Opp GY:  Thoughtseize, Brainstorm, Lotus Petal
+  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Tropical Island
+   3: Play Wasteland
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 19 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(4): Fatal Push, Force of Will, Tropical Island, Wasteland | lib 52
+  Opp:   18 life | mana: empty | hand count: 4 | lib 67
+  Self BF:  Bayou | Polluted Delta
+  Opp BF:   Underground Sea (T)
+  Self GY: Sheoldred's Edict, Polluted Delta
+  Opp GY:  Thoughtseize, Brainstorm, Lotus Petal
+  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Underground Sea
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 20 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Fatal Push, Force of Will, Tropical Island, Wasteland | lib 52
+  Opp:   18 life | mana: empty | hand count: 4 | lib 67
+  Self BF:  Bayou
+  Opp BF:   Underground Sea (T)
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Thoughtseize, Brainstorm, Lotus Petal
+  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Underground Sea
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Swamp
+   3: Tropical Island
+   4: Tropical Island
+   5: Undercity Sewers
+   6: Underground Sea
+   7: Underground Sea
+  >> A/A: 1 (Island)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Island to the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Otherworldly Gaze
+--- Turn 4 (Player B) ---
+  PA: Fatal Push, Force of Will, Tropical Island, Wasteland
+  PB: Otherworldly Gaze, Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: Draw (turn 4)
+  Self:  18 life | mana: empty | hand(5): Otherworldly Gaze, Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 66
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Underground Sea
+  Opp BF:   Bayou | Island
+  Self GY: Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Known top: Dark Ritual, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Tropical Island, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Island, Fatal Push, Bayou, Sheoldred's Edict, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Otherworldly Gaze  [#0]
+  >> B/B: 1 (Cast Otherworldly Gaze)
+--- Narrative ---
+  Player B activated Underground Sea for 1(U)
+  Player B casts Otherworldly Gaze
+  Resolving ability (category: Surveil, amount: 3)
+  Player B surveils 3.
+  Surveil: looking at Dark Ritual
+  Surveil: looking at Archon of Cruelty
+  Surveil: looking at The Creation of Avacyn
+
+--- Decision 22 ---
+  Priority: Player B (active)
+  Step: Draw (turn 4)
+  Self:  18 life | mana: empty | hand(4): Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 66
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou | Island
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Known top: Dark Ritual, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Tropical Island, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Island, Fatal Push, Bayou, Sheoldred's Edict, Tropical Island
+  Actions:
+   0: Put Dark Ritual on top of library  [#0]
+   1: Put Archon of Cruelty on top of library  [#0]
+   2: Put The Creation of Avacyn on top of library  [#0]
+   3: Put Dark Ritual into graveyard
+   4: Put Archon of Cruelty into graveyard
+   5: Put The Creation of Avacyn into graveyard
+  >> B/B: 3 (Put Dark Ritual into graveyard)
+--- Narrative ---
+  Player B puts Dark Ritual into their graveyard.
+
+--- Decision 23 ---
+  Priority: Player B (active)
+  Step: Draw (turn 4)
+  Self:  18 life | mana: empty | hand(4): Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 65
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou | Island
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Known opp hand: Fatal Push, Tropical Island, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Island, Fatal Push, Bayou, Sheoldred's Edict, Tropical Island
+  Actions:
+   0: Put Archon of Cruelty on top of library  [#0]
+   1: Put The Creation of Avacyn on top of library  [#0]
+   2: Put Archon of Cruelty into graveyard
+   3: Put The Creation of Avacyn into graveyard
+  >> B/B: 2 (Put Archon of Cruelty into graveyard)
+--- Narrative ---
+  Player B puts Archon of Cruelty into their graveyard.
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: Draw (turn 4)
+  Self:  18 life | mana: empty | hand(4): Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 64
+  Opp:   18 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou | Island
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Known opp hand: Fatal Push, Tropical Island, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Island, Fatal Push, Bayou, Sheoldred's Edict, Tropical Island
+  Actions:
+   0: Put The Creation of Avacyn on top of library  [#0]
+   1: Put The Creation of Avacyn into graveyard
+  >> B/B: 1 (Put The Creation of Avacyn into graveyard)
+--- Narrative ---
+  Player B puts The Creation of Avacyn into their graveyard.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+  Player A draws Baleful Strix
+--- Turn 5 (Player A) ---
+  PA: Baleful Strix, Fatal Push, Force of Will, Tropical Island, Wasteland
+  PB: Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm
+
+--- Decision 25 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Baleful Strix, Fatal Push, Force of Will, Tropical Island, Wasteland | lib 50
+  Opp:   18 life | mana: empty | hand count: 4 | lib 63
+  Self BF:  Bayou | Island
+  Opp BF:   Underground Sea (T)
+  Self GY: Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp revealed: Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+   2: Play Wasteland
+   3: Cast Baleful Strix  [#0]
+  >> A/A: 3 (Cast Baleful Strix)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A activated Bayou for 1(B)
+  Player A casts Baleful Strix
+  Baleful Strix enters the battlefield
+  Baleful Strix triggered
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Baleful Strix
+
+--- Decision 26 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Baleful Strix, Fatal Push, Force of Will, Tropical Island, Wasteland | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 63
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T)
+  Opp BF:   Underground Sea (T)
+  Self GY: Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp revealed: Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+   2: Play Wasteland
+  >> A/A: 1 (Play Tropical Island)
+--- Narrative ---
+  Player A played Tropical Island
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Force of Will
+--- Turn 6 (Player B) ---
+  PA: Baleful Strix, Fatal Push, Force of Will, Tropical Island, Wasteland
+  PB: Force of Will, Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(5): Force of Will, Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 62
+  Opp:   18 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Underground Sea
+  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Self GY: Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Known opp hand: Fatal Push, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Island, Fatal Push, Bayou, Sheoldred's Edict, Baleful Strix, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(5): Force of Will, Thoughtseize, Consign to Memory, Echoing Truth, Flusterstorm | lib 62
+  Opp:   18 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Underground Sea
+  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Pending: Thoughtseize (self)
+  Self GY: Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Known opp hand: Fatal Push, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Island, Fatal Push, Bayou, Sheoldred's Edict, Baleful Strix, Tropical Island
+  Actions:
+   0: Player A (18 life)
+   1: Player B (18 life)
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Underground Sea for 1(B)
+  Player B casts Thoughtseize targeting Player A
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Force of Will, Consign to Memory, Echoing Truth, Flusterstorm | lib 62
+  Opp:   18 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Underground Sea (T)
+  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Self GY: Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Known opp hand: Fatal Push, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Island, Fatal Push, Bayou, Sheoldred's Edict, Baleful Strix, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 30 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Baleful Strix, Fatal Push, Force of Will, Wasteland | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 62
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Self GY: Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp revealed: Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 31 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Baleful Strix, Fatal Push, Force of Will, Wasteland | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 62
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
+  Self GY: Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp revealed: Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Thoughtseize
+  >> A/A: 0 (Thoughtseize)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 32 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Baleful Strix, Fatal Push, Force of Will, Wasteland | lib 49
+  Opp:   18 life | mana: empty | hand count: 4 | lib 62
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Self GY: Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp revealed: Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Exile Baleful Strix
+  >> A/A: 0 (Exile Baleful Strix)
+--- Narrative ---
+  Player A pays 1 life
+  Player A exiles Baleful Strix
+  Player A casts Force of Will targeting Thoughtseize
+
+--- Decision 33 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Force of Will, Consign to Memory, Echoing Truth, Flusterstorm | lib 62
+  Opp:   17 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Underground Sea (T)
+  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Stack: Force of Will (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
+  Self GY: Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp exile:  Baleful Strix
+  Known opp hand: Fatal Push, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Fatal Push, Bayou, Sheoldred's Edict, Baleful Strix, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 34 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Force of Will, Consign to Memory, Echoing Truth, Flusterstorm | lib 62
+  Opp:   17 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Underground Sea (T)
+  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Stack: Force of Will (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
+  Pending: Force of Will (self)
+  Self GY: Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp exile:  Baleful Strix
+  Known opp hand: Fatal Push, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Fatal Push, Bayou, Sheoldred's Edict, Baleful Strix, Tropical Island
+  Actions:
+   0: Force of Will
+   1: Thoughtseize
+  >> B/B: 0 (Force of Will)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 35 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(4): Force of Will, Consign to Memory, Echoing Truth, Flusterstorm | lib 62
+  Opp:   17 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Underground Sea (T)
+  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Stack: Force of Will (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
+  Self GY: Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp exile:  Baleful Strix
+  Known opp hand: Fatal Push, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Fatal Push, Bayou, Sheoldred's Edict, Baleful Strix, Tropical Island
+  Actions:
+   0: Exile Consign to Memory
+   1: Exile Echoing Truth
+   2: Exile Flusterstorm
+  >> B/B: 0 (Exile Consign to Memory)
+--- Narrative ---
+  Player B pays 1 life
+  Player B exiles Consign to Memory
+  Player B casts Force of Will targeting Force of Will
+  Resolving ability (category: Counter)
+  Force of Will is countered
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Fatal Push
+    Wasteland
+  Player B chooses a card to discard:
+
+--- Decision 36 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(2): Echoing Truth, Flusterstorm | lib 62
+  Opp:   17 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Underground Sea (T)
+  Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Bayou (T) | Island (T) | Tropical Island
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Force of Will, Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Self exile: Consign to Memory
+  Opp exile:  Baleful Strix
+  Known opp hand: Fatal Push, Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Fatal Push, Bayou, Sheoldred's Edict, Baleful Strix, Tropical Island
+  Actions:
+   0: Fatal Push
+  >> B/B: 0 (Fatal Push)
+--- Narrative ---
+  Player A discards Fatal Push
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 15)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+  Player A draws Witherbloom Command
+--- Turn 7 (Player A) ---
+  PA: Wasteland, Witherbloom Command
+  PB: Echoing Truth, Flusterstorm
+
+--- Decision 37 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(2): Wasteland, Witherbloom Command | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 62
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou | Island | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Self GY: Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Witherbloom Command  [#0]
+  >> A/A: 2 (Cast Witherbloom Command)
+--- Narrative ---
+  Choose mode:
+
+--- Decision 38 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(2): Wasteland, Witherbloom Command | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 62
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou | Island | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Pending: Witherbloom Command (self)
+  Self GY: Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Target player mills three cards, then you return a land card from your graveyard to your hand.  [#0]
+   1: Target creature gets -3/-1 until end of turn.  [#2]
+   2: Target opponent loses 2 life and you gain 2 life.  [#3]
+  >> A/A: 0 (Target player mills three cards, then you return a land card from your graveyard to your hand.)
+--- Narrative ---
+  Player A chooses mode — Target player mills three cards, then you return a land card from your graveyard to your hand.
+  Choose target for Witherbloom Command:
+
+--- Decision 39 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(2): Wasteland, Witherbloom Command | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 62
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou | Island | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Pending: Witherbloom Command (self)
+  Self GY: Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Player B (15 life)
+   1: Player A (17 life)
+  >> A/A: 0 (Player B (15 life))
+--- Narrative ---
+  Targeting choice 0
+  Choose mode:
+
+--- Decision 40 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(2): Wasteland, Witherbloom Command | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 62
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou | Island | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Pending: Witherbloom Command (self)
+  Self GY: Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Target creature gets -3/-1 until end of turn.  [#2]
+   1: Target opponent loses 2 life and you gain 2 life.  [#3]
+  >> A/A: 0 (Target creature gets -3/-1 until end of turn.)
+--- Narrative ---
+  Player A chooses mode — Target creature gets -3/-1 until end of turn.
+  Choose target for Witherbloom Command:
+
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(2): Wasteland, Witherbloom Command | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 62
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou | Island | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Pending: Witherbloom Command (self)
+  Self GY: Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Underground Sea, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Baleful Strix
+  >> A/A: 0 (Baleful Strix)
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Bayou for 1(B)
+  Player A activated Tropical Island for 1(G)
+  Player A casts Witherbloom Command
+  Resolving ability (category: Charm)
+  Resolving ability (category: Mill, amount: 3)
+  Player B mills Force of Will.
+  Player B mills Undercity Sewers.
+  Player B mills Fatal Push.
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A graveyard:
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(1): Wasteland | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 59
+  Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Island | Tropical Island (T)
+  Opp BF:   Underground Sea (T)
+  Stack: Witherbloom Command (spell, self) [modes 0,2] -> opponent (player); Baleful Strix (self, slot 0)
+  Pending: Witherbloom Command (self)
+  Self GY: Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict, Polluted Delta
+  Opp GY:  Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Fatal Push, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Polluted Delta
+   1: Polluted Delta
+  >> A/A: 0 (Polluted Delta)
+--- Narrative ---
+  Player A puts Polluted Delta to hand
+  Resolving ability (category: Pump, -3/-1)
+  Baleful Strix gets -3/-1 (now 0/0)
+  Baleful Strix dies (zero toughness)
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(2): Polluted Delta, Wasteland | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 59
+  Self BF:  Bayou (T) | Island | Tropical Island (T)
+  Opp BF:   Underground Sea (T)
+  Self GY: Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Fatal Push, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Wasteland
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(1): Wasteland | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 59
+  Self BF:  Bayou (T) | Island | Polluted Delta | Tropical Island (T)
+  Opp BF:   Underground Sea (T)
+  Self GY: Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Fatal Push, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  16 life | mana: empty | hand(1): Wasteland | lib 48
+  Opp:   15 life | mana: empty | hand count: 2 | lib 59
+  Self BF:  Bayou (T) | Island | Tropical Island (T)
+  Opp BF:   Underground Sea (T)
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Fatal Push, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Swamp
+   2: Tropical Island
+   3: Tropical Island
+   4: Undercity Sewers
+   5: Underground Sea
+   6: Underground Sea
+  >> A/A: 1 (Swamp)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Swamp to the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+  Player B draws Force of Negation
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+  Player A draws Flow State
+--- Turn 9 (Player A) ---
+  PA: Flow State, Wasteland
+  PB: Echoing Truth, Flusterstorm
+
+--- Decision 46 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  16 life | mana: empty | hand(2): Flow State, Wasteland | lib 46
+  Opp:   15 life | mana: empty | hand count: 3 | lib 58
+  Self BF:  Bayou | Island | Swamp | Tropical Island
+  Opp BF:   Underground Sea
+  Self GY: Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Baleful Strix
+  Opp exile:  Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Fatal Push, Consign to Memory, Otherworldly Gaze, Archon of Cruelty, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Flow State  [#0]
+  >> A/A: 2 (Cast Flow State)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A activated Bayou for 1(G)
+  Player A casts Flow State
+
+--- Decision 47 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(3): Echoing Truth, Flusterstorm, Force of Negation | lib 58
+  Opp:   16 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Underground Sea
+  Opp BF:   Bayou (T) | Island (T) | Swamp | Tropical Island
+  Stack: Flow State (spell, opponent)
+  Self GY: Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Consign to Memory
+  Opp exile:  Baleful Strix
+  Known opp hand: Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Swamp, Fatal Push, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Flusterstorm  [#0]
+   2: Cast Force of Negation (alternate cost)  [#1]
+  >> B/B: 1 (Cast Flusterstorm)
+--- Narrative ---
+  Choose target for Flusterstorm:
+
+--- Decision 48 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(3): Echoing Truth, Flusterstorm, Force of Negation | lib 58
+  Opp:   16 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Underground Sea
+  Opp BF:   Bayou (T) | Island (T) | Swamp | Tropical Island
+  Stack: Flow State (spell, opponent)
+  Pending: Flusterstorm (self)
+  Self GY: Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Consign to Memory
+  Opp exile:  Baleful Strix
+  Known opp hand: Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Swamp, Fatal Push, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Tropical Island
+  Actions:
+   0: Flow State
+  >> B/B: 0 (Flow State)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Underground Sea for 1(U)
+  Player B casts Flusterstorm targeting Flow State
+  Flusterstorm triggered
+
+--- Decision 49 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(2): Echoing Truth, Force of Negation | lib 58
+  Opp:   16 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou (T) | Island (T) | Swamp | Tropical Island
+  Stack: Flusterstorm (ability, self) [amt=1] -> Flusterstorm (spell, self) -> Flow State (opponent, slot 98) -> Flow State (spell, opponent)
+  Self GY: Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Consign to Memory
+  Opp exile:  Baleful Strix
+  Known opp hand: Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Swamp, Fatal Push, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Force of Negation (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Negation (alternate cost))
+--- Narrative ---
+  Choose target for Force of Negation:
+
+--- Decision 50 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(2): Echoing Truth, Force of Negation | lib 58
+  Opp:   16 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou (T) | Island (T) | Swamp | Tropical Island
+  Stack: Flusterstorm (ability, self) [amt=1] -> Flusterstorm (spell, self) -> Flow State (opponent, slot 98) -> Flow State (spell, opponent)
+  Pending: Force of Negation (self)
+  Self GY: Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Consign to Memory
+  Opp exile:  Baleful Strix
+  Known opp hand: Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Swamp, Fatal Push, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Tropical Island
+  Actions:
+   0: Flusterstorm
+   1: Flow State
+  >> B/B: 1 (Flow State)
+--- Narrative ---
+  Targeting choice 1
+
+--- Decision 51 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(2): Echoing Truth, Force of Negation | lib 58
+  Opp:   16 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou (T) | Island (T) | Swamp | Tropical Island
+  Stack: Flusterstorm (ability, self) [amt=1] -> Flusterstorm (spell, self) -> Flow State (opponent, slot 98) -> Flow State (spell, opponent)
+  Self GY: Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Consign to Memory
+  Opp exile:  Baleful Strix
+  Known opp hand: Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Swamp, Fatal Push, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Tropical Island
+  Actions:
+   0: Exile Echoing Truth
+  >> B/B: 0 (Exile Echoing Truth)
+--- Narrative ---
+  Player B exiles Echoing Truth
+  Player B casts Force of Negation targeting Flow State
+  Resolving ability (category: Counter)
+  Flow State is countered
+  Resolving ability (category: Storm)
+  Choose target for Flusterstorm:
+
+--- Decision 52 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 58
+  Opp:   16 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou (T) | Island (T) | Swamp | Tropical Island
+  Stack: Flusterstorm (ability, self) [amt=1] -> Flusterstorm (spell, self) -> Flow State (opponent)
+  Pending: Flusterstorm (opp)
+  Self GY: Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Echoing Truth, Consign to Memory
+  Opp exile:  Flow State, Baleful Strix
+  Known opp hand: Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Swamp, Fatal Push, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Tropical Island
+  Actions:
+   0: Flusterstorm
+  >> B/B: 0 (Flusterstorm)
+--- Narrative ---
+  Targeting choice 0
+  Player B copies Flusterstorm
+  Resolving ability (category: Counter)
+  Flusterstorm's controller may pay {1} to save it:
+
+--- Decision 53 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 58
+  Opp:   16 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou (T) | Island (T) | Swamp | Tropical Island
+  Stack: Flusterstorm (spell, self) [copy] -> Flusterstorm (self, slot 97) -> Flusterstorm (spell, self) -> Flow State (opponent)
+  Self GY: Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Echoing Truth, Consign to Memory
+  Opp exile:  Flow State, Baleful Strix
+  Known opp hand: Wasteland
+  Opp revealed: Polluted Delta, Wasteland, Force of Will, Island, Swamp, Fatal Push, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Tropical Island
+  Actions:
+   0: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Don't pay (spell is countered))
+--- Narrative ---
+  Flusterstorm is countered
+  Flusterstorm (copy) ceases to exist
+
+--- Decision 54 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  16 life | mana: empty | hand(1): Wasteland | lib 46
+  Opp:   15 life | mana: empty | hand count: 0 | lib 58
+  Self BF:  Bayou (T) | Island (T) | Swamp | Tropical Island
+  Opp BF:   Underground Sea (T)
+  Self GY: Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 55 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  16 life | mana: empty | hand(0): (empty) | lib 46
+  Opp:   15 life | mana: empty | hand count: 0 | lib 58
+  Self BF:  Bayou (T) | Island (T) | Swamp | Tropical Island | Wasteland
+  Opp BF:   Underground Sea (T)
+  Self GY: Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 56 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  16 life | mana: empty | hand(0): (empty) | lib 46
+  Opp:   15 life | mana: empty | hand count: 0 | lib 58
+  Self BF:  Bayou (T) | Island (T) | Swamp | Tropical Island | Wasteland
+  Opp BF:   Underground Sea (T)
+  Pending: Wasteland (self)
+  Self GY: Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1
+  Actions:
+   0: Underground Sea
+   1: Bayou
+   2: Tropical Island
+   3: Wasteland
+  >> A/A: 0 (Underground Sea)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Underground Sea is on the stack
+  Resolving ability (category: Destroy)
+  Underground Sea is destroyed
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 10 (Player B) --------
+  Player B draws Otherworldly Gaze
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+  Player A draws Orcish Bowmasters
+--- Turn 11 (Player A) ---
+  PA: Orcish Bowmasters
+  PB: (empty)
+
+--- Decision 57 ---
+  Priority: Player A (active)
+  Step: Draw (turn 11)
+  Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 45
+  Opp:   15 life | mana: empty | hand count: 1 | lib 57
+  Self BF:  Bayou | Island | Swamp | Tropical Island
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Cast Orcish Bowmasters  [#0]
+  >> A/A: 1 (Cast Orcish Bowmasters)
+--- Narrative ---
+  Player A activated Swamp for 1(B)
+  Player A activated Bayou for 1(G)
+  Player A casts Orcish Bowmasters
+  Orcish Bowmasters enters the battlefield
+  Choose target for Orcish Bowmasters:
+
+--- Decision 58 ---
+  Priority: Player A (active)
+  Step: Draw (turn 11)
+  Self:  16 life | mana: empty | hand(0): (empty) | lib 45
+  Opp:   15 life | mana: empty | hand count: 1 | lib 57
+  Self BF:  Bayou (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island
+  Pending: Orcish Bowmasters (self)
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Player B (15 life)
+   1: Player A (16 life)
+   2: Orcish Bowmasters
+  >> A/A: 0 (Player B (15 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 14 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 1/1.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 12 (Player B) --------
+  Player B draws Otherworldly Gaze
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 13 (Player A) --------
+  Player A draws Orcish Bowmasters
+--- Turn 13 (Player A) ---
+  PA: Orcish Bowmasters
+  PB: (empty)
+
+--- Decision 59 ---
+  Priority: Player A (active)
+  Step: Draw (turn 13)
+  Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 44
+  Opp:   14 life | mana: empty | hand count: 2 | lib 56
+  Self BF:  Bayou | Island | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Orc Army [1/1] [+1/+1:1]
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Cast Orcish Bowmasters  [#0]
+  >> A/A: 1 (Cast Orcish Bowmasters)
+--- Narrative ---
+  Player A activated Swamp for 1(B)
+  Player A activated Bayou for 1(G)
+  Player A casts Orcish Bowmasters
+  Orcish Bowmasters enters the battlefield
+  Choose target for Orcish Bowmasters:
+
+--- Decision 60 ---
+  Priority: Player A (active)
+  Step: Draw (turn 13)
+  Self:  16 life | mana: empty | hand(0): (empty) | lib 44
+  Opp:   14 life | mana: empty | hand count: 2 | lib 56
+  Self BF:  Bayou (T) | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island | Orc Army [1/1] [+1/+1:1]
+  Pending: Orcish Bowmasters (self)
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Player B (14 life)
+   1: Player A (16 life)
+   2: Orcish Bowmasters
+   3: Orcish Bowmasters
+   4: Orc Army token
+  >> A/A: 0 (Player B (14 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 13 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 2/2.
+  --- Declare Attackers (Player A) ---
+
+--- Decision 61 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  16 life | mana: empty | hand(0): (empty) | lib 44
+  Opp:   13 life | mana: empty | hand count: 2 | lib 56
+  Self BF:  Bayou (T) | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [2/2]
+   2: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 62 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  16 life | mana: empty | hand(0): (empty) | lib 44
+  Opp:   13 life | mana: empty | hand count: 2 | lib 56
+  Self BF:  Bayou (T) | Island | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Orc Army token [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Orc Army token [2/2])
+--- Narrative ---
+  Orc Army token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orc Army token [2/2] -> Player B
+
+--- Decision 63 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  16 life | mana: empty | hand(0): (empty) | lib 44
+  Opp:   13 life | mana: empty | hand count: 2 | lib 56
+  Self BF:  Bayou (T) | Island | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island | Orc Army [2/2] [+1/+1:2] (ATK)
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orcish Bowmasters -> Player B
+    Orc Army token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Orcish Bowmasters deals 1 damage to Player B
+    Orc Army token deals 2 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 14 (Player B) --------
+  Player B draws Flow State
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 15 (Player A) --------
+  Player A draws Verdant Catacombs
+--- Turn 15 (Player A) ---
+  PA: Verdant Catacombs
+  PB: (empty)
+
+--- Decision 64 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(1): Verdant Catacombs | lib 43
+  Opp:   10 life | mana: empty | hand count: 3 | lib 55
+  Self BF:  Bayou | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Verdant Catacombs
+  >> A/A: 1 (Play Verdant Catacombs)
+--- Narrative ---
+  Player A played Verdant Catacombs
+
+--- Decision 65 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  16 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   10 life | mana: empty | hand count: 3 | lib 55
+  Self BF:  Bayou | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Verdant Catacombs | Orc Army [2/2] [+1/+1:2]
+  Self GY: Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Verdant Catacombs (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Verdant Catacombs (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Verdant Catacombs
+  Player A's Verdant Catacombs ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 66 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 43
+  Opp:   10 life | mana: empty | hand count: 3 | lib 55
+  Self BF:  Bayou | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Stack: Verdant Catacombs (ability, self)
+  Pending: Verdant Catacombs (self)
+  Self GY: Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Forest
+   2: Tropical Island
+   3: Tropical Island
+   4: Undercity Sewers
+   5: Underground Sea
+   6: Underground Sea
+  >> A/A: 1 (Forest)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Forest to the battlefield
+  --- Declare Attackers (Player A) ---
+
+--- Decision 67 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 15)
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   10 life | mana: empty | hand count: 3 | lib 55
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self GY: Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orcish Bowmasters [1/1]
+   2: Orc Army token [2/2]
+   3: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 68 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 15)
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   10 life | mana: empty | hand count: 3 | lib 55
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self GY: Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [2/2]
+   2: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 69 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 15)
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   10 life | mana: empty | hand count: 3 | lib 55
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self GY: Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orc Army token [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Orc Army token [2/2])
+--- Narrative ---
+  Orc Army token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orc Army token [2/2] -> Player B
+
+--- Decision 70 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 15)
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 42
+  Opp:   10 life | mana: empty | hand count: 3 | lib 55
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2] (ATK)
+  Self GY: Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orcish Bowmasters -> Player B
+    Orcish Bowmasters -> Player B
+    Orc Army token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Orcish Bowmasters deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B
+    Orc Army token deals 2 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 16 (Player B) --------
+  Player B draws Show and Tell
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 17 (Player A) --------
+  Player A draws Lórien Revealed
+--- Turn 17 (Player A) ---
+  PA: Lorien Revealed
+  PB: (empty)
+
+--- Decision 71 ---
+  Priority: Player A (active)
+  Step: Draw (turn 17)
+  Self:  15 life | mana: empty | hand(1): Lorien Revealed | lib 41
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self GY: Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 72 ---
+  Priority: Player A (active)
+  Step: First Main (turn 17)
+  Self:  15 life | mana: empty | hand(1): Lorien Revealed | lib 41
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self GY: Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Cast Lórien Revealed  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 1 (Cast Lórien Revealed)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A activated Tropical Island for 1(U)
+  Player A activated Bayou for 1(G)
+  Player A activated Forest for 1(G)
+  Player A activated Swamp for 1(B)
+  Player A casts Lórien Revealed
+  Resolving ability (category: Draw, amount: 3)
+  Player A draws Thoughtseize
+  Player A draws Misty Rainforest
+  Player A draws Brainstorm
+
+--- Decision 73 ---
+  Priority: Player A (active)
+  Step: First Main (turn 17)
+  Self:  15 life | mana: empty | hand(3): Brainstorm, Misty Rainforest, Thoughtseize | lib 38
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+  >> A/A: 1 (Play Misty Rainforest)
+--- Narrative ---
+  Player A played Misty Rainforest
+
+--- Decision 74 ---
+  Priority: Player A (active)
+  Step: First Main (turn 17)
+  Self:  15 life | mana: empty | hand(2): Brainstorm, Thoughtseize | lib 38
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Misty Rainforest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Misty Rainforest
+  Player A's Misty Rainforest ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 75 ---
+  Priority: Player A (active)
+  Step: First Main (turn 17)
+  Self:  14 life | mana: empty | hand(2): Brainstorm, Thoughtseize | lib 38
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Stack: Misty Rainforest (ability, self)
+  Pending: Misty Rainforest (self)
+  Self GY: Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Tropical Island
+   2: Tropical Island
+   3: Undercity Sewers
+   4: Underground Sea
+   5: Underground Sea
+  >> A/A: 1 (Tropical Island)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Tropical Island to the battlefield
+
+--- Decision 76 ---
+  Priority: Player A (active)
+  Step: First Main (turn 17)
+  Self:  14 life | mana: empty | hand(2): Brainstorm, Thoughtseize | lib 37
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+  >> A/A: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player A activated Tropical Island for 1(U)
+  Player A casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player A draws Ponder
+  Player A draws Wasteland
+  Player A draws Polluted Delta
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
+
+--- Decision 77 ---
+  Priority: Player A (active)
+  Step: First Main (turn 17)
+  Self:  14 life | mana: empty | hand(4): Polluted Delta, Ponder, Thoughtseize, Wasteland | lib 34
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Polluted Delta
+   1: Ponder
+   2: Thoughtseize
+   3: Wasteland
+  >> A/A: 0 (Polluted Delta)
+--- Narrative ---
+  Player A puts Polluted Delta to top of library
+  Player A chooses a card from Player A hand:
+
+--- Decision 78 ---
+  Priority: Player A (active)
+  Step: First Main (turn 17)
+  Self:  14 life | mana: empty | hand(3): Ponder, Thoughtseize, Wasteland | lib 35
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, ?, ?, ?, ?
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Ponder
+   1: Thoughtseize
+   2: Wasteland
+  >> A/A: 0 (Ponder)
+--- Narrative ---
+  Player A puts Ponder to top of library
+  --- Declare Attackers (Player A) ---
+
+--- Decision 79 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 17)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 36
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Ponder, Polluted Delta, ?, ?, ?
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orcish Bowmasters [1/1]
+   2: Orc Army token [2/2]
+   3: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 80 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 17)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 36
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Ponder, Polluted Delta, ?, ?, ?
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [2/2]
+   2: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 81 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 17)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 36
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Ponder, Polluted Delta, ?, ?, ?
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orc Army token [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Orc Army token [2/2])
+--- Narrative ---
+  Orc Army token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orc Army token [2/2] -> Player B
+
+--- Decision 82 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 17)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 36
+  Opp:   6 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (ATK)
+  Self GY: Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Ponder, Polluted Delta, ?, ?, ?
+  Opp revealed: Force of Will, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orcish Bowmasters -> Player B
+    Orcish Bowmasters -> Player B
+    Orc Army token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Orcish Bowmasters deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B
+    Orc Army token deals 2 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 18 (Player B) --------
+  Player B draws Underground Sea
+--- Turn 18 (Player B) ---
+  PA: Thoughtseize, Wasteland
+  PB: Flow State, Otherworldly Gaze, Otherworldly Gaze, Underground Sea, Show and Tell
+
+--- Decision 83 ---
+  Priority: Player B (active)
+  Step: First Main (turn 18)
+  Self:  2 life | mana: empty | hand(5): Flow State, Otherworldly Gaze, Otherworldly Gaze, Underground Sea, Show and Tell | lib 53
+  Opp:   14 life | mana: empty | hand count: 2 | lib 36
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (T)
+  Self GY: Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Echoing Truth, Consign to Memory
+  Opp exile:  Flow State, Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Swamp, Verdant Catacombs, Fatal Push, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+  >> B/B: 1 (Play Underground Sea)
+--- Narrative ---
+  Player B played Underground Sea
+
+--- Decision 84 ---
+  Priority: Player B (active)
+  Step: First Main (turn 18)
+  Self:  2 life | mana: empty | hand(4): Flow State, Otherworldly Gaze, Otherworldly Gaze, Show and Tell | lib 53
+  Opp:   14 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Underground Sea
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (T)
+  Self GY: Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Echoing Truth, Consign to Memory
+  Opp exile:  Flow State, Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Swamp, Verdant Catacombs, Fatal Push, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Otherworldly Gaze  [#0]
+   2: Cast Otherworldly Gaze  [#0]
+  >> B/B: 1 (Cast Otherworldly Gaze)
+--- Narrative ---
+  Player B activated Underground Sea for 1(U)
+  Player B casts Otherworldly Gaze
+  Resolving ability (category: Surveil, amount: 3)
+  Player B surveils 3.
+  Surveil: looking at Marsh Flats
+  Surveil: looking at Island
+  Surveil: looking at Scalding Tarn
+
+--- Decision 85 ---
+  Priority: Player B (active)
+  Step: First Main (turn 18)
+  Self:  2 life | mana: empty | hand(3): Flow State, Otherworldly Gaze, Show and Tell | lib 53
+  Opp:   14 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (T)
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Echoing Truth, Consign to Memory
+  Opp exile:  Flow State, Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Swamp, Verdant Catacombs, Fatal Push, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Put Marsh Flats on top of library  [#0]
+   1: Put Island on top of library  [#0]
+   2: Put Scalding Tarn on top of library  [#0]
+   3: Put Marsh Flats into graveyard
+   4: Put Island into graveyard
+   5: Put Scalding Tarn into graveyard
+  >> B/B: 3 (Put Marsh Flats into graveyard)
+--- Narrative ---
+  Player B puts Marsh Flats into their graveyard.
+
+--- Decision 86 ---
+  Priority: Player B (active)
+  Step: First Main (turn 18)
+  Self:  2 life | mana: empty | hand(3): Flow State, Otherworldly Gaze, Show and Tell | lib 52
+  Opp:   14 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (T)
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Echoing Truth, Consign to Memory
+  Opp exile:  Flow State, Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Swamp, Verdant Catacombs, Fatal Push, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Put Island on top of library  [#0]
+   1: Put Scalding Tarn on top of library  [#0]
+   2: Put Island into graveyard
+   3: Put Scalding Tarn into graveyard
+  >> B/B: 2 (Put Island into graveyard)
+--- Narrative ---
+  Player B puts Island into their graveyard.
+
+--- Decision 87 ---
+  Priority: Player B (active)
+  Step: First Main (turn 18)
+  Self:  2 life | mana: empty | hand(3): Flow State, Otherworldly Gaze, Show and Tell | lib 51
+  Opp:   14 life | mana: empty | hand count: 2 | lib 36
+  Self BF:  Underground Sea (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (T)
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Self exile: Echoing Truth, Consign to Memory
+  Opp exile:  Flow State, Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Swamp, Verdant Catacombs, Fatal Push, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Put Scalding Tarn on top of library  [#0]
+   1: Put Scalding Tarn into graveyard
+  >> B/B: 1 (Put Scalding Tarn into graveyard)
+--- Narrative ---
+  Player B puts Scalding Tarn into their graveyard.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 19 (Player A) --------
+  Player A draws Ponder
+--- Turn 19 (Player A) ---
+  PA: Ponder, Thoughtseize, Wasteland
+  PB: Flow State, Otherworldly Gaze, Show and Tell
+
+--- Decision 88 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(3): Ponder, Thoughtseize, Wasteland | lib 35
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Self GY: Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, ?, ?, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Ponder  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> A/A: 2 (Cast Ponder)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 89 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 35
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, ?, ?, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Polluted Delta  [#2]
+   1: Misty Rainforest  [#2]
+   2: Brainstorm  [#2]
+  >> A/A: 0 (Polluted Delta)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 90 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 35
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, ?, ?, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Misty Rainforest  [#1]
+   1: Brainstorm  [#1]
+  >> A/A: 0 (Misty Rainforest)
+
+--- Decision 91 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 35
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Brainstorm, Misty Rainforest, Polluted Delta, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Brainstorm
+
+--- Decision 92 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(3): Brainstorm, Thoughtseize, Wasteland | lib 34
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Self GY: Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Misty Rainforest, Polluted Delta, ?, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Brainstorm  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> A/A: 2 (Cast Brainstorm)
+--- Narrative ---
+  Player A activated Tropical Island for 1(U)
+  Player A casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player A draws Misty Rainforest
+  Player A draws Polluted Delta
+  Player A draws Tamiyo, Inquisitive Student
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
+
+--- Decision 93 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(5): Misty Rainforest, Polluted Delta, Tamiyo, Inquisitive Student, Thoughtseize, Wasteland | lib 31
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island (T) | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Misty Rainforest
+   1: Polluted Delta
+   2: Tamiyo, Inquisitive Student
+   3: Thoughtseize
+   4: Wasteland
+  >> A/A: 0 (Misty Rainforest)
+--- Narrative ---
+  Player A puts Misty Rainforest to top of library
+  Player A chooses a card from Player A hand:
+
+--- Decision 94 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(4): Polluted Delta, Tamiyo, Inquisitive Student, Thoughtseize, Wasteland | lib 32
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island (T) | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Misty Rainforest, ?, ?, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Polluted Delta
+   1: Tamiyo, Inquisitive Student
+   2: Thoughtseize
+   3: Wasteland
+  >> A/A: 0 (Polluted Delta)
+--- Narrative ---
+  Player A puts Polluted Delta to top of library
+
+--- Decision 95 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Thoughtseize, Wasteland | lib 33
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island (T) | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Self GY: Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> A/A: 2 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player A activated Tropical Island for 1(U)
+  Player A casts Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student enters the battlefield
+
+--- Decision 96 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 33
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Self GY: Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Thoughtseize  [#0]
+  >> A/A: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 97 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(2): Thoughtseize, Wasteland | lib 33
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Pending: Thoughtseize (self)
+  Self GY: Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, The Creation of Avacyn
+  Actions:
+   0: Player B (2 life)
+   1: Player A (14 life)
+  >> A/A: 0 (Player B (2 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Swamp for 1(B)
+  Player A casts Thoughtseize targeting Player B
+  Resolving ability (category: Discard)
+  Player B reveals their hand:
+    Flow State
+    Otherworldly Gaze
+    Show and Tell
+  Player A chooses a card to discard:
+
+--- Decision 98 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  14 life | mana: empty | hand(1): Wasteland | lib 33
+  Opp:   2 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Known opp hand: Flow State, Otherworldly Gaze, Show and Tell
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, Show and Tell, The Creation of Avacyn
+  Actions:
+   0: Flow State
+   1: Otherworldly Gaze
+   2: Show and Tell
+  >> A/A: 2 (Show and Tell)
+--- Narrative ---
+  Player B discards Show and Tell
+  Resolving ability (category: LoseLife, amount: 2)
+  Player A loses 2 life (now at 12)
+
+--- Decision 99 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  12 life | mana: empty | hand(1): Wasteland | lib 33
+  Opp:   2 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Self GY: Thoughtseize, Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Show and Tell, Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Known opp hand: Flow State, Otherworldly Gaze
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, Show and Tell, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 100 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 33
+  Opp:   2 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Wasteland | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Self GY: Thoughtseize, Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Show and Tell, Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Known opp hand: Flow State, Otherworldly Gaze
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, Show and Tell, The Creation of Avacyn
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 101 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 33
+  Opp:   2 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Wasteland | Orc Army [2/2] [+1/+1:2]
+  Opp BF:   Underground Sea (T)
+  Pending: Wasteland (self)
+  Self GY: Thoughtseize, Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Show and Tell, Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Known opp hand: Flow State, Otherworldly Gaze
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, Show and Tell, The Creation of Avacyn
+  Extras: self_lands_played=1
+  Actions:
+   0: Underground Sea
+   1: Bayou
+   2: Tropical Island
+   3: Tropical Island
+   4: Wasteland
+  >> A/A: 0 (Underground Sea)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Underground Sea is on the stack
+  Resolving ability (category: Destroy)
+  Underground Sea is destroyed
+  --- Declare Attackers (Player A) ---
+
+--- Decision 102 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 33
+  Opp:   2 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Wasteland, Thoughtseize, Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Show and Tell, Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Known opp hand: Flow State, Otherworldly Gaze
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, Show and Tell, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orcish Bowmasters [1/1]
+   2: Orc Army token [2/2]
+   3: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 103 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 33
+  Opp:   2 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Wasteland, Thoughtseize, Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Show and Tell, Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Known opp hand: Flow State, Otherworldly Gaze
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, Show and Tell, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [2/2]
+   2: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 104 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 33
+  Opp:   2 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
+  Self GY: Wasteland, Thoughtseize, Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Show and Tell, Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Known opp hand: Flow State, Otherworldly Gaze
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, Show and Tell, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orc Army token [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Orc Army token [2/2])
+--- Narrative ---
+  Orc Army token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orc Army token [2/2] -> Player B
+
+--- Decision 105 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 33
+  Opp:   2 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (ATK)
+  Self GY: Wasteland, Thoughtseize, Brainstorm, Ponder, Brainstorm, Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
+  Opp GY:  Underground Sea, Show and Tell, Otherworldly Gaze, Scalding Tarn, Island, Marsh Flats, Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
+  Self exile: Flow State, Baleful Strix
+  Opp exile:  Echoing Truth, Consign to Memory
+  Known top: Polluted Delta, Misty Rainforest, ?, ?, ?
+  Known opp hand: Flow State, Otherworldly Gaze
+  Opp revealed: Scalding Tarn, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Flusterstorm, Otherworldly Gaze, Archon of Cruelty, Echoing Truth, Show and Tell, The Creation of Avacyn
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orcish Bowmasters -> Player B
+    Orcish Bowmasters -> Player B
+    Orc Army token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Orcish Bowmasters deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B
+    Orc Army token deals 2 damage to Player B
+  --- End Combat Damage ---
+  Player B has -2 life - Player A wins!
+
+=== A/A wins ===

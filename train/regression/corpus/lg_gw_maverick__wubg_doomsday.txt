@@ -1,0 +1,2450 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Forest
+  Player A draws Wasteland
+  Player A draws Wasteland
+  Player A draws Once Upon a Time
+  Player A draws Thalia, Guardian of Thraben
+  Player A draws Once Upon a Time
+  Player A draws Savannah
+  Player B draws Lotus Petal
+  Player B draws Quantum Riddler
+  Player B draws Tropical Island
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Doomsday
+  Player B draws Dark Ritual
+  Player B draws Force of Will
+  Player A hand:
+  Forest
+  Once Upon a Time
+  Once Upon a Time
+  Savannah
+  Thalia, Guardian of Thraben
+  Wasteland
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Dark Ritual
+  Doomsday
+  Force of Will
+  Lotus Petal
+  Quantum Riddler
+  Tamiyo, Inquisitive Student
+  Tropical Island
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 1 (Mulligan)
+--- Narrative ---
+  Player B mulligans.
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Dark Ritual
+  Player B draws Cavern of Souls
+  Player B draws Dark Ritual
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Ponder
+  Player B draws Doomsday
+  Player B hand:
+  Cavern of Souls
+  Dark Ritual
+  Dark Ritual
+  Doomsday
+  Ponder
+  Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student
+
+--- Decision 3 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 6-card hand.
+  Player B: Choose card to put on library bottom (1 remaining):
+
+--- Decision 4 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Cavern of Souls
+   1: Dark Ritual
+   2: Dark Ritual
+   3: Doomsday
+   4: Ponder
+   5: Tamiyo, Inquisitive Student
+   6: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Cavern of Souls)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Actions:
+   0: Pass priority
+   1: Cast Once Upon a Time (alternate cost)  [#1]
+   2: Cast Once Upon a Time (alternate cost)  [#1]
+  >> A/A: 1 (Cast Once Upon a Time (alternate cost))
+--- Narrative ---
+  Player A casts for free (alternate cost)
+  Player A casts Once Upon a Time
+  Resolving ability (category: Dig)
+  Player A looks at the top 5 card(s) of their library.
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(6): Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Stack: Once Upon a Time (spell, self)
+  Pending: Once Upon a Time (self)
+  Actions:
+   0: Take nothing
+   1: Badgermole Cub
+   2: Endurance
+   3: Collector Ouphe
+   4: Badgermole Cub
+  >> A/A: 1 (Badgermole Cub)
+--- Narrative ---
+  Player A puts Badgermole Cub into hand.
+  Player A puts 4 card(s) on the bottom of their library.
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self GY: Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Play Forest
+   2: Play Savannah
+   3: Play Wasteland
+   4: Play Wasteland
+  >> A/A: 1 (Play Forest)
+--- Narrative ---
+  Player A played Forest
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Island
+--- Turn 2 (Player B) ---
+  PA: Badgermole Cub, Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Island, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 8 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Opp BF:   Forest
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Play Island
+  >> B/B: 1 (Play Island)
+--- Narrative ---
+  Player B played Island
+
+--- Decision 9 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Island
+  Opp BF:   Forest
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+   3: Cast Tamiyo, Inquisitive Student  [#0]
+  >> B/B: 1 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 10 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Forest
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Extras: self_lands_played=1
+  Actions:
+   0: Scrubland  [#2]
+   1: Tamiyo, Inquisitive Student  [#2]
+   2: Brainstorm  [#2]
+  >> B/B: 0 (Scrubland)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 11 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Forest
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Extras: self_lands_played=1
+  Actions:
+   0: Tamiyo, Inquisitive Student  [#1]
+   1: Brainstorm  [#1]
+  >> B/B: 0 (Tamiyo, Inquisitive Student)
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Forest
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Opp GY:  Once Upon a Time
+  Known top: Brainstorm, Tamiyo, Inquisitive Student, Scrubland, ?, ?
+  Opp revealed: Forest, Once Upon a Time
+  Extras: self_lands_played=1
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Brainstorm
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Swords to Plowshares
+--- Turn 3 (Player A) ---
+  PA: Badgermole Cub, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 13 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Forest
+  Opp BF:   Island (T)
+  Self GY: Once Upon a Time
+  Opp GY:  Ponder
+  Opp revealed: Ponder, Island
+  Actions:
+   0: Pass priority
+   1: Play Savannah
+   2: Play Wasteland
+   3: Play Wasteland
+  >> A/A: 1 (Play Savannah)
+--- Narrative ---
+  Player A played Savannah
+
+--- Decision 14 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(6): Badgermole Cub, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Forest | Savannah
+  Opp BF:   Island (T)
+  Self GY: Once Upon a Time
+  Opp GY:  Ponder
+  Opp revealed: Ponder, Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Badgermole Cub  [#0]
+   2: Cast Once Upon a Time  [#0]
+   3: Cast Thalia, Guardian of Thraben  [#0]
+  >> A/A: 1 (Cast Badgermole Cub)
+--- Narrative ---
+  Player A activated Forest for 1(G)
+  Player A activated Savannah for 1(G)
+  Player A casts Badgermole Cub
+  Badgermole Cub enters the battlefield
+  Choose target for Badgermole Cub:
+
+--- Decision 15 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Badgermole Cub [2/2] (SICK) | Forest (T) | Savannah (T)
+  Opp BF:   Island (T)
+  Pending: Badgermole Cub (self)
+  Self GY: Once Upon a Time
+  Opp GY:  Ponder
+  Opp revealed: Ponder, Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Forest
+   1: Savannah
+  >> A/A: 0 (Forest)
+--- Narrative ---
+  Targeting choice 0
+  Badgermole Cub triggered
+  Resolving ability (category: Earthbend)
+  Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Brainstorm, Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 16 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 4)
+  Self:  20 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Tamiyo, Inquisitive Student, Scrubland, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Scrubland
+  Player B draws Ponder
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 17 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 4)
+  Self:  20 life | mana: empty | hand(8): Dark Ritual, Dark Ritual, Doomsday, Ponder, Scrubland, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Ponder
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Dark Ritual
+   1: Dark Ritual
+   2: Doomsday
+   3: Ponder
+   4: Scrubland
+   5: Tamiyo, Inquisitive Student
+   6: Tamiyo, Inquisitive Student
+   7: Tamiyo, Inquisitive Student
+  >> B/B: 3 (Ponder)
+--- Narrative ---
+  Player B puts Ponder to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 18 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 4)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Scrubland, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Dark Ritual
+   1: Dark Ritual
+   2: Doomsday
+   3: Scrubland
+   4: Tamiyo, Inquisitive Student
+   5: Tamiyo, Inquisitive Student
+   6: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Dark Ritual)
+--- Narrative ---
+  Player B puts Dark Ritual to top of library
+  Player B draws Dark Ritual
+
+--- Decision 19 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Scrubland, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> B/B: 1 (Play Scrubland)
+--- Narrative ---
+  Player B played Scrubland
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: Begin Combat (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 22 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 23 ---
+  Priority: Player B (active)
+  Step: Declare Blk (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: Combat Dmg (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: End Combat (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: End Step (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 28 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T) | Scrubland
+  Self GY: Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Cast Once Upon a Time  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Cast Once Upon a Time)
+--- Narrative ---
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Forest for 1(G)
+  Player A casts Once Upon a Time
+
+--- Decision 29 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Scrubland
+  Stack: Once Upon a Time (spell, self)
+  Self GY: Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 30 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Stack: Once Upon a Time (spell, opponent)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Dig)
+  Player A looks at the top 5 card(s) of their library.
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Scrubland
+  Stack: Once Upon a Time (spell, self)
+  Pending: Once Upon a Time (self)
+  Self GY: Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Take nothing
+   1: Thalia, Guardian of Thraben
+   2: Verdant Catacombs
+   3: Talon Gates of Madara
+   4: Thalia, Guardian of Thraben
+   5: Noble Hierarch
+  >> A/A: 1 (Thalia, Guardian of Thraben)
+--- Narrative ---
+  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A puts 4 card(s) on the bottom of their library.
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(5): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 50
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Scrubland
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 33 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 50
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time, Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Green Sun's Zenith
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: Draw (turn 5)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Scrubland
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 35 ---
+  Priority: Player B (non-active)
+  Step: Draw (turn 5)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 6 | lib 49
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Once Upon a Time, Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 36 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Scrubland
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+   3: Cast Green Sun's Zenith  [#0]
+   4: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 37 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah | Wasteland
+  Opp BF:   Island (T) | Scrubland
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Green Sun's Zenith  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Thalia, Guardian of Thraben  [#0]
+   4: Cast Thalia, Guardian of Thraben  [#0]
+   5: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Cast Green Sun's Zenith)
+--- Narrative ---
+  Choose X value (0-1):
+
+--- Decision 38 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah | Wasteland
+  Opp BF:   Island (T) | Scrubland
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1
+  Actions:
+   0: X = 0  [#0]
+   1: X = 1  [#1]
+  >> A/A: 0 (X = 0)
+--- Narrative ---
+  Player A chooses X = 0
+  Player A activated Savannah for 1(G)
+  Player A casts Green Sun's Zenith
+
+--- Decision 39 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Wasteland
+  Opp BF:   Island (T) | Scrubland
+  Stack: Green Sun's Zenith (spell, self)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 40 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Wasteland
+  Opp BF:   Island (T) | Scrubland
+  Stack: Green Sun's Zenith (spell, self)
+  Pending: Wasteland (self)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1
+  Actions:
+   0: Scrubland
+   1: Savannah
+   2: Wasteland
+  >> A/A: 0 (Scrubland)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Scrubland is on the stack
+
+--- Decision 41 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Scrubland
+  Opp BF:   Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Wasteland (ability, opponent) -> Scrubland (self, slot 1) -> Green Sun's Zenith (spell, opponent)
+  Self GY: Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Tap Scrubland for (W)
+   4: Tap Scrubland for (B)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Destroy)
+  Scrubland is destroyed
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Island (T)
+  Stack: Green Sun's Zenith (spell, self)
+  Pending: Green Sun's Zenith (self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Scrubland, Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Fail to find
+   1: Dryad Arbor
+  >> A/A: 1 (Dryad Arbor)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Dryad Arbor to the battlefield
+  Green Sun's Zenith is shuffled into its owner's library
+  --- Declare Attackers (Player A) ---
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Island (T)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Scrubland, Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [2/2])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Island (T)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Scrubland, Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Badgermole Cub deals 2 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Ponder
+--- Turn 6 (Player B) ---
+  PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 45 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+   3: Cast Tamiyo, Inquisitive Student  [#0]
+   4: Cast Tamiyo, Inquisitive Student  [#0]
+  >> B/B: 1 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 46 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Flooded Strand  [#2]
+   1: Flooded Strand  [#2]
+   2: Daze  [#2]
+  >> B/B: 0 (Flooded Strand)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 47 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Flooded Strand  [#1]
+   1: Daze  [#1]
+  >> B/B: 0 (Flooded Strand)
+
+--- Decision 48 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  18 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Known top: Daze, Flooded Strand, Flooded Strand, ?, ?
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Daze
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Scythecat Cub
+
+--- Decision 50 ---
+  Priority: Player A (active)
+  Step: Draw (turn 7)
+  Self:  20 life | mana: empty | hand(5): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(5): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Scythecat Cub  [#0]
+   3: Cast Swords to Plowshares  [#0]
+   4: Cast Thalia, Guardian of Thraben  [#0]
+   5: Cast Thalia, Guardian of Thraben  [#0]
+  >> A/A: 2 (Cast Scythecat Cub)
+--- Narrative ---
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Dryad Arbor for 1(G)
+  Player A casts Scythecat Cub
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T)
+  Stack: Scythecat Cub (spell, self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 53 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  18 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Stack: Scythecat Cub (spell, opponent)
+  Self GY: Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+  >> B/B: 1 (Cast Daze (alternate cost))
+--- Narrative ---
+  Choose target for Daze:
+
+--- Decision 54 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  18 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Stack: Scythecat Cub (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Badgermole Cub
+  Actions:
+   0: Scythecat Cub
+  >> B/B: 0 (Scythecat Cub)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 55 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  18 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
+  Self BF:  Island (T)
+  Opp BF:   Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Stack: Scythecat Cub (spell, opponent)
+  Self GY: Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Badgermole Cub
+  Actions:
+   0: Return Island
+  >> B/B: 0 (Return Island)
+--- Narrative ---
+  Player B returns Island to hand
+  Player B casts Daze targeting Scythecat Cub
+
+--- Decision 56 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Stack: Daze (spell, opponent) -> Scythecat Cub (self, slot 97) -> Scythecat Cub (spell, self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Counter)
+  Scythecat Cub's controller may pay {1} to save it:
+
+--- Decision 57 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Stack: Daze (spell, opponent) -> Scythecat Cub (self, slot 97) -> Scythecat Cub (spell, self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: opp_revolt
+  Actions:
+   0: Tap Forest for (G)
+   1: Tap Savannah for (G)
+   2: Tap Savannah for (W)
+   3: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Forest for (G))
+--- Narrative ---
+  Badgermole Cub adds an additional 1(G).
+  Player A tapped Forest for {G}
+
+--- Decision 58 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: 2G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Stack: Daze (spell, opponent) -> Scythecat Cub (self, slot 97) -> Scythecat Cub (spell, self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: opp_revolt
+  Actions:
+   0: Tap Savannah for (G)
+   1: Tap Savannah for (W)
+   2: Pay {1} (spell is not countered)  [#1]
+   3: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Savannah for (G))
+--- Narrative ---
+  Player A tapped Savannah for {G}
+
+--- Decision 59 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: 3G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Daze (spell, opponent) -> Scythecat Cub (self, slot 97) -> Scythecat Cub (spell, self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: opp_revolt
+  Actions:
+   0: Pay {1} (spell is not countered)  [#1]
+   1: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Pay {1} (spell is not countered))
+--- Narrative ---
+  Player A pays {1} — spell is not countered
+  Scythecat Cub enters the battlefield
+
+--- Decision 60 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: 2G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: opp_revolt
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+  Choose target for Scythecat Cub:
+
+--- Decision 61 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: 2G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Pending: Scythecat Cub (self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Badgermole Cub
+   1: Dryad Arbor
+   2: Forest
+   3: Scythecat Cub
+  >> A/A: 0 (Badgermole Cub)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+
+--- Decision 62 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: 2G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Stack: Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 +1/+1 counter(s) on creature (now 3/3).
+  Resolving ability (category: MultiplyCounter)
+
+--- Decision 63 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: 2G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 64 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player A) ---
+
+--- Decision 65 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [3/3]
+   1: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [3/3])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [3/3] -> Player B
+
+--- Decision 66 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+
+--- Decision 67 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 68 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   18 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Badgermole Cub deals 3 damage to Player B
+  --- End Combat Damage ---
+
+--- Decision 69 ---
+  Priority: Player A (active)
+  Step: Combat Dmg (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   15 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 70 ---
+  Priority: Player A (active)
+  Step: End Combat (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   15 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 71 ---
+  Priority: Player A (active)
+  Step: Second Main (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   15 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 72 ---
+  Priority: Player A (active)
+  Step: End Step (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   15 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
+  PB: Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 73 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 8)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   15 life | mana: empty | hand count: 7 | lib 48
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Flooded Strand
+
+--- Decision 74 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 8)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   15 life | mana: empty | hand count: 8 | lib 47
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 75 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  15 life | mana: empty | hand(8): Dark Ritual, Dark Ritual, Doomsday, Flooded Strand, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
+  Opp:   20 life | mana: empty | hand count: 3 | lib 48
+  Opp BF:   Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Known top: Flooded Strand, ?, ?, ?, ?
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Island
+  >> B/B: 1 (Play Flooded Strand)
+--- Narrative ---
+  Player B played Flooded Strand
+
+--- Decision 76 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  15 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
+  Opp:   20 life | mana: empty | hand count: 3 | lib 48
+  Self BF:  Flooded Strand
+  Opp BF:   Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Known top: Flooded Strand, ?, ?, ?, ?
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Flooded Strand (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Flooded Strand
+  Player B's Flooded Strand ability is on the stack
+
+--- Decision 77 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   14 life | mana: empty | hand count: 7 | lib 47
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Stack: Flooded Strand (ability, opponent)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 78 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
+  Opp:   20 life | mana: empty | hand count: 3 | lib 48
+  Opp BF:   Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Stack: Flooded Strand (ability, self)
+  Pending: Flooded Strand (self)
+  Self GY: Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Known top: Flooded Strand, ?, ?, ?, ?
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Tropical Island
+   2: Tropical Island
+   3: Tundra
+   4: Undercity Sewers
+   5: Underground Sea
+   6: Underground Sea
+  >> B/B: 1 (Tropical Island)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Tropical Island to the battlefield
+
+--- Decision 79 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Opp:   20 life | mana: empty | hand count: 3 | lib 48
+  Self BF:  Tropical Island
+  Opp BF:   Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Self GY: Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Tamiyo, Inquisitive Student  [#0]
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+   3: Cast Tamiyo, Inquisitive Student  [#0]
+  >> B/B: 1 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Tropical Island for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+
+--- Decision 80 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Opp BF:   Tropical Island (T)
+  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 81 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
+  Opp BF:   Tropical Island (T)
+  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Pending: Wasteland (self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Tropical Island
+   1: Dryad Arbor
+   2: Savannah
+   3: Wasteland
+  >> A/A: 0 (Tropical Island)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Tropical Island is on the stack
+  Resolving ability (category: Destroy)
+  Tropical Island is destroyed
+  Tamiyo, Inquisitive Student enters the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
+  PB: Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 82 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 9)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah | Scythecat Cub [2/2] [Trample]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Windswept Heath
+
+--- Decision 83 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 47
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah | Scythecat Cub [2/2] [Trample]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 84 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 47
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah | Scythecat Cub [2/2] [Trample]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Windswept Heath
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Thalia, Guardian of Thraben  [#0]
+   4: Cast Thalia, Guardian of Thraben  [#0]
+  >> A/A: 3 (Cast Thalia, Guardian of Thraben)
+--- Narrative ---
+  Player A activated Savannah for 1(W)
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Dryad Arbor for 1(G)
+  Player A casts Thalia, Guardian of Thraben
+  Thalia, Guardian of Thraben enters the battlefield
+
+--- Decision 85 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: 1G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath | lib 47
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Windswept Heath
+  >> A/A: 1 (Play Windswept Heath)
+--- Narrative ---
+  Player A played Windswept Heath
+  Choose target for Scythecat Cub:
+
+--- Decision 86 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Windswept Heath
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Pending: Scythecat Cub (self)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Badgermole Cub
+   1: Dryad Arbor
+   2: Forest
+   3: Scythecat Cub
+   4: Thalia, Guardian of Thraben
+  >> A/A: 0 (Badgermole Cub)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+
+--- Decision 87 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Windswept Heath
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Windswept Heath (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Windswept Heath (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Windswept Heath
+  Player A's Windswept Heath ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 88 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Windswept Heath (ability, self) -> Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
+  Pending: Windswept Heath (self)
+  Self GY: Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Plains
+   2: Savannah
+   3: Savannah
+  >> A/A: 1 (Plains)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Plains to the battlefield
+  Choose target for Scythecat Cub:
+
+--- Decision 89 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
+  Pending: Scythecat Cub (self)
+  Self GY: Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Badgermole Cub
+   1: Dryad Arbor
+   2: Forest
+   3: Scythecat Cub
+   4: Thalia, Guardian of Thraben
+  >> A/A: 0 (Badgermole Cub)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+
+--- Decision 90 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0) -> Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
+  Self GY: Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 +1/+1 counter(s) on creature (now 4/4).
+  Resolving ability (category: MultiplyCounter)
+
+--- Decision 91 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [4/4] [+1/+1:2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
+  Self GY: Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Resolving ability (category: MultiplyCounter)
+  MultiplyCounter: doubled +1/+1 counters on creature (now 6/6).
+
+--- Decision 92 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Thalia, Guardian of Thraben  [#0]
+  >> A/A: 2 (Cast Thalia, Guardian of Thraben)
+--- Narrative ---
+  Player A activated Plains for 1(W)
+  Player A casts Thalia, Guardian of Thraben
+  Thalia, Guardian of Thraben enters the battlefield
+  Legend rule: Player A controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
+
+--- Decision 93 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Keep Thalia, Guardian of Thraben
+   1: Keep Thalia, Guardian of Thraben
+  >> A/A: 0 (Keep Thalia, Guardian of Thraben)
+--- Narrative ---
+  Thalia, Guardian of Thraben is put into the graveyard (legend rule)
+  --- Declare Attackers (Player A) ---
+
+--- Decision 94 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [6/6]
+   1: Forest [1/1]
+   2: Scythecat Cub [2/2]
+   3: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [6/6])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [6/6] -> Player B
+
+--- Decision 95 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Forest [1/1]
+   1: Scythecat Cub [2/2]
+   2: Confirm attackers
+  >> A/A: 0 (Forest [1/1])
+--- Narrative ---
+  Forest attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [6/6] -> Player B
+    [attacking] Forest [1/1] -> Player B
+
+--- Decision 96 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Scythecat Cub [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Scythecat Cub [2/2])
+--- Narrative ---
+  Scythecat Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [6/6] -> Player B
+    [attacking] Forest [1/1] -> Player B
+    [attacking] Scythecat Cub [2/2] -> Player B
+
+--- Decision 97 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   14 life | mana: empty | hand count: 6 | lib 46
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (ATK) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Known opp hand: Island
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+    Forest -> Player B
+    Scythecat Cub -> Player B
+  --- Declare Blockers (Player B) ---
+  Attackers:
+    0: Badgermole Cub [6/6]
+    1: Forest [1/1]
+    2: Scythecat Cub [2/2]
+  Your creatures:
+
+--- Decision 98 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk (turn 9)
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Opp:   19 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Opp BF:   Badgermole Cub [6/6] [+1/+1:4] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T,ATK) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
+  Extras: opp_lands_played=1, opp_revolt, mandatory_choice=Declare Blk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm blockers
+  >> B/B: 1 (Confirm blockers)
+--- Narrative ---
+  Blockers declared:
+    (none)
+  --- Combat Damage ---
+    Badgermole Cub deals 6 damage to Player B
+    Forest deals 1 damage to Player B
+    Scythecat Cub deals 2 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 10 (Player B) --------
+  Player B draws Doomsday
+--- Turn 10 (Player B) ---
+  PA: Swords to Plowshares
+  PB: Dark Ritual, Dark Ritual, Doomsday, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 99 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 45
+  Opp:   19 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying]
+  Opp BF:   Badgermole Cub [6/6] [+1/+1:4] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Play Island
+  >> B/B: 1 (Play Island)
+--- Narrative ---
+  Player B played Island
+
+--- Decision 100 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  5 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 45
+  Opp:   19 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Opp BF:   Badgermole Cub [6/6] [+1/+1:4] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Tamiyo, Inquisitive Student  [#0]
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+  >> B/B: 1 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student enters the battlefield
+  Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
+
+--- Decision 101 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  5 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Doomsday, Tamiyo, Inquisitive Student | lib 45
+  Opp:   19 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Opp BF:   Badgermole Cub [6/6] [+1/+1:4] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Keep Tamiyo, Inquisitive Student
+   1: Keep Tamiyo, Inquisitive Student
+  >> B/B: 0 (Keep Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 102 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  5 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Doomsday, Tamiyo, Inquisitive Student | lib 45
+  Opp:   19 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Opp BF:   Badgermole Cub [6/6] [+1/+1:4] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 103 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  5 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Doomsday, Tamiyo, Inquisitive Student | lib 45
+  Opp:   19 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
+  Opp BF:   Badgermole Cub [6/6] [+1/+1:4] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Plains (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+--- Turn 11 (Player A) ---
+  PA: Swords to Plowshares
+  PB: Dark Ritual, Dark Ritual, Doomsday, Doomsday, Tamiyo, Inquisitive Student
+
+--- Decision 104 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Birds of Paradise
+
+--- Decision 105 ---
+  Priority: Player A (active)
+  Step: Draw (turn 11)
+  Self:  19 life | mana: empty | hand(2): Birds of Paradise, Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 106 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  19 life | mana: empty | hand(2): Birds of Paradise, Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Birds of Paradise  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Cast Birds of Paradise)
+--- Narrative ---
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Dryad Arbor for 1(G)
+  Player A casts Birds of Paradise
+
+--- Decision 107 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  19 life | mana: 1G | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Stack: Birds of Paradise (spell, self)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Birds of Paradise enters the battlefield
+
+--- Decision 108 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  19 life | mana: 1G | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 109 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player A) ---
+
+--- Decision 110 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [6/6]
+   1: Forest [1/1]
+   2: Scythecat Cub [2/2]
+   3: Thalia, Guardian of Thraben [2/1]
+   4: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [6/6])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [6/6] -> Player B
+
+--- Decision 111 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (ATK) | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Forest [1/1]
+   1: Scythecat Cub [2/2]
+   2: Thalia, Guardian of Thraben [2/1]
+   3: Confirm attackers
+  >> A/A: 0 (Forest [1/1])
+--- Narrative ---
+  Forest attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [6/6] -> Player B
+    [attacking] Forest [1/1] -> Player B
+
+--- Decision 112 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (ATK) | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Plains | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Scythecat Cub [2/2]
+   1: Thalia, Guardian of Thraben [2/1]
+   2: Confirm attackers
+  >> A/A: 0 (Scythecat Cub [2/2])
+--- Narrative ---
+  Scythecat Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [6/6] -> Player B
+    [attacking] Forest [1/1] -> Player B
+    [attacking] Scythecat Cub [2/2] -> Player B
+
+--- Decision 113 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (ATK) | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Plains | Savannah | Scythecat Cub [2/2] [Trample] (ATK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Thalia, Guardian of Thraben [2/1]
+   1: Confirm attackers
+  >> A/A: 0 (Thalia, Guardian of Thraben [2/1])
+--- Narrative ---
+  Thalia, Guardian of Thraben attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [6/6] -> Player B
+    [attacking] Forest [1/1] -> Player B
+    [attacking] Scythecat Cub [2/2] -> Player B
+    [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+
+--- Decision 114 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (ATK) | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Plains | Savannah | Scythecat Cub [2/2] [Trample] (ATK) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+    Forest -> Player B
+    Scythecat Cub -> Player B
+    Thalia, Guardian of Thraben -> Player B
+
+--- Decision 115 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (T,ATK) | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Plains | Savannah | Scythecat Cub [2/2] [Trample] (T,ATK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 116 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   5 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (T,ATK) | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Plains | Savannah | Scythecat Cub [2/2] [Trample] (T,ATK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Thalia, Guardian of Thraben deals 2 damage to Player B
+  --- End First Strike Combat Damage ---
+
+--- Decision 117 ---
+  Priority: Player A (active)
+  Step: First Strike Dmg (turn 11)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   3 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Badgermole Cub [6/6] [+1/+1:4] (T,ATK) | Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Plains | Savannah | Scythecat Cub [2/2] [Trample] (T,ATK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
+  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Badgermole Cub deals 6 damage to Player B
+    Forest deals 1 damage to Player B
+    Scythecat Cub deals 2 damage to Player B
+  --- End Combat Damage ---
+  Player B has -6 life - Player A wins!
+
+=== A/A wins ===

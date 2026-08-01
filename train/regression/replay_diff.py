@@ -55,6 +55,19 @@ SCENARIOS = [
     ("mav_vs_doomsday",    "mav",      "doomsday"),
 ]
 
+# Full league-matchup coverage: every deck of the league roster against every
+# other (each unordered pair once, the lexically-earlier deck seated as Player
+# A) plus each deck's mirror — 55 scenarios named lg_<a>__<b>. One game per
+# matchup keeps the corpus and the CI replay tier tractable; the curated
+# scenarios above already exercise both seatings for the deepest decks.
+LEAGUE_DECKS = [
+    "bug", "burn", "bw_dnt", "gw_maverick", "lands", "reanimator",
+    "ur_delver", "uw_control", "wrb_energy", "wubg_doomsday",
+]
+for _i, _a in enumerate(LEAGUE_DECKS):
+    for _b in LEAGUE_DECKS[_i:]:
+        SCENARIOS.append((f"lg_{_a}__{_b}", f"league/{_a}", f"league/{_b}"))
+
 
 def _play(deck_a: str, deck_b: str, seed: int) -> str:
     """Drive one scripted deck-vs-deck game and return its full transcript.

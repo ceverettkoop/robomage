@@ -1,0 +1,1421 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Fiery Islet
+  Player A draws Rift Bolt
+  Player A draws Rift Bolt
+  Player A draws Mountain
+  Player A draws Price of Progress
+  Player A draws Mountain
+  Player A draws Mountain
+  Player B draws Atraxa, Grand Unifier
+  Player B draws Fatal Push
+  Player B draws Reanimate
+  Player B draws Raph & Mikey, Troublemakers
+  Player B draws Flow State
+  Player B draws Dark Ritual
+  Player B draws Animate Dead
+  Player A hand:
+  Fiery Islet
+  Mountain
+  Mountain
+  Mountain
+  Price of Progress
+  Rift Bolt
+  Rift Bolt
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Animate Dead
+  Atraxa, Grand Unifier
+  Dark Ritual
+  Flow State
+  Raph & Mikey, Troublemakers
+  Reanimate
+  Fatal Push
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Animate Dead, Atraxa, Grand Unifier, Dark Ritual, Flow State, Raph & Mikey, Troublemakers, Reanimate, Fatal Push | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 1 (Mulligan)
+--- Narrative ---
+  Player B mulligans.
+  Player B draws Force of Will
+  Player B draws Consign to Memory
+  Player B draws Scalding Tarn
+  Player B draws Marsh Flats
+  Player B draws Atraxa, Grand Unifier
+  Player B draws Ponder
+  Player B draws Force of Will
+  Player B hand:
+  Atraxa, Grand Unifier
+  Force of Will
+  Force of Will
+  Marsh Flats
+  Ponder
+  Scalding Tarn
+  Consign to Memory
+
+--- Decision 3 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 6-card hand.
+  Player B: Choose card to put on library bottom (1 remaining):
+
+--- Decision 4 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 68
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Atraxa, Grand Unifier
+   1: Force of Will
+   2: Force of Will
+   3: Marsh Flats
+   4: Ponder
+   5: Scalding Tarn
+   6: Consign to Memory
+  >> B/B: 0 (Atraxa, Grand Unifier)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
+  PB: Atraxa, Grand Unifier, Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 69
+  Actions:
+   0: Pass priority
+   1: Play Fiery Islet
+   2: Play Mountain
+   3: Play Mountain
+   4: Play Mountain
+  >> A/A: 1 (Play Fiery Islet)
+--- Narrative ---
+  Player A played Fiery Islet
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 69
+  Self BF:  Fiery Islet
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Suspend Rift Bolt
+   2: Suspend Rift Bolt
+  >> A/A: 1 (Suspend Rift Bolt)
+--- Narrative ---
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(R)
+  Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Show and Tell
+--- Turn 2 (Player B) ---
+  PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
+  PB: Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory, Show and Tell
+
+--- Decision 7 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 68
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Scalding Tarn
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 8 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 68
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Marsh Flats
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 9 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 68
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Fiery Islet (T)
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Swamp
+   2: Undercity Sewers
+   3: Undercity Sewers
+   4: Underground Sea
+   5: Underground Sea
+   6: Underground Sea
+   7: Underground Sea
+  >> B/B: 1 (Swamp)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Swamp to the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Rift Bolt triggers: remove a time counter (suspend).
+  Resolving ability (category: SuspendTick)
+  Removed a time counter from Rift Bolt (0 remaining).
+  Player A may cast Rift Bolt without paying its mana cost (suspend).
+--- Turn 3 (Player A) ---
+  PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory, Show and Tell
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 3)
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 67
+  Self BF:  Fiery Islet
+  Opp BF:   Swamp
+  Opp GY:  Marsh Flats
+  Self exile: Rift Bolt
+  Opp revealed: Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Cast Rift Bolt (from exile, no cost)  [#7]
+  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+--- Narrative ---
+  Player A casts Rift Bolt without paying its mana cost
+  Choose target for Rift Bolt:
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 3)
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 67
+  Self BF:  Fiery Islet
+  Opp BF:   Swamp
+  Pending: Rift Bolt (self)
+  Opp GY:  Marsh Flats
+  Self exile: Rift Bolt
+  Opp revealed: Swamp, Marsh Flats
+  Actions:
+   0: Player B (19 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Rift Bolt targeting Player B
+
+--- Decision 12 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 3)
+  Self:  19 life | mana: empty | hand(6): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 67
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Swamp
+  Opp BF:   Fiery Islet
+  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Self GY: Marsh Flats
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 13 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 3)
+  Self:  19 life | mana: empty | hand(6): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 67
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Swamp
+  Opp BF:   Fiery Islet
+  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
+  Self GY: Marsh Flats
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Rift Bolt
+  >> B/B: 0 (Rift Bolt)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 14 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 3)
+  Self:  19 life | mana: empty | hand(6): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 67
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Swamp
+  Opp BF:   Fiery Islet
+  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Self GY: Marsh Flats
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Exile Force of Will
+   1: Exile Ponder
+   2: Exile Consign to Memory
+   3: Exile Show and Tell
+  >> B/B: 0 (Exile Force of Will)
+--- Narrative ---
+  Player B pays 1 life
+  Player B exiles Force of Will
+  Player B casts Force of Will targeting Rift Bolt
+  Resolving ability (category: Counter)
+  Rift Bolt is countered
+  Player A draws Chain Lightning
+
+--- Decision 15 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   18 life | mana: empty | hand count: 4 | lib 67
+  Self BF:  Fiery Islet
+  Opp BF:   Swamp
+  Self GY: Rift Bolt
+  Opp GY:  Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+   4: Cast Chain Lightning  [#0]
+   5: Suspend Rift Bolt
+  >> A/A: 4 (Cast Chain Lightning)
+--- Narrative ---
+  Choose target for Chain Lightning:
+
+--- Decision 16 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   18 life | mana: empty | hand count: 4 | lib 67
+  Self BF:  Fiery Islet
+  Opp BF:   Swamp
+  Pending: Chain Lightning (self)
+  Self GY: Rift Bolt
+  Opp GY:  Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will, Swamp, Marsh Flats
+  Actions:
+   0: Player B (18 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(R)
+  Player A casts Chain Lightning targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 15 life)
+  Resolving ability (category: CopySpellAbility)
+  Player B may pay to copy Chain Lightning:
+
+--- Decision 17 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  15 life | mana: empty | hand(4): Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 67
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Swamp
+  Opp BF:   Fiery Islet (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt
+  Self exile: Force of Will
+  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Tap Swamp for (B)
+   1: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Swamp for (B))
+--- Narrative ---
+  Player B tapped Swamp for {B}
+
+--- Decision 18 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  15 life | mana: 1B | hand(4): Ponder, Scalding Tarn, Consign to Memory, Show and Tell | lib 67
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Swamp (T)
+  Opp BF:   Fiery Islet (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt
+  Self exile: Force of Will
+  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Don't pay (spell is countered))
+
+--- Decision 19 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   15 life | mana: 1B | hand count: 4 | lib 67
+  Self BF:  Fiery Islet (T)
+  Opp BF:   Swamp (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+
+--- Decision 20 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   15 life | mana: 1B | hand count: 4 | lib 67
+  Self BF:  Fiery Islet (T) | Mountain
+  Opp BF:   Swamp (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Force of Will, Swamp, Marsh Flats
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Suspend Rift Bolt
+  >> A/A: 1 (Suspend Rift Bolt)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws The Creation of Avacyn
+--- Turn 4 (Player B) ---
+  PA: Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Ponder, Scalding Tarn, Consign to Memory, Show and Tell, The Creation of Avacyn
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  15 life | mana: empty | hand(5): Ponder, Scalding Tarn, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 66
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+  >> B/B: 1 (Play Scalding Tarn)
+--- Narrative ---
+  Player B played Scalding Tarn
+
+--- Decision 22 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  15 life | mana: empty | hand(4): Ponder, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 66
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Scalding Tarn | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Scalding Tarn
+  Player B's Scalding Tarn ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 23 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(4): Ponder, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 66
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Scalding Tarn (ability, self)
+  Pending: Scalding Tarn (self)
+  Self GY: Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Undercity Sewers
+   3: Undercity Sewers
+   4: Underground Sea
+   5: Underground Sea
+   6: Underground Sea
+   7: Underground Sea
+  >> B/B: 1 (Island)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Island to the battlefield
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(4): Ponder, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 65
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Island | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+  >> B/B: 1 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(3): Consign to Memory, Show and Tell, The Creation of Avacyn | lib 65
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Lotus Petal  [#2]
+   1: Force of Negation  [#2]
+   2: Atraxa, Grand Unifier  [#2]
+  >> B/B: 0 (Lotus Petal)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(3): Consign to Memory, Show and Tell, The Creation of Avacyn | lib 65
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Opp exile:  Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Force of Negation  [#1]
+   1: Atraxa, Grand Unifier  [#1]
+  >> B/B: 0 (Force of Negation)
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(3): Consign to Memory, Show and Tell, The Creation of Avacyn | lib 65
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Opp exile:  Rift Bolt
+  Known top: Atraxa, Grand Unifier, Force of Negation, Lotus Petal, ?, ?
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Atraxa, Grand Unifier
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+  Rift Bolt triggers: remove a time counter (suspend).
+--- Turn 5 (Player A) ---
+  PA: Mountain, Mountain, Price of Progress
+  PB: Consign to Memory, Show and Tell, The Creation of Avacyn
+
+--- Decision 28 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
+  Opp:   14 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Island (T) | Swamp
+  Stack: Rift Bolt (ability, self)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Self exile: Rift Bolt
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Cast Price of Progress  [#0]
+   2: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Cast Price of Progress)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(U)
+  Player A casts Price of Progress
+  Resolving ability (category: RepeatEach)
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to player (now at 15 life)
+  Resolving ability (category: DealDamage, amount: 0)
+  Dealt 0 damage to player (now at 14 life)
+  Resolving ability (category: SuspendTick)
+  Removed a time counter from Rift Bolt (0 remaining).
+  Player A may cast Rift Bolt without paying its mana cost (suspend).
+
+--- Decision 29 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   14 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Self exile: Rift Bolt
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Cast Rift Bolt (from exile, no cost)  [#7]
+  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+--- Narrative ---
+  Player A casts Rift Bolt without paying its mana cost
+  Choose target for Rift Bolt:
+
+--- Decision 30 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   14 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Island (T) | Swamp
+  Pending: Rift Bolt (self)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Self exile: Rift Bolt
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Player B (14 life)
+   1: Player A (15 life)
+  >> A/A: 0 (Player B (14 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Rift Bolt targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 11 life)
+  Player A draws Exquisite Firecraft
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
+  Opp:   11 life | mana: empty | hand count: 4 | lib 64
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Island (T) | Swamp
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Force of Negation
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Exquisite Firecraft, Mountain
+  PB: Consign to Memory, Show and Tell, The Creation of Avacyn
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Opp:   11 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Island | Swamp
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Mountain
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: Draw (turn 7)
+  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Opp:   11 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Island | Swamp
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Opp:   11 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Island | Swamp
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Cast Exquisite Firecraft  [#0]
+   4: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 3 (Cast Exquisite Firecraft)
+--- Narrative ---
+  Choose target for Exquisite Firecraft:
+
+--- Decision 35 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Opp:   11 life | mana: empty | hand count: 5 | lib 63
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Island | Swamp
+  Pending: Exquisite Firecraft (self)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Marsh Flats
+  Actions:
+   0: Player B (11 life)
+   1: Player A (15 life)
+  >> A/A: 0 (Player B (11 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Mountain for 1(R)
+  Player A activated Mountain for 1(R)
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(U)
+  Player A casts Exquisite Firecraft targeting Player B
+
+--- Decision 36 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(5): Atraxa, Grand Unifier, Consign to Memory, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   14 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Island | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Stack: Exquisite Firecraft (spell, opponent) -> self (player)
+  Self GY: Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Negation (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Negation (alternate cost))
+--- Narrative ---
+  Choose target for Force of Negation:
+
+--- Decision 37 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(5): Atraxa, Grand Unifier, Consign to Memory, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   14 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Island | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Stack: Exquisite Firecraft (spell, opponent) -> self (player)
+  Pending: Force of Negation (self)
+  Self GY: Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Exquisite Firecraft
+  >> B/B: 0 (Exquisite Firecraft)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 38 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(5): Atraxa, Grand Unifier, Consign to Memory, Force of Negation, Show and Tell, The Creation of Avacyn | lib 63
+  Opp:   14 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Island | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Stack: Exquisite Firecraft (spell, opponent) -> self (player)
+  Self GY: Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Force of Will
+  Known top: Lotus Petal, ?, ?, ?, ?
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Exile Atraxa, Grand Unifier
+   1: Exile Consign to Memory
+   2: Exile Show and Tell
+  >> B/B: 0 (Exile Atraxa, Grand Unifier)
+--- Narrative ---
+  Player B exiles Atraxa, Grand Unifier
+  Player B casts Force of Negation targeting Exquisite Firecraft
+  Resolving ability (category: Counter)
+  Exquisite Firecraft can't be countered
+  Resolving ability (category: DealDamage, amount: 4)
+  Dealt 4 damage to player (now at 7 life)
+
+--- Decision 39 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  14 life | mana: empty | hand(2): Mountain, Mountain | lib 50
+  Opp:   7 life | mana: empty | hand count: 3 | lib 63
+  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Island | Swamp
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Swamp, Force of Negation, Marsh Flats, Atraxa, Grand Unifier
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+  Player B draws Lotus Petal
+--- Turn 8 (Player B) ---
+  PA: Mountain, Mountain
+  PB: Lotus Petal, Consign to Memory, Show and Tell, The Creation of Avacyn
+
+--- Decision 40 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  7 life | mana: empty | hand(4): Lotus Petal, Consign to Memory, Show and Tell, The Creation of Avacyn | lib 62
+  Opp:   14 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Island | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Self GY: Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Lotus Petal  [#0]
+  >> B/B: 1 (Cast Lotus Petal)
+--- Narrative ---
+  Player B casts Lotus Petal
+
+--- Decision 41 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  7 life | mana: empty | hand(3): Consign to Memory, Show and Tell, The Creation of Avacyn | lib 62
+  Opp:   14 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Island | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Stack: Lotus Petal (spell, self)
+  Self GY: Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Consign to Memory  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Lotus Petal enters the battlefield
+
+--- Decision 42 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  7 life | mana: empty | hand(3): Consign to Memory, Show and Tell, The Creation of Avacyn | lib 62
+  Opp:   14 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Island | Lotus Petal | Swamp
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Self GY: Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Show and Tell  [#0]
+   2: Cast The Creation of Avacyn  [#0]
+  >> B/B: 1 (Cast Show and Tell)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Swamp for 1(B)
+  Player B sacrifices Lotus Petal
+  Player B activated Lotus Petal for 1(W)
+  Player B casts Show and Tell
+  Resolving ability (category: ChangeZone)
+
+--- Decision 43 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(1): Mountain | lib 50
+  Opp:   7 life | mana: empty | hand count: 2 | lib 62
+  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Island (T) | Swamp (T)
+  Stack: Show and Tell (spell, opponent)
+  Pending: Show and Tell (opp)
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Marsh Flats, Show and Tell, Atraxa, Grand Unifier
+  Extras: opp_revolt
+  Actions:
+   0: Put Mountain onto the battlefield
+   1: Put nothing
+  >> A/A: 0 (Put Mountain onto the battlefield)
+--- Narrative ---
+  Player A puts Mountain onto the battlefield
+
+--- Decision 44 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  7 life | mana: empty | hand(2): Consign to Memory, The Creation of Avacyn | lib 62
+  Opp:   14 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island (T) | Swamp (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Stack: Show and Tell (spell, self)
+  Pending: Show and Tell (self)
+  Self GY: Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_revolt
+  Actions:
+   0: Put The Creation of Avacyn onto the battlefield
+   1: Put nothing
+  >> B/B: 0 (Put The Creation of Avacyn onto the battlefield)
+--- Narrative ---
+  Player B puts The Creation of Avacyn onto the battlefield
+  The Creation of Avacyn gets 1 lore counter (now 1).
+  The Creation of Avacyn chapter 1 triggers.
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 45 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  7 life | mana: empty | hand(1): Consign to Memory | lib 62
+  Opp:   14 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island (T) | Swamp (T) | The Creation of Avacyn [lore:1]
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain | Mountain
+  Stack: The Creation of Avacyn (ability, self) [amt=1]
+  Pending: The Creation of Avacyn (self)
+  Self GY: Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_revolt
+  Actions:
+   0: Animate Dead
+   1: Animate Dead
+   2: Animate Dead
+   3: Archon of Cruelty
+   4: Archon of Cruelty
+   5: Atraxa, Grand Unifier
+   6: Atraxa, Grand Unifier
+   7: Atraxa, Grand Unifier
+   8: Bloodstained Mire
+   9: Brainstorm
+  10: Brainstorm
+  11: Brainstorm
+  12: Brainstorm
+  13: Careful Study
+  14: Careful Study
+  15: Careful Study
+  16: Dark Ritual
+  17: Flooded Strand
+  18: Flow State
+  19: Flow State
+  20: Flow State
+  21: Force of Will
+  22: Force of Will
+  23: Griselbrand
+  24: Lotus Petal
+  25: Lotus Petal
+  26: Lotus Petal
+  27: Otherworldly Gaze
+  28: Otherworldly Gaze
+  29: Otherworldly Gaze
+  30: Polluted Delta
+  31: Polluted Delta
+  32: Polluted Delta
+  33: Polluted Delta
+  34: Ponder
+  35: Ponder
+  36: Raph & Mikey, Troublemakers
+  37: Reanimate
+  38: Reanimate
+  39: Reanimate
+  40: Reanimate
+  41: Thoughtseize
+  42: Thoughtseize
+  43: Thoughtseize
+  44: Thoughtseize
+  45: Undercity Sewers
+  46: Undercity Sewers
+  47: Underground Sea
+  48: Underground Sea
+  49: Underground Sea
+  50: Underground Sea
+  51: Consign to Memory
+  52: Echoing Truth
+  53: Echoing Truth
+  54: Fatal Push
+  55: Fatal Push
+  56: Flusterstorm
+  57: Force of Negation
+  58: Show and Tell
+  59: Show and Tell
+  60: Show and Tell
+  61: The Creation of Avacyn
+  >> B/B: 1 (Animate Dead)
+--- Narrative ---
+  Player B shuffles their library
+  Player B exiles Animate Dead face down
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: (empty)
+  PB: Consign to Memory
+
+--- Decision 46 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 9)
+  Self:  14 life | mana: empty | hand(0): (empty) | lib 50
+  Opp:   7 life | mana: empty | hand count: 1 | lib 61
+  Self BF:  Fiery Islet | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:1]
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Eidolon of the Great Revel
+
+--- Decision 47 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  14 life | mana: empty | hand(1): Eidolon of the Great Revel | lib 49
+  Opp:   7 life | mana: empty | hand count: 1 | lib 61
+  Self BF:  Fiery Islet | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:1]
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 48 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  14 life | mana: empty | hand(1): Eidolon of the Great Revel | lib 49
+  Opp:   7 life | mana: empty | hand count: 1 | lib 61
+  Self BF:  Fiery Islet | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:1]
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Cast Eidolon of the Great Revel  [#0]
+   2: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Cast Eidolon of the Great Revel)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A activated Mountain for 1(R)
+  Player A casts Eidolon of the Great Revel
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  14 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   7 life | mana: empty | hand count: 1 | lib 61
+  Self BF:  Fiery Islet | Mountain (T) | Mountain (T) | Mountain | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:1]
+  Stack: Eidolon of the Great Revel (spell, self)
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Activate Fiery Islet (Draw))
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A sacrifices Fiery Islet
+  Player A's Fiery Islet ability is on the stack
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Chain Lightning
+  Eidolon of the Great Revel enters the battlefield
+
+--- Decision 50 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
+  Opp:   7 life | mana: empty | hand count: 1 | lib 61
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:1]
+  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, The Creation of Avacyn
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Chain Lightning  [#0]
+  >> A/A: 1 (Cast Chain Lightning)
+--- Narrative ---
+  Choose target for Chain Lightning:
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
+  Opp:   7 life | mana: empty | hand count: 1 | lib 61
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:1]
+  Pending: Chain Lightning (self)
+  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, The Creation of Avacyn
+  Extras: self_revolt
+  Actions:
+   0: Player B (7 life)
+   1: Player A (14 life)
+   2: Eidolon of the Great Revel
+  >> A/A: 0 (Player B (7 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Mountain for 1(R)
+  Player A casts Chain Lightning targeting Player B
+  Eidolon of the Great Revel triggered
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to player (now at 12 life)
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 4 life)
+  Resolving ability (category: CopySpellAbility)
+  Player B may pay to copy Chain Lightning:
+
+--- Decision 52 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  4 life | mana: empty | hand(1): Consign to Memory | lib 61
+  Opp:   12 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Island (T) | Swamp (T) | The Creation of Avacyn [lore:1]
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Animate Dead, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: opp_revolt
+  Actions:
+   0: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Don't pay (spell is countered))
+--- Narrative ---
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 10 (Player B) --------
+  Player B draws Flow State
+  The Creation of Avacyn gets 1 lore counter (now 2).
+  The Creation of Avacyn chapter 2 triggers.
+--- Turn 10 (Player B) ---
+  PA: Chain Lightning
+  PB: Flow State, Consign to Memory
+
+--- Decision 53 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  4 life | mana: empty | hand(2): Flow State, Consign to Memory | lib 60
+  Opp:   12 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Island | Swamp | The Creation of Avacyn [lore:2]
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: The Creation of Avacyn (ability, self)
+  Self GY: Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Animate Dead, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Consign to Memory  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: SetState)
+  Animate Dead is turned face up.
+  Resolving ability (category: LoseLife, amount: 2)
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  4 life | mana: empty | hand(2): Flow State, Consign to Memory | lib 60
+  Opp:   12 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Island | Swamp | The Creation of Avacyn [lore:2]
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Self GY: Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Animate Dead, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Flow State  [#0]
+  >> B/B: 1 (Cast Flow State)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Swamp for 1(B)
+  Player B casts Flow State
+  Eidolon of the Great Revel triggered
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to player (now at 2 life)
+  Resolving ability (category: Dig)
+  Player B looks at the top 3 card(s) of their library.
+
+--- Decision 55 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  2 life | mana: empty | hand(1): Consign to Memory | lib 60
+  Opp:   12 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Island (T) | Swamp (T) | The Creation of Avacyn [lore:2]
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Animate Dead, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Polluted Delta
+   1: Dark Ritual
+   2: Force of Negation
+  >> B/B: 1 (Dark Ritual)
+
+--- Decision 56 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  2 life | mana: empty | hand(1): Consign to Memory | lib 60
+  Opp:   12 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Island (T) | Swamp (T) | The Creation of Avacyn [lore:2]
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Animate Dead, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Polluted Delta
+   1: Force of Negation
+  >> B/B: 1 (Force of Negation)
+--- Narrative ---
+  Player B puts Dark Ritual into hand.
+  Player B puts Force of Negation into hand.
+  Player B puts 1 card(s) on the bottom of their library.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+  Player A draws Mountain
+--- Turn 11 (Player A) ---
+  PA: Mountain
+  PB: Consign to Memory
+
+--- Decision 57 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  12 life | mana: empty | hand(1): Mountain | lib 47
+  Opp:   2 life | mana: empty | hand count: 3 | lib 58
+  Self BF:  Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:2]
+  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Flow State, Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Animate Dead, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Flow State, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+  --- Declare Attackers (Player A) ---
+
+--- Decision 58 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 47
+  Opp:   2 life | mana: empty | hand count: 3 | lib 58
+  Self BF:  Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:2]
+  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Flow State, Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Animate Dead, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Flow State, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Eidolon of the Great Revel [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Eidolon of the Great Revel [2/2])
+--- Narrative ---
+  Eidolon of the Great Revel attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Eidolon of the Great Revel [2/2] -> Player B
+
+--- Decision 59 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 47
+  Opp:   2 life | mana: empty | hand count: 3 | lib 58
+  Self BF:  Eidolon of the Great Revel [2/2] (ATK) | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Island (T) | Swamp (T) | The Creation of Avacyn [lore:2]
+  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Flow State, Show and Tell, Lotus Petal, Force of Negation, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Animate Dead, Atraxa, Grand Unifier, Force of Will
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Lotus Petal, Swamp, Force of Negation, Flow State, Marsh Flats, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Eidolon of the Great Revel -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Eidolon of the Great Revel deals 2 damage to Player B
+  --- End Combat Damage ---
+  Player B has 0 life - Player A wins!
+
+=== A/A wins ===
