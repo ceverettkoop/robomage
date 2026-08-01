@@ -55,6 +55,8 @@ from env import (
     _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL, _BLUE_POOL_IDX, _WASTELAND_VOCAB_IDX,
     _AETHER_VIAL_VOCAB_IDX,
     _BASIC_LAND_IDS, _COUNTER_SPELL_VOCAB_IDS, _COUNTERSPELL_VOCAB_IDX,
+    _COUNTER_EXEMPT_CANTRIP_IDS, _TARGETED_REMOVAL_IDS, _WRATH_OF_SKIES_VOCAB_IDX,
+    _TOKEN_VOCAB_BASE,
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX, _DOOMSDAY_DECK_IDS,
     _PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX, _CONSIDER_VOCAB_IDX,
@@ -68,7 +70,7 @@ from env import (
     _CANDELABRA_VOCAB_IDX, _MULTI_MANA_LAND_IDS,
     _SOLITUDE_VOCAB_IDX, _THE_ONE_RING_VOCAB_IDX,
     # reanimation spells + the fatties they cheat out
-    _REANIMATION_SPELL_IDS, _REANIMATION_FATTY_IDS, _CAREFUL_STUDY_VOCAB_IDX,
+    _REANIMATION_SPELL_IDS, _REANIMATION_FATTY_IDS,
     # lands-deck combo/engine pieces
     _LIFE_FROM_LOAM_VOCAB_IDX, _URZAS_SAGA_VOCAB_IDX,
     _DARK_DEPTHS_VOCAB_IDX, _THESPIANS_STAGE_VOCAB_IDX,
@@ -78,6 +80,8 @@ from env import (
     _PENDING_DECISION_START,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
+    # action-history ring start (newest entry first: cat, card id, is_self, turn)
+    _HIST_START,
     # known top-of-library slot 0 (obs[_KNOWN_TOP_LIB_START] == top card id, sentinel=unknown)
     _KNOWN_TOP_LIB_START,
     # header flag / step one-hot indices + self player-block offsets
@@ -431,6 +435,40 @@ def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
         if _slot_card_idx(obs, base + 1) >= 0 and ctrl_is_self < 0.5:
             return True
     return False
+
+
+def _opponent_threat_on_stack(obs: np.ndarray) -> bool:
+    """Threat-type counter triage: True if a non-self stack object is worth a
+    counterspell — anything that is NOT a known pure cantrip
+    (_COUNTER_EXEMPT_CANTRIP_IDS). Creatures/planeswalkers/enchantments at any
+    MV and every other MV>=2 spell fall through the exemption and count."""
+    for i in range(12):
+        base = _STACK_START + i * _STACK_SLOT_SIZE
+        if obs[base] >= 0.5:
+            continue  # self-controlled
+        cid = _slot_card_idx(obs, base + 1)
+        if cid >= 0 and cid not in _COUNTER_EXEMPT_CANTRIP_IDS:
+            return True
+    return False
+
+
+def _hand_land_count(obs: np.ndarray) -> int:
+    """Lands in the priority player's hand."""
+    count = 0
+    for slot in range(MAX_HAND_SLOTS):
+        if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE) in _LAND_VOCAB_IDS:
+            count += 1
+    return count
+
+
+def _self_land_count(obs: np.ndarray) -> int:
+    """Lands self controls (unphased, self battlefield slots 0-47)."""
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_LAND] > 0.5 and not _phased(obs, base):
+            count += 1
+    return count
 
 
 # ── Doomsday combo constants/helpers ────────────────────────────────────────
@@ -849,8 +887,10 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     #    on the stack; skip them when the stack holds only own spells or is empty.
     opponent_spell_on_stack = _opponent_has_spell_on_stack(obs)
 
-    # Priority: if opponent has a spell on stack and we have UU, cast Counterspell first.
-    if opponent_spell_on_stack and int(round(obs[_BLUE_POOL_IDX] * 10)) >= 2:
+    # Priority: if opponent has a spell on stack and we have UU, cast Counterspell first
+    # (unless the caller's triage put it on hold — a cantrip not worth countering).
+    if (opponent_spell_on_stack and int(round(obs[_BLUE_POOL_IDX] * 10)) >= 2
+            and not (hold_casts and _COUNTERSPELL_VOCAB_IDX in hold_casts)):
         for i, c in enumerate(cats):
             if c == _CAT_CAST and _action_card_id(card_ids, i) == _COUNTERSPELL_VOCAB_IDX:
                 return i
@@ -1107,6 +1147,43 @@ def _best_opp_creature_target(g: dict, cats, card_ids, ctrl_arr, num_choices: in
         if best_pow is None or power > best_pow:
             best_i, best_pow = i, power
     return best_i
+
+
+def _wrath_energy_plan(g: dict) -> tuple[int, int, int]:
+    """Best energy amount Y for Wrath of the Skies, with its board impact.
+
+    Wrath destroys EACH artifact, creature, and enchantment with MV <= Y on
+    BOTH sides (lands and planeswalkers are immune). Evaluate every candidate
+    Y — the distinct MVs of the opponent's destroyable permanents, plus 0 —
+    and pick the one maximizing (opponent permanents destroyed - own
+    permanents destroyed), tie-broken by destroyed-power differential and
+    then by the SMALLEST Y (cheaper X, and no collateral own losses beyond
+    what the score already accepted). Token card ids cost-decode to MV 0,
+    matching their real mana value.
+
+    Returns (best_y, count_net, power_net) so the caster can also gate on
+    whether the sweep is worth it at all.
+    """
+    def destroyables(perms):
+        out = []
+        for p in perms:
+            if p.get("is_land") or p.get("loyalty", 0) > 0:
+                continue
+            out.append((int(_card_mana_value(p.get("card_idx", -1))),
+                        p.get("power", 0)))
+        return out
+    opp = destroyables(g["opp_battlefield"])
+    own = destroyables(g["self_battlefield"])
+    best_key, best = None, (0, 0, 0)
+    for y in sorted({mv for mv, _ in opp} | {0}):
+        count_net = (sum(1 for mv, _ in opp if mv <= y)
+                     - sum(1 for mv, _ in own if mv <= y))
+        power_net = (sum(pw for mv, pw in opp if mv <= y)
+                     - sum(pw for mv, pw in own if mv <= y))
+        key = (count_net, power_net, -y)
+        if best_key is None or key > best_key:
+            best_key, best = key, (y, count_net, power_net)
+    return best
 
 
 def _desired_block_count(g: dict, attackers: list) -> int:
@@ -1367,25 +1444,40 @@ class ScriptedAgent:
                         if c == _CAT_TARGET and _action_card_id(card_ids, i) == want:
                             return i
 
-        # Discard choice: pitch a reanimation fatty first — a discard menu
-        # offering Griselbrand/Archon/Atraxa means we hold a card whose home is
-        # the graveyard (the deck's discard outlets exist for exactly this; the
-        # scripted agent never sideboards, so no post-board Show and Tell plan
-        # to protect).
+        # Discard choice (lands-first conservative; replaces "first listed
+        # card"). Own-hand discards, in priority order:
+        #   1. a reanimation fatty — its home is the graveyard (the scripted
+        #      agent never sideboards, so no post-board Show and Tell plan to
+        #      protect);
+        #   2. an excess land, while the hand still holds >= 3;
+        #   3. the highest-MV card not castable any time soon
+        #      (MV > lands in play + 1);
+        #   4. the highest-MV card (lands are MV 0, so a spell goes first).
+        # A menu of OPPONENT-owned cards (our Thoughtseize-style pick) takes
+        # their highest-MV card instead — strip the biggest threat.
         if any(c == _CAT_DISCARD for c in cats):
+            own_dc, opp_dc = [], []
             for i, c in enumerate(cats):
-                if (c == _CAT_DISCARD
-                        and _action_card_id(card_ids, i) in _REANIMATION_FATTY_IDS):
+                if c != _CAT_DISCARD:
+                    continue
+                cid = _action_card_id(card_ids, i)
+                (own_dc if ctrl_arr[i] > 0.5 else opp_dc).append((i, cid))
+            for i, cid in own_dc:
+                if cid in _REANIMATION_FATTY_IDS:
                     return i
-            # Careful Study's second discard with no fatty left: pitch a land
-            # rather than the arbitrary first card (which was eating Reanimate
-            # itself). Gated on the pending source so generic/cleanup discards
-            # elsewhere keep their proven behaviour.
-            if _slot_card_idx(obs, _PENDING_DECISION_START) == _CAREFUL_STUDY_VOCAB_IDX:
-                for i, c in enumerate(cats):
-                    if (c == _CAT_DISCARD
-                            and _action_card_id(card_ids, i) in _LAND_VOCAB_IDS):
-                        return i
+            if own_dc:
+                if _hand_land_count(obs) >= 3:
+                    for i, cid in own_dc:
+                        if cid in _LAND_VOCAB_IDS:
+                            return i
+                castable_mv = _self_land_count(obs) + 1
+                uncastable = [(_card_mana_value(cid), i) for i, cid in own_dc
+                              if _card_mana_value(cid) > castable_mv]
+                if uncastable:
+                    return max(uncastable)[1]
+                return max((_card_mana_value(cid), i) for i, cid in own_dc)[1]
+            if opp_dc:
+                return max((_card_mana_value(cid), i) for i, cid in opp_dc)[1]
 
         # Urza's Saga chapter-II ability: always make the Construct when
         # offered. The Saga's mana ability is auto-pay (never offered at
@@ -1429,16 +1521,63 @@ class ScriptedAgent:
                     if c == _CAT_LAND and _action_card_id(card_ids, i) == want:
                         return i
 
-        # Reanimation cast hold: Reanimate/Animate Dead stay in hand until a
-        # creature worth cheating out is in a graveyard (either side's — the
-        # engine only offers the cast when SOME creature card is there, but a
-        # random 2-drop isn't worth the card).
-        hold_casts = None
-        if any(c == _CAT_CAST
-               and _action_card_id(card_ids, i) in _REANIMATION_SPELL_IDS
-               for i, c in enumerate(cats)):
-            if not _gy_has_any(obs, _REANIMATION_FATTY_IDS):
-                hold_casts = _REANIMATION_SPELL_IDS
+        # Cast holds, accumulated for the greedy fallback's cast scan. Each is
+        # card-id gated: it only fires when that cast is actually on the menu.
+        hold_casts: set[int] = set()
+        cast_ids = {_action_card_id(card_ids, i)
+                    for i, c in enumerate(cats) if c == _CAT_CAST}
+        # Reanimate/Animate Dead stay in hand until a creature worth cheating
+        # out is in a graveyard (either side's — the engine only offers the
+        # cast when SOME creature card is there, but a random 2-drop isn't
+        # worth the card).
+        if (cast_ids & _REANIMATION_SPELL_IDS
+                and not _gy_has_any(obs, _REANIMATION_FATTY_IDS)):
+            hold_casts |= _REANIMATION_SPELL_IDS
+        # Counter triage: an opponent spell is on the stack but nothing
+        # threat-shaped (only exempt cantrips) — let it resolve and keep the
+        # counter for their threat.
+        if (cast_ids & _COUNTER_SPELL_VOCAB_IDS
+                and not _opponent_threat_on_stack(obs)):
+            hold_casts |= _COUNTER_SPELL_VOCAB_IDS
+        # Targeted removal (Swords/Push/Prismatic) waits for a real threat:
+        # power >= 2, or a NONTOKEN 1-power creature (an unflipped Delver /
+        # Dragon's Rage Channeler is worth killing; a 1/1 token is not).
+        if cast_ids & _TARGETED_REMOVAL_IDS:
+            threat = any(p["power"] >= 2
+                         or (p["power"] >= 1
+                             and p.get("card_idx", _TOKEN_VOCAB_BASE) < _TOKEN_VOCAB_BASE)
+                         for p in _creatures(g()["opp_battlefield"]))
+            if not threat:
+                hold_casts |= _TARGETED_REMOVAL_IDS
+        # Wrath of the Skies (symmetric X sweeper) only into a board where the
+        # best energy amount nets a real sweep: 2+ more of their permanents
+        # destroyed than ours, or a 4+ destroyed-power differential.
+        if _WRATH_OF_SKIES_VOCAB_IDX in cast_ids:
+            _, count_net, power_net = _wrath_energy_plan(g())
+            if not (count_net >= 2 or power_net >= 4):
+                hold_casts.add(_WRATH_OF_SKIES_VOCAB_IDX)
+        hold_casts = hold_casts or None
+
+        # Wrath of the Skies X / energy-pay amounts: both arrive as bare
+        # number ladders (index == amount), and both should be the planned
+        # energy Y — X buys exactly the energy the sweep needs, and the pay
+        # step spends exactly that much (the generic pickers defaulted these
+        # to 0, sweeping nothing). The resolution-time pay menu names Wrath
+        # as the pending source; the cast-time X ladder fires BEFORE the
+        # spell is pending (601.2b announcement), so that one is identified
+        # from the newest action-history entry — our own just-recorded CAST
+        # of Wrath (a plain null-id ladder, so no delve-menu overlap).
+        wrath_x_menu = (
+            _slot_card_idx(obs, _PENDING_DECISION_START) == _WRATH_OF_SKIES_VOCAB_IDX
+            or (all(c == _CAT_CHOOSE_X for c in cats)
+                and card_ids[0] <= _ACTION_CARD_ID_NULL + 0.01
+                and int(round(float(obs[_HIST_START]) * ACTION_CATEGORY_MAX)) == _CAT_CAST
+                and obs[_HIST_START + 2] > 0.5
+                and _slot_card_idx(obs, _HIST_START + 1) == _WRATH_OF_SKIES_VOCAB_IDX))
+        if (num_choices >= 2 and wrath_x_menu
+                and all(c in (_CAT_CHOOSE_X, _CAT_OTHER) for c in cats)):
+            y, _, _ = _wrath_energy_plan(g())
+            return min(y, num_choices - 1)
 
         # Tron synergy: Candelabra of Tawnos untaps X target lands. It's only a mana
         # engine when it untaps lands that make MORE THAN ONE mana (Ancient Tomb, a

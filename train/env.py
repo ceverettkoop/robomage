@@ -1271,8 +1271,42 @@ _BASIC_LAND_IDS          = frozenset({0,    # Mountain
                                       62,   # Swamp
                                       235,  # Snow-Covered Island
                                       240}) # Wastes
-_COUNTER_SPELL_VOCAB_IDS = frozenset({12, 13, 22})  # Force of Will(12), Daze(13), Counterspell(22)
+# Every counterspell in the vocab: these are only cast with an opponent spell
+# on the stack (a missing entry let the agent counter its OWN spell, the only
+# legal target when nothing else is stacked).
+_COUNTER_SPELL_VOCAB_IDS = frozenset({12,    # Force of Will
+                                      13,    # Daze
+                                      22,    # Counterspell
+                                      72,    # Force of Negation
+                                      206,   # Consign to Memory
+                                      291,   # Flusterstorm
+                                      307,   # Spell Pierce
+                                      321})  # Spell Snare
 _COUNTERSPELL_VOCAB_IDX  = 22
+# Pure cantrips the hard tier lets resolve rather than countering (threat-type
+# triage: a counter spent on the opponent's Ponder is a counter unavailable for
+# their threat; everything NOT in this set — any creature/planeswalker/
+# enchantment at any MV, and any other MV>=2 spell — stays counterable).
+_COUNTER_EXEMPT_CANTRIP_IDS = frozenset({11,    # Ponder
+                                         24,    # Brainstorm
+                                         27,    # Mishra's Bauble
+                                         43,    # Once Upon a Time
+                                         68,    # Consider
+                                         152,   # Preordain
+                                         303,   # Careful Study
+                                         305})  # Otherworldly Gaze
+# Targeted removal the hard tier holds until a real threat exists — power >= 2,
+# or any NONTOKEN 1-power creature (an unflipped Delver / Dragon's Rage
+# Channeler is a real threat; a 1/1 token is not).
+_TARGETED_REMOVAL_IDS    = frozenset({48,    # Swords to Plowshares
+                                      84,    # Fatal Push
+                                      338})  # Prismatic Ending
+# First index of the token band in the card vocab (mirror src/card_vocab.h
+# TOKEN_VOCAB_BASE): perm-slot card ids >= this are token permanents.
+_TOKEN_VOCAB_BASE        = 900
+# Wrath of the Skies: symmetric X sweeper (destroys artifacts/creatures/
+# enchantments with MV <= energy paid) — gated on the board actually favoring it.
+_WRATH_OF_SKIES_VOCAB_IDX = 186
 # Death and Taxes: Solitude's ETB exiles a creature, so hard-cast it only with an
 # opponent creature to hit. The One Ring's {T} draws a card per burden counter.
 _SOLITUDE_VOCAB_IDX      = 141
