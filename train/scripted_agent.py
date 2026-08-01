@@ -57,6 +57,7 @@ from env import (
     _BASIC_LAND_IDS, _COUNTER_SPELL_VOCAB_IDS, _COUNTERSPELL_VOCAB_IDX,
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX, _DOOMSDAY_DECK_IDS,
+    _PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX, _CONSIDER_VOCAB_IDX,
     _KEEP_ONE_LANDER_IDS,
     _GREEN_SUNS_ZENITH_VOCAB_IDX, _KEEN_EYED_CURATOR_VOCAB_IDX, _MANA_DORK_IDS,
     _UNRELIABLE_LAND_IDS,
@@ -462,6 +463,8 @@ _BLUE_SOURCE_IDS = frozenset({
     64,   # Underground Sea (U/B)
     67,   # Cavern of Souls (any colour for creature spells, e.g. Oracle)
     56,   # Lotus Petal (sacrifice: one mana of any colour)
+    300,  # Tropical Island (U/G) — wubg_doomsday runs 2; omitting it
+          # undercounted blue sources and held Doomsday longer than needed
 })
 
 
@@ -539,9 +542,21 @@ def _count_untapped_mana_sources(obs: np.ndarray) -> int:
     return count
 
 
+# Free-draw enablers for the Doomsday pile: cycling that costs no mana (Street
+# Wraith pays life, Edge of Autumn sacs a land), so a drawn one is immediately
+# re-cycled to keep drawing down the pile the same turn.
+_DD_FREE_DRAW_IDS = frozenset({_STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX})
+# Cheap cantrips: preferred pile filler (a drawn one is castable for more digging)
+# but NOT counted toward Oracle's position — they cost mana, so the pile plan
+# only relies on the free draws plus natural draw steps.
+_DD_CANTRIP_IDS = frozenset({_PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
+                             _CONSIDER_VOCAB_IDX})
+
+
 def _classify_top_library(cats, card_ids):
-    """Bucket the offered TOP_LIBRARY choices into (oracle_idx, wraith_idxs, filler_idxs)."""
-    oracle_i, wraith_is, filler_is = None, [], []
+    """Bucket the offered TOP_LIBRARY choices into
+    (oracle_idx, free_draw_idxs, cantrip_idxs, filler_idxs)."""
+    oracle_i, draw_is, cantrip_is, filler_is = None, [], [], []
     for i, c in enumerate(cats):
         if c != _CAT_TOP_LIBRARY:
             continue
@@ -549,11 +564,13 @@ def _classify_top_library(cats, card_ids):
         if cid == _THASSAS_ORACLE_VOCAB_IDX:
             if oracle_i is None:
                 oracle_i = i
-        elif cid == _STREET_WRAITH_VOCAB_IDX:
-            wraith_is.append(i)
+        elif cid in _DD_FREE_DRAW_IDS:
+            draw_is.append(i)
+        elif cid in _DD_CANTRIP_IDS:
+            cantrip_is.append(i)
         else:
             filler_is.append(i)
-    return oracle_i, wraith_is, filler_is
+    return oracle_i, draw_is, cantrip_is, filler_is
 
 
 def _doomsday_pile_pick(cats, card_ids) -> int:
@@ -563,47 +580,60 @@ def _doomsday_pile_pick(cats, card_ids) -> int:
 
       (a) SELECTION — choose WHICH 5 cards to keep, from the whole library and
           graveyard (many options). Composition only; the order is fixed by the
-          rearrange that follows, so just keep Thassa's Oracle and the Street
-          Wraiths and let anything fill the rest.
+          rearrange that follows: keep Thassa's Oracle, then every free-draw
+          enabler (Street Wraith / Edge of Autumn), then cheap cantrips, then
+          whatever fills the rest.
 
       (b) REARRANGE — order the (<= 5) kept cards. The engine fills the pile
           bottom-first (effect_rearrange_top_of_library.cpp), so the
           position-from-top being placed equals the number of remaining choices.
 
-    Target pile, top -> bottom: [Wraith, Wraith, Thassa's Oracle, filler, filler].
-    The kill is then: cycle a Street Wraith to draw Wraith(pos1), cycle to draw
-    Wraith(pos2), cycle to draw Oracle(pos3) -> library is now 2 -> cast Oracle
-    and win. Oracle sits 3rd from the top (== 3rd from the bottom of the pile).
+    Target pile, top -> bottom: [free draws..., Thassa's Oracle, rest...] with
+    Oracle's position ADAPTIVE — directly under however many free-draw enablers
+    the pile actually has (the old plan hardcoded Oracle 3rd behind two Street
+    Wraiths, which stalls a list running only one Wraith, e.g. wubg_doomsday).
+    The kill: each drawn enabler is immediately cycled (the post-Doomsday
+    cycling rules), chaining down to Oracle; natural draw steps and any cantrip
+    filler drain the remainder until the library hits the Oracle-win size.
     """
-    oracle_i, wraith_is, filler_is = _classify_top_library(cats, card_ids)
+    oracle_i, draw_is, cantrip_is, filler_is = _classify_top_library(cats, card_ids)
     n_choices = sum(1 for c in cats if c == _CAT_TOP_LIBRARY)
 
-    # (a) SELECTION: keep Oracle, then the Street Wraiths, then any filler.
+    # (a) SELECTION: Oracle, free draws, cantrips, then any filler.
     if n_choices > _DD_PILE_SIZE:
         if oracle_i is not None:
             return oracle_i
-        if wraith_is:
-            return wraith_is[0]
+        if draw_is:
+            return draw_is[0]
+        if cantrip_is:
+            return cantrip_is[0]
         return 0
 
     # Small rearrange with no combo pieces (Ponder / Brainstorm): legacy behaviour.
-    if oracle_i is None and not wraith_is:
+    if oracle_i is None and not draw_is:
         return 0
 
-    # (b) REARRANGE: position-from-top being placed == remaining choice count.
+    # (b) REARRANGE, bottom-first: position-from-top == remaining choice count.
+    # Oracle goes right under the (remaining) free-draw enablers; positions
+    # above it get the enablers, positions below it get filler-then-cantrips
+    # (cantrips shallower than dead filler, since a drawn one digs further).
     pos = n_choices
-    if pos == 3 and oracle_i is not None:
-        return oracle_i                      # Thassa's Oracle 3rd from top
-    if pos <= 2:                             # top slots: free-draw enablers first
-        if wraith_is:
-            return wraith_is[0]
-        if oracle_i is not None:
-            return oracle_i
-    # Bottom slots (pos 4, 5): bury filler, keeping Oracle/Wraiths shallower.
-    if filler_is:
-        return filler_is[0]
-    if wraith_is:
-        return wraith_is[0]
+    oracle_pos = (len(draw_is) + 1) if oracle_i is not None else 0
+    if pos == oracle_pos:
+        return oracle_i
+    if pos > oracle_pos:                     # below Oracle: bury the worst first
+        if filler_is:
+            return filler_is[0]
+        if cantrip_is:
+            return cantrip_is[0]
+        if draw_is:
+            return draw_is[0]
+        return oracle_i if oracle_i is not None else 0
+    # Above Oracle: the free-draw chain.
+    if draw_is:
+        return draw_is[0]
+    if cantrip_is:
+        return cantrip_is[0]
     if oracle_i is not None:
         return oracle_i
     return 0
