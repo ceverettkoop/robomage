@@ -482,6 +482,19 @@ inline std::vector<Entity> battlefield_permanents(
     return out;
 }
 
+// CR 702.131b: Ascend on a permanent is a static ability — "ANY TIME you control ten or
+// more permanents and you don't have the city's blessing, you get the city's blessing for
+// the rest of the game" (a one-way latch, never lost once gained, 702.131c). Because it
+// applies "any time", the grant must be visible IMMEDIATELY when the tenth permanent
+// arrives — in particular mid-resolution, between a Token sub-ability creating the 10th
+// permanent and a later Condition$ Blessing gate reading the flag (Ocelot Pride's copy
+// clause) — not only at the next state-based pass. Re-evaluates and latches the blessing
+// for both players. The SBA preamble runs it every pass; any code that READS the blessing
+// flag after possibly changing the permanent count should call it first. Pass the
+// iterating system's mEntities (or orderer->mEntities). Defined in game_queries.cpp
+// (needs cur_game's player entities and game_log).
+void refresh_city_blessing(const std::set<Entity> &entities);
+
 // The most recently exiled card linked to `host` (Permanent::exiled_with) that STILL has a live
 // "return it from exile" path scheduled in cur_game.delayed_triggers, or 0 if none. This
 // distinguishes an exile-with-return host (a Static Prison holding a real Murktide) from a

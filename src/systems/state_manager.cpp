@@ -137,7 +137,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         // through so the deriving scan below can reach its site.)
         if (game.pending_query.active && !game.pending_query.answered) return;
         apply_continuous_effects(game);
-        update_city_blessing(game);  // 702.131: ascend grants the city's blessing at 10+ permanents
+        refresh_city_blessing(mEntities);  // 702.131: ascend grants the city's blessing at 10+ permanents
 
         bool any_applied = false;
 

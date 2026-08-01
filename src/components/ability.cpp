@@ -1819,6 +1819,12 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
         // controller has the city's blessing (702.131). Failure still chains subabilities.
         if (condition_passed && condition_city_blessing) {
+            // 702.131b applies "any time", so re-latch the blessing before reading the
+            // flag: a token created by an EARLIER sub-ability of this same resolution
+            // (Ocelot Pride's first clause making the 10th permanent) must count — the
+            // SBA-pass refresh alone would lag until after the whole trigger resolved
+            // and this gate would read a stale false.
+            if (orderer) refresh_city_blessing(orderer->mEntities);
             Entity pe = get_player_entity(controller);
             condition_passed = global_coordinator.entity_has_component<Player>(pe) &&
                                global_coordinator.GetComponent<Player>(pe).has_city_blessing;

@@ -5,7 +5,9 @@
 #include <cstdio>
 
 #include "classes/game.h"
+#include "cli_output.h"
 #include "components/ability.h"
+#include "components/player.h"
 #include "svar_eval.h"
 
 extern Coordinator global_coordinator;
@@ -580,6 +582,41 @@ Zone::Ownership resolve_defined_player(const Ability &ab) {
     // check_triggered_abilities' delayed-trigger leave-battlefield path).
     if (ab.defined_triggered_card_controller) return ab.triggered_player;
     return Zone::UNKNOWN;
+}
+
+// CR 702.131b: Ascend on a permanent — any time its controller controls ten or more
+// permanents and doesn't yet have the city's blessing, they get the city's blessing
+// for the rest of the game (a one-way latch; never lost once gained, 702.131c). The
+// keyword lives on the source CardData, so this also covers non-creature permanents
+// that have Ascend. Shared by the SBA preamble (every pass) and by mid-resolution
+// readers of the flag (the Condition$ Blessing gate), since "any time" means the
+// grant may not lag to the next state-based pass — see the header comment.
+void refresh_city_blessing(const std::set<Entity> &entities) {
+    bool ascend_a = false, ascend_b = false;
+    int perms_a = 0, perms_b = 0;
+    for (auto entity : entities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(entity).controller;
+        if (ctrl == Zone::PLAYER_A) ++perms_a;
+        else if (ctrl == Zone::PLAYER_B) ++perms_b;
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            for (const auto &kw : cd.keywords)
+                if (kw == "Ascend") {
+                    if (ctrl == Zone::PLAYER_A) ascend_a = true;
+                    else if (ctrl == Zone::PLAYER_B) ascend_b = true;
+                }
+        }
+    }
+    auto grant = [](Entity pe, int perms, const char *who) {
+        auto &pl = global_coordinator.GetComponent<Player>(pe);
+        if (!pl.has_city_blessing && perms >= 10) {
+            pl.has_city_blessing = true;
+            game_log("%s gets the city's blessing.\n", who);
+        }
+    };
+    if (ascend_a) grant(cur_game.player_a_entity, perms_a, "Player A");
+    if (ascend_b) grant(cur_game.player_b_entity, perms_b, "Player B");
 }
 
 bool player_cant_gain_life(Entity player_entity) {
