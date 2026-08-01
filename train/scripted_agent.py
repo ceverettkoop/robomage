@@ -40,11 +40,15 @@ from env import (
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY,
     _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE,
     _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD, _CAT_YESNO,
-    # battlefield / stack layout
+    _CAT_DISCARD, _CAT_KEEP_LEGEND, _CAT_CHOOSE_REPLACEMENT,
+    # battlefield / stack / graveyard layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
     _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE, _CUR_TURN_IDX,
+    _GY_START, _GY_SLOT_SIZE, MAX_GY_SLOTS,
     _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE,
-    _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
+    _OFF_IS_LAND, _OFF_IS_PHASED_OUT, _OFF_OTHER_COUNTERS,
+    # per-action entity-reference slots (KEEP_LEGEND duplicate disambiguation)
+    ACT_REFS_START, N_ENTITY_REF_SLOTS,
     # per-slot card-id decoder
     _slot_card_idx,
     # vocab / targeting constants
@@ -62,6 +66,11 @@ from env import (
     _MYCOSYNTH_LATTICE_VOCAB_IDX,
     _CANDELABRA_VOCAB_IDX, _MULTI_MANA_LAND_IDS,
     _SOLITUDE_VOCAB_IDX, _THE_ONE_RING_VOCAB_IDX,
+    # reanimation spells + the fatties they cheat out
+    _REANIMATION_SPELL_IDS, _REANIMATION_FATTY_IDS, _CAREFUL_STUDY_VOCAB_IDX,
+    # lands-deck combo/engine pieces
+    _LIFE_FROM_LOAM_VOCAB_IDX, _URZAS_SAGA_VOCAB_IDX,
+    _DARK_DEPTHS_VOCAB_IDX, _THESPIANS_STAGE_VOCAB_IDX,
     # Lion's Eye Diamond crack: blue-mana category + LED vocab id + draw-on-stack test
     _CAT_MANA_U, _LED_VOCAB_IDX, _self_has_draw_on_stack,
     # pending-decision source index (obs[_PENDING_DECISION_START] == source card id)
@@ -332,6 +341,36 @@ def _opponent_has_creature(obs: np.ndarray) -> bool:
     return False
 
 
+def _controls_card(obs: np.ndarray, cid: int) -> bool:
+    """True if self controls an unphased permanent with this vocab id (slots 0-47)."""
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base):
+            continue
+        if _slot_card_idx(obs, base + _BF_CARD_OFF) == cid:
+            return True
+    return False
+
+
+def _gy_has_any(obs: np.ndarray, ids: frozenset) -> bool:
+    """True if EITHER graveyard holds a card whose vocab id is in ``ids``.
+
+    The self and opponent graveyard blocks are contiguous card-id slots
+    (self first), so one scan over 2*MAX_GY_SLOTS covers both. Both sides
+    matter to the caller (Reanimate can take a creature from any graveyard).
+    """
+    for slot in range(2 * MAX_GY_SLOTS):
+        if _slot_card_idx(obs, _GY_START + slot * _GY_SLOT_SIZE) in ids:
+            return True
+    return False
+
+
+def _action_slot_ref(obs: np.ndarray, i: int) -> int:
+    """Decode action i's entity-reference slot (-1 = none; 0-47 self perms,
+    48-95 opp perms, 96-107 stack — the unified reference space)."""
+    return int(round(float(obs[ACT_REFS_START + i]) * N_ENTITY_REF_SLOTS)) - 1
+
+
 def _tapped_multi_mana_lands(obs: np.ndarray) -> int:
     """Count self-controlled TAPPED lands that make more than one mana (self slots 0-47).
 
@@ -570,6 +609,54 @@ def _doomsday_pile_pick(cats, card_ids) -> int:
     return 0
 
 
+# ── Reanimation / lands-combo helpers (card-id gated, deck-agnostic) ────────
+# Don't dredge (skip the draw, mill 3) once the library is this small — the
+# lands deck grinds long games and a draw/deck-out loss is never acceptable.
+_LOAM_DREDGE_MIN_LIBRARY = 10
+
+
+def _reanimation_target_choice(cats, card_ids, ctrl_arr, num_choices: int) -> int | None:
+    """Target pick for Reanimate / Animate Dead: the highest-mana-value creature
+    card offered, tie-broken toward self-owned (our own fatty beats stealing an
+    equal one). Fixes the generic target rule's prefer-opponent polarity, which
+    is meant for removal and is exactly backwards for reanimation. Returns None
+    when no TARGET action is offered."""
+    best_i, best_key = None, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_TARGET:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if cid < 0:
+            continue  # "no target" slot — never preferred
+        key = (_card_mana_value(cid), 1 if ctrl_arr[i] > 0.5 else 0)
+        if best_key is None or key > best_key:
+            best_i, best_key = i, key
+    return best_i
+
+
+def _keep_legend_choice(obs: np.ndarray, cats, card_ids, num_choices: int) -> int | None:
+    """Legend-rule keep pick (704.5j) for duplicate Dark Depths: keep the copy
+    with the FEWEST 'other' counters — the freshly-cloned Thespian's Stage at
+    zero ice counters — so its "no ice counters" trigger fires and makes Marit
+    Lage. Keeping the 10-counter original fizzles the combo. The duplicates
+    share one card id, so they are told apart through the action's slot_ref
+    into the battlefield slots' counter float. Other legend conflicts return
+    None (generic behaviour)."""
+    best_i, best_ct = None, None
+    for i in range(num_choices):
+        if (cats[i] != _CAT_KEEP_LEGEND
+                or _action_card_id(card_ids, i) != _DARK_DEPTHS_VOCAB_IDX):
+            continue
+        ref = _action_slot_ref(obs, i)
+        if 0 <= ref < 2 * _PERM_A_SLOTS:
+            ct = float(obs[_BF_START + ref * _BF_SLOT_SIZE + _OFF_OTHER_COUNTERS])
+        else:
+            ct = float("inf")  # unresolvable ref — never preferred
+        if best_ct is None or ct < best_ct:
+            best_i, best_ct = i, ct
+    return best_i
+
+
 # ── GREEDY/HEURISTIC fruitless-activation stall guard ───────────────────────
 # Action categories a resolution-time zone search emits (src/components/
 # ability.cpp search_zone): SEARCH_LIBRARY for library searches, TOP_LIBRARY for
@@ -593,7 +680,9 @@ _FRUITLESS_ACTIVATION_LIMIT = 3
 
 
 def _greedy_action(obs: np.ndarray, num_choices: int,
-                   fruitless: set[int] | None = None) -> int:
+                   fruitless: set[int] | None = None,
+                   hold_casts: frozenset | set | None = None,
+                   hold_activations: frozenset | set | None = None) -> int:
     """
     Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
     Works correctly for either Player A or Player B because the observation
@@ -776,6 +865,9 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     for i, c in enumerate(cats):
         if c == _CAT_CAST:
             cid = _action_card_id(card_ids, i)
+            if hold_casts and cid in hold_casts:
+                continue  # caller-computed hold (e.g. Reanimate with no fatty
+                          # in a graveyard yet — see _heuristic_action)
             if cid in _COUNTER_SPELL_VOCAB_IDS and not opponent_spell_on_stack:
                 continue
             if cid == _DARK_RITUAL_VOCAB_IDX:
@@ -838,6 +930,9 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                               # fizzles when its graveyard target is already exiled)
                 if cid == _CANDELABRA_VOCAB_IDX and _tapped_multi_mana_lands(obs) == 0:
                     continue  # nothing worth untapping — don't tap Candelabra for X=0
+                if hold_activations and cid in hold_activations:
+                    continue  # caller-computed hold (e.g. Thespian's Stage with
+                              # no Dark Depths to copy — see _heuristic_action)
                 if fruitless and cid in fruitless:
                     continue  # stall guard: this card's search found NOTHING
                               # earlier this game (see _SEARCH_MENU_CATS) —
@@ -1193,6 +1288,128 @@ class ScriptedAgent:
             if any(c == _CAT_SEL_ATK for c in cats):
                 return self._attack_choice(g(), cats, card_ids)
 
+        # ── Reanimation / lands-combo interceptions ─────────────────────────
+        # All card-id / pending-source gated (no deck-name gate needed): each
+        # rule can only fire on a menu that names its specific card, so no
+        # other deck's decisions change. Kept out of GREEDY so the easy tier
+        # stays byte-identical.
+
+        # Legend rule: duplicate Dark Depths → keep the 0-counter clone so
+        # Marit Lage happens (see _keep_legend_choice).
+        if any(c == _CAT_KEEP_LEGEND for c in cats):
+            pick = _keep_legend_choice(obs, cats, card_ids, num_choices)
+            if pick is not None:
+                return pick
+
+        # Life from the Loam: take the dredge draw-replacement whenever the
+        # library can afford the mill — Loam back to hand every turn is the
+        # lands deck's engine (recast it to return Wasteland / Urza's Saga).
+        if (any(c == _CAT_CHOOSE_REPLACEMENT for c in cats)
+                and _self_library_count(obs) > _LOAM_DREDGE_MIN_LIBRARY):
+            for i, c in enumerate(cats):
+                if (c == _CAT_CHOOSE_REPLACEMENT
+                        and _action_card_id(card_ids, i) == _LIFE_FROM_LOAM_VOCAB_IDX):
+                    return i
+
+        # Beneficial-target polarity: the generic target rule prefers
+        # opponent-controlled targets (right for removal, backwards for
+        # effects that help their target). Keyed on the pending-decision
+        # source so only the named cards change behaviour.
+        if any(c == _CAT_TARGET for c in cats):
+            pending = _slot_card_idx(obs, _PENDING_DECISION_START)
+            # Reanimate / Animate Dead: the biggest creature card offered,
+            # preferring our own graveyard.
+            if pending in _REANIMATION_SPELL_IDS:
+                pick = _reanimation_target_choice(cats, card_ids, ctrl_arr, num_choices)
+                if pick is not None:
+                    return pick
+            # Thespian's Stage: copy our own Dark Depths (the Marit Lage line).
+            if pending == _THESPIANS_STAGE_VOCAB_IDX:
+                for i, c in enumerate(cats):
+                    if (c == _CAT_TARGET and ctrl_arr[i] > 0.5
+                            and _action_card_id(card_ids, i) == _DARK_DEPTHS_VOCAB_IDX):
+                        return i
+            # Life from the Loam: return the engine lands first (Urza's Saga
+            # to redeploy, then Wasteland to keep stripping their mana).
+            if pending == _LIFE_FROM_LOAM_VOCAB_IDX:
+                for want in (_URZAS_SAGA_VOCAB_IDX, _WASTELAND_VOCAB_IDX):
+                    for i, c in enumerate(cats):
+                        if c == _CAT_TARGET and _action_card_id(card_ids, i) == want:
+                            return i
+
+        # Discard choice: pitch a reanimation fatty first — a discard menu
+        # offering Griselbrand/Archon/Atraxa means we hold a card whose home is
+        # the graveyard (the deck's discard outlets exist for exactly this; the
+        # scripted agent never sideboards, so no post-board Show and Tell plan
+        # to protect).
+        if any(c == _CAT_DISCARD for c in cats):
+            for i, c in enumerate(cats):
+                if (c == _CAT_DISCARD
+                        and _action_card_id(card_ids, i) in _REANIMATION_FATTY_IDS):
+                    return i
+            # Careful Study's second discard with no fatty left: pitch a land
+            # rather than the arbitrary first card (which was eating Reanimate
+            # itself). Gated on the pending source so generic/cleanup discards
+            # elsewhere keep their proven behaviour.
+            if _slot_card_idx(obs, _PENDING_DECISION_START) == _CAREFUL_STUDY_VOCAB_IDX:
+                for i, c in enumerate(cats):
+                    if (c == _CAT_DISCARD
+                            and _action_card_id(card_ids, i) in _LAND_VOCAB_IDS):
+                        return i
+
+        # Urza's Saga chapter-II ability: always make the Construct when
+        # offered. The Saga's mana ability is auto-pay (never offered at
+        # priority), so the only Saga ACTIVATE here is the {2},{T} token
+        # ability — and the Saga sacrifices itself after chapter III, so the
+        # window is short. Ungated by phase, like The One Ring.
+        for i, c in enumerate(cats):
+            if (c == _CAT_ACTIVATE
+                    and _action_card_id(card_ids, i) == _URZAS_SAGA_VOCAB_IDX):
+                return i
+
+        # Thespian's Stage: with our own Dark Depths in play, take the Clone
+        # activation immediately (copy Depths → legend rule keeps the
+        # 0-counter copy → Marit Lage). Without Depths, hold it — copying a
+        # random land wastes the {2} and the tap.
+        hold_activations = None
+        if any(c == _CAT_ACTIVATE
+               and _action_card_id(card_ids, i) == _THESPIANS_STAGE_VOCAB_IDX
+               for i, c in enumerate(cats)):
+            if _controls_card(obs, _DARK_DEPTHS_VOCAB_IDX):
+                for i, c in enumerate(cats):
+                    if (c == _CAT_ACTIVATE
+                            and _action_card_id(card_ids, i) == _THESPIANS_STAGE_VOCAB_IDX):
+                        return i
+            else:
+                hold_activations = {_THESPIANS_STAGE_VOCAB_IDX}
+
+        # Land drop: complete the Depths/Stage pair when half is already down,
+        # else lead with Urza's Saga (its chapters start ticking — mana, then
+        # Constructs, then the tutor). Card-id gated: decks without these
+        # lands in hand fall through unchanged.
+        if any(c == _CAT_LAND for c in cats):
+            land_prefs = []
+            if _controls_card(obs, _DARK_DEPTHS_VOCAB_IDX):
+                land_prefs.append(_THESPIANS_STAGE_VOCAB_IDX)
+            if _controls_card(obs, _THESPIANS_STAGE_VOCAB_IDX):
+                land_prefs.append(_DARK_DEPTHS_VOCAB_IDX)
+            land_prefs.append(_URZAS_SAGA_VOCAB_IDX)
+            for want in land_prefs:
+                for i, c in enumerate(cats):
+                    if c == _CAT_LAND and _action_card_id(card_ids, i) == want:
+                        return i
+
+        # Reanimation cast hold: Reanimate/Animate Dead stay in hand until a
+        # creature worth cheating out is in a graveyard (either side's — the
+        # engine only offers the cast when SOME creature card is there, but a
+        # random 2-drop isn't worth the card).
+        hold_casts = None
+        if any(c == _CAT_CAST
+               and _action_card_id(card_ids, i) in _REANIMATION_SPELL_IDS
+               for i, c in enumerate(cats)):
+            if not _gy_has_any(obs, _REANIMATION_FATTY_IDS):
+                hold_casts = _REANIMATION_SPELL_IDS
+
         # Tron synergy: Candelabra of Tawnos untaps X target lands. It's only a mana
         # engine when it untaps lands that make MORE THAN ONE mana (Ancient Tomb, a
         # metalcraft Urza's Workshop, the assembled Urza's tron lands), so pay X for
@@ -1281,8 +1498,11 @@ class ScriptedAgent:
             if pick is not None:
                 return pick
 
-        # Anything not explicitly improved: proven GREEDY behaviour.
-        return _greedy_action(obs, num_choices, fruitless)
+        # Anything not explicitly improved: proven GREEDY behaviour (with the
+        # reanimation/Stage holds computed above threaded through its scans).
+        return _greedy_action(obs, num_choices, fruitless,
+                              hold_casts=hold_casts,
+                              hold_activations=hold_activations)
 
     @staticmethod
     def _confirm(cats, confirm_cat: int) -> int:

@@ -110,7 +110,7 @@ try:
         CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
         CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
         CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
-        CAT_SHUFFLE, CAT_KEEP_HAND)
+        CAT_SHUFFLE, CAT_KEEP_HAND, CAT_KEEP_LEGEND, CAT_CHOOSE_REPLACEMENT)
 except ImportError:
     from train._enums import (
         ACTION_CATEGORY_MAX, REF_ZONE_MAX, OPTION_ORDINAL_MAX, N_OBS_KEYWORDS,
@@ -133,7 +133,7 @@ except ImportError:
         CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
         CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
         CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
-        CAT_SHUFFLE, CAT_KEEP_HAND)
+        CAT_SHUFFLE, CAT_KEEP_HAND, CAT_KEEP_LEGEND, CAT_CHOOSE_REPLACEMENT)
 
 # STATE_SIZE / MAX_ACTIONS are imported from _enums (src/machine_io.h,
 # src/classes/gamestate.h). Card identity is 1 id float/slot, not a one-hot.
@@ -1260,7 +1260,17 @@ _BF_COST_START    = ACT_BLOCKS_END + _HAND_COST_FEATS
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
 _AETHER_VIAL_VOCAB_IDX   = 121
-_BASIC_LAND_IDS          = frozenset({0, 19})  # Mountain(0), Island(19)
+# All basic lands in the vocab. Used by the Wasteland gate ("does the opponent
+# have a nonbasic land worth destroying"): a missing entry makes an opposing
+# basic look nonbasic, so Wasteland fires with only its controller's own
+# nonbasics as legal targets and destroys one of them.
+_BASIC_LAND_IDS          = frozenset({0,    # Mountain
+                                      1,    # Forest
+                                      19,   # Island
+                                      44,   # Plains
+                                      62,   # Swamp
+                                      235,  # Snow-Covered Island
+                                      240}) # Wastes
 _COUNTER_SPELL_VOCAB_IDS = frozenset({12, 13, 22})  # Force of Will(12), Daze(13), Counterspell(22)
 _COUNTERSPELL_VOCAB_IDX  = 22
 # Death and Taxes: Solitude's ETB exiles a creature, so hard-cast it only with an
@@ -1346,8 +1356,33 @@ _MULTI_MANA_LAND_IDS     = frozenset({123, 261,  # Ancient Tomb, Urza's Workshop
                                       _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
                                       _URZAS_TOWER_VOCAB_IDX})
 
+# Reanimator deck card vocab indices (mirror src/card_vocab.h). Reanimate and
+# Animate Dead are the "put a creature card from a graveyard onto the
+# battlefield" spells; the fatties are the creatures those spells exist to
+# cheat out (the deck's discard outlets put them in the graveyard first).
+_REANIMATE_VOCAB_IDX     = 302
+_ANIMATE_DEAD_VOCAB_IDX  = 348
+_CAREFUL_STUDY_VOCAB_IDX = 303
+_REANIMATION_SPELL_IDS   = frozenset({_REANIMATE_VOCAB_IDX, _ANIMATE_DEAD_VOCAB_IDX})
+_REANIMATION_FATTY_IDS   = frozenset({304,   # Griselbrand
+                                      323,   # Archon of Cruelty
+                                      347})  # Atraxa, Grand Unifier
+
+# Lands deck card vocab indices (mirror src/card_vocab.h). Thespian's Stage
+# copying Dark Depths yields a zero-ice-counter Depths (copy effects don't copy
+# counters, CR 706.2) whose "no ice counters" trigger makes Marit Lage — the
+# deck's win condition. Urza's Saga's chapter-II ability builds Construct
+# tokens, and Life from the Loam's dredge recurs Saga/Wasteland from the
+# graveyard every turn.
+_LIFE_FROM_LOAM_VOCAB_IDX   = 90
+_URZAS_SAGA_VOCAB_IDX       = 296
+_DARK_DEPTHS_VOCAB_IDX      = 334
+_THESPIANS_STAGE_VOCAB_IDX  = 335
+
 _CAT_TOP_LIBRARY = CAT_TOP_LIBRARY  # choose card to put on top of library (Doomsday pile ordering)
 _CAT_SHUFFLE     = CAT_SHUFFLE  # shuffle choice (0 = don't shuffle, 1 = shuffle)
+_CAT_KEEP_LEGEND = CAT_KEEP_LEGEND  # legend rule (704.5j): choose which duplicate to keep
+_CAT_CHOOSE_REPLACEMENT = CAT_CHOOSE_REPLACEMENT  # draw replacement menu (0 = draw, 1+ = dredge)
 
 
 def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:
