@@ -110,7 +110,8 @@ try:
         CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
         CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
         CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
-        CAT_SHUFFLE, CAT_KEEP_HAND, CAT_KEEP_LEGEND, CAT_CHOOSE_REPLACEMENT)
+        CAT_SHUFFLE, CAT_KEEP_HAND, CAT_KEEP_LEGEND, CAT_CHOOSE_REPLACEMENT,
+        CAT_SACRIFICE_PERMANENT)
 except ImportError:
     from train._enums import (
         ACTION_CATEGORY_MAX, REF_ZONE_MAX, OPTION_ORDINAL_MAX, N_OBS_KEYWORDS,
@@ -133,7 +134,8 @@ except ImportError:
         CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
         CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
         CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
-        CAT_SHUFFLE, CAT_KEEP_HAND, CAT_KEEP_LEGEND, CAT_CHOOSE_REPLACEMENT)
+        CAT_SHUFFLE, CAT_KEEP_HAND, CAT_KEEP_LEGEND, CAT_CHOOSE_REPLACEMENT,
+        CAT_SACRIFICE_PERMANENT)
 
 # STATE_SIZE / MAX_ACTIONS are imported from _enums (src/machine_io.h,
 # src/classes/gamestate.h). Card identity is 1 id float/slot, not a one-hot.
@@ -1409,14 +1411,27 @@ _REANIMATION_FATTY_IDS   = frozenset({304,   # Griselbrand
 # tokens, and Life from the Loam's dredge recurs Saga/Wasteland from the
 # graveyard every turn.
 _LIFE_FROM_LOAM_VOCAB_IDX   = 90
+_EXPLORATION_VOCAB_IDX      = 311
+_CROP_ROTATION_VOCAB_IDX    = 312
 _URZAS_SAGA_VOCAB_IDX       = 296
 _DARK_DEPTHS_VOCAB_IDX      = 334
 _THESPIANS_STAGE_VOCAB_IDX  = 335
+_TABERNACLE_VOCAB_IDX       = 337  # The Tabernacle at Pendrell Vale
+# Lands a sacrifice cost should never eat while another option exists — the
+# combo pieces and the irreplaceable utility lands (a Crop Rotation that sacs
+# Dark Depths to fetch Thespian's Stage has defeated itself).
+_SAC_LAST_LAND_IDS = frozenset({_DARK_DEPTHS_VOCAB_IDX, _THESPIANS_STAGE_VOCAB_IDX,
+                                _URZAS_SAGA_VOCAB_IDX, _TABERNACLE_VOCAB_IDX,
+                                39,    # Karakas
+                                316,   # Boseiju, Who Endures
+                                324,   # Blast Zone
+                                343})  # Maze of Ith
 
 _CAT_TOP_LIBRARY = CAT_TOP_LIBRARY  # choose card to put on top of library (Doomsday pile ordering)
 _CAT_SHUFFLE     = CAT_SHUFFLE  # shuffle choice (0 = don't shuffle, 1 = shuffle)
 _CAT_KEEP_LEGEND = CAT_KEEP_LEGEND  # legend rule (704.5j): choose which duplicate to keep
 _CAT_CHOOSE_REPLACEMENT = CAT_CHOOSE_REPLACEMENT  # draw replacement menu (0 = draw, 1+ = dredge)
+_CAT_SACRIFICE   = CAT_SACRIFICE_PERMANENT  # choose a permanent to sacrifice (cost or effect)
 
 
 def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:

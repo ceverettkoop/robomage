@@ -40,7 +40,7 @@ from env import (
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY,
     _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE,
     _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD, _CAT_YESNO,
-    _CAT_DISCARD, _CAT_KEEP_LEGEND, _CAT_CHOOSE_REPLACEMENT,
+    _CAT_DISCARD, _CAT_KEEP_LEGEND, _CAT_CHOOSE_REPLACEMENT, _CAT_SACRIFICE,
     # battlefield / stack / graveyard layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
     _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE, _CUR_TURN_IDX,
@@ -74,6 +74,7 @@ from env import (
     # lands-deck combo/engine pieces
     _LIFE_FROM_LOAM_VOCAB_IDX, _URZAS_SAGA_VOCAB_IDX,
     _DARK_DEPTHS_VOCAB_IDX, _THESPIANS_STAGE_VOCAB_IDX,
+    _EXPLORATION_VOCAB_IDX, _TABERNACLE_VOCAB_IDX, _SAC_LAST_LAND_IDS,
     # Lion's Eye Diamond crack: blue-mana category + LED vocab id + draw-on-stack test
     _CAT_MANA_U, _LED_VOCAB_IDX, _self_has_draw_on_stack,
     # pending-decision source index (obs[_PENDING_DECISION_START] == source card id)
@@ -1504,6 +1505,50 @@ class ScriptedAgent:
                         return i
             else:
                 hold_activations = {_THESPIANS_STAGE_VOCAB_IDX}
+
+        # Sacrifice-cost pick: never eat a combo piece or irreplaceable
+        # utility land while any other option exists (Crop Rotation sacking
+        # the Dark Depths it plays around defeats itself). First
+        # non-protected option, else the generic first pick.
+        if any(c == _CAT_SACRIFICE for c in cats):
+            for i, c in enumerate(cats):
+                if (c == _CAT_SACRIFICE
+                        and _action_card_id(card_ids, i) not in _SAC_LAST_LAND_IDS):
+                    return i
+
+        # Land-search preference (Crop Rotation, Expedition Map, any land
+        # tutor — self-gating, the options only exist when the search can
+        # fetch them): complete the missing Depths/Stage half, else grab
+        # Tabernacle against a wide opposing board our own board shrugs at,
+        # else Urza's Saga. Tron decks run none of these cards, so their own
+        # search priorities (the tron blocks below) are unaffected.
+        if any(c == _CAT_SEARCH for c in cats):
+            search_prefs = []
+            has_depths = _controls_card(obs, _DARK_DEPTHS_VOCAB_IDX)
+            has_stage = _controls_card(obs, _THESPIANS_STAGE_VOCAB_IDX)
+            if has_depths and not has_stage:
+                search_prefs.append(_THESPIANS_STAGE_VOCAB_IDX)
+            if has_stage and not has_depths:
+                search_prefs.append(_DARK_DEPTHS_VOCAB_IDX)
+            gs_creatures = None
+            if any(_action_card_id(card_ids, i) == _TABERNACLE_VOCAB_IDX
+                   for i, c in enumerate(cats) if c == _CAT_SEARCH):
+                gs_creatures = (len(_creatures(g()["opp_battlefield"])),
+                                len(_creatures(g()["self_battlefield"])))
+                if gs_creatures[0] >= 3 and gs_creatures[1] <= 1:
+                    search_prefs.append(_TABERNACLE_VOCAB_IDX)
+            search_prefs.append(_URZAS_SAGA_VOCAB_IDX)
+            for want in search_prefs:
+                for i, c in enumerate(cats):
+                    if c == _CAT_SEARCH and _action_card_id(card_ids, i) == want:
+                        return i
+
+        # Exploration first among casts: the extra land drop compounds every
+        # later turn, so it beats any other one-shot play this turn.
+        for i, c in enumerate(cats):
+            if (c == _CAT_CAST
+                    and _action_card_id(card_ids, i) == _EXPLORATION_VOCAB_IDX):
+                return i
 
         # Land drop: complete the Depths/Stage pair when half is already down,
         # else lead with Urza's Saga (its chapters start ticking — mana, then
