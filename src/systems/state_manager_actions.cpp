@@ -384,6 +384,17 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         return is_battlefield_permanent(ab.source);
     }
 
+    // IsPresent$ Card.StrictlySelf (Animate Dead's ETB: "When CARDNAME enters, if it's on the
+    // battlefield, ..."): strictly this object itself must be on the battlefield when the
+    // trigger would go on the stack AND when it resolves (CR 603.4 — either check failing means
+    // the trigger does nothing). Unlike Card.Self this is NOT Forge's "another permanent
+    // enters" idiom, so the source's own entry satisfies it (no trigger_self_excluded in
+    // parse.cpp). Must not fall through to the generic presence scan below, which would read
+    // the type token "Card" as any-permanent and pass vacuously whenever anything is in play.
+    if (ab.condition_present == "Card.StrictlySelf") {
+        return is_battlefield_permanent(ab.source);
+    }
+
     // Card.Self+escaped: the source permanent entered because its spell was cast from the
     // graveyard for its Escape cost (CR 702.139). Read the persisted flag off its Permanent.
     // Uro's TrigSac uses ConditionNotPresent$ Card.Self+escaped ("sacrifice it unless it

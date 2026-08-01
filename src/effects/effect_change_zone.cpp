@@ -16,6 +16,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../classes/action.h"
+#include "../action_processor.h"
 #include "../game_queries.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
@@ -27,6 +28,7 @@ extern Game cur_game;
 namespace effects {
 
 static bool search_reveals_card(const Ability &ab);
+static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, Entity e);
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
                                         Zone::ZoneValue dest, bool exile_face_down = false);
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
@@ -37,6 +39,50 @@ static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orde
 // Permanent (and Token) but no CardData, so reading CardData on it crashes. Delegates to the
 // shared resolver (game_queries.h), which also names lingering tokens and ability entities.
 static std::string object_display_name(Entity e) { return entity_name(e); }
+
+// CR 303.4f/g: an Aura entering the battlefield WITHOUT being cast (any ChangeZone move to
+// the battlefield — Show and Tell's put-from-hand, a reanimation, a blink return) has no
+// cast-time enchant target, so the player it enters under chooses a legal object for it to
+// enchant AS it enters (303.4f). The choice is seeded into pending_aura_target so the
+// Permanent-creation SBA finalizes the attach link exactly like a resolved Aura spell — and a
+// graveyard-card choice (Animate Dead's "enchant creature card in a graveyard") stays pending
+// there so the aura's ETB trigger reanimates-and-attaches through the existing machinery.
+// With NO legal object the Aura never enters at all: it stays in its current zone (303.4g;
+// the stack-origin special case — graveyard instead — never reaches here, because a resolving
+// Aura SPELL goes through the cast path with its target already in pending_aura_target).
+// Returns true when the battlefield move may proceed. Driven purely by the card's Enchant
+// spec (CardData::enchant_filter), reusing the cast path's target legality machinery, so the
+// two paths can never disagree about what the aura may enchant.
+static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, Entity e) {
+    if (!global_coordinator.entity_has_component<CardData>(e)) return true;
+    const auto &cd = global_coordinator.GetComponent<CardData>(e);
+    if (cd.enchant_filter.empty()) return true;              // not an Aura
+    if (cur_game.pending_aura_target.count(e)) return true;  // enchant object already chosen
+    // It enters under its owner's control for every ChangeZone put (CR 110.2a), so the owner
+    // chooses what it will enchant (CR 303.4f).
+    Zone::Ownership ctrl = global_coordinator.GetComponent<Zone>(e).owner;
+    Ability enchant_ab;
+    enchant_ab.source = e;
+    enchant_ab.controller = ctrl;
+    enchant_ab.valid_tgts = cd.enchant_filter;
+    // "Enchant creature card in a graveyard" (Animate Dead): the legal objects are graveyard
+    // cards, not battlefield permanents (CR 303.4).
+    enchant_ab.target_in_graveyard = enchant_targets_graveyard(cd.enchant_filter);
+    if (!has_legal_targets(enchant_ab, orderer)) {
+        game_log("%s stays in its current zone (no legal object for it to enchant, CR 303.4g)\n",
+                 cd.name.c_str());
+        return false;
+    }
+    // The chooser picks among the legal objects; seat priority at them for the inline prompt
+    // (blocking, like other mid-resolution choices).
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (ctrl == Zone::PLAYER_A);
+    select_target(enchant_ab, orderer, ctrl);
+    cur_game.player_a_has_priority = prev_priority;
+    if (enchant_ab.target == 0) return false;  // defensive: target_min=1 never offers "No target"
+    cur_game.pending_aura_target[e] = enchant_ab.target;
+    return true;
+}
 
 // Move a card for a ChangeZone effect and report the zone it actually landed in. A
 // replacement effect can divert the move during add_to_zone — Containment Priest redirects an
@@ -59,6 +105,11 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     if (dest == Zone::BATTLEFIELD &&
         global_coordinator.entity_has_component<CardData>(e) &&
         !is_permanent_card(global_coordinator.GetComponent<CardData>(e))) {
+        return global_coordinator.GetComponent<Zone>(e).location;
+    }
+    // CR 303.4f/g: an Aura put onto the battlefield without being cast must choose a legal
+    // object to enchant as it enters — and with none available it doesn't enter at all.
+    if (dest == Zone::BATTLEFIELD && !aura_enters_choose_object(orderer, e)) {
         return global_coordinator.GetComponent<Zone>(e).location;
     }
     orderer->add_to_zone(false, e, dest, /*top_seen_by_owner=*/true, exile_face_down);
