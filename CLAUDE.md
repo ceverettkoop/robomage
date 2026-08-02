@@ -612,6 +612,7 @@ train/.venv/bin/python train/train.py exploiter --archetype burn --resume       
 train/.venv/bin/python train/train.py az --deck delver                                # one cycle: self-play -> train -> gate
 train/.venv/bin/python train/train.py az-league                                       # rotate AZ cycles across decks/league/
 train/.venv/bin/python train/train.py az-league --matrix --expert-decks league/wubg_doomsday  # whole-roster focus matrix + scripted:hard expert (BC) shards for the combo deck each slot
+train/.venv/bin/python train/train.py az-league --exhaustive --rotations 2 --gate-every 0 --window 0 --workers 28  # EXACT matchup matrix each slot (one bo3 match vs scripted:hard per ordered deck pair + one self-play match per unordered pair = 155 on the 10-deck roster; HYBRID backend: C++ actor plays the self-play cells when built, Python the vs-scripted cells), auto 2x shard window (0 = twice this slot's new shards, so the previous pass stays in-window), ungated (--gate-every 0: no gates; final candidate promoted to gen__azfinal unconditionally at completion)
 
 # Curriculum: a multi-phase plan (league -> exploiter -> league -> az-league -> baseline) in one file
 train/.venv/bin/python train/train.py curriculum --plan q3 --dry-run                  # print each phase's composed command

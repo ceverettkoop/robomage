@@ -876,7 +876,20 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--batches", "int", default=500),
         Arg("--batch-size", "int", default=256),
         Arg("--lr", "float", default=1e-3),
-        Arg("--window", "int", default=50),
+        Arg("--window", "int", default=50,
+            help="Training window: newest N shards (default 50). 0 = AUTO — 2x "
+                 "the shards this cycle's generation writes, so every training "
+                 "pass covers exactly this pass plus the previous one"),
+        Arg("--exhaustive", "flag",
+            help="Replace the random self-play draw with the EXACT matchup "
+                 "matrix: one bo3 match vs scripted:hard per ORDERED focus x "
+                 "opponent pair (net pilots the focus seat) plus one pure "
+                 "self-play match per UNORDERED pair, mirrors included — "
+                 "10x10 + 55 = 155 matches on the 10-deck roster, every cell "
+                 "exactly once. --games/--mirror-frac/--scripted-opponent-frac "
+                 "are ignored. HYBRID backend: the C++ actor (when built) "
+                 "plays the pure self-play cells, the Python backend the "
+                 "vs-scripted cells; --no-actor keeps everything on Python"),
         Arg("--eval-games", "int", default=56,
             help="Total gate matches, split over the roster-wide panel (a mirror "
                  "per roster deck + direction-balanced cross pairs; default 56 "
@@ -951,7 +964,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--batches", "int", default=500),
         Arg("--batch-size", "int", default=256),
         Arg("--lr", "float", default=1e-3),
-        Arg("--window", "int", default=50),
+        Arg("--window", "int", default=50,
+            help="Training window: newest N shards (default 50). 0 = AUTO — 2x "
+                 "the shards each slot's generation writes, so every training "
+                 "pass covers exactly that pass plus the previous one"),
         Arg("--eval-games", "int", default=56,
             help="Total gate matches, split over the roster-wide panel (a mirror "
                  "per roster deck + direction-balanced cross pairs; default 56 "
@@ -969,13 +985,27 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "candidate accumulates K cycles of training (and "
                  "candidate-generated self-play) between promotions, and the "
                  "gate's wall-clock cost is paid 1/K as often. Candidate "
-                 "snapshots still save every slot."),
+                 "snapshots still save every slot. 0 = NO gating: no slot is "
+                 "ever gated and the final candidate is promoted to "
+                 "gen__azfinal UNCONDITIONALLY when the run completes (use a "
+                 "finite --rotations)."),
         Arg("--matrix", "flag",
             help="Whole-roster focus MATRIX every slot instead of the per-deck "
                  "focus rotation: each cycle's self-play draws its focus deck "
                  "uniformly from the roster per game, keeping the training "
                  "window stationary (no one-deck-at-a-time forgetting sweep). "
                  "A rotation then counts --cycles-per-deck matrix cycles."),
+        Arg("--exhaustive", "flag",
+            help="Like --matrix but EXACT: every slot's self-play plays the "
+                 "full matchup matrix once — one bo3 match vs scripted:hard "
+                 "per ORDERED deck pair (net pilots the focus seat) plus one "
+                 "pure self-play match per UNORDERED pair, mirrors included "
+                 "(10x10 + 55 = 155 matches on the 10-deck roster). "
+                 "--games/--mirror-frac/--scripted-opponent-frac are ignored. "
+                 "HYBRID backend: the C++ actor (when built) plays the pure "
+                 "self-play cells, the Python backend the vs-scripted cells; "
+                 "--no-actor keeps everything on Python. A rotation counts "
+                 "--cycles-per-deck matrix cycles, as with --matrix."),
         Arg("--expert-decks", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated decks to ALSO write scripted:hard EXPERT "
                  "demonstration shards for each slot (pi = one-hot expert "

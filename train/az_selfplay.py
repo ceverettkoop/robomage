@@ -22,6 +22,9 @@ net+MCTS (focus seat) against the rule-based scripted:hard agent (opponent seat)
 instead of against itself; only the net seat's decisions become samples
 (:func:`_play_match_vs_scripted`). ``f=1.0`` trains entirely against the scripted
 agent. That path is Python-backend only (the C++ actor is pure self-play).
+``generate(exhaustive=True)`` plays the exact matchup matrix instead of a random
+draw, splitting HYBRID across both backends: actor for the pure self-play cells,
+Python for the vs-scripted cells (see :func:`_generate_hybrid`).
 
 :func:`generate_expert` additionally writes EXPERT demonstration shards —
 scripted:hard piloting both seats, pi = one-hot on the expert's action — in the
@@ -109,6 +112,53 @@ def build_matchup_schedule_ex(focus_decks, opponent_decks, games: int,
         pair = (fdeck, opp) if focus_is_a else (opp, fdeck)
         sched.append((pair[0], pair[1], focus_is_a))
     return sched
+
+
+def build_exhaustive_schedule_ex(focus_decks, opponent_decks, seed: int) -> tuple:
+    """The EXHAUSTIVE matchup matrix: every cell exactly once, no random draw.
+
+    Two families of cells, one bo3 match each:
+
+    * every ORDERED ``(focus, opponent)`` pair — a vs-SCRIPTED cell: the net+MCTS
+      pilots the focus deck, scripted:hard the opponent deck. Ordered because the
+      two seats produce different training data (only the net seat is sampled),
+      so "net pilots X vs scripted Y" and "net pilots Y vs scripted X" are both
+      played. Mirrors included: ``len(focus) * len(pool)`` cells.
+    * every UNORDERED deck pair (mirrors included) — a pure SELF-PLAY cell: the
+      one generalist pilots both seats, so (X, Y) and (Y, X) are the same cell.
+
+    On the 10-deck league roster that is 100 + 55 = 155 matches. The seeded RNG
+    randomizes only each cell's seat assignment and the interleaving of the two
+    families (scripted cells cost less wall-clock than searched-both-seats cells,
+    so shuffling balances the contiguous worker slices); the CELL SET is exact
+    and deterministic regardless of seed.
+
+    Returns ``(sched_ex, scripted_seats)`` — the same shapes ``generate`` builds
+    from :func:`build_matchup_schedule_ex` + its scripted-fraction draw: a list of
+    ``(deck_a, deck_b, focus_is_a)`` and a parallel list of per-match ``net_is_a``
+    (None = pure self-play)."""
+    rng = np.random.default_rng(seed)
+    focus = list(focus_decks or [])
+    pool = list(opponent_decks or []) or list(focus)
+    cells = []                       # (fdeck, opp, net_is_a_or_None)
+    for f in focus:                  # ordered: one vs-scripted cell per pair
+        for o in pool:
+            cells.append((f, o, True))
+    seen = set()
+    for f in focus:                  # unordered: one pure self-play cell per pair
+        for o in pool:
+            key = tuple(sorted((f, o)))
+            if key not in seen:
+                seen.add(key)
+                cells.append((f, o, None))
+    rng.shuffle(cells)
+    sched_ex, seats = [], []
+    for fdeck, opp, scripted in cells:
+        focus_is_a = bool(rng.random() < 0.5)
+        pair = (fdeck, opp) if focus_is_a else (opp, fdeck)
+        sched_ex.append((pair[0], pair[1], focus_is_a))
+        seats.append(focus_is_a if scripted else None)
+    return sched_ex, seats
 
 
 def build_matchup_schedule(focus_decks, opponent_decks, games: int,
@@ -708,7 +758,7 @@ def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
              sb_persist: bool = bool(DEFAULT_SB_PERSIST),
              scripted_opponent_frac: float = 0.0,
-             bo3: bool = False) -> dict:
+             bo3: bool = False, exhaustive: bool = False) -> dict:
     """Generate ``games`` self-play MATCHES over a FOCUS pool and write shards.
 
     ``games`` is a count of MATCHES (bo1: one game each; bo3: up to three games
@@ -741,6 +791,16 @@ def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
     actor has no scripted-opponent support, so a nonzero fraction FORCES the
     Python backend (and is a loud error alongside an explicit ``use_actor=True``).
 
+    ``exhaustive`` replaces the random schedule with the exact matchup MATRIX of
+    :func:`build_exhaustive_schedule_ex`: one vs-scripted match per ORDERED
+    (focus x roster) pair plus one pure self-play match per UNORDERED pair —
+    155 matches on the 10-deck league roster, each cell exactly once. ``games``,
+    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored (loudly). The
+    backend goes HYBRID (:func:`_generate_hybrid`): the C++ actor, when built,
+    plays the pure self-play cells and the Python backend the vs-scripted cells
+    (the actor has no scripted seat); ``use_actor=False`` keeps everything on
+    Python, ``use_actor=True`` demands the actor binary but remains hybrid.
+
     ``use_actor`` picks the generation backend:
       * ``None`` (AUTO, default) — use the C++ ``bin/az_actor`` iff it is built,
         else the pure-Python multiprocess path;
@@ -753,9 +813,16 @@ def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
         raise ValueError(
             f"scripted_opponent_frac must be in [0, 1] "
             f"(got {scripted_opponent_frac})")
+    if exhaustive:
+        # The matrix defines the match count; the random-draw knobs are inert.
+        ignored = [name for name, on in
+                   (("games", True), ("mirror_frac", mirror_frac != DEFAULT_MIRROR_FRAC),
+                    ("scripted_opponent_frac", scripted_opponent_frac > 0.0)) if on]
+        print(f"[az-selfplay] exhaustive matrix: ignoring {', '.join(ignored)} "
+              f"(every cell is played exactly once)")
+        scripted_opponent_frac = 0.0
     if workers is None:
         workers = max(1, (os.cpu_count() or 2) - 2)
-    workers = max(1, min(workers, games))
     out_dir = out_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     os.makedirs(out_dir, exist_ok=True)
     if roster is None:
@@ -768,12 +835,33 @@ def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
         # backend-agnostic (the .bo3_migrated sentinel gates it either way) and
         # runs regardless of which backend generates the bo3 shards below.
         _discard_pre_bo3_shards(out_dir)
+    requested = use_actor        # None = AUTO, True = --actor, False = --no-actor
     if use_actor is None:
         use_actor = have_actor
         chosen = "AUTO"
     else:
         chosen = "forced"
-    if use_actor and scripted_opponent_frac > 0.0:
+    hybrid = False
+    if exhaustive:
+        # HYBRID backend: the C++ actor (when built) plays the pure self-play
+        # cells while the Python backend plays the vs-scripted cells (the actor
+        # has no scripted-opponent seat). --no-actor keeps everything on the
+        # Python path; --actor demands the binary but is still hybrid — the
+        # scripted cells can never run on the actor.
+        if requested is False:
+            chosen = "forced PYTHON"
+        elif not have_actor:
+            if requested is True:
+                raise FileNotFoundError(
+                    f"--actor requested but the actor binary is not built at "
+                    f"{_ACTOR_BIN} (build it with `make actor`, or pass "
+                    f"--no-actor)")
+            chosen = "AUTO->PYTHON (actor absent)"
+        else:
+            hybrid = True
+            chosen = "HYBRID (forced)" if requested is True else "AUTO->HYBRID"
+        use_actor = False
+    elif use_actor and scripted_opponent_frac > 0.0:
         if chosen == "forced":
             raise ValueError(
                 "--actor is incompatible with --scripted-opponent-frac > 0: the "
@@ -786,18 +874,29 @@ def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
             f"--actor requested but the actor binary is not built at {_ACTOR_BIN} "
             f"(build it with `make actor`, or pass --no-actor)")
 
-    sched_ex = build_matchup_schedule_ex(focus, roster, games, mirror_frac, seed)
+    if exhaustive:
+        sched_ex, scripted_seats = build_exhaustive_schedule_ex(focus, roster, seed)
+        n_scr = sum(1 for s in scripted_seats if s is not None)
+        print(f"[az-selfplay] exhaustive matrix: {len(sched_ex)} matches "
+              f"({n_scr} vs scripted:hard, one per ordered focus x opponent pair; "
+              f"{len(sched_ex) - n_scr} pure self-play, one per unordered pair)")
+        games = len(sched_ex)
+    else:
+        sched_ex = build_matchup_schedule_ex(focus, roster, games, mirror_frac,
+                                             seed)
+        scripted_seats = None
+        if scripted_opponent_frac > 0.0:
+            # Dedicated RNG stream (never touches the schedule's draws) indexed
+            # per MATCH, so the scripted assignment is reproducible and
+            # independent of how the schedule is sliced across workers. Entry =
+            # net_is_a; None = pure self-play for that match.
+            srng = np.random.default_rng([seed, 0x5C819])
+            scripted_seats = [(focus_is_a
+                               if srng.random() < scripted_opponent_frac
+                               else None)
+                              for (_a, _b, focus_is_a) in sched_ex]
     schedule = [(a, b) for a, b, _ in sched_ex]
-    scripted_seats = None
-    if scripted_opponent_frac > 0.0:
-        # Dedicated RNG stream (never touches the schedule's draws) indexed per
-        # MATCH, so the scripted assignment is reproducible and independent of
-        # how the schedule is sliced across workers. Entry = net_is_a; None =
-        # pure self-play for that match.
-        srng = np.random.default_rng([seed, 0x5C819])
-        scripted_seats = [(focus_is_a if srng.random() < scripted_opponent_frac
-                           else None)
-                          for (_a, _b, focus_is_a) in sched_ex]
+    workers = max(1, min(workers, games))
     source = resolve_source(deck, checkpoint)
     focus_lbl = focus[0] if len(focus) == 1 else f"{len(focus)} decks [{','.join(focus)}]"
     unit = "matches" if bo3 else "games"
@@ -812,16 +911,26 @@ def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
     print(f"[az-selfplay] matchups: {_schedule_summary(schedule)}")
     if scripted_seats is not None:
         n_scripted = sum(1 for s in scripted_seats if s is not None)
+        how = ("exhaustive matrix"
+               if exhaustive else f"frac={scripted_opponent_frac}")
         print(f"[az-selfplay] scripted-opponent games: {n_scripted}/{len(schedule)} "
-              f"(frac={scripted_opponent_frac}; scripted:hard on the opponent seat, "
+              f"({how}; scripted:hard on the opponent seat, "
               f"net samples only)")
-    print(f"[az-selfplay] backend={'ACTOR' if use_actor else 'PYTHON'} ({chosen}); "
+    backend_lbl = ("HYBRID" if hybrid
+                   else "ACTOR" if use_actor else "PYTHON")
+    print(f"[az-selfplay] backend={backend_lbl} ({chosen}); "
           f"az_actor {'present' if have_actor else 'absent'}")
 
     common = dict(source=source, schedule=schedule, sims=sims, worlds=worlds,
                   workers=workers, temp_moves=temp_moves,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed)
+    if hybrid:
+        return _generate_hybrid(deck, scripted_seats=scripted_seats,
+                                actor_bin=_ACTOR_BIN, bo3=bo3, sb_sims=sb_sims,
+                                sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                                sb_rollout_turns=sb_rollout_turns,
+                                sb_persist=sb_persist, **common)
     if use_actor:
         # The C++ actor mirrors the Python match loop for bo3 (Stage 6), including
         # the searched sideboard roots — pass bo3 + the sb budget through so the
@@ -837,6 +946,77 @@ def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
                             sb_rollout_turns=sb_rollout_turns,
                             sb_persist=sb_persist, scripted_seats=scripted_seats,
                             **common)
+
+
+# ----------------------------------------------------------------------
+# Hybrid backend (exhaustive matrix: actor self-play + Python vs-scripted)
+# ----------------------------------------------------------------------
+
+# Seed offset for the hybrid's actor pass, so its per-group seed ranges never
+# collide with the Python pass's game seeds run in the same invocation.
+_HYBRID_ACTOR_SEED_OFFSET = 10_000_019
+
+
+def _merge_summaries(a: dict, b: dict) -> dict:
+    """Fold two backend summary dicts (same shape both backends return) into
+    one: samples/shards concatenate, stats sum key-wise (a key missing from one
+    side counts 0)."""
+    stats = dict(a["stats"])
+    for k, v in b["stats"].items():
+        stats[k] = stats.get(k, 0) + v
+    return {"samples": a["samples"] + b["samples"],
+            "shards": list(a["shards"]) + list(b["shards"]),
+            "stats": stats, "out_dir": a["out_dir"], "source": a["source"]}
+
+
+def _generate_hybrid(deck, *, source, schedule, scripted_seats, sims, worlds,
+                     workers, temp_moves, root_noise_eps, root_noise_alpha,
+                     out_dir, seed, actor_bin, bo3=False,
+                     sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
+                     sb_max_depth=DEFAULT_SB_MAX_DEPTH,
+                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
+                     sb_persist=bool(DEFAULT_SB_PERSIST)) -> dict:
+    """Split an exhaustive-matrix schedule across BOTH backends: the C++ actor
+    plays the pure self-play cells (it is much faster per match), the Python
+    multiprocess backend the vs-scripted cells (the actor has no scripted seat).
+    The passes run sequentially, each with the full ``workers`` budget, and both
+    write trainer-compatible ``shard_*.npz`` files into the same ``out_dir``
+    (filenames are globally unique), so the merged summary's shard list is
+    exactly what an auto (``window=0``) training window should count.
+
+    The actor pass runs on a derived seed stream
+    (``seed + _HYBRID_ACTOR_SEED_OFFSET``) so its game seeds never collide with
+    the Python pass's; per-pass reproducibility is unchanged."""
+    self_sched = [m for m, s in zip(schedule, scripted_seats) if s is None]
+    scr_sched = [m for m, s in zip(schedule, scripted_seats) if s is not None]
+    scr_seats = [s for s in scripted_seats if s is not None]
+    print(f"[az-selfplay] hybrid split: {len(self_sched)} pure self-play "
+          f"matches -> ACTOR, {len(scr_sched)} vs-scripted matches -> PYTHON "
+          f"(sequential, {workers} workers each)")
+    kw = dict(source=source, sims=sims, worlds=worlds, workers=workers,
+              temp_moves=temp_moves, root_noise_eps=root_noise_eps,
+              root_noise_alpha=root_noise_alpha, out_dir=out_dir, bo3=bo3,
+              sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+              sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist)
+    summaries = []
+    if self_sched:
+        print(f"[az-selfplay] hybrid pass 1/2: ACTOR ({len(self_sched)} matches)")
+        summaries.append(_generate_actor(
+            deck, schedule=self_sched, seed=seed + _HYBRID_ACTOR_SEED_OFFSET,
+            actor_bin=actor_bin, **kw))
+    if scr_sched:
+        print(f"[az-selfplay] hybrid pass 2/2: PYTHON ({len(scr_sched)} "
+              f"vs-scripted matches)")
+        summaries.append(_generate_python(
+            deck, schedule=scr_sched, seed=seed, scripted_seats=scr_seats,
+            **kw))
+    merged = summaries[0]
+    for s in summaries[1:]:
+        merged = _merge_summaries(merged, s)
+    print(f"[az-selfplay] hybrid done: {merged['samples']} samples, "
+          f"{len(merged['shards'])} shards from {len(schedule)} matches "
+          f"(ACTOR {len(self_sched)} + PYTHON {len(scr_sched)})")
+    return merged
 
 
 # ----------------------------------------------------------------------

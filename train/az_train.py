@@ -476,12 +476,7 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
 
     promoted = False
     if promote and wr >= promote_threshold and not vetoes:
-        final = az_checkpoint_path(None, ckpt_dir)
-        for src, dst in ((cand_path, final),
-                         (_meta_of(cand_path), _meta_of(final))):
-            if os.path.exists(src):
-                os.makedirs(os.path.dirname(dst), exist_ok=True)
-                shutil.copyfile(src, dst)
+        final = _promote_to_final(cand_path, ckpt_dir)
         promoted = True
         print(f"[az-eval] PROMOTED candidate -> {final} (>= {promote_threshold:.2f})")
     elif promote and vetoes:
@@ -498,6 +493,21 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
 def _meta_of(path: str) -> str:
     base, _ = os.path.splitext(path)
     return base + ".meta.json"
+
+
+def _promote_to_final(cand_path: str, ckpt_dir: str = _AZ_CKPT_DIR) -> str:
+    """Copy a candidate snapshot (and its meta sidecar) over ``gen__azfinal.pt``
+    — the checkpoint the ``az:gen`` serving/eval specs resolve to. Used by the
+    gate on promotion and by an ungated (``gate_every=0``) az-league run at
+    completion. Returns the final path."""
+    from az_net import az_checkpoint_path
+    final = az_checkpoint_path(None, ckpt_dir)
+    for src, dst in ((cand_path, final),
+                     (_meta_of(cand_path), _meta_of(final))):
+        if os.path.exists(src):
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copyfile(src, dst)
+    return final
 
 
 # ----------------------------------------------------------------------
@@ -519,10 +529,24 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
              gate_floor: float = DEFAULT_GATE_FLOOR,
              expert_decks: Optional[list] = None, expert_games: int = 16,
              roster: Optional[list] = None, bo3: bool = True,
-             gate: bool = True) -> dict:
+             gate: bool = True, exhaustive: bool = False) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
+
+    ``exhaustive`` swaps the random self-play schedule for the exact matchup
+    matrix (see :func:`az_selfplay.build_exhaustive_schedule_ex`): one bo3 match
+    vs scripted:hard per ORDERED focus x opponent pair plus one pure self-play
+    match per UNORDERED pair — 155 matches on the 10-deck roster. ``games``,
+    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and the backend
+    goes HYBRID: the C++ actor (when built) plays the pure self-play cells, the
+    Python backend the vs-scripted cells (the actor has no scripted seat).
+
+    ``window=0`` sizes the training window automatically: 2x the shards THIS
+    cycle's generation just wrote (self-play + expert), so each training pass
+    always covers exactly this generation pass plus the previous one — older
+    shards age out and anything newer (e.g. expert shards written just before
+    the run) still lands inside the window.
 
     ``gate=False`` skips the eval/gate stage entirely (the returned ``eval`` is
     None) — az-league uses it to gate every K slots (``--gate-every``) instead
@@ -558,7 +582,8 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
     label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
 
     print(f"=== az cycle: self-play (cross-deck, focus={label}, "
-          f"{'bo3' if bo3 else 'bo1'}) ===")
+          f"{'bo3' if bo3 else 'bo1'}"
+          f"{', exhaustive matrix' if exhaustive else ''}) ===")
     gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
                                sb_sims=sb_sims, sb_worlds=sb_worlds,
                                sb_max_depth=sb_max_depth,
@@ -568,7 +593,7 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
                                roster=roster, focus_decks=focus,
                                mirror_frac=mirror_frac,
                                scripted_opponent_frac=scripted_opponent_frac,
-                               bo3=bo3)
+                               bo3=bo3, exhaustive=exhaustive)
     if expert_decks:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
@@ -576,6 +601,13 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
         gen["expert"] = az_selfplay.generate_expert(
             list(expert_decks), games=expert_games * len(expert_decks),
             roster=roster, mirror_frac=mirror_frac, bo3=bo3, seed=seed)
+    if window == 0:
+        # Auto window: 2x the shards this cycle just wrote, so training always
+        # reads exactly this generation pass plus the previous one.
+        n_new = len(gen["shards"]) + len((gen.get("expert") or {}).get("shards", []))
+        window = max(1, 2 * n_new)
+        print(f"[az cycle] auto window: {n_new} new shard(s) this cycle -> "
+              f"window={window} (2x, covers this pass + the previous one)")
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
                   window=window, seed=seed)
@@ -645,7 +677,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               promote_threshold: float = 0.55, seed: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
               scripted_opponent_frac: float = 0.0,
-              matrix: bool = False, gate_floor: float = DEFAULT_GATE_FLOOR,
+              matrix: bool = False, exhaustive: bool = False,
+              gate_floor: float = DEFAULT_GATE_FLOOR,
               gate_every: int = DEFAULT_GATE_EVERY,
               expert_decks: Optional[list] = None, expert_games: int = 16,
               use_actor: Optional[bool] = None, resume: bool = False,
@@ -665,6 +698,24 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     deck's distribution at a time — the per-deck rotation is where the
     catastrophic-forgetting pressure came from. A "rotation" then counts
     ``cycles_per_deck`` matrix cycles instead of a roster pass.
+
+    ``exhaustive=True`` goes one step further than ``matrix``: every slot's
+    self-play is the EXACT matchup matrix (one vs-scripted match per ordered
+    pair + one pure self-play match per unordered pair — 155 bo3 matches on a
+    10-deck roster; see :func:`az_selfplay.build_exhaustive_schedule_ex`)
+    instead of a random draw. Slot accounting follows the matrix rule (a
+    rotation = ``cycles_per_deck`` whole-roster cycles); ``games``,
+    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and self-play
+    runs on the HYBRID backend — the C++ actor (when built) plays the pure
+    self-play cells, the Python backend the vs-scripted cells.
+
+    ``gate_every=0`` disables the eval/gate entirely: no slot is gated, and at
+    run COMPLETION the newest candidate snapshot is promoted to
+    ``gen__azfinal.pt`` unconditionally — otherwise ``az:gen`` serving/eval
+    specs would keep resolving a stale (or missing) incumbent forever. An
+    indefinite run (``rotations=0``) with ``gate_every=0`` never reaches
+    completion, so it never promotes until interrupted+finished — prefer a
+    finite ``rotations`` with ``gate_every=0``.
 
     ``rotations=0`` runs INDEFINITELY: slots keep generating until the process
     is interrupted. The sidecar still advances after every completed slot, so an
@@ -711,6 +762,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         scripted_opponent_frac = float(
             p.get("scripted_opponent_frac", scripted_opponent_frac))
         matrix = bool(p.get("matrix", False))
+        exhaustive = bool(p.get("exhaustive", False))
         gate_floor = float(p.get("gate_floor", gate_floor))
         gate_every = int(p.get("gate_every", gate_every))
         expert_decks = p.get("expert_decks", None)
@@ -739,9 +791,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
 
     # rotations == 0 -> indefinite: no materialized slot list; slot i maps to
     # (rotation, deck, cycle) by index arithmetic and total stays None. In
-    # matrix mode every slot is a whole-roster cycle, so a rotation is just
-    # cycles_per_deck slots.
-    per_rotation = cycles_per_deck if matrix else len(roster) * cycles_per_deck
+    # matrix (and exhaustive) mode every slot is a whole-roster cycle, so a
+    # rotation is just cycles_per_deck slots.
+    whole_roster_slots = matrix or exhaustive
+    per_rotation = (cycles_per_deck if whole_roster_slots
+                    else len(roster) * cycles_per_deck)
     total = None if rotations == 0 else rotations * per_rotation
 
     base_state = {
@@ -759,6 +813,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
             "seed": seed, "mirror_frac": mirror_frac,
             "scripted_opponent_frac": scripted_opponent_frac, "matrix": matrix,
+            "exhaustive": exhaustive,
             "gate_floor": gate_floor, "gate_every": gate_every,
             "expert_decks": expert_decks,
             "expert_games": expert_games, "use_actor": use_actor,
@@ -769,17 +824,26 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     print(f"AZ league roster: {', '.join(roster)}")
     rotations_txt = "indefinite" if total is None else str(rotations)
     total_txt = "unbounded" if total is None else str(total)
-    focus_txt = ("matrix (whole-roster focus every slot)" if matrix
+    focus_txt = ("exhaustive matrix (every matchup cell once, every slot)"
+                 if exhaustive
+                 else "matrix (whole-roster focus every slot)" if matrix
                  else "per-deck rotation")
     print(f"  rotations={rotations_txt}  cycles_per_deck={cycles_per_deck}  "
           f"slots={total_txt}  focus={focus_txt}  (starting at slot {slot_index})")
-    gate_every = max(1, int(gate_every))
+    gate_every = max(0, int(gate_every))
+    gate_txt = ("OFF (ungated promotion at run completion)" if gate_every == 0
+                else str(gate_every))
+    window_txt = "auto(2x new shards)" if window == 0 else str(window)
     print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
           f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth} "
           f"sb_rollout_turns={sb_rollout_turns} sb_persist={sb_persist}  "
-          f"batches={batches} window={window}  "
+          f"batches={batches} window={window_txt}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
-          f"gate_floor={gate_floor} gate_every={gate_every}")
+          f"gate_floor={gate_floor} gate_every={gate_txt}")
+    if gate_every == 0 and total is None:
+        print("  WARNING: gate_every=0 with rotations=0 (indefinite) never "
+              "reaches completion, so gen__azfinal is never refreshed — prefer "
+              "a finite --rotations with --gate-every 0.")
     if scripted_opponent_frac:
         print(f"  scripted_opponent_frac={scripted_opponent_frac} "
               f"(scripted:hard on the opponent seat that share of self-play "
@@ -801,26 +865,32 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         return {"roster": roster, "slots": total, "results": results}
 
     si = slot_index
+    last_snapshot = None
     while total is None or si < total:
         r, rem = divmod(si, per_rotation)
-        if matrix:
+        if whole_roster_slots:
             c = rem
             focus = list(roster)
-            deck_label = f"matrix[{len(roster)} decks]"
+            deck_label = (f"{'exhaustive' if exhaustive else 'matrix'}"
+                          f"[{len(roster)} decks]")
         else:
             di, c = divmod(rem, cycles_per_deck)
             focus = roster[di]
             deck_label = focus
         slot_seed = seed + si
         # Gate on the LAST slot of each gate_every group (slot-index arithmetic,
-        # so an interrupted run resumes onto the same cadence).
-        do_gate = ((si + 1) % gate_every == 0)
+        # so an interrupted run resumes onto the same cadence). gate_every == 0
+        # disables gating entirely (ungated promotion at run completion instead).
+        do_gate = gate_every > 0 and ((si + 1) % gate_every == 0)
         slot_txt = f"{si + 1}" if total is None else f"{si + 1}/{total}"
         rot_txt = f"{r + 1}" if total is None else f"{r + 1}/{rotations}"
+        gate_note = ("" if do_gate
+                     else "  [gating off]" if gate_every == 0
+                     else f"  [gate deferred: every {gate_every} slots]")
         print(f"\n{'='*60}")
         print(f"[az-league slot {slot_txt}] rotation {rot_txt}  "
-              f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})"
-              f"{'' if do_gate else f'  [gate deferred: every {gate_every} slots]'}")
+              f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  "
+              f"(seed={slot_seed}){gate_note}")
         print(f"{'='*60}")
         res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
                        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
@@ -834,10 +904,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        scripted_opponent_frac=scripted_opponent_frac,
                        gate_floor=gate_floor,
                        expert_decks=expert_decks, expert_games=expert_games,
-                       roster=roster, bo3=bo3, gate=do_gate)
+                       roster=roster, bo3=bo3, gate=do_gate,
+                       exhaustive=exhaustive)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
+        last_snapshot = tr.get("snapshot")
         if ev is None:
-            gate_txt = "gate deferred"
+            gate_txt = "gating off" if gate_every == 0 else "gate deferred"
         else:
             veto_txt = (f" (floor-veto: {', '.join(ev['vetoes'])})"
                         if ev.get("vetoes") else "")
@@ -857,6 +929,21 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         del results[:-_AZ_LEAGUE_MAX_RESULTS]
         save_progress(si + 1)
         si += 1
+
+    if gate_every == 0:
+        # Ungated run: nothing ever refreshed gen__azfinal, so az:gen specs
+        # (serving, baseline, the next run's gate opponent) would resolve a
+        # stale or missing incumbent. Promote the last trained candidate
+        # unconditionally at completion.
+        from az_net import resolve_az_checkpoint
+        cand = last_snapshot or resolve_az_checkpoint("gen", prefer="snapshot")
+        if cand and os.path.exists(cand):
+            final = _promote_to_final(cand, ckpt_dir)
+            print(f"[az-league] gating off: promoted final candidate {cand} -> "
+                  f"{final} (unconditional, run complete)")
+        else:
+            print("[az-league] gating off: no candidate snapshot found to "
+                  "promote — gen__azfinal left untouched")
 
     print(f"\n[az-league] complete: {total} slots over {rotations} rotations.")
     return {"roster": roster, "slots": total, "results": results}
@@ -932,7 +1019,8 @@ def run_cycle(args) -> None:
              expert_decks=_split_decks(getattr(args, "expert_decks", None)),
              expert_games=getattr(args, "expert_games", 16),
              roster=roster, bo3=not getattr(args, "bo1", False),
-             use_actor=_resolve_use_actor(args))
+             use_actor=_resolve_use_actor(args),
+             exhaustive=getattr(args, "exhaustive", False))
 
 
 def run_league(args) -> None:
@@ -953,6 +1041,7 @@ def run_league(args) -> None:
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
               scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
               matrix=getattr(args, "matrix", False),
+              exhaustive=getattr(args, "exhaustive", False),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
               gate_every=getattr(args, "gate_every", DEFAULT_GATE_EVERY),
               expert_decks=_split_decks(getattr(args, "expert_decks", None)),
