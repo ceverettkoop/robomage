@@ -25,6 +25,7 @@ Run from the repo root:
 
 import argparse
 import traceback
+from functools import partial
 
 import numpy as np
 
@@ -38,6 +39,7 @@ from textual.widgets import (Footer, Header, Input, OptionList, Static,
 from textual.widgets.option_list import Option
 
 import az_inspect as azi
+from cli_spec import AZ_INSPECT_TOOL, apply_to_parser
 
 # (view key, sidebar label). The key is dispatched in _render_worker.
 _EMB_VIEWS = [
@@ -124,6 +126,11 @@ class InspectApp(App):
 
     def __init__(self, args):
         super().__init__()
+        # The shared spec leaves --shards unset (the launcher should not have to
+        # carry an absolute path), so the default is applied here — on every
+        # construction path, not just main()'s.
+        if not getattr(args, "shards", None):
+            args.shards = azi.AZ_DATA_DIR
         self._args = args
         self._net = None
         self._path = None
@@ -137,7 +144,6 @@ class InspectApp(App):
         self._site = None           # chosen card-identity site for the swap probe
         self._view = {"emb": "neighbors", "critic": "overview",
                       "probe": "state"}
-        self._busy = False
 
     # ----- layout -----
 
@@ -348,10 +354,15 @@ class InspectApp(App):
             target == "emb" and key == "neighbors")
         self.query_one("#probe-sites", OptionList).display = (
             target == "probe" and key == "swap")
-        self._render_worker(target, key)
+        # One worker group PER PANE: exclusive is what keeps a slow view from
+        # being overtaken by the next selection in the same pane, but a single
+        # shared group would also cancel the OTHER panes' renders — which is
+        # exactly what happens on load, when all three are kicked off at once.
+        self.run_worker(partial(self._render_blocking, target, key),
+                        thread=True, group=f"render-{target}", exclusive=True,
+                        description=f"{target}:{key}")
 
-    @work(thread=True, group="render", exclusive=True)
-    def _render_worker(self, target: str, key: str) -> None:
+    def _render_blocking(self, target: str, key: str) -> None:
         try:
             if key in _NEEDS_SHARDS and self._sample is None:
                 self.post_message(Rendered(
@@ -462,39 +473,13 @@ class InspectApp(App):
 
 
 def build_parser():
+    """Parser built from the shared spec, so the ./tui.sh launcher form and this
+    script's flags cannot drift apart (same contract tui_analysis.py uses)."""
     ap = argparse.ArgumentParser(
         prog="tui_az_inspect",
         description="Interactive AZ checkpoint inspector (weights + recorded "
                     "self-play; no games are played).")
-    ap.add_argument("--model", default="gen",
-                    help="AZ checkpoint spec: 'gen', a snapshot stem, or a path")
-    ap.add_argument("--shards", default=azi.AZ_DATA_DIR,
-                    help="directory of shard_*.npz self-play records")
-    ap.add_argument("--no-shards", action="store_true",
-                    help="weights only — skip loading recorded self-play")
-    ap.add_argument("--max-rows", type=int, default=3000,
-                    help="recorded decisions to sample (default: 3000)")
-    ap.add_argument("--count-rows", type=int, default=800,
-                    help="states decoded for occurrence counts (default: 800)")
-    ap.add_argument("--window", type=int, default=None,
-                    help="use only the newest N shards")
-    ap.add_argument("--seed", type=int, default=0, help="sampling seed")
-    ap.add_argument("--min-seen", type=int, default=0,
-                    help="drop cards seen fewer than N times from the embedding "
-                         "views (their rows are untrained)")
-    ap.add_argument("--neighbors", type=int, default=20,
-                    help="neighbours listed per card")
-    ap.add_argument("--knn", type=int, default=10,
-                    help="k for the label-purity view")
-    ap.add_argument("--clusters", type=int, default=8, help="k for k-means")
-    ap.add_argument("--mark", default="color", choices=azi.LABEL_KINDS,
-                    help="marker label for the PCA scatter")
-    ap.add_argument("--top", type=int, default=25,
-                    help="rows in the occurrence / divergence / probe tables")
-    ap.add_argument("--block-rows", type=int, default=120,
-                    help="states averaged by the mean block-attribution view")
-    ap.add_argument("--donors", type=int, default=3,
-                    help="donor states per block in that average")
+    apply_to_parser(ap, AZ_INSPECT_TOOL.subs[0])
     return ap
 
 

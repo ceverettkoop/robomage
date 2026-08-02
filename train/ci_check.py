@@ -79,6 +79,14 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           matches round-trip through synthetic shard_*.npz files into
           browsable match records (train/test_shard_replay.py).
           Torch-free; needs bin/robomage.
+  azinspect The AZ checkpoint inspector (az_inspect.py / tui_az_inspect.py):
+          every view computed against a FRESH AZNet and synthetic shards, so it
+          needs neither a trained checkpoint nor recorded self-play. Pins the
+          views to the real observation layout — the block partition covers
+          [0, OBS_SIZE), the card embedding's padding offset, the swap probe's
+          swap-for-itself-is-zero invariant, the sweep normalizers — plus the
+          ./tui.sh spec wiring (train/test_az_inspect.py). Needs torch (self-
+          skips without it); no engine binary.
 
 Draw classification (per repo policy — draws are not acceptable, but the two
 causes differ in severity):
@@ -129,7 +137,7 @@ ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "actorobs", "pergame",
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
 # self-skips cleanly when either is absent (so it never breaks a stock build).
-OPT_IN_TIERS = ["actor", "analysis"]
+OPT_IN_TIERS = ["actor", "analysis", "azinspect"]
 KNOWN_TIERS = ALL_TIERS + OPT_IN_TIERS
 
 # Transcript scan (stdout narrative + captured engine stderr). Two severities:
@@ -380,6 +388,28 @@ def tier_analysis(rep):
         rep.error("analysis", "shard-replay violation "
                               f"(test_shard_replay.py exit {r.returncode}):\n"
                               f"{r.stdout}{r.stderr}")
+
+
+def tier_azinspect(rep):
+    """AZ checkpoint-inspector regression (opt-in). Self-skips without torch.
+
+    Runs train/test_az_inspect.py: every az_inspect view against a fresh AZNet
+    and synthetic shards — obs-block partition, card-embedding padding offset,
+    shard-layout rejection, critic/bucket agreement, the probe invariants
+    (swap-for-itself == 0, sweep normalizers) and the ./tui.sh spec wiring.
+    No engine binary and no trained checkpoint needed."""
+    try:
+        import torch  # noqa: F401
+    except Exception as e:
+        print(f"  [skip] azinspect: torch not importable ({e})", flush=True)
+        return
+    r = subprocess.run([sys.executable, "train/test_az_inspect.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("azinspect", "az-inspect violation "
+                               f"(test_az_inspect.py exit {r.returncode}):\n"
+                               f"{r.stdout}{r.stderr}")
 
 
 def tier_replay(rep):
@@ -722,6 +752,8 @@ def main(argv=None):
             tier_actor(rep)
         elif t == "analysis":
             tier_analysis(rep)
+        elif t == "azinspect":
+            tier_azinspect(rep)
 
     print("\n" + "=" * 60, flush=True)
     print(f"ci_check: {len(rep.errors)} error(s), {len(rep.warnings)} warning(s)",

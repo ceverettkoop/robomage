@@ -865,6 +865,18 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
 - `train/mcts.py` — determinized PUCT search: `run_search`/`run_search_parallel` (now also
   reporting per-action `q`, `w_sum`, per-world `world_values`) and `IncrementalSearch`
 - `train/test_analysis_session.py` — analysis-core regression (opt-in ci tier `analysis`)
+- `train/az_inspect.py` — **static** inspection of an AZ checkpoint: views computed from the
+  checkpoint WEIGHTS and the recorded self-play shards (`az_data/gen/*.npz`), never from a
+  played game. Card-embedding neighbours / label purity / clusters / PCA (the embedding's rows
+  line up with `src/card_vocab.h`), per-card occurrence counts in self-play, the per-matchup
+  value-head column map, per-bucket calibration against recorded outcomes, KL(search‖net) by
+  action category, checkpoint diffs, and per-decision probes (block permutation importance,
+  card-identity swap, scalar sweeps). Each view is a data function plus a `render_*` returning
+  display lines, so the CLI and the TUI cannot diverge
+- `train/tui_az_inspect.py` — Textual front end over those views (Embedding / Critic / Probes
+  panes, clickable embedding drill-down); `./tui.sh`'s `az-inspect → inspect` menu entry
+- `train/test_az_inspect.py` — inspector regression against a fresh net + synthetic shards
+  (opt-in ci tier `azinspect`; needs torch, no engine binary)
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)
 - `train/fuzz_campaign.py` — batch fuzzing driver for the league fuzz campaigns: runs N scripted

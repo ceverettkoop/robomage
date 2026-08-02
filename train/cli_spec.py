@@ -1189,7 +1189,50 @@ HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
     ]),
 ])
 
-ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, ANALYSIS_TUI_TOOL, PLAY_TOOL, HARNESS_TOOL]
+# tui_az_inspect.py — static AZ checkpoint inspector (flat parser, no
+# subcommand). Mirrors tui_az_inspect.build_parser(); the individual views are
+# also available non-interactively as az_inspect.py subcommands.
+AZ_INSPECT_TOOL = Tool("az-inspect", "train/tui_az_inspect.py", flat=True, subs=[
+    Sub("inspect",
+        "Inspect an AZ checkpoint's weights and recorded self-play — card "
+        "embedding space, the per-matchup critic, and per-decision probes. "
+        "No games are played",
+        mode="interactive", items=[
+        Arg("--model", "str", default="gen", suggest="checkpoint",
+            help="AZ checkpoint: 'gen' (the generalist), a snapshot stem "
+                 "(gen__azv384000), or a path"),
+        Arg("--shards", "str", default=None,
+            help="Directory of recorded self-play shard_*.npz "
+                 "(default: train/az_data/gen)"),
+        Arg("--no-shards", "flag",
+            help="Weights only — skip recorded self-play (disables the "
+                 "occurrence, calibration, divergence and probe views)"),
+        Arg("--max-rows", "int", default=3000,
+            help="Recorded decisions to sample (default: 3000)"),
+        Arg("--count-rows", "int", default=800,
+            help="States decoded for per-card occurrence counts (default: 800)"),
+        Arg("--window", "int", default=None,
+            help="Use only the newest N shards"),
+        Arg("--seed", "int", default=0, help="Sampling seed"),
+        Arg("--min-seen", "int", default=0,
+            help="Drop cards seen fewer than N times from the embedding views "
+                 "(their rows never trained)"),
+        Arg("--neighbors", "int", default=20, help="Neighbours listed per card"),
+        Arg("--knn", "int", default=10, help="k for the label-purity view"),
+        Arg("--clusters", "int", default=8, help="k for k-means"),
+        Arg("--mark", "choice", choices=("color", "type", "cmc", "land"),
+            default="color", help="Marker label for the PCA scatter"),
+        Arg("--top", "int", default=25,
+            help="Rows in the occurrence / divergence / probe tables"),
+        Arg("--block-rows", "int", default=120,
+            help="States averaged by the mean block-attribution probe"),
+        Arg("--donors", "int", default=3,
+            help="Donor states per block in that average"),
+    ]),
+])
+
+ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, ANALYSIS_TUI_TOOL, AZ_INSPECT_TOOL,
+             PLAY_TOOL, HARNESS_TOOL]
 
 
 # ── argparse bridge (used by the scripts) ─────────────────────────────────────

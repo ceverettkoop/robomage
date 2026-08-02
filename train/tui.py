@@ -599,7 +599,8 @@ class LauncherApp(ArgFormMixin, App):
     # play.py launches the game board (tui_game.py) and tui_analysis.py is the
     # analysis browser. Teeing either through `script` would fill the log with
     # terminal escape sequences, so they run without logging.
-    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py"})
+    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py",
+                                     "tui_az_inspect.py"})
 
     def _is_play_mode(self):
         """True when the selected command is itself a full-screen Textual app

@@ -680,6 +680,45 @@ live search during a replay); the whatif counterfactual `_rollout_from` re-drive
 the branch live, which now legitimately searches on a search spec (works with the
 search env; snapshots released between decisions as usual).
 
+## Static checkpoint inspection (az_inspect)
+
+Every tool above studies the net by *watching it play*. `train/az_inspect.py`
+(CLI) and `train/tui_az_inspect.py` (Textual, `./tui.sh` → `az-inspect`) are the
+other half: views computed from the checkpoint's **weights** and the **recorded
+self-play shards** (`az_data/gen/shard_*.npz` — obs/pi/z/mask), with no engine
+subprocess and no game played.
+
+- **Embedding space.** `trunk.card_emb` is an `nn.Embedding(N_CARD_TYPES + 1,
+  card_embed_dim, padding_idx=0)` whose row `i + 1` is vocab card `i`, so its rows
+  line up with `src/card_vocab.h`: cosine neighbours, kNN **label purity vs
+  chance** (color / primary type / mana value / land — the quantitative "did it
+  recover real card structure"), k-means, a PCA scatter, and the
+  action-category embedding's neighbours.
+- **Occurrence counts** (`occur`) decode a sample of recorded states and count
+  which cards appear. This is the honesty check for every embedding view: a card
+  the training window never contained still carries its PPO warm-start row, so
+  its "neighbours" are noise. `--min-seen` filters those out.
+- **Critic.** The value head's per-matchup columns as an `N_ARCH × N_ARCH` map
+  (norm / constant / `dead_value_buckets`), which buckets the sampled self-play
+  actually covers, and **per-bucket calibration** of predicted V against the
+  shards' realized `z` — matchup-level "is this critic honest", without playing.
+- **Policy.** `KL(search posterior ‖ raw-net priors)` grouped by the action
+  category the search preferred: where the net cannot reproduce search without
+  searching.
+- **Probes** on one recorded decision: **permutation importance** over the named
+  observation blocks (a block is replaced with another *real* state's values,
+  not zeroed — a 0 life total is not "no information"), a **card-identity swap**
+  ranking every vocab card by ΔV in one slot, and **scalar sweeps** (own/opp
+  life, hand, turn) with a monotonicity verdict.
+- **`diff`** between two checkpoints: per-tensor, per-card and per-bucket
+  movement — what a league/az rotation actually changed.
+
+`obs_blocks()` derives its partition from `env.py`'s offset chain and asserts it
+contiguous over `[0, OBS_SIZE)`, so a layout change fails loudly instead of
+mislabelling attributions. Regression: `train/test_az_inspect.py` (opt-in ci tier
+`azinspect`) runs every view against a *fresh* net and synthetic shards, so it
+needs neither a trained checkpoint nor recorded self-play.
+
 ## Analysis-tool integration (M10)
 
 The model-analysis tools (`train/analysis.py` + its shared CLI in

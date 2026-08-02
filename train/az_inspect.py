@@ -339,6 +339,7 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
     Returns a dict with ``obs, pi, z, mask, n_shards, n_rows_total``.
     """
     from env import OBS_SIZE, MAX_ACTIONS
+    data_dir = data_dir or AZ_DATA_DIR
     paths = shard_paths(data_dir)
     if not paths:
         raise FileNotFoundError(
