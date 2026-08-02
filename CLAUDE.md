@@ -481,13 +481,18 @@ correct way to provision a missing script:
 When implementing a new card, **both** of the following steps are required:
 
 1. Add the card to `src/card_vocab.h` — append a `{"Card Name", N}` entry where N is the next available index. `N_CARD_TYPES` in `src/machine_io.h` must be >= (highest index + 1).
-2. Regenerate `train/card_costs.py` — the cast-cost feature matrix used by the RL environment
-   and extractor. A normal `make` does this for you (the `pygen` step regenerates it because
-   `src/card_vocab.h` changed); run it by hand only to regenerate without a full build:
+2. Regenerate `train/card_costs.py` AND `train/card_props.py` — the cast-cost feature matrix
+   used by the RL environment/extractor, and the frozen printed-property block of the
+   network's card representation. A normal `make` does both for you (the `pygen` step
+   regenerates them because `src/card_vocab.h` changed); run them by hand only to regenerate
+   without a full build:
    ```
    train/.venv/bin/python train/gen_card_costs.py
+   train/.venv/bin/python train/gen_card_props.py
    ```
-   Either way, commit the regenerated `train/card_costs.py` alongside the vocab change.
+   Either way, commit both regenerated files alongside the vocab change. (A new card only
+   ADDS a property row — the column layout is a fixed constant in `gen_card_props.py`, so
+   vocab growth never changes the network shape or invalidates checkpoints.)
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
 engine lacks, implement the mechanic so the parser honors the script's actual tags
@@ -883,6 +888,13 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
 - `train/test_az_inspect.py` — inspector regression against a fresh net + synthetic shards
   (opt-in ci tier `azinspect`; needs torch, no engine binary)
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
+- `train/gen_card_props.py` — regenerates `train/card_props.py`, the FROZEN printed-property
+  block (96 fixed columns: pips/CMC/X, colors, types, land subtypes, P/T, printed keywords,
+  ability-category heads, tribal subtypes) of the network's card representation. The
+  extractor consumes `[card_emb | card_props]` per card id — the trainable 32-dim identity
+  embedding carries only the behavioral residual the frozen printed facts can't express.
+  DFC-face aware (a back-face vocab entry parses its own face; Delver does not get Flying)
+  and token-band aware (token rows parse `bin/resources/tokenscripts/`)
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)
 - `train/fuzz_campaign.py` — batch fuzzing driver for the league fuzz campaigns: runs N scripted
   games for ONE matchup (both seats driven by the coverage `explore` fuzzer, independent per-seat
@@ -894,6 +906,7 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
   (decks resolve relative to `bin/resources/decks/`; W/L/D summary to stdout, any draw is a finding).
 - `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
+- `train/card_props.py` — auto-generated frozen card-property matrix (do not edit manually)
 - `train/test_obs_invariants.py` — standalone regression script asserting per-decision structural
   invariants on the RAW machine-mode observation state vector across a few seeded scripted games
   (delver vs maverick, exile-heavy bw_dnt vs delver, and a Yorion companion probe). Checks: every

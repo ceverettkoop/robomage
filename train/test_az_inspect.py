@@ -9,6 +9,11 @@ Checks:
 
   layout     obs_blocks() partitions [0, OBS_SIZE) contiguously; the card
              embedding's padding row is row 0 and vocab card i is row i+1
+  card props the frozen printed-property buffer: shape/values/padding, buffer
+             not parameter, _embed_ids concat width, bit-identical through an
+             optimizer step and a save/load round trip, DFC back-face canary,
+             and props-space purity far above chance while a fresh identity
+             table sits at chance
   vocab      card resolution (exact / substring / ambiguous), labels, and the
              neighbour list's ordering + self-exclusion
   shards     load_shard_sample honours its row budget, and a shard recorded
@@ -117,8 +122,12 @@ def test_layout(net):
     w = net.trunk.card_emb.weight.detach().cpu().numpy()
     check(np.allclose(w[0], 0.0),
           "card embedding row 0 is the zeroed padding row (padding_idx=0)")
+    # Compare against the extractor's identity width, NOT this test's net
+    # _EMBED_DIM — the two being equal (32) was a coincidence that would mask
+    # a width change in either.
+    import extractor
     mat = azi.card_embedding(net)
-    check(mat.shape == (azi.N_CARD_TYPES, _EMBED_DIM),
+    check(mat.shape == (azi.N_CARD_TYPES, extractor._CARD_EMBED_DIM),
           f"card_embedding is (N_CARD_TYPES, D) = {mat.shape}")
     check(np.allclose(mat[7], w[8]),
           "card_embedding row i is table row i+1 (the padding offset)")
@@ -277,6 +286,96 @@ def test_probes(net, sample):
     tr = azi.sweep_trend(res)
     check(tr["expected"] == +1 and tr["agrees"] in (True, False),
           "own-life sweeps carry an expected direction and a verdict")
+
+
+def test_card_props(net, tmp):
+    """The frozen printed-property half of the card vector: right shape, right
+    values, absent from the optimizer, and bit-identical through a training
+    step and a save/load round trip."""
+    import torch
+    import extractor
+    from card_props import _CARD_PROP_MATRIX, _PROP_NAMES, N_CARD_PROPS
+    from az_net import decay_exempt_param_groups, load_az
+
+    col = {n: i for i, n in enumerate(_PROP_NAMES)}
+    props = net.trunk.card_props
+    check(tuple(props.shape) == (azi.N_CARD_TYPES + 1, N_CARD_PROPS),
+          f"card_props buffer is (N_CARD_TYPES + 1, P) = {tuple(props.shape)}")
+    check(bool((props[0] == 0).all()),
+          "card_props row 0 is the zero padding row")
+    check("card_props" not in dict(net.named_parameters())
+          and not any(k.endswith("card_props") for k in
+                      dict(net.named_parameters())),
+          "card_props is a buffer, not a parameter")
+
+    # _embed_ids returns [identity | props] and the props tail is the matrix row.
+    bolt = azi.resolve_card(_PLANTED)
+    emb, present = net.trunk._embed_ids(
+        torch.tensor([bolt / azi.N_CARD_TYPES, -1.0 / azi.N_CARD_TYPES]))
+    ident_d = extractor._CARD_EMBED_DIM
+    check(emb.shape[-1] == ident_d + N_CARD_PROPS,
+          f"_embed_ids width is identity + props = {emb.shape[-1]}")
+    check(bool(present[0]) and not bool(present[1]),
+          "present mask still tracks the id, not the props")
+    emb = emb.detach()
+    check(np.allclose(emb[0, ident_d:].numpy(), _CARD_PROP_MATRIX[bolt]),
+          "props tail equals the generated matrix row")
+    check(bool((emb[1] == 0).all()),
+          "empty slot embeds to all-zero in both halves")
+
+    # Printed-fact spot checks straight through the buffer.
+    check(emb[0, ident_d + col["type_instant"]] == 1.0
+          and emb[0, ident_d + col["pip_r"]].item() > 0,
+          f"{_PLANTED} props read instant + red pip")
+    delver = azi.resolve_card("Delver of Secrets")
+    check(_CARD_PROP_MATRIX[delver][col["kw_flying"]] == 0.0,
+          "DFC canary: Delver does not inherit its back face's Flying")
+
+    # One optimizer step that moves card_emb must not move card_props.
+    train_net = make_net(seed=3)
+    train_net.train()
+    before = train_net.trunk.card_props.clone()
+    emb_before = train_net.trunk.card_emb.weight.detach().clone()
+    opt = torch.optim.Adam(decay_exempt_param_groups(train_net, 1e-2), lr=0.1)
+    obs = torch.zeros(2, env.OBS_SIZE)
+    obs[:, env._HAND_START] = bolt / azi.N_CARD_TYPES  # give card_emb gradient
+    mask = torch.zeros(2, env.MAX_ACTIONS, dtype=torch.bool)
+    mask[:, :3] = True
+    logits, value = train_net(obs, mask)
+    (logits[mask].sum() + value.sum()).backward()
+    opt.step()
+    check(not torch.equal(train_net.trunk.card_emb.weight, emb_before),
+          "the step moved the trainable identity table")
+    check(torch.equal(train_net.trunk.card_props, before),
+          "...but left card_props bit-identical")
+
+    # Save/load round trip carries the buffer bit-identically.
+    p = os.path.join(tmp, "props_roundtrip__azv1.pt")
+    train_net.save(p, 1)
+    loaded = load_az(p)
+    check(torch.equal(loaded.trunk.card_props, before),
+          "save/load_az round-trips card_props bit-identically")
+
+    # The frozen block provably encodes the ground-truth labels the structure
+    # view measures — the purity ceiling printed facts alone provide.
+    ids = azi.named_card_ids()
+    pmat = azi.card_property_block(net)
+    check(pmat.shape == (azi.N_CARD_TYPES, N_CARD_PROPS),
+          "card_property_block drops the padding row")
+    check(np.allclose(azi.card_matrix(net, "full"),
+                      np.concatenate([azi.card_embedding(net), pmat], axis=1)),
+          "card_matrix('full') is [identity | props]")
+    for kind, floor in (("land", 0.9), ("type", 0.5), ("color", 0.4)):
+        res = azi.knn_purity(pmat, azi.card_labels(kind, ids), ids, k=10)
+        check(res["purity"] >= floor and res["lift"] > 0.15,
+              f"props purity[{kind}] {res['purity']:.3f} "
+              f"(chance {res['baseline']:.3f}) clears {floor}")
+    # ...while the fresh random identity table stays at chance.
+    res = azi.knn_purity(azi.card_embedding(net),
+                         azi.card_labels("land", ids), ids, k=10)
+    check(abs(res["lift"]) < 0.15,
+          f"fresh identity table stays near chance on land "
+          f"(lift {res['lift']:+.3f})")
 
 
 def test_diff(net, tmp):
@@ -515,6 +614,8 @@ def main():
         test_critic(net, sample)
         print("\n[probes]")
         test_probes(net, sample)
+        print("\n[card props]")
+        test_card_props(net, tmp)
         print("\n[diff]")
         test_diff(net, tmp)
         print("\n[exposure]")

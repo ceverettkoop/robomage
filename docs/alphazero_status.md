@@ -694,6 +694,19 @@ subprocess and no game played.
   chance** (color / primary type / mana value / land — the quantitative "did it
   recover real card structure"), k-means, a PCA scatter, and the
   action-category embedding's neighbours.
+- **The card representation is split** (2026-08-01): the network consumes
+  `[card_emb | trunk.card_props]` per card id — a 32-dim **trainable identity**
+  table plus a 96-dim **frozen printed-property buffer** (`train/card_props.py`
+  codegen: pips/CMC/X, colors, types, land subtypes, P/T, printed keywords,
+  ability-category heads, tribal subtypes). Properties are constant per card, so
+  the identity rows carry only the behavioral residual — measured purity on the
+  identity table is *expected* to sit at chance on printed labels after the
+  split (the props block encodes those at ~0.98 land / ~0.79 type purity by
+  construction); that is the division of labor working, not a regression. The
+  embedding views take `--space identity|props|full` (default `identity`).
+  This was a breaking network-shape change: pre-split PPO zips fail SB3's strict
+  policy load and pre-split AZ `.pt` fail `load_az`'s `N_CARD_PROPS` handshake —
+  both intended; retrain via `league --fresh`, then warm-start AZ as usual.
 - **Training exposure** (`exposure`, weights only) is the honesty check for every
   embedding view: a card the training window never contained still carries its
   warm-start row, so its "neighbours" are noise. Diffing a checkpoint against its

@@ -17,7 +17,12 @@ The card-identity embedding is the interpretable table: ``trunk.card_emb`` is an
 ``nn.Embedding(N_CARD_TYPES + 1, card_embed_dim, padding_idx=0)`` whose row
 ``i + 1`` is vocab card ``i`` (row 0 is the empty-slot padding), so its rows line
 up 1:1 with ``src/card_vocab.h`` and can be named, typed, and costed via
-``decode``/``card_costs``.
+``decode``/``card_costs``. Since the card-representation split it is the
+TRAINABLE RESIDUAL half of the card vector — the network consumes
+``[card_emb | trunk.card_props]``, where ``card_props`` is the frozen
+printed-property buffer (card_props codegen). The embedding views default to
+the residual table (that is what training moves); pass ``--space props`` /
+``--space full`` to measure the frozen block or the concatenation instead.
 
 Views (all also exposed as CLI subcommands, ``--help`` on each):
 
@@ -222,11 +227,39 @@ def checkpoint_meta(path):
 
 
 def card_embedding(net):
-    """The card-identity embedding as ``(N_CARD_TYPES, D)``, row ``i`` = vocab card
-    ``i``. The stored table has ``N_CARD_TYPES + 1`` rows — row 0 is the padding
-    row for empty slots — so this drops it and re-bases the index."""
+    """The TRAINABLE card-identity embedding as ``(N_CARD_TYPES, D)``, row ``i`` =
+    vocab card ``i``. The stored table has ``N_CARD_TYPES + 1`` rows — row 0 is
+    the padding row for empty slots — so this drops it and re-bases the index.
+    This is only the residual half of the card vector; see card_matrix for the
+    frozen property block and the full concatenation."""
     w = net.trunk.card_emb.weight.detach().cpu().numpy()
     return np.array(w[1:], dtype=np.float64)
+
+
+def card_property_block(net):
+    """The FROZEN printed-property block as ``(N_CARD_TYPES, P)``, row-aligned
+    with card_embedding (padding row dropped). Constant by construction — a
+    registered buffer, not a parameter — so purity measured on it is the
+    ceiling the printed facts alone provide."""
+    w = net.trunk.card_props.detach().cpu().numpy()
+    return np.array(w[1:], dtype=np.float64)
+
+
+CARD_SPACES = ("identity", "props", "full")
+
+
+def card_matrix(net, space="identity"):
+    """The per-card matrix for one of the three card spaces: the trainable
+    ``identity`` table (default — what training moves), the frozen ``props``
+    block, or the ``full`` concatenation the network actually consumes."""
+    if space == "identity":
+        return card_embedding(net)
+    if space == "props":
+        return card_property_block(net)
+    if space == "full":
+        return np.concatenate([card_embedding(net), card_property_block(net)],
+                              axis=1)
+    raise ValueError(f"unknown card space {space!r} (want one of {CARD_SPACES})")
 
 
 def category_embedding(net):
@@ -996,6 +1029,8 @@ def render_overview(net, path, sample=None):
              f"{meta.get('embed_dim', '?')}  obs_size={meta.get('obs_size', '?')}",
              f"vocab      : {len(named_card_ids())} named cards of "
              f"{N_CARD_TYPES} slots",
+             f"card rep   : {net.trunk.card_emb.weight.shape[1]} trainable "
+             f"identity + {net.trunk.card_props.shape[1]} frozen printed props",
              f"critic     : {len(live)}/{len(rows)} value buckets alive "
              f"({len(rows) - len(live)} dead — constant value in that matchup)"]
     top = sorted(live, key=lambda r: -r["norm"])[:8]
@@ -1492,25 +1527,31 @@ def build_parser():
     p.add_argument("--no-shards", action="store_true",
                    help="skip the shard sample (weights only)")
 
+    def _add_space_arg(p):
+        p.add_argument("--space", default="identity", choices=CARD_SPACES,
+                       help="card space to measure: the trainable identity "
+                            "table (default), the frozen printed-property "
+                            "block, or the full concatenation")
+
     p = sub.add_parser("neighbors", help="nearest cards in embedding space")
     p.add_argument("card", help="card name (exact or unique substring)")
     p.add_argument("-k", type=int, default=15, help="neighbours to show")
-    _add_shard_args(p); _add_count_args(p)
+    _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
 
     p = sub.add_parser("structure", help="kNN label purity of the embedding")
     p.add_argument("-k", type=int, default=10, help="neighbours per card")
-    _add_shard_args(p); _add_count_args(p)
+    _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
 
     p = sub.add_parser("clusters", help="k-means over the card embedding")
     p.add_argument("-k", type=int, default=8, help="clusters")
     p.add_argument("--cluster-seed", type=int, default=0)
-    _add_shard_args(p); _add_count_args(p)
+    _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
 
     p = sub.add_parser("project", help="PCA-to-2D terminal scatter")
     p.add_argument("--mark", default="color", choices=LABEL_KINDS)
     p.add_argument("--width", type=int, default=78)
     p.add_argument("--height", type=int, default=24)
-    _add_shard_args(p); _add_count_args(p)
+    _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
 
     p = sub.add_parser("occur", help="how often each card appears in self-play")
     _add_shard_args(p)
@@ -1676,7 +1717,7 @@ def main(argv=None):
                                           fields)))
         return 0
 
-    mat = card_embedding(net)
+    mat = card_matrix(net, getattr(args, "space", "identity"))
     counts = _maybe_counts(args)
     # Without --with-counts, annotate/filter with the weights-only exposure
     # instead of loading shards (same signal the TUI defaults to).
