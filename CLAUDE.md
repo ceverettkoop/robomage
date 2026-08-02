@@ -865,16 +865,21 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
 - `train/mcts.py` — determinized PUCT search: `run_search`/`run_search_parallel` (now also
   reporting per-action `q`, `w_sum`, per-world `world_values`) and `IncrementalSearch`
 - `train/test_analysis_session.py` — analysis-core regression (opt-in ci tier `analysis`)
-- `train/az_inspect.py` — **static** inspection of an AZ checkpoint: views computed from the
-  checkpoint WEIGHTS and the recorded self-play shards (`az_data/gen/*.npz`), never from a
-  played game. Card-embedding neighbours / label purity / clusters / PCA (the embedding's rows
-  line up with `src/card_vocab.h`), per-card occurrence counts in self-play, the per-matchup
-  value-head column map, per-bucket calibration against recorded outcomes, KL(search‖net) by
-  action category, checkpoint diffs, and per-decision probes (block permutation importance,
-  card-identity swap, scalar sweeps). Each view is a data function plus a `render_*` returning
-  display lines, so the CLI and the TUI cannot diverge
-- `train/tui_az_inspect.py` — Textual front end over those views (Embedding / Critic / Probes
-  panes, clickable embedding drill-down); `./tui.sh`'s `az-inspect → inspect` menu entry
+- `train/az_inspect.py` — **static** inspection of an AZ checkpoint, never from a played game.
+  Most views need only the WEIGHTS: card-embedding neighbours / label purity / clusters / PCA
+  (the embedding's rows line up with `src/card_vocab.h`), the per-matchup value-head column
+  map, checkpoint diffs, and **`exposure`** — which embedding rows and critic columns actually
+  received gradient, read exactly from a checkpoint pair (an untrained row is bit-identical,
+  since `az_train` exempts these tables from weight decay). The rest additionally read the
+  recorded self-play shards (`az_data/gen/*.npz`): per-card occurrence counts, per-bucket
+  calibration against realized outcomes, KL(search‖net) by action category, and the
+  per-decision probes (block permutation importance, card-identity swap, scalar sweeps).
+  Each view is a data function plus a `render_*` returning display lines, so the CLI and the
+  TUI cannot diverge
+- `train/tui_az_inspect.py` — Textual front end over those views (Embedding / Critic panes,
+  clickable embedding drill-down); `./tui.sh`'s `az-inspect → inspect` menu entry. **Opens
+  weights-only** (~1s, no shard pool needed) and lists only the views it can compute;
+  `--with-shards` loads recorded self-play and adds the Probes pane
 - `train/test_az_inspect.py` — inspector regression against a fresh net + synthetic shards
   (opt-in ci tier `azinspect`; needs torch, no engine binary)
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`

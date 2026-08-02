@@ -5,25 +5,32 @@ but with the checkpoint, the embedding matrix and the self-play sample loaded ON
 and reused across views, and with the one thing a CLI cannot do: drilling through
 the card embedding by clicking a neighbour and walking outward from it.
 
-Two panes (a third, Probes, is added by the probe views):
+**It opens weights-only.** By default nothing but the checkpoint (and its
+baseline, for exposure) is read: the app starts in about a second, needs no
+recorded self-play on disk, and the sidebar lists only views it can actually
+compute. ``--with-shards`` loads recorded self-play and adds the rest.
 
   Embedding — neighbours of a card (click a neighbour to recentre on it, ``u``
               walks back), kNN label purity, k-means clusters, PCA scatter,
-              per-card occurrence counts, action-category neighbours.
-  Critic    — checkpoint overview, the per-matchup value-head column map,
-              per-bucket calibration against recorded outcomes, and raw-net vs
-              search-posterior divergence by action category.
+              training exposure (which rows ever received gradient), and — with
+              shards — per-card occurrence counts.
+  Critic    — checkpoint overview and the per-matchup value-head column map;
+              with shards, per-bucket calibration against recorded outcomes and
+              raw-net vs search-posterior divergence by action category.
+  Probes    — shards only, so the pane is not built without them: one recorded
+              decision's board and policy, block attribution, the card-swap
+              probe and scalar sweeps.
 
-Everything is computed from the checkpoint weights and the recorded self-play
-shards; no game is played and the engine is never started.
+No game is played and the engine is never started in either mode.
 
 Run from the repo root:
-    train/.venv/bin/python train/tui_az_inspect.py
+    train/.venv/bin/python train/tui_az_inspect.py                  # weights only
+    train/.venv/bin/python train/tui_az_inspect.py --with-shards    # + self-play
     train/.venv/bin/python train/tui_az_inspect.py --model gen__azv384000
-    train/.venv/bin/python train/tui_az_inspect.py --no-shards      # weights only
 """
 
 import argparse
+import os
 import traceback
 from functools import partial
 
@@ -47,6 +54,7 @@ _EMB_VIEWS = [
     ("structure", "Label purity (kNN)"),
     ("clusters", "Clusters (k-means)"),
     ("project", "PCA scatter"),
+    ("exposure", "Training exposure"),
     ("occur", "Occurrences in self-play"),
     ("catemb", "Action-category embedding"),
 ]
@@ -66,9 +74,16 @@ _PROBE_VIEWS = [
     ("sweep", "Scalar sweeps"),
 ]
 
-# Views that need the shard sample; offered but reported as unavailable under
-# --no-shards rather than silently rendering something weaker.
+# Views that need recorded self-play. Without --with-shards they are not listed
+# at all (the sidebar shows only what this session can actually compute), and the
+# Probes pane — every view of which needs a recorded state — is not built.
 _NEEDS_SHARDS = {"occur", "calib", "divergence"} | {k for k, _ in _PROBE_VIEWS}
+
+
+def available_views(views, with_shards):
+    """The subset of a pane's views this session can compute."""
+    return [(k, label) for k, label in views
+            if with_shards or k not in _NEEDS_SHARDS]
 
 _MAX_CARD_OPTIONS = 400
 # Recorded decisions listed in the Probes sidebar. The sample is thousands of
@@ -126,11 +141,17 @@ class InspectApp(App):
 
     def __init__(self, args):
         super().__init__()
-        # The shared spec leaves --shards unset (the launcher should not have to
-        # carry an absolute path), so the default is applied here — on every
-        # construction path, not just main()'s.
-        if not getattr(args, "shards", None):
+        # Naming an explicit --shards directory is a request to use it.
+        if getattr(args, "shards", None):
+            args.with_shards = True
+        else:
+            # The shared spec leaves --shards unset (the launcher should not have
+            # to carry an absolute path), so the default is applied here — on
+            # every construction path, not just main()'s.
             args.shards = azi.AZ_DATA_DIR
+        self._with_shards = bool(getattr(args, "with_shards", False))
+        self._panes = (("emb", "critic", "probe") if self._with_shards
+                       else ("emb", "critic"))
         self._args = args
         self._net = None
         self._path = None
@@ -138,6 +159,8 @@ class InspectApp(App):
         self._sample = None         # recorded self-play sample (or None)
         self._counts = None         # per-card occurrence counts (or None)
         self._count_states = 0      # states actually decoded for those counts
+        self._exposure = None       # weights-only per-card training movement
+        self._exp = None            # the full card_exposure() result (or None)
         self._card = None           # current card index for the neighbours view
         self._history = []          # drill-down stack of card indices
         self._row = 0               # current recorded decision (probe views)
@@ -171,33 +194,34 @@ class InspectApp(App):
                         yield OptionList(id="critic-views", classes="views")
                     with VerticalScroll(classes="out-scroll"):
                         yield Static(id="critic-out", markup=False, classes="out")
-            with TabPane("Probes", id="tab-probe"):
-                with Horizontal():
-                    with Vertical(classes="sidebar"):
-                        yield Static("Views", classes="head")
-                        yield OptionList(id="probe-views", classes="views")
-                        yield Static("Recorded decisions", classes="head")
-                        yield OptionList(id="probe-decisions")
-                    with Vertical():
-                        with VerticalScroll(classes="out-scroll"):
-                            yield Static(id="probe-out", markup=False,
-                                         classes="out")
-                        yield OptionList(id="probe-sites")
+            # Every probe view needs a recorded decision to probe, so the pane
+            # only exists when this session loaded recorded self-play.
+            if self._with_shards:
+                with TabPane("Probes", id="tab-probe"):
+                    with Horizontal():
+                        with Vertical(classes="sidebar"):
+                            yield Static("Views", classes="head")
+                            yield OptionList(id="probe-views", classes="views")
+                            yield Static("Recorded decisions", classes="head")
+                            yield OptionList(id="probe-decisions")
+                        with Vertical():
+                            with VerticalScroll(classes="out-scroll"):
+                                yield Static(id="probe-out", markup=False,
+                                             classes="out")
+                            yield OptionList(id="probe-sites")
         yield Footer()
 
     def on_mount(self) -> None:
         self.title = "RoboMage · AZ inspect"
-        self.sub_title = self._args.model
-        for key, label in _EMB_VIEWS:
-            self.query_one("#emb-views", OptionList).add_option(
-                Option(label, id=key))
-        for key, label in _CRITIC_VIEWS:
-            self.query_one("#critic-views", OptionList).add_option(
-                Option(label, id=key))
-        for key, label in _PROBE_VIEWS:
-            self.query_one("#probe-views", OptionList).add_option(
-                Option(label, id=key))
-        for pane in ("emb", "critic", "probe"):
+        self.sub_title = self._args.model + ("" if self._with_shards
+                                             else "  (weights only)")
+        for pane, views in (("emb", _EMB_VIEWS), ("critic", _CRITIC_VIEWS),
+                            ("probe", _PROBE_VIEWS)):
+            if pane not in self._panes:
+                continue
+            menu = self.query_one(f"#{pane}-views", OptionList)
+            for key, label in available_views(views, self._with_shards):
+                menu.add_option(Option(label, id=key))
             self.query_one(f"#{pane}-out", Static).update("Loading checkpoint…")
         self._load()
 
@@ -213,7 +237,19 @@ class InspectApp(App):
             self._mat = azi.card_embedding(net)
             status = [f"{path.split('/')[-1]}  "
                       f"steps={azi.checkpoint_meta(path).get('steps', '?')}"]
-            if not a.no_shards:
+            # Exposure is weights-only and cheap, so it loads in every mode: it
+            # is what the embedding views filter on when there is no shard
+            # sample (and the stricter signal even when there is one).
+            try:
+                self._exp = azi.card_exposure(path)
+                self._exposure = azi.exposure_counts(self._exp)
+                trained = int(self._exp["moved"][azi.named_card_ids()].sum())
+                status.append(f"{trained}/{len(azi.named_card_ids())} card rows "
+                              f"trained vs "
+                              f"{os.path.basename(self._exp['baseline'])}")
+            except (FileNotFoundError, KeyError, RuntimeError) as exc:
+                status.append(f"exposure unavailable ({exc})")
+            if a.with_shards:
                 self._sample = azi.load_shard_sample(
                     a.shards, max_rows=a.max_rows, window=a.window, seed=a.seed)
                 self._counts, self._count_states = azi.card_occurrences(
@@ -222,7 +258,8 @@ class InspectApp(App):
                               f"{self._sample['n_shards']} shards, "
                               f"{self._count_states} decoded")
             else:
-                status.append("weights only (--no-shards)")
+                status.append("weights only — pass --with-shards for the "
+                              "self-play views")
             self.post_message(Loaded(path, "\n".join(status)))
         except Exception:
             self.post_message(Failed("emb", traceback.format_exc()))
@@ -232,19 +269,27 @@ class InspectApp(App):
         self._populate_cards("")
         self._populate_decisions()
         self._card = self._default_card()
-        for pane in ("emb", "critic", "probe"):
+        for pane in self._panes:
             self.query_one(f"#{pane}-views", OptionList).highlighted = 0
         self._render("critic", "overview")
-        self._render("probe", "state")
+        if "probe" in self._panes:
+            self._render("probe", "state")
         self._render("emb", "neighbors")
 
+    def _rank(self):
+        """Per-card ranking signal for the card list and --min-seen: occurrence
+        counts when a shard sample is loaded, else the weights-only training
+        movement. None when neither is available."""
+        return self._counts if self._counts is not None else self._exposure
+
     def _default_card(self):
-        """Open on the most-played card when occurrence counts are available (it
-        is the one whose embedding actually got trained), else the first card."""
+        """Open on the most-exercised card — the one whose embedding actually
+        trained, so the first thing shown is not warm-start noise."""
         ids = azi.named_card_ids()
-        if self._counts is None:
+        rank = self._rank()
+        if rank is None:
             return int(ids[0])
-        return int(max(ids, key=lambda i: self._counts[i]))
+        return int(max(ids, key=lambda i: rank[i]))
 
     # ----- card list / drill-down -----
 
@@ -253,15 +298,21 @@ class InspectApp(App):
         opts.clear_options()
         needle = needle.strip().lower()
         ids = azi.named_card_ids()
-        if self._counts is not None:
-            ids = sorted(ids, key=lambda i: -self._counts[i])
+        rank = self._rank()
+        if rank is not None:
+            ids = sorted(ids, key=lambda i: -rank[i])
         shown = 0
         for i in ids:
             name = azi.card_name(i)
             if needle and needle not in name.lower():
                 continue
-            seen = "" if self._counts is None else f"  ({int(self._counts[i])})"
-            opts.add_option(Option(f"{name}{seen}", id=str(int(i))))
+            if self._counts is not None:
+                tag = f"  ({int(self._counts[i])})"
+            elif self._exposure is not None:
+                tag = "" if self._exposure[i] > 0 else "  (untrained)"
+            else:
+                tag = ""
+            opts.add_option(Option(f"{name}{tag}", id=str(int(i))))
             shown += 1
             if shown >= _MAX_CARD_OPTIONS:
                 break
@@ -269,10 +320,10 @@ class InspectApp(App):
     def _populate_decisions(self) -> None:
         """Label the first slice of sampled decisions by turn/step/outcome, so
         picking a probe target is not picking a bare row number."""
+        if "probe" not in self._panes or self._sample is None:
+            return
         opts = self.query_one("#probe-decisions", OptionList)
         opts.clear_options()
-        if self._sample is None:
-            return
         obs, z = self._sample["obs"], self._sample["z"]
         for r in range(min(_MAX_DECISION_OPTIONS, obs.shape[0])):
             turn = azi.decode.decode_turn(obs[r])
@@ -282,16 +333,16 @@ class InspectApp(App):
 
     def _populate_sites(self) -> None:
         """Card-identity sites of the current decision (the swap probe's menu)."""
+        if "probe" not in self._panes or self._sample is None:
+            return
         opts = self.query_one("#probe-sites", OptionList)
         opts.clear_options()
-        if self._sample is None:
-            return
         for i, (label, _, _) in enumerate(
                 azi.card_id_sites(self._sample["obs"][self._row])):
             opts.add_option(Option(label, id=str(i)))
 
     def action_step_row(self, delta: int) -> None:
-        if self._sample is None:
+        if "probe" not in self._panes or self._sample is None:
             return
         self._row = max(0, min(self._sample["obs"].shape[0] - 1,
                                self._row + int(delta)))
@@ -352,8 +403,10 @@ class InspectApp(App):
         out.update(f"computing {key}…")
         self.query_one("#emb-nn", OptionList).display = (
             target == "emb" and key == "neighbors")
-        self.query_one("#probe-sites", OptionList).display = (
-            target == "probe" and key == "swap")
+        # query() (not query_one) so this is a no-op when the Probes pane was
+        # never built — the weights-only default.
+        for w in self.query("#probe-sites"):
+            w.display = (target == "probe" and key == "swap")
         # One worker group PER PANE: exclusive is what keeps a slow view from
         # being overtaken by the next selection in the same pane, but a single
         # shared group would also cancel the OTHER panes' renders — which is
@@ -366,8 +419,8 @@ class InspectApp(App):
         try:
             if key in _NEEDS_SHARDS and self._sample is None:
                 self.post_message(Rendered(
-                    target, [f"'{key}' needs recorded self-play; this session "
-                             "was started with --no-shards."]))
+                    target, [f"'{key}' needs recorded self-play — restart with "
+                             "--with-shards."]))
                 return
             lines, cards = self._compute(key)
             self.post_message(Rendered(target, lines, cards))
@@ -378,32 +431,46 @@ class InspectApp(App):
         """Run one view. Returns ``(lines, drill_down_cards_or_None)``."""
         a = self._args
         mat, counts = self._mat, self._counts
+        # What the embedding views filter on (see _filter_counts).
+        filt = self._filter_counts()
         if key == "neighbors":
             # The neighbours themselves live in the clickable list, so the text
             # pane keeps only the header (identity, row norm, times seen).
             idx = self._card
+            # With a shard sample the annotation is occurrence counts; without
+            # one it is the weights-only training movement.
+            exp = None if counts is not None else self._exposure
             nn = azi.nearest_cards(mat, idx, k=a.neighbors,
                                    candidates=self._candidates())
-            lines = azi.render_neighbors(mat, idx, counts=counts, rows=False)
-            lines += ["", azi.NEIGHBOR_HEADER]
-            cards = [(j, azi.neighbor_row(j, cos, counts)) for j, cos in nn]
+            lines = azi.render_neighbors(mat, idx, counts=counts, rows=False,
+                                         exposure=exp)
+            lines += ["", azi.neighbor_header(counts, exp)]
+            cards = [(j, azi.neighbor_row(j, cos, counts, exp)) for j, cos in nn]
             return lines, cards
         if key == "structure":
-            return azi.render_structure(mat, k=a.knn, counts=counts,
+            return azi.render_structure(mat, k=a.knn, counts=filt,
                                         min_seen=a.min_seen), None
         if key == "clusters":
             return azi.render_clusters(mat, k=a.clusters, seed=a.seed,
-                                       counts=counts,
+                                       counts=filt,
                                        min_seen=a.min_seen), None
         if key == "project":
             size = self.query_one("#emb-out", Static).container_size
             return azi.render_projection(mat, width=max(40, size.width - 2),
                                          height=max(12, size.height - 4),
-                                         mark=a.mark, counts=counts,
+                                         mark=a.mark, counts=filt,
                                          min_seen=a.min_seen), None
+        if key == "exposure":
+            if self._exp is None:
+                return (["training exposure needs a baseline checkpoint — an "
+                         "earlier gen__azv* snapshot, or the PPO gen checkpoint "
+                         "this net warm-started from."], None)
+            return azi.render_exposure(self._exp, top_n=a.top), None
         if key == "occur":
-            return azi.render_occurrences(counts, self._count_states,
-                                          top_n=a.top), None
+            emb, rev, n = azi.card_occurrence_split(
+                self._sample["obs"], limit=a.count_rows, seed=a.seed)
+            return azi.render_occurrences(emb, n, top_n=a.top,
+                                          revealed=rev), None
         if key == "catemb":
             return azi.render_category_embedding(self._net), None
         if key == "overview":
@@ -451,13 +518,18 @@ class InspectApp(App):
                                      self._sample["mask"][self._row]), None
         return [f"unknown view {key!r}"], None
 
+    def _filter_counts(self):
+        """The vector --min-seen is compared against (shared with the CLI)."""
+        return azi.filter_vector(self._counts, self._exposure)
+
     def _candidates(self):
-        """Neighbour candidate pool, honouring --min-seen so warm-start noise
-        rows do not crowd the list."""
-        if self._counts is None or self._args.min_seen <= 0:
+        """Neighbour candidate pool, honouring --min-seen so warm-start rows do
+        not crowd the list."""
+        rank = self._filter_counts()
+        if rank is None or self._args.min_seen <= 0:
             return None
         return np.array([i for i in azi.named_card_ids()
-                         if self._counts[i] >= self._args.min_seen])
+                         if rank[i] >= self._args.min_seen])
 
     def on_rendered(self, message: Rendered) -> None:
         self.query_one(f"#{message.target}-out", Static).update(

@@ -381,45 +381,99 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
     return out
 
 
-def _names_in_state(gs):
-    """Every card name mentioned by a decoded game state (both boards, both
-    graveyards/exiles, hand, stack, known top-of-library, known opponent hand)."""
-    names = set()
-    for key in ("self_battlefield", "opp_battlefield", "self_hand", "stack",
-                "known_top_library", "opp_known_hand"):
+# Decoded-state zones whose card ids are looked up in ``trunk.card_emb`` (the
+# perm / stack / entity encoders all embed the slot's id). Dict-valued zones
+# carry {"name": ...}; the rest are plain name lists.
+_EMB_DICT_ZONES = ("self_battlefield", "opp_battlefield", "self_hand", "stack",
+                   "known_top_library", "opp_known_hand")
+_EMB_STR_ZONES = ("self_graveyard", "opp_graveyard", "self_exile", "opp_exile")
+
+
+def _decklist_id_slots():
+    """``[(start, slots)]`` for the five ``(card_id, count)`` decklist blocks.
+
+    These are NOT part of the decoded board dump, but their ids do go through
+    ``card_emb`` (via ``decklist_encoder``), so a card sitting in a decklist is
+    embedded at every decision even though it is nowhere on the board."""
+    import env as e
+    return [(e._SELF_LIVE_LIB_START, e.DECKLIST_MAIN_SLOTS),
+            (e._SELF_DECK_MAIN_START, e.DECKLIST_MAIN_SLOTS),
+            (e._SELF_DECK_SIDE_START, e.DECKLIST_SIDE_SLOTS),
+            (e._OPP_DECK_MAIN_START, e.DECKLIST_MAIN_SLOTS),
+            (e._OPP_DECK_SIDE_START, e.DECKLIST_SIDE_SLOTS)]
+
+
+def _state_card_ids(obs_row, name_to_id, deck_slots, slot_size):
+    """``(embedded_ids, revealed_ids)`` for one observation.
+
+    The split matters: the opponent-revealed block is a dense N_CARD_TYPES
+    multi-hot fed to ``revealed_encoder``, NOT a card-id lookup, so a mention
+    there gives the card's EMBEDDING ROW no gradient at all. It is also sticky
+    for the whole match (revealed once = set in every later state), so folding
+    it into one number both overstates exposure and misattributes it."""
+    gs = decode.decode_game_state(obs_row)
+    emb, revealed = set(), set()
+    for key in _EMB_DICT_ZONES:
         for item in gs.get(key) or ():
-            n = item.get("name") if isinstance(item, dict) else item
-            if n:
-                names.add(n)
-    for key in ("self_graveyard", "opp_graveyard", "self_exile", "opp_exile",
-                "opp_revealed"):
-        for n in gs.get(key) or ():
-            if isinstance(n, str) and n:
-                names.add(n)
-    return names
+            nm = item.get("name") if isinstance(item, dict) else item
+            if nm and nm in name_to_id:
+                emb.add(name_to_id[nm])
+    for key in _EMB_STR_ZONES:
+        for nm in gs.get(key) or ():
+            if isinstance(nm, str) and nm in name_to_id:
+                emb.add(name_to_id[nm])
+    for nm in gs.get("opp_revealed") or ():
+        if isinstance(nm, str) and nm in name_to_id:
+            revealed.add(name_to_id[nm])
+    for start, slots in deck_slots:
+        for k in range(slots):
+            idx = int(round(float(obs_row[start + k * slot_size])
+                            * N_CARD_TYPES))
+            if idx >= 0:
+                emb.add(idx)
+    return emb, revealed
 
 
-def card_occurrences(obs, limit=1500, seed=0):
-    """Per-card count of sampled states that MENTION the card, via the shared
-    board decoder (layout-proof, unlike hand-counting id offsets).
+def card_occurrence_split(obs, limit=1500, seed=0):
+    """Per-card state counts, split by how the card reaches the network:
 
-    This is what keeps the embedding views honest: a card with no occurrences got
-    no training signal, so its embedding row is warm-start noise and its
-    "neighbours" mean nothing. Returns ``(counts (N_CARD_TYPES,), n_states)``.
-    """
+      ``emb``      — states where the card's id is EMBEDDED (both boards, hand,
+                     stack, graveyards, exiles, known top-library, known
+                     opponent hand, and the five decklist blocks)
+      ``revealed`` — states where it appears ONLY in the dense opponent-revealed
+                     multi-hot, which never touches the card embedding
+
+    Counting is per state (a hand of four Brainstorms counts once). Returns
+    ``(emb, revealed, n_states)``."""
     rng = np.random.default_rng(seed)
     n = obs.shape[0]
     idx = np.arange(n) if n <= limit else np.sort(
         rng.choice(n, size=int(limit), replace=False))
     name_to_id = {n_: i for i, n_ in enumerate(VOCAB_NAMES) if n_}
-    counts = np.zeros(N_CARD_TYPES, dtype=np.int64)
+    deck_slots = _decklist_id_slots()
+    import env as e
+    slot_size = e._DECKLIST_SLOT_SIZE
+    emb = np.zeros(N_CARD_TYPES, dtype=np.int64)
+    rev = np.zeros(N_CARD_TYPES, dtype=np.int64)
     for r in idx:
-        gs = decode.decode_game_state(obs[r])
-        for nm in _names_in_state(gs):
-            i = name_to_id.get(nm)
-            if i is not None:
-                counts[i] += 1
-    return counts, int(len(idx))
+        e_ids, r_ids = _state_card_ids(obs[r], name_to_id, deck_slots, slot_size)
+        for i in e_ids:
+            emb[i] += 1
+        for i in r_ids - e_ids:
+            rev[i] += 1
+    return emb, rev, int(len(idx))
+
+
+def card_occurrences(obs, limit=1500, seed=0):
+    """Per-card count of sampled states that EMBED the card — the occurrence
+    number the embedding views should filter on. See card_occurrence_split for
+    the revealed-only column. Returns ``(counts, n_states)``.
+
+    Note this measures *visibility in the sampled data*; :func:`card_exposure`
+    answers the stronger question (did this row actually receive gradient) from
+    the weights, with no shards at all."""
+    emb, _, n = card_occurrence_split(obs, limit=limit, seed=seed)
+    return emb, n
 
 
 # ----------------------------------------------------------------------
@@ -761,6 +815,123 @@ def sweep_trend(res):
 # Checkpoint diff
 # ----------------------------------------------------------------------
 
+def _snapshot_steps(path):
+    """Step count encoded in a ``gen__azv{steps}.pt`` filename, else -1."""
+    try:
+        return int(os.path.basename(path).split("__azv")[1].split(".pt")[0])
+    except (IndexError, ValueError):
+        return -1
+
+
+def resolve_baseline(path, checkpoint_dir=None):
+    """The checkpoint to measure training AGAINST, for exposure.
+
+    Prefers the newest ``gen__azv*`` snapshot strictly older than ``path``
+    (exposure over that training interval); falls back to the PPO checkpoint AZ
+    warm-started from (exposure since warm-start), since AZ has no from-scratch
+    path. Returns ``(spec, kind)`` with kind ``'snapshot' | 'ppo' | None``.
+
+    Siblings are searched in ``path``'s OWN directory by default — for the
+    normal generalist that is the AZ checkpoint dir, and for a checkpoint kept
+    elsewhere the neighbours next to it are the meaningful baselines."""
+    checkpoint_dir = checkpoint_dir or os.path.dirname(os.path.abspath(path))
+    steps = _snapshot_steps(path)
+    snaps = [(s, p) for p in glob.glob(os.path.join(checkpoint_dir,
+                                                    "gen__azv*.pt"))
+             for s in (_snapshot_steps(p),)
+             if s >= 0 and (steps < 0 or s < steps)]
+    if snaps:
+        return max(snaps)[1], "snapshot"
+    from opponents import resolve_checkpoint
+    # resolve_checkpoint returns the gen__final path even when it does not exist
+    # yet (so callers can test it), so existence is checked here.
+    ppo = resolve_checkpoint("gen")
+    return (ppo, "ppo") if ppo and os.path.isfile(ppo) else (None, None)
+
+
+def _card_emb_and_value(spec):
+    """``(card_emb weight, value_head weight)`` for a checkpoint spec — either an
+    AZ ``.pt`` state dict or a PPO ``.zip`` mapped through the warm-start."""
+    import torch
+    if str(spec).endswith(".zip"):
+        from az_net import from_ppo
+        sd = from_ppo(spec).state_dict()
+    else:
+        sd = torch.load(spec, map_location="cpu")
+    return sd["trunk.card_emb.weight"].float(), sd["value_head.weight"].float()
+
+
+def card_exposure(path, baseline=None, checkpoint_dir=None):
+    """Which embedding rows and critic columns actually TRAINED, from weights.
+
+    A row that received no gradient is bit-identical between two checkpoints —
+    az_train exempts the embedding tables and the critic's bucket columns from
+    weight decay precisely so an untouched row does not drift (az_train.py's
+    decay_exempt_param_groups), which makes "moved at all" an exact binary.
+
+    This is the shard-free (and stricter) form of :func:`card_occurrences`: it
+    measures gradient rather than visibility, so it also catches cards embedded
+    only through a decklist block."""
+    if baseline is None:
+        baseline, kind = resolve_baseline(path, checkpoint_dir)
+    else:
+        baseline = resolve_spec(
+            baseline, checkpoint_dir
+            or os.path.dirname(os.path.abspath(path))) or baseline
+        kind = "ppo" if str(baseline).endswith(".zip") else "snapshot"
+    if baseline is None:
+        raise FileNotFoundError(
+            "no baseline checkpoint to measure exposure against — exposure "
+            "needs an earlier gen__azv* snapshot or the PPO gen checkpoint AZ "
+            "warm-started from")
+    emb_a, val_a = _card_emb_and_value(baseline)
+    emb_b, val_b = _card_emb_and_value(path)
+    # Row i+1 is vocab card i (row 0 is the padding row).
+    delta = (emb_b - emb_a).norm(dim=1).numpy()[1:]
+    bucket_delta = (val_b - val_a).norm(dim=1).numpy()
+    return {"path": path, "baseline": baseline, "kind": kind,
+            "delta": delta, "moved": delta > 0.0,
+            "bucket_delta": bucket_delta, "bucket_moved": bucket_delta > 0.0}
+
+
+def exposure_counts(exp):
+    """The exposure vector in the shape the embedding views take for filtering
+    (per-card, 0 = never trained), so --min-seen works without shards."""
+    return exp["delta"]
+
+
+def filter_vector(counts=None, exposure=None):
+    """The per-card vector ``--min-seen`` is compared against, shared by both
+    front ends so they filter identically.
+
+    With a shard sample that is the occurrence count. Without one it is a BINARY
+    trained/not-trained vector derived from the exposure movement — the movement
+    is a float distance (0.39, 0.03, …), so comparing it to a count threshold
+    would silently discard almost every card. Under it, ``--min-seen 1`` reads as
+    "this row actually received gradient"."""
+    if counts is not None:
+        return counts
+    if exposure is not None:
+        return (np.asarray(exposure) > 0).astype(np.int64)
+    return None
+
+
+def try_exposure(path):
+    """``card_exposure`` if a baseline exists, else None — the embedding views
+    annotate with it when no shard sample is loaded."""
+    try:
+        return card_exposure(path)
+    except (FileNotFoundError, KeyError, RuntimeError):
+        return None
+
+
+def exposure_counts_or_none(path):
+    """The per-card movement vector for ``path``, or None when there is no
+    baseline checkpoint to measure against."""
+    exp = try_exposure(path)
+    return None if exp is None else exposure_counts(exp)
+
+
 def checkpoint_diff(path_a, path_b, top_n=15):
     """Per-tensor, per-card and per-bucket movement between two checkpoints —
     "what did the last training rotation actually change"."""
@@ -836,34 +1007,55 @@ def render_overview(net, path, sample=None):
     return lines
 
 
-NEIGHBOR_HEADER = f"  {'cos':>6}  {'card':<34} {'cost':<6} {'type':<13} seen"
+def neighbor_header(counts=None, exposure=None):
+    """Column header matching what neighbor_row will annotate with."""
+    tail = "seen" if counts is not None else ("Δemb" if exposure is not None
+                                              else "")
+    return f"  {'cos':>6}  {'card':<34} {'cost':<6} {'type':<13} {tail}"
 
 
-def neighbor_row(idx, cos, counts=None):
+# Back-compat alias for the plain (shard-annotated) header.
+NEIGHBOR_HEADER = neighbor_header(counts=True)
+
+
+def neighbor_row(idx, cos, counts=None, exposure=None):
     """One formatted neighbour line. Shared so the TUI's clickable list and the
-    text view show identical columns."""
-    seen = "" if counts is None else str(int(counts[int(idx)]))
+    text view show identical columns. Annotated with occurrence counts when a
+    shard sample is loaded, else with the weights-only embedding movement."""
+    if counts is not None:
+        tail = str(int(counts[int(idx)]))
+    elif exposure is not None:
+        d = float(exposure[int(idx)])
+        tail = f"{d:.3f}" if d > 0 else "—"
+    else:
+        tail = ""
     return (f"  {cos:6.3f}  {card_name(idx)[:34]:<34} "
-            f"{card_cost_colors(idx):<6} {card_primary_type(idx):<13} {seen}")
+            f"{card_cost_colors(idx):<6} {card_primary_type(idx):<13} {tail}")
 
 
-def render_neighbors(mat, idx, k=15, counts=None, candidates=None, rows=True):
+def render_neighbors(mat, idx, k=15, counts=None, candidates=None, rows=True,
+                     exposure=None):
     """Header + neighbour rows for a card. ``rows=False`` returns the header
     alone, for callers (the TUI) that render the neighbours as a widget."""
     lines = [f"{card_name(idx)}  [{card_cost_colors(idx)} "
              f"mv{card_cmc(idx):.0f} {card_primary_type(idx)}]",
              f"  embedding row norm {np.linalg.norm(mat[idx]):.3f}"]
+    untrained = ("  ⚠ its row never trained, so it still holds warm-start "
+                 "values and these neighbours are meaningless")
     if counts is not None:
         seen = int(counts[idx])
-        lines.append(f"  seen in {seen} sampled states"
-                     + ("  ⚠ NEVER SEEN — its row is warm-start noise, so its "
-                        "neighbours are meaningless" if seen == 0 else ""))
+        lines.append(f"  embedded in {seen} sampled states"
+                     + (untrained if seen == 0 else ""))
+    if exposure is not None:
+        d = float(exposure[idx])
+        lines.append(f"  embedding moved {d:.4f} since the baseline"
+                     + (untrained if d == 0 else ""))
     if not rows:
         return lines
     lines.append("")
-    lines.append(NEIGHBOR_HEADER)
+    lines.append(neighbor_header(counts, exposure))
     for j, cos in nearest_cards(mat, idx, k=k, candidates=candidates):
-        lines.append(neighbor_row(j, cos, counts))
+        lines.append(neighbor_row(j, cos, counts, exposure))
     return lines
 
 
@@ -872,8 +1064,10 @@ def render_structure(mat, k=10, ids=None, counts=None, min_seen=0):
     note = ""
     if counts is not None and min_seen > 0:
         keep = np.array([counts[i] >= min_seen for i in ids])
-        note = (f" (restricted to {int(keep.sum())} cards seen >= {min_seen} "
-                f"times of {len(ids)})")
+        # Neutral wording: the vector is occurrence counts with a shard sample
+        # loaded, and a binary trained/untrained flag without one.
+        note = (f" (restricted to the {int(keep.sum())} of {len(ids)} cards "
+                f"passing --min-seen {min_seen})")
         ids = ids[keep]
     lines = [f"kNN label purity over {len(ids)} card embeddings, k={k}{note}",
              "  purity = share of a card's k nearest neighbours with its label;",
@@ -953,22 +1147,71 @@ def render_projection(mat, ids=None, width=78, height=24, mark="color",
     return lines
 
 
-def render_occurrences(counts, n_states, top_n=25):
+def render_occurrences(counts, n_states, top_n=25, revealed=None):
     ids = named_card_ids()
     order = sorted(ids, key=lambda i: -counts[i])
     zero = [i for i in ids if counts[i] == 0]
     lines = [f"card occurrences over {n_states} sampled decision states",
-             f"  {len(ids) - len(zero)}/{len(ids)} named cards appear; "
-             f"{len(zero)} never seen (their embedding rows are untrained)", ""]
+             f"  {len(ids) - len(zero)}/{len(ids)} named cards are EMBEDDED "
+             f"(board zones, hand, graveyards/exiles, and the decklist blocks); "
+             f"{len(zero)} never appear",
+             "  'revealed' counts states where the card shows up ONLY in the "
+             "dense opponent-revealed",
+             "  multi-hot — that block never touches the card embedding, and it "
+             "is sticky for the match.", "",
+             f"  {'embedded':>8} {'':>6} {'revealed':>8}  card"]
     for i in order[:top_n]:
         frac = counts[i] / max(1, n_states)
-        lines.append(f"  {counts[i]:6d}  {frac*100:5.1f}%  "
-                     f"{card_name(i)[:38]:<38} {_bar(frac)}")
+        rev = "" if revealed is None else f"{int(revealed[i]):8d}"
+        lines.append(f"  {counts[i]:8d} {frac*100:5.1f}% {rev:>8}  "
+                     f"{card_name(i)[:34]:<34} {_bar(frac)}")
     if zero:
         lines.append("")
-        lines.append(f"never seen ({len(zero)}): "
+        lines.append(f"never embedded ({len(zero)}): "
                      + ", ".join(card_name(i) for i in zero[:40])
                      + (" …" if len(zero) > 40 else ""))
+        lines.append("  (this is visibility in the SAMPLE; the 'exposure' view "
+                     "answers it exactly from the weights)")
+    return lines
+
+
+def render_exposure(exp, top_n=20):
+    """Which embedding rows / critic columns actually received gradient."""
+    ids = named_card_ids()
+    delta = exp["delta"]
+    d = np.array([delta[i] for i in ids])
+    moved = d > 0
+    src = ("the previous AZ snapshot" if exp["kind"] == "snapshot"
+           else "the PPO checkpoint AZ warm-started from")
+    lines = [f"training exposure — {os.path.basename(exp['path'])} vs "
+             f"{os.path.basename(exp['baseline'])}",
+             f"  ({src}; a row that got no gradient is bit-identical, so "
+             "'moved' is exact — az_train",
+             "   exempts these tables from weight decay precisely so an "
+             "untouched row cannot drift)", "",
+             f"card embedding rows trained: {int(moved.sum())}/{len(ids)}"]
+    top = np.argsort(-d)[:top_n]
+    hi = d[top[0]] if len(top) and d[top[0]] > 0 else 1.0
+    for j in top:
+        if d[j] <= 0:
+            break
+        lines.append(f"  {d[j]:8.4f}  {card_name(ids[j])[:38]:<38} "
+                     f"{_bar(d[j] / hi)}")
+    frozen = [card_name(ids[j]) for j in np.nonzero(~moved)[0]]
+    if frozen:
+        lines.append("")
+        lines.append(f"never trained ({len(frozen)}): " + ", ".join(frozen[:40])
+                     + (" …" if len(frozen) > 40 else ""))
+        lines.append("  their rows still hold warm-start values — exclude them "
+                     "with --min-seen 1")
+    bd = exp["bucket_delta"]
+    bmoved = exp["bucket_moved"]
+    lines.append("")
+    lines.append(f"value-head columns trained: {int(bmoved.sum())}/{len(bd)}")
+    cold = [archetypes.bucket_name(i) for i in np.nonzero(~bmoved)[0]]
+    if cold:
+        lines.append(f"  untrained matchups ({len(cold)}): "
+                     + ", ".join(cold[:12]) + (" …" if len(cold) > 12 else ""))
     return lines
 
 
@@ -1271,6 +1514,14 @@ def build_parser():
                    help="states to decode (default: 1500)")
     p.add_argument("--top", type=int, default=25)
 
+    p = sub.add_parser("exposure",
+                       help="which embedding rows / critic columns actually "
+                            "trained (weights only, no shards)")
+    p.add_argument("--baseline", default=None,
+                   help="checkpoint to measure against (default: the previous "
+                        "gen__azv* snapshot, else the PPO gen warm-start)")
+    p.add_argument("--top", type=int, default=20)
+
     sub.add_parser("catemb", help="action-category embedding neighbours")
 
     p = sub.add_parser("buckets", help="per-matchup critic column map")
@@ -1344,9 +1595,18 @@ def main(argv=None):
         s = load_shard_sample(args.shards, max_rows=max(args.max_rows,
                                                         args.count_rows),
                               window=args.window, seed=args.seed)
-        counts, n = card_occurrences(s["obs"], limit=args.count_rows,
-                                     seed=args.seed)
-        print("\n".join(render_occurrences(counts, n, top_n=args.top)))
+        emb, rev, n = card_occurrence_split(s["obs"], limit=args.count_rows,
+                                            seed=args.seed)
+        print("\n".join(render_occurrences(emb, n, top_n=args.top,
+                                           revealed=rev)))
+        return 0
+
+    if cmd == "exposure":
+        path = resolve_spec(args.model)
+        if path is None:
+            raise SystemExit(f"could not resolve checkpoint {args.model!r}")
+        print("\n".join(render_exposure(card_exposure(path, args.baseline),
+                                        top_n=args.top)))
         return 0
 
     net, path = load_net(args.model)
@@ -1414,25 +1674,29 @@ def main(argv=None):
 
     mat = card_embedding(net)
     counts = _maybe_counts(args)
+    # Without --with-counts, annotate/filter with the weights-only exposure
+    # instead of loading shards (same signal the TUI defaults to).
+    exposure = None if counts is not None else exposure_counts_or_none(path)
+    filt = filter_vector(counts, exposure)
 
     if cmd == "neighbors":
         idx = resolve_card(args.card)
         cand = None
-        if counts is not None and args.min_seen > 0:
+        if filt is not None and args.min_seen > 0:
             cand = np.array([i for i in named_card_ids()
-                             if counts[i] >= args.min_seen])
+                             if filt[i] >= args.min_seen])
         print("\n".join(render_neighbors(mat, idx, k=args.k, counts=counts,
-                                         candidates=cand)))
+                                         candidates=cand, exposure=exposure)))
     elif cmd == "structure":
-        print("\n".join(render_structure(mat, k=args.k, counts=counts,
+        print("\n".join(render_structure(mat, k=args.k, counts=filt,
                                          min_seen=args.min_seen)))
     elif cmd == "clusters":
         print("\n".join(render_clusters(mat, k=args.k, seed=args.cluster_seed,
-                                        counts=counts, min_seen=args.min_seen)))
+                                        counts=filt, min_seen=args.min_seen)))
     elif cmd == "project":
         print("\n".join(render_projection(mat, width=args.width,
                                           height=args.height, mark=args.mark,
-                                          counts=counts,
+                                          counts=filt,
                                           min_seen=args.min_seen)))
     return 0
 

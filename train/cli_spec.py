@@ -1201,12 +1201,15 @@ AZ_INSPECT_TOOL = Tool("az-inspect", "train/tui_az_inspect.py", flat=True, subs=
         Arg("--model", "str", default="gen", suggest="checkpoint",
             help="AZ checkpoint: 'gen' (the generalist), a snapshot stem "
                  "(gen__azv384000), or a path"),
+        Arg("--with-shards", "flag",
+            help="Also load recorded self-play, adding the views that need it: "
+                 "occurrences, value calibration, priors-vs-search divergence "
+                 "and the whole Probes pane. Off by default — the weights-only "
+                 "views load in a second and need no shard pool"),
         Arg("--shards", "str", default=None,
-            help="Directory of recorded self-play shard_*.npz "
+            help="Directory of recorded self-play shard_*.npz to use with "
+                 "--with-shards, which it implies "
                  "(default: train/az_data/gen)"),
-        Arg("--no-shards", "flag",
-            help="Weights only — skip recorded self-play (disables the "
-                 "occurrence, calibration, divergence and probe views)"),
         Arg("--max-rows", "int", default=3000,
             help="Recorded decisions to sample (default: 3000)"),
         Arg("--count-rows", "int", default=800,

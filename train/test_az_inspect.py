@@ -183,11 +183,18 @@ def test_shards(data_dir, planted_idx):
             check("observation layout" in str(e),
                   "a stale-layout shard is rejected by message, not a shape error")
 
-    counts, n = azi.card_occurrences(s["obs"], limit=8)
-    check(counts[planted_idx] == n and n > 0,
+    emb, rev, n = azi.card_occurrence_split(s["obs"], limit=8)
+    check(emb[planted_idx] == n and n > 0,
           f"the planted hand card is counted in all {n} decoded states")
-    check(counts.sum() > counts[planted_idx],
+    check(emb.sum() > emb[planted_idx],
           "other cards in the synthetic state are counted too")
+    # The revealed multi-hot never reaches card_emb, so it must not be folded
+    # into the embedded count (it is also sticky for a whole match).
+    check(rev.sum() == 0,
+          "revealed-only counts are reported separately, not summed in")
+    counts, n2 = azi.card_occurrences(s["obs"], limit=8)
+    check(np.array_equal(counts, emb) and n2 == n,
+          "card_occurrences returns the EMBEDDED column")
     return s
 
 
@@ -295,6 +302,46 @@ def test_diff(net, tmp):
           "and as the tensor that actually changed")
 
 
+def test_exposure(net, tmp):
+    """Exposure must be an EXACT trained/not-trained split from weights alone."""
+    import torch
+    ckpt_dir = os.path.join(tmp, "exposure")
+    os.makedirs(ckpt_dir, exist_ok=True)
+    base = os.path.join(ckpt_dir, "gen__azv10.pt")
+    later = os.path.join(ckpt_dir, "gen__azv20.pt")
+    net.save(base, 10)
+    net.save(later, 20)
+
+    bolt = azi.resolve_card(_PLANTED)
+    sd = torch.load(later, map_location="cpu")
+    sd["trunk.card_emb.weight"][bolt + 1] += 0.25      # one card trained
+    sd["value_head.weight"][3] += 0.5                  # one matchup trained
+    torch.save(sd, later)
+
+    exp = azi.card_exposure(later, checkpoint_dir=ckpt_dir)
+    check(os.path.basename(exp["baseline"]) == "gen__azv10.pt"
+          and exp["kind"] == "snapshot",
+          "the baseline defaults to the previous snapshot")
+    moved = np.nonzero(exp["moved"])[0]
+    check(list(moved) == [bolt],
+          f"exactly the perturbed card reads as trained (got {list(moved)})")
+    check(exp["delta"][bolt] > 0 and (exp["delta"] >= 0).all(),
+          "movement is a non-negative per-row distance")
+    bmoved = np.nonzero(exp["bucket_moved"])[0]
+    check(list(bmoved) == [3],
+          f"exactly the perturbed value bucket reads as trained (got {list(bmoved)})")
+    # An untouched row must be bit-identical, not merely close — that exactness
+    # is what makes 'never trained' a fact rather than a threshold.
+    check(exp["delta"][azi.resolve_card("Mountain")] == 0.0,
+          "an untouched row moves by exactly 0")
+    check(np.array_equal(azi.exposure_counts(exp), exp["delta"]),
+          "exposure_counts exposes the movement vector for --min-seen")
+
+    lines = azi.render_exposure(exp)
+    check(any("1/330" in ln for ln in lines),
+          "the exposure view reports the trained-row count")
+
+
 def test_renders(net, path, sample, mat):
     counts, _ = azi.card_occurrences(sample["obs"], limit=6)
     bolt = azi.resolve_card(_PLANTED)
@@ -305,7 +352,8 @@ def test_renders(net, path, sample, mat):
         "structure": lambda: azi.render_structure(mat, k=5),
         "clusters": lambda: azi.render_clusters(mat, k=3),
         "project": lambda: azi.render_projection(mat, width=40, height=10),
-        "occur": lambda: azi.render_occurrences(counts, 6, top_n=5),
+        "occur": lambda: azi.render_occurrences(counts, 6, top_n=5,
+                                                revealed=counts * 0),
         "catemb": lambda: azi.render_category_embedding(net),
         "buckets": lambda: azi.render_buckets(
             net, azi.obs_buckets(net, sample["obs"])),
@@ -345,6 +393,23 @@ def test_tui_wiring():
     app = tui.InspectApp(args)
     check(app._args.shards == azi.AZ_DATA_DIR,
           "an unset --shards falls back to the recorded self-play directory")
+    # The default is weights-only: no shard load, no Probes pane, and the
+    # sidebar offers only views this session can actually compute.
+    check(not app._with_shards and app._panes == ("emb", "critic"),
+          "the app defaults to weights-only (no Probes pane)")
+    offered = [k for k, _ in tui.available_views(tui._EMB_VIEWS, False)
+               ] + [k for k, _ in tui.available_views(tui._CRITIC_VIEWS, False)]
+    check(not (set(offered) & tui._NEEDS_SHARDS),
+          f"no shard-backed view is offered by default (got {offered})")
+    check("exposure" in offered,
+          "the weights-only exposure view replaces occurrences by default")
+    with_shards = tui.InspectApp(tui.build_parser().parse_args(["--with-shards"]))
+    check(with_shards._panes == ("emb", "critic", "probe"),
+          "--with-shards restores the Probes pane")
+    implied = tui.InspectApp(tui.build_parser().parse_args(["--shards", "/tmp/x"]))
+    check(implied._with_shards,
+          "naming an explicit --shards directory implies --with-shards")
+
     views = ([k for k, _ in tui._EMB_VIEWS] + [k for k, _ in tui._CRITIC_VIEWS]
              + [k for k, _ in tui._PROBE_VIEWS])
     check(len(views) == len(set(views)), "view keys are unique across the panes")
@@ -359,15 +424,17 @@ def test_tui_wiring():
           "probe views are declared as needing recorded self-play")
 
 
-async def _drive_app(app, pilot):
+async def _drive_app(app, pilot, label):
     """Wait for the load worker, then let every pane's initial render land."""
+    ready = (lambda: app._net is not None and app._counts is not None) \
+        if app._with_shards else (lambda: app._net is not None)
     for _ in range(400):                       # <= 80s: torch import + sampling
         await pilot.pause(0.2)
-        if app._net is not None and app._counts is not None:
+        if ready():
             break
-    check(app._net is not None, "the app loads a checkpoint + shard sample")
+    check(app._net is not None, f"[{label}] the app loads a checkpoint")
     from textual.widgets import Static
-    panes = ("emb", "critic", "probe")
+    panes = app._panes
     for _ in range(400):
         await pilot.pause(0.2)
         texts = {p: str(app.query_one(f"#{p}-out", Static).content) for p in panes}
@@ -377,9 +444,11 @@ async def _drive_app(app, pilot):
     # the three stuck at "computing…" forever (exclusive cancels its group), so
     # this is the check that keeps the per-pane groups honest.
     stuck = [p for p, t in texts.items() if t.startswith("computing")]
-    check(not stuck, f"every pane renders its initial view (stuck: {stuck})")
+    check(not stuck, f"[{label}] every pane renders its initial view "
+                     f"(stuck: {stuck})")
     crashed = [p for p, t in texts.items() if "Traceback" in t]
-    check(not crashed, f"no pane rendered a traceback (crashed: {crashed})")
+    check(not crashed, f"[{label}] no pane rendered a traceback "
+                       f"(crashed: {crashed})")
 
     # A view switch in one pane still lands.
     app._render("emb", "structure")
@@ -389,33 +458,41 @@ async def _drive_app(app, pilot):
         if not txt.startswith("computing"):
             break
     check("purity" in txt and "Traceback" not in txt,
-          "switching views re-renders that pane")
+          f"[{label}] switching views re-renders that pane")
 
 
 def test_tui_end_to_end(net, tmp):
-    """Drive the Textual app headlessly against a synthetic checkpoint+shards."""
+    """Drive the Textual app headlessly against a synthetic checkpoint+shards,
+    in BOTH modes: the weights-only default and the full --with-shards run."""
     import asyncio
     import tui_az_inspect as tui
 
     ckpt_dir = os.path.join(tmp, "tui_ckpt")
     os.makedirs(ckpt_dir, exist_ok=True)
-    ckpt = os.path.join(ckpt_dir, "gen__azv1.pt")
-    net.save(ckpt, 1)
+    # Two snapshots so the weights-only run has a baseline for exposure.
+    net.save(os.path.join(ckpt_dir, "gen__azv1.pt"), 1)
+    ckpt = os.path.join(ckpt_dir, "gen__azv2.pt")
+    net.save(ckpt, 2)
     data_dir = os.path.join(tmp, "tui_shards")
     os.makedirs(data_dir, exist_ok=True)
     synth_shards(data_dir, np.random.default_rng(1), azi.resolve_card(_PLANTED))
 
-    args = tui.build_parser().parse_args(
-        ["--model", ckpt, "--shards", data_dir, "--max-rows", "16",
-         "--count-rows", "6", "--block-rows", "3", "--donors", "1",
-         "--neighbors", "5", "--knn", "4", "--clusters", "3", "--top", "5"])
-    app = tui.InspectApp(args)
+    common = ["--model", ckpt, "--max-rows", "16", "--count-rows", "6",
+              "--block-rows", "3", "--donors", "1", "--neighbors", "5",
+              "--knn", "4", "--clusters", "3", "--top", "5"]
 
-    async def run():
-        async with app.run_test(size=(120, 40)) as pilot:
-            await _drive_app(app, pilot)
+    for label, extra in (("weights-only", []),
+                         ("with-shards", ["--shards", data_dir])):
+        app = tui.InspectApp(tui.build_parser().parse_args(common + extra))
 
-    asyncio.run(run())
+        async def run(app=app, label=label):
+            async with app.run_test(size=(120, 40)) as pilot:
+                await _drive_app(app, pilot, label)
+
+        asyncio.run(run())
+        if not extra:
+            check(app._sample is None and app._exposure is not None,
+                  "[weights-only] no shards were read, but exposure loaded")
 
 
 def main():
@@ -440,6 +517,8 @@ def main():
         test_probes(net, sample)
         print("\n[diff]")
         test_diff(net, tmp)
+        print("\n[exposure]")
+        test_exposure(net, tmp)
         print("\n[renders]")
         ckpt = os.path.join(tmp, "same_a__azv1.pt")
         test_renders(net, ckpt, sample, mat)

@@ -694,10 +694,22 @@ subprocess and no game played.
   chance** (color / primary type / mana value / land — the quantitative "did it
   recover real card structure"), k-means, a PCA scatter, and the
   action-category embedding's neighbours.
-- **Occurrence counts** (`occur`) decode a sample of recorded states and count
-  which cards appear. This is the honesty check for every embedding view: a card
-  the training window never contained still carries its PPO warm-start row, so
-  its "neighbours" are noise. `--min-seen` filters those out.
+- **Training exposure** (`exposure`, weights only) is the honesty check for every
+  embedding view: a card the training window never contained still carries its
+  warm-start row, so its "neighbours" are noise. Diffing a checkpoint against its
+  previous snapshot (or the PPO net it warm-started from) says *exactly* which
+  rows and which critic columns received gradient — an untouched row is
+  bit-identical, because `az_train`'s `decay_exempt_param_groups` keeps weight
+  decay off these tables precisely so an ungradiented row cannot drift.
+  `--min-seen 1` filters the untrained rows out of every embedding view.
+- **Occurrence counts** (`occur`, needs shards) decode a sample of recorded
+  states and count where each card appears. Reported in two columns: states that
+  EMBED the card (both boards, hand, graveyards/exiles, known zones, and the five
+  decklist blocks) and states where it appears only in the dense
+  opponent-revealed multi-hot — which never touches `card_emb` and is sticky for
+  a whole match, so summing the two would both overstate and misattribute
+  exposure. This measures visibility in the sample; `exposure` answers the
+  underlying question exactly.
 - **Critic.** The value head's per-matchup columns as an `N_ARCH × N_ARCH` map
   (norm / constant / `dead_value_buckets`), which buckets the sampled self-play
   actually covers, and **per-bucket calibration** of predicted V against the
@@ -712,6 +724,13 @@ subprocess and no game played.
   life, hand, turn) with a monotonicity verdict.
 - **`diff`** between two checkpoints: per-tensor, per-card and per-bucket
   movement — what a league/az rotation actually changed.
+
+**The TUI opens weights-only.** Only the checkpoint (and its baseline, for
+exposure) is read by default: it starts in about a second, needs no shard pool on
+disk, and the sidebar lists only the views this session can actually compute —
+the Probes pane, every view of which needs a recorded decision, is not built at
+all. `--with-shards` (implied by naming `--shards <dir>`) loads recorded
+self-play and restores the rest.
 
 `obs_blocks()` derives its partition from `env.py`'s offset chain and asserts it
 contiguous over `[0, OBS_SIZE)`, so a layout change fails loudly instead of
