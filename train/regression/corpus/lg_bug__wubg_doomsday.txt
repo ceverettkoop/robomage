@@ -213,7 +213,7 @@
   Self:  19 life | mana: empty | hand(6): Doomsday, Doomsday, Polluted Delta, Ponder, Teferi, Time Raveler, Tundra | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp revealed: Tropical Island
@@ -446,7 +446,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Island (T)
   Opp BF:   Tropical Island
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Brainstorm, Ponder, Flooded Strand
   Known top: Ponder, ?, ?, ?, ?
@@ -982,7 +982,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra (T)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Lotus Petal, Ponder, Polluted Delta, Brainstorm, Ponder, Flooded Strand
   Opp GY:  Force of Will
@@ -1762,7 +1762,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 41
   Self BF:  Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island | Orc Army [5/5] [+1/+1:5] | Clue
   Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Teferi, Time Raveler [loy 5] | Tropical Island (T) | Tropical Island (T) | Tundra (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Lotus Petal, Brainstorm, Flooded Strand, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Lotus Petal, Ponder, Polluted Delta, Brainstorm, Ponder, Flooded Strand
@@ -2373,7 +2373,7 @@
   Opp:   8 life | mana: empty | hand count: 1 | lib 37
   Self BF:  Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [5/5] [+1/+1:5] | Clue
   Opp BF:   Island | Scrubland | Teferi, Time Raveler [loy 6] | Tropical Island | Tropical Island | Tundra
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Witherbloom Command, Thoughtseize, Sheoldred's Edict, Force of Will
   Opp GY:  Tamiyo, Inquisitive Student, Force of Will, Daze, Doomsday, Force of Will, Lotus Petal, Brainstorm, Flooded Strand, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Lotus Petal, Ponder, Polluted Delta, Brainstorm, Ponder, Flooded Strand

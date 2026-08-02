@@ -47,6 +47,20 @@ inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Cre
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
 inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }
 
+// The CardData face a permanent entity is currently showing: the back face while the
+// permanent is transformed (CR 712.8e — a face-up back face has its own characteristics),
+// else the front. Falls back to the front face for single-faced cards and non-permanents.
+// Use this instead of reading GetComponent<CardData>(e) directly wherever a transformed
+// permanent's PRINTED characteristics (colors, types, P/T) matter; note that MANA VALUE is
+// the one characteristic that does NOT follow the active face for a nonmodal DFC (712.8e
+// computes it from the front face's cost; only a MODAL back face carries its own, 712.8d).
+inline const CardData &active_face(Entity e, const CardData &cd) {
+    if (cd.backside && global_coordinator.entity_has_component<Permanent>(e) &&
+        global_coordinator.GetComponent<Permanent>(e).transformed)
+        return *cd.backside;
+    return cd;
+}
+
 // Printed colors of a card: an explicit Colors$ override if present (e.g. Devoid's COLORLESS),
 // otherwise the colors of its mana cost (CR 105.2 / 202.2). Single source for the color of a
 // card object, shared by the targeting color checks and the last-known-info snapshot.

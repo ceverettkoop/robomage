@@ -1411,7 +1411,7 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
   Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Keen-Eyed Curator, Once Upon a Time
   Known opp hand: Swords to Plowshares, Wasteland, Windswept Heath
@@ -1431,7 +1431,7 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
   Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Keen-Eyed Curator, Once Upon a Time
@@ -2050,7 +2050,7 @@
   Self:  16 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 45
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Opp BF:   Dryad Arbor [1/1] (T) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Self GY: Polluted Delta, Undercity Sewers, Doomsday, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Wasteland, Keen-Eyed Curator, Once Upon a Time
   Known opp hand: Swords to Plowshares, Windswept Heath
@@ -2070,7 +2070,7 @@
   Self:  16 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 45
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Opp BF:   Dryad Arbor [1/1] (T) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Undercity Sewers, Doomsday, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Wasteland, Keen-Eyed Curator, Once Upon a Time
@@ -4519,7 +4519,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Lotus Petal | Swamp
   Opp BF:   Gaea's Cradle (T) | Knight of the Reliquary [8/8] (SICK) | Knight of the Reliquary [8/8] (T) | Savannah (T) | Talon Gates of Madara | Wasteland (T)
-  Stack: Windswept Heath (ability, opponent)
+  Stack: Windswept Heath (ability, opponent) [amt=1]
   Self GY: Force of Will, Thoughtseize, Polluted Delta, Undercity Sewers, Doomsday, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Windswept Heath, Horizon Canopy, Plains, Noble Hierarch, Forest, Dryad Arbor, Sylvan Library, Wasteland, Keen-Eyed Curator, Once Upon a Time
   Self exile: Brainstorm
@@ -4541,7 +4541,7 @@
   Opp:   13 life | mana: empty | hand count: 3 | lib 42
   Self BF:  Gaea's Cradle (T) | Knight of the Reliquary [8/8] (SICK) | Knight of the Reliquary [8/8] (T) | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Lotus Petal | Swamp
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Horizon Canopy, Plains, Noble Hierarch, Forest, Dryad Arbor, Sylvan Library, Wasteland, Keen-Eyed Curator, Once Upon a Time
   Opp GY:  Force of Will, Thoughtseize, Polluted Delta, Undercity Sewers, Doomsday, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -5975,7 +5975,7 @@
   Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 39
   Opp:   2 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Gaea's Cradle (T) | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [11/11] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara | Wasteland
-  Stack: Windswept Heath (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self, slot 1)
+  Stack: Windswept Heath (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self, slot 1)
   Self GY: Windswept Heath, Savannah, Savannah, Once Upon a Time, Windswept Heath, Horizon Canopy, Plains, Noble Hierarch, Forest, Dryad Arbor, Sylvan Library, Wasteland, Keen-Eyed Curator, Once Upon a Time
   Opp GY:  Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Swamp, Street Wraith, Doomsday
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Street Wraith, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Misty Rainforest, Island, Underground Sea, Polluted Delta, Undercity Sewers, Ponder, Lotus Petal, Thoughtseize, Thoughtseize, Force of Will, Doomsday, Brainstorm
@@ -5993,7 +5993,7 @@
   Self:  2 life | mana: empty | hand(2): Doomsday, Street Wraith | lib 1
   Opp:   18 life | mana: empty | hand count: 1 | lib 39
   Opp BF:   Gaea's Cradle (T) | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [11/11] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara | Wasteland
-  Stack: Windswept Heath (ability, opponent) -> Knight of the Reliquary (ability, opponent) [amt=1] -> Knight of the Reliquary (ability, opponent) [amt=1] -> Scythecat Cub (ability, opponent) -> Knight of the Reliquary (opponent, slot 49)
+  Stack: Windswept Heath (ability, opponent) [amt=1] -> Knight of the Reliquary (ability, opponent) [amt=1] -> Knight of the Reliquary (ability, opponent) [amt=1] -> Scythecat Cub (ability, opponent) -> Knight of the Reliquary (opponent, slot 49)
   Self GY: Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Swamp, Street Wraith, Doomsday
   Opp GY:  Windswept Heath, Savannah, Savannah, Once Upon a Time, Windswept Heath, Horizon Canopy, Plains, Noble Hierarch, Forest, Dryad Arbor, Sylvan Library, Wasteland, Keen-Eyed Curator, Once Upon a Time
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Street Wraith, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Misty Rainforest, Island, Underground Sea, Polluted Delta, Undercity Sewers, Ponder, Lotus Petal, Thoughtseize, Thoughtseize, Force of Will, Doomsday, Brainstorm
@@ -6015,7 +6015,7 @@
   Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 39
   Opp:   2 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Gaea's Cradle (T) | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [11/11] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara | Wasteland
-  Stack: Windswept Heath (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self, slot 1)
+  Stack: Windswept Heath (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self, slot 1)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Savannah, Savannah, Once Upon a Time, Windswept Heath, Horizon Canopy, Plains, Noble Hierarch, Forest, Dryad Arbor, Sylvan Library, Wasteland, Keen-Eyed Curator, Once Upon a Time
   Opp GY:  Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Swamp, Street Wraith, Doomsday

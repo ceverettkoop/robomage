@@ -3389,7 +3389,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Cat [1/1] (SICK)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
   Opp GY:  Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Self exile: Orcish Bowmasters
@@ -3408,7 +3408,7 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 68
   Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Cat [1/1] (SICK)
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Stack: Prismatic Vista (ability, opponent)
+  Stack: Prismatic Vista (ability, opponent) [amt=1]
   Self GY: Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Opp GY:  Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
   Opp exile:  Orcish Bowmasters
@@ -3431,7 +3431,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Cat [1/1] (SICK)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
   Opp GY:  Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
@@ -6162,7 +6162,7 @@
   Opp:   12 life | mana: empty | hand count: 5 | lib 42
   Self BF:  Aether Vial [charge:8] | Aether Vial [charge:7] | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Cat [1/1] | Cat [1/1] | Cat [1/1]
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Self GY: Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
   Opp GY:  Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
@@ -6184,7 +6184,7 @@
   Opp:   12 life | mana: empty | hand count: 5 | lib 42
   Self BF:  Aether Vial [charge:8] | Aether Vial [charge:7] | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Cat [1/1] | Cat [1/1] | Cat [1/1]
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
   Opp GY:  Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
@@ -8186,7 +8186,7 @@
   Opp:   3 life | mana: empty | hand count: 6 | lib 38
   Self BF:  Aether Vial [charge:10] | Aether Vial [charge:9] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T) | Stoneforge Mystic [1/2] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains (T) | Plateau (T) | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
-  Stack: Ajani, Nacatl Pariah (ability, opponent)
+  Stack: Ajani, Nacatl Pariah (ability, opponent) [amt=1]
   Self GY: Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
   Opp GY:  Marsh Flats, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
@@ -9178,7 +9178,7 @@
   Opp:   1 life | mana: empty | hand count: 6 | lib 37
   Self BF:  Aether Vial [charge:11] | Aether Vial [charge:10] | Plains (T) | Plains (T) | Plains (T) | Stoneforge Mystic [1/2] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains (T) | Plateau (T) | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
-  Stack: Ajani, Nacatl Pariah (ability, opponent)
+  Stack: Ajani, Nacatl Pariah (ability, opponent) [amt=1]
   Self GY: Phelia, Exuberant Shepherd, Swords to Plowshares, Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
   Opp GY:  Marsh Flats, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters

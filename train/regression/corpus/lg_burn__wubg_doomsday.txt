@@ -1805,7 +1805,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Scrubland
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Known top: Flooded Strand, ?, ?, ?, ?
@@ -1827,7 +1827,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Scrubland
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt

@@ -97,7 +97,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Force of Will, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -744,7 +744,7 @@
   Opp:   18 life | mana: empty | hand count: 0 | lib 50
   Self BF:  Island | Underground Sea (T)
   Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
-  Stack: Bloodstained Mire (ability, self)
+  Stack: Bloodstained Mire (ability, self) [amt=1]
   Pending: Bloodstained Mire (self)
   Self GY: Bloodstained Mire, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp GY:  Flow State, Tamiyo, Inquisitive Student, Force of Will, Brainstorm, Force of Will
@@ -952,7 +952,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 63
   Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Island | Swamp (T) | Underground Sea (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Ponder, Flow State, Tamiyo, Inquisitive Student, Force of Will, Brainstorm, Force of Will
   Opp GY:  Thoughtseize, Bloodstained Mire, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -1355,7 +1355,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 62
   Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
   Opp BF:   Island (T) | Swamp (T) | Underground Sea
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Ponder, Misty Rainforest, Ponder, Flow State, Tamiyo, Inquisitive Student, Force of Will, Brainstorm, Force of Will
   Opp GY:  Echoing Truth, Thoughtseize, Bloodstained Mire, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -1779,7 +1779,7 @@
   Opp:   14 life | mana: empty | hand count: 3 | lib 60
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
   Opp BF:   Island | Swamp
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Wasteland, Tune the Narrative, Brainstorm, Tune the Narrative, Flooded Strand, Ponder, Misty Rainforest, Ponder, Flow State, Tamiyo, Inquisitive Student, Force of Will, Brainstorm, Force of Will
   Opp GY:  Underground Sea, Echoing Truth, Echoing Truth, Thoughtseize, Bloodstained Mire, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -2792,7 +2792,7 @@
   Opp:   11 life | mana: empty | hand count: 2 | lib 58
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra (T)
   Opp BF:   Island | Swamp (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Flow State, Flow State, Lorien Revealed, Murktide Regent, Brainstorm, Force of Negation, Flooded Strand, Wasteland, Tune the Narrative, Brainstorm, Tune the Narrative, Flooded Strand, Ponder, Misty Rainforest, Ponder, Flow State, Tamiyo, Inquisitive Student, Force of Will, Brainstorm, Force of Will
   Opp GY:  Thoughtseize, Underground Sea, Echoing Truth, Echoing Truth, Thoughtseize, Bloodstained Mire, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -3360,7 +3360,7 @@
   Opp:   11 life | mana: empty | hand count: 2 | lib 57
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | The One Ring [burden:4] [Indestructible] (T) | Tundra | Tundra
   Opp BF:   Island | Swamp | Underground Sea
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Self GY: Flooded Strand, Ponder, Polluted Delta, Ponder, Flow State, Flow State, Lorien Revealed, Murktide Regent, Force of Negation, Wasteland, Tune the Narrative, Tune the Narrative, Ponder, Misty Rainforest, Ponder, Flow State, Tamiyo, Inquisitive Student, Force of Will, Force of Will
   Opp GY:  Thoughtseize, Underground Sea, Echoing Truth, Echoing Truth, Thoughtseize, Bloodstained Mire, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Brainstorm, Lorien Revealed, Brainstorm
@@ -3382,7 +3382,7 @@
   Opp:   11 life | mana: empty | hand count: 2 | lib 57
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | The One Ring [burden:4] [Indestructible] (T) | Tundra | Tundra
   Opp BF:   Island | Swamp | Underground Sea
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Ponder, Polluted Delta, Ponder, Flow State, Flow State, Lorien Revealed, Murktide Regent, Force of Negation, Wasteland, Tune the Narrative, Tune the Narrative, Ponder, Misty Rainforest, Ponder, Flow State, Tamiyo, Inquisitive Student, Force of Will, Force of Will
   Opp GY:  Thoughtseize, Underground Sea, Echoing Truth, Echoing Truth, Thoughtseize, Bloodstained Mire, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta

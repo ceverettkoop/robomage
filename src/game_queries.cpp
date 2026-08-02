@@ -48,10 +48,13 @@ std::set<Colors> effective_colors(Entity e) {
     std::set<Colors> override_colors;
     if (setcolor_override_for(e, override_colors)) return override_colors;
     // On the battlefield, effective color is the layer-5 (613.1e) result. With no active color-
-    // changing static this reads the printed colors; the override above is the single seam such a
-    // static plugs into without touching any consumer.
+    // changing static this reads the printed colors of the ACTIVE face — a transformed permanent
+    // has its back face's colors (CR 712.8e: Ajani, Nacatl Avenger is red-white via its color
+    // indicator, not its mono-white front; a face-up MDFC land back is colorless, not the front
+    // spell's color). The override above is the single seam a color-changing static plugs into
+    // without touching any consumer.
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<CardData>(e))
-        return card_colors(global_coordinator.GetComponent<CardData>(e));
+        return card_colors(active_face(e, global_coordinator.GetComponent<CardData>(e)));
     if (const LastKnownInfo *lki = lki_for(e)) return lki->colors;
     if (global_coordinator.entity_has_component<CardData>(e))
         return card_colors(global_coordinator.GetComponent<CardData>(e));
@@ -454,8 +457,13 @@ CharView permanent_view(Entity e, const Permanent &perm) {
     }
     if (global_coordinator.entity_has_component<CardData>(e)) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
-        v.cmc = card_mana_value(cd);  // CR 112.7
-        v.has_x_cost = cd.has_x_cost;
+        // Mana value: a transformed NONMODAL permanent keeps the front face's (CR 712.8e —
+        // Insectile Aberration is MV 1 from Delver's cost), so the front CardData is the right
+        // read; but a face-up MODAL back has entirely its own characteristics (CR 712.8d), so
+        // Witch-Blessed Meadow in play is MV 0, not the front spell's 4.
+        const CardData &mv_face = cd.is_modal_dfc ? active_face(e, cd) : cd;
+        v.cmc = card_mana_value(mv_face);  // CR 112.7
+        v.has_x_cost = mv_face.has_x_cost;
     }
     return v;
 }

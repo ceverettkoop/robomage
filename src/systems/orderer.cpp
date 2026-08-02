@@ -187,8 +187,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
             lki.power = static_cast<int>(cr.power);
             lki.toughness = static_cast<int>(cr.toughness);
         }
+        // Colors of the ACTIVE face (CR 712.8e): a transformed permanent's last-known colors
+        // are its back face's (Ajani, Nacatl Avenger died red-white, not mono-white).
+        // Captured here while the Permanent component is still intact, like everything above.
         if (global_coordinator.entity_has_component<CardData>(target))
-            lki.colors = card_colors(global_coordinator.GetComponent<CardData>(target));
+            lki.colors = card_colors(
+                active_face(target, global_coordinator.GetComponent<CardData>(target)));
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.

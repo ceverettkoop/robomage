@@ -1290,7 +1290,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 50
   Self BF:  Aether Vial [charge:2] | Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 4] [Flying]
-  Stack: Polluted Delta (ability, opponent)
+  Stack: Polluted Delta (ability, opponent) [amt=1]
   Self GY: Wasteland
   Opp GY:  Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
@@ -1311,7 +1311,7 @@
   Opp:   20 life | mana: empty | hand count: 3 | lib 71
   Self BF:  Island | Tamiyo, Seasoned Scholar [loy 4] [Flying]
   Opp BF:   Aether Vial [charge:2] | Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp GY:  Wasteland
@@ -3661,7 +3661,7 @@
   Opp:   17 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Lotus Petal | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 5] | Undercity Sewers (T)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Self GY: Prismatic Vista, Wasteland, Pre-War Formalwear, Wasteland
   Opp GY:  Scrubland, Daze, Lotus Petal, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Daze, Island, Brainstorm, Lotus Petal, Undercity Sewers, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
@@ -3682,7 +3682,7 @@
   Opp:   17 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Lotus Petal | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 5] | Undercity Sewers (T)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Wasteland, Pre-War Formalwear, Wasteland
   Opp GY:  Scrubland, Daze, Lotus Petal, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
@@ -4343,7 +4343,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T)
   Opp BF:   Island (T) | Lotus Petal | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 5] | Undercity Sewers
-  Stack: Polluted Delta (ability, opponent)
+  Stack: Polluted Delta (ability, opponent) [amt=1]
   Self GY: Prismatic Vista, Wasteland, Pre-War Formalwear, Wasteland
   Opp GY:  Polluted Delta, Consider, Doomsday, Scrubland, Daze, Lotus Petal, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Daze, Island, Brainstorm, Doomsday, Lotus Petal, Undercity Sewers, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
@@ -4364,7 +4364,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 67
   Self BF:  Island (T) | Lotus Petal | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 5] | Undercity Sewers
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Consider, Doomsday, Scrubland, Daze, Lotus Petal, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp GY:  Prismatic Vista, Wasteland, Pre-War Formalwear, Wasteland
@@ -4939,7 +4939,7 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 42
   Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 6] | Tropical Island (T) | Undercity Sewers (T)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Self GY: Prismatic Vista, Prismatic Vista, Wasteland, Pre-War Formalwear, Wasteland
   Opp GY:  Teferi, Time Raveler, Lotus Petal, Polluted Delta, Consider, Doomsday, Scrubland, Daze, Lotus Petal, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Daze, Island, Brainstorm, Doomsday, Lotus Petal, Undercity Sewers, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
@@ -4960,7 +4960,7 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 42
   Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 6] | Tropical Island (T) | Undercity Sewers (T)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Prismatic Vista, Wasteland, Pre-War Formalwear, Wasteland
   Opp GY:  Teferi, Time Raveler, Lotus Petal, Polluted Delta, Consider, Doomsday, Scrubland, Daze, Lotus Petal, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal

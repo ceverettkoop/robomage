@@ -476,7 +476,7 @@
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
   Self BF:  Swamp
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Marsh Flats, Force of Will
   Opp GY:  Dark Depths, Mox Diamond

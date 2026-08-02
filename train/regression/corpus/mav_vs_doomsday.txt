@@ -568,7 +568,7 @@
   Self:  19 life | mana: empty | hand(5): Force of Will, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor | lib 47
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Opp BF:   Talon Gates of Madara
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Ponder, Edge of Autumn, Underground Sea, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta
   Opp GY:  Once Upon a Time

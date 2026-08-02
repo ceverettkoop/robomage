@@ -587,7 +587,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Mishra's Bauble (ability, opponent)
+  Stack: Mishra's Bauble (ability, opponent) [amt=1]
   Self GY: Ponder
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Tamiyo, Inquisitive Student, Scrubland, ?, ?, ?
@@ -607,7 +607,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T)
   Opp BF:   Island (T)
-  Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, self)
+  Stack: Brainstorm (spell, opponent) -> Mishra's Bauble (ability, self) [amt=1]
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder
   Opp revealed: Ponder, Island, Brainstorm
@@ -631,7 +631,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, opponent)
+  Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, opponent) [amt=1]
   Pending: Brainstorm (self)
   Self GY: Ponder
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -657,7 +657,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, opponent)
+  Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, opponent) [amt=1]
   Pending: Brainstorm (self)
   Self GY: Ponder
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -1044,7 +1044,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Island (T) | Scrubland
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island
-  Stack: Scalding Tarn (ability, opponent)
+  Stack: Scalding Tarn (ability, opponent) [amt=1]
   Self GY: Brainstorm, Ponder
   Opp GY:  Scalding Tarn, Brainstorm, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Ponder, ?, ?, ?, ?
@@ -1066,7 +1066,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island
   Opp BF:   Island (T) | Scrubland
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Brainstorm, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Brainstorm, Ponder
@@ -2420,7 +2420,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 44
   Self BF:  Scrubland
   Opp BF:   Cori-Steel Cutter | Island | Murktide Regent [5/5] [+1/+1:2] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Unholy Heat, Daze, Daze, Scalding Tarn
   Opp exile:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Brainstorm, Brainstorm
@@ -2443,7 +2443,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 44
   Self BF:  Scrubland
   Opp BF:   Cori-Steel Cutter | Island | Murktide Regent [5/5] [+1/+1:2] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Unholy Heat, Daze, Daze, Scalding Tarn

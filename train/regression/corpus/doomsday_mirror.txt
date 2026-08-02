@@ -1562,7 +1562,7 @@
   Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Opp BF:   Underground Sea
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -1579,7 +1579,7 @@
   Self:  19 life | mana: empty | hand(4): Daze, Dark Ritual, Dark Ritual, Verdant Catacombs | lib 49
   Opp:   19 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Underground Sea
-  Stack: Misty Rainforest (ability, opponent)
+  Stack: Misty Rainforest (ability, opponent) [amt=1]
   Self GY: Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -1601,7 +1601,7 @@
   Self:  19 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Opp BF:   Underground Sea
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2102,7 +2102,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Self exile: Personal Tutor
@@ -2121,7 +2121,7 @@
   Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Undercity Sewers (T)
   Opp BF:   Underground Sea
-  Stack: Verdant Catacombs (ability, opponent)
+  Stack: Verdant Catacombs (ability, opponent) [amt=1]
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp exile:  Personal Tutor
@@ -2142,7 +2142,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Underground Sea
   Opp BF:   Undercity Sewers (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Ponder, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea

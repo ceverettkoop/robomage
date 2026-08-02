@@ -502,7 +502,7 @@
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 52
-  Stack: Polluted Delta (ability, opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
+  Stack: Polluted Delta (ability, opponent) [amt=1] -> Mishra's Bauble (ability, opponent) -> self (player)
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Polluted Delta, Mishra's Bauble, Daze
   Known opp hand: Dragon's Rage Channeler, Brainstorm, Ponder, Scalding Tarn
@@ -521,7 +521,7 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Brainstorm, Ponder, Volcanic Island, Scalding Tarn | lib 52
   Opp:   18 life | mana: empty | hand count: 5 | lib 52
-  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Thoughtseize, Edge of Autumn, Underground Sea
@@ -800,7 +800,7 @@
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Ponder, Island, Misty Rainforest | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
   Opp BF:   Island (T)
-  Stack: Mishra's Bauble (ability, opponent)
+  Stack: Mishra's Bauble (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Known opp hand: Scalding Tarn
@@ -1598,7 +1598,7 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
   Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Known opp hand: Scalding Tarn
@@ -1618,7 +1618,7 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
   Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
@@ -2494,7 +2494,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Undercity Sewers
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Mishra's Bauble (ability, opponent)
+  Stack: Mishra's Bauble (ability, opponent) [amt=1]
   Self GY: Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Known opp hand: Scalding Tarn
@@ -2939,7 +2939,7 @@
   Opp:   8 life | mana: empty | hand count: 2 | lib 44
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers (T)
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Wasteland, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Brainstorm, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
@@ -3311,7 +3311,7 @@
   Opp:   17 life | mana: empty | hand count: 1 | lib 36
   Self BF:  Undercity Sewers
   Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island | Volcanic Island
-  Stack: Scalding Tarn (ability, opponent)
+  Stack: Scalding Tarn (ability, opponent) [amt=1]
   Self GY: Force of Will, Thoughtseize, Lotus Petal, Brainstorm, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea
   Opp GY:  Scalding Tarn, Scalding Tarn, Wasteland, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Self exile: Personal Tutor
@@ -3334,7 +3334,7 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Undercity Sewers
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Scalding Tarn, Wasteland, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Brainstorm, Personal Tutor, Misty Rainforest, Edge of Autumn, Island, Ponder, Thoughtseize, Edge of Autumn, Underground Sea

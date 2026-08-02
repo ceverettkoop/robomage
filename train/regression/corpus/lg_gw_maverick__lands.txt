@@ -1186,7 +1186,7 @@
   Opp:   16 life | mana: empty | hand count: 3 | lib 50
   Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
   Opp BF:   Blast Zone [charge:1] (T) | Exploration | Sphere of Resistance | The Tabernacle at Pendrell Vale | Thespian's Stage (T)
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Savannah, Dark Depths
@@ -2629,7 +2629,7 @@
   Opp:   8 life | mana: empty | hand count: 7 | lib 46
   Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Plains (T) | Savannah (T) | Savannah (T)
   Opp BF:   Blast Zone [charge:1] (T) | Exploration | Sphere of Resistance | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Savannah, Dark Depths
@@ -7546,7 +7546,7 @@
   Opp:   10 life | mana: empty | hand count: 5 | lib 29
   Self BF:  Badgermole Cub [2/2] | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Blast Zone [charge:1] (T) | Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Rishadan Port (T) | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2] (T) | Urza's Saga [lore:2] | Construct [4/4] (SICK)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Scythecat Cub, Thalia, Guardian of Thraben, Endurance, Thalia, Guardian of Thraben
   Opp GY:  Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Dark Depths, Dark Depths
@@ -11933,7 +11933,7 @@
   Opp:   24 life | mana: empty | hand count: 6 | lib 16
   Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Skateboard | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Urza's Saga [lore:2] (T) | Yavimaya, Cradle of Growth (T) | Construct [7/7] (SICK)
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Swords to Plowshares, Swords to Plowshares, Knight of the Reliquary, Keen-Eyed Curator, Endurance, Outland Liberator, Scythecat Cub, Bojuka Bog, Wasteland, Verdant Catacombs, Scythecat Cub, Thalia, Guardian of Thraben, Endurance, Thalia, Guardian of Thraben
   Opp GY:  Urza's Saga, Urza's Saga, Mox Diamond, Karakas, Urza's Saga, Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Mox Diamond, Thespian's Stage, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Dark Depths, Dark Depths

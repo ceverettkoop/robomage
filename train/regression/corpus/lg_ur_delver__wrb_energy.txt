@@ -869,7 +869,7 @@
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Murktide Regent, Ponder, Thundering Falls, Volcanic Island, Volcanic Island | lib 46
   Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1573,7 +1573,7 @@
   Opp:   18 life | mana: empty | hand count: 5 | lib 42
   Self BF:  Badlands (T) | Elegant Parlor (T) | Guide of Souls [1/2] (SICK) | Scrubland
   Opp BF:   Island
-  Stack: Misty Rainforest (ability, opponent)
+  Stack: Misty Rainforest (ability, opponent) [amt=1]
   Self GY: Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Cabal Therapy
@@ -1595,7 +1595,7 @@
   Opp:   16 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Island
   Opp BF:   Badlands (T) | Elegant Parlor (T) | Guide of Souls [1/2] (SICK) | Scrubland
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -3529,7 +3529,7 @@
   Opp:   17 life | mana: empty | energy 1 | hand count: 0 | lib 43
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Thundering Falls (T) | Volcanic Island | Monk [1/1]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland | Voice of Victory [1/3] | Cat Warrior [2/1] (SICK)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -4425,7 +4425,7 @@
   Opp:   4 life | mana: empty | hand count: 0 | lib 33
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] | Cat Warrior [2/1]
   Opp BF:   Cori-Steel Cutter (->Tamiyo, Inquisitive Student) | Island (T) | Tamiyo, Inquisitive Student [1/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1] (T) | Clue (SICK)
-  Stack: Ajani, Nacatl Pariah (ability, self) -> Ajani, Nacatl Pariah (ability, self)
+  Stack: Ajani, Nacatl Pariah (ability, self) -> Ajani, Nacatl Pariah (ability, self) [amt=1]
   Self GY: Ajani, Nacatl Pariah, Arid Mesa, Swords to Plowshares, Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Polluted Delta, Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Cabal Therapy, Cabal Therapy

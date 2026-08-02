@@ -175,7 +175,7 @@
   Self:  19 life | mana: empty | hand(7): Brainstorm, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
   Opp BF:   Aether Vial (T) | Scrubland (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
@@ -709,7 +709,7 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Aether Vial [charge:1] (T) | Scrubland (T) | Wasteland
   Opp BF:   Island
-  Stack: Flooded Strand (ability, opponent)
+  Stack: Flooded Strand (ability, opponent) [amt=1]
   Self GY: Aether Vial
   Opp GY:  Flooded Strand, Force of Will, Brainstorm, Flooded Strand
   Opp exile:  Geist of Saint Traft
@@ -730,7 +730,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 72
   Self BF:  Island
   Opp BF:   Aether Vial [charge:1] (T) | Scrubland (T) | Wasteland
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Aether Vial
@@ -2811,7 +2811,7 @@
   Opp:   2 life | mana: empty | hand count: 5 | lib 42
   Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
   Opp BF:   Island | Island
-  Stack: Polluted Delta (ability, opponent)
+  Stack: Polluted Delta (ability, opponent) [amt=1]
   Self GY: Wasteland, Wasteland, Aether Vial
   Opp GY:  Polluted Delta, Mystic Sanctuary, Ponder, Misty Rainforest, Meticulous Archive, Ponder, Flooded Strand, Force of Will, Brainstorm, Flooded Strand
   Opp exile:  Geist of Saint Traft
@@ -2832,7 +2832,7 @@
   Opp:   20 life | mana: empty | hand count: 2 | lib 69
   Self BF:  Island | Island
   Opp BF:   Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mystic Sanctuary, Ponder, Misty Rainforest, Meticulous Archive, Ponder, Flooded Strand, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Wasteland, Aether Vial
@@ -3287,7 +3287,7 @@
   Opp:   2 life | mana: empty | hand count: 4 | lib 41
   Self BF:  Aether Vial [charge:5] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island | Island | Tundra (T)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Polluted Delta, Mystic Sanctuary, Ponder, Misty Rainforest, Meticulous Archive, Ponder, Flooded Strand, Force of Will, Brainstorm, Flooded Strand
   Self exile: Orcish Bowmasters
@@ -3309,7 +3309,7 @@
   Opp:   2 life | mana: empty | hand count: 4 | lib 41
   Self BF:  Aether Vial [charge:5] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island | Island | Tundra (T)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Polluted Delta, Mystic Sanctuary, Ponder, Misty Rainforest, Meticulous Archive, Ponder, Flooded Strand, Force of Will, Brainstorm, Flooded Strand

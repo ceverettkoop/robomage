@@ -313,7 +313,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Dryad Arbor [1/1]
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Once Upon a Time
@@ -2577,7 +2577,7 @@
   Opp:   12 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Gaea's Cradle
   Opp BF:   Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Wasteland, Wasteland, Savannah, Swords to Plowshares
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
@@ -3020,7 +3020,7 @@
   Opp:   12 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Gaea's Cradle | Knight of the Reliquary [7/7] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T)
   Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T)
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
@@ -3576,7 +3576,7 @@
   Opp:   12 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Bojuka Bog (T) | Forest (T) | Gaea's Cradle (T) | Karakas | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [11/11] (T)
   Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK)
-  Stack: Misty Rainforest (ability, self) -> Thalia, Guardian of Thraben (spell, self)
+  Stack: Misty Rainforest (ability, self) [amt=1] -> Thalia, Guardian of Thraben (spell, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
@@ -3727,7 +3727,7 @@
   Opp:   12 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Bojuka Bog (T) | Forest (T) | Gaea's Cradle (T) | Karakas (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK)
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
@@ -4437,7 +4437,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Bojuka Bog (T) | Gaea's Cradle (T) | Karakas (T) | Knight of the Reliquary [15/15] (T) | Knight of the Reliquary [15/15] (T) | Knight of the Reliquary [15/15] | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Stack: Misty Rainforest (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (opponent, slot 54)
+  Stack: Misty Rainforest (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (opponent, slot 54)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Savannah, Forest, Once Upon a Time, Windswept Heath, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub

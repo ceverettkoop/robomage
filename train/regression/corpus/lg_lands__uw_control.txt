@@ -292,7 +292,7 @@
   Self:  18 life | mana: empty | hand(5): Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   20 life | mana: empty | hand count: 2 | lib 53
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Force of Will
   Opp GY:  Dark Depths, Mox Diamond
@@ -479,7 +479,7 @@
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
   Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Tune the Narrative, Flooded Strand, Force of Will
   Opp GY:  Dark Depths, Mox Diamond

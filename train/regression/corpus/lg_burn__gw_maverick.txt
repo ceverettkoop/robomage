@@ -372,7 +372,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Dryad Arbor [1/1]
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Chain Lightning, Rift Bolt

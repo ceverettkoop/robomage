@@ -97,7 +97,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Force of Will, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -351,7 +351,7 @@
   Opp:   17 life | mana: empty | hand count: 4 | lib 66
   Self BF:  Mishra's Bauble
   Opp BF:   Island (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Self GY: Flooded Strand, Flow State
   Opp GY:  Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp revealed: Polluted Delta, Ponder, Island, Thoughtseize, Lotus Petal
@@ -370,7 +370,7 @@
   Opp:   17 life | mana: empty | hand count: 4 | lib 66
   Self BF:  Mishra's Bauble
   Opp BF:   Island (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Mishra's Bauble (self)
   Self GY: Flooded Strand, Flow State
   Opp GY:  Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -397,7 +397,7 @@
   Self:  19 life | mana: empty | hand(5): Brainstorm, Brainstorm, Daze, Ponder, Ponder | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 66
   Opp BF:   Island (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -952,7 +952,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Island | Underground Sea (T)
   Opp BF:   Island (T)
-  Stack: Bloodstained Mire (ability, self)
+  Stack: Bloodstained Mire (ability, self) [amt=1]
   Pending: Bloodstained Mire (self)
   Self GY: Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp GY:  Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
@@ -1765,7 +1765,7 @@
   Opp:   18 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Island | Swamp | Underground Sea
   Opp BF:   Island (T) | Thundering Falls (T) | Volcanic Island
-  Stack: Mishra's Bauble (ability, opponent)
+  Stack: Mishra's Bauble (ability, opponent) [amt=1]
   Self GY: Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp GY:  Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp exile:  Brainstorm
@@ -4769,7 +4769,7 @@
   Opp:   17 life | mana: empty | hand count: 0 | lib 35
   Self BF:  Island | Swamp
   Opp BF:   Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Self GY: Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
@@ -4791,7 +4791,7 @@
   Opp:   17 life | mana: empty | hand count: 0 | lib 35
   Self BF:  Island | Swamp
   Opp BF:   Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
@@ -5322,38 +5322,14 @@
    2: Put nothing
   >> A/A: 0 (Put Animate Dead onto the battlefield)
 --- Narrative ---
-  Choose target for Animate Dead:
-
---- Decision 263 ---
-  Priority: Player A (active)
-  Step: First Main (turn 23)
-  Self:  8 life | mana: empty | hand(4): Animate Dead, Archon of Cruelty, Dark Ritual, Force of Will | lib 51
-  Opp:   17 life | mana: empty | hand count: 0 | lib 34
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island
-  Stack: Show and Tell (spell, self)
-  Pending: Animate Dead (self)
-  Self GY: Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
-  Self exile: Echoing Truth, Atraxa, Grand Unifier
-  Opp exile:  Force of Will, Brainstorm
-  Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
-  Actions:
-   0: Tamiyo, Inquisitive Student
-  >> A/A: 0 (Tamiyo, Inquisitive Student)
---- Narrative ---
-  Targeting choice 0
   Player A puts Animate Dead onto the battlefield
   Animate Dead triggered
   Resolving ability (category: ChangeZone)
-  Tamiyo, Inquisitive Student is moved to the battlefield
   Resolving ability (category: Animate)
+  Animate Dead gains an activated ability.
   Resolving ability (category: Attach)
-  Equipment will attach once the creature finishes entering.
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: SacrificeAll when watched permanent leaves the battlefield.
-  Equipment attached.
-  Tamiyo, Inquisitive Student gains -1/0 (always)
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---
@@ -5364,14 +5340,14 @@
   PA: Animate Dead, Archon of Cruelty, Dark Ritual, Force of Will
   PB: Dragon's Rage Channeler
 
---- Decision 264 ---
+--- Decision 263 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  17 life | mana: empty | hand(1): Dragon's Rage Channeler | lib 33
   Opp:   8 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter | Island | Mystic Sanctuary | Thundering Falls | Volcanic Island
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (SICK)
-  Self GY: Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
+  Self GY: Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Echoing Truth, Atraxa, Grand Unifier
@@ -5386,14 +5362,14 @@
   Dragon's Rage Channeler enters the battlefield
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 
---- Decision 265 ---
+--- Decision 264 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 33
   Opp:   8 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (SICK)
-  Self GY: Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
+  Self GY: Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Echoing Truth, Atraxa, Grand Unifier
@@ -5408,14 +5384,14 @@
   Player B activated Island for 1(U)
   Choose creature to equip:
 
---- Decision 266 ---
+--- Decision 265 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 33
   Opp:   8 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (SICK)
-  Self GY: Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
+  Self GY: Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Echoing Truth, Atraxa, Grand Unifier
@@ -5430,14 +5406,14 @@
   --- Declare Attackers (Player B) ---
     [attacking] Dragon's Rage Channeler [4/4] -> Player A
 
---- Decision 267 ---
+--- Decision 266 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 24)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 33
   Opp:   8 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (SICK)
-  Self GY: Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
+  Self GY: Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Echoing Truth, Atraxa, Grand Unifier
@@ -5449,31 +5425,7 @@
 --- Narrative ---
   Attackers declared:
     Dragon's Rage Channeler -> Player A
-  --- Declare Blockers (Player A) ---
-  Attackers:
-    0: Dragon's Rage Channeler [4/4]
-  Your creatures:
-
---- Decision 268 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 24)
-  Self:  8 life | mana: empty | hand(3): Archon of Cruelty, Dark Ritual, Force of Will | lib 51
-  Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (SICK)
-  Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
-  Self exile: Echoing Truth, Atraxa, Grand Unifier
-  Opp exile:  Force of Will, Brainstorm
-  Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
-  Extras: mandatory_choice=Declare Blk
-  Actions:
-   0: Tamiyo, Inquisitive Student [0/3]
-   1: Confirm blockers
-  >> A/A: 1 (Confirm blockers)
---- Narrative ---
-  Blockers declared:
-    (none)
+  No creatures eligible to block.
   --- Combat Damage ---
     Dragon's Rage Channeler deals 4 damage to Player A
   --- End Combat Damage ---
@@ -5482,15 +5434,15 @@
   PA: Archon of Cruelty, Dark Ritual, Force of Will
   PB: (empty)
 
---- Decision 269 ---
+--- Decision 267 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  4 life | mana: empty | hand(3): Archon of Cruelty, Dark Ritual, Force of Will | lib 51
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island | Swamp | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island | Swamp | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5501,15 +5453,15 @@
 --- Narrative ---
   Player A draws Flow State
 
---- Decision 270 ---
+--- Decision 268 ---
   Priority: Player A (active)
   Step: Draw (turn 25)
   Self:  4 life | mana: empty | hand(4): Archon of Cruelty, Dark Ritual, Flow State, Force of Will | lib 50
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island | Swamp | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island | Swamp | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5518,15 +5470,15 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 271 ---
+--- Decision 269 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  4 life | mana: empty | hand(4): Archon of Cruelty, Dark Ritual, Flow State, Force of Will | lib 50
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island | Swamp | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island | Swamp | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5540,16 +5492,16 @@
   Player A activated Swamp for 1(B)
   Player A casts Flow State
 
---- Decision 272 ---
+--- Decision 270 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  4 life | mana: empty | hand(3): Archon of Cruelty, Dark Ritual, Force of Will | lib 50
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Stack: Flow State (spell, self)
   Self GY: Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5561,17 +5513,17 @@
   Resolving ability (category: Dig)
   Player A looks at the top 3 card(s) of their library.
 
---- Decision 273 ---
+--- Decision 271 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  4 life | mana: empty | hand(3): Archon of Cruelty, Dark Ritual, Force of Will | lib 50
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
   Self GY: Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5581,17 +5533,17 @@
    2: Atraxa, Grand Unifier
   >> A/A: 1 (Polluted Delta)
 
---- Decision 274 ---
+--- Decision 272 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  4 life | mana: empty | hand(3): Archon of Cruelty, Dark Ritual, Force of Will | lib 50
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
   Self GY: Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5604,15 +5556,15 @@
   Player A puts Atraxa, Grand Unifier into hand.
   Player A puts 1 card(s) on the bottom of their library.
 
---- Decision 275 ---
+--- Decision 273 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  4 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will, Polluted Delta | lib 48
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5624,15 +5576,15 @@
 --- Narrative ---
   Player A played Polluted Delta
 
---- Decision 276 ---
+--- Decision 274 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  4 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 48
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Polluted Delta | Swamp (T) | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Polluted Delta | Swamp (T) | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5647,16 +5599,16 @@
   Player A sacrifices Polluted Delta
   Player A's Polluted Delta ability is on the stack
 
---- Decision 277 ---
+--- Decision 275 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 48
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Self GY: Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5669,17 +5621,17 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 278 ---
+--- Decision 276 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 48
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5696,16 +5648,16 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
 
---- Decision 279 ---
+--- Decision 277 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 47
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Self GY: Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5719,17 +5671,17 @@
   Player A surveils 1.
   Surveil: looking at Reanimate
 
---- Decision 280 ---
+--- Decision 278 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 47
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
   Self GY: Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5741,15 +5693,15 @@
 --- Narrative ---
   Player A puts Reanimate into their graveyard.
 
---- Decision 281 ---
+--- Decision 279 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5759,15 +5711,15 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 282 ---
+--- Decision 280 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5777,61 +5729,17 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
-  --- Declare Attackers (Player A) ---
+  No creatures eligible to attack.
 
---- Decision 283 ---
+--- Decision 281 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
-  Self exile: Echoing Truth, Atraxa, Grand Unifier
-  Opp exile:  Force of Will, Brainstorm
-  Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Tamiyo, Inquisitive Student [0/3]
-   1: Confirm attackers
-  >> A/A: 0 (Tamiyo, Inquisitive Student [0/3])
---- Narrative ---
-  Tamiyo, Inquisitive Student attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
-
---- Decision 284 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 25)
-  Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
-  Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (ATK)
-  Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
-  Self exile: Echoing Truth, Atraxa, Grand Unifier
-  Opp exile:  Force of Will, Brainstorm
-  Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> A/A: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Tamiyo, Inquisitive Student -> Player B
-  Tamiyo, Inquisitive Student triggered
-
---- Decision 285 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 25)
-  Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
-  Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T,ATK)
-  Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Tamiyo, Inquisitive Student (ability, self)
-  Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5841,38 +5749,17 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
-  Resolving ability (category: Investigate)
-  Token created: 0/0 Clue
+  No attackers — skipping declare blockers.
 
---- Decision 286 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 25)
-  Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
-  Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T,ATK) | Clue (SICK)
-  Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
-  Self exile: Echoing Truth, Atraxa, Grand Unifier
-  Opp exile:  Force of Will, Brainstorm
-  Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  No creatures eligible to block.
-
---- Decision 287 ---
+--- Decision 282 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T,ATK) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5885,15 +5772,15 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 288 ---
+--- Decision 283 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T,ATK) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5903,15 +5790,15 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 289 ---
+--- Decision 284 ---
   Priority: Player A (active)
   Step: End Combat (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T,ATK) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5921,15 +5808,15 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 290 ---
+--- Decision 285 ---
   Priority: Player A (active)
   Step: Second Main (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5939,15 +5826,15 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 291 ---
+--- Decision 286 ---
   Priority: Player A (active)
   Step: End Step (turn 25)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5962,15 +5849,15 @@
   PA: Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will
   PB: (empty)
 
---- Decision 292 ---
+--- Decision 287 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 26)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island | Mystic Sanctuary | Thundering Falls | Volcanic Island
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5981,15 +5868,15 @@
 --- Narrative ---
   Player B draws Flow State
 
---- Decision 293 ---
+--- Decision 288 ---
   Priority: Player A (non-active)
   Step: Draw (turn 26)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island | Mystic Sanctuary | Thundering Falls | Volcanic Island
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -5998,14 +5885,14 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 294 ---
+--- Decision 289 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
   Self:  17 life | mana: empty | hand(1): Flow State | lib 32
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island | Mystic Sanctuary | Thundering Falls | Volcanic Island
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
-  Self GY: Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
+  Self GY: Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Echoing Truth, Atraxa, Grand Unifier
@@ -6022,16 +5909,16 @@
   Player B casts Flow State
   Dragon's Rage Channeler triggered
 
---- Decision 295 ---
+--- Decision 290 ---
   Priority: Player A (non-active)
   Step: First Main (turn 26)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 32
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Flow State (spell, opponent)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6043,17 +5930,17 @@
 --- Narrative ---
   Choose target for Force of Will:
 
---- Decision 296 ---
+--- Decision 291 ---
   Priority: Player A (non-active)
   Step: First Main (turn 26)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 32
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Flow State (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6063,16 +5950,16 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 297 ---
+--- Decision 292 ---
   Priority: Player A (non-active)
   Step: First Main (turn 26)
   Self:  3 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 32
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1] -> Flow State (spell, opponent)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6084,16 +5971,16 @@
   Player A exiles Atraxa, Grand Unifier
   Player A casts Force of Will targeting Flow State
 
---- Decision 298 ---
+--- Decision 293 ---
   Priority: Player A (non-active)
   Step: First Main (turn 26)
   Self:  2 life | mana: empty | hand(2): Archon of Cruelty, Dark Ritual | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 32
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island
   Stack: Force of Will (spell, self) -> Flow State (opponent, slot 98) -> Dragon's Rage Channeler (ability, opponent) [amt=1] -> Flow State (spell, opponent)
   Self GY: Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6105,16 +5992,16 @@
   Resolving ability (category: Counter)
   Flow State is countered
 
---- Decision 299 ---
+--- Decision 294 ---
   Priority: Player A (non-active)
   Step: First Main (turn 26)
   Self:  2 life | mana: empty | hand(2): Archon of Cruelty, Dark Ritual | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 32
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island
   Stack: Dragon's Rage Channeler (ability, opponent) [amt=1]
   Self GY: Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6127,16 +6014,16 @@
   Player B surveils 1.
   Surveil: looking at Lightning Bolt
 
---- Decision 300 ---
+--- Decision 295 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 32
   Opp:   2 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1]
   Pending: Dragon's Rage Channeler (self)
-  Self GY: Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Self GY: Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
@@ -6148,15 +6035,15 @@
 --- Narrative ---
   Player B puts Lightning Bolt into their graveyard.
 
---- Decision 301 ---
+--- Decision 296 ---
   Priority: Player A (non-active)
   Step: First Main (turn 26)
   Self:  2 life | mana: empty | hand(2): Archon of Cruelty, Dark Ritual | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island
   Self GY: Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Lightning Bolt, Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Lightning Bolt, Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6165,14 +6052,14 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 302 ---
+--- Decision 297 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 31
   Opp:   2 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
-  Self GY: Lightning Bolt, Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
+  Self GY: Lightning Bolt, Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
@@ -6187,14 +6074,14 @@
   Player B activated Volcanic Island for 1(U)
   Choose creature to equip:
 
---- Decision 303 ---
+--- Decision 298 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 31
   Opp:   2 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
-  Self GY: Lightning Bolt, Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
+  Self GY: Lightning Bolt, Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
@@ -6205,15 +6092,15 @@
 --- Narrative ---
   Cori-Steel Cutter equipped to Dragon's Rage Channeler.
 
---- Decision 304 ---
+--- Decision 299 ---
   Priority: Player A (non-active)
   Step: First Main (turn 26)
   Self:  2 life | mana: empty | hand(2): Archon of Cruelty, Dark Ritual | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Lightning Bolt, Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Lightning Bolt, Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6222,15 +6109,15 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 305 ---
+--- Decision 300 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 26)
   Self:  2 life | mana: empty | hand(2): Archon of Cruelty, Dark Ritual | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Lightning Bolt, Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Lightning Bolt, Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6243,14 +6130,14 @@
   --- Declare Attackers (Player B) ---
     [attacking] Dragon's Rage Channeler [4/4] -> Player A
 
---- Decision 306 ---
+--- Decision 301 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 26)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 31
   Opp:   2 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
-  Self GY: Lightning Bolt, Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
+  Self GY: Lightning Bolt, Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Opp GY:  Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Force of Will, Brainstorm
   Opp exile:  Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
@@ -6263,15 +6150,15 @@
   Attackers declared:
     Dragon's Rage Channeler -> Player A
 
---- Decision 307 ---
+--- Decision 302 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 26)
   Self:  2 life | mana: empty | hand(2): Archon of Cruelty, Dark Ritual | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Lightning Bolt, Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Lightning Bolt, Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student
@@ -6282,15 +6169,15 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 308 ---
+--- Decision 303 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 26)
   Self:  2 life | mana: empty | hand(2): Archon of Cruelty, Dark Ritual | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
-  Self BF:  Animate Dead (->Tamiyo, Inquisitive Student) | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (eq:Animate Dead) (T) | Clue (SICK)
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers (T)
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Cori-Steel Cutter | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Force of Will, Reanimate, Polluted Delta, Flow State, Show and Tell, Flusterstorm, Polluted Delta, Force of Will, Force of Will, Underground Sea, The Creation of Avacyn, Underground Sea, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Lightning Bolt, Flow State, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
+  Opp GY:  Lightning Bolt, Flow State, Tamiyo, Inquisitive Student, Daze, Force of Will, Wasteland, Wasteland, Mishra's Bauble, Brainstorm, Lightning Bolt, Force of Will, Ponder, Ponder, Brainstorm, Daze, Force of Will, Brainstorm, Mishra's Bauble, Flooded Strand, Flow State
   Self exile: Atraxa, Grand Unifier, Echoing Truth, Atraxa, Grand Unifier
   Opp exile:  Force of Will, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Flooded Strand, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student

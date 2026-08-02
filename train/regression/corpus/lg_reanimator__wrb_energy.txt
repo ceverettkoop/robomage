@@ -141,7 +141,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Force of Will, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt

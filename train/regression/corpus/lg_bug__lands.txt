@@ -1010,7 +1010,7 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 46
   Self BF:  Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Boseiju, Who Endures (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Life from the Loam, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -1503,7 +1503,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Tropical Island | Orc Army [1/1] [+1/+1:1] | Clue | Clue
   Opp BF:   Boseiju, Who Endures (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Self GY: Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Self exile: Baleful Strix
@@ -1533,7 +1533,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Boseiju, Who Endures (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2582,7 +2582,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
   Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Self exile: Baleful Strix
@@ -2610,7 +2610,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
   Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Self exile: Baleful Strix
@@ -2635,7 +2635,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
   Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Orcish Bowmasters (self)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2670,7 +2670,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 38
   Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale

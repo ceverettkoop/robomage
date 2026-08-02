@@ -3250,7 +3250,7 @@
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Expedition Map | Ghost Quarter (T) | Grafdigger's Cage | Mox Diamond (T) | Sphere of Resistance | Urza's Saga [lore:2] (T)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Self GY: Prismatic Vista, Wasteland
   Opp GY:  Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
@@ -3271,7 +3271,7 @@
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Expedition Map | Ghost Quarter (T) | Grafdigger's Cage | Mox Diamond (T) | Sphere of Resistance | Urza's Saga [lore:2] (T)
-  Stack: Prismatic Vista (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1]
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Wasteland
   Opp GY:  Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures

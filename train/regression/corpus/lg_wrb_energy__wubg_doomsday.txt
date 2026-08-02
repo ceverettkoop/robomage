@@ -1716,7 +1716,7 @@
   Self:  17 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
   Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Opp BF:   Badlands (T) | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plateau (T) | Voice of Victory [1/3] (SICK) | Cat [1/1] (SICK) | Cat [1/1] (SICK)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Scrubland, Daze, Ponder, Brainstorm, Ponder, Doomsday
   Opp GY:  Wasteland, Shadowy Backstreet, Marsh Flats, Thoughtseize, Arid Mesa

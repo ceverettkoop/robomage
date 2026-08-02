@@ -1271,7 +1271,7 @@
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
-  Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
+  Stack: Windswept Heath (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
@@ -1291,7 +1291,7 @@
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
-  Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
+  Stack: Windswept Heath (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
@@ -2609,7 +2609,7 @@
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
   Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
-  Stack: Wooded Foothills (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
+  Stack: Wooded Foothills (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Self GY: Wooded Foothills, Forest
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
@@ -2631,7 +2631,7 @@
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
   Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
-  Stack: Wooded Foothills (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
+  Stack: Wooded Foothills (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Pending: Wooded Foothills (self)
   Self GY: Wooded Foothills, Forest
   Opp GY:  Thalia, Guardian of Thraben

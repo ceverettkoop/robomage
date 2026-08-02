@@ -1561,7 +1561,7 @@
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
   Opp:   14 life | mana: empty | hand count: 7 | lib 47
   Self BF:  Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
-  Stack: Flooded Strand (ability, opponent)
+  Stack: Flooded Strand (ability, opponent) [amt=1]
   Self GY: Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
   Known opp hand: Island
@@ -1581,7 +1581,7 @@
   Self:  14 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
   Opp:   20 life | mana: empty | hand count: 3 | lib 48
   Opp BF:   Badgermole Cub [3/3] [+1/+1:1] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
@@ -1811,7 +1811,7 @@
   Opp:   14 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Stack: Windswept Heath (ability, self) -> Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
+  Stack: Windswept Heath (ability, self) [amt=1] -> Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Tropical Island, Flooded Strand, Daze, Ponder, Scrubland, Brainstorm, Ponder

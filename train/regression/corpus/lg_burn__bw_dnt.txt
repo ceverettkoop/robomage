@@ -471,7 +471,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Aether Vial [charge:1] (T) | Plains
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Prismatic Vista (ability, self) -> Aether Vial (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1] -> Aether Vial (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista
   Opp GY:  Chain Lightning, Rift Bolt
@@ -808,7 +808,7 @@
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
   Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Stack: Prismatic Vista (ability, self) -> Aether Vial (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1] -> Aether Vial (ability, self)
   Self GY: Prismatic Vista, Prismatic Vista
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
@@ -828,7 +828,7 @@
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
   Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Stack: Prismatic Vista (ability, self) -> Aether Vial (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1] -> Aether Vial (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Prismatic Vista
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt

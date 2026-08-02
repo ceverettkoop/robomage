@@ -2190,7 +2190,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue | Clue | Clue
   Opp BF:   Badlands | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat Warrior [2/1] (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Self GY: Misty Rainforest, Fatal Push, Tropical Island, Force of Will
   Opp GY:  Ajani, Nacatl Pariah, Swords to Plowshares, Amped Raptor, Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Baleful Strix
@@ -2214,7 +2214,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue | Clue
   Opp BF:   Badlands | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat Warrior [2/1] (T)
-  Stack: Lorien Revealed (ability, self) -> Misty Rainforest (ability, self)
+  Stack: Lorien Revealed (ability, self) -> Misty Rainforest (ability, self) [amt=1]
   Pending: Lorien Revealed (self)
   Self GY: Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island, Force of Will
   Opp GY:  Ajani, Nacatl Pariah, Swords to Plowshares, Amped Raptor, Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -2243,7 +2243,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue | Clue
   Opp BF:   Badlands | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat Warrior [2/1] (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island, Force of Will
   Opp GY:  Ajani, Nacatl Pariah, Swords to Plowshares, Amped Raptor, Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats

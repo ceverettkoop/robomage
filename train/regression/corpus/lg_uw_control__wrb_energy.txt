@@ -99,7 +99,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -447,7 +447,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Island (T)
   Opp BF:   Badlands (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Cabal Therapy, Marsh Flats
@@ -2309,7 +2309,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Island | Island | Teferi, Time Raveler [loy 5] | Tundra | Wasteland
   Opp BF:   Elegant Parlor (T) | Goblin Bombardment | Scrubland | Wasteland (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Self GY: Polluted Delta, Brainstorm, Tune the Narrative, Force of Will, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
   Self exile: Force of Negation, Flow State
@@ -2331,7 +2331,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Island | Island | Teferi, Time Raveler [loy 5] | Tundra | Wasteland
   Opp BF:   Elegant Parlor (T) | Goblin Bombardment | Scrubland | Wasteland (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Wasteland (self)
   Self GY: Polluted Delta, Brainstorm, Tune the Narrative, Force of Will, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -2363,7 +2363,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Island | Island | Teferi, Time Raveler [loy 5] | Tundra
   Opp BF:   Goblin Bombardment | Scrubland | Wasteland (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Wasteland, Polluted Delta, Brainstorm, Tune the Narrative, Force of Will, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -2910,7 +2910,7 @@
   Opp:   18 life | mana: empty | hand count: 1 | lib 38
   Self BF:  Island | Island | Teferi, Time Raveler [loy 8] | Tundra
   Opp BF:   Goblin Bombardment | Plains (T) | Scrubland
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Brainstorm, Tune the Narrative, Force of Will, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -3920,7 +3920,7 @@
   Opp:   18 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 10] | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains (T) | Scrubland | Shadowy Backstreet
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -5175,7 +5175,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 32
   Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Teferi, Time Raveler [loy 13] | Tundra (T) | Tundra (T) | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Cabal Therapy, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7021,7 +7021,7 @@
   Opp:   1 life | mana: empty | energy 4 | hand count: 3 | lib 17
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Stack: Ajani, Nacatl Pariah (ability, self)
+  Stack: Ajani, Nacatl Pariah (ability, self) [amt=1]
   Self GY: Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Self exile: Cabal Therapy, Cabal Therapy, Plateau, Amped Raptor
@@ -7042,7 +7042,7 @@
   Opp:   1 life | mana: empty | energy 4 | hand count: 3 | lib 17
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Stack: Ajani, Nacatl Pariah (ability, self)
+  Stack: Ajani, Nacatl Pariah (ability, self) [amt=1]
   Pending: Goblin Bombardment (self)
   Self GY: Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -7067,7 +7067,7 @@
   Opp:   1 life | mana: empty | energy 4 | hand count: 3 | lib 17
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Stack: Ajani, Nacatl Pariah (ability, self)
+  Stack: Ajani, Nacatl Pariah (ability, self) [amt=1]
   Self GY: Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Self exile: Cabal Therapy, Cabal Therapy, Plateau, Amped Raptor
@@ -7088,7 +7088,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
-  Stack: Goblin Bombardment (ability, opponent) [amt=1] -> self (player) -> Ajani, Nacatl Pariah (ability, opponent)
+  Stack: Goblin Bombardment (ability, opponent) [amt=1] -> self (player) -> Ajani, Nacatl Pariah (ability, opponent) [amt=1]
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Ajani, Nacatl Pariah, Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
   Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State

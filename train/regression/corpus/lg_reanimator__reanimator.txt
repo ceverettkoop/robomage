@@ -141,7 +141,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Force of Will, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
   Opp:   20 life | mana: empty | hand count: 6 | lib 69
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -591,15 +591,14 @@
   Player B casts Reanimate targeting Archon of Cruelty
   Resolving ability (category: ChangeZone)
   Archon of Cruelty is moved to the battlefield
-  Resolving ability (category: LoseLife, amount: 8)
-  Player B loses 8 life (now at 10)
-  Resolving ability (category: Cleanup)
+  Resolving ability (category: LoseLife, amount: 0)
+  Player B loses 0 life (now at 18)
   Choose target for Archon of Cruelty:
 
 --- Decision 27 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(2): Brainstorm, Underground Sea | lib 64
+  Self:  18 life | mana: empty | hand(2): Brainstorm, Underground Sea | lib 64
   Opp:   17 life | mana: empty | hand count: 4 | lib 65
   Self BF:  Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T)
   Opp BF:   Island
@@ -622,7 +621,7 @@
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Force of Will, Thoughtseize, Thoughtseize, The Creation of Avacyn | lib 65
-  Opp:   10 life | mana: empty | hand count: 2 | lib 64
+  Opp:   18 life | mana: empty | hand count: 2 | lib 64
   Self BF:  Island
   Opp BF:   Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T)
   Stack: Archon of Cruelty (ability, opponent) -> self (player)
@@ -645,12 +644,12 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Animate Dead
   Resolving ability (category: GainLife, amount: 3)
-  Player B gains 3 life (now at 13)
+  Player B gains 3 life (now at 21)
 
 --- Decision 29 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(2): Brainstorm, Underground Sea | lib 64
+  Self:  21 life | mana: empty | hand(2): Brainstorm, Underground Sea | lib 64
   Opp:   14 life | mana: empty | hand count: 4 | lib 64
   Self BF:  Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T)
   Opp BF:   Island
@@ -668,7 +667,7 @@
 --- Decision 30 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(1): Brainstorm | lib 64
+  Self:  21 life | mana: empty | hand(1): Brainstorm | lib 64
   Opp:   14 life | mana: empty | hand count: 4 | lib 64
   Self BF:  Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea
   Opp BF:   Island
@@ -694,7 +693,7 @@
 --- Decision 31 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(3): Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory | lib 61
+  Self:  21 life | mana: empty | hand(3): Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory | lib 61
   Opp:   14 life | mana: empty | hand count: 4 | lib 64
   Self BF:  Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea (T)
   Opp BF:   Island
@@ -717,7 +716,7 @@
 --- Decision 32 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(2): Otherworldly Gaze, Consign to Memory | lib 62
+  Self:  21 life | mana: empty | hand(2): Otherworldly Gaze, Consign to Memory | lib 62
   Opp:   14 life | mana: empty | hand count: 4 | lib 64
   Self BF:  Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea (T)
   Opp BF:   Island
@@ -749,7 +748,7 @@
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  14 life | mana: empty | hand(5): Animate Dead, Bloodstained Mire, Thoughtseize, Thoughtseize, The Creation of Avacyn | lib 63
-  Opp:   13 life | mana: empty | hand count: 1 | lib 63
+  Opp:   21 life | mana: empty | hand count: 1 | lib 63
   Self BF:  Island
   Opp BF:   Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea (T)
   Self GY: Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -766,7 +765,7 @@
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  14 life | mana: empty | hand(4): Animate Dead, Thoughtseize, Thoughtseize, The Creation of Avacyn | lib 63
-  Opp:   13 life | mana: empty | hand count: 1 | lib 63
+  Opp:   21 life | mana: empty | hand count: 1 | lib 63
   Self BF:  Bloodstained Mire | Island
   Opp BF:   Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea (T)
   Self GY: Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -788,10 +787,10 @@
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  13 life | mana: empty | hand(4): Animate Dead, Thoughtseize, Thoughtseize, The Creation of Avacyn | lib 63
-  Opp:   13 life | mana: empty | hand count: 1 | lib 63
+  Opp:   21 life | mana: empty | hand count: 1 | lib 63
   Self BF:  Island
   Opp BF:   Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea (T)
-  Stack: Bloodstained Mire (ability, self)
+  Stack: Bloodstained Mire (ability, self) [amt=1]
   Pending: Bloodstained Mire (self)
   Self GY: Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp GY:  Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Otherworldly Gaze, Show and Tell, Underground Sea, Flow State, Lotus Petal
@@ -815,7 +814,7 @@
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  13 life | mana: empty | hand(4): Animate Dead, Thoughtseize, Thoughtseize, The Creation of Avacyn | lib 62
-  Opp:   13 life | mana: empty | hand count: 1 | lib 63
+  Opp:   21 life | mana: empty | hand count: 1 | lib 63
   Self BF:  Island | Swamp
   Opp BF:   Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea (T)
   Self GY: Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -834,7 +833,7 @@
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  13 life | mana: empty | hand(4): Animate Dead, Thoughtseize, Thoughtseize, The Creation of Avacyn | lib 62
-  Opp:   13 life | mana: empty | hand count: 1 | lib 63
+  Opp:   21 life | mana: empty | hand count: 1 | lib 63
   Self BF:  Island | Swamp
   Opp BF:   Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea (T)
   Pending: Thoughtseize (self)
@@ -843,9 +842,9 @@
   Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Reanimate, Otherworldly Gaze, Show and Tell
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Player B (13 life)
+   0: Player B (21 life)
    1: Player A (13 life)
-  >> A/A: 0 (Player B (13 life))
+  >> A/A: 0 (Player B (21 life))
 --- Narrative ---
   Targeting choice 0
   Player A activated Swamp for 1(B)
@@ -859,7 +858,7 @@
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  13 life | mana: empty | hand(3): Animate Dead, Thoughtseize, The Creation of Avacyn | lib 62
-  Opp:   13 life | mana: empty | hand count: 1 | lib 63
+  Opp:   21 life | mana: empty | hand count: 1 | lib 63
   Self BF:  Island | Swamp (T)
   Opp BF:   Archon of Cruelty [6/6] [Flying] (SICK) | Swamp (T) | Underground Sea (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
@@ -888,7 +887,7 @@
 --- Decision 39 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 63
+  Self:  21 life | mana: empty | hand(0): (empty) | lib 63
   Opp:   11 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp | Underground Sea
   Opp BF:   Island | Swamp (T)
@@ -914,7 +913,7 @@
 --- Decision 40 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 63
+  Self:  21 life | mana: empty | hand(0): (empty) | lib 63
   Opp:   11 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp (T) | Underground Sea (T)
   Opp BF:   Island | Swamp (T)
@@ -939,7 +938,7 @@
 --- Decision 41 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 62
+  Self:  21 life | mana: empty | hand(0): (empty) | lib 62
   Opp:   11 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp (T) | Underground Sea (T)
   Opp BF:   Island | Swamp (T)
@@ -962,7 +961,7 @@
 --- Decision 42 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  13 life | mana: empty | hand(0): (empty) | lib 61
+  Self:  21 life | mana: empty | hand(0): (empty) | lib 61
   Opp:   11 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp (T) | Underground Sea (T)
   Opp BF:   Island | Swamp (T)
@@ -985,7 +984,7 @@
 --- Decision 43 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
-  Self:  13 life | mana: empty | hand(1): Show and Tell | lib 59
+  Self:  21 life | mana: empty | hand(1): Show and Tell | lib 59
   Opp:   11 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp (T) | Underground Sea (T)
   Opp BF:   Island | Swamp (T)
@@ -1007,7 +1006,7 @@
 --- Decision 44 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
-  Self:  13 life | mana: empty | hand(1): Show and Tell | lib 59
+  Self:  21 life | mana: empty | hand(1): Show and Tell | lib 59
   Opp:   11 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Archon of Cruelty [6/6] [Flying] (ATK) | Swamp (T) | Underground Sea (T)
   Opp BF:   Island | Swamp (T)
@@ -1028,7 +1027,7 @@
 --- Decision 45 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
-  Self:  13 life | mana: empty | hand(1): Show and Tell | lib 59
+  Self:  21 life | mana: empty | hand(1): Show and Tell | lib 59
   Opp:   11 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Archon of Cruelty [6/6] [Flying] (T,ATK) | Swamp (T) | Underground Sea (T)
   Opp BF:   Island | Swamp (T)
@@ -1052,7 +1051,7 @@
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  11 life | mana: empty | hand(3): Animate Dead, Thoughtseize, The Creation of Avacyn | lib 62
-  Opp:   13 life | mana: empty | hand count: 1 | lib 59
+  Opp:   21 life | mana: empty | hand count: 1 | lib 59
   Self BF:  Island | Swamp (T)
   Opp BF:   Archon of Cruelty [6/6] [Flying] (T,ATK) | Swamp (T) | Underground Sea (T)
   Stack: Archon of Cruelty (ability, opponent) -> self (player)
@@ -1073,7 +1072,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Reanimate
   Resolving ability (category: GainLife, amount: 3)
-  Player B gains 3 life (now at 16)
+  Player B gains 3 life (now at 24)
   No creatures eligible to block.
   --- Combat Damage ---
     Archon of Cruelty deals 6 damage to Player A
@@ -1088,7 +1087,7 @@
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  2 life | mana: empty | hand(4): Animate Dead, Reanimate, Thoughtseize, Undercity Sewers | lib 60
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
+  Opp:   24 life | mana: empty | hand count: 1 | lib 59
   Self BF:  Island | Swamp
   Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
   Self GY: The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -1109,7 +1108,7 @@
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  2 life | mana: empty | hand(4): Animate Dead, Reanimate, Thoughtseize, Undercity Sewers | lib 60
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
+  Opp:   24 life | mana: empty | hand count: 1 | lib 59
   Self BF:  Island | Swamp
   Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
   Pending: Animate Dead (self)
@@ -1123,31 +1122,27 @@
   >> A/A: 1 (Raph & Mikey, Troublemakers)
 --- Narrative ---
   Targeting choice 1
-  Player A casts Animate Dead enchanting Raph & Mikey, Troublemakers
   Player A activated Swamp for 1(B)
   Player A activated Island for 1(U)
-  Player A casts Animate Dead
+  Player A casts Animate Dead targeting Raph & Mikey, Troublemakers
   Animate Dead enters the battlefield
   Animate Dead triggered
   Resolving ability (category: ChangeZone)
-  Raph & Mikey, Troublemakers is moved to the battlefield
   Resolving ability (category: Animate)
+  Animate Dead gains an activated ability.
   Resolving ability (category: Attach)
-  Equipment will attach once the creature finishes entering.
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: SacrificeAll when watched permanent leaves the battlefield.
-  Equipment attached.
-  Raph & Mikey, Troublemakers gains -1/0 (always)
 
 --- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  2 life | mana: empty | hand(3): Reanimate, Thoughtseize, Undercity Sewers | lib 60
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Island (T) | Swamp (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK)
+  Opp:   24 life | mana: empty | hand count: 1 | lib 59
+  Self BF:  Animate Dead | Island (T) | Swamp (T)
   Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
   Self GY: The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Opp GY:  Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
   Actions:
@@ -1166,13 +1161,13 @@
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  2 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 60
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK)
+  Opp:   24 life | mana: empty | hand count: 1 | lib 59
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
   Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
   Self GY: The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Opp GY:  Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
   Extras: self_lands_played=1
@@ -1182,204 +1177,27 @@
   >> A/A: 1 (Put Force of Will into graveyard)
 --- Narrative ---
   Player A puts Force of Will into their graveyard.
-  --- Declare Attackers (Player A) ---
-
---- Decision 51 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  2 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 59
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
-  Self GY: Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
-  Actions:
-   0: Raph & Mikey, Troublemakers [6/7]
-   1: Confirm attackers
-  >> A/A: 0 (Raph & Mikey, Troublemakers [6/7])
---- Narrative ---
-  Raph & Mikey, Troublemakers attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Raph & Mikey, Troublemakers [6/7] -> Player B
-
---- Decision 52 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  2 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 59
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (ATK,SICK)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
-  Self GY: Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> A/A: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Raph & Mikey, Troublemakers -> Player B
-  Raph & Mikey, Troublemakers triggered
-  Resolving ability (category: DigUntil)
-  Player A reveals Thoughtseize.
-  Player A reveals Polluted Delta.
-  Player A reveals Ponder.
-  Player A reveals Atraxa, Grand Unifier.
-  Player A puts Atraxa, Grand Unifier onto the battlefield tapped and attacking.
-  Atraxa, Grand Unifier enters tapped.
-  Atraxa, Grand Unifier is attacking.
-  Atraxa, Grand Unifier triggered
-  Resolving ability (category: PeekAndReveal)
-  Player A reveals Show and Tell from the top of their library
-  Player A reveals Fatal Push from the top of their library
-  Player A reveals Griselbrand from the top of their library
-  Player A reveals Reanimate from the top of their library
-  Player A reveals Polluted Delta from the top of their library
-  Player A reveals Echoing Truth from the top of their library
-  Player A reveals Reanimate from the top of their library
-  Player A reveals Atraxa, Grand Unifier from the top of their library
-  Player A reveals Archon of Cruelty from the top of their library
-  Player A reveals Ponder from the top of their library
-  Resolving ability (category: RepeatEach)
-  Resolving ability (category: ChooseCard)
-  Player A may put a Creature card from among the revealed cards into their hand:
-
---- Decision 53 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  2 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 58
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Griselbrand (Creature) into hand
-   1: Put Atraxa, Grand Unifier (Creature) into hand
-   2: Put Archon of Cruelty (Creature) into hand
-   3: Put no Creature card into hand
-  >> A/A: 0 (Put Griselbrand (Creature) into hand)
---- Narrative ---
-  Player A chooses Griselbrand
-  Resolving ability (category: ChooseCard)
-  Player A may put a Instant card from among the revealed cards into their hand:
-
---- Decision 54 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  2 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 58
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Fatal Push (Instant) into hand
-   1: Put Echoing Truth (Instant) into hand
-   2: Put no Instant card into hand
-  >> A/A: 0 (Put Fatal Push (Instant) into hand)
---- Narrative ---
-  Player A chooses Fatal Push
-  Resolving ability (category: ChooseCard)
-  Player A may put a Land card from among the revealed cards into their hand:
-
---- Decision 55 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  2 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 58
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Polluted Delta (Land) into hand
-   1: Put no Land card into hand
-  >> A/A: 0 (Put Polluted Delta (Land) into hand)
---- Narrative ---
-  Player A chooses Polluted Delta
-  Resolving ability (category: ChooseCard)
-  Player A may put a Sorcery card from among the revealed cards into their hand:
-
---- Decision 56 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  2 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 58
-  Opp:   16 life | mana: empty | hand count: 1 | lib 59
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T) | Swamp (T) | Underground Sea (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
-  Opp exile:  Otherworldly Gaze
-  Opp revealed: Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Show and Tell (Sorcery) into hand
-   1: Put Reanimate (Sorcery) into hand
-   2: Put Reanimate (Sorcery) into hand
-   3: Put Ponder (Sorcery) into hand
-   4: Put no Sorcery card into hand
-  >> A/A: 0 (Put Show and Tell (Sorcery) into hand)
---- Narrative ---
-  Player A chooses Show and Tell
-  Resolving ability (category: ChangeZone)
-  Griselbrand is moved to hand
-  Fatal Push is moved to hand
-  Polluted Delta is moved to hand
-  Show and Tell is moved to hand
-  Resolving ability (category: ChangeZoneAll)
-  Player A moves Reanimate to the bottom of their library
-  Player A moves Echoing Truth to the bottom of their library
-  Player A moves Ponder to the bottom of their library
-  Player A moves Archon of Cruelty to the bottom of their library
-  Player A moves Atraxa, Grand Unifier to the bottom of their library
-  Player A moves Reanimate to the bottom of their library
-  Player A moves 6 card(s) to the bottom of their library
-  Resolving ability (category: Cleanup)
-  No creatures eligible to block.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
   --- Combat Damage ---
-    Atraxa, Grand Unifier deals 7 damage to Player B
-    Raph & Mikey, Troublemakers deals 6 damage to Player B
-    Player A gains 7 life (lifelink)
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Reanimate, Thoughtseize
   PB: Show and Tell
 
---- Decision 57 ---
+--- Decision 51 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  3 life | mana: empty | hand(1): Show and Tell | lib 59
-  Opp:   9 life | mana: empty | hand count: 6 | lib 54
+  Self:  24 life | mana: empty | hand(1): Show and Tell | lib 59
+  Opp:   2 life | mana: empty | hand count: 2 | lib 59
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp | Underground Sea
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
-  Self GY: Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
+  Self GY: Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Otherworldly Gaze, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp GY:  Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Otherworldly Gaze
   Known opp hand: Thoughtseize
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Fatal Push, Reanimate, Griselbrand, Archon of Cruelty, Echoing Truth, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Archon of Cruelty, Animate Dead, The Creation of Avacyn
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze (flashback)  [#4]
@@ -1394,20 +1212,20 @@
   Surveil: looking at Brainstorm
   Surveil: looking at Ponder
 
---- Decision 58 ---
+--- Decision 52 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  3 life | mana: empty | hand(1): Show and Tell | lib 59
-  Opp:   9 life | mana: empty | hand count: 6 | lib 54
+  Self:  24 life | mana: empty | hand(1): Show and Tell | lib 59
+  Opp:   2 life | mana: empty | hand count: 2 | lib 59
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
   Stack: Otherworldly Gaze (spell, self) [flashback]
   Pending: Otherworldly Gaze (self)
-  Self GY: Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Self GY: Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp GY:  Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Otherworldly Gaze
   Known opp hand: Thoughtseize
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Fatal Push, Reanimate, Griselbrand, Archon of Cruelty, Echoing Truth, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Archon of Cruelty, Animate Dead, The Creation of Avacyn
   Actions:
    0: Put Lotus Petal on top of library  [#0]
    1: Put Brainstorm on top of library  [#0]
@@ -1419,20 +1237,20 @@
 --- Narrative ---
   Player B puts Lotus Petal into their graveyard.
 
---- Decision 59 ---
+--- Decision 53 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  3 life | mana: empty | hand(1): Show and Tell | lib 58
-  Opp:   9 life | mana: empty | hand count: 6 | lib 54
+  Self:  24 life | mana: empty | hand(1): Show and Tell | lib 58
+  Opp:   2 life | mana: empty | hand count: 2 | lib 59
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
   Stack: Otherworldly Gaze (spell, self) [flashback]
   Pending: Otherworldly Gaze (self)
-  Self GY: Lotus Petal, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Self GY: Lotus Petal, Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp GY:  Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Otherworldly Gaze
   Known opp hand: Thoughtseize
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Fatal Push, Reanimate, Griselbrand, Archon of Cruelty, Echoing Truth, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Archon of Cruelty, Animate Dead, The Creation of Avacyn
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Ponder on top of library  [#0]
@@ -1442,20 +1260,20 @@
 --- Narrative ---
   Player B puts Brainstorm into their graveyard.
 
---- Decision 60 ---
+--- Decision 54 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  3 life | mana: empty | hand(1): Show and Tell | lib 57
-  Opp:   9 life | mana: empty | hand count: 6 | lib 54
+  Self:  24 life | mana: empty | hand(1): Show and Tell | lib 57
+  Opp:   2 life | mana: empty | hand count: 2 | lib 59
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
   Stack: Otherworldly Gaze (spell, self) [flashback]
   Pending: Otherworldly Gaze (self)
-  Self GY: Brainstorm, Lotus Petal, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Self GY: Brainstorm, Lotus Petal, Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp GY:  Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Otherworldly Gaze
   Known opp hand: Thoughtseize
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Fatal Push, Reanimate, Griselbrand, Archon of Cruelty, Echoing Truth, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Archon of Cruelty, Animate Dead, The Creation of Avacyn
   Actions:
    0: Put Ponder on top of library  [#0]
    1: Put Ponder into graveyard
@@ -1466,18 +1284,18 @@
   Player B draws Atraxa, Grand Unifier
   --- Declare Attackers (Player B) ---
 
---- Decision 61 ---
+--- Decision 55 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
-  Self:  3 life | mana: empty | hand(2): Atraxa, Grand Unifier, Show and Tell | lib 55
-  Opp:   9 life | mana: empty | hand count: 6 | lib 54
+  Self:  24 life | mana: empty | hand(2): Atraxa, Grand Unifier, Show and Tell | lib 55
+  Opp:   2 life | mana: empty | hand count: 2 | lib 59
   Self BF:  Archon of Cruelty [6/6] [Flying] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
-  Self GY: Ponder, Brainstorm, Lotus Petal, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
+  Self GY: Ponder, Brainstorm, Lotus Petal, Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp GY:  Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Otherworldly Gaze, Otherworldly Gaze
   Known opp hand: Thoughtseize
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Fatal Push, Reanimate, Griselbrand, Archon of Cruelty, Echoing Truth, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Archon of Cruelty, Animate Dead, The Creation of Avacyn
   Extras: mandatory_choice=Declare Atk
   Actions:
    0: Archon of Cruelty [6/6]
@@ -1488,18 +1306,18 @@
   --- Declare Attackers (Player B) ---
     [attacking] Archon of Cruelty [6/6] -> Player A
 
---- Decision 62 ---
+--- Decision 56 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
-  Self:  3 life | mana: empty | hand(2): Atraxa, Grand Unifier, Show and Tell | lib 55
-  Opp:   9 life | mana: empty | hand count: 6 | lib 54
+  Self:  24 life | mana: empty | hand(2): Atraxa, Grand Unifier, Show and Tell | lib 55
+  Opp:   2 life | mana: empty | hand count: 2 | lib 59
   Self BF:  Archon of Cruelty [6/6] [Flying] (ATK) | Swamp (T) | Underground Sea (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
-  Self GY: Ponder, Brainstorm, Lotus Petal, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
+  Self GY: Ponder, Brainstorm, Lotus Petal, Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp GY:  Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Otherworldly Gaze, Otherworldly Gaze
   Known opp hand: Thoughtseize
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Fatal Push, Reanimate, Griselbrand, Archon of Cruelty, Echoing Truth, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Archon of Cruelty, Animate Dead, The Creation of Avacyn
   Extras: mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1509,83 +1327,54 @@
     Archon of Cruelty -> Player A
   Choose target for Archon of Cruelty:
 
---- Decision 63 ---
+--- Decision 57 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
-  Self:  3 life | mana: empty | hand(2): Atraxa, Grand Unifier, Show and Tell | lib 55
-  Opp:   9 life | mana: empty | hand count: 6 | lib 54
+  Self:  24 life | mana: empty | hand(2): Atraxa, Grand Unifier, Show and Tell | lib 55
+  Opp:   2 life | mana: empty | hand count: 2 | lib 59
   Self BF:  Archon of Cruelty [6/6] [Flying] (T,ATK) | Swamp (T) | Underground Sea (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
+  Opp BF:   Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
   Pending: Archon of Cruelty (self)
-  Self GY: Ponder, Brainstorm, Lotus Petal, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Self GY: Ponder, Brainstorm, Lotus Petal, Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp GY:  Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Otherworldly Gaze, Otherworldly Gaze
   Known opp hand: Thoughtseize
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Fatal Push, Reanimate, Griselbrand, Archon of Cruelty, Echoing Truth, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Archon of Cruelty, Animate Dead, The Creation of Avacyn
   Actions:
-   0: Player A (9 life)
-  >> B/B: 0 (Player A (9 life))
+   0: Player A (2 life)
+  >> B/B: 0 (Player A (2 life))
 --- Narrative ---
   Targeting choice 0
   Archon of Cruelty triggered
   Resolving ability (category: Sacrifice)
+  Resolving ability (category: Discard)
+  Player A chooses a card to discard:
 
---- Decision 64 ---
+--- Decision 58 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
-  Self:  9 life | mana: empty | hand(6): Griselbrand, Polluted Delta, Reanimate, Thoughtseize, Fatal Push, Show and Tell | lib 54
-  Opp:   3 life | mana: empty | hand count: 2 | lib 55
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
+  Self:  2 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 59
+  Opp:   24 life | mana: empty | hand count: 2 | lib 55
+  Self BF:  Animate Dead | Island (T) | Swamp (T) | Undercity Sewers (T)
   Opp BF:   Archon of Cruelty [6/6] [Flying] (T,ATK) | Swamp (T) | Underground Sea (T)
   Stack: Archon of Cruelty (ability, opponent) -> self (player)
   Pending: Archon of Cruelty (opp)
   Self GY: Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Ponder, Brainstorm, Lotus Petal, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
+  Opp GY:  Ponder, Brainstorm, Lotus Petal, Raph & Mikey, Troublemakers, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Opp revealed: Ponder, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
   Actions:
-   0: Sacrifice Atraxa, Grand Unifier
-   1: Sacrifice Raph & Mikey, Troublemakers
-  >> A/A: 0 (Sacrifice Atraxa, Grand Unifier)
+   0: Reanimate
+   1: Thoughtseize
+  >> A/A: 1 (Thoughtseize)
 --- Narrative ---
-  Player A sacrifices Atraxa, Grand Unifier.
-  Resolving ability (category: Discard)
-  Player A chooses a card to discard:
-
---- Decision 65 ---
-  Priority: Player A (non-active)
-  Step: Declare Atk (turn 8)
-  Self:  9 life | mana: empty | hand(6): Griselbrand, Polluted Delta, Reanimate, Thoughtseize, Fatal Push, Show and Tell | lib 54
-  Opp:   3 life | mana: empty | hand count: 2 | lib 55
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Island (T) | Swamp (T) | Undercity Sewers (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,SICK)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T,ATK) | Swamp (T) | Underground Sea (T)
-  Stack: Archon of Cruelty (ability, opponent) -> self (player)
-  Pending: Archon of Cruelty (opp)
-  Self GY: Atraxa, Grand Unifier, Force of Will, The Creation of Avacyn, Thoughtseize, Bloodstained Mire, Force of Will, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
-  Opp GY:  Ponder, Brainstorm, Lotus Petal, Atraxa, Grand Unifier, Consign to Memory, Brainstorm, Reanimate, Thoughtseize, Thoughtseize, Show and Tell, Underground Sea, Flow State, Lotus Petal
-  Opp exile:  Otherworldly Gaze, Otherworldly Gaze
-  Opp revealed: Ponder, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Flow State, Consign to Memory, Reanimate, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_revolt
-  Actions:
-   0: Griselbrand
-   1: Polluted Delta
-   2: Reanimate
-   3: Thoughtseize
-   4: Fatal Push
-   5: Show and Tell
-  >> A/A: 0 (Griselbrand)
---- Narrative ---
-  Player A discards Griselbrand
+  Player A discards Thoughtseize
   Resolving ability (category: LoseLife, amount: 3)
-  Player A loses 3 life (now at 6)
+  Player A loses 3 life (now at -1)
   Resolving ability (category: Draw, amount: 1)
-  Player A draws Force of Negation
+  Player A draws Thoughtseize
   Resolving ability (category: GainLife, amount: 3)
-  Player B gains 3 life (now at 6)
-  No creatures eligible to block.
-  --- Combat Damage ---
-    Archon of Cruelty deals 6 damage to Player A
-  --- End Combat Damage ---
-  Player A has 0 life - Player B wins!
+  Player B gains 3 life (now at 27)
+  Player A has -1 life - Player B wins!
 
 === B/B wins ===

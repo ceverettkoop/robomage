@@ -256,7 +256,7 @@
   Self:  19 life | mana: empty | hand(4): Daze, Thassa's Oracle, Tundra, Underground Sea | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
   Self BF:  Lotus Petal
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Lotus Petal
   Known top: Dark Ritual, Brainstorm, ?, ?, ?
@@ -2292,7 +2292,7 @@
   Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Scrubland
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Self GY: Flooded Strand, Tamiyo, Inquisitive Student, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Daze, Daze, Force of Will, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp exile:  Thassa's Oracle
@@ -2316,7 +2316,7 @@
   Opp:   18 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Scrubland
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Tamiyo, Inquisitive Student, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Daze, Daze, Force of Will, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
@@ -3591,7 +3591,7 @@
   Opp:   17 life | mana: empty | hand count: 2 | lib 44
   Self BF:  Island (T) | Lotus Petal | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T)
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
-  Stack: Polluted Delta (ability, opponent)
+  Stack: Polluted Delta (ability, opponent) [amt=1]
   Self GY: Tamiyo, Inquisitive Student, Flooded Strand, Tamiyo, Inquisitive Student, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Polluted Delta, Dark Ritual, Daze, Daze, Force of Will, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp exile:  Thassa's Oracle
@@ -3614,7 +3614,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Underground Sea (T)
   Opp BF:   Island (T) | Lotus Petal | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Dark Ritual, Daze, Daze, Force of Will, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Tamiyo, Inquisitive Student, Flooded Strand, Tamiyo, Inquisitive Student, Daze, Ponder, Brainstorm, Ponder
@@ -4333,7 +4333,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Island (T) | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Underground Sea
   Opp BF:   Cavern of Souls (T) | Island (T) | Lotus Petal | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Tamiyo, Inquisitive Student, Polluted Delta, Dark Ritual, Daze, Daze, Force of Will, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Dark Ritual, Dark Ritual, Lotus Petal, Tamiyo, Inquisitive Student, Flooded Strand, Tamiyo, Inquisitive Student, Daze, Ponder, Brainstorm, Ponder
@@ -4410,7 +4410,7 @@
   Opp:   16 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Cavern of Souls | Island | Lotus Petal | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Island (T) | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island | Underground Sea
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Dark Ritual, Dark Ritual, Lotus Petal, Tamiyo, Inquisitive Student, Flooded Strand, Tamiyo, Inquisitive Student, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Flooded Strand, Tamiyo, Inquisitive Student, Polluted Delta, Dark Ritual, Daze, Daze, Force of Will, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal

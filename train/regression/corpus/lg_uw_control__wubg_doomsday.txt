@@ -143,7 +143,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -1913,7 +1913,7 @@
   Opp:   19 life | mana: empty | energy 2 | hand count: 5 | lib 44
   Self BF:  Scrubland
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tundra (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Known top: Flooded Strand, ?, ?, ?, ?
@@ -1936,7 +1936,7 @@
   Opp:   19 life | mana: empty | energy 2 | hand count: 5 | lib 44
   Self BF:  Scrubland
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tundra (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
@@ -2278,7 +2278,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Island | Island | Mystic Sanctuary | Tundra
   Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Self GY: Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Known opp hand: Island
@@ -2296,7 +2296,7 @@
   Opp:   18 life | mana: empty | energy 2 | hand count: 5 | lib 43
   Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Island | Island | Mystic Sanctuary | Tundra
-  Stack: Flooded Strand (ability, opponent)
+  Stack: Flooded Strand (ability, opponent) [amt=1]
   Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Known opp hand: Meticulous Archive
@@ -2318,7 +2318,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Island | Island | Mystic Sanctuary | Tundra
   Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
@@ -3622,7 +3622,7 @@
   Opp:   18 life | mana: empty | energy 2 | hand count: 5 | lib 40
   Self BF:  Island (T) | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Opp BF:   Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tundra
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Self GY: Polluted Delta, Consider, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual, Lotus Petal, Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Tundra, Island, Brainstorm, Plains, Mystic Sanctuary, Lorien Revealed, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
@@ -3645,7 +3645,7 @@
   Opp:   18 life | mana: empty | hand count: 1 | lib 42
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tundra
   Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Stack: Polluted Delta (ability, opponent)
+  Stack: Polluted Delta (ability, opponent) [amt=1]
   Self GY: Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Polluted Delta, Consider, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual, Lotus Petal, Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Daze, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Consider, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
@@ -3666,7 +3666,7 @@
   Opp:   18 life | mana: empty | hand count: 2 | lib 41
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tundra
   Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Stack: Tamiyo, Inquisitive Student (ability, opponent) -> Polluted Delta (ability, opponent)
+  Stack: Tamiyo, Inquisitive Student (ability, opponent) -> Polluted Delta (ability, opponent) [amt=1]
   Self GY: Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Polluted Delta, Consider, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual, Lotus Petal, Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Daze, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Consider, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
@@ -3692,7 +3692,7 @@
   Opp:   18 life | mana: empty | energy 2 | hand count: 5 | lib 40
   Self BF:  Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tundra
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Consider, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual, Lotus Petal, Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
@@ -4600,7 +4600,7 @@
   Opp:   18 life | mana: empty | energy 2 | hand count: 3 | lib 36
   Self BF:  Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T) | Clue (SICK)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Tropical Island, Daze, Scrubland, Brainstorm, Ponder, Polluted Delta, Consider, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual, Lotus Petal, Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  Wasteland, Wasteland, Swords to Plowshares, Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
@@ -5715,7 +5715,7 @@
   Opp:   13 life | mana: empty | energy 2 | hand count: 7 | lib 23
   Self BF:  Island | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Tundra
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 5] | The One Ring [burden:3] [Indestructible] (T) | Tundra (T) | Tundra (T) | Wasteland (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Tropical Island, Flooded Strand, Tropical Island, Daze, Scrubland, Brainstorm, Ponder, Polluted Delta, Consider, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual, Lotus Petal, Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp GY:  The One Ring, Murktide Regent, Wasteland, Brainstorm, Flow State, Flow State, Wasteland, Wasteland, Swords to Plowshares, Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
@@ -6347,7 +6347,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 29
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 5] | The One Ring [burden:4] [Indestructible] (T) | Tundra | Tundra | Wasteland (T)
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Tundra | Undercity Sewers (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Self GY: Flooded Strand, Flow State, Flow State, Tune the Narrative, Tamiyo, Inquisitive Student, The One Ring, Murktide Regent, Wasteland, Brainstorm, Flow State, Flow State, Wasteland, Wasteland, Swords to Plowshares, Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Veil of Summer, Flooded Strand, Tropical Island, Flooded Strand, Tropical Island, Daze, Scrubland, Brainstorm, Ponder, Polluted Delta, Consider, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual, Lotus Petal, Flooded Strand, Daze, Ponder, Brainstorm, Ponder
   Opp exile:  Quantum Riddler
@@ -6370,7 +6370,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 29
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 5] | The One Ring [burden:4] [Indestructible] (T) | Tundra | Tundra | Wasteland (T)
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Tundra | Undercity Sewers (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Flow State, Flow State, Tune the Narrative, Tamiyo, Inquisitive Student, The One Ring, Murktide Regent, Wasteland, Brainstorm, Flow State, Flow State, Wasteland, Wasteland, Swords to Plowshares, Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Veil of Summer, Flooded Strand, Tropical Island, Flooded Strand, Tropical Island, Daze, Scrubland, Brainstorm, Ponder, Polluted Delta, Consider, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual, Lotus Petal, Flooded Strand, Daze, Ponder, Brainstorm, Ponder
@@ -8731,7 +8731,7 @@
   Opp:   10 life | mana: empty | hand count: 3 | lib 5
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Plains | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 6] | The One Ring [burden:5] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Undercity Sewers (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Self GY: Misty Rainforest, Ponder, Wasteland, Tamiyo, Inquisitive Student, Force of Negation, Force of Will, Force of Will, Force of Will, Force of Will, Flow State, Flow State, Tune the Narrative, Tamiyo, Inquisitive Student, The One Ring, Murktide Regent, Wasteland, Flow State, Flow State, Wasteland, Wasteland, Swords to Plowshares, Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Tundra, Doomsday
   Self exile: Flooded Strand, Brainstorm, Brainstorm, Brainstorm, Brainstorm
@@ -8756,7 +8756,7 @@
   Opp:   10 life | mana: empty | hand count: 3 | lib 5
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Plains | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 6] | The One Ring [burden:5] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Undercity Sewers (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Ponder, Wasteland, Tamiyo, Inquisitive Student, Force of Negation, Force of Will, Force of Will, Force of Will, Force of Will, Flow State, Flow State, Tune the Narrative, Tamiyo, Inquisitive Student, The One Ring, Murktide Regent, Wasteland, Flow State, Flow State, Wasteland, Wasteland, Swords to Plowshares, Ponder, Flooded Strand, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Tundra, Doomsday

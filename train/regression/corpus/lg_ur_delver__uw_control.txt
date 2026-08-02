@@ -326,7 +326,7 @@
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Opp BF:   Thundering Falls (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -865,7 +865,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Cori-Steel Cutter
-  Stack: Mishra's Bauble (ability, opponent)
+  Stack: Mishra's Bauble (ability, opponent) [amt=1]
   Self GY: Force of Will, Ponder, Flooded Strand
   Opp GY:  Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
@@ -939,7 +939,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Island (T)
   Opp BF:   Cori-Steel Cutter
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -1246,7 +1246,7 @@
   Opp:   17 life | mana: empty | energy 2 | hand count: 3 | lib 46
   Self BF:  Cori-Steel Cutter | Thundering Falls (T)
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -1800,7 +1800,7 @@
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 43
   Self BF:  Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Monk [3/3] | Monk [1/1] (SICK)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Ponder, Unholy Heat, Preordain, Scalding Tarn, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -4315,7 +4315,7 @@
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 35
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] | Monk [3/3] | Monk [3/3] | Monk [3/3] | Monk [3/3] | Monk [3/3] | Monk [1/1] (SICK) | Monk [1/1] (SICK) | Monk [1/1] (SICK)
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Flow State, Murktide Regent, Misty Rainforest, Ponder, Unholy Heat, Preordain, Scalding Tarn, Scalding Tarn, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative

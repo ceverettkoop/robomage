@@ -145,7 +145,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Orcish Bowmasters, Tropical Island, Undercity Sewers, Uro, Titan of Nature's Wrath, Witherbloom Command | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 73
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Opp revealed: Yorion, Sky Nomad
@@ -461,7 +461,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 52
   Self BF:  Aether Vial [charge:1] (T) | Plains
   Opp BF:   Bayou (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Prismatic Vista (ability, self) -> Aether Vial (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1] -> Aether Vial (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista
   Opp GY:  Polluted Delta
@@ -867,7 +867,7 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 50
   Self BF:  Aether Vial [charge:2] (T) | Plains | Plains
   Opp BF:   Bayou (T) | Orcish Bowmasters [1/1] [Flash] (T) | Tropical Island (T) | Undercity Sewers (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Prismatic Vista (ability, self) -> Aether Vial (ability, self)
+  Stack: Prismatic Vista (ability, self) [amt=1] -> Aether Vial (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp GY:  Brainstorm, Sheoldred's Edict, Polluted Delta
@@ -1729,7 +1729,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 64
   Self BF:  Bayou (T) | Orcish Bowmasters [1/1] [Flash] | Tropical Island (T) | Undercity Sewers (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Plains (T) | Plains (T) | Plains (T) | Plains (T) | Witch Enchanter [2/2] (SICK)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Witherbloom Command, Life from the Loam, Fatal Push, Kaito, Bane of Nightmares, Brainstorm, Brainstorm, Sheoldred's Edict, Polluted Delta
   Opp GY:  Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
@@ -2440,7 +2440,7 @@
   Opp:   9 life | mana: empty | hand count: 4 | lib 61
   Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] (T) | Tropical Island (T) | Undercity Sewers (T) | Underground Sea (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Plains | Plains | Plains | Plains | Plains | Witch Enchanter [2/2]
-  Stack: Flooded Strand (ability, opponent)
+  Stack: Flooded Strand (ability, opponent) [amt=1]
   Self GY: Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Wasteland, Misty Rainforest, Orcish Bowmasters, Orcish Bowmasters, Misty Rainforest, Witherbloom Command, Fatal Push, Kaito, Bane of Nightmares, Brainstorm, Brainstorm, Sheoldred's Edict, Polluted Delta
   Opp GY:  Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Flooded Strand, Wasteland, Plains, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
@@ -2460,7 +2460,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 38
   Self BF:  Plains | Plains | Plains | Plains | Plains | Witch Enchanter [2/2]
   Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] (T) | Tropical Island (T) | Undercity Sewers (T) | Underground Sea (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp GY:  Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Wasteland, Misty Rainforest, Orcish Bowmasters, Orcish Bowmasters, Misty Rainforest, Witherbloom Command, Fatal Push, Kaito, Bane of Nightmares, Brainstorm, Brainstorm, Sheoldred's Edict, Polluted Delta
@@ -4316,7 +4316,7 @@
   Opp:   2 life | mana: empty | hand count: 1 | lib 56
   Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Tropical Island | Undercity Sewers | Underground Sea | Wasteland | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains | Plains | Plains | Stoneforge Mystic [1/2] (SICK) | Witch Enchanter [2/2]
-  Stack: Windswept Heath (ability, opponent)
+  Stack: Windswept Heath (ability, opponent) [amt=1]
   Self GY: Life from the Loam, Force of Will, Flow State, Island, Flow State, Force of Will, Ponder, Witherbloom Command, Flow State, Brainstorm, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Misty Rainforest, Orcish Bowmasters, Orcish Bowmasters, Misty Rainforest, Witherbloom Command, Fatal Push, Kaito, Bane of Nightmares, Brainstorm, Brainstorm, Sheoldred's Edict, Polluted Delta
   Opp GY:  Windswept Heath, Stoneforge Mystic, Shadowy Backstreet, Thoughtseize, Scrubland, Scrubland, Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Flooded Strand, Wasteland, Plains, Windswept Heath, Thoughtseize, Shadowy Backstreet, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
@@ -4336,7 +4336,7 @@
   Opp:   13 life | mana: empty | hand count: 2 | lib 28
   Self BF:  Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains | Plains | Plains | Stoneforge Mystic [1/2] (SICK) | Witch Enchanter [2/2]
   Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Tropical Island | Undercity Sewers | Underground Sea | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Stack: Windswept Heath (ability, self)
+  Stack: Windswept Heath (ability, self) [amt=1]
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Stoneforge Mystic, Shadowy Backstreet, Thoughtseize, Scrubland, Scrubland, Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp GY:  Life from the Loam, Force of Will, Flow State, Island, Flow State, Force of Will, Ponder, Witherbloom Command, Flow State, Brainstorm, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Misty Rainforest, Orcish Bowmasters, Orcish Bowmasters, Misty Rainforest, Witherbloom Command, Fatal Push, Kaito, Bane of Nightmares, Brainstorm, Brainstorm, Sheoldred's Edict, Polluted Delta

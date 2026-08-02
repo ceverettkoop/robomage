@@ -414,7 +414,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Swamp
   Opp BF:   Forest (T) | Savannah (T)
-  Stack: Scalding Tarn (ability, self)
+  Stack: Scalding Tarn (ability, self) [amt=1]
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Force of Will, Marsh Flats
   Opp GY:  Badgermole Cub, Once Upon a Time
@@ -1572,7 +1572,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 59
   Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T) | Wasteland
   Opp BF:   Island | Swamp
-  Stack: Polluted Delta (ability, opponent)
+  Stack: Polluted Delta (ability, opponent) [amt=1]
   Self GY: Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp exile:  Force of Will
@@ -1593,7 +1593,7 @@
   Opp:   20 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Island | Swamp
   Opp BF:   Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T) | Wasteland
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -2685,7 +2685,7 @@
   Opp:   9 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Island (T) | Swamp (T) | Underground Sea (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Self GY: Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp exile:  Force of Will
@@ -2708,7 +2708,7 @@
   Opp:   9 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Island (T) | Swamp (T) | Underground Sea (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Wasteland (self)
   Self GY: Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
@@ -2734,7 +2734,7 @@
   Opp:   9 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Swamp (T) | Underground Sea (T)
-  Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 50) -> Verdant Catacombs (ability, self)
+  Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 50) -> Verdant Catacombs (ability, self) [amt=1]
   Self GY: Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp exile:  Force of Will
@@ -2757,7 +2757,7 @@
   Opp:   9 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Swamp (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Self GY: Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp exile:  Force of Will
@@ -2780,7 +2780,7 @@
   Opp:   9 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Swamp (T)
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
@@ -3231,7 +3231,7 @@
   Opp:   5 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Opp BF:   Island (T) | Swamp (T)
-  Stack: Flooded Strand (ability, opponent)
+  Stack: Flooded Strand (ability, opponent) [amt=1]
   Self GY: Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Careful Study, Force of Negation, Raph & Mikey, Troublemakers, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp exile:  Force of Will
@@ -3254,7 +3254,7 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Island (T) | Swamp (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Careful Study, Force of Negation, Raph & Mikey, Troublemakers, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp GY:  Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4005,7 +4005,7 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers
-  Stack: Polluted Delta (ability, opponent)
+  Stack: Polluted Delta (ability, opponent) [amt=1]
   Self GY: Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Raph & Mikey, Troublemakers, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp exile:  Force of Will
@@ -4028,7 +4028,7 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Island (T) | Swamp (T) | Undercity Sewers
   Opp BF:   Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Raph & Mikey, Troublemakers, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4113,9 +4113,1631 @@
 --- Narrative ---
   Resolving ability (category: ChangeZone)
   Raph & Mikey, Troublemakers is moved to the battlefield
-  Resolving ability (category: LoseLife, amount: 7)
-  Player B loses 7 life (now at -5)
-  Resolving ability (category: Cleanup)
-  Player B has -5 life - Player A wins!
+  Resolving ability (category: LoseLife, amount: 0)
+  Player B loses 0 life (now at 2)
+
+--- Decision 194 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 18)
+  Self:  19 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Swords to Plowshares | lib 40
+  Opp:   2 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Cast Swords to Plowshares)
+--- Narrative ---
+  Choose target for Swords to Plowshares:
+
+--- Decision 195 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 18)
+  Self:  19 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Swords to Plowshares | lib 40
+  Opp:   2 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Pending: Swords to Plowshares (self)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Raph & Mikey, Troublemakers
+   1: Dryad Arbor
+   2: Thalia, Guardian of Thraben
+  >> A/A: 0 (Raph & Mikey, Troublemakers)
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Savannah for 1(W)
+  Player A activated Forest for 1(G)
+  Player A casts Swords to Plowshares targeting Raph & Mikey, Troublemakers
+  Resolving ability (category: ChangeZone)
+  Raph & Mikey, Troublemakers is moved to exile
+  Resolving ability (category: GainLife, amount: 7)
+  Player B gains 7 life (now at 9)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 19 (Player A) --------
+--- Turn 19 (Player A) ---
+  PA: Swords to Plowshares, Swords to Plowshares
+  PB: Animate Dead, Reanimate, Reanimate
+
+--- Decision 196 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 40
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Noble Hierarch
+
+--- Decision 197 ---
+  Priority: Player A (active)
+  Step: Draw (turn 19)
+  Self:  19 life | mana: empty | hand(3): Noble Hierarch, Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 198 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  19 life | mana: empty | hand(3): Noble Hierarch, Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Noble Hierarch  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Cast Noble Hierarch)
+--- Narrative ---
+  Player A activated Dryad Arbor for 1(G)
+  Player A casts Noble Hierarch
+
+--- Decision 199 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Stack: Noble Hierarch (spell, self)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Noble Hierarch enters the battlefield
+
+--- Decision 200 ---
+  Priority: Player A (active)
+  Step: First Main (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 201 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player A) ---
+
+--- Decision 202 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Thalia, Guardian of Thraben [2/1]
+   1: Confirm attackers
+  >> A/A: 0 (Thalia, Guardian of Thraben [2/1])
+--- Narrative ---
+  Thalia, Guardian of Thraben attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+
+--- Decision 203 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Thalia, Guardian of Thraben -> Player B
+  Noble Hierarch triggered
+
+--- Decision 204 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Stack: Noble Hierarch (ability, self) [amt=1] -> Thalia, Guardian of Thraben (self, slot 6)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ExaltedBonus)
+  Exalted (Noble Hierarch): Thalia, Guardian of Thraben gets +1/+1 until end of turn.
+
+--- Decision 205 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [3/2] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 206 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   9 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [3/2] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Thalia, Guardian of Thraben deals 3 damage to Player B
+  --- End First Strike Combat Damage ---
+
+--- Decision 207 ---
+  Priority: Player A (active)
+  Step: First Strike Dmg (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [3/2] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 208 ---
+  Priority: Player A (active)
+  Step: Combat Dmg (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [3/2] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 209 ---
+  Priority: Player A (active)
+  Step: End Combat (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [3/2] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 210 ---
+  Priority: Player A (active)
+  Step: Second Main (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [3/2] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 211 ---
+  Priority: Player A (active)
+  Step: End Step (turn 19)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [3/2] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 20 (Player B) --------
+--- Turn 20 (Player B) ---
+  PA: Swords to Plowshares, Swords to Plowshares
+  PB: Animate Dead, Reanimate
+
+--- Decision 212 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 20)
+  Self:  6 life | mana: empty | hand(2): Animate Dead, Reanimate | lib 44
+  Opp:   19 life | mana: empty | hand count: 2 | lib 39
+  Self BF:  Island | Swamp | Undercity Sewers | Underground Sea
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Reanimate, Polluted Delta, Otherworldly Gaze, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Otherworldly Gaze (flashback)  [#4]
+  >> B/B: 1 (Cast Otherworldly Gaze (flashback))
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Swamp for 1(B)
+  Player B activated Undercity Sewers for 1(U)
+  Player B casts Otherworldly Gaze
+
+--- Decision 213 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 2 | lib 44
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Stack: Otherworldly Gaze (spell, opponent) [flashback]
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 3)
+  Player B surveils 3.
+  Surveil: looking at Brainstorm
+  Surveil: looking at Atraxa, Grand Unifier
+  Surveil: looking at Brainstorm
+
+--- Decision 214 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 20)
+  Self:  6 life | mana: empty | hand(2): Animate Dead, Reanimate | lib 44
+  Opp:   19 life | mana: empty | hand count: 2 | lib 39
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Otherworldly Gaze (spell, self) [flashback]
+  Pending: Otherworldly Gaze (self)
+  Self GY: Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
+  Actions:
+   0: Put Brainstorm on top of library  [#0]
+   1: Put Atraxa, Grand Unifier on top of library  [#0]
+   2: Put Brainstorm on top of library  [#0]
+   3: Put Brainstorm into graveyard
+   4: Put Atraxa, Grand Unifier into graveyard
+   5: Put Brainstorm into graveyard
+  >> B/B: 3 (Put Brainstorm into graveyard)
+--- Narrative ---
+  Player B puts Brainstorm into their graveyard.
+
+--- Decision 215 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 20)
+  Self:  6 life | mana: empty | hand(2): Animate Dead, Reanimate | lib 43
+  Opp:   19 life | mana: empty | hand count: 2 | lib 39
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Otherworldly Gaze (spell, self) [flashback]
+  Pending: Otherworldly Gaze (self)
+  Self GY: Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
+  Actions:
+   0: Put Atraxa, Grand Unifier on top of library  [#0]
+   1: Put Brainstorm on top of library  [#0]
+   2: Put Atraxa, Grand Unifier into graveyard
+   3: Put Brainstorm into graveyard
+  >> B/B: 2 (Put Atraxa, Grand Unifier into graveyard)
+--- Narrative ---
+  Player B puts Atraxa, Grand Unifier into their graveyard.
+
+--- Decision 216 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 20)
+  Self:  6 life | mana: empty | hand(2): Animate Dead, Reanimate | lib 42
+  Opp:   19 life | mana: empty | hand count: 2 | lib 39
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Otherworldly Gaze (spell, self) [flashback]
+  Pending: Otherworldly Gaze (self)
+  Self GY: Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
+  Actions:
+   0: Put Brainstorm on top of library  [#0]
+   1: Put Brainstorm into graveyard
+  >> B/B: 1 (Put Brainstorm into graveyard)
+--- Narrative ---
+  Player B puts Brainstorm into their graveyard.
+  Otherworldly Gaze is exiled (flashback)
+
+--- Decision 217 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 2 | lib 41
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Reanimate
+
+--- Decision 218 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 219 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 220 ---
+  Priority: Player A (non-active)
+  Step: Begin Combat (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 221 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 222 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 223 ---
+  Priority: Player A (non-active)
+  Step: Combat Dmg (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 224 ---
+  Priority: Player A (non-active)
+  Step: End Combat (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 225 ---
+  Priority: Player A (non-active)
+  Step: Second Main (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 226 ---
+  Priority: Player A (non-active)
+  Step: End Step (turn 20)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (SICK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 21 (Player A) --------
+--- Turn 21 (Player A) ---
+  PA: Swords to Plowshares, Swords to Plowshares
+  PB: Animate Dead, Reanimate
+
+--- Decision 227 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 39
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Bojuka Bog
+
+--- Decision 228 ---
+  Priority: Player A (active)
+  Step: Draw (turn 21)
+  Self:  19 life | mana: empty | hand(3): Bojuka Bog, Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 229 ---
+  Priority: Player A (active)
+  Step: First Main (turn 21)
+  Self:  19 life | mana: empty | hand(3): Bojuka Bog, Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Play Bojuka Bog
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Play Bojuka Bog)
+--- Narrative ---
+  Player A played Bojuka Bog
+  Bojuka Bog enters tapped.
+  Choose target for Bojuka Bog:
+
+--- Decision 230 ---
+  Priority: Player A (active)
+  Step: First Main (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Pending: Bojuka Bog (self)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Player B (6 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (6 life))
+--- Narrative ---
+  Targeting choice 0
+  Bojuka Bog triggered
+
+--- Decision 231 ---
+  Priority: Player A (active)
+  Step: First Main (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Stack: Bojuka Bog (ability, self) -> opponent (player)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Brainstorm, Atraxa, Grand Unifier, Brainstorm, Reanimate, Polluted Delta, Griselbrand, Animate Dead, Reanimate, Atraxa, Grand Unifier, Flooded Strand, Careful Study, Force of Negation, Underground Sea, Flow State, Undercity Sewers, Consign to Memory, Polluted Delta, Underground Sea, Careful Study, Show and Tell, The Creation of Avacyn, Ponder, Scalding Tarn, Force of Will, Marsh Flats
+  Opp exile:  Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZoneAll)
+  Player B moves Animate Dead to exile
+  Player B moves Atraxa, Grand Unifier to exile
+  Player B moves Atraxa, Grand Unifier to exile
+  Player B moves Brainstorm to exile
+  Player B moves Brainstorm to exile
+  Player B moves Careful Study to exile
+  Player B moves Careful Study to exile
+  Player B moves Flooded Strand to exile
+  Player B moves Flow State to exile
+  Player B moves Force of Will to exile
+  Player B moves Griselbrand to exile
+  Player B moves Marsh Flats to exile
+  Player B moves Polluted Delta to exile
+  Player B moves Polluted Delta to exile
+  Player B moves Ponder to exile
+  Player B moves Reanimate to exile
+  Player B moves Reanimate to exile
+  Player B moves Scalding Tarn to exile
+  Player B moves Undercity Sewers to exile
+  Player B moves Underground Sea to exile
+  Player B moves Underground Sea to exile
+  Player B moves Consign to Memory to exile
+  Player B moves Force of Negation to exile
+  Player B moves Show and Tell to exile
+  Player B moves The Creation of Avacyn to exile
+  Player B moves 25 card(s) to exile
+
+--- Decision 232 ---
+  Priority: Player A (active)
+  Step: First Main (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 233 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player A) ---
+
+--- Decision 234 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Dryad Arbor [1/1]
+   1: Noble Hierarch [0/1]
+   2: Thalia, Guardian of Thraben [2/1]
+   3: Confirm attackers
+  >> A/A: 0 (Dryad Arbor [1/1])
+--- Narrative ---
+  Dryad Arbor attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dryad Arbor [1/1] -> Player B
+
+--- Decision 235 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Noble Hierarch [0/1]
+   1: Thalia, Guardian of Thraben [2/1]
+   2: Confirm attackers
+  >> A/A: 0 (Noble Hierarch [0/1])
+--- Narrative ---
+  Noble Hierarch attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dryad Arbor [1/1] -> Player B
+    [attacking] Noble Hierarch [0/1] -> Player B
+
+--- Decision 236 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (ATK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Thalia, Guardian of Thraben [2/1]
+   1: Confirm attackers
+  >> A/A: 0 (Thalia, Guardian of Thraben [2/1])
+--- Narrative ---
+  Thalia, Guardian of Thraben attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dryad Arbor [1/1] -> Player B
+    [attacking] Noble Hierarch [0/1] -> Player B
+    [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+
+--- Decision 237 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (ATK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dryad Arbor -> Player B
+    Noble Hierarch -> Player B
+    Thalia, Guardian of Thraben -> Player B
+
+--- Decision 238 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T,ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T,ATK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 239 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   6 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T,ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T,ATK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Thalia, Guardian of Thraben deals 2 damage to Player B
+  --- End First Strike Combat Damage ---
+
+--- Decision 240 ---
+  Priority: Player A (active)
+  Step: First Strike Dmg (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   4 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T,ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T,ATK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Dryad Arbor deals 1 damage to Player B
+  --- End Combat Damage ---
+
+--- Decision 241 ---
+  Priority: Player A (active)
+  Step: Combat Dmg (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   3 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T,ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T,ATK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 242 ---
+  Priority: Player A (active)
+  Step: End Combat (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   3 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T,ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T,ATK) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 243 ---
+  Priority: Player A (active)
+  Step: Second Main (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   3 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 244 ---
+  Priority: Player A (active)
+  Step: End Step (turn 21)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   3 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 22 (Player B) --------
+--- Turn 22 (Player B) ---
+  PA: Swords to Plowshares, Swords to Plowshares
+  PB: Animate Dead, Reanimate
+
+--- Decision 245 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 22)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   3 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island | Swamp | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Thoughtseize
+
+--- Decision 246 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 22)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   3 life | mana: empty | hand count: 4 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island | Swamp | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 247 ---
+  Priority: Player B (active)
+  Step: First Main (turn 22)
+  Self:  3 life | mana: empty | hand(4): Animate Dead, Reanimate, Reanimate, Thoughtseize | lib 39
+  Opp:   19 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Island | Swamp | Undercity Sewers | Underground Sea
+  Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Animate Dead  [#0]
+   2: Cast Reanimate  [#0]
+   3: Cast Reanimate  [#0]
+   4: Cast Thoughtseize  [#0]
+  >> B/B: 4 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 248 ---
+  Priority: Player B (active)
+  Step: First Main (turn 22)
+  Self:  3 life | mana: empty | hand(4): Animate Dead, Reanimate, Reanimate, Thoughtseize | lib 39
+  Opp:   19 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Island | Swamp | Undercity Sewers | Underground Sea
+  Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Pending: Thoughtseize (self)
+  Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Actions:
+   0: Player A (19 life)
+   1: Player B (3 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Swamp for 1(B)
+  Player B activated Island for 1(U)
+  Player B casts Thoughtseize targeting Player A
+
+--- Decision 249 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 22)
+  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Swords to Plowshares | lib 38
+  Opp:   3 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Swords to Plowshares
+    Swords to Plowshares
+  Player B chooses a card to discard:
+
+--- Decision 250 ---
+  Priority: Player B (active)
+  Step: First Main (turn 22)
+  Self:  3 life | mana: empty | hand(3): Animate Dead, Reanimate, Reanimate | lib 39
+  Opp:   19 life | mana: empty | hand count: 2 | lib 38
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Known opp hand: Swords to Plowshares, Swords to Plowshares
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Actions:
+   0: Swords to Plowshares
+   1: Swords to Plowshares
+  >> B/B: 1 (Swords to Plowshares)
+--- Narrative ---
+  Player A discards Swords to Plowshares
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 1)
+
+--- Decision 251 ---
+  Priority: Player B (active)
+  Step: First Main (turn 22)
+  Self:  1 life | mana: empty | hand(3): Animate Dead, Reanimate, Reanimate | lib 39
+  Opp:   19 life | mana: empty | hand count: 1 | lib 38
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Thoughtseize
+  Opp GY:  Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Reanimate  [#0]
+   2: Cast Reanimate  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 252 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 22)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 253 ---
+  Priority: Player A (non-active)
+  Step: Begin Combat (turn 22)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 254 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 22)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 255 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 22)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 256 ---
+  Priority: Player A (non-active)
+  Step: Combat Dmg (turn 22)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 257 ---
+  Priority: Player A (non-active)
+  Step: End Combat (turn 22)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 258 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 22)
+  Self:  1 life | mana: empty | hand(3): Animate Dead, Reanimate, Reanimate | lib 39
+  Opp:   19 life | mana: empty | hand count: 1 | lib 38
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Thoughtseize
+  Opp GY:  Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Reanimate  [#0]
+   2: Cast Reanimate  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 259 ---
+  Priority: Player A (non-active)
+  Step: Second Main (turn 22)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 260 ---
+  Priority: Player A (non-active)
+  Step: End Step (turn 22)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 23 (Player A) --------
+--- Turn 23 (Player A) ---
+  PA: Swords to Plowshares
+  PB: Animate Dead, Reanimate, Reanimate
+
+--- Decision 261 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 23)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 38
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Misty Rainforest
+
+--- Decision 262 ---
+  Priority: Player A (active)
+  Step: Draw (turn 23)
+  Self:  19 life | mana: empty | hand(2): Misty Rainforest, Swords to Plowshares | lib 37
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 263 ---
+  Priority: Player A (active)
+  Step: First Main (turn 23)
+  Self:  19 life | mana: empty | hand(2): Misty Rainforest, Swords to Plowshares | lib 37
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Play Misty Rainforest)
+--- Narrative ---
+  Player A played Misty Rainforest
+
+--- Decision 264 ---
+  Priority: Player A (active)
+  Step: First Main (turn 23)
+  Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 37
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Misty Rainforest | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Misty Rainforest (ChangeZone)  [#0]
+  >> A/A: 2 (Activate Misty Rainforest (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Misty Rainforest
+  Player A's Misty Rainforest ability is on the stack
+
+--- Decision 265 ---
+  Priority: Player A (active)
+  Step: First Main (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 37
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Stack: Misty Rainforest (ability, self) [amt=1]
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 266 ---
+  Priority: Player A (active)
+  Step: First Main (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 37
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Stack: Misty Rainforest (ability, self) [amt=1]
+  Pending: Misty Rainforest (self)
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Savannah
+  >> A/A: 1 (Savannah)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Savannah to the battlefield
+
+--- Decision 267 ---
+  Priority: Player A (active)
+  Step: First Main (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 36
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 268 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 36
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player A) ---
+
+--- Decision 269 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 36
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Dryad Arbor [1/1]
+   1: Noble Hierarch [0/1]
+   2: Thalia, Guardian of Thraben [2/1]
+   3: Confirm attackers
+  >> A/A: 0 (Dryad Arbor [1/1])
+--- Narrative ---
+  Dryad Arbor attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dryad Arbor [1/1] -> Player B
+
+--- Decision 270 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 36
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] (ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Noble Hierarch [0/1]
+   1: Thalia, Guardian of Thraben [2/1]
+   2: Confirm attackers
+  >> A/A: 0 (Noble Hierarch [0/1])
+--- Narrative ---
+  Noble Hierarch attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dryad Arbor [1/1] -> Player B
+    [attacking] Noble Hierarch [0/1] -> Player B
+
+--- Decision 271 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 36
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] (ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (ATK) | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Thalia, Guardian of Thraben [2/1]
+   1: Confirm attackers
+  >> A/A: 0 (Thalia, Guardian of Thraben [2/1])
+--- Narrative ---
+  Thalia, Guardian of Thraben attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dryad Arbor [1/1] -> Player B
+    [attacking] Noble Hierarch [0/1] -> Player B
+    [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+
+--- Decision 272 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 36
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] (ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (ATK) | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dryad Arbor -> Player B
+    Noble Hierarch -> Player B
+    Thalia, Guardian of Thraben -> Player B
+
+--- Decision 273 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 36
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] (T,ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T,ATK) | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 274 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 23)
+  Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 36
+  Opp:   1 life | mana: empty | hand count: 3 | lib 39
+  Self BF:  Bojuka Bog | Dryad Arbor [1/1] (T,ATK) | Forest | Gaea's Cradle | Noble Hierarch [0/1] (T,ATK) | Savannah | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
+  Self GY: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Verdant Catacombs, Horizon Canopy, Once Upon a Time, Wasteland, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Thoughtseize
+  Opp exile:  The Creation of Avacyn, Show and Tell, Force of Negation, Consign to Memory, Underground Sea, Underground Sea, Undercity Sewers, Scalding Tarn, Reanimate, Reanimate, Ponder, Polluted Delta, Polluted Delta, Marsh Flats, Griselbrand, Force of Will, Flow State, Flooded Strand, Careful Study, Careful Study, Brainstorm, Brainstorm, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Animate Dead, Otherworldly Gaze, Raph & Mikey, Troublemakers, Force of Will
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, Animate Dead, The Creation of Avacyn, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Thalia, Guardian of Thraben deals 2 damage to Player B
+  --- End First Strike Combat Damage ---
+  Player B has -1 life - Player A wins!
 
 === A/A wins ===

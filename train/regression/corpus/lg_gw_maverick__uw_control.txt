@@ -177,7 +177,7 @@
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Opp BF:   Forest
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp GY:  Once Upon a Time
@@ -499,7 +499,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Forest (T) | Savannah (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) [amt=1]
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Badgermole Cub, Once Upon a Time
@@ -846,7 +846,7 @@
   Opp:   16 life | mana: empty | energy 2 | hand count: 4 | lib 46
   Self BF:  Forest (T) | Savannah (T) | Wasteland
   Opp BF:   Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Stack: Misty Rainforest (ability, opponent)
+  Stack: Misty Rainforest (ability, opponent) [amt=1]
   Self GY: Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Tamiyo, Inquisitive Student
@@ -867,7 +867,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Forest (T) | Savannah (T) | Wasteland
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -1536,7 +1536,7 @@
   Opp:   15 life | mana: empty | energy 2 | hand count: 3 | lib 42
   Self BF:  Forest (T) | Gaea's Cradle | Savannah
   Opp BF:   Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Stack: Polluted Delta (ability, opponent)
+  Stack: Polluted Delta (ability, opponent) [amt=1]
   Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Self exile: Green Sun's Zenith
@@ -1558,7 +1558,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Forest (T) | Gaea's Cradle | Savannah
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3261,7 +3261,7 @@
   Opp:   22 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tundra (T) | Clue
   Opp BF:   Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Swords to Plowshares
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3417,7 +3417,7 @@
   Opp:   5 life | mana: empty | energy 2 | hand count: 3 | lib 32
   Self BF:  Bojuka Bog | Forest | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Tundra (T) | Clue
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Misty Rainforest, Swords to Plowshares
@@ -3750,7 +3750,7 @@
   Opp:   4 life | mana: empty | energy 2 | hand count: 2 | lib 31
   Self BF:  Dryad Arbor [1/1] | Forest | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Island (T) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra (T) | Tundra (T) | Clue
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Bojuka Bog, Misty Rainforest, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Wasteland
@@ -5873,7 +5873,7 @@
   Opp:   3 life | mana: empty | energy 2 | hand count: 1 | lib 22
   Self BF:  Karakas (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Tundra (T) | Tundra (T) | Tundra
-  Stack: Windswept Heath (ability, self) -> Scythecat Cub (ability, self) -> Scythecat Cub (self, slot 2) -> Scythecat Cub (ability, self) -> Scythecat Cub (self, slot 2)
+  Stack: Windswept Heath (ability, self) [amt=1] -> Scythecat Cub (ability, self) -> Scythecat Cub (self, slot 2) -> Scythecat Cub (ability, self) -> Scythecat Cub (self, slot 2)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Thalia, Guardian of Thraben, Forest, Horizon Canopy, Dryad Arbor, Swords to Plowshares, Misty Rainforest, Bojuka Bog, Misty Rainforest, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Force of Will, Lorien Revealed, Swords to Plowshares, Tamiyo, Inquisitive Student, Wasteland, Brainstorm, Flow State, Wasteland

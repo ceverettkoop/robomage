@@ -188,7 +188,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Fatal Push, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland | lib 54
   Opp:   20 life | mana: empty | hand count: 6 | lib 69
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -460,7 +460,7 @@
   Opp:   18 life | mana: empty | hand count: 4 | lib 67
   Self BF:  Bayou
   Opp BF:   Underground Sea (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Sheoldred's Edict, Polluted Delta
   Opp GY:  Thoughtseize, Brainstorm, Lotus Petal
@@ -1045,7 +1045,7 @@
   Opp:   15 life | mana: empty | hand count: 2 | lib 59
   Self BF:  Bayou (T) | Island | Tropical Island (T)
   Opp BF:   Underground Sea (T)
-  Stack: Polluted Delta (ability, self)
+  Stack: Polluted Delta (ability, self) [amt=1]
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
   Opp GY:  Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
@@ -1582,7 +1582,7 @@
   Self:  15 life | mana: empty | hand(0): (empty) | lib 43
   Opp:   10 life | mana: empty | hand count: 3 | lib 55
   Self BF:  Bayou | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tropical Island | Orc Army [2/2] [+1/+1:2]
-  Stack: Verdant Catacombs (ability, self)
+  Stack: Verdant Catacombs (ability, self) [amt=1]
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
   Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
@@ -1802,7 +1802,7 @@
   Self:  14 life | mana: empty | hand(2): Brainstorm, Thoughtseize | lib 38
   Opp:   6 life | mana: empty | hand count: 4 | lib 54
   Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2]
-  Stack: Misty Rainforest (ability, self)
+  Stack: Misty Rainforest (ability, self) [amt=1]
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Lorien Revealed, Verdant Catacombs, Wasteland, Polluted Delta, Baleful Strix, Witherbloom Command, Fatal Push, Force of Will, Polluted Delta, Sheoldred's Edict
   Opp GY:  Underground Sea, Flusterstorm, Force of Negation, Fatal Push, Undercity Sewers, Force of Will, Thoughtseize, Force of Will, Otherworldly Gaze, The Creation of Avacyn, Archon of Cruelty, Dark Ritual, Thoughtseize, Brainstorm, Lotus Petal
