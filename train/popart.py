@@ -45,9 +45,12 @@ except ImportError:  # pragma: no cover
 
 # Decay of the running per-bucket statistics, applied once per rollout.
 POPART_BETA = 0.99
-# Floor on a bucket's sigma (a bucket whose returns are constant must not blow up
-# the normalized targets).
-POPART_EPS = 1e-4
+# Floor on a bucket's sigma. Beyond div-by-zero safety, this caps target
+# amplification for near-deterministic matchups (the doomsday row sits at
+# sigma 0.09-0.22): a bucket pinned at the floor keeps full mean-centering but
+# only partial variance equalization, so its upset noise no longer draws an
+# equal share of value-loss gradient on top of PFSP already oversampling it.
+POPART_EPS = 0.25
 
 
 class PopArtMaskablePPO(MaskablePPO):

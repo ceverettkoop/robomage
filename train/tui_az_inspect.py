@@ -17,11 +17,23 @@ compute. ``--with-shards`` loads recorded self-play and adds the rest.
   Critic    — checkpoint overview and the per-matchup value-head column map;
               with shards, per-bucket calibration against recorded outcomes and
               raw-net vs search-posterior divergence by action category.
+  Weights   — the weight-space views (always available, no shards): per-encoder
+              and body first-layer input attribution, one unit's signed input
+              recipe (pick a layer in Targets, ``,``/``.`` steps the unit), a
+              value bucket's input connectivity (pick the bucket in Targets),
+              value-head geometry, card-selective units, weight spectra, the
+              zone embedding, and PopArt statistics.
   Probes    — shards only, so the pane is not built without them: one recorded
               decision's board and policy, block attribution, the card-swap
               probe and scalar sweeps.
 
 No game is played and the engine is never started in either mode.
+
+**PPO fallback.** When ``--model`` resolves to no AZ checkpoint, the app loads
+the PPO generalist ``.zip`` through az_inspect's normalized weight loader
+instead of exiting: the Weights pane and the embedding-matrix views work in
+full (the trunk is shared), while the net-dependent views (overview, buckets,
+exposure, everything shard-backed) explain what they need.
 
 Run from the repo root:
     train/.venv/bin/python train/tui_az_inspect.py                  # weights only
@@ -66,6 +78,18 @@ _CRITIC_VIEWS = [
     ("divergence", "Priors vs search"),
 ]
 
+_WEIGHT_VIEWS = [
+    ("firstlayer", "Encoder input attribution"),
+    ("bodylayer", "Body input attribution"),
+    ("unit", "Unit input recipe"),
+    ("pathto", "Bucket input connectivity"),
+    ("valuegeom", "Value-head geometry"),
+    ("cardsel", "Card-selective units"),
+    ("spectra", "Weight spectra"),
+    ("zoneemb", "Zone-ref embedding"),
+    ("popart", "PopArt statistics (PPO)"),
+]
+
 _PROBE_VIEWS = [
     ("state", "Decision + policy"),
     ("blocks", "Block attribution (state)"),
@@ -78,6 +102,11 @@ _PROBE_VIEWS = [
 # at all (the sidebar shows only what this session can actually compute), and the
 # Probes pane — every view of which needs a recorded state — is not built.
 _NEEDS_SHARDS = {"occur", "calib", "divergence"} | {k for k, _ in _PROBE_VIEWS}
+
+# Views that need a loaded AZNet (not just the normalized state dict). In the
+# PPO-fallback session these render an explanation instead of computing.
+_NEEDS_NET = ({"overview", "buckets", "exposure"} | _NEEDS_SHARDS) - {"occur",
+                                                                      "state"}
 
 
 def available_views(views, with_shards):
@@ -122,6 +151,9 @@ class InspectApp(App):
     #emb-cards, #probe-decisions { height: 1fr; border: round $surface; }
     /* The swap view's site picker; hidden on the other probe views. */
     #probe-sites { height: 40%; border: round $primary; display: none; }
+    /* The unit/pathto target picker (layers / value buckets); hidden on the
+       other weight views. */
+    #weights-targets { height: 1fr; border: round $primary; display: none; }
     /* Taller than the text pane above it: on the neighbours view the list IS
        the content, and the pane keeps only the card's header. Hidden (so the
        text pane takes the whole column) on every other view. */
@@ -150,10 +182,15 @@ class InspectApp(App):
             # every construction path, not just main()'s.
             args.shards = azi.AZ_DATA_DIR
         self._with_shards = bool(getattr(args, "with_shards", False))
-        self._panes = (("emb", "critic", "probe") if self._with_shards
-                       else ("emb", "critic"))
+        self._panes = (("emb", "critic", "weights", "probe")
+                       if self._with_shards else ("emb", "critic", "weights"))
         self._args = args
         self._net = None
+        self._sd = None             # normalized state dict (both families)
+        self._sd_kind = None        # 'az' | 'ppo'
+        self._layer = "value_body"  # unit view's current layer
+        self._unit = 0              # unit view's current row
+        self._bucket = 0            # pathto view's current value bucket
         self._path = None
         self._mat = None            # card embedding matrix
         self._sample = None         # recorded self-play sample (or None)
@@ -166,7 +203,7 @@ class InspectApp(App):
         self._row = 0               # current recorded decision (probe views)
         self._site = None           # chosen card-identity site for the swap probe
         self._view = {"emb": "neighbors", "critic": "overview",
-                      "probe": "state"}
+                      "weights": "firstlayer", "probe": "state"}
 
     # ----- layout -----
 
@@ -194,6 +231,16 @@ class InspectApp(App):
                         yield OptionList(id="critic-views", classes="views")
                     with VerticalScroll(classes="out-scroll"):
                         yield Static(id="critic-out", markup=False, classes="out")
+            with TabPane("Weights", id="tab-weights"):
+                with Horizontal():
+                    with Vertical(classes="sidebar"):
+                        yield Static("Views", classes="head")
+                        yield OptionList(id="weights-views", classes="views")
+                        yield Static("Targets", classes="head")
+                        yield OptionList(id="weights-targets")
+                    with VerticalScroll(classes="out-scroll"):
+                        yield Static(id="weights-out", markup=False,
+                                     classes="out")
             # Every probe view needs a recorded decision to probe, so the pane
             # only exists when this session loaded recorded self-play.
             if self._with_shards:
@@ -216,6 +263,7 @@ class InspectApp(App):
         self.sub_title = self._args.model + ("" if self._with_shards
                                              else "  (weights only)")
         for pane, views in (("emb", _EMB_VIEWS), ("critic", _CRITIC_VIEWS),
+                            ("weights", _WEIGHT_VIEWS),
                             ("probe", _PROBE_VIEWS)):
             if pane not in self._panes:
                 continue
@@ -231,16 +279,34 @@ class InspectApp(App):
     def _load(self) -> None:
         a = self._args
         try:
-            net, path = azi.load_net(a.model)
+            try:
+                net, path = azi.load_net(a.model)
+            except FileNotFoundError:
+                # No AZ checkpoint — fall back to the normalized weight loader
+                # (the PPO generalist .zip). The Weights pane and the embedding
+                # matrix work in full; the net-dependent views explain
+                # themselves via _NEEDS_NET.
+                net = None
+                self._sd, path, self._sd_kind = azi.load_weight_state(a.model)
             self._net = net
             self._path = path
-            self._mat = azi.card_embedding(net)
-            status = [f"{path.split('/')[-1]}  "
+            if net is not None:
+                self._sd = net.state_dict()
+                self._sd_kind = "az"
+            self._mat = azi.card_embedding(self._sd)
+            status = [f"{path.split('/')[-1]} [{self._sd_kind}]  "
                       f"steps={azi.checkpoint_meta(path).get('steps', '?')}"]
-            # Exposure is weights-only and cheap, so it loads in every mode: it
-            # is what the embedding views filter on when there is no shard
-            # sample (and the stricter signal even when there is one).
+            if net is None:
+                status.append("no AZ checkpoint — PPO fallback: weight-space "
+                              "and embedding views only")
+            # Exposure is weights-only and cheap, so it loads whenever an AZ
+            # net did: it is what the embedding views filter on when there is
+            # no shard sample (and the stricter signal even when there is one).
+            # Under the PPO fallback its only baseline would be the checkpoint
+            # itself (a zero diff), so it is skipped.
             try:
+                if net is None:
+                    raise FileNotFoundError("PPO fallback session")
                 self._exp = azi.card_exposure(path)
                 self._exposure = azi.exposure_counts(self._exp)
                 trained = int(self._exp["moved"][azi.named_card_ids()].sum())
@@ -272,6 +338,7 @@ class InspectApp(App):
         for pane in self._panes:
             self.query_one(f"#{pane}-views", OptionList).highlighted = 0
         self._render("critic", "overview")
+        self._render("weights", self._view["weights"])
         if "probe" in self._panes:
             self._render("probe", "state")
         self._render("emb", "neighbors")
@@ -341,7 +408,35 @@ class InspectApp(App):
                 azi.card_id_sites(self._sample["obs"][self._row])):
             opts.add_option(Option(label, id=str(i)))
 
+    def _populate_weight_targets(self) -> None:
+        """The unit view's layer menu / the pathto view's bucket menu."""
+        if self._sd is None:
+            return
+        opts = self.query_one("#weights-targets", OptionList)
+        opts.clear_options()
+        key = self._view["weights"]
+        if key == "unit":
+            layers = [e for e, _ in azi._encoder_specs(self._sd)]
+            layers += [b for b in ("policy_body", "value_body")
+                       if f"{b}.0.weight" in self._sd]
+            for name in layers:
+                opts.add_option(Option(name, id=f"layer:{name}"))
+        elif key == "pathto":
+            for b in range(azi.archetypes.N_VALUE_BUCKETS):
+                opts.add_option(Option(azi.archetypes.bucket_name(b),
+                                       id=f"bucket:{b}"))
+
     def action_step_row(self, delta: int) -> None:
+        # ',' / '.' step the active tab's row-like selection: the recorded
+        # decision on Probes, the unit index on the Weights unit view.
+        if self.query_one("#tabs", TabbedContent).active == "tab-weights":
+            if self._view["weights"] != "unit" or self._sd is None:
+                return
+            _, prefix = azi.layer_column_names(self._sd, self._layer)
+            n = int(self._sd[prefix + ".weight"].shape[0])
+            self._unit = max(0, min(n - 1, self._unit + int(delta)))
+            self._render("weights", "unit")
+            return
         if "probe" not in self._panes or self._sample is None:
             return
         self._row = max(0, min(self._sample["obs"].shape[0] - 1,
@@ -362,6 +457,19 @@ class InspectApp(App):
             self._render("emb", oid)
         elif which == "critic-views":
             self._render("critic", oid)
+        elif which == "weights-views":
+            self._view["weights"] = oid
+            if oid in ("unit", "pathto"):
+                self._populate_weight_targets()
+            self._render("weights", oid)
+        elif which == "weights-targets":
+            kind, _, val = oid.partition(":")
+            if kind == "layer":
+                self._layer, self._unit = val, 0
+                self._render("weights", "unit")
+            elif kind == "bucket":
+                self._bucket = int(val)
+                self._render("weights", "pathto")
         elif which == "probe-views":
             if oid == "swap":
                 self._populate_sites()
@@ -389,20 +497,22 @@ class InspectApp(App):
         self.query_one("#card-filter", Input).focus()
 
     def action_rerun(self) -> None:
-        pane = self.query_one("#tabs", TabbedContent).active
-        target = "emb" if pane == "tab-emb" else "critic"
-        self._render(target, self._view[target])
+        target = self.query_one("#tabs", TabbedContent).active.split("-", 1)[1]
+        if target in self._panes:
+            self._render(target, self._view[target])
 
     # ----- rendering -----
 
     def _render(self, target: str, key: str) -> None:
-        if self._net is None or not key:
+        if self._sd is None or not key:
             return
         self._view[target] = key
         out = self.query_one(f"#{target}-out", Static)
         out.update(f"computing {key}…")
         self.query_one("#emb-nn", OptionList).display = (
             target == "emb" and key == "neighbors")
+        self.query_one("#weights-targets", OptionList).display = (
+            target == "weights" and key in ("unit", "pathto"))
         # query() (not query_one) so this is a no-op when the Probes pane was
         # never built — the weights-only default.
         for w in self.query("#probe-sites"):
@@ -417,6 +527,12 @@ class InspectApp(App):
 
     def _render_blocking(self, target: str, key: str) -> None:
         try:
+            if key in _NEEDS_NET and self._net is None:
+                self.post_message(Rendered(
+                    target, [f"'{key}' needs an AZ checkpoint — this session "
+                             "fell back to the PPO .zip. Run 'train.py az' "
+                             "(warm-starts from the PPO gen) first."]))
+                return
             if key in _NEEDS_SHARDS and self._sample is None:
                 self.post_message(Rendered(
                     target, [f"'{key}' needs recorded self-play — restart with "
@@ -472,7 +588,51 @@ class InspectApp(App):
             return azi.render_occurrences(emb, n, top_n=a.top,
                                           revealed=rev), None
         if key == "catemb":
-            return azi.render_category_embedding(self._net), None
+            # The state dict, not the net — so it also works in the PPO
+            # fallback (the accessor takes either).
+            return azi.render_category_embedding(self._sd), None
+        if key == "firstlayer":
+            return azi.render_first_layer(
+                azi.first_layer_attribution(self._sd), top_cols=a.top), None
+        if key == "bodylayer":
+            return azi.render_body_layer(
+                azi.body_layer_attribution(self._sd)), None
+        if key == "unit":
+            try:
+                prof = azi.unit_profile(self._sd, self._layer, self._unit,
+                                        top=a.top)
+            except ValueError as e:
+                return [str(e)], None
+            return (azi.render_unit(prof)
+                    + ["", "pick a layer under Targets; ',' / '.' step the "
+                           "unit"]), None
+        if key == "pathto":
+            try:
+                conn = azi.bucket_input_connectivity(self._sd, self._bucket,
+                                                     top=a.top)
+            except ValueError as e:
+                return [str(e)], None
+            return (azi.render_pathto(conn)
+                    + ["", "pick a value bucket under Targets"]), None
+        if key == "valuegeom":
+            return azi.render_value_geometry(
+                azi.value_head_geometry(self._sd), top_n=a.top), None
+        if key == "cardsel":
+            return azi.render_card_selectivity(
+                azi.card_selectivity(self._sd), top_units=a.top), None
+        if key == "spectra":
+            return azi.render_spectra(azi.weight_spectra(self._sd)), None
+        if key == "zoneemb":
+            try:
+                return azi.render_zone_embedding(
+                    azi.zone_embedding(self._sd)), None
+            except ValueError as e:
+                return [str(e)], None
+        if key == "popart":
+            try:
+                return azi.render_popart(azi.popart_table(self._sd)), None
+            except ValueError as e:
+                return [str(e)], None
         if key == "overview":
             return azi.render_overview(self._net, self._path, self._sample), None
         if key == "buckets":

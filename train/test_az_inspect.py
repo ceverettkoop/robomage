@@ -493,6 +493,39 @@ def test_weight_views(net, tmp):
               for a in attr),
           "each encoder's group energy shares sum to 1")
 
+    battr = azi.body_layer_attribution(sd)   # the remainder assert runs inside
+    check({a["body"] for a in battr} == {"policy_body", "value_body"}
+          and all(sum(g["width"] for g in a["groups"]) == a["in_dim"]
+                  and len(a["arch"]) == 2 * archetypes.N_ARCH
+                  for a in battr),
+          "bodylayer tiles both bodies' in-dim and names every arch column")
+
+    for layer in ("perm_encoder", "entity_encoder", "policy_body",
+                  "value_body"):
+        names, prefix = azi.layer_column_names(sd, layer)
+        check(len(names) == sd[prefix + ".weight"].shape[1],
+              f"layer_column_names labels every {layer} input column")
+    prof = azi.unit_profile(sd, "value_body", 0, top=5)
+    check(len(prof["pos"]) <= 5 and len(prof["neg"]) <= 5
+          and all(v > 0 for _, v in prof["pos"])
+          and all(v < 0 for _, v in prof["neg"]),
+          "unit_profile splits a unit's row by sign")
+    try:
+        azi.unit_profile(sd, "no_such_layer", 0)
+        check(False, "unit_profile rejects an unknown layer")
+    except ValueError:
+        check(True, "unit_profile rejects an unknown layer")
+
+    b = azi.resolve_bucket(archetypes.bucket_name(3))
+    check(b == 3 and azi.resolve_bucket("3") == 3,
+          "resolve_bucket accepts a name and an index")
+    conn = azi.bucket_input_connectivity(sd, b, top=7)
+    check(sum(g["width"] for g in conn["groups"])
+          == sd["value_body.0.weight"].shape[1]
+          and abs(sum(g["share"] for g in conn["groups"]) - 1.0) < 1e-6
+          and len(conn["top"]) == 7,
+          "pathto connectivity tiles the value body input and shares sum to 1")
+
     acts = azi.entity_unit_activations(sd)
     ids = torch.arange(1, azi.N_CARD_TYPES + 1)
     with torch.no_grad():
@@ -537,6 +570,9 @@ def test_weight_views(net, tmp):
 
     for name, lines in (
             ("firstlayer", azi.render_first_layer(attr)),
+            ("bodylayer", azi.render_body_layer(battr)),
+            ("unit", azi.render_unit(prof)),
+            ("pathto", azi.render_pathto(conn)),
             ("spectra", azi.render_spectra(spec)),
             ("popart", azi.render_popart(pp)),
             ("valuegeom", azi.render_value_geometry(geo)),
@@ -598,7 +634,8 @@ def test_tui_wiring():
           "an unset --shards falls back to the recorded self-play directory")
     # The default is weights-only: no shard load, no Probes pane, and the
     # sidebar offers only views this session can actually compute.
-    check(not app._with_shards and app._panes == ("emb", "critic"),
+    check(not app._with_shards
+          and app._panes == ("emb", "critic", "weights"),
           "the app defaults to weights-only (no Probes pane)")
     offered = [k for k, _ in tui.available_views(tui._EMB_VIEWS, False)
                ] + [k for k, _ in tui.available_views(tui._CRITIC_VIEWS, False)]
@@ -606,14 +643,20 @@ def test_tui_wiring():
           f"no shard-backed view is offered by default (got {offered})")
     check("exposure" in offered,
           "the weights-only exposure view replaces occurrences by default")
+    wkeys = {k for k, _ in tui._WEIGHT_VIEWS}
+    check([k for k, _ in tui.available_views(tui._WEIGHT_VIEWS, False)]
+          == [k for k, _ in tui._WEIGHT_VIEWS]
+          and not (wkeys & (tui._NEEDS_SHARDS | tui._NEEDS_NET)),
+          "every Weights view is offered without shards and without an AZ net")
     with_shards = tui.InspectApp(tui.build_parser().parse_args(["--with-shards"]))
-    check(with_shards._panes == ("emb", "critic", "probe"),
+    check(with_shards._panes == ("emb", "critic", "weights", "probe"),
           "--with-shards restores the Probes pane")
     implied = tui.InspectApp(tui.build_parser().parse_args(["--shards", "/tmp/x"]))
     check(implied._with_shards,
           "naming an explicit --shards directory implies --with-shards")
 
     views = ([k for k, _ in tui._EMB_VIEWS] + [k for k, _ in tui._CRITIC_VIEWS]
+             + [k for k, _ in tui._WEIGHT_VIEWS]
              + [k for k, _ in tui._PROBE_VIEWS])
     check(len(views) == len(set(views)), "view keys are unique across the panes")
     # Every sidebar key must be a branch in _compute, else selecting it renders
@@ -698,6 +741,58 @@ def test_tui_end_to_end(net, tmp):
                   "[weights-only] no shards were read, but exposure loaded")
 
 
+def test_tui_ppo_fallback(net, tmp):
+    """Drive the app with load_net forced to miss: the normalized weight
+    loader must serve the session (net=None), the Weights and embedding panes
+    must compute from the state dict, and the net-gated views must explain
+    themselves instead of crashing."""
+    import asyncio
+    import tui_az_inspect as tui
+    from textual.widgets import Static
+
+    ckpt = os.path.join(tmp, "fallback__azv1.pt")
+    net.save(ckpt, 1)
+    real_load_net = azi.load_net
+
+    def _miss(*a, **k):
+        raise FileNotFoundError("forced miss: no AZ checkpoint")
+
+    azi.load_net = _miss
+    try:
+        app = tui.InspectApp(tui.build_parser().parse_args(["--model", ckpt]))
+
+        async def run():
+            async with app.run_test(size=(120, 40)) as pilot:
+                for _ in range(400):
+                    await pilot.pause(0.2)
+                    if app._sd is not None:
+                        break
+                check(app._net is None and app._sd is not None,
+                      "[fallback] the weight loader served the session")
+                for _ in range(400):
+                    await pilot.pause(0.2)
+                    texts = {p: str(app.query_one(f"#{p}-out", Static).content)
+                             for p in app._panes}
+                    if not any(t.startswith("computing")
+                               for t in texts.values()):
+                        break
+                stuck = [p for p, t in texts.items()
+                         if t.startswith("computing")]
+                crashed = [p for p, t in texts.items() if "Traceback" in t]
+                check(not stuck and not crashed,
+                      f"[fallback] every pane settles "
+                      f"(stuck: {stuck}, crashed: {crashed})")
+                check("needs an AZ checkpoint" in texts["critic"],
+                      "[fallback] net-gated views explain instead of crashing")
+                check("attribution" in texts["weights"],
+                      "[fallback] the Weights pane computes from the state "
+                      "dict")
+
+        asyncio.run(run())
+    finally:
+        azi.load_net = real_load_net
+
+
 def main():
     print("az_inspect regression")
     rng = np.random.default_rng(0)
@@ -733,6 +828,8 @@ def main():
         test_tui_wiring()
         print("\n[tui end-to-end]")
         test_tui_end_to_end(net, tmp)
+        print("\n[tui ppo fallback]")
+        test_tui_ppo_fallback(net, tmp)
 
     print()
     if _failures:

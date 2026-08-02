@@ -38,14 +38,18 @@ Views (all also exposed as CLI subcommands, ``--help`` on each):
   divergence   raw-net priors vs the search posterior, by action category
   diff         two checkpoints: per-tensor, per-card and per-bucket movement
   firstlayer   which input columns each encoder's first layer actually reads
+  bodylayer    what the policy/value bodies read from the pooled features —
+               incl. the archetype one-hots (named) and decklist aggregates
+  unit         one hidden unit's signed input-variable recipe (exact, per-row)
+  pathto       weights-only input connectivity of one value bucket's column
   spectra      singular-value spectrum / effective rank of every weight matrix
   popart       PPO PopArt per-bucket value-normalizer statistics (PPO .zip only)
   valuegeom    value-head row geometry — which matchups share a value direction
   zoneemb      full cosine matrix of the small zone-ref embedding
   cardsel      entity-encoder units ranked by card selectivity
 
-The weight-space views (firstlayer, spectra, popart, valuegeom, zoneemb, cardsel,
-and diff) read EITHER checkpoint family: an AZ ``.pt``, or a PPO ``.zip`` whose
+The weight-space views (firstlayer, bodylayer, unit, pathto, spectra, popart,
+valuegeom, zoneemb, cardsel, and diff) read EITHER checkpoint family: an AZ ``.pt``, or a PPO ``.zip`` whose
 ``policy.pth`` state dict is renamed tensor-for-tensor into the AZNet key space
 (``features_extractor.`` → ``trunk.``, ``value_net.`` → ``value_head.``, …) —
 the two families share the CardGameExtractor trunk, so every trunk view means
@@ -245,13 +249,20 @@ def checkpoint_meta(path):
         return json.load(f)
 
 
+def _as_state_dict(net_or_sd):
+    """The table accessors below take either a loaded AZNet or an AZNet-keyed
+    state dict (load_weight_state's output — which is how a PPO .zip reaches
+    them), so the embedding views work on both checkpoint families."""
+    return net_or_sd if isinstance(net_or_sd, dict) else net_or_sd.state_dict()
+
+
 def card_embedding(net):
     """The TRAINABLE card-identity embedding as ``(N_CARD_TYPES, D)``, row ``i`` =
     vocab card ``i``. The stored table has ``N_CARD_TYPES + 1`` rows — row 0 is
     the padding row for empty slots — so this drops it and re-bases the index.
     This is only the residual half of the card vector; see card_matrix for the
     frozen property block and the full concatenation."""
-    w = net.trunk.card_emb.weight.detach().cpu().numpy()
+    w = _as_state_dict(net)["trunk.card_emb.weight"].detach().cpu().numpy()
     return np.array(w[1:], dtype=np.float64)
 
 
@@ -260,7 +271,7 @@ def card_property_block(net):
     with card_embedding (padding row dropped). Constant by construction — a
     registered buffer, not a parameter — so purity measured on it is the
     ceiling the printed facts alone provide."""
-    w = net.trunk.card_props.detach().cpu().numpy()
+    w = _as_state_dict(net)["trunk.card_props"].detach().cpu().numpy()
     return np.array(w[1:], dtype=np.float64)
 
 
@@ -283,8 +294,8 @@ def card_matrix(net, space="identity"):
 
 def category_embedding(net):
     """The action-category embedding as ``(ACTION_CATEGORY_MAX + 1, D)``."""
-    return np.array(net.trunk.action_cat_emb.weight.detach().cpu().numpy(),
-                    dtype=np.float64)
+    w = _as_state_dict(net)["trunk.action_cat_emb.weight"]
+    return np.array(w.detach().cpu().numpy(), dtype=np.float64)
 
 
 def _unit(mat):
@@ -1237,6 +1248,222 @@ def first_layer_attribution(sd, encoders=None):
     return out
 
 
+def _body_segments(sd):
+    """``(segments, arch_offset)`` for the pooled feature vector the policy and
+    value MLP bodies consume — ``segments`` is ``[(name, width), ...]`` in the
+    exact ``torch.cat`` order of ``CardGameExtractor.forward``'s ``base``, with
+    every width taken from env.py's offset chain or the checkpoint's own tensor
+    shapes (never a re-spelled literal). ``arch_offset`` is the start of the
+    archetype one-hot block within the vector."""
+    import env
+    from extractor import _HIST_RECENT_K
+    E = int(sd["trunk.perm_encoder.0.weight"].shape[0])
+    half = int(sd["trunk.stack_encoder.2.weight"].shape[0])
+    card_feat = (int(sd["trunk.card_emb.weight"].shape[1])
+                 + int(sd["trunk.card_props"].shape[1]))
+    cat_dim = int(sd["trunk.action_cat_emb.weight"].shape[1])
+    segments = [
+        ("global ctx",         env._GLOBAL_SIZE),
+        ("history raw",        env._MATCH_CTX_START - env._HIST_START),
+        ("history recent-K",   _HIST_RECENT_K * (cat_dim + card_feat + 2)),
+        ("match/lib/turn ctx", env._KNOWN_TOP_LIB_START - env._MATCH_CTX_START),
+        ("known-top-lib agg",  E),
+        ("revealed agg",       E),
+        ("pending decision",   card_feat + 1),
+        ("global extras",      env._EXTRAS_END - env._EXTRAS_START),
+        ("action extras raw",  env.BUCKET_IDX - env.STATE_SIZE),
+        ("arch one-hots",      env.ARCH_ONEHOT_END - env.ARCH_ONEHOT_START),
+        ("perm agg",           2 * E),
+        ("stack agg",          2 * half),
+        ("graveyard agg",      2 * E),
+        ("exile agg",          2 * E),
+        ("hand agg",           2 * E),
+        ("opp-hand agg",       2 * E),
+        ("self live-lib agg",  2 * E),
+        ("self main agg",      2 * E),
+        ("self side agg",      2 * E),
+        ("opp main agg",       2 * E),
+        ("opp side agg",       2 * E),
+    ]
+    arch_offset = 0
+    for n, w in segments:
+        if n == "arch one-hots":
+            break
+        arch_offset += w
+    return segments, arch_offset
+
+
+def body_layer_attribution(sd):
+    """How hard the policy and value bodies' FIRST layers read each segment of
+    the extractor's pooled feature vector — the downstream companion to
+    first_layer_attribution. This is where the matchup conditioning becomes
+    visible: the archetype one-hot columns (named per self/opp archetype) and
+    the five decklist aggregates are individual segments, so "does the model
+    read the matchup inputs, and how hard relative to the board?" is answered
+    directly from the weights. Same share/rms metrics as firstlayer."""
+    segments, arch_off = _body_segments(sd)
+    base = sum(w for _, w in segments)
+    pa_dim = (int(sd["trunk.action_encoder.2.weight"].shape[0])
+              if "trunk.action_encoder.2.weight" in sd else 0)
+    n_arch = archetypes.N_ARCH
+    arch_names = ([f"self:{archetypes.arch_name_at(i)}" for i in range(n_arch)]
+                  + [f"opp:{archetypes.arch_name_at(i)}" for i in range(n_arch)])
+    out = []
+    for body in ("policy_body", "value_body"):
+        key = f"{body}.0.weight"
+        if key not in sd:
+            continue
+        w = _t2np(sd[key])
+        pa = w.shape[1] - base
+        assert pa >= 0 and (pa_dim == 0 or pa % pa_dim == 0), (
+            f"{body}: base segments cover {base} of {w.shape[1]} inputs and "
+            f"the {pa}-column remainder is not a per-action block — the "
+            "extractor's base concat changed; update _body_segments")
+        rows = segments + [("per-action features", pa)]
+        col = np.linalg.norm(w, axis=0)
+        energy = col ** 2
+        total = float(energy.sum()) or 1.0
+        groups, off = [], 0
+        for name, width in rows:
+            seg = energy[off:off + width]
+            groups.append({"name": name, "width": int(width),
+                           "share": float(seg.sum() / total),
+                           "rms": float(np.sqrt(seg.mean()))})
+            off += width
+        arch = sorted(zip(arch_names,
+                          col[arch_off:arch_off + 2 * n_arch].tolist()),
+                      key=lambda t: -t[1])
+        out.append({"body": body, "in_dim": int(w.shape[1]),
+                    "out_dim": int(w.shape[0]), "groups": groups,
+                    "arch": [(n, float(v)) for n, v in arch]})
+    return out
+
+
+# The match/library/turn context scalars, in serialized order (machine_io.h:
+# match context ×4, library counts & post-board ×3, current turn).
+_META_CTX_NAMES = ("game_number", "self_match_wins", "opp_match_wins",
+                   "is_sideboard_phase", "self_library_ct", "opp_library_ct",
+                   "is_post_board", "turn")
+
+
+def layer_column_names(sd, layer):
+    """``(column labels, state-dict key prefix)`` for a first layer whose input
+    columns are nameable: a trunk encoder (perm_encoder, stack_encoder,
+    entity_encoder, decklist_encoder, revealed_encoder, action_encoder) or a
+    body (policy_body, value_body). Columns without an individual name (learned
+    embedding dims, pooled-aggregate dims) get ``group[j]`` labels so every
+    label still says which input the column came from."""
+    base = str(layer).split(".")[0]
+    enc = dict(_encoder_specs(sd))
+    if base in enc:
+        names = []
+        for gname, width, colnames in enc[base]:
+            names += (list(colnames) if colnames is not None
+                      else [f"{gname}[{j}]" for j in range(width)])
+        return names, f"trunk.{base}.0"
+    if base in ("policy_body", "value_body"):
+        segments, _ = _body_segments(sd)
+        n_arch = archetypes.N_ARCH
+        names = []
+        for gname, width in segments:
+            if gname == "arch one-hots":
+                names += [f"self:{archetypes.arch_name_at(i)}"
+                          for i in range(n_arch)]
+                names += [f"opp:{archetypes.arch_name_at(i)}"
+                          for i in range(n_arch)]
+            elif gname == "match/lib/turn ctx":
+                assert width == len(_META_CTX_NAMES), (width, _META_CTX_NAMES)
+                names += list(_META_CTX_NAMES)
+            else:
+                names += [f"{gname}[{j}]" for j in range(width)]
+        pa = int(sd[f"{base}.0.weight"].shape[1]) - len(names)
+        names += [f"per-action[{j}]" for j in range(pa)]
+        return names, f"{base}.0"
+    known = ", ".join(sorted(list(enc) + ["policy_body", "value_body"]))
+    raise ValueError(f"unknown layer {layer!r} (want one of: {known})")
+
+
+def unit_profile(sd, layer, unit, top=12):
+    """One hidden unit's signed input recipe: the strongest positive and
+    negative input-variable weights of row ``unit`` in ``layer``'s first
+    Linear. Exact — the row IS the unit's per-variable weighting; the sign
+    structure shows what the unit contrasts against what."""
+    names, prefix = layer_column_names(sd, layer)
+    w = _t2np(sd[prefix + ".weight"])
+    b = _t2np(sd[prefix + ".bias"])
+    if not 0 <= int(unit) < w.shape[0]:
+        raise ValueError(f"{prefix} has units 0..{w.shape[0] - 1}, not {unit}")
+    row = w[int(unit)]
+    assert len(names) == w.shape[1], (prefix, len(names), w.shape)
+    order = np.argsort(row)
+    pos = [(names[j], float(row[j])) for j in order[::-1] if row[j] > 0][:top]
+    neg = [(names[j], float(row[j])) for j in order if row[j] < 0][:top]
+    return {"layer": prefix, "unit": int(unit), "n_units": int(w.shape[0]),
+            "in_dim": int(w.shape[1]), "bias": float(b[int(unit)]),
+            "pos": pos, "neg": neg}
+
+
+def resolve_bucket(query):
+    """Value-bucket index for a query: an integer, or a bucket-name substring
+    (``doomsday_vs_burn``). Raises with candidates when ambiguous."""
+    q = str(query).strip().lower()
+    n = archetypes.N_VALUE_BUCKETS
+    if q.lstrip("-").isdigit():
+        i = int(q)
+        if not 0 <= i < n:
+            raise ValueError(f"bucket index {i} out of range 0..{n - 1}")
+        return i
+    names = [archetypes.bucket_name(i) for i in range(n)]
+    exact = [i for i, nm in enumerate(names) if nm.lower() == q]
+    if exact:
+        return exact[0]
+    subs = [i for i, nm in enumerate(names) if q in nm.lower()]
+    if len(subs) == 1:
+        return subs[0]
+    if not subs:
+        raise ValueError(f"no value bucket matches {query!r}")
+    cands = ", ".join(names[i] for i in subs[:8])
+    more = "" if len(subs) <= 8 else f" (+{len(subs) - 8} more)"
+    raise ValueError(f"{query!r} is ambiguous: {cands}{more}")
+
+
+def bucket_input_connectivity(sd, bucket, top=15):
+    """Weights-only relevance chain from ONE value bucket's head column back to
+    the input variables: ``|w_bucket| · |W_L| · … · |W_0|`` composed through the
+    value body, aggregated by input segment and named per column.
+
+    This measures potential connectivity — which input pathways exist and how
+    wide they are — not state-conditional influence (the ReLU/Tanh gates are
+    ignored, which is exactly what makes it computable from weights alone; the
+    exact per-state answer is gradient saliency and needs recorded states)."""
+    body_keys = sorted(
+        (k for k in sd if k.startswith("value_body.") and k.endswith(".weight")),
+        key=lambda k: int(k.split(".")[1]))
+    if not body_keys:
+        raise ValueError("this checkpoint has no value_body (stock-policy "
+                         "PPO?) — pathto needs the multi-head critic stack")
+    rel = np.abs(_t2np(sd["value_head.weight"])[int(bucket)])
+    for k in reversed(body_keys):
+        rel = rel @ np.abs(_t2np(sd[k]))
+    names, _ = layer_column_names(sd, "value_body")
+    assert rel.shape[0] == len(names), (rel.shape, len(names))
+    segments, _ = _body_segments(sd)
+    rows = segments + [("per-action features", rel.shape[0]
+                        - sum(w for _, w in segments))]
+    total = float(rel.sum()) or 1.0
+    groups, off = [], 0
+    for gname, width in rows:
+        seg = rel[off:off + width]
+        groups.append({"name": gname, "width": int(width),
+                       "share": float(seg.sum() / total),
+                       "mean": float(seg.mean())})
+        off += width
+    order = np.argsort(-rel)[:top]
+    return {"bucket": int(bucket), "name": archetypes.bucket_name(int(bucket)),
+            "groups": groups,
+            "top": [(names[j], float(rel[j])) for j in order]}
+
+
 def weight_spectra(sd):
     """Singular-value health of every 2-D weight tensor: top σ, effective rank
     (exp of the σ² spectrum's entropy), and the rank capturing 90% of the
@@ -1841,6 +2068,60 @@ def render_first_layer(attr, top_cols=10):
     return lines
 
 
+def render_body_layer(attr, top_arch=8):
+    lines = ["policy/value body first-layer attribution — what the heads read "
+             "from the pooled features",
+             "  the matchup conditioning (arch one-hots, decklist aggregates) "
+             "lives here",
+             "  share = fraction of input weight energy; rms = per-column "
+             "norm (width-independent)"]
+    for a in attr:
+        lines.append("")
+        lines.append(f"{a['body']}.0  ({a['in_dim']} → {a['out_dim']})")
+        for g in sorted(a["groups"], key=lambda g: -g["rms"]):
+            lines.append(f"  {g['name']:<20} w={g['width']:<5d} "
+                         f"{_bar(g['share'])} {g['share'] * 100:5.1f}%   "
+                         f"rms {g['rms']:.3f}")
+        lines.append("  arch columns: "
+                     + ", ".join(f"{n}({v:.2f})"
+                                 for n, v in a["arch"][:top_arch])
+                     + (f", … {len(a['arch']) - top_arch} more"
+                        if len(a["arch"]) > top_arch else ""))
+    return lines
+
+
+def render_unit(prof):
+    lines = [f"{prof['layer']}  unit {prof['unit']} of {prof['n_units']}   "
+             f"bias {prof['bias']:+.3f}",
+             "  the unit's signed input recipe — reads the + list, is "
+             "suppressed by the − list", ""]
+    lines.append("  strongest positive inputs:")
+    for n, v in prof["pos"]:
+        lines.append(f"    {v:+7.3f}  {n}")
+    lines.append("  strongest negative inputs:")
+    for n, v in prof["neg"]:
+        lines.append(f"    {v:+7.3f}  {n}")
+    return lines
+
+
+def render_pathto(conn):
+    lines = [f"input connectivity of value bucket {conn['bucket']} "
+             f"({conn['name']})",
+             "  weights-only |w|-chain through the value body: potential "
+             "pathway width per input,",
+             "  NOT state-conditional influence (activation gating ignored)",
+             ""]
+    for g in sorted(conn["groups"], key=lambda g: -g["mean"]):
+        lines.append(f"  {g['name']:<20} w={g['width']:<5d} "
+                     f"{_bar(g['share'])} {g['share'] * 100:5.1f}%   "
+                     f"mean {g['mean']:.3f}")
+    lines.append("")
+    lines.append("  widest individual input columns:")
+    for n, v in conn["top"]:
+        lines.append(f"    {v:8.3f}  {n}")
+    return lines
+
+
 def render_spectra(rows):
     lines = ["singular-value spectra — effective rank per weight matrix",
              "  eff ≪ full rank = the layer collapsed onto few directions",
@@ -1971,10 +2252,10 @@ def build_parser():
                     "self-play — no games played.")
     ap.add_argument("--model", default="gen",
                     help="AZ checkpoint spec: 'gen' (the generalist) or a "
-                         "path. The weight-space views (firstlayer, spectra, "
-                         "popart, valuegeom, zoneemb, cardsel, diff) also take "
-                         "a PPO .zip, and their 'gen' falls back to the PPO "
-                         "generalist when no AZ checkpoint exists")
+                         "path. The weight-space views (firstlayer, bodylayer, "
+                         "spectra, popart, valuegeom, zoneemb, cardsel, diff) "
+                         "also take a PPO .zip, and their 'gen' falls back to "
+                         "the PPO generalist when no AZ checkpoint exists")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("overview", help="checkpoint meta + critic + shard status")
@@ -2077,6 +2358,31 @@ def build_parser():
     p.add_argument("--top", type=int, default=10,
                    help="named columns to show per encoder")
 
+    p = sub.add_parser("bodylayer",
+                       help="policy/value body first-layer attribution "
+                            "(arch one-hots + decklist aggregates)")
+    p.add_argument("--top-arch", type=int, default=16,
+                   help="archetype columns to name (default: all 16)")
+
+    p = sub.add_parser("unit",
+                       help="one hidden unit's signed input-variable profile")
+    p.add_argument("layer",
+                   help="layer name: perm_encoder, stack_encoder, "
+                        "entity_encoder, decklist_encoder, revealed_encoder, "
+                        "action_encoder, policy_body, value_body")
+    p.add_argument("unit", type=int, help="unit (row) index in that layer")
+    p.add_argument("--top", type=int, default=12,
+                   help="inputs to show per sign")
+
+    p = sub.add_parser("pathto",
+                       help="weights-only input connectivity of one value "
+                            "bucket's head column")
+    p.add_argument("bucket",
+                   help="bucket index or name substring "
+                        "(e.g. doomsday_vs_burn)")
+    p.add_argument("--top", type=int, default=15,
+                   help="widest individual input columns to show")
+
     sub.add_parser("spectra",
                    help="singular-value spectrum / effective rank per "
                         "weight matrix")
@@ -2118,11 +2424,27 @@ def main(argv=None):
                                     top_n=args.top)))
         return 0
 
-    if cmd in ("firstlayer", "spectra", "popart", "valuegeom", "zoneemb",
-               "cardsel"):
+    if cmd in ("firstlayer", "bodylayer", "unit", "pathto", "spectra",
+               "popart", "valuegeom", "zoneemb", "cardsel"):
         sd, path, kind = load_weight_state(args.model)
         print(f"[{kind}] {path}")
-        if cmd == "firstlayer":
+        if cmd == "bodylayer":
+            print("\n".join(render_body_layer(body_layer_attribution(sd),
+                                              top_arch=args.top_arch)))
+        elif cmd == "unit":
+            try:
+                prof = unit_profile(sd, args.layer, args.unit, top=args.top)
+            except ValueError as e:
+                raise SystemExit(str(e))
+            print("\n".join(render_unit(prof)))
+        elif cmd == "pathto":
+            try:
+                conn = bucket_input_connectivity(sd, resolve_bucket(args.bucket),
+                                                 top=args.top)
+            except ValueError as e:
+                raise SystemExit(str(e))
+            print("\n".join(render_pathto(conn)))
+        elif cmd == "firstlayer":
             enc = [args.encoder] if args.encoder else None
             attr = first_layer_attribution(sd, enc)
             if not attr:
