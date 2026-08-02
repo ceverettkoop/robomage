@@ -63,12 +63,14 @@ from extractor import CardGameExtractor, _ActionScorer
 try:
     from env import OBS_SIZE, MAX_ACTIONS, make_observation_space
     from card_costs import N_CARD_TYPES
+    from card_props import N_CARD_PROPS
     from cli_spec import EMBED_DIM, NET_ARCH
     from _enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
     from archetypes import N_VALUE_BUCKETS, bucket_name
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, make_observation_space
     from train.card_costs import N_CARD_TYPES
+    from train.card_props import N_CARD_PROPS
     from train.cli_spec import EMBED_DIM, NET_ARCH
     from train._enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
     from train.archetypes import N_VALUE_BUCKETS, bucket_name
@@ -155,6 +157,11 @@ class ScriptTrunk(nn.Module):
             "ScriptTrunk requires a per_action_head=True CardGameExtractor"
         # Adopt the extractor's encoder submodules (same names -> state_dict 1:1).
         self.card_emb = fe.card_emb
+        # The frozen printed-property block must be register_buffer'd (a bare
+        # tensor attribute is neither in the state_dict nor TorchScript-visible);
+        # the registered name trunk.card_props then aligns 1:1 with the policy's
+        # features_extractor.card_props under from_ppo's prefix map.
+        self.register_buffer("card_props", fe.card_props)
         self.perm_encoder = fe.perm_encoder
         self.stack_encoder = fe.stack_encoder
         self.entity_encoder = fe.entity_encoder
@@ -246,7 +253,8 @@ class ScriptTrunk(nn.Module):
     def _embed_ids(self, id_floats: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         idx = torch.round(id_floats * self.N_CARD_TYPES).long()
         present = idx >= 0
-        emb = self.card_emb((idx + 1).clamp(0, self.N_CARD_TYPES))
+        safe = (idx + 1).clamp(0, self.N_CARD_TYPES)
+        emb = torch.cat([self.card_emb(safe), self.card_props[safe]], dim=-1)
         return emb, present
 
     def _mean_max(self, emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -508,6 +516,7 @@ class AZNet(nn.Module):
             "OBS_SIZE": OBS_SIZE,
             "MAX_ACTIONS": MAX_ACTIONS,
             "N_CARD_TYPES": N_CARD_TYPES,
+            "N_CARD_PROPS": int(self.trunk.card_props.shape[1]),
             "N_VALUE_BUCKETS": N_VALUE_BUCKETS,
             "steps": int(steps),
         }
@@ -619,6 +628,7 @@ def load_az(path: str, map_location="cpu") -> "AZNet":
             meta = json.load(f)
         for key, cur in (("OBS_SIZE", OBS_SIZE), ("MAX_ACTIONS", MAX_ACTIONS),
                          ("N_CARD_TYPES", N_CARD_TYPES),
+                         ("N_CARD_PROPS", N_CARD_PROPS),
                          ("N_VALUE_BUCKETS", N_VALUE_BUCKETS)):
             if key in meta and int(meta[key]) != int(cur):
                 raise RuntimeError(
@@ -669,6 +679,7 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
     net_sd = net.state_dict()
 
     transferred: list = []
+    trunk_skipped: list = []
     # 1) Trunk (features_extractor.* -> trunk.*). Shared by both flavors.
     for k, v in sd.items():
         if not k.startswith("features_extractor."):
@@ -677,6 +688,8 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
         if tk in net_sd and net_sd[tk].shape == v.shape:
             net_sd[tk] = v.clone()
             transferred.append(tk)
+        else:
+            trunk_skipped.append(tk)
 
     notes: list = []
     if flavor == "per_action":
@@ -727,6 +740,15 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
     fresh_top = sorted({k.split(".")[0] for k in fresh})
     if fresh:
         print(f"[from_ppo]   fresh modules: {', '.join(fresh_top)}")
+    if trunk_skipped:
+        # Shape-gated transfer is silent per-tensor; a checkpoint from before a
+        # card-representation change (e.g. the frozen card_props split) would
+        # otherwise warm-start almost nothing with only a count as evidence.
+        skipped_top = sorted({k.split(".")[1] for k in trunk_skipped})
+        print(f"[from_ppo] WARNING: {len(trunk_skipped)} trunk tensors did NOT "
+              f"transfer (shape mismatch or absent in this build — the source "
+              f"checkpoint likely predates a card-representation change); "
+              f"starting fresh: {', '.join(skipped_top)}")
     net.eval()
     return net
 

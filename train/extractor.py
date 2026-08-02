@@ -71,6 +71,7 @@ Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6329):
 
 from functools import partial
 
+import numpy as np
 import torch
 import torch.nn as nn
 import gymnasium as gym
@@ -79,8 +80,10 @@ from sb3_contrib.common.maskable.policies import MaskableActorCriticPolicy
 
 try:
     from card_costs import N_CARD_TYPES
+    from card_props import _CARD_PROP_MATRIX, N_CARD_PROPS
 except ImportError:
     from train.card_costs import N_CARD_TYPES
+    from train.card_props import _CARD_PROP_MATRIX, N_CARD_PROPS
 
 # ACTION_CATEGORY_MAX (mirrors src/classes/action.h via codegen) is needed to
 # decode the per-action category-norm floats back to integer category ids for the
@@ -382,12 +385,17 @@ class CardGameExtractor(BaseFeaturesExtractor):
         per_action_head: bool = False,
     ):
         half = embed_dim // 2
+        # The full per-card vector every _embed_ids lookup returns: the trainable
+        # identity embedding concatenated with the FROZEN printed-property block
+        # (card_props). Every consumer below sizes against this, not the identity
+        # width alone.
+        card_feat = card_embed_dim + N_CARD_PROPS
         _hist_size = _HIST_ENTRIES * _HIST_ENTRY_SIZE     # 512
         _meta_ctx_size = _KNOWN_TOP_LIB_START - _HIST_END  # 8 (match+lib+turn)
         # Embedded recent-history block: the K most recent action-history entries,
         # each flattened as [cat_emb | card_emb | is_self | turn]. Positional
         # (recency-ordered) on purpose.
-        _hist_recent_size = _HIST_RECENT_K * (_ACTION_CAT_EMBED + card_embed_dim + 2)
+        _hist_recent_size = _HIST_RECENT_K * (_ACTION_CAT_EMBED + card_feat + 2)
         base_features_dim = (
             _GLOBAL_SIZE                                 # 36
             + _hist_size                                 # 512 action history (raw)
@@ -395,7 +403,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + _meta_ctx_size                             # 8 match + lib + turn
             + embed_dim                                  # known-top library mean
             + embed_dim                                  # opponent revealed-cards multi-hot
-            + card_embed_dim + 1                         # pending-decision source embed + ctrl flag
+            + card_feat + 1                              # pending-decision source embed + ctrl flag
             + _EXTRAS_SIZE                               # 22 global extras (raw passthrough)
             # action extras (6 blocks incl. refs + ords + costs): everything after
             # the state EXCEPT the matchup tail, which is handled separately.
@@ -439,8 +447,20 @@ class CardGameExtractor(BaseFeaturesExtractor):
         self.last_bucket = None
 
         # Shared card-identity embedding. Slot id -1 (empty) maps to padding row 0;
-        # real ids 0..N_CARD_TYPES-1 map to rows 1..N_CARD_TYPES.
+        # real ids 0..N_CARD_TYPES-1 map to rows 1..N_CARD_TYPES. This is the
+        # TRAINABLE half of the card vector — it carries only the card-specific
+        # behavioral residual the frozen property block below cannot express.
         self.card_emb = nn.Embedding(N_CARD_TYPES + 1, card_embed_dim, padding_idx=0)
+
+        # FROZEN printed-property block (card_props codegen): a registered buffer,
+        # not a parameter — never in any optimizer group, never decayed, rides in
+        # the state_dict so checkpoints stay self-contained. Row 0 is the zero
+        # padding row, mirroring padding_idx above.
+        self.register_buffer(
+            "card_props",
+            torch.from_numpy(np.concatenate(
+                [np.zeros((1, N_CARD_PROPS), dtype=np.float32),
+                 _CARD_PROP_MATRIX])))
 
         # Encoder for permanent slots (35 non-id floats + chosen-name embedding +
         # card embedding). Status, counters, is_blocked/is_phased_out, and the
@@ -448,7 +468,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # floats (v1). The chosen-name id (Pithing Needle / Disruptor Flute named
         # card) is embedded via the shared card embedding, like the card id.
         self.perm_encoder = nn.Sequential(
-            nn.Linear(_PERM_STATUS_FLOATS + 3 * card_embed_dim, embed_dim),
+            nn.Linear(_PERM_STATUS_FLOATS + 3 * card_feat, embed_dim),
             nn.ReLU(),
             nn.Linear(embed_dim, embed_dim),
             nn.ReLU(),
@@ -462,7 +482,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         _stack_scalars = (2 + 1 + _STACK_QUALS + _STACK_MODE_SLOTS
                           + _STACK_TGT_SLOTS * (_STACK_TGT_FIELDS - 1))
         self.stack_encoder = nn.Sequential(
-            nn.Linear(_stack_scalars + 2 * card_embed_dim, embed_dim),
+            nn.Linear(_stack_scalars + 2 * card_feat, embed_dim),
             nn.ReLU(),
             nn.Linear(embed_dim, half),
             nn.ReLU(),
@@ -470,7 +490,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
 
         # Shared encoder for pure card-identity slots (graveyard, hand, top-library)
         self.entity_encoder = nn.Sequential(
-            nn.Linear(card_embed_dim, embed_dim),
+            nn.Linear(card_feat, embed_dim),
             nn.ReLU(),
             nn.Linear(embed_dim, embed_dim),
             nn.ReLU(),
@@ -481,7 +501,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # pair: the card id is embedded via the shared card embedding and the
         # normalized count appended, so one encoder covers all three blocks.
         self.decklist_encoder = nn.Sequential(
-            nn.Linear(card_embed_dim + 1, embed_dim),
+            nn.Linear(card_feat + 1, embed_dim),
             nn.ReLU(),
         )
 
@@ -506,7 +526,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         if per_action_head:
             self.zone_emb = nn.Embedding(N_REF_ZONES, _REF_ZONE_EMBED)
             self.action_encoder = nn.Sequential(
-                nn.Linear(_ACTION_CAT_EMBED + card_embed_dim + 1 + _REF_ZONE_EMBED
+                nn.Linear(_ACTION_CAT_EMBED + card_feat + 1 + _REF_ZONE_EMBED
                           + embed_dim + 1,  # +1 ctrl flag, +1 option_ordinal scalar
                           embed_dim),
                 nn.ReLU(),
@@ -518,11 +538,16 @@ class CardGameExtractor(BaseFeaturesExtractor):
         """Map normalized id floats → (card embeddings, present mask).
 
         id_floats : (..., ) normalized ids (idx/N_CARD_TYPES; -1/N = empty)
-        returns   : (emb (..., card_embed_dim), present (...,) bool)
+        returns   : (emb (..., card_embed_dim + N_CARD_PROPS), present (...,) bool)
+
+        The returned vector is [trainable identity | frozen printed props] —
+        both tables are looked up through the same clamped index so the padding
+        row (all-zero in both) and out-of-range behavior stay identical.
         """
         idx = torch.round(id_floats * N_CARD_TYPES).long()
         present = idx >= 0
-        emb = self.card_emb((idx + 1).clamp(0, N_CARD_TYPES))  # -1 → 0 (padding)
+        safe = (idx + 1).clamp(0, N_CARD_TYPES)  # -1 → 0 (padding)
+        emb = torch.cat([self.card_emb(safe), self.card_props[safe]], dim=-1)
         return emb, present
 
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
