@@ -124,21 +124,24 @@ def split_faces(text):
 
 
 def face_lines_for(name):
-    """The script lines for the vocab entry's own face: the front section of
-    the resolved script, or the back section when the name only resolves as a
-    combined-file suffix (a DFC back-face vocab entry). None if no script."""
+    """The script lines for the vocab entry's own face, plus DFC context.
+
+    Returns ``(lines, front_lines, is_back)``: the front section of the
+    resolved script, or the back section (with the front carried alongside)
+    when the name only resolves as a combined-file suffix — a DFC back-face
+    vocab entry. ``(None, None, False)`` if no script."""
     path = find_card_file(name)
     if path is not None:
         front, _back = split_faces(open(path).read())
-        return front
+        return front, front, False
     path = find_back_face_file(name)
     if path is not None:
-        _front, back = split_faces(open(path).read())
+        front, back = split_faces(open(path).read())
         if back is not None:
-            return back
+            return back, front, True
         print(f"  WARNING: '{name}' matched combined file '{path}' "
               f"but it has no {DFC_SEPARATOR} section")
-    return None
+    return None, None, False
 
 
 def field(lines, key):
@@ -241,13 +244,22 @@ def main():
                       f"(stem {stem!r}), zero property row")
                 continue
             lines, _ = split_faces(open(path).read())
+            parse_face(lines, matrix[idx])
         else:
-            lines = face_lines_for(name)
+            lines, front_lines, is_back = face_lines_for(name)
             if lines is None:
                 print(f"  WARNING: no card file found for '{name}', "
                       f"zero property row")
                 continue
-        parse_face(lines, matrix[idx])
+            parse_face(lines, matrix[idx])
+            # CR 712.8e: a NONMODAL (transform) back face has no mana cost of
+            # its own but its mana value is the FRONT face's. A modal back face
+            # (AlternateMode:Modal, CR 712.8d) keeps entirely its own
+            # characteristics, so its own (usually absent) cost stands.
+            if is_back and field(front_lines, "AlternateMode") == "DoubleFaced":
+                pips = parse_mana_cost(field(front_lines, "ManaCost") or
+                                       "no cost")
+                matrix[idx][COL["cmc"]] = (sum(pips[:6]) + pips[6]) / 10.0
 
     for label, ignored in (("keywords", _ignored_keywords),
                            ("ability categories", _ignored_cats),

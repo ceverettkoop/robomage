@@ -330,6 +330,21 @@ def test_card_props(net, tmp):
     delver = azi.resolve_card("Delver of Secrets")
     check(_CARD_PROP_MATRIX[delver][col["kw_flying"]] == 0.0,
           "DFC canary: Delver does not inherit its back face's Flying")
+    # CR 712.8e: a transform back face's mana value is the front face's; a
+    # MODAL back face (CR 712.8d) keeps its own — 0 for the MDFC land.
+    aberration = _CARD_PROP_MATRIX[azi.resolve_card("Insectile Aberration")]
+    check(aberration[col["cmc"]] == _CARD_PROP_MATRIX[delver][col["cmc"]]
+          and aberration[col["cmc"]] > 0,
+          "transform back face inherits the front face's mana value")
+    check(all(aberration[col[f"pip_{c}"]] == 0 for c in "wubrgc")
+          and aberration[col["pip_generic"]] == 0,
+          "...but has no mana COST pips of its own")
+    meadow = _CARD_PROP_MATRIX[azi.resolve_card("Witch-Blessed Meadow")]
+    check(meadow[col["cmc"]] == 0.0 and meadow[col["type_land"]] == 1.0,
+          "modal back face keeps its own mana value (0 for the MDFC land)")
+    tamiyo2 = _CARD_PROP_MATRIX[azi.resolve_card("Tamiyo, Seasoned Scholar")]
+    check(tamiyo2[col["color_g"]] == 1.0 and tamiyo2[col["color_u"]] == 1.0,
+          "back-face color indicator (Colors:green,blue) sets both colors")
 
     # One optimizer step that moves card_emb must not move card_props.
     train_net = make_net(seed=3)
