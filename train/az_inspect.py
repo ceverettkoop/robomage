@@ -643,8 +643,12 @@ def obs_blocks():
         ("action zones", e.ACT_ZONE_START, e.ACT_ZONE_START + e.MAX_ACTIONS),
         ("action refs", e.ACT_REFS_START, e.ACT_REFS_START + e.MAX_ACTIONS),
         ("action ordinals", e.ACT_ORDS_START, e.ACT_ORDS_START + e.MAX_ACTIONS),
-        ("hand cost feats", e.ACT_BLOCKS_END, e._BF_COST_START),
-        ("battlefield cost feats", e._BF_COST_START, e.MATCHUP_TAIL_START),
+        # Named for what they actually hold: the hand block is CAST costs
+        # (_CARD_COST_MATRIX), the battlefield block is ACTIVATED-ABILITY costs
+        # (_CARD_ABILITY_COST_MATRIX) — not the permanents' mana values, which
+        # the observation does not carry at all.
+        ("hand cast costs", e.ACT_BLOCKS_END, e._BF_COST_START),
+        ("battlefield ability costs", e._BF_COST_START, e.MATCHUP_TAIL_START),
         ("matchup tail", e.MATCHUP_TAIL_START, e.OBS_SIZE),
     ]
     blocks = [(n, int(s), int(t)) for n, s, t in blocks]
