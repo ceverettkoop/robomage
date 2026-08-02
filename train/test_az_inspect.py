@@ -27,6 +27,10 @@ Checks:
              engine's normalizer would decode back
   diff       an identical checkpoint pair moves nothing; a perturbed card row
              surfaces as that card
+  weights    the weight-space views: PPO→AZNet key normalization (aliases
+             dropped), first-layer column groups exactly tile every encoder's
+             in-dim, the numpy entity-encoder mirror matches the torch module,
+             spectra/value-geometry/zone/selectivity shapes, PopArt PPO-only
   render     every render_* returns non-empty display lines
   tui        the Textual app's parser comes from the shared spec, and its view
              tables dispatch to real implementations
@@ -456,6 +460,91 @@ def test_exposure(net, tmp):
           "the exposure view reports the trained-row count")
 
 
+def test_weight_views(net, tmp):
+    """Weight-space views: family key normalization, first-layer column
+    layout, spectra, PopArt, value geometry, zone embedding, selectivity."""
+    import torch
+    p = os.path.join(tmp, "wv__azv1.pt")
+    net.save(p, 1)
+    sd, _, kind = azi.load_weight_state(p)
+    check(kind == "az" and "trunk.card_emb.weight" in sd,
+          "an AZ .pt loads with kind 'az' and AZNet keys")
+
+    fake = {
+        "features_extractor.card_emb.weight": sd["trunk.card_emb.weight"],
+        "pi_features_extractor.card_emb.weight": sd["trunk.card_emb.weight"],
+        "vf_features_extractor.card_emb.weight": sd["trunk.card_emb.weight"],
+        "mlp_extractor.value_net.0.weight": torch.zeros(2, 2),
+        "value_net.weight": sd["value_head.weight"],
+        "popart_mu": torch.zeros(N_VALUE_BUCKETS),
+    }
+    norm, k2 = azi.normalize_state_dict(fake)
+    check(k2 == "ppo" and set(norm) == {"trunk.card_emb.weight",
+                                        "value_body.0.weight",
+                                        "value_head.weight", "popart_mu"},
+          "PPO keys normalize into AZNet space (pi_/vf_ aliases dropped)")
+
+    attr = azi.first_layer_attribution(sd)   # the width asserts run inside
+    encs = {a["encoder"] for a in attr}
+    check({"perm_encoder", "stack_encoder", "entity_encoder",
+           "decklist_encoder", "revealed_encoder", "action_encoder"} <= encs,
+          "firstlayer covers every trunk encoder incl. the per-action head")
+    check(all(abs(sum(g["share"] for g in a["groups"]) - 1.0) < 1e-6
+              for a in attr),
+          "each encoder's group energy shares sum to 1")
+
+    acts = azi.entity_unit_activations(sd)
+    ids = torch.arange(1, azi.N_CARD_TYPES + 1)
+    with torch.no_grad():
+        ref = net.trunk.entity_encoder(
+            torch.cat([net.trunk.card_emb.weight[ids],
+                       net.trunk.card_props[ids]], dim=1)).numpy()
+    check(acts.shape == ref.shape and np.allclose(acts, ref, atol=1e-5),
+          "entity_unit_activations matches the real torch entity_encoder")
+    sel = azi.card_selectivity(sd)
+    check(sel["n_units"] == acts.shape[1]
+          and sel["n_dead"] + len(sel["units"]) == sel["n_units"],
+          "card_selectivity partitions units into dead + ranked alive")
+
+    spec = azi.weight_spectra(sd)
+    check(bool(spec)
+          and not any(r["name"].endswith("card_props") for r in spec)
+          and all(r["eff"] <= min(r["shape"]) + 1e-6 for r in spec),
+          "spectra: frozen buffer skipped, effective rank bounded by shape")
+
+    geo = azi.value_head_geometry(sd)
+    check(len(geo["rows"]) == N_VALUE_BUCKETS
+          and len(geo["pairs"]) == geo["n_live"] * (geo["n_live"] - 1) // 2,
+          "value geometry spans every bucket with all live pairs")
+
+    zmat = azi.zone_embedding(sd)
+    check(zmat.shape[0] == azi.N_REF_ZONES,
+          "zone embedding has a row per ref zone")
+
+    try:
+        azi.popart_table(sd)
+        check(False, "popart_table rejects an AZ checkpoint")
+    except ValueError:
+        check(True, "popart_table rejects an AZ checkpoint")
+    pp = azi.popart_table({
+        "popart_mu": torch.tensor([0.0, 0.5]),
+        "popart_sigma": torch.tensor([1.0, 2.0]),
+        "popart_count": torch.tensor([0.0, 12.0]),
+    })
+    check(len(pp["rows"]) == 2 and pp["n_trained"] == 1
+          and pp["rows"][1]["trained"],
+          "popart_table reads mu/sigma/count and flags trained buckets")
+
+    for name, lines in (
+            ("firstlayer", azi.render_first_layer(attr)),
+            ("spectra", azi.render_spectra(spec)),
+            ("popart", azi.render_popart(pp)),
+            ("valuegeom", azi.render_value_geometry(geo)),
+            ("zoneemb", azi.render_zone_embedding(zmat)),
+            ("cardsel", azi.render_card_selectivity(sel))):
+        check(bool(lines), f"render {name} returns display lines")
+
+
 def test_renders(net, path, sample, mat):
     counts, _ = azi.card_occurrences(sample["obs"], limit=6)
     bolt = azi.resolve_card(_PLANTED)
@@ -635,6 +724,8 @@ def main():
         test_diff(net, tmp)
         print("\n[exposure]")
         test_exposure(net, tmp)
+        print("\n[weight views]")
+        test_weight_views(net, tmp)
         print("\n[renders]")
         ckpt = os.path.join(tmp, "same_a__azv1.pt")
         test_renders(net, ckpt, sample, mat)

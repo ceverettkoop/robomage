@@ -37,6 +37,20 @@ Views (all also exposed as CLI subcommands, ``--help`` on each):
   calib        per-bucket value calibration against the shards' outcomes
   divergence   raw-net priors vs the search posterior, by action category
   diff         two checkpoints: per-tensor, per-card and per-bucket movement
+  firstlayer   which input columns each encoder's first layer actually reads
+  spectra      singular-value spectrum / effective rank of every weight matrix
+  popart       PPO PopArt per-bucket value-normalizer statistics (PPO .zip only)
+  valuegeom    value-head row geometry — which matchups share a value direction
+  zoneemb      full cosine matrix of the small zone-ref embedding
+  cardsel      entity-encoder units ranked by card selectivity
+
+The weight-space views (firstlayer, spectra, popart, valuegeom, zoneemb, cardsel,
+and diff) read EITHER checkpoint family: an AZ ``.pt``, or a PPO ``.zip`` whose
+``policy.pth`` state dict is renamed tensor-for-tensor into the AZNet key space
+(``features_extractor.`` → ``trunk.``, ``value_net.`` → ``value_head.``, …) —
+the two families share the CardGameExtractor trunk, so every trunk view means
+the same thing on both. Their ``--model gen`` falls back to the PPO generalist
+(``checkpoints/gen__final.zip``) when no AZ checkpoint exists yet.
 
 Every view returns ``list[str]`` display lines from a ``render_*`` function on top
 of a data-only ``compute``-style function, so the TUI (``tui_az_inspect.py``)
@@ -52,9 +66,11 @@ Run from the repo root:
 import argparse
 import functools
 import glob
+import io
 import json
 import os
 import sys
+import zipfile
 
 import numpy as np
 
@@ -63,7 +79,10 @@ import decode
 from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as VOCAB_NAMES,
                         _CARD_COST_MATRIX as CARD_COST_MATRIX,
                         _LAND_VOCAB_IDS as LAND_VOCAB_IDS)
-from _enums import _CAT_NAMES
+from card_props import N_CARD_PROPS, _PROP_NAMES
+from _enums import (_CAT_NAMES, _OBS_KEYWORDS, _REF_NAMES, N_OBS_KEYWORDS,
+                    N_REF_ZONES, STACK_QUAL_FIELDS, MAX_STACK_MODES,
+                    MAX_STACK_TGTS)
 
 # Paths. Same layout constants az_net/az_train pin (duplicated deliberately: this
 # module must stay importable without dragging in the trainer's torch/sb3 chain).
@@ -971,10 +990,13 @@ def exposure_counts_or_none(path):
 
 def checkpoint_diff(path_a, path_b, top_n=15):
     """Per-tensor, per-card and per-bucket movement between two checkpoints —
-    "what did the last training rotation actually change"."""
-    import torch
-    sa = torch.load(path_a, map_location="cpu")
-    sb = torch.load(path_b, map_location="cpu")
+    "what did the last training rotation actually change".
+
+    Either side may be an AZ ``.pt`` or a PPO ``.zip`` (keys normalized into the
+    AZNet space), so it also answers "what did MCTS training change relative to
+    the PPO warm-start"."""
+    sa, _ = normalize_state_dict(_load_raw_state(path_a))
+    sb, _ = normalize_state_dict(_load_raw_state(path_b))
     shared = [k for k in sa if k in sb and sa[k].shape == sb[k].shape]
     only_a = sorted(k for k in sa if k not in sb)
     only_b = sorted(k for k in sb if k not in sa)
@@ -982,10 +1004,13 @@ def checkpoint_diff(path_a, path_b, top_n=15):
 
     tensors = []
     for k in shared:
-        d = (sb[k] - sa[k]).float()
-        base = sa[k].float().norm().item()
+        va, vb = sa[k].float().flatten(), sb[k].float().flatten()
+        d = vb - va
+        base = float(va.norm())
+        den = float(va.norm() * vb.norm())
         tensors.append({"name": k, "delta": float(d.norm()),
                         "base": base,
+                        "cos": float(va @ vb) / den if den > 0 else float("nan"),
                         "rel": float(d.norm() / base) if base > 0 else float("nan")})
     tensors.sort(key=lambda t: -t["rel"] if np.isfinite(t["rel"]) else 0.0)
 
@@ -1008,6 +1033,327 @@ def checkpoint_diff(path_a, path_b, top_n=15):
     return {"a": path_a, "b": path_b, "tensors": tensors, "cards": cards,
             "buckets": buckets, "only_a": only_a, "only_b": only_b,
             "shape_diff": shape_diff}
+
+
+# ----------------------------------------------------------------------
+# Weight-space views — PPO .zip or AZ .pt, one normalized key space
+# ----------------------------------------------------------------------
+
+# PPO policy keys → the AZNet naming the rest of this module speaks. The
+# pi_/vf_ feature-extractor aliases in an SB3 state dict are the SAME shared
+# extractor serialized again, so they are dropped rather than renamed.
+_PPO_DROP = ("pi_features_extractor.", "vf_features_extractor.")
+_PPO_RENAME = (
+    ("features_extractor.", "trunk."),
+    ("mlp_extractor.policy_net.", "policy_body."),
+    ("mlp_extractor.value_net.", "value_body."),
+    ("value_net.", "value_head."),
+)
+
+
+def normalize_state_dict(sd):
+    """``(state dict in AZNet key space, family kind 'ppo' | 'az')``.
+
+    A PPO PerActionMaskablePolicy state dict is renamed tensor-for-tensor; the
+    PopArt buffers and the action heads keep their names. An AZ dict passes
+    through unchanged — the two families share the CardGameExtractor trunk, so
+    after this every weight-space view means the same thing on both."""
+    if not any(k.startswith("features_extractor.") for k in sd):
+        return dict(sd), "az"
+    out = {}
+    for k, v in sd.items():
+        if k.startswith(_PPO_DROP):
+            continue
+        for src, dst in _PPO_RENAME:
+            if k.startswith(src):
+                k = dst + k[len(src):]
+                break
+        out[k] = v
+    return out, "ppo"
+
+
+def _load_raw_state(path):
+    """The raw state dict at ``path`` — ``policy.pth`` out of a PPO ``.zip``
+    (no sb3 import, just the tensors), or the flat AZ ``.pt`` dict."""
+    import torch
+    if str(path).endswith(".zip"):
+        with zipfile.ZipFile(path) as z:
+            return torch.load(io.BytesIO(z.read("policy.pth")),
+                              map_location="cpu", weights_only=True)
+    return torch.load(path, map_location="cpu")
+
+
+def resolve_weights_spec(spec="gen", checkpoint_dir=AZ_CKPT_DIR):
+    """Checkpoint path for a weight-space view: an explicit ``.zip``/``.pt``
+    path passes through; otherwise the AZ resolution is tried first and — since
+    the trunk is shared and the AZ net is always warm-started from the PPO gen —
+    the spec falls back to the PPO resolution (``gen`` → ``gen__final.zip``)
+    when no AZ checkpoint exists yet."""
+    s = str(spec)
+    if s.endswith((".zip", ".pt")):
+        return s if os.path.isfile(s) else None
+    path = resolve_spec(s, checkpoint_dir)
+    if path is not None:
+        return path
+    from opponents import resolve_checkpoint
+    ppo = resolve_checkpoint(s)
+    return ppo if ppo and os.path.isfile(ppo) else None
+
+
+def load_weight_state(spec="gen", checkpoint_dir=AZ_CKPT_DIR):
+    """Resolve, load, and normalize a checkpoint of either family.
+    Returns ``(state_dict, path, kind)``."""
+    path = resolve_weights_spec(spec, checkpoint_dir)
+    if path is None:
+        raise FileNotFoundError(
+            f"no checkpoint for {spec!r} — want an AZ .pt, a PPO .zip, or "
+            "'gen' with either checkpoints/az/gen__az*.pt or "
+            "checkpoints/gen__final.zip present")
+    sd, kind = normalize_state_dict(_load_raw_state(path))
+    return sd, path, kind
+
+
+def _t2np(t):
+    """Tensor → float64 numpy (works on detached checkpoint tensors without
+    importing torch at the call site)."""
+    return np.asarray(t.detach().cpu(), dtype=np.float64)
+
+
+# The per-permanent scalar input columns, in serialized order (mirrors the
+# perm-slot field offsets in env.py / machine_io.h), then the keyword multi-hot.
+_PERM_SCALAR_NAMES = [
+    "power", "toughness", "tapped", "attacking", "blocking", "sickness",
+    "damage", "ctrl_is_self", "is_creature", "is_land", "loyalty", "p1p1_net",
+    "other_counters", "ref attached_to", "ref attached_by", "ref attack_tgt",
+    "ref blocking_tgt", "is_blocked", "is_phased_out",
+] + ["kw " + k for k in _OBS_KEYWORDS]
+assert len(_PERM_SCALAR_NAMES) == 19 + N_OBS_KEYWORDS
+
+# Cast-qualifier flags in STACK_QUAL_FIELDS order (machine_io.h).
+_STACK_QUAL_NAMES = ["is_copy", "kicked", "flashback", "evoke", "escape",
+                     "offspring", "impending"]
+assert len(_STACK_QUAL_NAMES) == STACK_QUAL_FIELDS
+
+
+def _card_feat_cols(prefix, card_dim):
+    """Column groups for one embedded card-identity input: the trainable
+    identity half (dims unnamed) and the frozen printed-property half, whose
+    columns carry the card_props codegen names."""
+    return [(f"{prefix} identity", card_dim, None),
+            (f"{prefix} props", N_CARD_PROPS,
+             [f"{prefix} {p}" for p in _PROP_NAMES])]
+
+
+def _encoder_specs(sd):
+    """``[(encoder name, [(group name, width, column names | None), ...]), ...]``
+    for every first-layer Linear in the trunk, mirroring the exact ``torch.cat``
+    order in ``CardGameExtractor.forward``. first_layer_attribution asserts each
+    spec's widths sum to the layer's in-dim, so an extractor input reorder fails
+    loudly here instead of silently mislabeling columns."""
+    card_dim = int(sd["trunk.card_emb.weight"].shape[1])
+    specs = []
+
+    perm = [("status/refs/keywords", len(_PERM_SCALAR_NAMES),
+             _PERM_SCALAR_NAMES)]
+    perm += _card_feat_cols("chosen-name", card_dim)
+    perm += _card_feat_cols("returnable", card_dim)
+    perm += _card_feat_cols("card", card_dim)
+    specs.append(("perm_encoder", perm))
+
+    stack_scalars = (["ctrl_is_self", "is_spell", "x_or_amount"]
+                     + _STACK_QUAL_NAMES
+                     + [f"mode_{i}" for i in range(MAX_STACK_MODES)]
+                     + [f"tgt{t} {f}" for t in range(MAX_STACK_TGTS)
+                        for f in ("present", "is_player", "ctrl", "slot_ref")])
+    stack = [("scalars", len(stack_scalars), stack_scalars)]
+    stack += _card_feat_cols("object", card_dim)
+    stack += _card_feat_cols("tgts-mean", card_dim)
+    specs.append(("stack_encoder", stack))
+
+    specs.append(("entity_encoder", _card_feat_cols("card", card_dim)))
+    specs.append(("decklist_encoder",
+                  _card_feat_cols("card", card_dim)
+                  + [("copies count", 1, ["count"])]))
+    # The revealed multi-hot's columns ARE vocab cards: its per-column weight
+    # norm names which opponent reveals the net reacts to.
+    specs.append(("revealed_encoder",
+                  [("revealed multi-hot", N_CARD_TYPES,
+                    [card_name(i) for i in range(N_CARD_TYPES)])]))
+
+    if "trunk.action_encoder.0.weight" in sd:
+        in_dim = int(sd["trunk.action_encoder.0.weight"].shape[1])
+        cat_dim = int(sd["trunk.action_cat_emb.weight"].shape[1])
+        zone_dim = int(sd["trunk.zone_emb.weight"].shape[1])
+        card_feat = card_dim + N_CARD_PROPS
+        ref_dim = in_dim - (cat_dim + card_feat + 1 + zone_dim + 1)
+        act = [("category emb", cat_dim, None)]
+        act += _card_feat_cols("tgt-card", card_dim)
+        act += [("ctrl flag", 1, ["ctrl_is_self"]),
+                ("zone emb", zone_dim, None),
+                ("referenced-entity enc", ref_dim, None),
+                ("option ordinal", 1, ["option_ordinal"])]
+        specs.append(("action_encoder", act))
+    return specs
+
+
+def first_layer_attribution(sd, encoders=None):
+    """How hard each encoder's FIRST Linear reads each of its input columns.
+
+    The first layer is the only place the input columns are still separable, and
+    every column has a NAME (perm status flags, the 96 card_props codegen
+    columns, the revealed multi-hot's vocab cards, …) — so its per-column weight
+    norms literally answer "does the net read printed flying, or the learned
+    identity residual, or the tapped bit?". Per group: ``share`` = fraction of
+    the layer's input weight energy (Σ column-norm²), ``rms`` = RMS per-column
+    norm, comparable across groups of different width."""
+    out = []
+    for enc, spec in _encoder_specs(sd):
+        key = f"trunk.{enc}.0.weight"
+        if key not in sd or (encoders is not None and enc not in encoders):
+            continue
+        w = _t2np(sd[key])
+        widths = sum(width for _, width, _ in spec)
+        assert widths == w.shape[1], (
+            f"{enc}: column spec covers {widths} of {w.shape[1]} inputs — the "
+            "extractor's forward() input order changed; update _encoder_specs")
+        col = np.linalg.norm(w, axis=0)
+        energy = col ** 2
+        total = float(energy.sum()) or 1.0
+        groups, named = [], []
+        off = 0
+        for name, width, colnames in spec:
+            seg = energy[off:off + width]
+            groups.append({"name": name, "width": int(width),
+                           "share": float(seg.sum() / total),
+                           "rms": float(np.sqrt(seg.mean()))})
+            if colnames is not None:
+                named += [(colnames[j], float(col[off + j]))
+                          for j in range(width)]
+            off += width
+        named.sort(key=lambda t: -t[1])
+        out.append({"encoder": enc, "in_dim": int(w.shape[1]),
+                    "out_dim": int(w.shape[0]), "groups": groups,
+                    "named": named})
+    return out
+
+
+def weight_spectra(sd):
+    """Singular-value health of every 2-D weight tensor: top σ, effective rank
+    (exp of the σ² spectrum's entropy), and the rank capturing 90% of the
+    energy. Rank collapse shows up as eff ≪ full; compared across snapshots it
+    shows which layers are still learning. The frozen card_props buffer is
+    skipped (constant by construction)."""
+    rows = []
+    for k, t in sd.items():
+        if getattr(t, "ndim", 0) != 2 or k.endswith("card_props"):
+            continue
+        s = np.linalg.svd(_t2np(t), compute_uv=False)
+        e = s ** 2
+        total = float(e.sum())
+        if total <= 0:
+            rows.append({"name": k, "shape": tuple(t.shape), "top": 0.0,
+                         "eff": 0.0, "r90": 0, "rank": int(len(s)), "sv": s})
+            continue
+        p = e / total
+        ent = float(-(p * np.where(p > 0, np.log(np.where(p > 0, p, 1.0)),
+                                   0.0)).sum())
+        rows.append({"name": k, "shape": tuple(t.shape), "top": float(s[0]),
+                     "eff": float(np.exp(ent)),
+                     "r90": int(np.searchsorted(np.cumsum(p), 0.90) + 1),
+                     "rank": int(len(s)), "sv": s})
+    return rows
+
+
+def popart_table(sd):
+    """The PPO policy's PopArt buffers, per value bucket: the running return
+    mean/std the head's normalized predictions are denormalized with, and the
+    sample count that fitted them. Direct per-matchup training statistics no
+    behavioral eval can see — a bucket with count 0 was never trained on.
+    PPO-only: AZ checkpoints have no PopArt counterpart."""
+    if "popart_mu" not in sd:
+        raise ValueError("no PopArt buffers in this checkpoint — the popart "
+                         "view reads a PPO .zip (AZ has no PopArt)")
+    mu = _t2np(sd["popart_mu"])
+    sigma = _t2np(sd["popart_sigma"])
+    counts = _t2np(sd["popart_count"]) if "popart_count" in sd else None
+    rows = []
+    for i in range(len(mu)):
+        n = float(counts[i]) if counts is not None else None
+        trained = (n > 0) if n is not None else (mu[i] != 0.0
+                                                 or sigma[i] != 1.0)
+        rows.append({"bucket": i, "name": archetypes.bucket_name(i),
+                     "mu": float(mu[i]), "sigma": float(sigma[i]),
+                     "count": n, "trained": bool(trained)})
+    return {"rows": rows, "n_trained": sum(r["trained"] for r in rows)}
+
+
+def value_head_geometry(sd, tol=1e-8):
+    """Pairwise cosine between the multi-head critic's bucket rows — which
+    matchups the net values along the SAME latent direction. The buckets view
+    maps which columns are alive; this measures how the alive ones relate: a
+    near-1 pair is one value function reused for two matchups, a negative pair
+    is two matchups the critic reads through opposed features."""
+    w = _t2np(sd["value_head.weight"])
+    b = _t2np(sd["value_head.bias"])
+    norms = np.linalg.norm(w, axis=1)
+    live = np.where(norms > tol)[0]
+    sims = _unit(w) @ _unit(w).T
+    pairs = [(int(live[x]), int(live[y]), float(sims[live[x], live[y]]))
+             for x in range(len(live)) for y in range(x + 1, len(live))]
+    pairs.sort(key=lambda t: -t[2])
+    rows = [{"bucket": i, "name": archetypes.bucket_name(i),
+             "norm": float(norms[i]), "bias": float(b[i]),
+             "dead": bool(norms[i] <= tol)} for i in range(w.shape[0])]
+    return {"rows": rows, "pairs": pairs, "n_live": int(len(live))}
+
+
+def zone_embedding(sd):
+    """The per-action zone-ref embedding ``(N_REF_ZONES, D)`` (per-action-head
+    trunks only)."""
+    key = "trunk.zone_emb.weight"
+    if key not in sd:
+        raise ValueError("this trunk has no zone embedding — the checkpoint "
+                         "was built without the per-action head")
+    return _t2np(sd[key])
+
+
+def entity_unit_activations(sd):
+    """Every vocab card pushed through the entity encoder alone: the
+    ``(N_CARD_TYPES, embed_dim)`` unit-activation matrix. A pure numpy mirror
+    of ``trunk.entity_encoder`` on ``[card_emb | card_props]`` rows (row i =
+    vocab card i; the padding row is dropped) — no game state involved, since
+    that encoder consumes card identity and nothing else."""
+    x = np.concatenate([_t2np(sd["trunk.card_emb.weight"])[1:],
+                        _t2np(sd["trunk.card_props"])[1:]], axis=1)
+    h = np.maximum(x @ _t2np(sd["trunk.entity_encoder.0.weight"]).T
+                   + _t2np(sd["trunk.entity_encoder.0.bias"]), 0.0)
+    return np.maximum(h @ _t2np(sd["trunk.entity_encoder.2.weight"]).T
+                      + _t2np(sd["trunk.entity_encoder.2.bias"]), 0.0)
+
+
+def card_selectivity(sd, top_cards=6):
+    """Entity-encoder units ranked by how card-SELECTIVE they are (peak
+    activation over mean, across the named vocab), with each unit's
+    top-activating cards — "this unit fires for counterspells". Dead units
+    (never active for any card) are counted separately; they answer the
+    activation-level question the static exposure view cannot."""
+    acts = entity_unit_activations(sd)
+    ids = named_card_ids()
+    a = acts[ids]
+    mx, mean, active = a.max(axis=0), a.mean(axis=0), (a > 0).mean(axis=0)
+    dead = mx <= 0
+    sel = np.where(dead, 0.0, mx / np.where(mean > 0, mean, 1.0))
+    units = []
+    for u in np.argsort(-sel):
+        if dead[u]:
+            continue
+        top = np.argsort(-a[:, u])[:top_cards]
+        units.append({"unit": int(u), "max": float(mx[u]),
+                      "mean": float(mean[u]), "active_frac": float(active[u]),
+                      "sel": float(sel[u]),
+                      "top": [(int(ids[j]), float(a[j, u])) for j in top]})
+    return {"n_units": int(acts.shape[1]), "n_dead": int(dead.sum()),
+            "units": units}
 
 
 # ----------------------------------------------------------------------
@@ -1457,9 +1803,12 @@ def render_diff(d, top_n=15):
                      f"{len(d['only_b'])} only in B, "
                      f"{len(d['shape_diff'])} shape mismatches")
         lines.append("")
-    lines.append(f"  {'tensor':<44} {'rel Δ':>8} {'|Δ|':>10}")
+    lines.append(f"  {'tensor':<44} {'rel Δ':>8} {'|Δ|':>10} {'cos':>7}")
     for t in d["tensors"][:top_n]:
-        lines.append(f"  {t['name'][:44]:<44} {t['rel']:8.4f} {t['delta']:10.4f}")
+        cos = f"{t['cos']:7.4f}" if np.isfinite(t.get("cos", float("nan"))) \
+            else "      -"
+        lines.append(f"  {t['name'][:44]:<44} {t['rel']:8.4f} "
+                     f"{t['delta']:10.4f} {cos}")
     if d["cards"]:
         lines.append("")
         lines.append("cards whose embedding moved most:")
@@ -1470,6 +1819,108 @@ def render_diff(d, top_n=15):
         lines.append("value-head columns that moved most:")
         for _, name, dist in d["buckets"]:
             lines.append(f"  {dist:8.4f}  {name}")
+    return lines
+
+
+def render_first_layer(attr, top_cols=10):
+    lines = ["first-layer input attribution — what each encoder actually reads",
+             "  share = fraction of the layer's input weight energy on the "
+             "group",
+             "  rms   = RMS per-column weight norm (width-independent)"]
+    for a in attr:
+        lines.append("")
+        lines.append(f"{a['encoder']}  ({a['in_dim']} → {a['out_dim']})")
+        for g in sorted(a["groups"], key=lambda g: -g["share"]):
+            lines.append(f"  {g['name']:<24} w={g['width']:<5d} "
+                         f"{_bar(g['share'])} {g['share'] * 100:5.1f}%   "
+                         f"rms {g['rms']:.3f}")
+        if a["named"]:
+            lines.append("  top named columns: "
+                         + ", ".join(f"{n}({v:.2f})"
+                                     for n, v in a["named"][:top_cols]))
+    return lines
+
+
+def render_spectra(rows):
+    lines = ["singular-value spectra — effective rank per weight matrix",
+             "  eff ≪ full rank = the layer collapsed onto few directions",
+             "",
+             f"  {'tensor':<40} {'shape':>12} {'top σ':>8} {'eff':>7} "
+             f"{'r90':>5} {'full':>5}"]
+    for r in rows:
+        shape = "x".join(str(s) for s in r["shape"])
+        lines.append(f"  {r['name'][:40]:<40} {shape:>12} {r['top']:8.2f} "
+                     f"{r['eff']:7.1f} {r['r90']:5d} {r['rank']:5d}  "
+                     f"{_spark(r['sv'][:24])}")
+    return lines
+
+
+def render_popart(pt):
+    rows = pt["rows"]
+    lines = ["PopArt per-bucket value normalizer (PPO) — the running return "
+             "mean/std",
+             "  the value head predicts NORMALIZED returns; count = samples "
+             "that fitted the bucket",
+             f"  {pt['n_trained']}/{len(rows)} buckets ever trained", "",
+             f"  {'bucket':<34} {'mu':>8} {'sigma':>8} {'count':>10}"]
+    have_counts = bool(rows) and rows[0]["count"] is not None
+    key = (lambda r: -r["count"]) if have_counts else (lambda r: r["bucket"])
+    for r in sorted(rows, key=key):
+        if not r["trained"]:
+            continue
+        cnt = f"{r['count']:10.0f}" if r["count"] is not None else "         ?"
+        lines.append(f"  {r['name'][:34]:<34} {r['mu']:+8.3f} "
+                     f"{r['sigma']:8.3f} {cnt}")
+    untrained = [r for r in rows if not r["trained"]]
+    if untrained:
+        lines.append(f"  … {len(untrained)} untrained buckets omitted "
+                     "(mu=0, sigma=1, count=0)")
+    return lines
+
+
+def render_value_geometry(geo, top_n=12):
+    lines = ["value-head row geometry — cosine between matchup columns",
+             "  ~1 = one value function reused for both matchups; negative = "
+             "valued through opposed features",
+             f"  {geo['n_live']}/{len(geo['rows'])} columns alive", ""]
+    name = {r["bucket"]: r["name"] for r in geo["rows"]}
+    if geo["pairs"]:
+        lines.append("most similar live pairs:")
+        for i, j, c in geo["pairs"][:top_n]:
+            lines.append(f"  {c:+.3f}  {name[i]}  ~  {name[j]}")
+        lines.append("")
+        lines.append("most opposed live pairs:")
+        for i, j, c in geo["pairs"][-min(top_n // 2, len(geo["pairs"])):]:
+            lines.append(f"  {c:+.3f}  {name[i]}  ~  {name[j]}")
+    return lines
+
+
+def render_zone_embedding(mat, top_k=4):
+    u = _unit(mat)
+    sims = u @ u.T
+    lines = ["zone-ref embedding — nearest zones by cosine",
+             "  (does the net treat actions referencing these zones alike?)",
+             ""]
+    for z in range(mat.shape[0]):
+        if np.linalg.norm(mat[z]) <= 1e-6:
+            continue
+        order = [j for j in np.argsort(-sims[z]) if j != z][:top_k]
+        near = ", ".join(f"{_REF_NAMES.get(int(j), int(j))}({sims[z][j]:.2f})"
+                         for j in order)
+        lines.append(f"  {_REF_NAMES.get(z, z):<10} → {near}")
+    return lines
+
+
+def render_card_selectivity(sel, top_units=12, counts=None):
+    lines = ["entity-encoder unit → card selectivity",
+             "  sel = peak/mean activation over the named vocab; a selective "
+             "unit is a card-class detector",
+             f"  {sel['n_units'] - sel['n_dead']}/{sel['n_units']} units "
+             f"alive ({sel['n_dead']} never fire for any card)", ""]
+    for uinfo in sel["units"][:top_units]:
+        top = ", ".join(f"{card_name(i)}({v:.2f})" for i, v in uinfo["top"])
+        lines.append(f"  unit {uinfo['unit']:>3}  sel {uinfo['sel']:6.1f}  "
+                     f"active {uinfo['active_frac'] * 100:4.1f}%  → {top}")
     return lines
 
 
@@ -1519,7 +1970,11 @@ def build_parser():
         description="Inspect an AlphaZero checkpoint's weights and recorded "
                     "self-play — no games played.")
     ap.add_argument("--model", default="gen",
-                    help="AZ checkpoint spec: 'gen' (the generalist) or a path")
+                    help="AZ checkpoint spec: 'gen' (the generalist) or a "
+                         "path. The weight-space views (firstlayer, spectra, "
+                         "popart, valuegeom, zoneemb, cardsel, diff) also take "
+                         "a PPO .zip, and their 'gen' falls back to the PPO "
+                         "generalist when no AZ checkpoint exists")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("overview", help="checkpoint meta + critic + shard status")
@@ -1614,6 +2069,33 @@ def build_parser():
     p.add_argument("--row", type=int, default=0, help="which sampled decision")
     p.add_argument("--field", default=None,
                    help="one field (default: every sweepable field)")
+
+    p = sub.add_parser("firstlayer",
+                       help="first-layer input-column attribution per encoder")
+    p.add_argument("--encoder", default=None,
+                   help="one encoder (e.g. perm_encoder; default: all)")
+    p.add_argument("--top", type=int, default=10,
+                   help="named columns to show per encoder")
+
+    sub.add_parser("spectra",
+                   help="singular-value spectrum / effective rank per "
+                        "weight matrix")
+
+    sub.add_parser("popart",
+                   help="PPO PopArt per-bucket value statistics (PPO .zip)")
+
+    p = sub.add_parser("valuegeom",
+                       help="value-head row geometry (which matchups share "
+                            "a value direction)")
+    p.add_argument("--top", type=int, default=12)
+
+    sub.add_parser("zoneemb", help="zone-ref embedding neighbours")
+
+    p = sub.add_parser("cardsel",
+                       help="entity-encoder units ranked by card selectivity")
+    p.add_argument("--units", type=int, default=12, help="units to show")
+    p.add_argument("--cards", type=int, default=6,
+                   help="top cards listed per unit")
     return ap
 
 
@@ -1627,13 +2109,48 @@ def main(argv=None):
         return 0
 
     if cmd == "diff":
-        a = resolve_spec(args.model)
-        b = resolve_spec(args.other)
+        a = resolve_weights_spec(args.model)
+        b = resolve_weights_spec(args.other)
         if a is None or b is None:
             raise SystemExit(f"could not resolve both checkpoints "
                              f"({args.model!r} -> {a}, {args.other!r} -> {b})")
         print("\n".join(render_diff(checkpoint_diff(a, b, top_n=args.top),
                                     top_n=args.top)))
+        return 0
+
+    if cmd in ("firstlayer", "spectra", "popart", "valuegeom", "zoneemb",
+               "cardsel"):
+        sd, path, kind = load_weight_state(args.model)
+        print(f"[{kind}] {path}")
+        if cmd == "firstlayer":
+            enc = [args.encoder] if args.encoder else None
+            attr = first_layer_attribution(sd, enc)
+            if not attr:
+                names = ", ".join(e for e, _ in _encoder_specs(sd))
+                raise SystemExit(f"unknown encoder {args.encoder!r} "
+                                 f"(want one of: {names})")
+            print("\n".join(render_first_layer(attr, top_cols=args.top)))
+        elif cmd == "spectra":
+            print("\n".join(render_spectra(weight_spectra(sd))))
+        elif cmd == "popart":
+            try:
+                pt = popart_table(sd)
+            except ValueError as e:
+                raise SystemExit(str(e))
+            print("\n".join(render_popart(pt)))
+        elif cmd == "valuegeom":
+            print("\n".join(render_value_geometry(value_head_geometry(sd),
+                                                  top_n=args.top)))
+        elif cmd == "zoneemb":
+            try:
+                zmat = zone_embedding(sd)
+            except ValueError as e:
+                raise SystemExit(str(e))
+            print("\n".join(render_zone_embedding(zmat)))
+        else:
+            sel = card_selectivity(sd, top_cards=args.cards)
+            print("\n".join(render_card_selectivity(sel,
+                                                    top_units=args.units)))
         return 0
 
     if cmd == "occur":
