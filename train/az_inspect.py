@@ -629,21 +629,34 @@ def render_overview(net, path, sample=None):
     return lines
 
 
-def render_neighbors(mat, idx, k=15, counts=None, candidates=None):
+NEIGHBOR_HEADER = f"  {'cos':>6}  {'card':<34} {'cost':<6} {'type':<13} seen"
+
+
+def neighbor_row(idx, cos, counts=None):
+    """One formatted neighbour line. Shared so the TUI's clickable list and the
+    text view show identical columns."""
+    seen = "" if counts is None else str(int(counts[int(idx)]))
+    return (f"  {cos:6.3f}  {card_name(idx)[:34]:<34} "
+            f"{card_cost_colors(idx):<6} {card_primary_type(idx):<13} {seen}")
+
+
+def render_neighbors(mat, idx, k=15, counts=None, candidates=None, rows=True):
+    """Header + neighbour rows for a card. ``rows=False`` returns the header
+    alone, for callers (the TUI) that render the neighbours as a widget."""
     lines = [f"{card_name(idx)}  [{card_cost_colors(idx)} "
              f"mv{card_cmc(idx):.0f} {card_primary_type(idx)}]",
              f"  embedding row norm {np.linalg.norm(mat[idx]):.3f}"]
     if counts is not None:
         seen = int(counts[idx])
         lines.append(f"  seen in {seen} sampled states"
-                     + ("  ⚠ NEVER SEEN — its row is warm-start noise, the "
-                        "neighbours below are meaningless" if seen == 0 else ""))
+                     + ("  ⚠ NEVER SEEN — its row is warm-start noise, so its "
+                        "neighbours are meaningless" if seen == 0 else ""))
+    if not rows:
+        return lines
     lines.append("")
-    lines.append(f"  {'cos':>6}  {'card':<34} {'cost':<6} {'type':<13} seen")
+    lines.append(NEIGHBOR_HEADER)
     for j, cos in nearest_cards(mat, idx, k=k, candidates=candidates):
-        seen = "" if counts is None else str(int(counts[j]))
-        lines.append(f"  {cos:6.3f}  {card_name(j)[:34]:<34} "
-                     f"{card_cost_colors(j):<6} {card_primary_type(j):<13} {seen}")
+        lines.append(neighbor_row(j, cos, counts))
     return lines
 
 
