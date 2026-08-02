@@ -30,8 +30,8 @@ BINNAME=robomage
 PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
 # Auto-generated files kept in sync with the C++ sources at build time
 # (train/ codegen plus the C++ mirror header src/gen/card_costs_gen.h).
-PYGEN := train/_enums.py train/card_costs.py src/gen/card_costs_gen.h \
-	src/gen/archetypes_gen.h
+PYGEN := train/_enums.py train/card_costs.py train/card_props.py \
+	src/gen/card_costs_gen.h src/gen/archetypes_gen.h
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -105,6 +105,13 @@ train/_enums.py: src/classes/action.h src/classes/game.h src/classes/gamestate.h
 train/card_costs.py src/gen/card_costs_gen.h &: src/card_vocab.h src/machine_io.h train/gen_card_costs.py
 	$(PYTHON) train/gen_card_costs.py
 
+# Frozen per-card printed-property block (network-side only; no C++ mirror).
+# gen_card_costs.py and train/_enums.py are prerequisites because the generator
+# imports helpers from one and _OBS_KEYWORDS from the other; card scripts stay
+# out of the prerequisites, same convention as card_costs.
+train/card_props.py: src/card_vocab.h src/machine_io.h train/gen_card_props.py train/gen_card_costs.py train/_enums.py
+	$(PYTHON) train/gen_card_props.py
+
 # C++ mirror of the deck -> archetype -> value-bucket metadata, so the in-process
 # AZ actor rebuilds the same observation matchup tail train/env.py appends.
 src/gen/archetypes_gen.h: train/archetypes.py bin/resources/decks/archetypes.json train/gen_archetypes.py
@@ -134,6 +141,7 @@ regen: all
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(PYTHON) train/gen_enums.py
 	$(PYTHON) train/gen_card_costs.py
+	$(PYTHON) train/gen_card_props.py
 	$(PYTHON) train/gen_archetypes.py
 	$(PYTHON) train/regression/replay_diff.py record
 

@@ -13,9 +13,9 @@ non-fatal errors / anomalies in the transcripts.
 Tiers (run cheap-to-expensive; all requested tiers run even if an earlier one
 fails, so one invocation reports every finding):
 
-  pygen   Regenerate train/_enums.py + train/card_costs.py and fail if the
-          committed copies are stale (someone changed a C++ input without
-          committing the regenerated Python).
+  pygen   Regenerate train/_enums.py + train/card_costs.py + train/card_props.py
+          and fail if the committed copies are stale (someone changed a C++
+          input without committing the regenerated Python).
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
           resolve through their script's front face, mirroring the engine.
@@ -233,10 +233,10 @@ def tier_pygen(rep):
     fetches the whole vocab, so every cost is reproducible here and in CI. The
     working tree is restored afterward so a stale result is reported, not left
     half-regenerated (the developer runs `make pygen` to actually update them)."""
-    gen_files = ["train/_enums.py", "train/card_costs.py",
+    gen_files = ["train/_enums.py", "train/card_costs.py", "train/card_props.py",
                  "src/gen/card_costs_gen.h", "src/gen/archetypes_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
-                "train/gen_archetypes.py"):
+                "train/gen_card_props.py", "train/gen_archetypes.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
         if r.returncode != 0:
