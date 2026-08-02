@@ -56,11 +56,22 @@ _CRITIC_VIEWS = [
     ("divergence", "Priors vs search"),
 ]
 
+_PROBE_VIEWS = [
+    ("state", "Decision + policy"),
+    ("blocks", "Block attribution (state)"),
+    ("blocksavg", "Block attribution (mean)"),
+    ("swap", "Card-swap probe"),
+    ("sweep", "Scalar sweeps"),
+]
+
 # Views that need the shard sample; offered but reported as unavailable under
 # --no-shards rather than silently rendering something weaker.
-_NEEDS_SHARDS = {"occur", "calib", "divergence"}
+_NEEDS_SHARDS = {"occur", "calib", "divergence"} | {k for k, _ in _PROBE_VIEWS}
 
 _MAX_CARD_OPTIONS = 400
+# Recorded decisions listed in the Probes sidebar. The sample is thousands of
+# rows; the list is a picker, not a census (',' / '.' step through all of them).
+_MAX_DECISION_OPTIONS = 250
 
 
 class Loaded(Message):
@@ -91,7 +102,9 @@ class InspectApp(App):
     .views     { height: auto; max-height: 40%; border: round $primary; }
     .head      { height: 1; padding: 0 1; color: $accent; text-style: bold; }
     #status    { height: 2; padding: 0 1; color: $text-muted; }
-    #emb-cards { height: 1fr; border: round $surface; }
+    #emb-cards, #probe-decisions { height: 1fr; border: round $surface; }
+    /* The swap view's site picker; hidden on the other probe views. */
+    #probe-sites { height: 40%; border: round $primary; display: none; }
     /* Taller than the text pane above it: on the neighbours view the list IS
        the content, and the pane keeps only the card's header. Hidden (so the
        text pane takes the whole column) on every other view. */
@@ -105,6 +118,8 @@ class InspectApp(App):
         Binding("r", "rerun", "Re-run view"),
         Binding("slash", "focus_filter", "Filter cards"),
         Binding("u", "back", "Back (card)"),
+        Binding("comma", "step_row(-1)", "◀ decision"),
+        Binding("full_stop", "step_row(1)", "decision ▶"),
     ]
 
     def __init__(self, args):
@@ -118,7 +133,10 @@ class InspectApp(App):
         self._count_states = 0      # states actually decoded for those counts
         self._card = None           # current card index for the neighbours view
         self._history = []          # drill-down stack of card indices
-        self._view = {"emb": "neighbors", "critic": "overview"}
+        self._row = 0               # current recorded decision (probe views)
+        self._site = None           # chosen card-identity site for the swap probe
+        self._view = {"emb": "neighbors", "critic": "overview",
+                      "probe": "state"}
         self._busy = False
 
     # ----- layout -----
@@ -147,6 +165,18 @@ class InspectApp(App):
                         yield OptionList(id="critic-views", classes="views")
                     with VerticalScroll(classes="out-scroll"):
                         yield Static(id="critic-out", markup=False, classes="out")
+            with TabPane("Probes", id="tab-probe"):
+                with Horizontal():
+                    with Vertical(classes="sidebar"):
+                        yield Static("Views", classes="head")
+                        yield OptionList(id="probe-views", classes="views")
+                        yield Static("Recorded decisions", classes="head")
+                        yield OptionList(id="probe-decisions")
+                    with Vertical():
+                        with VerticalScroll(classes="out-scroll"):
+                            yield Static(id="probe-out", markup=False,
+                                         classes="out")
+                        yield OptionList(id="probe-sites")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -158,8 +188,11 @@ class InspectApp(App):
         for key, label in _CRITIC_VIEWS:
             self.query_one("#critic-views", OptionList).add_option(
                 Option(label, id=key))
-        self.query_one("#emb-out", Static).update("Loading checkpoint…")
-        self.query_one("#critic-out", Static).update("Loading checkpoint…")
+        for key, label in _PROBE_VIEWS:
+            self.query_one("#probe-views", OptionList).add_option(
+                Option(label, id=key))
+        for pane in ("emb", "critic", "probe"):
+            self.query_one(f"#{pane}-out", Static).update("Loading checkpoint…")
         self._load()
 
     # ----- loading -----
@@ -191,10 +224,12 @@ class InspectApp(App):
     def on_loaded(self, message: Loaded) -> None:
         self.query_one("#status", Static).update(message.status)
         self._populate_cards("")
+        self._populate_decisions()
         self._card = self._default_card()
-        self.query_one("#emb-views", OptionList).highlighted = 0
-        self.query_one("#critic-views", OptionList).highlighted = 0
+        for pane in ("emb", "critic", "probe"):
+            self.query_one(f"#{pane}-views", OptionList).highlighted = 0
         self._render("critic", "overview")
+        self._render("probe", "state")
         self._render("emb", "neighbors")
 
     def _default_card(self):
@@ -225,6 +260,39 @@ class InspectApp(App):
             if shown >= _MAX_CARD_OPTIONS:
                 break
 
+    def _populate_decisions(self) -> None:
+        """Label the first slice of sampled decisions by turn/step/outcome, so
+        picking a probe target is not picking a bare row number."""
+        opts = self.query_one("#probe-decisions", OptionList)
+        opts.clear_options()
+        if self._sample is None:
+            return
+        obs, z = self._sample["obs"], self._sample["z"]
+        for r in range(min(_MAX_DECISION_OPTIONS, obs.shape[0])):
+            turn = azi.decode.decode_turn(obs[r])
+            step = azi.decode.decode_step(obs[r])
+            opts.add_option(Option(f"#{r:<5} T{turn:<3} {step[:14]:<14} "
+                                   f"z={z[r]:+.0f}", id=str(r)))
+
+    def _populate_sites(self) -> None:
+        """Card-identity sites of the current decision (the swap probe's menu)."""
+        opts = self.query_one("#probe-sites", OptionList)
+        opts.clear_options()
+        if self._sample is None:
+            return
+        for i, (label, _, _) in enumerate(
+                azi.card_id_sites(self._sample["obs"][self._row])):
+            opts.add_option(Option(label, id=str(i)))
+
+    def action_step_row(self, delta: int) -> None:
+        if self._sample is None:
+            return
+        self._row = max(0, min(self._sample["obs"].shape[0] - 1,
+                               self._row + int(delta)))
+        self._site = None
+        self._populate_sites()
+        self._render("probe", self._view["probe"])
+
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "card-filter":
             self._populate_cards(event.value)
@@ -237,6 +305,18 @@ class InspectApp(App):
             self._render("emb", oid)
         elif which == "critic-views":
             self._render("critic", oid)
+        elif which == "probe-views":
+            if oid == "swap":
+                self._populate_sites()
+            self._render("probe", oid)
+        elif which == "probe-decisions":
+            self._row = int(oid)
+            self._site = None
+            self._populate_sites()
+            self._render("probe", self._view["probe"])
+        elif which == "probe-sites":
+            self._site = int(oid)
+            self._render("probe", "swap")
         elif which in ("emb-cards", "emb-nn"):
             if self._card is not None and oid != str(self._card):
                 self._history.append(self._card)
@@ -266,6 +346,8 @@ class InspectApp(App):
         out.update(f"computing {key}…")
         self.query_one("#emb-nn", OptionList).display = (
             target == "emb" and key == "neighbors")
+        self.query_one("#probe-sites", OptionList).display = (
+            target == "probe" and key == "swap")
         self._render_worker(target, key)
 
     @work(thread=True, group="render", exclusive=True)
@@ -326,6 +408,36 @@ class InspectApp(App):
             return azi.render_divergence(
                 azi.policy_divergence(self._net, self._sample,
                                       top_n=a.top)), None
+        if key == "state":
+            return azi.render_state(self._sample, self._row, net=self._net,
+                                    top_n=a.top), None
+        if key == "blocks":
+            return azi.render_block_importance(
+                azi.state_block_importance(self._net, self._sample, self._row,
+                                           seed=a.seed),
+                top_n=a.top, single=True), None
+        if key == "blocksavg":
+            return azi.render_block_importance(
+                azi.block_importance(self._net, self._sample,
+                                     n_rows=a.block_rows, donors=a.donors,
+                                     seed=a.seed), top_n=a.top), None
+        if key == "swap":
+            sites = azi.card_id_sites(self._sample["obs"][self._row])
+            if not sites:
+                return ["this decision has no card on the battlefield or in "
+                        "hand to swap — pick another (',' / '.')"], None
+            if self._site is None or self._site >= len(sites):
+                return ([f"{len(sites)} card-identity sites in decision "
+                         f"{self._row} — pick one from the list below."], None)
+            label, off, _ = sites[self._site]
+            probe = azi.card_swap_probe(self._net,
+                                        self._sample["obs"][self._row],
+                                        self._sample["mask"][self._row], off)
+            return azi.render_card_swap(probe, label, top_n=a.top,
+                                        counts=counts), None
+        if key == "sweep":
+            return azi.render_sweeps(self._net, self._sample["obs"][self._row],
+                                     self._sample["mask"][self._row]), None
         return [f"unknown view {key!r}"], None
 
     def _candidates(self):
@@ -378,7 +490,11 @@ def build_parser():
     ap.add_argument("--mark", default="color", choices=azi.LABEL_KINDS,
                     help="marker label for the PCA scatter")
     ap.add_argument("--top", type=int, default=25,
-                    help="rows in the occurrence / divergence tables")
+                    help="rows in the occurrence / divergence / probe tables")
+    ap.add_argument("--block-rows", type=int, default=120,
+                    help="states averaged by the mean block-attribution view")
+    ap.add_argument("--donors", type=int, default=3,
+                    help="donor states per block in that average")
     return ap
 
 

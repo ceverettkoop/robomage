@@ -551,6 +551,212 @@ def policy_divergence(net, sample, top_n=12):
 
 
 # ----------------------------------------------------------------------
+# Probes — what a single evaluation actually rests on
+# ----------------------------------------------------------------------
+
+def obs_blocks():
+    """Partition of the observation vector into named blocks:
+    ``[(name, start, end), ...]``, contiguous and covering ``[0, OBS_SIZE)``.
+
+    Derived entirely from env.py's offset chain (never a literal), and asserted
+    contiguous so a layout change fails here rather than silently mislabelling
+    every attribution below."""
+    import env as e
+    blocks = [
+        ("self player", e._SELF_BLOCK_START, e._OPP_BLOCK_START),
+        ("opp player", e._OPP_BLOCK_START, e._STEP_ONEHOT_START),
+        ("step one-hot", e._STEP_ONEHOT_START, e._IS_ACTIVE_IDX),
+        ("header flags", e._IS_ACTIVE_IDX, e._GLOBAL_SIZE),
+        ("self battlefield", e._SELF_PERM_START, e._OPP_PERM_START),
+        ("opp battlefield", e._OPP_PERM_START, e._STACK_START),
+        ("stack", e._STACK_START, e._GY_START),
+        ("graveyards", e._GY_START, e._EXILE_START),
+        ("exiles", e._EXILE_START, e._HAND_START),
+        ("hand", e._HAND_START, e._HIST_START),
+        ("action history", e._HIST_START, e._HIST_END),
+        ("match context", e._MATCH_CTX_START, e._LIBRARY_CTX_START),
+        ("library context", e._LIBRARY_CTX_START, e._CUR_TURN_IDX),
+        ("turn", e._CUR_TURN_IDX, e._KNOWN_TOP_LIB_START),
+        ("known top library", e._KNOWN_TOP_LIB_START, e._REVEALED_START),
+        ("opp revealed", e._REVEALED_START, e._OPP_KNOWN_HAND_START),
+        ("opp known hand", e._OPP_KNOWN_HAND_START, e._PENDING_DECISION_START),
+        ("pending decision", e._PENDING_DECISION_START, e._EXTRAS_START),
+        ("global extras", e._EXTRAS_START, e.STATE_SIZE),
+        ("action categories", e.ACT_CATS_START, e.ACT_CATS_START + e.MAX_ACTIONS),
+        ("action card ids", e.ACT_IDS_START, e.ACT_IDS_START + e.MAX_ACTIONS),
+        ("action controllers", e.ACT_CTRL_START, e.ACT_CTRL_START + e.MAX_ACTIONS),
+        ("action zones", e.ACT_ZONE_START, e.ACT_ZONE_START + e.MAX_ACTIONS),
+        ("action refs", e.ACT_REFS_START, e.ACT_REFS_START + e.MAX_ACTIONS),
+        ("action ordinals", e.ACT_ORDS_START, e.ACT_ORDS_START + e.MAX_ACTIONS),
+        ("hand cost feats", e.ACT_BLOCKS_END, e._BF_COST_START),
+        ("battlefield cost feats", e._BF_COST_START, e.MATCHUP_TAIL_START),
+        ("matchup tail", e.MATCHUP_TAIL_START, e.OBS_SIZE),
+    ]
+    blocks = [(n, int(s), int(t)) for n, s, t in blocks]
+    blocks.sort(key=lambda b: b[1])
+    pos = 0
+    for name, s, t in blocks:
+        if s != pos or t <= s:
+            raise RuntimeError(
+                f"observation block table is not contiguous at {name!r} "
+                f"({s}..{t}, expected to start at {pos}) — env.py's offset chain "
+                "changed shape; update obs_blocks()")
+        pos = t
+    if pos != int(e.OBS_SIZE):
+        raise RuntimeError(f"observation block table covers {pos} floats but "
+                           f"OBS_SIZE is {e.OBS_SIZE}")
+    return blocks
+
+
+def state_value(net, obs_row, mask_row):
+    """V for a single observation, in the current mover's perspective."""
+    v, _ = predict(net, np.asarray(obs_row)[None], np.asarray(mask_row)[None])
+    return float(v[0])
+
+
+def block_importance(net, sample, n_rows=150, donors=3, seed=0, blocks=None):
+    """Permutation importance of each observation block on V.
+
+    For each block, the block's floats are replaced by another sampled state's
+    (a valid value for that block, unlike zeroing, which invents states the net
+    never saw — a 0 life total is not "no information", it is "dead"), and the
+    mean |ΔV| is recorded. High = the evaluation leans on that block.
+    """
+    blocks = blocks or obs_blocks()
+    rng = np.random.default_rng(seed)
+    obs, mask = sample["obs"], sample["mask"]
+    n = min(int(n_rows), obs.shape[0])
+    rows = np.sort(rng.choice(obs.shape[0], size=n, replace=False))
+    base, _ = predict(net, obs[rows], mask[rows])
+    out = []
+    for name, s, t in blocks:
+        acc = np.zeros(n)
+        for _ in range(int(donors)):
+            donor = rng.choice(obs.shape[0], size=n)
+            pert = obs[rows].copy()
+            pert[:, s:t] = obs[donor][:, s:t]
+            v, _ = predict(net, pert, mask[rows])
+            acc += np.abs(v - base)
+        out.append({"name": name, "start": s, "width": t - s,
+                    "delta": float((acc / donors).mean())})
+    out.sort(key=lambda r: -r["delta"])
+    return {"rows": out, "n": n, "donors": int(donors),
+            "base_spread": float(base.std())}
+
+
+def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
+    """Permutation importance for ONE recorded state — which blocks this
+    particular evaluation rests on."""
+    blocks = blocks or obs_blocks()
+    rng = np.random.default_rng(seed)
+    obs, mask = sample["obs"], sample["mask"]
+    base = state_value(net, obs[row], mask[row])
+    batch = np.repeat(obs[row][None], donors, axis=0)
+    mk = np.repeat(mask[row][None], donors, axis=0)
+    out = []
+    for name, s, t in blocks:
+        donor = rng.choice(obs.shape[0], size=donors)
+        pert = batch.copy()
+        pert[:, s:t] = obs[donor][:, s:t]
+        v, _ = predict(net, pert, mk)
+        out.append({"name": name, "start": s, "width": t - s,
+                    "delta": float(np.abs(v - base).mean()),
+                    "signed": float((v - base).mean())})
+    out.sort(key=lambda r: -r["delta"])
+    return {"rows": out, "base": base, "donors": int(donors)}
+
+
+def card_id_sites(obs_row):
+    """Every swappable card-identity float in a state:
+    ``[(label, offset, card_idx), ...]`` over both battlefields and the hand."""
+    import env as e
+    sites = []
+    for tag, start in (("self bf", e._SELF_PERM_START),
+                       ("opp bf", e._OPP_PERM_START)):
+        for s in range(e._PERM_SLOTS):
+            off = start + s * e._PERM_SLOT_SIZE + e._PERM_CARD_OFF
+            idx = int(round(float(obs_row[off]) * N_CARD_TYPES))
+            if idx >= 0:
+                sites.append((f"{tag} slot {s}: {card_name(idx)}", off, idx))
+    for s in range(e._HAND_SLOTS_TOTAL):
+        off = e._HAND_START + s * e._HAND_SLOT_SIZE
+        idx = int(round(float(obs_row[off]) * N_CARD_TYPES))
+        if idx >= 0:
+            sites.append((f"hand {s}: {card_name(idx)}", off, idx))
+    return sites
+
+
+def card_swap_probe(net, obs_row, mask_row, offset, candidates=None, batch=256):
+    """Replace the card identity at ``offset`` with each candidate card and
+    measure ΔV — a grounded per-position card valuation.
+
+    Only the IDENTITY float moves: the slot's status floats (power/toughness,
+    tapped, counters, refs) stay as they are, so this asks "what if the net
+    believed this object were card X", not "what if card X were played here".
+    """
+    cand = named_card_ids() if candidates is None else np.asarray(candidates)
+    base = state_value(net, obs_row, mask_row)
+    rows = np.repeat(np.asarray(obs_row, dtype=np.float32)[None], len(cand),
+                     axis=0)
+    rows[:, offset] = cand / float(N_CARD_TYPES)
+    mk = np.repeat(np.asarray(mask_row)[None], len(cand), axis=0)
+    vals, _ = predict(net, rows, mk, batch=batch)
+    order = np.argsort(-vals)
+    return {"base": base,
+            "rows": [(int(cand[i]), float(vals[i]), float(vals[i] - base))
+                     for i in order]}
+
+
+def sweep_fields():
+    """Sweepable scalar fields: ``name -> (obs index, scale, values)``.
+
+    ``scale`` is the engine's normalizer, so ``obs[idx] = value / scale``."""
+    import env as e
+    return {
+        "self_life": (e._SELF_BLOCK_START + e._PB_LIFE, 20.0,
+                      list(range(0, 21))),
+        "opp_life": (e._OPP_BLOCK_START + e._PB_LIFE, 20.0,
+                     list(range(0, 21))),
+        "self_hand": (e._SELF_BLOCK_START + e._PB_HAND_CT, 10.0,
+                      list(range(0, 11))),
+        "opp_hand": (e._OPP_BLOCK_START + e._PB_HAND_CT, 10.0,
+                     list(range(0, 11))),
+        "turn": (e._CUR_TURN_IDX, 50.0, list(range(0, 26))),
+    }
+
+
+def sweep(net, obs_row, mask_row, field):
+    """V as one scalar field is swept over its range — the monotonicity sanity
+    check ("does its own life total falling make it less happy?")."""
+    idx, scale, values = sweep_fields()[field]
+    rows = np.repeat(np.asarray(obs_row, dtype=np.float32)[None], len(values),
+                     axis=0)
+    rows[:, idx] = np.array(values, dtype=np.float32) / scale
+    mk = np.repeat(np.asarray(mask_row)[None], len(values), axis=0)
+    vals, _ = predict(net, rows, mk)
+    return {"field": field, "values": list(values),
+            "v": [float(x) for x in vals],
+            "current": float(round(float(obs_row[idx]) * scale))}
+
+
+# Fields whose value SHOULD move V in a known direction, and that direction.
+# Not laws of the game — a state can be won regardless of a life total — but a
+# net that trends the wrong way across the whole sweep is worth knowing about.
+_SWEEP_EXPECTED = {"self_life": +1, "opp_life": -1}
+
+
+def sweep_trend(res):
+    """Spearman-free trend summary: net rise across the sweep, and whether it
+    agrees with the expected direction (None when there is no expectation)."""
+    v = np.asarray(res["v"])
+    rise = float(v[-1] - v[0])
+    want = _SWEEP_EXPECTED.get(res["field"])
+    ok = None if want is None else (rise * want >= 0)
+    return {"rise": rise, "expected": want, "agrees": ok,
+            "span": float(v.max() - v.min())}
+
+
+# ----------------------------------------------------------------------
 # Checkpoint diff
 # ----------------------------------------------------------------------
 
@@ -852,6 +1058,115 @@ def render_divergence(div):
     return lines
 
 
+_SPARK = "▁▂▃▄▅▆▇█"
+
+
+def _spark(values, min_span=0.0):
+    """Terminal sparkline over a float series.
+
+    ``min_span`` renders a flat line when the series barely moves — a sparkline
+    autoscaled to a 0.001-wide range otherwise draws a dramatic ramp out of
+    nothing."""
+    v = np.asarray(values, dtype=float)
+    if not len(v):
+        return ""
+    lo, hi = float(v.min()), float(v.max())
+    span = hi - lo
+    if span <= 0 or span < min_span:
+        return "─" * len(v)
+    idx = np.clip(((v - lo) / span * (len(_SPARK) - 1)).round().astype(int),
+                  0, len(_SPARK) - 1)
+    return "".join(_SPARK[i] for i in idx)
+
+
+def render_state(sample, row, net=None, top_n=12):
+    """One recorded decision: the board, the search's posterior next to the raw
+    net's priors, and the game's eventual result."""
+    from env import MAX_ACTIONS
+    obs = sample["obs"][row]
+    pi, mask, z = sample["pi"][row], sample["mask"][row], float(sample["z"][row])
+    n_legal = int(mask.sum())
+    lines = [f"recorded decision {row} of {sample['obs'].shape[0]}   "
+             f"outcome z={z:+.0f}   legal actions={n_legal}"]
+    if net is not None:
+        lines[0] += f"   net V={state_value(net, obs, mask):+.3f}"
+    lines.append("")
+    lines += decode.format_state_lines(decode.decode_game_state(obs))
+    lines.append("")
+
+    priors = None
+    if net is not None:
+        _, p = predict(net, obs[None], mask[None])
+        priors = p[0]
+    acts = decode.decode_actions(decode.action_categories(obs, MAX_ACTIONS),
+                                 decode.action_card_ids(obs),
+                                 decode.action_ctrls(obs), n_legal,
+                                 zone_refs=decode.action_zone_refs(obs,
+                                                                   MAX_ACTIONS))
+    order = np.argsort(-pi[:n_legal])[:top_n]
+    lines.append(f"  {'search':>7} {'net':>7}  action")
+    for i in order:
+        p_net = "" if priors is None else f"{priors[i]*100:6.1f}%"
+        lines.append(f"  {pi[i]*100:6.1f}% {p_net:>7}  "
+                     f"{acts[i]['description'][:64]}")
+    return lines
+
+
+def render_block_importance(imp, top_n=20, single=False):
+    head = ("what THIS evaluation rests on" if single
+            else f"what the value head rests on, over {imp['n']} states")
+    lines = [head,
+             "  each block's floats are replaced by another real state's; the "
+             "number is the mean |ΔV| that causes.", ""]
+    if single:
+        lines.insert(1, f"  base V={imp['base']:+.3f}  "
+                        f"({imp['donors']} donor states per block)")
+    top = imp["rows"][0]["delta"] or 1.0
+    lines.append(f"  {'block':<24} {'width':>6} {'mean |ΔV|':>10}"
+                 + ("  signed" if single else ""))
+    for r in imp["rows"][:top_n]:
+        sign = f"  {r['signed']:+.3f}" if single else ""
+        lines.append(f"  {r['name']:<24} {r['width']:6d} {r['delta']:10.4f}"
+                     f"{sign}  {_bar(r['delta'] / top)}")
+    return lines
+
+
+def render_card_swap(probe, site_label, top_n=12, counts=None):
+    rows = probe["rows"]
+    lines = [f"card-swap probe — {site_label}",
+             f"  base V={probe['base']:+.3f}; each row is V with that card's "
+             "identity in this slot",
+             "  (only the identity float changes — the slot keeps its power, "
+             "toughness and status)", "",
+             f"  {'ΔV':>7} {'V':>7}  {'card':<34} seen"]
+    for idx, v, dv in rows[:top_n]:
+        seen = "" if counts is None else str(int(counts[idx]))
+        lines.append(f"  {dv:+7.3f} {v:+7.3f}  {card_name(idx)[:34]:<34} {seen}")
+    lines.append(f"  {'…':>7}")
+    for idx, v, dv in rows[-top_n:]:
+        seen = "" if counts is None else str(int(counts[idx]))
+        lines.append(f"  {dv:+7.3f} {v:+7.3f}  {card_name(idx)[:34]:<34} {seen}")
+    return lines
+
+
+def render_sweeps(net, obs_row, mask_row, fields=None):
+    """V across every sweepable scalar, with the monotonicity check."""
+    fields = fields or list(sweep_fields())
+    lines = ["value response to single scalars (everything else held fixed)",
+             "  a net whose V does not fall as its OWN life falls is broken; "
+             "the arrow flags disagreement.", ""]
+    for f in fields:
+        res = sweep(net, obs_row, mask_row, f)
+        tr = sweep_trend(res)
+        flag = ("" if tr["agrees"] is None
+                else ("  ok" if tr["agrees"] else "  ⚠ WRONG DIRECTION"))
+        lines.append(f"  {f:<10} now={res['current']:<5.0f} "
+                     f"V {res['v'][0]:+.2f} → {res['v'][-1]:+.2f} "
+                     f"(span {tr['span']:.2f})  "
+                     f"{_spark(res['v'], min_span=0.01)}{flag}")
+    return lines
+
+
 def render_diff(d, top_n=15):
     lines = [f"A: {d['a']}", f"B: {d['b']}", ""]
     if d["only_a"] or d["only_b"] or d["shape_diff"]:
@@ -972,6 +1287,36 @@ def build_parser():
     p = sub.add_parser("diff", help="compare two checkpoints")
     p.add_argument("other", help="second checkpoint spec/path (B); --model is A")
     p.add_argument("--top", type=int, default=15)
+
+    p = sub.add_parser("state", help="browse one recorded decision")
+    _add_shard_args(p)
+    p.add_argument("--row", type=int, default=0, help="which sampled decision")
+    p.add_argument("--top", type=int, default=12)
+
+    p = sub.add_parser("blocks", help="permutation importance of obs blocks")
+    _add_shard_args(p)
+    p.add_argument("--row", type=int, default=None,
+                   help="attribute ONE recorded decision instead of the mean "
+                        "over many")
+    p.add_argument("--rows", type=int, default=150,
+                   help="states averaged when --row is not given")
+    p.add_argument("--donors", type=int, default=3,
+                   help="donor states per block")
+    p.add_argument("--top", type=int, default=20)
+
+    p = sub.add_parser("swap", help="per-slot card valuation by identity swap")
+    _add_shard_args(p)
+    p.add_argument("--row", type=int, default=0, help="which sampled decision")
+    p.add_argument("--site", type=int, default=None,
+                   help="index into the state's card-identity sites "
+                        "(omit to list them)")
+    p.add_argument("--top", type=int, default=12)
+
+    p = sub.add_parser("sweep", help="V across single scalars (life, hand, turn)")
+    _add_shard_args(p)
+    p.add_argument("--row", type=int, default=0, help="which sampled decision")
+    p.add_argument("--field", default=None,
+                   help="one field (default: every sweepable field)")
     return ap
 
 
@@ -1024,6 +1369,46 @@ def main(argv=None):
     if cmd == "divergence":
         print("\n".join(render_divergence(
             policy_divergence(net, _sample(args), top_n=args.top))))
+        return 0
+
+    if cmd in ("state", "blocks", "swap", "sweep"):
+        s = _sample(args)
+        row = getattr(args, "row", 0)
+        if row is not None and not 0 <= row < s["obs"].shape[0]:
+            raise SystemExit(f"--row {row} out of range "
+                             f"(0..{s['obs'].shape[0] - 1} in this sample)")
+        if cmd == "state":
+            print("\n".join(render_state(s, row, net=net, top_n=args.top)))
+        elif cmd == "blocks":
+            if args.row is None:
+                imp = block_importance(net, s, n_rows=args.rows,
+                                       donors=args.donors, seed=args.seed)
+                print("\n".join(render_block_importance(imp, top_n=args.top)))
+            else:
+                imp = state_block_importance(net, s, row, seed=args.seed)
+                print("\n".join(render_block_importance(imp, top_n=args.top,
+                                                        single=True)))
+        elif cmd == "swap":
+            sites = card_id_sites(s["obs"][row])
+            if not sites:
+                raise SystemExit(f"decision {row} has no card on the "
+                                 "battlefield or in hand to swap")
+            if args.site is None:
+                print(f"card-identity sites in decision {row}:")
+                for i, (label, _, _) in enumerate(sites):
+                    print(f"  {i:3d}  {label}")
+                print("\nre-run with --site N")
+                return 0
+            if not 0 <= args.site < len(sites):
+                raise SystemExit(f"--site {args.site} out of range "
+                                 f"(0..{len(sites) - 1})")
+            label, off, _ = sites[args.site]
+            probe = card_swap_probe(net, s["obs"][row], s["mask"][row], off)
+            print("\n".join(render_card_swap(probe, label, top_n=args.top)))
+        else:
+            fields = [args.field] if args.field else None
+            print("\n".join(render_sweeps(net, s["obs"][row], s["mask"][row],
+                                          fields)))
         return 0
 
     mat = card_embedding(net)
