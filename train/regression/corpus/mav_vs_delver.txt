@@ -324,35 +324,35 @@
    5: Volcanic Island
    6: Scalding Tarn
    7: Thundering Falls
-  >> B/B: 3 (Ponder)
+  >> B/B: 4 (Volcanic Island)
 --- Narrative ---
-  Player B puts Ponder to top of library
+  Player B puts Volcanic Island to top of library
   Player B chooses a card from Player B hand:
 
 --- Decision 16 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Daze, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 49
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Volcanic Island, Scalding Tarn, Thundering Falls | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Island (T)
   Opp BF:   Talon Gates of Madara
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Brainstorm (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Known top: Ponder, ?, ?, ?, ?
+  Known top: Volcanic Island, ?, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Dragon's Rage Channeler
    1: Mishra's Bauble
    2: Daze
-   3: Volcanic Island
+   3: Ponder
    4: Volcanic Island
    5: Scalding Tarn
    6: Thundering Falls
-  >> B/B: 0 (Dragon's Rage Channeler)
+  >> B/B: 4 (Volcanic Island)
 --- Narrative ---
-  Player B puts Dragon's Rage Channeler to top of library
+  Player B puts Volcanic Island to top of library
   Resolving ability (category: PeekAndReveal)
   Player B looks at top of Player A's library: Once Upon a Time
   Resolving ability (category: DelayedTrigger)
@@ -361,12 +361,12 @@
 --- Decision 17 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Mishra's Bauble, Daze, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 50
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Island (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
+  Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -379,13 +379,13 @@
 --- Decision 18 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Daze, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 50
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Island (T)
   Opp BF:   Talon Gates of Madara
   Stack: Mishra's Bauble (spell, self)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
+  Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -398,12 +398,12 @@
 --- Decision 19 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Daze, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 50
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Mishra's Bauble | Island (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
+  Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -416,13 +416,13 @@
 --- Decision 20 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Daze, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 50
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Mishra's Bauble | Island (T)
   Opp BF:   Talon Gates of Madara
   Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
+  Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -445,17 +445,17 @@
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 3 (Player A) ---
   PA: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
-  PB: Daze, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls
+  PB: Dragon's Rage Channeler, Daze, Ponder, Scalding Tarn, Thundering Falls
 
 --- Decision 21 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(5): Daze, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 50
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Island (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
+  Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   Actions:
    0: Delayed trigger  [#0]
@@ -465,9 +465,9 @@
   Delayed trigger fires.
   Delayed trigger fires.
   Resolving ability (category: Draw, amount: 1)
-  Player B draws Dragon's Rage Channeler
+  Player B draws Volcanic Island
   Resolving ability (category: Draw, amount: 1)
-  Player B draws Ponder
+  Player B draws Volcanic Island
   Player A draws Once Upon a Time
 
 --- Decision 22 ---

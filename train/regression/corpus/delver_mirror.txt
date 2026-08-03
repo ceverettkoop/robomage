@@ -437,15 +437,15 @@
    5: Flooded Strand
    6: Volcanic Island
    7: Scalding Tarn
-  >> B/B: 4 (Ponder)
+  >> B/B: 5 (Flooded Strand)
 --- Narrative ---
-  Player B puts Ponder to top of library
+  Player B puts Flooded Strand to top of library
   Player B chooses a card from Player B hand:
 
 --- Decision 22 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn | lib 49
+  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 49
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Island (T)
   Opp BF:   Island (T)
@@ -453,7 +453,7 @@
   Pending: Brainstorm (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Ponder, Misty Rainforest
-  Known top: Ponder, ?, ?, ?, ?
+  Known top: Flooded Strand, ?, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -461,12 +461,12 @@
    1: Dragon's Rage Channeler
    2: Dragon's Rage Channeler
    3: Daze
-   4: Flooded Strand
+   4: Ponder
    5: Volcanic Island
    6: Scalding Tarn
-  >> B/B: 0 (Delver of Secrets)
+  >> B/B: 4 (Ponder)
 --- Narrative ---
-  Player B puts Delver of Secrets to top of library
+  Player B puts Ponder to top of library
   Resolving ability (category: PeekAndReveal)
   Player B looks at top of Player A's library: Dragon's Rage Channeler
   Resolving ability (category: DelayedTrigger)
@@ -478,11 +478,11 @@
   -------- TURN 3 (Player A) --------
   Delayed trigger fires.
   Resolving ability (category: Draw, amount: 1)
-  Player B draws Delver of Secrets
+  Player B draws Ponder
   Player A draws Dragon's Rage Channeler
 --- Turn 3 (Player A) ---
   PA: Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Scalding Tarn, Wasteland
-  PB: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn
+  PB: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn
 
 --- Decision 23 ---
   Priority: Player A (active)
@@ -595,14 +595,14 @@
 --- Decision 28 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn | lib 49
+  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T)
   Opp BF:   Island | Mountain (T)
   Stack: Dragon's Rage Channeler (spell, opponent)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Scalding Tarn, Ponder, Misty Rainforest
-  Known top: Ponder, ?, ?, ?, ?
+  Known top: Flooded Strand, ?, ?, ?, ?
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -615,7 +615,7 @@
 --- Decision 29 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn | lib 49
+  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T)
   Opp BF:   Island | Mountain (T)
@@ -623,7 +623,7 @@
   Pending: Daze (self)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Scalding Tarn, Ponder, Misty Rainforest
-  Known top: Ponder, ?, ?, ?, ?
+  Known top: Flooded Strand, ?, ?, ?, ?
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -635,14 +635,14 @@
 --- Decision 30 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Flooded Strand, Volcanic Island, Scalding Tarn | lib 49
+  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T)
   Opp BF:   Island | Mountain (T)
   Stack: Dragon's Rage Channeler (spell, opponent)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Scalding Tarn, Ponder, Misty Rainforest
-  Known top: Ponder, ?, ?, ?, ?
+  Known top: Flooded Strand, ?, ?, ?, ?
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -716,13 +716,13 @@
 --- Decision 34 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Island, Flooded Strand, Volcanic Island, Scalding Tarn | lib 49
+  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Ponder, Island, Volcanic Island, Scalding Tarn | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 49
   Opp BF:   Mountain (T)
   Stack: Daze (spell, opponent) -> Daze (self, slot 97) -> Daze (spell, self) -> Dragon's Rage Channeler (opponent, slot 98) -> Dragon's Rage Channeler (spell, opponent)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Scalding Tarn, Ponder, Misty Rainforest
-  Known top: Ponder, ?, ?, ?, ?
+  Known top: Flooded Strand, ?, ?, ?, ?
   Known opp hand: Island
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: opp_lands_played=1, self_revolt, opp_revolt
@@ -737,7 +737,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
-  Player B draws Ponder
+  Player B draws Flooded Strand
 --- Turn 4 (Player B) ---
   PA: Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Wasteland
   PB: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Ponder, Island, Flooded Strand, Volcanic Island, Scalding Tarn

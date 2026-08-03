@@ -1,0 +1,10 @@
+{
+  "name": "doomsday_brainstorm_led_kill",
+  "comment": "Same-turn Doomsday kill via Brainstorm + LED: pile [Wraith, Edge, LED, Oracle, filler]; Brainstorm lifts the top three and puts back two junk Islands; LED resolves before the cycle chain; the Edge cycle's draw is the crack window (sac LED for UUU with Oracle still in the library), then Oracle wins off the floating mana on turn 1. The in-hand Street Wraith is load-bearing: Brainstorm's two put-backs cost two draws, so a pile-only chain is always one draw short.",
+  "hand_a": ["Brainstorm", "Dark Ritual", "Doomsday", "Street Wraith", "Island", "Island", "Island"],
+  "library_a": ["Street Wraith", "Edge of Autumn", "Lions Eye Diamond", "Thassas Oracle", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Underground Sea", "Island"],
+  "hand_b": ["Forest"],
+  "play": "A:keep,B:keep,A:play:Island,A:cast:Dark Ritual,A:pass,A:cast:Doomsday,A:top:Street Wraith,A:top:Edge of Autumn,A:top:Lions Eye Diamond,A:top:Thassas Oracle,A:top:Island,A:top:Island,A:top:Thassas Oracle,A:top:Lions Eye Diamond,A:top:Edge of Autumn,A:cast:Brainstorm,A:top:Island,A:top:Island,A:cast:Lions Eye Diamond,A:pass,A:activate:Street Wraith,A:pass,A:activate:Street Wraith,A:pass,A:activate:Edge of Autumn,A:desc:Sacrifice Island,A:mana:u,A:cast:Thassas Oracle",
+  "seed": 1
+}

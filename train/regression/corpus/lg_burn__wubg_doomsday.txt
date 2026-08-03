@@ -54,63 +54,19 @@
   Actions:
    0: Keep
    1: Mulligan
-  >> B/B: 1 (Mulligan)
---- Narrative ---
-  Player B mulligans.
-  Player B draws Tamiyo, Inquisitive Student
-  Player B draws Dark Ritual
-  Player B draws Cavern of Souls
-  Player B draws Dark Ritual
-  Player B draws Tamiyo, Inquisitive Student
-  Player B draws Ponder
-  Player B draws Doomsday
-  Player B hand:
-  Cavern of Souls
-  Dark Ritual
-  Dark Ritual
-  Doomsday
-  Ponder
-  Tamiyo, Inquisitive Student
-  Tamiyo, Inquisitive Student
-
---- Decision 3 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Actions:
-   0: Keep
-   1: Mulligan
   >> B/B: 0 (Keep)
 --- Narrative ---
-  Player B keeps a 6-card hand.
-  Player B: Choose card to put on library bottom (1 remaining):
-
---- Decision 4 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Actions:
-   0: Cavern of Souls
-   1: Dark Ritual
-   2: Dark Ritual
-   3: Doomsday
-   4: Ponder
-   5: Tamiyo, Inquisitive Student
-   6: Tamiyo, Inquisitive Student
-  >> B/B: 0 (Cavern of Souls)
---- Narrative ---
+  Player B keeps a 7-card hand.
   -------- TURN 1 (Player A) --------
 --- Turn 1 (Player A) ---
   PA: Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
-  PB: Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island
 
---- Decision 5 ---
+--- Decision 3 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Fiery Islet
@@ -121,11 +77,11 @@
 --- Narrative ---
   Player A played Fiery Islet
 
---- Decision 6 ---
+--- Decision 4 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Fiery Islet
   Extras: self_lands_played=1
   Actions:
@@ -142,106 +98,98 @@
   --- Combat Damage ---
   --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
-  Player B draws Island
+  Player B draws Teferi, Time Raveler
 --- Turn 2 (Player B) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
-  PB: Dark Ritual, Dark Ritual, Doomsday, Island, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island
+
+--- Decision 5 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+   2: Cast Lotus Petal  [#0]
+  >> B/B: 2 (Cast Lotus Petal)
+--- Narrative ---
+  Player B casts Lotus Petal
+
+--- Decision 6 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Fiery Islet (T)
+  Stack: Lotus Petal (spell, self)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Lotus Petal enters the battlefield
 
 --- Decision 7 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Lotus Petal
   Opp BF:   Fiery Islet (T)
   Opp exile:  Rift Bolt
   Opp revealed: Fiery Islet, Rift Bolt
   Actions:
    0: Pass priority
-   1: Play Island
-  >> B/B: 1 (Play Island)
+   1: Play Tropical Island
+   2: Cast Dark Ritual  [#0]
+   3: Cast Tamiyo, Inquisitive Student  [#0]
+  >> B/B: 3 (Cast Tamiyo, Inquisitive Student)
 --- Narrative ---
-  Player B played Island
+  Player B sacrifices Lotus Petal
+  Player B activated Lotus Petal for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
 
 --- Decision 8 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island
   Opp BF:   Fiery Islet (T)
+  Stack: Tamiyo, Inquisitive Student (spell, self)
+  Self GY: Lotus Petal
   Opp exile:  Rift Bolt
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1
+  Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Cast Ponder  [#0]
-   2: Cast Tamiyo, Inquisitive Student  [#0]
-   3: Cast Tamiyo, Inquisitive Student  [#0]
-  >> B/B: 1 (Cast Ponder)
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Player B activated Island for 1(U)
-  Player B casts Ponder
-  Resolving ability (category: RearrangeTopOfLibrary)
-  Player B looks at the top 3 card(s) of their library.
-  Choose which card goes 3 from top:
+  Tamiyo, Inquisitive Student enters the battlefield
 
 --- Decision 9 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Opp BF:   Fiery Islet (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
+  Self GY: Lotus Petal
   Opp exile:  Rift Bolt
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1
+  Extras: self_revolt
   Actions:
-   0: Scrubland  [#2]
-   1: Tamiyo, Inquisitive Student  [#2]
-   2: Brainstorm  [#2]
-  >> B/B: 0 (Scrubland)
+   0: Pass priority
+   1: Play Tropical Island
+  >> B/B: 1 (Play Tropical Island)
 --- Narrative ---
-  Choose which card goes 2 from top:
-
---- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
-  Opp BF:   Fiery Islet (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Opp exile:  Rift Bolt
-  Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1
-  Actions:
-   0: Tamiyo, Inquisitive Student  [#1]
-   1: Brainstorm  [#1]
-  >> B/B: 0 (Tamiyo, Inquisitive Student)
-
---- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
-  Opp BF:   Fiery Islet (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Opp exile:  Rift Bolt
-  Known top: Brainstorm, Tamiyo, Inquisitive Student, Scrubland, ?, ?
-  Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1
-  Actions:
-   0: Don't shuffle
-   1: Shuffle
-  >> B/B: 0 (Don't shuffle)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Brainstorm
+  Player B played Tropical Island
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---
@@ -253,18 +201,18 @@
   Player A may cast Rift Bolt without paying its mana cost (suspend).
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
-  PB: Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island
 
---- Decision 12 ---
+--- Decision 10 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet
-  Opp BF:   Island (T)
-  Opp GY:  Ponder
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
+  Opp GY:  Lotus Petal
   Self exile: Rift Bolt
-  Opp revealed: Ponder, Island
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Pass priority
    1: Cast Rift Bolt (from exile, no cost)  [#7]
@@ -273,38 +221,55 @@
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 13 ---
+--- Decision 11 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet
-  Opp BF:   Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
   Pending: Rift Bolt (self)
-  Opp GY:  Ponder
+  Opp GY:  Lotus Petal
   Self exile: Rift Bolt
-  Opp revealed: Ponder, Island
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Player B (20 life)
    1: Player A (19 life)
+   2: Tamiyo, Inquisitive Student
   >> A/A: 0 (Player B (20 life))
 --- Narrative ---
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
+
+--- Decision 12 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 3)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
+  Opp BF:   Fiery Islet
+  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Self GY: Lotus Petal
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 17 life)
   Player A draws Chain Lightning
 
---- Decision 14 ---
+--- Decision 13 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   17 life | mana: empty | hand count: 6 | lib 52
+  Opp:   17 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet
-  Opp BF:   Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
   Self GY: Rift Bolt
-  Opp GY:  Ponder
-  Opp revealed: Ponder, Island
+  Opp GY:  Lotus Petal
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -316,26 +281,44 @@
 --- Narrative ---
   Choose target for Chain Lightning:
 
---- Decision 15 ---
+--- Decision 14 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   17 life | mana: empty | hand count: 6 | lib 52
+  Opp:   17 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet
-  Opp BF:   Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
-  Opp GY:  Ponder
-  Opp revealed: Ponder, Island
+  Opp GY:  Lotus Petal
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Player B (17 life)
    1: Player A (19 life)
+   2: Tamiyo, Inquisitive Student
   >> A/A: 0 (Player B (17 life))
 --- Narrative ---
   Targeting choice 0
   Player A pays 1 life
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
+
+--- Decision 15 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  17 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
+  Opp BF:   Fiery Islet (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Lotus Petal
+  Opp GY:  Rift Bolt
+  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 14 life)
   Resolving ability (category: CopySpellAbility)
@@ -344,29 +327,47 @@
 --- Decision 16 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  14 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 52
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   18 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
   Opp BF:   Fiery Islet (T)
   Stack: Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Ponder
+  Self GY: Lotus Petal
   Opp GY:  Rift Bolt
-  Known top: Tamiyo, Inquisitive Student, Scrubland, ?, ?, ?
+  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Tap Tropical Island for (G)
+   1: Tap Tropical Island for (U)
+   2: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Tap Tropical Island for (G))
+--- Narrative ---
+  Player B tapped Tropical Island for {G}
+
+--- Decision 17 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  14 life | mana: 1G | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Fiery Islet (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Lotus Petal
+  Opp GY:  Rift Bolt
   Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Don't pay (spell is countered)  [#0]
   >> B/B: 0 (Don't pay (spell is countered))
 
---- Decision 17 ---
+--- Decision 18 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   14 life | mana: empty | hand count: 6 | lib 52
+  Opp:   14 life | mana: 1G | hand count: 5 | lib 52
   Self BF:  Fiery Islet (T)
-  Opp BF:   Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Ponder
-  Opp revealed: Ponder, Island
+  Opp GY:  Lotus Petal
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -376,16 +377,16 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 18 ---
+--- Decision 19 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   14 life | mana: empty | hand count: 6 | lib 52
+  Opp:   14 life | mana: 1G | hand count: 5 | lib 52
   Self BF:  Fiery Islet (T) | Mountain
-  Opp BF:   Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Ponder
-  Opp revealed: Ponder, Island
+  Opp GY:  Lotus Petal
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -399,286 +400,193 @@
   --- Combat Damage ---
   --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
+  Player B draws Flooded Strand
 --- Turn 4 (Player B) ---
   PA: Mountain, Mountain, Price of Progress, Rift Bolt
-  PB: Brainstorm, Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-
---- Decision 19 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  14 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 52
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Ponder
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
-  Known top: Tamiyo, Inquisitive Student, Scrubland, ?, ?, ?
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Brainstorm  [#0]
-  >> B/B: 1 (Cast Brainstorm)
---- Narrative ---
-  Player B activated Island for 1(U)
-  Player B casts Brainstorm
-  Resolving ability (category: Draw, amount: 3)
-  Player B draws Tamiyo, Inquisitive Student
-  Player B draws Scrubland
-  Player B draws Ponder
-  Resolving ability (category: ChangeZone)
-  Player B chooses a card from Player B hand:
+  PB: Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler
 
 --- Decision 20 ---
   Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  14 life | mana: empty | hand(8): Dark Ritual, Dark Ritual, Doomsday, Ponder, Scrubland, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Ponder
+  Self GY: Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
-   0: Dark Ritual
-   1: Dark Ritual
-   2: Doomsday
-   3: Ponder
-   4: Scrubland
-   5: Tamiyo, Inquisitive Student
-   6: Tamiyo, Inquisitive Student
-   7: Tamiyo, Inquisitive Student
-  >> B/B: 3 (Ponder)
+   0: Pass priority
+   1: Play Flooded Strand
+  >> B/B: 1 (Play Flooded Strand)
 --- Narrative ---
-  Player B puts Ponder to top of library
-  Player B chooses a card from Player B hand:
+  Player B played Flooded Strand
 
 --- Decision 21 ---
   Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  14 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Scrubland, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T)
+  Self BF:  Flooded Strand | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Ponder
+  Self GY: Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
   Actions:
-   0: Dark Ritual
-   1: Dark Ritual
-   2: Doomsday
-   3: Scrubland
-   4: Tamiyo, Inquisitive Student
-   5: Tamiyo, Inquisitive Student
-   6: Tamiyo, Inquisitive Student
-  >> B/B: 0 (Dark Ritual)
+   0: Pass priority
+   1: Activate Flooded Strand (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Flooded Strand (ChangeZone))
 --- Narrative ---
-  Player B puts Dark Ritual to top of library
-  Player B draws Dark Ritual
+  Player B pays 1 life
+  Player B sacrifices Flooded Strand
+  Player B's Flooded Strand ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
 
 --- Decision 22 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Scrubland, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Self:  13 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
+  Stack: Flooded Strand (ability, self) [amt=1]
+  Pending: Flooded Strand (self)
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Pass priority
-   1: Play Scrubland
-  >> B/B: 1 (Play Scrubland)
+   0: Fail to find
+   1: Island
+   2: Scrubland
+   3: Tropical Island
+   4: Tundra
+   5: Undercity Sewers
+   6: Underground Sea
+   7: Underground Sea
+  >> B/B: 1 (Island)
 --- Narrative ---
-  Player B played Scrubland
+  Player B shuffles their library
+  Player B puts Island to the battlefield
 
 --- Decision 23 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Self:  13 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   1: Cast Quantum Riddler (warp)  [#1]
+  >> B/B: 1 (Cast Quantum Riddler (warp))
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Tropical Island for 1(G)
+  Player B casts Quantum Riddler
 
 --- Decision 24 ---
   Priority: Player B (active)
-  Step: Begin Combat (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Step: First Main (turn 4)
+  Self:  13 life | mana: empty | hand(4): Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
+  Stack: Quantum Riddler (spell, self)
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  No creatures eligible to attack.
+  Quantum Riddler enters the battlefield
+  Quantum Riddler was cast with warp (exiled at the next end step; castable from exile later).
+  Quantum Riddler triggered
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Dark Ritual
+  --- Declare Attackers (Player B) ---
 
 --- Decision 25 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Self:  13 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler | lib 49
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Island (T) | Quantum Riddler [4/6] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
 --- Narrative ---
-  No attackers — skipping declare blockers.
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
 --- Decision 26 ---
   Priority: Player B (active)
-  Step: Declare Blk (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Step: Declare Atk (turn 4)
+  Self:  13 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler | lib 49
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Island (T) | Quantum Riddler [4/6] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (T)
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
 --- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
   --- Combat Damage ---
   --- End Combat Damage ---
-
---- Decision 27 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 28 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 29 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 30 ---
-  Priority: Player B (active)
-  Step: End Step (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
+  Delayed trigger fires.
+  Resolving ability (category: WarpExile)
+  Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
   -------- TURN 5 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
 --- Turn 5 (Player A) ---
   PA: Mountain, Mountain, Price of Progress
-  PB: Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler
 
---- Decision 31 ---
+--- Decision 27 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
-  Opp:   14 life | mana: empty | hand count: 6 | lib 50
+  Opp:   13 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Fiery Islet | Mountain
-  Opp BF:   Island (T) | Scrubland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
   Stack: Rift Bolt (ability, self)
   Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Brainstorm, Ponder
+  Opp GY:  Flooded Strand, Lotus Petal
   Self exile: Rift Bolt
-  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Cast Price of Progress  [#0]
@@ -690,65 +598,45 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Price of Progress
 
---- Decision 32 ---
+--- Decision 28 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Self:  13 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler | lib 49
   Opp:   17 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Price of Progress (spell, opponent) -> Rift Bolt (ability, opponent)
-  Self GY: Brainstorm, Ponder
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 2)
   Dealt 2 damage to player (now at 15 life)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 12 life)
-
---- Decision 33 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 5)
-  Self:  12 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Rift Bolt (ability, opponent)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
+  Dealt 2 damage to player (now at 11 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
   Player A may cast Rift Bolt without paying its mana cost (suspend).
 
---- Decision 34 ---
+--- Decision 29 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
-  Opp:   12 life | mana: empty | hand count: 6 | lib 50
+  Opp:   11 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Island (T) | Scrubland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Brainstorm, Ponder
+  Opp GY:  Flooded Strand, Lotus Petal
   Self exile: Rift Bolt
-  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Cast Rift Bolt (from exile, no cost)  [#7]
@@ -757,93 +645,60 @@
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 35 ---
+--- Decision 30 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
-  Opp:   12 life | mana: empty | hand count: 6 | lib 50
+  Opp:   11 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Island (T) | Scrubland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Brainstorm, Ponder
+  Opp GY:  Flooded Strand, Lotus Petal
   Self exile: Rift Bolt
-  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
-   0: Player B (12 life)
+   0: Player B (11 life)
    1: Player A (15 life)
-  >> A/A: 0 (Player B (12 life))
+   2: Tamiyo, Inquisitive Student
+  >> A/A: 0 (Player B (11 life))
 --- Narrative ---
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
 
---- Decision 36 ---
+--- Decision 31 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
-  Self:  12 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Self:  11 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler | lib 49
   Opp:   15 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Rift Bolt (spell, opponent) -> self (player)
-  Self GY: Brainstorm, Ponder
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 9 life)
-
---- Decision 37 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
+  Dealt 3 damage to player (now at 8 life)
   Player A draws Exquisite Firecraft
 
---- Decision 38 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 39 ---
+--- Decision 32 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
-  Opp:   9 life | mana: empty | hand count: 6 | lib 50
+  Opp:   8 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Island (T) | Scrubland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Brainstorm, Ponder
-  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -851,524 +706,167 @@
   >> A/A: 1 (Play Mountain)
 --- Narrative ---
   Player A played Mountain
-
---- Decision 40 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 41 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   No creatures eligible to attack.
-
---- Decision 42 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   No attackers — skipping declare blockers.
-
---- Decision 43 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   --- Combat Damage ---
   --- End Combat Damage ---
-
---- Decision 44 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 45 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 46 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 47 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 5)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Exquisite Firecraft, Mountain, Mountain
-  PB: Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler
 
---- Decision 48 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 50
+  Self:  8 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler | lib 49
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island | Scrubland
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Ponder, ?, ?, ?, ?
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Player B draws Ponder
+  Player B draws Edge of Autumn
 
---- Decision 49 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
+  Self:  8 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 48
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island | Scrubland
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   1: Activate Clue token (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 2 (Activate Edge of Autumn from hand (Draw))
 
---- Decision 50 ---
+--- Decision 35 ---
   Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
+  Step: Draw (turn 6)
+  Self:  8 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 48
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island | Scrubland
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Brainstorm, Ponder
+  Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Cast Ponder  [#0]
-   4: Cast Tamiyo, Inquisitive Student  [#0]
-   5: Cast Tamiyo, Inquisitive Student  [#0]
-   6: Cast Tamiyo, Inquisitive Student  [#0]
-  >> B/B: 3 (Cast Ponder)
+   0: Sacrifice Island
+   1: Sacrifice Tropical Island
+  >> B/B: 0 (Sacrifice Island)
 --- Narrative ---
-  Player B activated Island for 1(U)
-  Player B casts Ponder
-
---- Decision 51 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Stack: Ponder (spell, self)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: RearrangeTopOfLibrary)
-  Player B looks at the top 3 card(s) of their library.
-  Choose which card goes 3 from top:
-
---- Decision 52 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Flooded Strand  [#2]
-   1: Flooded Strand  [#2]
-   2: Daze  [#2]
-  >> B/B: 0 (Flooded Strand)
---- Narrative ---
-  Choose which card goes 2 from top:
-
---- Decision 53 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Flooded Strand  [#1]
-   1: Daze  [#1]
-  >> B/B: 0 (Flooded Strand)
-
---- Decision 54 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 49
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Daze, Flooded Strand, Flooded Strand, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Don't shuffle
-   1: Shuffle
-  >> B/B: 0 (Don't shuffle)
---- Narrative ---
+  Player B sacrifices Island
+  Player B activates Edge of Autumn from hand
   Resolving ability (category: Draw, amount: 1)
-  Player B draws Daze
+  Player B draws Teferi, Time Raveler
+  --- Declare Attackers (Player B) ---
 
---- Decision 55 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 56 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  No creatures eligible to attack.
-
---- Decision 57 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
+  Self:  8 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 47
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
+  Self GY: Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_revolt, mandatory_choice=Declare Atk
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
 --- Narrative ---
-  No attackers — skipping declare blockers.
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 58 ---
+--- Decision 37 ---
   Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
+  Step: Declare Atk (turn 6)
+  Self:  8 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 47
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
+  Self GY: Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_revolt, mandatory_choice=Declare Atk
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
 --- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
   --- Combat Damage ---
   --- End Combat Damage ---
-
---- Decision 59 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 60 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 61 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 62 ---
-  Priority: Player B (active)
-  Step: End Step (turn 6)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: Exquisite Firecraft, Mountain
-  PB: Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler
 
---- Decision 63 ---
+--- Decision 38 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   9 life | mana: empty | hand count: 7 | lib 48
+  Opp:   8 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island (T) | Scrubland
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue (SICK)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Brainstorm, Ponder
-  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Opp GY:  Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
-
---- Decision 64 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet | Mountain | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Mountain
 
---- Decision 65 ---
+--- Decision 39 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 7 | lib 48
+  Opp:   8 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island (T) | Scrubland
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue (SICK)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Brainstorm, Ponder
-  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Opp GY:  Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 66 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 7)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   15 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet | Mountain | Mountain
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 67 ---
+--- Decision 40 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 7 | lib 48
+  Opp:   8 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island (T) | Scrubland
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue (SICK)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Brainstorm, Ponder
-  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Opp GY:  Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -1379,21 +877,23 @@
 --- Narrative ---
   Choose target for Exquisite Firecraft:
 
---- Decision 68 ---
+--- Decision 41 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 7 | lib 48
+  Opp:   8 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island (T) | Scrubland
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue (SICK)
   Pending: Exquisite Firecraft (self)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Brainstorm, Ponder
-  Opp revealed: Ponder, Island, Brainstorm, Scrubland
+  Opp GY:  Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
-   0: Player B (9 life)
+   0: Player B (8 life)
    1: Player A (15 life)
-  >> A/A: 0 (Player B (9 life))
+   2: Tamiyo, Inquisitive Student
+  >> A/A: 0 (Player B (8 life))
 --- Narrative ---
   Targeting choice 0
   Player A activated Mountain for 1(R)
@@ -1402,158 +902,37 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Exquisite Firecraft targeting Player B
 
---- Decision 69 ---
+--- Decision 42 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
+  Self:  8 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 47
   Opp:   14 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Island (T) | Scrubland
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue (SICK)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
   Stack: Exquisite Firecraft (spell, opponent) -> self (player)
-  Self GY: Ponder, Brainstorm, Ponder
+  Self GY: Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Cast Daze (alternate cost)  [#1]
-  >> B/B: 3 (Cast Daze (alternate cost))
---- Narrative ---
-  Choose target for Daze:
-
---- Decision 70 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Stack: Exquisite Firecraft (spell, opponent) -> self (player)
-  Pending: Daze (self)
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Actions:
-   0: Exquisite Firecraft
-  >> B/B: 0 (Exquisite Firecraft)
---- Narrative ---
-  Targeting choice 0
-
---- Decision 71 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Daze, Doomsday, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Island (T) | Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Stack: Exquisite Firecraft (spell, opponent) -> self (player)
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Actions:
-   0: Return Island
-  >> B/B: 0 (Return Island)
---- Narrative ---
-  Player B returns Island to hand
-  Player B casts Daze targeting Exquisite Firecraft
-
---- Decision 72 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Stack: Daze (spell, self) -> Exquisite Firecraft (opponent, slot 97) -> Exquisite Firecraft (spell, opponent) -> self (player)
-  Self GY: Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Counter)
-  Exquisite Firecraft's controller may pay {1} to save it:
-
---- Decision 73 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  14 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Scrubland
-  Stack: Daze (spell, opponent) -> Exquisite Firecraft (self, slot 97) -> Exquisite Firecraft (spell, self) -> opponent (player)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
-  Extras: opp_revolt
-  Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> A/A: 0 (Don't pay (spell is countered))
---- Narrative ---
-  Exquisite Firecraft can't be countered
-
---- Decision 74 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  9 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Stack: Exquisite Firecraft (spell, opponent) -> self (player)
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 5 life)
+  Dealt 4 damage to player (now at 4 life)
 
---- Decision 75 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 76 ---
+--- Decision 43 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  14 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   5 life | mana: empty | hand count: 7 | lib 48
+  Opp:   4 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Scrubland
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue (SICK)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Daze, Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Ponder, Daze, Island, Brainstorm, Scrubland
-  Extras: opp_revolt
+  Opp GY:  Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -1561,560 +940,155 @@
   >> A/A: 1 (Play Mountain)
 --- Narrative ---
   Player A played Mountain
-
---- Decision 77 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 78 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   No creatures eligible to attack.
-
---- Decision 79 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   No attackers — skipping declare blockers.
-
---- Decision 80 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   --- Combat Damage ---
   --- End Combat Damage ---
-
---- Decision 81 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 82 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 83 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 84 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 7)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   -------- TURN 8 (Player B) --------
+  Player B draws Veil of Summer
 --- Turn 8 (Player B) ---
   PA: Mountain, Mountain
-  PB: Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler, Veil of Summer
 
---- Decision 85 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, Flooded Strand, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Player B draws Flooded Strand
-
---- Decision 86 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
-  Self:  5 life | mana: empty | hand(8): Dark Ritual, Dark Ritual, Doomsday, Flooded Strand, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
+  Self:  4 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler, Veil of Summer | lib 46
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
+  Self GY: Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, ?, ?, ?, ?
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 87 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(8): Dark Ritual, Dark Ritual, Doomsday, Flooded Strand, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Play Flooded Strand
-   2: Play Island
-   3: Cast Dark Ritual  [#0]
-   4: Cast Dark Ritual  [#0]
-  >> B/B: 1 (Play Flooded Strand)
+   1: Cast Veil of Summer  [#0]
+  >> B/B: 1 (Cast Veil of Summer)
 --- Narrative ---
-  Player B played Flooded Strand
+  Player B activated Tropical Island for 1(G)
+  Player B casts Veil of Summer
 
---- Decision 88 ---
+--- Decision 45 ---
   Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
+  Step: Draw (turn 8)
+  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 46
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Flooded Strand | Scrubland
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Daze, Ponder, Brainstorm, Ponder
+  Stack: Veil of Summer (spell, self)
+  Self GY: Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, ?, ?, ?, ?
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Activate Flooded Strand (ChangeZone)  [#0]
-  >> B/B: 3 (Activate Flooded Strand (ChangeZone))
---- Narrative ---
-  Player B pays 1 life
-  Player B sacrifices Flooded Strand
-  Player B's Flooded Strand ability is on the stack
-
---- Decision 89 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  4 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Flooded Strand (ability, self) [amt=1]
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Resolving ability (category: ChangeZone)
-  Searching Player B's library:
+  Resolving ability (category: Draw, amount: 1)
+  Resolving ability (category: Effect)
+  Spells Player B controls can't be countered this turn.
+  Resolving ability (category: Pump)
+  Player B and the permanents they control gain hexproof from the chosen color(s) until end of turn.
+  Resolving ability (category: PumpAll)
+  --- Declare Attackers (Player B) ---
 
---- Decision 90 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  4 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Flooded Strand (ability, self) [amt=1]
-  Pending: Flooded Strand (self)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known top: Flooded Strand, ?, ?, ?, ?
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Fail to find
-   1: Tropical Island
-   2: Tropical Island
-   3: Tundra
-   4: Undercity Sewers
-   5: Underground Sea
-   6: Underground Sea
-  >> B/B: 1 (Tropical Island)
---- Narrative ---
-  Player B shuffles their library
-  Player B puts Tropical Island to the battlefield
-
---- Decision 91 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  4 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tropical Island
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Cast Tamiyo, Inquisitive Student  [#0]
-   4: Cast Tamiyo, Inquisitive Student  [#0]
-   5: Cast Tamiyo, Inquisitive Student  [#0]
-  >> B/B: 3 (Cast Tamiyo, Inquisitive Student)
---- Narrative ---
-  Player B activated Tropical Island for 1(U)
-  Player B casts Tamiyo, Inquisitive Student
-
---- Decision 92 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Tamiyo, Inquisitive Student (spell, self)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Tamiyo, Inquisitive Student enters the battlefield
-
---- Decision 93 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 94 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  No creatures eligible to attack.
-
---- Decision 95 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 46
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  Extras: mandatory_choice=Declare Atk
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
 --- Narrative ---
-  No attackers — skipping declare blockers.
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 96 ---
+--- Decision 47 ---
   Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Step: Declare Atk (turn 8)
+  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 46
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (T) | Clue | Clue
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  Extras: mandatory_choice=Declare Atk
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
 --- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
   --- Combat Damage ---
   --- End Combat Damage ---
-
---- Decision 97 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 98 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 99 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 100 ---
-  Priority: Player B (active)
-  Step: End Step (turn 8)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
   PA: Mountain
-  PB: Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler
 
---- Decision 101 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  14 life | mana: empty | hand(1): Mountain | lib 50
   Opp:   4 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
-
---- Decision 102 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 9)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Fiery Islet | Mountain | Mountain | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
 --- Narrative ---
   Player A draws Eidolon of the Great Revel
 
---- Decision 103 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  14 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
   Opp:   4 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 104 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 9)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   14 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Fiery Islet | Mountain | Mountain | Mountain
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 105 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
   Opp:   4 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -2126,18 +1100,18 @@
   Player A activated Mountain for 1(R)
   Player A casts Eidolon of the Great Revel
 
---- Decision 106 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Mountain | lib 49
   Opp:   4 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Fiery Islet | Mountain (T) | Mountain (T) | Mountain
-  Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Stack: Eidolon of the Great Revel (spell, self)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -2147,58 +1121,58 @@
   Player A sacrifices Fiery Islet
   Player A's Fiery Islet ability is on the stack
 
---- Decision 107 ---
+--- Decision 52 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 46
   Opp:   14 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
   Stack: Fiery Islet (ability, opponent) [amt=1] -> Eidolon of the Great Revel (spell, opponent)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
   Player A draws Chain Lightning
 
---- Decision 108 ---
+--- Decision 53 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 46
   Opp:   14 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
   Stack: Eidolon of the Great Revel (spell, opponent)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Eidolon of the Great Revel enters the battlefield
 
---- Decision 109 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
   Opp:   4 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2207,17 +1181,17 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 110 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
   Opp:   4 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain
-  Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2226,18 +1200,18 @@
 --- Narrative ---
   Choose target for Chain Lightning:
 
---- Decision 111 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
   Opp:   4 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain
-  Opp BF:   Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Pending: Chain Lightning (self)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Known opp hand: Island
-  Opp revealed: Flooded Strand, Ponder, Daze, Island, Brainstorm, Scrubland, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Player B (4 life)
@@ -2251,43 +1225,43 @@
   Player A casts Chain Lightning targeting Player B
   Eidolon of the Great Revel triggered
 
---- Decision 112 ---
+--- Decision 57 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 46
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 2)
   Dealt 2 damage to player (now at 12 life)
 
---- Decision 113 ---
+--- Decision 58 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Self:  4 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 46
   Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Stack: Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
+   1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
@@ -2295,36 +1269,17 @@
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
---- Decision 114 ---
+--- Decision 59 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  1 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Self:  1 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 46
   Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Stack: Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Tap Scrubland for (W)
-   1: Tap Scrubland for (B)
-   2: Don't pay (spell is countered)  [#0]
-  >> B/B: 0 (Tap Scrubland for (W))
---- Narrative ---
-  Player B tapped Scrubland for {W}
-
---- Decision 115 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  1 life | mana: 1W | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
-  Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -2336,87 +1291,125 @@
   --- Combat Damage ---
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
+  Player B draws Force of Will
+  --- Declare Attackers (Player B) ---
 --- Turn 10 (Player B) ---
   PA: Chain Lightning
-  PB: Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  PB: Dark Ritual, Dark Ritual, Doomsday, Force of Will, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler
 
---- Decision 116 ---
+--- Decision 60 ---
   Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  1 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 46
+  Step: Declare Atk (turn 10)
+  Self:  1 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 45
   Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue | Clue | Clue
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: mandatory_choice=Declare Atk
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
 --- Narrative ---
-  Player B draws Tropical Island
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 117 ---
+--- Decision 61 ---
   Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  1 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tropical Island | lib 45
+  Step: Declare Atk (turn 10)
+  Self:  1 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Force of Will, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler | lib 45
   Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island | Clue | Clue | Clue
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
+  Self GY: Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Quantum Riddler
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: mandatory_choice=Declare Atk
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 118 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  1 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tropical Island | lib 45
-  Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Play Island
-   2: Play Tropical Island
-   3: Cast Dark Ritual  [#0]
-   4: Cast Dark Ritual  [#0]
-   5: Cast Tamiyo, Inquisitive Student  [#0]
-   6: Cast Tamiyo, Inquisitive Student  [#0]
-  >> B/B: 5 (Cast Tamiyo, Inquisitive Student)
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
 --- Narrative ---
-  Player B activated Tropical Island for 1(U)
-  Player B casts Tamiyo, Inquisitive Student
-  Eidolon of the Great Revel triggered
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+  Player A draws Mountain
+--- Turn 11 (Player A) ---
+  PA: Mountain
+  PB: Dark Ritual, Dark Ritual, Doomsday, Force of Will, Force of Will, Teferi, Time Raveler, Teferi, Time Raveler
 
---- Decision 119 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  1 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tropical Island | lib 45
-  Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Tamiyo, Inquisitive Student (spell, self)
-  Self GY: Flooded Strand, Daze, Ponder, Brainstorm, Ponder
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+--- Decision 62 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  12 life | mana: empty | hand(1): Mountain | lib 47
+  Opp:   1 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue | Clue | Clue (SICK)
+  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   1: Play Mountain
+  >> A/A: 1 (Play Mountain)
 --- Narrative ---
-  Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at -1 life)
+  Player A played Mountain
+  --- Declare Attackers (Player A) ---
+
+--- Decision 63 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 47
+  Opp:   1 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue | Clue | Clue (SICK)
+  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Eidolon of the Great Revel [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Eidolon of the Great Revel [2/2])
+--- Narrative ---
+  Eidolon of the Great Revel attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Eidolon of the Great Revel [2/2] -> Player B
+
+--- Decision 64 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 47
+  Opp:   1 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Eidolon of the Great Revel [2/2] (ATK) | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue | Clue | Clue | Clue (SICK)
+  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Veil of Summer, Edge of Autumn, Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Edge of Autumn, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Eidolon of the Great Revel -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Eidolon of the Great Revel deals 2 damage to Player B
+  --- End Combat Damage ---
   Player B has -1 life - Player A wins!
 
 === A/A wins ===

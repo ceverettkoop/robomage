@@ -5719,15 +5719,15 @@
    2: Ponder
    3: Wasteland
    4: Wasteland
-  >> B/B: 0 (Force of Will)
+  >> B/B: 2 (Ponder)
 --- Narrative ---
-  Player B puts Force of Will to top of library
+  Player B puts Ponder to top of library
   Player B chooses a card from Player B hand:
 
 --- Decision 250 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
-  Self:  7 life | mana: empty | hand(4): Life from the Loam, Ponder, Wasteland, Wasteland | lib 7
+  Self:  7 life | mana: empty | hand(4): Force of Will, Life from the Loam, Wasteland, Wasteland | lib 7
   Opp:   13 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Bayou | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp | Undercity Sewers | Clue
   Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
@@ -5737,21 +5737,21 @@
   Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
+  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
-   0: Life from the Loam
-   1: Ponder
+   0: Force of Will
+   1: Life from the Loam
    2: Wasteland
    3: Wasteland
-  >> B/B: 0 (Life from the Loam)
+  >> B/B: 0 (Force of Will)
 --- Narrative ---
-  Player B puts Life from the Loam to top of library
+  Player B puts Force of Will to top of library
 
 --- Decision 251 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
-  Self:  7 life | mana: empty | hand(3): Ponder, Wasteland, Wasteland | lib 8
+  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 8
   Opp:   13 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Bayou | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp | Undercity Sewers | Clue
   Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
@@ -5759,7 +5759,7 @@
   Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Life from the Loam, Force of Will, ?, ?, ?
+  Known top: Force of Will, Ponder, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Pass priority
@@ -5769,7 +5769,7 @@
 --- Decision 252 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Ponder, Wasteland, Wasteland | lib 8
+  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 8
   Opp:   13 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Bayou | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp | Undercity Sewers | Clue
   Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
@@ -5777,562 +5777,71 @@
   Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Life from the Loam, Force of Will, ?, ?, ?
+  Known top: Force of Will, Ponder, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Pass priority
    1: Play Wasteland
    2: Play Wasteland
-   3: Cast Ponder  [#0]
+   3: Cast Life from the Loam  [#0]
    4: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
    5: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
    6: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
    7: Activate Clue token (Draw)  [#0]
-  >> B/B: 3 (Cast Ponder)
+  >> B/B: 3 (Cast Life from the Loam)
 --- Narrative ---
-  Player B activated Undercity Sewers for 1(U)
-  Player B casts Ponder
+  Choose target for Life from the Loam:
 
 --- Decision 253 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
+  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 8
   Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp | Undercity Sewers (T) | Clue
+  Self BF:  Bayou | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp | Undercity Sewers | Clue
   Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Ponder (spell, self)
+  Pending: Life from the Loam (self)
   Self GY: Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Life from the Loam, Force of Will, ?, ?, ?
+  Known top: Force of Will, Ponder, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
-   0: Pass priority
-   1: Activate Clue token (Draw)  [#0]
-  >> B/B: 1 (Activate Clue token (Draw))
+   0: Done selecting targets
+   1: Forest
+   2: Misty Rainforest
+   3: Misty Rainforest
+   4: Misty Rainforest
+   5: Misty Rainforest
+   6: Polluted Delta
+   7: Polluted Delta
+   8: Polluted Delta
+   9: Tropical Island
+  10: Tropical Island
+  11: Tropical Island
+  12: Underground Sea
+  13: Underground Sea
+  14: Verdant Catacombs
+  15: Wasteland
+  >> B/B: 15 (Wasteland)
 --- Narrative ---
-  Player B activated Bayou for 1(G)
-  Player B activated Swamp for 1(B)
-  Player B sacrifices Clue token
-  Player B's Clue ability is on the stack
-  Clue (token) is put into the graveyard and ceases to exist.
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Life from the Loam
-  Resolving ability (category: RearrangeTopOfLibrary)
-  Player B looks at the top 3 card(s) of their library.
-  Choose which card goes 3 from top:
+  Targeting choice 15
+  Choose target for Life from the Loam:
 
 --- Decision 254 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 7
+  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 8
   Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp (T) | Undercity Sewers (T)
+  Self BF:  Bayou | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp | Undercity Sewers | Clue
   Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
+  Pending: Life from the Loam (self)
   Self GY: Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
+  Known top: Force of Will, Ponder, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt
-  Actions:
-   0: Force of Will  [#2]
-   1: Thoughtseize  [#2]
-   2: Tamiyo, Inquisitive Student  [#2]
-  >> B/B: 0 (Force of Will)
---- Narrative ---
-  Choose which card goes 2 from top:
-
---- Decision 255 ---
-  Priority: Player B (active)
-  Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 7
-  Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt
-  Actions:
-   0: Thoughtseize  [#1]
-   1: Tamiyo, Inquisitive Student  [#1]
-  >> B/B: 0 (Thoughtseize)
-
---- Decision 256 ---
-  Priority: Player B (active)
-  Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 7
-  Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Tamiyo, Inquisitive Student, Thoughtseize, Force of Will, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt
-  Actions:
-   0: Don't shuffle
-   1: Shuffle
-  >> B/B: 0 (Don't shuffle)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Tamiyo, Inquisitive Student
-
---- Decision 257 ---
-  Priority: Player B (active)
-  Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(4): Life from the Loam, Tamiyo, Inquisitive Student, Wasteland, Wasteland | lib 6
-  Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Thoughtseize, Force of Will, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Play Wasteland
-   2: Play Wasteland
-   3: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
-   4: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
-   5: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
-  >> B/B: 1 (Play Wasteland)
---- Narrative ---
-  Player B played Wasteland
-
---- Decision 258 ---
-  Priority: Player B (active)
-  Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Tamiyo, Inquisitive Student, Wasteland | lib 6
-  Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp (T) | Undercity Sewers (T) | Wasteland
-  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Thoughtseize, Force of Will, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
-   2: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
-   3: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
-   4: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 1 (Activate Kaito, Bane of Nightmares [+1] (Effect))
---- Narrative ---
-  Kaito, Bane of Nightmares activates a loyalty ability (+1, loyalty now 7)
-  Player B's Kaito, Bane of Nightmares ability is on the stack
-
---- Decision 259 ---
-  Priority: Player B (active)
-  Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Tamiyo, Inquisitive Student, Wasteland | lib 6
-  Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 7] [Hexproof] | Swamp (T) | Undercity Sewers (T) | Wasteland
-  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Kaito, Bane of Nightmares (ability, self)
-  Self GY: Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Thoughtseize, Force of Will, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 1 (Activate Wasteland (Destroy))
---- Narrative ---
-  Choose target for Wasteland:
-
---- Decision 260 ---
-  Priority: Player B (active)
-  Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Tamiyo, Inquisitive Student, Wasteland | lib 6
-  Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 7] [Hexproof] | Swamp (T) | Undercity Sewers (T) | Wasteland
-  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Kaito, Bane of Nightmares (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Thoughtseize, Force of Will, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Bayou
-   1: Bayou
-   2: Undercity Sewers
-   3: Wasteland
-  >> B/B: 0 (Bayou)
---- Narrative ---
-  Targeting choice 0
-  Player B sacrifices Wasteland
-  Player B's Wasteland ability targeting Bayou is on the stack
-
---- Decision 261 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 26)
-  Self:  13 life | mana: empty | hand(2): Misty Rainforest, Wasteland | lib 35
-  Opp:   7 life | mana: empty | hand count: 3 | lib 6
-  Self BF:  Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 7] [Hexproof] | Swamp (T) | Undercity Sewers (T)
-  Stack: Wasteland (ability, opponent) -> Bayou (self, slot 0) -> Kaito, Bane of Nightmares (ability, opponent)
-  Self GY: Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Self exile: Force of Will
-  Opp exile:  Uro, Titan of Nature's Wrath
-  Known top: Undercity Sewers, ?, ?, ?, ?
-  Known opp hand: Wasteland
-  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Tap Bayou for (G)
-   2: Tap Bayou for (B)
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Destroy)
-  Bayou is destroyed
-  Resolving ability (category: Effect)
-  Player B gets an emblem.
-  --- Declare Attackers (Player B) ---
-
---- Decision 262 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Tamiyo, Inquisitive Student, Wasteland | lib 6
-  Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Thoughtseize, Force of Will, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Kaito, Bane of Nightmares [6/7]
-   1: Confirm attackers
-  >> B/B: 0 (Kaito, Bane of Nightmares [6/7])
---- Narrative ---
-  Kaito, Bane of Nightmares attacking Player A.
-  --- Declare Attackers (Player B) ---
-    [attacking] Kaito, Bane of Nightmares [6/7] -> Player A
-
---- Decision 263 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Tamiyo, Inquisitive Student, Wasteland | lib 6
-  Opp:   13 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] (ATK) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Thoughtseize, Force of Will, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> B/B: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Kaito, Bane of Nightmares -> Player A
-  No creatures eligible to block.
-  --- Combat Damage ---
-    Kaito, Bane of Nightmares deals 6 damage to Player A
-  --- End Combat Damage ---
-  -------- TURN 27 (Player A) --------
-  Player A draws Undercity Sewers
---- Turn 27 (Player A) ---
-  PA: Misty Rainforest, Undercity Sewers, Wasteland
-  PB: Life from the Loam, Tamiyo, Inquisitive Student, Wasteland
-
---- Decision 264 ---
-  Priority: Player A (active)
-  Step: First Main (turn 27)
-  Self:  7 life | mana: empty | hand(3): Misty Rainforest, Undercity Sewers, Wasteland | lib 34
-  Opp:   7 life | mana: empty | hand count: 3 | lib 6
-  Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Self exile: Force of Will
-  Opp exile:  Uro, Titan of Nature's Wrath
-  Known opp hand: Wasteland
-  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
-  Actions:
-   0: Pass priority
-   1: Play Misty Rainforest
-   2: Play Undercity Sewers
-   3: Play Wasteland
-  >> A/A: 1 (Play Misty Rainforest)
---- Narrative ---
-  Player A played Misty Rainforest
-
---- Decision 265 ---
-  Priority: Player A (active)
-  Step: First Main (turn 27)
-  Self:  7 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 34
-  Opp:   7 life | mana: empty | hand count: 3 | lib 6
-  Self BF:  Forest | Island | Misty Rainforest | Swamp | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Self exile: Force of Will
-  Opp exile:  Uro, Titan of Nature's Wrath
-  Known opp hand: Wasteland
-  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Misty Rainforest (ChangeZone)  [#0]
-  >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
---- Narrative ---
-  Player A pays 1 life
-  Player A sacrifices Misty Rainforest
-  Player A's Misty Rainforest ability is on the stack
-  Resolving ability (category: ChangeZone)
-  Searching Player A's library:
-
---- Decision 266 ---
-  Priority: Player A (active)
-  Step: First Main (turn 27)
-  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 34
-  Opp:   7 life | mana: empty | hand count: 3 | lib 6
-  Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers (T)
-  Stack: Misty Rainforest (ability, self) [amt=1]
-  Pending: Misty Rainforest (self)
-  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Self exile: Force of Will
-  Opp exile:  Uro, Titan of Nature's Wrath
-  Known opp hand: Wasteland
-  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Fail to find
-   1: Underground Sea
-   2: Underground Sea
-  >> A/A: 1 (Underground Sea)
---- Narrative ---
-  Player A shuffles their library
-  Player A puts Underground Sea to the battlefield
-  --- Declare Attackers (Player A) ---
-
---- Decision 267 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 27)
-  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 33
-  Opp:   7 life | mana: empty | hand count: 3 | lib 6
-  Self BF:  Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Self exile: Force of Will
-  Opp exile:  Uro, Titan of Nature's Wrath
-  Known opp hand: Wasteland
-  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Orc Army token [1/1]
-   1: Confirm attackers
-  >> A/A: 0 (Orc Army token [1/1])
---- Narrative ---
-  Select target for Orc Army token:
-
---- Decision 268 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 27)
-  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 33
-  Opp:   7 life | mana: empty | hand count: 3 | lib 6
-  Self BF:  Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Self exile: Force of Will
-  Opp exile:  Uro, Titan of Nature's Wrath
-  Known opp hand: Wasteland
-  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Player B (7 life)
-   1: Kaito, Bane of Nightmares (loyalty 7)
-  >> A/A: 0 (Player B (7 life))
---- Narrative ---
-  Orc Army token attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Orc Army token [1/1] -> Player B
-
---- Decision 269 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 27)
-  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 33
-  Opp:   7 life | mana: empty | hand count: 3 | lib 6
-  Self BF:  Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (ATK)
-  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Self exile: Force of Will
-  Opp exile:  Uro, Titan of Nature's Wrath
-  Known opp hand: Wasteland
-  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> A/A: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Orc Army token -> Player B
-  No creatures eligible to block.
-  --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
-  --- End Combat Damage ---
-  -------- TURN 28 (Player B) --------
-  Kaito, Bane of Nightmares gains Hexproof (PlayerTurn)
-  Player B draws Thoughtseize
---- Turn 28 (Player B) ---
-  PA: Undercity Sewers, Wasteland
-  PB: Life from the Loam, Tamiyo, Inquisitive Student, Thoughtseize, Wasteland
-
---- Decision 270 ---
-  Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  6 life | mana: empty | hand(4): Life from the Loam, Tamiyo, Inquisitive Student, Thoughtseize, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Actions:
-   0: Pass priority
-   1: Play Wasteland
-   2: Cast Life from the Loam  [#0]
-   3: Cast Tamiyo, Inquisitive Student  [#0]
-   4: Cast Thoughtseize  [#0]
-   5: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
-   6: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
-   7: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
-  >> B/B: 2 (Cast Life from the Loam)
---- Narrative ---
-  Choose target for Life from the Loam:
-
---- Decision 271 ---
-  Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  6 life | mana: empty | hand(4): Life from the Loam, Tamiyo, Inquisitive Student, Thoughtseize, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Pending: Life from the Loam (self)
-  Self GY: Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Actions:
-   0: Done selecting targets
-   1: Forest
-   2: Misty Rainforest
-   3: Misty Rainforest
-   4: Misty Rainforest
-   5: Misty Rainforest
-   6: Polluted Delta
-   7: Polluted Delta
-   8: Polluted Delta
-   9: Tropical Island
-  10: Tropical Island
-  11: Tropical Island
-  12: Underground Sea
-  13: Underground Sea
-  14: Verdant Catacombs
-  15: Wasteland
-  16: Wasteland
-  >> B/B: 15 (Wasteland)
---- Narrative ---
-  Targeting choice 15
-  Choose target for Life from the Loam:
-
---- Decision 272 ---
-  Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  6 life | mana: empty | hand(4): Life from the Loam, Tamiyo, Inquisitive Student, Thoughtseize, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Pending: Life from the Loam (self)
-  Self GY: Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Actions:
-   0: Done selecting targets
-   1: Forest
-   2: Misty Rainforest
-   3: Misty Rainforest
-   4: Misty Rainforest
-   5: Misty Rainforest
-   6: Polluted Delta
-   7: Polluted Delta
-   8: Polluted Delta
-   9: Tropical Island
-  10: Tropical Island
-  11: Tropical Island
-  12: Underground Sea
-  13: Underground Sea
-  14: Verdant Catacombs
-  15: Wasteland
-  >> B/B: 15 (Wasteland)
---- Narrative ---
-  Targeting choice 15
-  Choose target for Life from the Loam:
-
---- Decision 273 ---
-  Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  6 life | mana: empty | hand(4): Life from the Loam, Tamiyo, Inquisitive Student, Thoughtseize, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Pending: Life from the Loam (self)
-  Self GY: Wasteland, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Done selecting targets
    1: Forest
@@ -6353,111 +5862,24 @@
 --- Narrative ---
   Targeting choice 0
   Player B activated Bayou for 1(G)
-  Player B activated Island for 1(U)
+  Player B activated Swamp for 1(B)
   Player B casts Life from the Loam targeting Wasteland
   Resolving ability (category: ChangeZone)
   Wasteland is moved to hand
-  Wasteland is moved to hand
 
---- Decision 274 ---
+--- Decision 255 ---
   Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  6 life | mana: empty | hand(5): Tamiyo, Inquisitive Student, Thoughtseize, Wasteland, Wasteland, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Step: First Main (turn 26)
+  Self:  7 life | mana: empty | hand(3): Wasteland, Wasteland, Wasteland | lib 8
+  Opp:   13 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp (T) | Undercity Sewers | Clue
+  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Actions:
-   0: Pass priority
-   1: Play Wasteland
-   2: Play Wasteland
-   3: Play Wasteland
-   4: Cast Tamiyo, Inquisitive Student  [#0]
-   5: Cast Thoughtseize  [#0]
-   6: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
-   7: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
-   8: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
-  >> B/B: 4 (Cast Tamiyo, Inquisitive Student)
---- Narrative ---
-  Player B activated Undercity Sewers for 1(U)
-  Player B casts Tamiyo, Inquisitive Student
-  Tamiyo, Inquisitive Student enters the battlefield
-
---- Decision 275 ---
-  Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  6 life | mana: empty | hand(4): Thoughtseize, Wasteland, Wasteland, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T)
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Actions:
-   0: Pass priority
-   1: Play Wasteland
-   2: Play Wasteland
-   3: Play Wasteland
-   4: Cast Thoughtseize  [#0]
-   5: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
-   6: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
-   7: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
-  >> B/B: 4 (Cast Thoughtseize)
---- Narrative ---
-  Choose target for Thoughtseize:
-
---- Decision 276 ---
-  Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  6 life | mana: empty | hand(4): Thoughtseize, Wasteland, Wasteland, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T)
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Pending: Thoughtseize (self)
-  Self GY: Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
-  Actions:
-   0: Player A (6 life)
-   1: Player B (6 life)
-  >> B/B: 0 (Player A (6 life))
---- Narrative ---
-  Targeting choice 0
-  Player B activated Swamp for 1(B)
-  Player B casts Thoughtseize targeting Player A
-  Resolving ability (category: Discard)
-  Player A reveals their hand:
-    Undercity Sewers
-    Wasteland
-  No valid cards to discard.
-  Resolving ability (category: LoseLife, amount: 2)
-  Player B loses 2 life (now at 4)
-
---- Decision 277 ---
-  Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  4 life | mana: empty | hand(3): Wasteland, Wasteland, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T)
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Thoughtseize, Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Self exile: Uro, Titan of Nature's Wrath
-  Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Known opp hand: Undercity Sewers, Wasteland
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Known top: Force of Will, Ponder, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -6470,20 +5892,19 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 278 ---
+--- Decision 256 ---
   Priority: Player B (active)
-  Step: First Main (turn 28)
-  Self:  4 life | mana: empty | hand(2): Wasteland, Wasteland | lib 5
-  Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T) | Wasteland
-  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Thoughtseize, Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
-  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Step: First Main (turn 26)
+  Self:  7 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
+  Opp:   13 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp (T) | Undercity Sewers | Wasteland | Clue
+  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Known opp hand: Undercity Sewers, Wasteland
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Known top: Force of Will, Ponder, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -6491,50 +5912,435 @@
    2: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
    3: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
    4: Activate Wasteland (Destroy)  [#1]
+   5: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Activate Kaito, Bane of Nightmares [+1] (Effect))
+--- Narrative ---
+  Kaito, Bane of Nightmares activates a loyalty ability (+1, loyalty now 7)
+  Player B's Kaito, Bane of Nightmares ability is on the stack
+
+--- Decision 257 ---
+  Priority: Player B (active)
+  Step: First Main (turn 26)
+  Self:  7 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
+  Opp:   13 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 7] [Hexproof] | Swamp (T) | Undercity Sewers | Wasteland | Clue
+  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Kaito, Bane of Nightmares (ability, self)
+  Self GY: Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Force of Will, Ponder, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 258 ---
+  Priority: Player B (active)
+  Step: First Main (turn 26)
+  Self:  7 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
+  Opp:   13 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 7] [Hexproof] | Swamp (T) | Undercity Sewers | Wasteland | Clue
+  Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Kaito, Bane of Nightmares (ability, self)
+  Pending: Wasteland (self)
+  Self GY: Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Force of Will, Ponder, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Bayou
+   1: Bayou
+   2: Undercity Sewers
+   3: Wasteland
+  >> B/B: 0 (Bayou)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Bayou is on the stack
+
+--- Decision 259 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 26)
+  Self:  13 life | mana: empty | hand(2): Misty Rainforest, Wasteland | lib 35
+  Opp:   7 life | mana: empty | hand count: 2 | lib 8
+  Self BF:  Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 7] [Hexproof] | Swamp (T) | Undercity Sewers | Clue
+  Stack: Wasteland (ability, opponent) -> Bayou (self, slot 0) -> Kaito, Bane of Nightmares (ability, opponent)
+  Self GY: Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Opp GY:  Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self exile: Force of Will
+  Opp exile:  Uro, Titan of Nature's Wrath
+  Known top: Undercity Sewers, ?, ?, ?, ?
+  Known opp hand: Wasteland
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Tap Bayou for (G)
+   2: Tap Bayou for (B)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Destroy)
+  Bayou is destroyed
+  Resolving ability (category: Effect)
+  Player B gets an emblem.
+  --- Declare Attackers (Player B) ---
+
+--- Decision 260 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 26)
+  Self:  7 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
+  Opp:   13 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp (T) | Undercity Sewers | Clue
+  Opp BF:   Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Force of Will, Ponder, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Kaito, Bane of Nightmares [6/7]
+   1: Confirm attackers
+  >> B/B: 0 (Kaito, Bane of Nightmares [6/7])
+--- Narrative ---
+  Kaito, Bane of Nightmares attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Kaito, Bane of Nightmares [6/7] -> Player A
+
+--- Decision 261 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 26)
+  Self:  7 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
+  Opp:   13 life | mana: empty | hand count: 2 | lib 35
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] (ATK) | Swamp (T) | Undercity Sewers | Clue
+  Opp BF:   Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Force of Will, Ponder, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Kaito, Bane of Nightmares -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Kaito, Bane of Nightmares deals 6 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 27 (Player A) --------
+  Player A draws Undercity Sewers
+--- Turn 27 (Player A) ---
+  PA: Misty Rainforest, Undercity Sewers, Wasteland
+  PB: Wasteland, Wasteland
+
+--- Decision 262 ---
+  Priority: Player A (active)
+  Step: First Main (turn 27)
+  Self:  7 life | mana: empty | hand(3): Misty Rainforest, Undercity Sewers, Wasteland | lib 34
+  Opp:   7 life | mana: empty | hand count: 2 | lib 8
+  Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers | Clue
+  Self GY: Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Opp GY:  Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self exile: Force of Will
+  Opp exile:  Uro, Titan of Nature's Wrath
+  Known opp hand: Wasteland
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+   2: Play Undercity Sewers
+   3: Play Wasteland
+  >> A/A: 1 (Play Misty Rainforest)
+--- Narrative ---
+  Player A played Misty Rainforest
+
+--- Decision 263 ---
+  Priority: Player A (active)
+  Step: First Main (turn 27)
+  Self:  7 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 34
+  Opp:   7 life | mana: empty | hand count: 2 | lib 8
+  Self BF:  Forest | Island | Misty Rainforest | Swamp | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers | Clue
+  Self GY: Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Opp GY:  Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self exile: Force of Will
+  Opp exile:  Uro, Titan of Nature's Wrath
+  Known opp hand: Wasteland
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Misty Rainforest (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Misty Rainforest
+  Player A's Misty Rainforest ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 264 ---
+  Priority: Player A (active)
+  Step: First Main (turn 27)
+  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 34
+  Opp:   7 life | mana: empty | hand count: 2 | lib 8
+  Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers | Clue
+  Stack: Misty Rainforest (ability, self) [amt=1]
+  Pending: Misty Rainforest (self)
+  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Opp GY:  Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self exile: Force of Will
+  Opp exile:  Uro, Titan of Nature's Wrath
+  Known opp hand: Wasteland
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Underground Sea
+   2: Underground Sea
+  >> A/A: 1 (Underground Sea)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Underground Sea to the battlefield
+  --- Declare Attackers (Player A) ---
+
+--- Decision 265 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 27)
+  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 33
+  Opp:   7 life | mana: empty | hand count: 2 | lib 8
+  Self BF:  Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers | Clue
+  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Opp GY:  Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self exile: Force of Will
+  Opp exile:  Uro, Titan of Nature's Wrath
+  Known opp hand: Wasteland
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Orc Army token [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Orc Army token [1/1])
+--- Narrative ---
+  Select target for Orc Army token:
+
+--- Decision 266 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 27)
+  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 33
+  Opp:   7 life | mana: empty | hand count: 2 | lib 8
+  Self BF:  Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers | Clue
+  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Opp GY:  Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self exile: Force of Will
+  Opp exile:  Uro, Titan of Nature's Wrath
+  Known opp hand: Wasteland
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Player B (7 life)
+   1: Kaito, Bane of Nightmares (loyalty 7)
+  >> A/A: 0 (Player B (7 life))
+--- Narrative ---
+  Orc Army token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Orc Army token [1/1] -> Player B
+
+--- Decision 267 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 27)
+  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 33
+  Opp:   7 life | mana: empty | hand count: 2 | lib 8
+  Self BF:  Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (ATK)
+  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers | Clue
+  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Opp GY:  Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self exile: Force of Will
+  Opp exile:  Uro, Titan of Nature's Wrath
+  Known opp hand: Wasteland
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orc Army token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Orc Army token deals 1 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 28 (Player B) --------
+  Kaito, Bane of Nightmares gains Hexproof (PlayerTurn)
+--- Turn 28 (Player B) ---
+  PA: Undercity Sewers, Wasteland
+  PB: Wasteland, Wasteland
+
+--- Decision 268 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 28)
+  Self:  6 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers | Clue
+  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Force of Will, Ponder, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 269 ---
+  Priority: Player B (active)
+  Step: Draw (turn 28)
+  Self:  6 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers | Clue
+  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Force of Will, Ponder, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Draw a card
+   1: Dredge Life from the Loam (mill 3)
+  >> B/B: 0 (Draw a card)
+--- Narrative ---
+  Player B draws Force of Will
+
+--- Decision 270 ---
+  Priority: Player B (active)
+  Step: Draw (turn 28)
+  Self:  6 life | mana: empty | hand(3): Force of Will, Wasteland, Wasteland | lib 7
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers | Clue
+  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 271 ---
+  Priority: Player B (active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(3): Force of Will, Wasteland, Wasteland | lib 7
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers | Clue
+  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+   3: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
+   4: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
+   5: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
+   6: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 272 ---
+  Priority: Player B (active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 7
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 7] [Hexproof] | Swamp | Undercity Sewers | Wasteland | Clue
+  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
+   2: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
+   3: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
+   4: Activate Wasteland (Destroy)  [#1]
+   5: Activate Clue token (Draw)  [#0]
   >> B/B: 1 (Activate Kaito, Bane of Nightmares [+1] (Effect))
 --- Narrative ---
   Kaito, Bane of Nightmares activates a loyalty ability (+1, loyalty now 8)
   Player B's Kaito, Bane of Nightmares ability is on the stack
 
---- Decision 279 ---
+--- Decision 273 ---
   Priority: Player B (active)
   Step: First Main (turn 28)
-  Self:  4 life | mana: empty | hand(2): Wasteland, Wasteland | lib 5
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 7
   Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T) | Wasteland
+  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp | Undercity Sewers | Wasteland | Clue
   Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
   Stack: Kaito, Bane of Nightmares (ability, self)
-  Self GY: Thoughtseize, Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Known opp hand: Undercity Sewers, Wasteland
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
+   2: Activate Clue token (Draw)  [#0]
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 280 ---
+--- Decision 274 ---
   Priority: Player B (active)
   Step: First Main (turn 28)
-  Self:  4 life | mana: empty | hand(2): Wasteland, Wasteland | lib 5
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 7
   Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T) | Wasteland
+  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp | Undercity Sewers | Wasteland | Clue
   Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
   Stack: Kaito, Bane of Nightmares (ability, self)
   Pending: Wasteland (self)
-  Self GY: Thoughtseize, Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Known opp hand: Undercity Sewers, Wasteland
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Extras: self_lands_played=1
   Actions:
    0: Underground Sea
@@ -6547,19 +6353,90 @@
   Player B sacrifices Wasteland
   Player B's Wasteland ability targeting Underground Sea is on the stack
 
---- Decision 281 ---
+--- Decision 275 ---
+  Priority: Player B (active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 7
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp | Undercity Sewers | Clue
+  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 51) -> Kaito, Bane of Nightmares (ability, self)
+  Self GY: Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B activated Bayou for 1(G)
+  Player B activated Swamp for 1(B)
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+
+--- Decision 276 ---
   Priority: Player A (non-active)
   Step: First Main (turn 28)
   Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 33
-  Opp:   4 life | mana: empty | hand count: 2 | lib 5
+  Opp:   6 life | mana: empty | hand count: 2 | lib 7
   Self BF:  Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T)
+  Opp BF:   Bayou (T) | Island | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
   Stack: Wasteland (ability, opponent) -> Underground Sea (self, slot 3) -> Kaito, Bane of Nightmares (ability, opponent)
   Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Wasteland, Thoughtseize, Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Self exile: Force of Will
   Opp exile:  Uro, Titan of Nature's Wrath
-  Known opp hand: Wasteland, Wasteland
+  Known opp hand: Wasteland
+  Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Tap Underground Sea for (U)
+   2: Tap Underground Sea for (B)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+
+--- Decision 277 ---
+  Priority: Player B (active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 7
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou (T) | Island | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
+  Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 51) -> Kaito, Bane of Nightmares (ability, self)
+  Self GY: Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Ponder, ?, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Draw a card
+   1: Dredge Life from the Loam (mill 3)
+  >> B/B: 0 (Draw a card)
+--- Narrative ---
+  Player B draws Ponder
+
+--- Decision 278 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(2): Undercity Sewers, Wasteland | lib 33
+  Opp:   6 life | mana: empty | hand count: 3 | lib 6
+  Self BF:  Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Bayou (T) | Island | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
+  Stack: Wasteland (ability, opponent) -> Underground Sea (self, slot 3) -> Kaito, Bane of Nightmares (ability, opponent)
+  Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Opp GY:  Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self exile: Force of Will
+  Opp exile:  Uro, Titan of Nature's Wrath
+  Known opp hand: Wasteland
   Opp revealed: Forest, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Verdant Catacombs, Fatal Push, Life from the Loam, Orcish Bowmasters, Flow State, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Kaito, Bane of Nightmares, Tamiyo, Inquisitive Student, Tropical Island
   Extras: opp_lands_played=1, opp_revolt
   Actions:
@@ -6572,22 +6449,133 @@
   Underground Sea is destroyed
   Resolving ability (category: Effect)
   Player B gets an emblem.
-  --- Declare Attackers (Player B) ---
 
---- Decision 282 ---
+--- Decision 279 ---
   Priority: Player B (active)
-  Step: Declare Atk (turn 28)
-  Self:  4 life | mana: empty | hand(2): Wasteland, Wasteland | lib 5
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(3): Force of Will, Ponder, Wasteland | lib 6
   Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T)
+  Self BF:  Bayou (T) | Island | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
   Opp BF:   Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Wasteland, Thoughtseize, Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self GY: Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Underground Sea, Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Known opp hand: Undercity Sewers, Wasteland
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+  >> B/B: 1 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 280 ---
+  Priority: Player B (active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 6
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
+  Opp BF:   Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Underground Sea, Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Thoughtseize  [#2]
+   1: Tamiyo, Inquisitive Student  [#2]
+   2: Orcish Bowmasters  [#2]
+  >> B/B: 0 (Thoughtseize)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 281 ---
+  Priority: Player B (active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 6
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
+  Opp BF:   Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Underground Sea, Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Tamiyo, Inquisitive Student  [#1]
+   1: Orcish Bowmasters  [#1]
+  >> B/B: 0 (Tamiyo, Inquisitive Student)
+
+--- Decision 282 ---
+  Priority: Player B (active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 6
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
+  Opp BF:   Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Underground Sea, Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Orcish Bowmasters, Tamiyo, Inquisitive Student, Thoughtseize, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+
+--- Decision 283 ---
+  Priority: Player B (active)
+  Step: First Main (turn 28)
+  Self:  6 life | mana: empty | hand(2): Force of Will, Wasteland | lib 6
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
+  Opp BF:   Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Ponder (spell, self)
+  Self GY: Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Underground Sea, Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Orcish Bowmasters, Tamiyo, Inquisitive Student, Thoughtseize, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Draw a card
+   1: Dredge Life from the Loam (mill 3)
+  >> B/B: 0 (Draw a card)
+--- Narrative ---
+  Player B draws Orcish Bowmasters
+  --- Declare Attackers (Player B) ---
+
+--- Decision 284 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 28)
+  Self:  6 life | mana: empty | hand(3): Force of Will, Orcish Bowmasters, Wasteland | lib 5
+  Opp:   6 life | mana: empty | hand count: 2 | lib 33
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] | Swamp (T) | Undercity Sewers
+  Opp BF:   Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Ponder, Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Opp GY:  Underground Sea, Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
+  Self exile: Uro, Titan of Nature's Wrath
+  Opp exile:  Force of Will
+  Known top: Tamiyo, Inquisitive Student, Thoughtseize, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Kaito, Bane of Nightmares [7/8]
@@ -6598,20 +6586,19 @@
   --- Declare Attackers (Player B) ---
     [attacking] Kaito, Bane of Nightmares [7/8] -> Player A
 
---- Decision 283 ---
+--- Decision 285 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 28)
-  Self:  4 life | mana: empty | hand(2): Wasteland, Wasteland | lib 5
+  Self:  6 life | mana: empty | hand(3): Force of Will, Orcish Bowmasters, Wasteland | lib 5
   Opp:   6 life | mana: empty | hand count: 2 | lib 33
-  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] (ATK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Undercity Sewers (T)
+  Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [7/8] [loy 8] [Hexproof] (ATK) | Swamp (T) | Undercity Sewers
   Opp BF:   Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Wasteland, Thoughtseize, Life from the Loam, Ponder, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
+  Self GY: Ponder, Wasteland, Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Underground Sea, Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Self exile: Uro, Titan of Nature's Wrath
   Opp exile:  Force of Will
-  Known top: Force of Will, ?, ?, ?, ?
-  Known opp hand: Undercity Sewers, Wasteland
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
+  Known top: Tamiyo, Inquisitive Student, Thoughtseize, ?, ?, ?
+  Opp revealed: Forest, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Witherbloom Command, Lorien Revealed, Uro, Titan of Nature's Wrath, Tamiyo, Inquisitive Student, Tropical Island
   Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers

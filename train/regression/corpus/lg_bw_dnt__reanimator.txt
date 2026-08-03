@@ -1220,15 +1220,15 @@
    4: Reanimate
    5: Undercity Sewers
    6: Underground Sea
-  >> B/B: 3 (Ponder)
+  >> B/B: 2 (Polluted Delta)
 --- Narrative ---
-  Player B puts Ponder to top of library
+  Player B puts Polluted Delta to top of library
   Player B chooses a card from Player B hand:
 
 --- Decision 62 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  17 life | mana: empty | hand(6): Careful Study, Griselbrand, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 62
+  Self:  17 life | mana: empty | hand(6): Careful Study, Griselbrand, Ponder, Reanimate, Undercity Sewers, Underground Sea | lib 62
   Opp:   20 life | mana: empty | hand count: 3 | lib 71
   Self BF:  Island (T) | Swamp
   Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
@@ -1237,18 +1237,18 @@
   Self GY: Flow State, Polluted Delta, Force of Will
   Opp GY:  Aether Vial
   Self exile: Force of Negation
-  Known top: Ponder, ?, ?, ?, ?
+  Known top: Polluted Delta, ?, ?, ?, ?
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
   Actions:
    0: Careful Study
    1: Griselbrand
-   2: Polluted Delta
+   2: Ponder
    3: Reanimate
    4: Undercity Sewers
    5: Underground Sea
-  >> B/B: 0 (Careful Study)
+  >> B/B: 2 (Ponder)
 --- Narrative ---
-  Player B puts Careful Study to top of library
+  Player B puts Ponder to top of library
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 63 ---
@@ -1441,7 +1441,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
-  Player B draws Careful Study
+  Player B draws Ponder
 
 --- Decision 72 ---
   Priority: Player A (non-active)
@@ -1462,108 +1462,38 @@
 --- Decision 73 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  14 life | mana: empty | hand(6): Careful Study, Griselbrand, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 62
+  Self:  14 life | mana: empty | hand(6): Careful Study, Griselbrand, Ponder, Reanimate, Undercity Sewers, Underground Sea | lib 62
   Opp:   20 life | mana: empty | hand count: 3 | lib 71
   Self BF:  Island (T) | Swamp
   Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
   Self GY: Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Aether Vial
   Self exile: Force of Negation
-  Known top: Ponder, ?, ?, ?, ?
+  Known top: Polluted Delta, ?, ?, ?, ?
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
   Actions:
    0: Pass priority
-   1: Play Polluted Delta
-   2: Play Undercity Sewers
-   3: Play Underground Sea
-  >> B/B: 1 (Play Polluted Delta)
+   1: Play Undercity Sewers
+   2: Play Underground Sea
+  >> B/B: 1 (Play Undercity Sewers)
 --- Narrative ---
-  Player B played Polluted Delta
-
---- Decision 74 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  14 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 62
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Island (T) | Polluted Delta | Swamp
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
-  Self GY: Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Force of Negation
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)  [#0]
-  >> B/B: 1 (Activate Polluted Delta (ChangeZone))
---- Narrative ---
-  Player B pays 1 life
-  Player B sacrifices Polluted Delta
-  Player B's Polluted Delta ability is on the stack
-
---- Decision 75 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   13 life | mana: empty | hand count: 5 | lib 62
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
-  Opp BF:   Island (T) | Swamp
-  Stack: Polluted Delta (ability, opponent) [amt=1]
-  Self GY: Aether Vial
-  Opp GY:  Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Force of Negation, Flow State
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: ChangeZone)
-  Searching Player B's library:
-
---- Decision 76 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  13 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 62
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
-  Stack: Polluted Delta (ability, self) [amt=1]
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Force of Negation
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Fail to find
-   1: Undercity Sewers
-   2: Underground Sea
-   3: Underground Sea
-   4: Underground Sea
-  >> B/B: 1 (Undercity Sewers)
---- Narrative ---
-  Player B shuffles their library
-  Player B puts Undercity Sewers to the battlefield
+  Player B played Undercity Sewers
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
 
---- Decision 77 ---
+--- Decision 74 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   13 life | mana: empty | hand count: 5 | lib 61
+  Opp:   14 life | mana: empty | hand count: 5 | lib 62
   Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Stack: Undercity Sewers (ability, opponent) [amt=1]
   Self GY: Aether Vial
-  Opp GY:  Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1571,20 +1501,20 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 78 ---
+--- Decision 75 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   13 life | mana: empty | hand count: 5 | lib 61
+  Opp:   14 life | mana: empty | hand count: 5 | lib 62
   Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [4/4] [+1/+1:4] (SICK)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Stack: Undercity Sewers (ability, opponent) [amt=1]
   Pending: Wasteland (self)
   Self GY: Aether Vial
-  Opp GY:  Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1
   Actions:
    0: Undercity Sewers
    1: Scrubland
@@ -1599,86 +1529,51 @@
   Undercity Sewers is destroyed
   Resolving ability (category: Surveil, amount: 1)
   Player B surveils 1.
-  Surveil: looking at Raph & Mikey, Troublemakers
+  Surveil: looking at Polluted Delta
 
---- Decision 79 ---
+--- Decision 76 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  13 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 61
+  Self:  14 life | mana: empty | hand(5): Careful Study, Griselbrand, Ponder, Reanimate, Underground Sea | lib 62
   Opp:   20 life | mana: empty | hand count: 3 | lib 71
   Self BF:  Island (T) | Swamp
   Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
-  Self GY: Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Self GY: Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Force of Negation
+  Known top: Polluted Delta, ?, ?, ?, ?
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
-   0: Put Raph & Mikey, Troublemakers on top of library  [#0]
-   1: Put Raph & Mikey, Troublemakers into graveyard
-  >> B/B: 1 (Put Raph & Mikey, Troublemakers into graveyard)
+   0: Put Polluted Delta on top of library  [#0]
+   1: Put Polluted Delta into graveyard
+  >> B/B: 1 (Put Polluted Delta into graveyard)
 --- Narrative ---
-  Player B puts Raph & Mikey, Troublemakers into their graveyard.
-
---- Decision 80 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  13 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 60
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Self GY: Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Reanimate  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
+  Player B puts Polluted Delta into their graveyard.
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---
   --- End Combat Damage ---
-
---- Decision 81 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  13 life | mana: empty | hand(5): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea | lib 60
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Self GY: Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Reanimate  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   -------- TURN 7 (Player A) --------
   Aether Vial triggered
 --- Turn 7 (Player A) ---
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
-  PB: Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea
+  PB: Careful Study, Griselbrand, Ponder, Reanimate, Underground Sea
 
---- Decision 82 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Stack: Aether Vial (ability, self)
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Actions:
    0: Pass priority
    1: Cast Phelia, Exuberant Shepherd  [#0]
@@ -1690,18 +1585,18 @@
   Player A activated Wasteland for 1(C)
   Player A casts Phelia, Exuberant Shepherd
 
---- Decision 83 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Stack: Phelia, Exuberant Shepherd (spell, self) -> Aether Vial (ability, self)
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1709,35 +1604,35 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 84 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Stack: Aether Vial (ability, self)
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 85 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Stack: Aether Vial (ability, self)
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Actions:
    0: Decline  [#0]
    1: Accept  [#1]
@@ -1746,17 +1641,17 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 86 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1764,33 +1659,33 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 87 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 88 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Actions:
    0: Pass priority
    1: Play Witch-Blessed Meadow
@@ -1799,17 +1694,17 @@
 --- Narrative ---
   Player A played Witch-Blessed Meadow
 
---- Decision 89 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Extras: self_lands_played=1
   Actions:
    0: Decline: pay 3 life so it enters untapped  [#0]
@@ -1819,17 +1714,17 @@
   Witch Enchanter enters tapped.
   Witch Enchanter transforms into Witch-Blessed Meadow!
 
---- Decision 90 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1840,19 +1735,19 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 91 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Extras: self_lands_played=1
   Actions:
    0: Fail to find
@@ -1862,18 +1757,18 @@
   Player A puts White Orchid Phantom to the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 92 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Pending: White Orchid Phantom (self)
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Extras: self_lands_played=1
   Actions:
    0: No target
@@ -1889,17 +1784,17 @@
   Resolving ability (category: ChangeZone)
   --- Declare Attackers (Player A) ---
 
---- Decision 93 ---
+--- Decision 88 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
@@ -1911,17 +1806,17 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 94 ---
+--- Decision 89 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [4/4]
@@ -1933,17 +1828,17 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Orc Army token [4/4] -> Player B
 
---- Decision 95 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 60
+  Opp:   14 life | mana: empty | hand count: 5 | lib 61
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (ATK)
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State
   Extras: self_lands_played=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1958,101 +1853,117 @@
     Orc Army token deals 4 damage to Player B
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
-  Player B draws Underground Sea
+  Player B draws Force of Will
 --- Turn 8 (Player B) ---
   PA: Pre-War Formalwear
-  PB: Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea, Underground Sea
+  PB: Careful Study, Force of Will, Griselbrand, Ponder, Reanimate, Underground Sea
 
---- Decision 96 ---
+--- Decision 91 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  8 life | mana: empty | hand(6): Careful Study, Griselbrand, Reanimate, Undercity Sewers, Underground Sea, Underground Sea | lib 59
+  Self:  9 life | mana: empty | hand(6): Careful Study, Force of Will, Griselbrand, Ponder, Reanimate, Underground Sea | lib 60
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
   Self BF:  Island | Swamp
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
-  Self GY: Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Self GY: Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Force of Negation
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   Actions:
    0: Pass priority
-   1: Play Undercity Sewers
-   2: Play Underground Sea
-   3: Play Underground Sea
-   4: Cast Careful Study  [#0]
-   5: Cast Reanimate  [#0]
-  >> B/B: 4 (Cast Careful Study)
+   1: Play Underground Sea
+   2: Cast Careful Study  [#0]
+   3: Cast Ponder  [#0]
+  >> B/B: 2 (Cast Careful Study)
 --- Narrative ---
   Player B activated Island for 1(U)
   Player B casts Careful Study
+
+--- Decision 92 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  9 life | mana: empty | hand(5): Force of Will, Griselbrand, Ponder, Reanimate, Underground Sea | lib 60
+  Opp:   20 life | mana: empty | hand count: 1 | lib 70
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
+  Stack: Careful Study (spell, self)
+  Self GY: Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
   Resolving ability (category: Draw, amount: 2)
-  Player B draws The Creation of Avacyn
-  Player B draws Flow State
+  Player B draws Undercity Sewers
+  Player B draws Bloodstained Mire
   Resolving ability (category: Discard)
   Player B chooses a card to discard:
 
---- Decision 97 ---
+--- Decision 93 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  8 life | mana: empty | hand(7): Flow State, Griselbrand, Reanimate, Undercity Sewers, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Self:  9 life | mana: empty | hand(7): Bloodstained Mire, Force of Will, Griselbrand, Ponder, Reanimate, Undercity Sewers, Underground Sea | lib 58
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
   Self BF:  Island (T) | Swamp
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
-  Self GY: Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Self GY: Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Force of Negation
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   Actions:
-   0: Flow State
-   1: Griselbrand
-   2: Reanimate
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: The Creation of Avacyn
-  >> B/B: 1 (Griselbrand)
+   0: Bloodstained Mire
+   1: Force of Will
+   2: Griselbrand
+   3: Ponder
+   4: Reanimate
+   5: Undercity Sewers
+   6: Underground Sea
+  >> B/B: 2 (Griselbrand)
 --- Narrative ---
   Player B discards Griselbrand
   Player B chooses a card to discard:
 
---- Decision 98 ---
+--- Decision 94 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  8 life | mana: empty | hand(6): Flow State, Reanimate, Undercity Sewers, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Self:  9 life | mana: empty | hand(6): Bloodstained Mire, Force of Will, Ponder, Reanimate, Undercity Sewers, Underground Sea | lib 58
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
   Self BF:  Island (T) | Swamp
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
-  Self GY: Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Self GY: Griselbrand, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Force of Negation
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   Actions:
-   0: Flow State
-   1: Reanimate
-   2: Undercity Sewers
-   3: Underground Sea
-   4: Underground Sea
-   5: The Creation of Avacyn
-  >> B/B: 2 (Undercity Sewers)
+   0: Bloodstained Mire
+   1: Force of Will
+   2: Ponder
+   3: Reanimate
+   4: Undercity Sewers
+   5: Underground Sea
+  >> B/B: 0 (Bloodstained Mire)
 --- Narrative ---
-  Player B discards Undercity Sewers
+  Player B discards Bloodstained Mire
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 99 ---
+--- Decision 95 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   8 life | mana: empty | hand count: 5 | lib 57
+  Opp:   9 life | mana: empty | hand count: 5 | lib 58
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
   Opp BF:   Island (T) | Swamp
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Careful Study, Bloodstained Mire, Griselbrand, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Careful Study, Griselbrand, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Bloodstained Mire, Force of Negation, Flow State, Careful Study, Griselbrand
   Actions:
    0: Orcish Bowmasters (DealDamage, targeted)  [#0]
    1: Orcish Bowmasters (DealDamage, targeted)  [#1]
@@ -2060,1256 +1971,168 @@
 --- Narrative ---
   Choose target for Orcish Bowmasters:
 
---- Decision 100 ---
+--- Decision 96 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   8 life | mana: empty | hand count: 5 | lib 57
+  Opp:   9 life | mana: empty | hand count: 5 | lib 58
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
   Opp BF:   Island (T) | Swamp
   Pending: Orcish Bowmasters (self)
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Careful Study, Bloodstained Mire, Griselbrand, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Careful Study, Griselbrand, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Bloodstained Mire, Force of Negation, Flow State, Careful Study, Griselbrand
   Actions:
-   0: Player B (8 life)
+   0: Player B (9 life)
    1: Player A (20 life)
    2: Orcish Bowmasters
    3: Phelia, Exuberant Shepherd
    4: White Orchid Phantom
    5: Orc Army token
-  >> A/A: 0 (Player B (8 life))
+  >> A/A: 0 (Player B (9 life))
 --- Narrative ---
   Targeting choice 0
   Orcish Bowmasters triggered
   Choose target for Orcish Bowmasters:
 
---- Decision 101 ---
+--- Decision 97 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   8 life | mana: empty | hand count: 5 | lib 57
+  Opp:   9 life | mana: empty | hand count: 5 | lib 58
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [4/4] [+1/+1:4] (T)
   Opp BF:   Island (T) | Swamp
   Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
   Pending: Orcish Bowmasters (self)
   Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Careful Study, Bloodstained Mire, Griselbrand, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Force of Negation, Flow State, Careful Study, Griselbrand, Raph & Mikey, Troublemakers
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Bloodstained Mire, Force of Negation, Flow State, Careful Study, Griselbrand
   Actions:
-   0: Player B (8 life)
+   0: Player B (9 life)
    1: Player A (20 life)
    2: Orcish Bowmasters
    3: Phelia, Exuberant Shepherd
    4: White Orchid Phantom
    5: Orc Army token
-  >> A/A: 0 (Player B (8 life))
+  >> A/A: 0 (Player B (9 life))
 --- Narrative ---
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 7 life)
+  Dealt 1 damage to player (now at 8 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 5/5.
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 6 life)
+  Dealt 1 damage to player (now at 7 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 6/6.
 
---- Decision 102 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  6 life | mana: empty | hand(5): Flow State, Reanimate, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Self:  7 life | mana: empty | hand(5): Force of Will, Ponder, Reanimate, Undercity Sewers, Underground Sea | lib 58
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
   Self BF:  Island (T) | Swamp
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Self GY: Careful Study, Bloodstained Mire, Griselbrand, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Force of Negation
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   Actions:
    0: Pass priority
-   1: Play Underground Sea
+   1: Play Undercity Sewers
    2: Play Underground Sea
    3: Cast Reanimate  [#0]
   >> B/B: 3 (Cast Reanimate)
 --- Narrative ---
   Choose target for Reanimate:
 
---- Decision 103 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  6 life | mana: empty | hand(5): Flow State, Reanimate, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Self:  7 life | mana: empty | hand(5): Force of Will, Ponder, Reanimate, Undercity Sewers, Underground Sea | lib 58
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
   Self BF:  Island (T) | Swamp
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
   Pending: Reanimate (self)
-  Self GY: Careful Study, Undercity Sewers, Griselbrand, Raph & Mikey, Troublemakers, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Self GY: Careful Study, Bloodstained Mire, Griselbrand, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Force of Negation
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   Actions:
    0: Griselbrand
-   1: Raph & Mikey, Troublemakers
-  >> B/B: 1 (Raph & Mikey, Troublemakers)
+  >> B/B: 0 (Griselbrand)
 --- Narrative ---
-  Targeting choice 1
+  Targeting choice 0
   Player B activated Swamp for 1(B)
-  Player B casts Reanimate targeting Raph & Mikey, Troublemakers
-  Resolving ability (category: ChangeZone)
-  Raph & Mikey, Troublemakers is moved to the battlefield
-  Resolving ability (category: LoseLife, amount: 0)
-  Player B loses 0 life (now at 6)
+  Player B casts Reanimate targeting Griselbrand
 
---- Decision 104 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  6 life | mana: empty | hand(4): Flow State, Underground Sea, Underground Sea, The Creation of Avacyn | lib 57
+  Self:  7 life | mana: empty | hand(4): Force of Will, Ponder, Undercity Sewers, Underground Sea | lib 58
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T)
+  Self BF:  Island (T) | Swamp (T)
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Stack: Reanimate (spell, self) -> Griselbrand (self)
+  Self GY: Careful Study, Bloodstained Mire, Griselbrand, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Force of Negation
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   Actions:
    0: Pass priority
-   1: Play Underground Sea
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Griselbrand is moved to the battlefield
+  Resolving ability (category: LoseLife, amount: 0)
+  Player B loses 0 life (now at 7)
+
+--- Decision 101 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  7 life | mana: empty | hand(4): Force of Will, Ponder, Undercity Sewers, Underground Sea | lib 58
+  Opp:   20 life | mana: empty | hand count: 1 | lib 70
+  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T)
+  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
+  Self GY: Reanimate, Careful Study, Bloodstained Mire, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Opp GY:  Wasteland, Aether Vial
+  Self exile: Force of Negation
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  Actions:
+   0: Pass priority
+   1: Play Undercity Sewers
    2: Play Underground Sea
-  >> B/B: 1 (Play Underground Sea)
+   3: Activate Griselbrand (Draw)  [#0]
+  >> B/B: 1 (Play Undercity Sewers)
 --- Narrative ---
-  Player B played Underground Sea
-  --- Declare Attackers (Player B) ---
+  Player B played Undercity Sewers
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
 
---- Decision 105 ---
+--- Decision 102 ---
   Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(3): Flow State, Underground Sea, The Creation of Avacyn | lib 57
+  Step: First Main (turn 8)
+  Self:  7 life | mana: empty | hand(3): Force of Will, Ponder, Underground Sea | lib 58
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Underground Sea
+  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
-  Actions:
-   0: Raph & Mikey, Troublemakers [7/7]
-   1: Confirm attackers
-  >> B/B: 0 (Raph & Mikey, Troublemakers [7/7])
---- Narrative ---
-  Raph & Mikey, Troublemakers attacking Player A.
-  --- Declare Attackers (Player B) ---
-    [attacking] Raph & Mikey, Troublemakers [7/7] -> Player A
-
---- Decision 106 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(3): Flow State, Underground Sea, The Creation of Avacyn | lib 57
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (ATK,SICK) | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> B/B: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Raph & Mikey, Troublemakers -> Player A
-  Raph & Mikey, Troublemakers triggered
-  Resolving ability (category: DigUntil)
-  Player B reveals The Creation of Avacyn.
-  Player B reveals Ponder.
-  Player B reveals Thoughtseize.
-  Player B reveals Force of Will.
-  Player B reveals Flusterstorm.
-  Player B reveals Echoing Truth.
-  Player B reveals Echoing Truth.
-  Player B reveals Fatal Push.
-  Player B reveals Consign to Memory.
-  Player B reveals Consign to Memory.
-  Player B reveals Lotus Petal.
-  Player B reveals Flow State.
-  Player B reveals Animate Dead.
-  Player B reveals Marsh Flats.
-  Player B reveals Otherworldly Gaze.
-  Player B reveals Reanimate.
-  Player B reveals Force of Negation.
-  Player B reveals Careful Study.
-  Player B reveals Animate Dead.
-  Player B reveals Scalding Tarn.
-  Player B reveals Show and Tell.
-  Player B reveals Underground Sea.
-  Player B reveals Reanimate.
-  Player B reveals Bloodstained Mire.
-  Player B reveals Atraxa, Grand Unifier.
-  Player B puts Atraxa, Grand Unifier onto the battlefield tapped and attacking.
-  Atraxa, Grand Unifier enters tapped.
-  Atraxa, Grand Unifier is attacking.
-  Atraxa, Grand Unifier triggered
-  Resolving ability (category: PeekAndReveal)
-  Player B reveals Otherworldly Gaze from the top of their library
-  Player B reveals Atraxa, Grand Unifier from the top of their library
-  Player B reveals Show and Tell from the top of their library
-  Player B reveals Thoughtseize from the top of their library
-  Player B reveals Ponder from the top of their library
-  Player B reveals Archon of Cruelty from the top of their library
-  Player B reveals Dark Ritual from the top of their library
-  Player B reveals Brainstorm from the top of their library
-  Player B reveals Lotus Petal from the top of their library
-  Player B reveals Show and Tell from the top of their library
-  Resolving ability (category: RepeatEach)
-  Resolving ability (category: ChooseCard)
-  Player B may put a Artifact card from among the revealed cards into their hand:
-
---- Decision 107 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(3): Flow State, Underground Sea, The Creation of Avacyn | lib 56
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Lotus Petal (Artifact) into hand
-   1: Put no Artifact card into hand
-  >> B/B: 0 (Put Lotus Petal (Artifact) into hand)
---- Narrative ---
-  Player B chooses Lotus Petal
-  Resolving ability (category: ChooseCard)
-  Player B may put a Creature card from among the revealed cards into their hand:
-
---- Decision 108 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(3): Flow State, Underground Sea, The Creation of Avacyn | lib 56
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Atraxa, Grand Unifier (Creature) into hand
-   1: Put Archon of Cruelty (Creature) into hand
-   2: Put no Creature card into hand
-  >> B/B: 0 (Put Atraxa, Grand Unifier (Creature) into hand)
---- Narrative ---
-  Player B chooses Atraxa, Grand Unifier
-  Resolving ability (category: ChooseCard)
-  Player B may put a Instant card from among the revealed cards into their hand:
-
---- Decision 109 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(3): Flow State, Underground Sea, The Creation of Avacyn | lib 56
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Otherworldly Gaze (Instant) into hand
-   1: Put Dark Ritual (Instant) into hand
-   2: Put Brainstorm (Instant) into hand
-   3: Put no Instant card into hand
-  >> B/B: 0 (Put Otherworldly Gaze (Instant) into hand)
---- Narrative ---
-  Player B chooses Otherworldly Gaze
-  Resolving ability (category: ChooseCard)
-  Player B may put a Sorcery card from among the revealed cards into their hand:
-
---- Decision 110 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(3): Flow State, Underground Sea, The Creation of Avacyn | lib 56
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Show and Tell (Sorcery) into hand
-   1: Put Thoughtseize (Sorcery) into hand
-   2: Put Ponder (Sorcery) into hand
-   3: Put Show and Tell (Sorcery) into hand
-   4: Put no Sorcery card into hand
-  >> B/B: 0 (Put Show and Tell (Sorcery) into hand)
---- Narrative ---
-  Player B chooses Show and Tell
-  Resolving ability (category: ChangeZone)
-  Lotus Petal is moved to hand
-  Atraxa, Grand Unifier is moved to hand
-  Otherworldly Gaze is moved to hand
-  Show and Tell is moved to hand
-  Resolving ability (category: ChangeZoneAll)
-  Player B moves Archon of Cruelty to the bottom of their library
-  Player B moves Ponder to the bottom of their library
-  Player B moves Thoughtseize to the bottom of their library
-  Player B moves Show and Tell to the bottom of their library
-  Player B moves Dark Ritual to the bottom of their library
-  Player B moves Brainstorm to the bottom of their library
-  Player B moves 6 card(s) to the bottom of their library
-  Resolving ability (category: Cleanup)
-
---- Decision 111 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(7): Atraxa, Grand Unifier, Flow State, Lotus Petal, Otherworldly Gaze, Underground Sea, Show and Tell, The Creation of Avacyn | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Self GY: Reanimate, Careful Study, Bloodstained Mire, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Force of Negation
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Cast Otherworldly Gaze  [#0]
-  >> B/B: 1 (Cast Otherworldly Gaze)
+   1: Activate Griselbrand (Draw)  [#0]
+  >> B/B: 1 (Activate Griselbrand (Draw))
 --- Narrative ---
-  Player B activated Underground Sea for 1(U)
-  Player B casts Otherworldly Gaze
-  Resolving ability (category: Surveil, amount: 3)
-  Player B surveils 3.
-  Surveil: looking at Lotus Petal
-  Surveil: looking at Careful Study
-  Surveil: looking at Brainstorm
+  Player B pays 7 life
+  Player B's Griselbrand ability is on the stack
+  Player B has 0 life - Player A wins!
 
---- Decision 112 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(6): Atraxa, Grand Unifier, Flow State, Lotus Petal, Underground Sea, Show and Tell, The Creation of Avacyn | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Lotus Petal on top of library  [#0]
-   1: Put Careful Study on top of library  [#0]
-   2: Put Brainstorm on top of library  [#0]
-   3: Put Lotus Petal into graveyard
-   4: Put Careful Study into graveyard
-   5: Put Brainstorm into graveyard
-  >> B/B: 3 (Put Lotus Petal into graveyard)
---- Narrative ---
-  Player B puts Lotus Petal into their graveyard.
-
---- Decision 113 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(6): Atraxa, Grand Unifier, Flow State, Lotus Petal, Underground Sea, Show and Tell, The Creation of Avacyn | lib 51
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Careful Study on top of library  [#0]
-   1: Put Brainstorm on top of library  [#0]
-   2: Put Careful Study into graveyard
-   3: Put Brainstorm into graveyard
-  >> B/B: 2 (Put Careful Study into graveyard)
---- Narrative ---
-  Player B puts Careful Study into their graveyard.
-
---- Decision 114 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  6 life | mana: empty | hand(6): Atraxa, Grand Unifier, Flow State, Lotus Petal, Underground Sea, Show and Tell, The Creation of Avacyn | lib 50
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Brainstorm on top of library  [#0]
-   1: Put Brainstorm into graveyard
-  >> B/B: 1 (Put Brainstorm into graveyard)
---- Narrative ---
-  Player B puts Brainstorm into their graveyard.
-  --- Declare Blockers (Player A) ---
-  Attackers:
-    0: Atraxa, Grand Unifier [7/7]
-    1: Raph & Mikey, Troublemakers [7/7]
-  Your creatures:
-
---- Decision 115 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 8)
-  Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   6 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
-  Actions:
-   0: Phelia, Exuberant Shepherd [2/2]
-   1: White Orchid Phantom [2/2]
-   2: Confirm blockers
-  >> A/A: 2 (Confirm blockers)
---- Narrative ---
-  Blockers declared:
-    (none)
-  --- Combat Damage ---
-    Atraxa, Grand Unifier deals 7 damage to Player A
-    Raph & Mikey, Troublemakers deals 7 damage to Player A
-    Player B gains 7 life (lifelink)
-  --- End Combat Damage ---
-
---- Decision 116 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 8)
-  Self:  13 life | mana: empty | hand(6): Atraxa, Grand Unifier, Flow State, Lotus Petal, Underground Sea, Show and Tell, The Creation of Avacyn | lib 49
-  Opp:   6 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Lotus Petal  [#0]
-  >> B/B: 1 (Cast Lotus Petal)
---- Narrative ---
-  Player B casts Lotus Petal
-  Lotus Petal enters the battlefield
-  -------- TURN 9 (Player A) --------
-  Aether Vial triggered
---- Turn 9 (Player A) ---
-  PA: Pre-War Formalwear
-  PB: Atraxa, Grand Unifier, Flow State, Lotus Petal, Underground Sea, Show and Tell, The Creation of Avacyn
-
---- Decision 117 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  6 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Stack: Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 118 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  6 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Stack: Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Decline  [#0]
-   1: Accept  [#1]
-  >> A/A: 1 (Accept)
---- Narrative ---
-  Resolving ability (category: PutCounter, amount: 1)
-  Put 1 CHARGE counter(s) on Aether Vial (now 3).
-
---- Decision 119 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  6 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  Player A draws White Orchid Phantom
-
---- Decision 120 ---
-  Priority: Player A (active)
-  Step: Draw (turn 9)
-  Self:  6 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 121 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  6 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Pass priority
-   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-   2: Cast Pre-War Formalwear  [#0]
-   3: Cast White Orchid Phantom  [#0]
-   4: Activate Aether Vial (ChangeZone)  [#0]
-   5: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 2 (Cast Pre-War Formalwear)
---- Narrative ---
-  Player A activated Witch-Blessed Meadow for 1(W)
-  Player A activated Wasteland for 1(C)
-  Player A activated Scrubland for 1(W)
-  Player A casts Pre-War Formalwear
-
---- Decision 122 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Stack: Pre-War Formalwear (spell, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 1 (Activate Aether Vial (ChangeZone))
---- Narrative ---
-  Player A's Aether Vial ability is on the stack
-  Resolving ability (category: ChangeZone)
-  Player A chooses a card from Player A hand:
-
---- Decision 123 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Stack: Aether Vial (ability, self) -> Pre-War Formalwear (spell, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Fail to find
-  >> A/A: 0 (Fail to find)
---- Narrative ---
-  Player A fails to find
-  Pre-War Formalwear enters the battlefield
-  Pre-War Formalwear's trigger is removed - no legal targets (603.3d)
-  --- Declare Attackers (Player A) ---
-
---- Decision 124 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: mandatory_choice=Declare Atk
-  Actions:
-   0: Orcish Bowmasters [1/1]
-   1: Phelia, Exuberant Shepherd [2/2]
-   2: White Orchid Phantom [2/2]
-   3: Orc Army token [6/6]
-   4: Confirm attackers
-  >> A/A: 0 (Orcish Bowmasters [1/1])
---- Narrative ---
-  Orcish Bowmasters attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Orcish Bowmasters [1/1] -> Player B
-
---- Decision 125 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: mandatory_choice=Declare Atk
-  Actions:
-   0: Phelia, Exuberant Shepherd [2/2]
-   1: White Orchid Phantom [2/2]
-   2: Orc Army token [6/6]
-   3: Confirm attackers
-  >> A/A: 0 (Phelia, Exuberant Shepherd [2/2])
---- Narrative ---
-  Phelia, Exuberant Shepherd attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Orcish Bowmasters [1/1] -> Player B
-    [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-
---- Decision 126 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: mandatory_choice=Declare Atk
-  Actions:
-   0: White Orchid Phantom [2/2]
-   1: Orc Army token [6/6]
-   2: Confirm attackers
-  >> A/A: 0 (White Orchid Phantom [2/2])
---- Narrative ---
-  White Orchid Phantom attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Orcish Bowmasters [1/1] -> Player B
-    [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-    [attacking] White Orchid Phantom [2/2] -> Player B
-
---- Decision 127 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: mandatory_choice=Declare Atk
-  Actions:
-   0: Orc Army token [6/6]
-   1: Confirm attackers
-  >> A/A: 0 (Orc Army token [6/6])
---- Narrative ---
-  Orc Army token attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Orcish Bowmasters [1/1] -> Player B
-    [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
-    [attacking] White Orchid Phantom [2/2] -> Player B
-    [attacking] Orc Army token [6/6] -> Player B
-
---- Decision 128 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (ATK)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> A/A: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Orcish Bowmasters -> Player B
-    Phelia, Exuberant Shepherd -> Player B
-    White Orchid Phantom -> Player B
-    Orc Army token -> Player B
-  Choose target for Phelia, Exuberant Shepherd:
-
---- Decision 129 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T,ATK)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Swamp (T) | Underground Sea (T)
-  Pending: Phelia, Exuberant Shepherd (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: No target
-   1: Atraxa, Grand Unifier
-   2: Lotus Petal
-   3: Raph & Mikey, Troublemakers
-   4: Aether Vial
-   5: Orcish Bowmasters
-   6: Pre-War Formalwear
-   7: White Orchid Phantom
-   8: Orc Army token
-  >> A/A: 0 (No target)
---- Narrative ---
-  Targeting choice 0
-  Phelia, Exuberant Shepherd triggered
-  Resolving ability (category: ChangeZone)
-  Resolving ability (category: DelayedTrigger)
-  No creatures eligible to block.
-  --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
-  --- End First Strike Combat Damage ---
-  --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 6 damage to Player B
-  --- End Combat Damage ---
-  -------- TURN 10 (Player B) --------
---- Turn 10 (Player B) ---
-  PA: White Orchid Phantom
-  PB: Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn
-
---- Decision 130 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 49
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp | Underground Sea
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Otherworldly Gaze, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Actions:
-   0: Pass priority
-   1: Cast Otherworldly Gaze (flashback)  [#4]
-  >> B/B: 1 (Cast Otherworldly Gaze (flashback))
---- Narrative ---
-  Player B activated Island for 1(U)
-  Player B activated Swamp for 1(B)
-  Player B casts Otherworldly Gaze
-  Resolving ability (category: Surveil, amount: 3)
-  Player B surveils 3.
-  Surveil: looking at Animate Dead
-  Surveil: looking at Otherworldly Gaze
-  Surveil: looking at Archon of Cruelty
-
---- Decision 131 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 49
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Actions:
-   0: Put Animate Dead on top of library  [#0]
-   1: Put Otherworldly Gaze on top of library  [#0]
-   2: Put Archon of Cruelty on top of library  [#0]
-   3: Put Animate Dead into graveyard
-   4: Put Otherworldly Gaze into graveyard
-   5: Put Archon of Cruelty into graveyard
-  >> B/B: 3 (Put Animate Dead into graveyard)
---- Narrative ---
-  Player B puts Animate Dead into their graveyard.
-
---- Decision 132 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 48
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Actions:
-   0: Put Otherworldly Gaze on top of library  [#0]
-   1: Put Archon of Cruelty on top of library  [#0]
-   2: Put Otherworldly Gaze into graveyard
-   3: Put Archon of Cruelty into graveyard
-  >> B/B: 2 (Put Otherworldly Gaze into graveyard)
---- Narrative ---
-  Player B puts Otherworldly Gaze into their graveyard.
-
---- Decision 133 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 47
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Otherworldly Gaze, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Actions:
-   0: Put Archon of Cruelty on top of library  [#0]
-   1: Put Archon of Cruelty into graveyard
-  >> B/B: 1 (Put Archon of Cruelty into graveyard)
---- Narrative ---
-  Player B puts Archon of Cruelty into their graveyard.
-  Otherworldly Gaze is exiled (flashback)
-
---- Decision 134 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 46
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Archon of Cruelty, Otherworldly Gaze, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Actions:
-   0: Pass priority
-   1: Cast Otherworldly Gaze (flashback)  [#4]
-  >> B/B: 1 (Cast Otherworldly Gaze (flashback))
---- Narrative ---
-  Player B activated Underground Sea for 1(U)
-  Player B sacrifices Lotus Petal
-  Player B activated Lotus Petal for 1(W)
-  Player B casts Otherworldly Gaze
-  Resolving ability (category: Surveil, amount: 3)
-  Player B surveils 3.
-  Surveil: looking at Thoughtseize
-  Surveil: looking at Ponder
-  Surveil: looking at Atraxa, Grand Unifier
-
---- Decision 135 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 46
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_revolt
-  Actions:
-   0: Put Thoughtseize on top of library  [#0]
-   1: Put Ponder on top of library  [#0]
-   2: Put Atraxa, Grand Unifier on top of library  [#0]
-   3: Put Thoughtseize into graveyard
-   4: Put Ponder into graveyard
-   5: Put Atraxa, Grand Unifier into graveyard
-  >> B/B: 3 (Put Thoughtseize into graveyard)
---- Narrative ---
-  Player B puts Thoughtseize into their graveyard.
-
---- Decision 136 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 45
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_revolt
-  Actions:
-   0: Put Ponder on top of library  [#0]
-   1: Put Atraxa, Grand Unifier on top of library  [#0]
-   2: Put Ponder into graveyard
-   3: Put Atraxa, Grand Unifier into graveyard
-  >> B/B: 2 (Put Ponder into graveyard)
---- Narrative ---
-  Player B puts Ponder into their graveyard.
-
---- Decision 137 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 44
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_revolt
-  Actions:
-   0: Put Atraxa, Grand Unifier on top of library  [#0]
-   1: Put Atraxa, Grand Unifier into graveyard
-  >> B/B: 1 (Put Atraxa, Grand Unifier into graveyard)
---- Narrative ---
-  Player B puts Atraxa, Grand Unifier into their graveyard.
-  Otherworldly Gaze is exiled (flashback)
-  Player B draws Lotus Petal
-
---- Decision 138 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(6): Atraxa, Grand Unifier, Flow State, Lotus Petal, Underground Sea, Show and Tell, The Creation of Avacyn | lib 42
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Play Underground Sea
-   2: Cast Lotus Petal  [#0]
-  >> B/B: 2 (Cast Lotus Petal)
---- Narrative ---
-  Player B casts Lotus Petal
-  Lotus Petal enters the battlefield
-
---- Decision 139 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Flow State, Underground Sea, Show and Tell, The Creation of Avacyn | lib 42
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Play Underground Sea
-  >> B/B: 1 (Play Underground Sea)
---- Narrative ---
-  Player B played Underground Sea
-
---- Decision 140 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(4): Atraxa, Grand Unifier, Flow State, Show and Tell, The Creation of Avacyn | lib 42
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Lotus Petal | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Flow State  [#0]
-  >> B/B: 1 (Cast Flow State)
---- Narrative ---
-  Player B activated Underground Sea for 1(U)
-  Player B sacrifices Lotus Petal
-  Player B activated Lotus Petal for 1(W)
-  Player B casts Flow State
-  Resolving ability (category: Dig)
-  Player B looks at the top 3 card(s) of their library.
-
---- Decision 141 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(3): Atraxa, Grand Unifier, Show and Tell, The Creation of Avacyn | lib 42
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Flow State (spell, self)
-  Pending: Flow State (self)
-  Self GY: Lotus Petal, Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Atraxa, Grand Unifier
-   1: Fatal Push
-   2: Brainstorm
-  >> B/B: 1 (Fatal Push)
-
---- Decision 142 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(3): Atraxa, Grand Unifier, Show and Tell, The Creation of Avacyn | lib 42
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Flow State (spell, self)
-  Pending: Flow State (self)
-  Self GY: Lotus Petal, Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Atraxa, Grand Unifier
-   1: Brainstorm
-  >> B/B: 1 (Brainstorm)
---- Narrative ---
-  Player B puts Fatal Push into hand.
-  Player B puts Brainstorm into hand.
-  Player B puts 1 card(s) on the bottom of their library.
-  --- Declare Attackers (Player B) ---
-
---- Decision 143 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Brainstorm, Fatal Push, Show and Tell, The Creation of Avacyn | lib 40
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Flow State, Lotus Petal, Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Atraxa, Grand Unifier [7/7]
-   1: Raph & Mikey, Troublemakers [7/7]
-   2: Confirm attackers
-  >> B/B: 0 (Atraxa, Grand Unifier [7/7])
---- Narrative ---
-  Atraxa, Grand Unifier attacking Player A.
-  --- Declare Attackers (Player B) ---
-    [attacking] Atraxa, Grand Unifier [7/7] -> Player A
-
---- Decision 144 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Brainstorm, Fatal Push, Show and Tell, The Creation of Avacyn | lib 40
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] | Swamp (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Flow State, Lotus Petal, Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Raph & Mikey, Troublemakers [7/7]
-   1: Confirm attackers
-  >> B/B: 0 (Raph & Mikey, Troublemakers [7/7])
---- Narrative ---
-  Raph & Mikey, Troublemakers attacking Player A.
-  --- Declare Attackers (Player B) ---
-    [attacking] Atraxa, Grand Unifier [7/7] -> Player A
-    [attacking] Raph & Mikey, Troublemakers [7/7] -> Player A
-
---- Decision 145 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Brainstorm, Fatal Push, Show and Tell, The Creation of Avacyn | lib 40
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (ATK) | Swamp (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Flow State, Lotus Petal, Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> B/B: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Atraxa, Grand Unifier -> Player A
-    Raph & Mikey, Troublemakers -> Player A
-  Raph & Mikey, Troublemakers triggered
-  Resolving ability (category: DigUntil)
-  Player B reveals Polluted Delta.
-  Player B reveals Flooded Strand.
-  Player B reveals Force of Will.
-  Player B reveals Force of Will.
-  Player B reveals Polluted Delta.
-  Player B reveals Thoughtseize.
-  Player B reveals Reanimate.
-  Player B reveals Show and Tell.
-  Player B reveals Underground Sea.
-  Player B reveals Fatal Push.
-  Player B reveals Reanimate.
-  Player B reveals Consign to Memory.
-  Player B reveals The Creation of Avacyn.
-  Player B reveals Scalding Tarn.
-  Player B reveals Marsh Flats.
-  Player B reveals Lotus Petal.
-  Player B reveals Flusterstorm.
-  Player B reveals Ponder.
-  Player B reveals Consign to Memory.
-  Player B reveals Echoing Truth.
-  Player B reveals Force of Will.
-  Player B reveals Bloodstained Mire.
-  Player B reveals Show and Tell.
-  Player B reveals Careful Study.
-  Player B reveals Thoughtseize.
-  Player B reveals Force of Negation.
-  Player B reveals Animate Dead.
-  Player B reveals Underground Sea.
-  Player B reveals Echoing Truth.
-  Player B reveals Reanimate.
-  Player B reveals Flow State.
-  Player B reveals Otherworldly Gaze.
-  Player B reveals Animate Dead.
-  Player B reveals Archon of Cruelty.
-  Player B puts Archon of Cruelty onto the battlefield tapped and attacking.
-  Archon of Cruelty enters tapped.
-  Archon of Cruelty is attacking.
-  Choose target for Archon of Cruelty:
-
---- Decision 146 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  2 life | mana: empty | hand(5): Atraxa, Grand Unifier, Brainstorm, Fatal Push, Show and Tell, The Creation of Avacyn | lib 39
-  Opp:   6 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK) | Swamp (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Pending: Archon of Cruelty (self)
-  Self GY: Flow State, Lotus Petal, Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Player A (6 life)
-  >> B/B: 0 (Player A (6 life))
---- Narrative ---
-  Targeting choice 0
-  Archon of Cruelty triggered
-  Resolving ability (category: Sacrifice)
-
---- Decision 147 ---
-  Priority: Player A (non-active)
-  Step: Declare Atk (turn 10)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   2 life | mana: empty | hand count: 5 | lib 39
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK) | Swamp (T) | Underground Sea (T) | Underground Sea (T)
-  Stack: Archon of Cruelty (ability, opponent) -> self (player)
-  Pending: Archon of Cruelty (opp)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flow State, Lotus Petal, Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Sacrifice Orcish Bowmasters
-   1: Sacrifice Phelia, Exuberant Shepherd
-   2: Sacrifice White Orchid Phantom
-   3: Sacrifice Orc Army
-  >> A/A: 0 (Sacrifice Orcish Bowmasters)
---- Narrative ---
-  Player A sacrifices Orcish Bowmasters.
-  Resolving ability (category: Discard)
-  Player A chooses a card to discard:
-
---- Decision 148 ---
-  Priority: Player A (non-active)
-  Step: Declare Atk (turn 10)
-  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   2 life | mana: empty | hand count: 5 | lib 39
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [6/6] [+1/+1:6] (T)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK) | Swamp (T) | Underground Sea (T) | Underground Sea (T)
-  Stack: Archon of Cruelty (ability, opponent) -> self (player)
-  Pending: Archon of Cruelty (opp)
-  Self GY: Orcish Bowmasters, Wasteland, Aether Vial
-  Opp GY:  Flow State, Lotus Petal, Atraxa, Grand Unifier, Ponder, Thoughtseize, Lotus Petal, Archon of Cruelty, Animate Dead, Brainstorm, Careful Study, Lotus Petal, Reanimate, Careful Study, Undercity Sewers, Griselbrand, Undercity Sewers, Polluted Delta, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp exile:  Otherworldly Gaze, Otherworldly Gaze, Force of Negation
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Show and Tell, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: White Orchid Phantom
-  >> A/A: 0 (White Orchid Phantom)
---- Narrative ---
-  Player A discards White Orchid Phantom
-  Resolving ability (category: LoseLife, amount: 3)
-  Player A loses 3 life (now at 3)
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Ponder
-  Resolving ability (category: GainLife, amount: 3)
-  Player B gains 3 life (now at 5)
-  No creatures eligible to block.
-  --- Combat Damage ---
-    Archon of Cruelty deals 6 damage to Player A
-    Atraxa, Grand Unifier deals 7 damage to Player A
-    Raph & Mikey, Troublemakers deals 7 damage to Player A
-    Player B gains 7 life (lifelink)
-  --- End Combat Damage ---
-  Player A has -17 life - Player B wins!
-
-=== B/B wins ===
+=== A/A wins ===
