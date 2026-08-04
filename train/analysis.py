@@ -773,7 +773,13 @@ def _ctrl_clock_stats(ctrl):
     return stats.get("clock_bank"), stats.get("clock_remaining")
 
 
-def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
+class CollectAbort(Exception):
+    """Raised out of the on_query hook to stop a trace collection between
+    decisions (see _collect_game_traces' should_stop)."""
+
+
+def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
+                         progress=None, should_stop=None):
     """Play n_games and collect per-step (obs, value, action) traces.
 
     Returns a list of game dicts:
@@ -802,16 +808,39 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
 
     The game loop itself is runner.drive_game (the shared loop); the trace
     recording rides its on_query/on_action hooks.
+
+    `progress(event_dict)`, when given, streams the collection live (called on
+    this thread): {"kind": "game_start", "model_is_a", "engine_seed"} after each
+    reset; {"kind": "step", "step": {...}} the moment a MODEL decision's action
+    is known (the step dict carries that decision's full record — obs copy,
+    value, interp, num_choices, probs, clock, prefix_len, action);
+    {"kind": "opp_action", "opp": {...}} per opponent decision;
+    {"kind": "game_end", "game": <finished dict>} with the authoritative record;
+    {"kind": "game_abort"} when should_stop lands mid-game; {"kind": "note",
+    "text"} for the search-play announce/stats lines (which print to stdout
+    only when progress is None). `should_stop()` is checked between games and
+    between decisions (via CollectAbort raised from on_query); a stop during a
+    single controller.choose takes effect when that decision returns. Both
+    default to None — existing callers are unchanged.
     """
     import torch
     import runner
 
-    _announce_search_play(model, opp_model)
+    if progress is None:
+        _announce_search_play(model, opp_model)
+    else:
+        for line in _search_play_notes(model, opp_model):
+            progress({"kind": "note", "text": line})
 
     games = []
     for g in range(n_games):
+        if should_stop is not None and should_stop():
+            break
         model_is_a = bool(np.random.random() < 0.5)
         obs, engine_seed = _reset_for_game(env, model_is_a)
+        if progress is not None:
+            progress({"kind": "game_start", "model_is_a": model_is_a,
+                      "engine_seed": engine_seed})
         ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model,
                                                       model_is_a, env)
         ctrl_opp = ctrl_b if ctrl_model is ctrl_a else ctrl_a
@@ -827,6 +856,8 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         prefix_len = []
 
         def on_query(d):
+            if should_stop is not None and should_stop():
+                raise CollectAbort
             # Record observation, value and policy probs for MODEL decisions
             # (before the controller acts; the obs is unchanged by choosing).
             if d.controller is not ctrl_model:
@@ -847,6 +878,16 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         def on_action(d, action):
             if d.controller is ctrl_model:
                 trace_actions.append(int(action))
+                if progress is not None:
+                    # The step's complete record, now that the choice is known.
+                    # Ships the same obs copy made in on_query — the consumer
+                    # owns it (finished dicts are treated as immutable).
+                    progress({"kind": "step", "step": {
+                        "obs": trace_obs[-1], "value": trace_vals[-1],
+                        "interp": trace_interp[-1],
+                        "num_choices": trace_num_choices[-1],
+                        "probs": trace_probs[-1], "clock": trace_clock[-1],
+                        "prefix_len": prefix_len[-1], "action": int(action)}})
             else:
                 # Decode now (obs is from the opponent's perspective and is not
                 # kept) so the replay can interleave opponent actions later.
@@ -857,9 +898,17 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                     "before_model_step": len(trace_obs),
                     "clock": _ctrl_clock_stats(d.controller)[1],
                 })
+                if progress is not None:
+                    progress({"kind": "opp_action",
+                              "opp": trace_opp_actions[-1]})
 
-        rec = runner.drive_game(env, obs, ctrl_a, ctrl_b,
-                                on_query=on_query, on_action=on_action)
+        try:
+            rec = runner.drive_game(env, obs, ctrl_a, ctrl_b,
+                                    on_query=on_query, on_action=on_action)
+        except CollectAbort:
+            if progress is not None:
+                progress({"kind": "game_abort"})
+            break
         full_actions = rec.actions
         model_reward = rec.reward if model_is_a else -rec.reward
         games.append({
@@ -882,6 +931,8 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             "clock_bank": _ctrl_clock_stats(ctrl_model)[0],
             "opp_clock_bank": _ctrl_clock_stats(ctrl_opp)[0],
         })
+        if progress is not None:
+            progress({"kind": "game_end", "game": games[-1]})
         if verbose:
             result_str = "W" if model_reward > 0 else ("L" if model_reward < 0 else "D")
             score = _match_score(games[-1])
@@ -889,22 +940,35 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                 result_str += f" {score[0]}-{score[1]}"
             print(f"  game {g}/{n_games - 1}: {len(trace_obs)} decisions, {result_str}",
                   flush=True)
-    _report_search_stats(model, opp_model)
+    if progress is None:
+        _report_search_stats(model, opp_model)
+    else:
+        for line in _search_stats_notes(model, opp_model):
+            progress({"kind": "note", "text": line})
     return games
+
+
+def _search_play_notes(model, opp_model):
+    """One-line notice per seat whose trace games are MCTS-played."""
+    lines = []
+    for who, m in (("model", model), ("opponent", opp_model)):
+        spec = getattr(m, "_play_spec", None) if m is not None else None
+        if _is_search_spec(spec):
+            lines.append(f"  {who} trace games played by MCTS ({spec}) — slow "
+                         f"(~sims/decision); use azraw:/bare spec for "
+                         f"raw-policy traces")
+    return lines
 
 
 def _announce_search_play(model, opp_model):
     """Print a one-line notice for each seat whose trace games are MCTS-played."""
-    for who, m in (("model", model), ("opponent", opp_model)):
-        spec = getattr(m, "_play_spec", None) if m is not None else None
-        if _is_search_spec(spec):
-            print(f"  {who} trace games played by MCTS ({spec}) — slow "
-                  f"(~sims/decision); use azraw:/bare spec for raw-policy traces",
-                  flush=True)
+    for line in _search_play_notes(model, opp_model):
+        print(line, flush=True)
 
 
-def _report_search_stats(model, opp_model):
-    """Print each search seat's accumulated searched/fallback/sims tally."""
+def _search_stats_notes(model, opp_model):
+    """Each search seat's accumulated searched/fallback/sims tally, as lines."""
+    lines = []
     for who, m in (("model", model), ("opponent", opp_model)):
         ctrl = getattr(m, "_search_ctrl", None) if m is not None else None
         stats = getattr(ctrl, "stats", None) if ctrl is not None else None
@@ -913,11 +977,18 @@ def _report_search_stats(model, opp_model):
             bank, remaining = _ctrl_clock_stats(ctrl)
             if bank is not None:
                 clock = f" clock={remaining:.1f}/{bank:g}s"
-            print(f"  {who} MCTS [{getattr(ctrl, 'label', 'mcts')}]: "
-                  f"searched={stats.get('searched', 0)} "
-                  f"sb_searched={stats.get('sb_searched', 0)} "
-                  f"fallback={stats.get('fallback', 0)} "
-                  f"sims={stats.get('sims', 0)}{clock}", flush=True)
+            lines.append(f"  {who} MCTS [{getattr(ctrl, 'label', 'mcts')}]: "
+                         f"searched={stats.get('searched', 0)} "
+                         f"sb_searched={stats.get('sb_searched', 0)} "
+                         f"fallback={stats.get('fallback', 0)} "
+                         f"sims={stats.get('sims', 0)}{clock}")
+    return lines
+
+
+def _report_search_stats(model, opp_model):
+    """Print each search seat's accumulated searched/fallback/sims tally."""
+    for line in _search_stats_notes(model, opp_model):
+        print(line, flush=True)
 
 
 def _game_is_replayable(game):

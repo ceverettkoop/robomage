@@ -137,7 +137,7 @@ ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "actorobs", "pergame",
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
 # self-skips cleanly when either is absent (so it never breaks a stock build).
-OPT_IN_TIERS = ["actor", "analysis", "azinspect"]
+OPT_IN_TIERS = ["actor", "analysis", "azinspect", "gui"]
 KNOWN_TIERS = ALL_TIERS + OPT_IN_TIERS
 
 # Transcript scan (stdout narrative + captured engine stderr). Two severities:
@@ -388,6 +388,69 @@ def tier_analysis(rep):
         rep.error("analysis", "shard-replay violation "
                               f"(test_shard_replay.py exit {r.returncode}):\n"
                               f"{r.stdout}{r.stderr}")
+    # Qt-free analysis-browser core (browse_session): histogram geometry parity,
+    # BrowseStore event application, presentation helpers, and live streaming
+    # through the real collector's progress/should_stop hooks. Needs
+    # bin/robomage; the live-stream leg self-skips without torch.
+    r = subprocess.run([sys.executable, "train/test_browse_session.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("analysis", "browse-session violation "
+                              f"(test_browse_session.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
+    # GUI session save/load (gui_session_io): .rmplay byte-identical replay
+    # round-trip, .rmtrace round-trip incl. shard/whatif records, validation
+    # gates, kind sniffing, trace_from_replay. Torch-free; needs bin/robomage.
+    r = subprocess.run([sys.executable, "train/test_gui_session_io.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("analysis", "gui-session-io violation "
+                              f"(test_gui_session_io.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
+
+
+def tier_gui(rep):
+    """Headless PySide6 shell smokes (opt-in; needs the optional PySide6
+    extra). Runs offscreen: the play-board auto-drive, the live-analysis
+    window, the play-session save→reopen replay round-trip, the synthetic
+    .rmtrace open into the analysis browser, and the shard-mode browser
+    (self-skips without recorded shards). Self-skips without PySide6."""
+    try:
+        import PySide6  # noqa: F401
+    except Exception as e:
+        print(f"  [skip] gui: PySide6 not importable ({e})", flush=True)
+        return
+    env = dict(os.environ, QT_QPA_PLATFORM="offscreen")
+    legs = [
+        ("play smoke",
+         dict(env, ROBOMAGE_GUI_SMOKE="8"),
+         [sys.executable, "train/play.py", "--gui",
+          "--human-deck", "league/ur_delver",
+          "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+        ("analysis-window smoke",
+         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_ANALYSIS_SMOKE="1"),
+         [sys.executable, "train/play.py", "--gui", "--analysis",
+          "--human-deck", "league/ur_delver",
+          "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+        ("session save/reopen smoke",
+         dict(env, ROBOMAGE_GUI_SESSION_SMOKE="1"),
+         [sys.executable, "train/gui_main.py"]),
+        ("trace open smoke",
+         dict(env, ROBOMAGE_GUI_TRACE_SMOKE="1"),
+         [sys.executable, "train/gui_main.py"]),
+        ("browser shard smoke",
+         dict(env, ROBOMAGE_BROWSER_SMOKE="1"),
+         [sys.executable, "train/gui_main.py"]),
+    ]
+    for name, leg_env, cmd in legs:
+        r = subprocess.run(cmd, cwd=_REPO_ROOT, capture_output=True,
+                           text=True, env=leg_env)
+        print(r.stdout, end="", flush=True)
+        if r.returncode != 0:
+            rep.error("gui", f"{name} failed (exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
 
 
 def tier_azinspect(rep):
@@ -754,6 +817,8 @@ def main(argv=None):
             tier_analysis(rep)
         elif t == "azinspect":
             tier_azinspect(rep)
+        elif t == "gui":
+            tier_gui(rep)
 
     print("\n" + "=" * 60, flush=True)
     print(f"ci_check: {len(rep.errors)} error(s), {len(rep.warnings)} warning(s)",

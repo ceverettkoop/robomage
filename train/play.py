@@ -189,7 +189,7 @@ if __name__ == "__main__":
         # installed, fall back to the TUI when --tui was also set, else error with
         # the install hint.
         try:
-            import gui_game
+            import gui_main
         except ImportError:
             if args.tui:
                 print("PySide6 not installed — falling back to the TUI board "
@@ -202,9 +202,11 @@ if __name__ == "__main__":
                 parser.error("PySide6 not installed — pip install -r "
                              "train/requirements-gui.txt, or use --tui")
         else:
-            gui_game.run(args.binary, model_path, human_player=args.player,
-                         human_deck=args.human_deck, model_deck=args.model_deck,
-                         bo3=not args.bo1, analysis=args.analysis)
+            import sys as _sys
+            _sys.exit(gui_main.run(
+                args.binary, model_path, human_player=args.player,
+                human_deck=args.human_deck, model_deck=args.model_deck,
+                bo3=not args.bo1, analysis=args.analysis))
     elif args.tui:
         import tui_game
         tui_game.run(args.binary, model_path, human_player=args.player,
