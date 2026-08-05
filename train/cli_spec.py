@@ -890,6 +890,16 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "are ignored. HYBRID backend: the C++ actor (when built) "
                  "plays the pure self-play cells, the Python backend the "
                  "vs-scripted cells; --no-actor keeps everything on Python"),
+        Arg("--exhaustive-selfplay", "flag",
+            help="Exhaustive matrix restricted to the pure SELF-PLAY cells "
+                 "(implies --exhaustive): one bo3 match per UNORDERED deck "
+                 "pair, mirrors included (55 on the 10-deck roster), with NO "
+                 "vs-scripted cells — so the whole schedule runs on the C++ "
+                 "actor backend and nothing falls back to Python"),
+        Arg("--exhaustive-repeats", "int", default=1,
+            help="Play every cell of the exhaustive matrix N times per cycle "
+                 "(default 1). Each repeat is an independent match with its "
+                 "own seat draw and game seed."),
         Arg("--eval-games", "int", default=56,
             help="Total gate matches, split over the roster-wide panel (a mirror "
                  "per roster deck + direction-balanced cross pairs; default 56 "
@@ -1006,6 +1016,19 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "self-play cells, the Python backend the vs-scripted cells; "
                  "--no-actor keeps everything on Python. A rotation counts "
                  "--cycles-per-deck matrix cycles, as with --matrix."),
+        Arg("--exhaustive-selfplay", "flag",
+            help="Exhaustive matrix restricted to the pure SELF-PLAY cells "
+                 "(implies --exhaustive): every slot plays one bo3 match per "
+                 "UNORDERED deck pair, mirrors included (55 on the 10-deck "
+                 "roster), with NO vs-scripted cells — so every slot's "
+                 "self-play runs entirely on the C++ actor backend "
+                 "(persisted in the resume sidecar)"),
+        Arg("--exhaustive-repeats", "int", default=1,
+            help="Play every cell of the exhaustive matrix N times per slot "
+                 "(default 1) — e.g. 2 makes each slot every self-play "
+                 "matchup twice. Each repeat is an independent match with its "
+                 "own seat draw and game seed (persisted in the resume "
+                 "sidecar)."),
         Arg("--expert-decks", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated decks to ALSO write scripted:hard EXPERT "
                  "demonstration shards for each slot (pi = one-hot expert "
