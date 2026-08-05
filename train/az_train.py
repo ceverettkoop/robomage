@@ -529,7 +529,9 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
              gate_floor: float = DEFAULT_GATE_FLOOR,
              expert_decks: Optional[list] = None, expert_games: int = 16,
              roster: Optional[list] = None, bo3: bool = True,
-             gate: bool = True, exhaustive: bool = False) -> dict:
+             gate: bool = True, exhaustive: bool = False,
+             exhaustive_selfplay: bool = False,
+             exhaustive_repeats: int = 1) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
@@ -541,6 +543,11 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
     ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and the backend
     goes HYBRID: the C++ actor (when built) plays the pure self-play cells, the
     Python backend the vs-scripted cells (the actor has no scripted seat).
+
+    ``exhaustive_selfplay`` (implies ``exhaustive``) drops the vs-scripted family:
+    the cycle plays ONLY the pure self-play cells, one bo3 match per unordered
+    deck pair (55 on the 10-deck roster), entirely on the C++ actor backend.
+    ``exhaustive_repeats=n`` plays every cell of that matrix n times per cycle.
 
     ``window=0`` sizes the training window automatically: 2x the shards THIS
     cycle's generation just wrote (self-play + expert), so each training pass
@@ -581,9 +588,13 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
     focus = _normalize_focus(deck, _default_az_league_roster())
     label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
 
+    exhaustive = bool(exhaustive) or bool(exhaustive_selfplay)
+    matrix_txt = ("" if not exhaustive else
+                  ", exhaustive matrix"
+                  + (" (self-play only)" if exhaustive_selfplay else "")
+                  + (f" x{exhaustive_repeats}" if exhaustive_repeats > 1 else ""))
     print(f"=== az cycle: self-play (cross-deck, focus={label}, "
-          f"{'bo3' if bo3 else 'bo1'}"
-          f"{', exhaustive matrix' if exhaustive else ''}) ===")
+          f"{'bo3' if bo3 else 'bo1'}{matrix_txt}) ===")
     gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
                                sb_sims=sb_sims, sb_worlds=sb_worlds,
                                sb_max_depth=sb_max_depth,
@@ -593,7 +604,9 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
                                roster=roster, focus_decks=focus,
                                mirror_frac=mirror_frac,
                                scripted_opponent_frac=scripted_opponent_frac,
-                               bo3=bo3, exhaustive=exhaustive)
+                               bo3=bo3, exhaustive=exhaustive,
+                               exhaustive_selfplay=exhaustive_selfplay,
+                               exhaustive_repeats=exhaustive_repeats)
     if expert_decks:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
@@ -678,6 +691,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
               scripted_opponent_frac: float = 0.0,
               matrix: bool = False, exhaustive: bool = False,
+              exhaustive_selfplay: bool = False,
+              exhaustive_repeats: int = 1,
               gate_floor: float = DEFAULT_GATE_FLOOR,
               gate_every: int = DEFAULT_GATE_EVERY,
               expert_decks: Optional[list] = None, expert_games: int = 16,
@@ -708,6 +723,14 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and self-play
     runs on the HYBRID backend — the C++ actor (when built) plays the pure
     self-play cells, the Python backend the vs-scripted cells.
+
+    ``exhaustive_selfplay=True`` (implies ``exhaustive``) keeps only the pure
+    SELF-PLAY family of that matrix: every slot plays one bo3 match per
+    UNORDERED deck pair, mirrors included (55 on the 10-deck roster) and no
+    vs-scripted cells, so the whole slot runs on the C++ actor backend.
+    ``exhaustive_repeats=n`` plays each cell n times per slot — e.g.
+    ``exhaustive_selfplay=True, exhaustive_repeats=2`` is "every self-play
+    matchup twice, every slot".
 
     ``gate_every=0`` disables the eval/gate entirely: no slot is gated, and at
     run COMPLETION the newest candidate snapshot is promoted to
@@ -763,6 +786,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             p.get("scripted_opponent_frac", scripted_opponent_frac))
         matrix = bool(p.get("matrix", False))
         exhaustive = bool(p.get("exhaustive", False))
+        exhaustive_selfplay = bool(p.get("exhaustive_selfplay", False))
+        exhaustive_repeats = int(p.get("exhaustive_repeats", 1))
         gate_floor = float(p.get("gate_floor", gate_floor))
         gate_every = int(p.get("gate_every", gate_every))
         expert_decks = p.get("expert_decks", None)
@@ -793,6 +818,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     # (rotation, deck, cycle) by index arithmetic and total stays None. In
     # matrix (and exhaustive) mode every slot is a whole-roster cycle, so a
     # rotation is just cycles_per_deck slots.
+    # --exhaustive-selfplay is a NARROWING of the exhaustive matrix, so it
+    # implies it; normalize before the slot accounting and the sidecar so both
+    # (and a later --resume) see the effective mode.
+    exhaustive = bool(exhaustive) or bool(exhaustive_selfplay)
+    exhaustive_repeats = max(1, int(exhaustive_repeats))
     whole_roster_slots = matrix or exhaustive
     per_rotation = (cycles_per_deck if whole_roster_slots
                     else len(roster) * cycles_per_deck)
@@ -814,6 +844,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "seed": seed, "mirror_frac": mirror_frac,
             "scripted_opponent_frac": scripted_opponent_frac, "matrix": matrix,
             "exhaustive": exhaustive,
+            "exhaustive_selfplay": exhaustive_selfplay,
+            "exhaustive_repeats": exhaustive_repeats,
             "gate_floor": gate_floor, "gate_every": gate_every,
             "expert_decks": expert_decks,
             "expert_games": expert_games, "use_actor": use_actor,
@@ -824,7 +856,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     print(f"AZ league roster: {', '.join(roster)}")
     rotations_txt = "indefinite" if total is None else str(rotations)
     total_txt = "unbounded" if total is None else str(total)
-    focus_txt = ("exhaustive matrix (every matchup cell once, every slot)"
+    times_txt = ("once" if exhaustive_repeats == 1
+                 else f"{exhaustive_repeats}x")
+    focus_txt = (f"exhaustive SELF-PLAY matrix (every unordered pair {times_txt}, "
+                 f"every slot; no vs-scripted cells)" if exhaustive_selfplay
+                 else f"exhaustive matrix (every matchup cell {times_txt}, every slot)"
                  if exhaustive
                  else "matrix (whole-roster focus every slot)" if matrix
                  else "per-deck rotation")
@@ -871,8 +907,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         if whole_roster_slots:
             c = rem
             focus = list(roster)
-            deck_label = (f"{'exhaustive' if exhaustive else 'matrix'}"
-                          f"[{len(roster)} decks]")
+            mode_lbl = ("exhaustive-selfplay" if exhaustive_selfplay
+                        else "exhaustive" if exhaustive else "matrix")
+            deck_label = f"{mode_lbl}[{len(roster)} decks]"
         else:
             di, c = divmod(rem, cycles_per_deck)
             focus = roster[di]
@@ -905,7 +942,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        gate_floor=gate_floor,
                        expert_decks=expert_decks, expert_games=expert_games,
                        roster=roster, bo3=bo3, gate=do_gate,
-                       exhaustive=exhaustive)
+                       exhaustive=exhaustive,
+                       exhaustive_selfplay=exhaustive_selfplay,
+                       exhaustive_repeats=exhaustive_repeats)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         last_snapshot = tr.get("snapshot")
         if ev is None:
@@ -1020,7 +1059,9 @@ def run_cycle(args) -> None:
              expert_games=getattr(args, "expert_games", 16),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args),
-             exhaustive=getattr(args, "exhaustive", False))
+             exhaustive=getattr(args, "exhaustive", False),
+             exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
+             exhaustive_repeats=getattr(args, "exhaustive_repeats", 1))
 
 
 def run_league(args) -> None:
@@ -1042,6 +1083,8 @@ def run_league(args) -> None:
               scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
               matrix=getattr(args, "matrix", False),
               exhaustive=getattr(args, "exhaustive", False),
+              exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
+              exhaustive_repeats=getattr(args, "exhaustive_repeats", 1),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
               gate_every=getattr(args, "gate_every", DEFAULT_GATE_EVERY),
               expert_decks=_split_decks(getattr(args, "expert_decks", None)),
