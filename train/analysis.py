@@ -598,6 +598,8 @@ def _load_model_and_env(args):
     except ImportError:
         from stable_baselines3 import PPO as MaskablePPO
 
+    from opponents import is_scripted_spec
+
     _apply_search_budget_flags(args)
     binary = getattr(args, "binary", BINARY)
 
@@ -607,6 +609,7 @@ def _load_model_and_env(args):
     # so the trace loop can build the matching SearchController.
     insp_model_spec = _inspection_spec(args.model)
     insp_opp_spec = _inspection_spec(args.opponent)
+    opp_scripted = is_scripted_spec(insp_opp_spec)
     model_path = _resolve_any_path(insp_model_spec)
 
     # Deck resolution. A checkpoint no longer encodes a deck — there is one
@@ -621,7 +624,7 @@ def _load_model_and_env(args):
               file=sys.stderr)
         sys.exit(1)
     if not deck_b:
-        if args.opponent == "scripted":
+        if opp_scripted:
             deck_b = deck_a  # no opponent deck given; mirror by default
             print(f"No --deck-b given for scripted opponent; defaulting to a mirror "
                   f"match (opponent plays {deck_b}). Pass --deck-b for a different matchup.")
@@ -643,8 +646,11 @@ def _load_model_and_env(args):
     # object here is always the inspection net (SHAP/value/probs); a search spec
     # additionally spins up a SearchController that plays via make_controller.
     model._play_spec = args.model
+    # A scripted opponent never loads a checkpoint; remember its tier spec
+    # (e.g. "scripted:easy") so _controllers_for builds the matching agent.
+    model._scripted_opp_spec = args.opponent if opp_scripted else None
     opp_model = None
-    if args.opponent != "scripted":
+    if not opp_scripted:
         if _is_az_model_spec(insp_opp_spec):
             opp_model, _ = _load_az_analysis_model(insp_opp_spec)
         else:
@@ -745,9 +751,10 @@ def _controllers_for(model, opp_model, model_is_a, env=None):
     The model seat (and the opponent seat when ``opp_model`` is given) plays via
     :func:`_playing_controller` — a raw-policy ``ModelController`` normally, or a
     real MCTS ``SearchController`` when the original spec was ``az:``/``mcts:``.
-    A scripted opponent is the HARD agent. ``env`` (the search-capable env when
-    search play is active) is handed to any controller that advertises
-    ``bind_env``.
+    A scripted opponent plays the tier the spec named (``_scripted_opp_spec``
+    stashed by ``_load_model_and_env``; the bare "scripted" default is the HARD
+    agent). ``env`` (the search-capable env when search play is active) is
+    handed to any controller that advertises ``bind_env``.
     """
     from opponents import ScriptedController
     from scripted_agent import make_agent
@@ -756,7 +763,8 @@ def _controllers_for(model, opp_model, model_is_a, env=None):
     if opp_model is not None:
         ctrl_opp = _playing_controller(opp_model, "Opp", env)
     else:
-        ctrl_opp = ScriptedController(make_agent("scripted"), label="Scripted")
+        spec = getattr(model, "_scripted_opp_spec", None) or "scripted"
+        ctrl_opp = ScriptedController(make_agent(spec), label="Scripted")
     ctrl_a, ctrl_b = ((ctrl_model, ctrl_opp) if model_is_a
                       else (ctrl_opp, ctrl_model))
     return ctrl_a, ctrl_b, ctrl_model

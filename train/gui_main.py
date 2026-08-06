@@ -18,9 +18,9 @@ env.close(), then the pane is removed.
 Entry points:
 
 * ``run(...)``          — play.py --gui: build a play session directly.
-* ``run_launcher(...)`` — gui.sh / no arguments: welcome pane + the New Play
-                          Session dialog (Cancel lands on the welcome pane
-                          with the menus live).
+* ``run_launcher(...)`` — gui.sh / no arguments: welcome pane with the menus
+                          live (File ▸ New Session to begin; no dialog is
+                          auto-opened).
 
 Smokes: ``ROBOMAGE_GUI_SMOKE`` / ``ROBOMAGE_ANALYSIS_SMOKE`` keep their
 gui_game semantics — the pane auto-plays and emits session_finished, which
@@ -888,10 +888,10 @@ def run(binary_path, model_path, human_player=None,
 
 def run_launcher(binary_path=None):
     """gui.sh / no-arguments entry: MainWindow on the welcome pane with the
-    New Play Session dialog auto-opened. Cancel lands on the welcome pane with
-    the menus live (instead of exiting). Returns 0 on a clean exit.
+    menus live — no dialog is auto-opened; start via File ▸ New Session
+    (Ctrl+N play, Ctrl+Shift+N analysis). Returns 0 on a clean exit.
 
-    The headless shell smokes hijack this entry (no dialog): set
+    The headless shell smokes hijack this entry: set
     ROBOMAGE_GUI_SESSION_SMOKE / ROBOMAGE_GUI_TRACE_SMOKE /
     ROBOMAGE_BROWSER_SMOKE and run `python train/gui_main.py`."""
     from cli_spec import BINARY
@@ -899,9 +899,7 @@ def run_launcher(binary_path=None):
     app = _ensure_app()
     window = MainWindow(binary_path)
     window.show()
-    smoke = _start_shell_smoke(window)
-    if smoke is None:
-        QTimer.singleShot(0, window._new_play_dialog)
+    _start_shell_smoke(window)
     code = app.exec()
     window.manager.shutdown()
     return code

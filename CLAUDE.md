@@ -780,7 +780,8 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 `./tui.sh` (`train/tui.py`) is the overall Textual control panel — deck management, training,
 league runs, observing games, and launching interactive play — and is a separate tool from the
 two *game board* front ends described below. `./gui.sh` is a thin wrapper that launches
-`train/gui_game.py` with no arguments (the GUI launcher dialog).
+`train/gui_main.py` with no arguments (the app shell on its welcome pane; sessions start
+via File ▸ New Session — no dialog is auto-opened).
 
 Both game boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a
 worker thread reporting `StateUpdate`s to a sink; `build_session` assembles env + opponent
@@ -789,9 +790,9 @@ controller). The engine is always a `--machine` subprocess; the opponent control
 
 - **TUI board**: `train/play.py --human-deck X --model-deck Y` (default), or via `./tui.sh`.
 - **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_game.py` / `./gui.sh` with
-  no args for the launcher dialog (deck/opponent/seat/format pickers + search and analysis
-  settings, persisted to `~/.robomage/gui_launcher.json`). Falls back to the TUI if PySide6 is
-  missing.
+  no args for the app shell's welcome pane — File ▸ New Session opens the play/analysis dialogs
+  (deck/opponent/seat/format pickers + search and analysis settings, persisted to
+  `~/.robomage/gui_launcher.json`). Falls back to the TUI if PySide6 is missing.
 - **Standalone analysis browser** (`train/tui_analysis.py`, Textual, not on `game_driver.py`):
   loads a checkpoint, simulates N games against a chosen opponent, and lets you page through
   each game's board states, seek via a clickable V(s) histogram, run any `analysis.py` REPL

@@ -2094,9 +2094,45 @@ def _wld_line(w: int, l: int, d: int) -> str:
     return f"{w}W/{l}L/{d}D  {pct:.1f}% win rate"
 
 
+# Per-process controller cache for baseline_all's --workers pool: each spawned
+# worker builds the controller (checkpoint load) once and reuses it for every
+# matchup it is handed.
+_WORKER_CTRLS: dict = {}
+
+
+def _baseline_worker_init():
+    """Pool-worker initializer: pin the tiny CPU net eval to one thread.
+
+    Each worker already saturates its core with the engine subprocess; letting
+    torch fan matmuls across cores just oversubscribes the pool."""
+    try:
+        import torch
+        torch.set_num_threads(1)
+    except ImportError:
+        pass
+
+
+def _baseline_matchup_worker(binary_path: str, spec: str, deck: str, opp: str,
+                             n_games: int, seed: int | None, bo3: bool):
+    """One (model deck, opponent deck) cell of the --all round-robin, run
+    inside a pool worker. Returns ``(w, l, d, per_game_split)``."""
+    from opponents import make_controller
+
+    ctrl = _WORKER_CTRLS.get(spec)
+    if ctrl is None:
+        ctrl = make_controller(spec, checkpoint_resolver=_resolve_model,
+                               deterministic=True)
+        _WORKER_CTRLS[spec] = ctrl
+    split: dict = {}
+    w, l, d = baseline(binary_path, ctrl, n_games=n_games, deck=deck,
+                       opp_deck=opp, seed=seed, quiet=True, bo3=bo3,
+                       split_out=split)
+    return w, l, d, split
+
+
 def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
                  log_path: str | None = None, bo3: bool = False,
-                 model: str | None = None):
+                 model: str | None = None, workers: int = 1):
     """Round-robin a model over every league matchup vs scripted:hard.
 
     ``model`` is any ``make_controller`` model spec — default ``'gen'`` (the one
@@ -2110,6 +2146,13 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
     opponent deck (against every model deck); all win rates are from the model's
     perspective. It is appended to ``log_path`` (default
     checkpoints/baseline_report.log) and printed to stdout.
+
+    ``workers > 1`` runs that many matchups concurrently in a spawn-based
+    process pool (one Python driver + one engine subprocess per worker; the
+    matchup grid is embarrassingly parallel). Seeds mean the same thing in both
+    modes — every matchup plays games ``seed .. seed+n_games-1`` — so a
+    parallel run is game-for-game reproducible against a sequential one; only
+    the progress-line completion order varies. The report is identical.
     """
     import runner
     from opponents import make_controller
@@ -2132,10 +2175,6 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
             return
         display = spec if spec == os.path.basename(ckpt) else \
             f"{spec} ({os.path.basename(ckpt)})"
-    # Build the controller ONCE (loads the checkpoint once); baseline() accepts
-    # a pre-built Controller and reuses it for every matchup.
-    ctrl = make_controller(spec, checkpoint_resolver=_resolve_model,
-                           deterministic=True)
 
     if log_path is None:
         log_path = os.path.join(_CHECKPOINT_ABS, "baseline_report.log")
@@ -2160,14 +2199,44 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
     # Pre-board vs post-board tallies pooled over every matchup (bo3 only).
     per_game_all: dict[int, list[int]] = {}
 
+    # Gather every matchup's tally into results[(deck, opp)] — sequentially or
+    # across the worker pool; the report below reads them in roster order
+    # either way, so completion order never reorders the report.
+    matchups = [(deck, opp) for deck in roster for opp in roster]
+    results: dict[tuple, tuple] = {}
+    if workers > 1:
+        import concurrent.futures as cf
+        import multiprocessing as mp
+
+        ctx = mp.get_context("spawn")
+        with cf.ProcessPoolExecutor(max_workers=workers, mp_context=ctx,
+                                    initializer=_baseline_worker_init) as pool:
+            futs = {pool.submit(_baseline_matchup_worker, binary_path, spec,
+                                deck, opp, n_games, seed, bo3): (deck, opp)
+                    for deck, opp in matchups}
+            for done, fut in enumerate(cf.as_completed(futs), 1):
+                deck, opp = futs[fut]
+                w, l, d, split = fut.result()
+                results[(deck, opp)] = (w, l, d)
+                runner.merge_per_game(per_game_all, split)
+                print(f"  [{done}/{len(matchups)}] {spec} piloting {deck} vs "
+                      f"{opp}: " + _wld_line(w, l, d), flush=True)
+    else:
+        # Build the controller ONCE (loads the checkpoint once); baseline()
+        # accepts a pre-built Controller and reuses it for every matchup.
+        ctrl = make_controller(spec, checkpoint_resolver=_resolve_model,
+                               deterministic=True)
+        for deck, opp in matchups:
+            print(f"\n  {spec} (model) piloting {deck} vs {opp} (scripted:hard):",
+                  flush=True)
+            results[(deck, opp)] = baseline(
+                binary_path, ctrl, n_games=n_games, deck=deck, opp_deck=opp,
+                seed=seed, bo3=bo3, split_out=per_game_all)
+
     for deck in roster:
         row_cells = []
         for opp in roster:
-            print(f"\n  {spec} (model) piloting {deck} vs {opp} (scripted:hard):",
-                  flush=True)
-            w, l, d = baseline(binary_path, ctrl, n_games=n_games, deck=deck,
-                               opp_deck=opp, seed=seed, bo3=bo3,
-                               split_out=per_game_all)
+            w, l, d = results[(deck, opp)]
             total = w + l + d
             pct = 100 * w / total if total else 0
             row_cells.append(f"{opp}={w}W/{l}L/{d}D({pct:.0f}%)")
@@ -2470,7 +2539,8 @@ if __name__ == "__main__":
         # (--bo3 is accepted as a redundant no-op for backward compatibility).
         if args.all:
             baseline_all(args.binary, n_games=args.games or 50, seed=args.seed,
-                         log_path=args.log, bo3=not args.bo1, model=args.model)
+                         log_path=args.log, bo3=not args.bo1, model=args.model,
+                         workers=args.workers)
         elif args.model is None:
             parser.error("baseline: give a model spec ('gen', 'az:gen', a .zip/.pt "
                          "path), or --all to round-robin it over every league "
@@ -2488,7 +2558,8 @@ if __name__ == "__main__":
             except ValueError as exc:
                 parser.error(str(exc))
             baseline(args.binary, ctrl, args.games or 100,
-                     deck=args.deck, seed=args.seed, bo3=not args.bo1)
+                     deck=args.deck, opp_deck=args.opponent,
+                     seed=args.seed, bo3=not args.bo1)
     elif args.command == "az-selfplay":
         import az_selfplay
         az_selfplay.run(args)

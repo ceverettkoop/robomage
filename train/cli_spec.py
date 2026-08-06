@@ -753,6 +753,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--deck", "str", default=None, suggest="deck",
             help="Deck the model pilots — REQUIRED (the generalist encodes no deck). "
                  "The scripted opponent mirrors it."),
+        Arg("--opponent", "str", default=None, suggest="deck",
+            help="Deck the scripted opponent pilots (default: mirror of --deck; "
+                 "ignored with --all, which sweeps every roster pairing)"),
+        Arg("--workers", "int", default=1,
+            help="With --all: run this many matchups concurrently in a process "
+                 "pool (each worker is one Python driver + one engine subprocess, "
+                 "so size it to the core count; default 1 = sequential)"),
         Arg("--seed", "int", default=None,
             help="RNG seed for reproducible runs (game N uses seed+N; default: random)"),
         Arg("--bo1", "flag",
