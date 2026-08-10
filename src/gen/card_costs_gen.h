@@ -1034,8 +1034,8 @@ static const float CARD_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 1023: 
 };
 
-// All-zero until non-mana activated ability costs are parsed C++-side,
-// mirroring card_costs.py's np.zeros _CARD_ABILITY_COST_MATRIX.
+// Mana cost of activating the card's cheapest qualifying battlefield
+// ability, mirroring card_costs.py's _CARD_ABILITY_COST_MATRIX.
 static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 0: Mountain
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 1: Forest
@@ -1065,7 +1065,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 25: Thundering Falls
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 26: Murktide Regent
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 27: Mishra's Bauble
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 28: Cori-Steel Cutter
+    {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.1f},  // 28: Cori-Steel Cutter
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 29: Unholy Heat
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 30: Birds of Paradise
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 31: Collector Ouphe
@@ -1073,11 +1073,11 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 33: Endurance
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 34: Gaea's Cradle
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 35: Green Sun's Zenith
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 36: Horizon Canopy
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 36: Horizon Canopy
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 37: Icetill Explorer
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 38: Ignoble Hierarch
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 39: Karakas
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 40: Keen-Eyed Curator
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 40: Keen-Eyed Curator
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 41: Knight of the Reliquary
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 42: Noble Hierarch
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 43: Once Upon a Time
@@ -1157,7 +1157,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 117: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 118: Elegant Parlor
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 119: Grafdigger's Cage
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 120: Abundant Countryside
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.6f},  // 120: Abundant Countryside
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 121: Aether Vial
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 122: Agate Instigator
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 123: Ancient Tomb
@@ -1179,9 +1179,9 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 139: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 140: Seat of the Synod
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 141: Solitude
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 142: Stadium Headliner
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 143: Stoneforge Mystic
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 144: Sunbaked Canyon
+    {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.1f},  // 142: Stadium Headliner
+    {0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 143: Stoneforge Mystic
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 144: Sunbaked Canyon
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 145: Thoughtcast
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 146: Urza's Bauble
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 147: White Orchid Phantom
@@ -1191,13 +1191,13 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 151: Metallic Rebuke
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 152: Preordain
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 153: Scrubland
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 154: Aether Spellbomb
+    {0.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 154: Aether Spellbomb
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 155: Badlands
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 156: Bojuka Bog
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 157: Recruiter of the Guard
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 158: Wight of the Reliquary
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 159: Cabal Therapy
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 160: Eye of Ugin
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.7f},  // 160: Eye of Ugin
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 161: Mai, Scornful Striker
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 162: Natural Order
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 163: Sheoldred's Edict
@@ -1234,14 +1234,14 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 194: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 195: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 196: 
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 197: Ba Sing Se
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.2f},  // 197: Ba Sing Se
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 198: Lorehold Charm
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 199: It That Heralds the End
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 200: Petrified Hamlet
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 201: Eiganjo, Seat of the Empire
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 202: Canoptek Scarab Swarm
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 203: Mox Amber
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 204: Alpha Deathclaw
+    {0.0f, 0.0f, 0.1f, 0.0f, 0.1f, 0.0f, 0.5f},  // 204: Alpha Deathclaw
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 205: Wastescape Battlemage
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 206: Consign to Memory
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 207: Forth Eorlingas!
@@ -1257,21 +1257,21 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 217: Council's Judgment
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 218: Craterhoof Behemoth
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 219: 
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 220: Elvish Reclaimer
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.2f},  // 220: Elvish Reclaimer
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 221: Flickerwisp
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 222: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 223: 
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 224: Lavaspur Boots
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 224: Lavaspur Boots
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 225: 
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 226: Meteor Sword
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f},  // 226: Meteor Sword
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 227: Mystical Dispute
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 228: Otawara, Soaring City
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 229: Pithing Needle
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 230: Pre-War Formalwear
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f},  // 230: Pre-War Formalwear
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 231: Prismari Charm
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 232: 
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 233: Shadowspear
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 234: Silent Clearing
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 233: Shadowspear
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 234: Silent Clearing
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 235: Snow-Covered Island
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 236: 
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 237: 
@@ -1283,12 +1283,12 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 243: Hide on the Ceiling
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 244: Baleful Strix
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 245: Blue Elemental Blast
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 246: Expedition Map
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.2f},  // 246: Expedition Map
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 247: Gaddock Teeg
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 248: Grim Monolith
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.4f},  // 248: Grim Monolith
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 249: Stony Silence
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 250: Voltaic Key
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 251: Manifold Key
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 250: Voltaic Key
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 251: Manifold Key
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 252: Boomerang Basics
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 253: Liquimetal Coating
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 254: Mole Man, Moloid Master
@@ -1323,7 +1323,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 283: Veil of Summer
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 284: Into the Flood Maw
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 285: The One Ring
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 286: Lion Sash
+    {0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 286: Lion Sash
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 287: Cityscape Leveler
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 288: Kaito, Bane of Nightmares
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 289: Yorion, Sky Nomad
@@ -1331,8 +1331,8 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 291: Flusterstorm
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 292: Emrakul, the Aeons Torn
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 293: Overlord of the Balemurk
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 294: Outland Liberator
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 295: Frenzied Trapbreaker
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 294: Outland Liberator
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 295: Frenzied Trapbreaker
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 296: Urza's Saga
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 297: Summon: Bahamut
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 298: Tamiyo, Inquisitive Student
@@ -1346,12 +1346,12 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 306: Meticulous Archive
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 307: Spell Pierce
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 308: Tune the Narrative
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 309: Fiery Islet
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 309: Fiery Islet
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 310: Lava Spike
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 311: Exploration
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 312: Crop Rotation
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 313: Rishadan Port
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 314: Skateboard
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 313: Rishadan Port
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f},  // 314: Skateboard
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 315: Sphere of Resistance
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 316: Boseiju, Who Endures
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 317: Twinshot Sniper
@@ -1361,7 +1361,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 321: Spell Snare
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 322: Goblin Guide
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 323: Archon of Cruelty
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 324: Blast Zone
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f},  // 324: Blast Zone
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 325: Malevolent Rumble
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 326: Chain Lightning
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 327: Searing Blood
@@ -1371,14 +1371,14 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 331: Echoing Truth
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 332: Show and Tell
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 333: Jace, Wielder of Mysteries
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 334: Dark Depths
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 335: Thespian's Stage
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f},  // 334: Dark Depths
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.2f},  // 335: Thespian's Stage
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 336: Mox Diamond
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 337: The Tabernacle at Pendrell Vale
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 338: Prismatic Ending
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 339: Skewer the Critics
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 340: Light Up the Stage
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 341: Roiling Vortex
+    {0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.0f},  // 341: Roiling Vortex
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 342: Rift Bolt
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 343: Maze of Ith
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 344: Teferi, Time Raveler
@@ -1943,7 +1943,7 @@ static const float CARD_ABILITY_COST_MATRIX[1024][7] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 903: Insect
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 904: Shapeshifter
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 905: Construct 4/4
-    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 906: Clue
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.2f},  // 906: Clue
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 907: Powerstone
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 908: Moloid
     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  // 909: Warrior

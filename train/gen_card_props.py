@@ -22,12 +22,13 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_card_costs import (REPO_ROOT, VOCAB_H, CARDS_DIR, N_TYPES,
-                            parse_vocab, parse_token_vocab_base,
-                            parse_mana_cost, find_card_file)
+from gen_card_costs import (REPO_ROOT, VOCAB_H, CARDS_DIR, N_TYPES, TOKENS_DIR,
+                            DFC_SEPARATOR, parse_vocab, parse_token_vocab_base,
+                            parse_mana_cost, find_card_file,
+                            parse_vocab_with_stems, find_back_face_file,
+                            split_faces, face_lines_for)
 from _enums import _OBS_KEYWORDS
 
-TOKENS_DIR = os.path.join(REPO_ROOT, "bin/resources/tokenscripts")
 OUT_FILE = os.path.join(REPO_ROOT, "train/card_props.py")
 
 # ---------------------------------------------------------------------------
@@ -73,7 +74,10 @@ PROP_NAMES = (
 N_PROPS = len(PROP_NAMES)
 COL = {n: i for i, n in enumerate(PROP_NAMES)}
 
-DFC_SEPARATOR = "ALTERNATE"
+# DFC_SEPARATOR, the vocab/DFC/token-script resolvers (parse_vocab_with_stems,
+# find_back_face_file, split_faces, face_lines_for) and TOKENS_DIR live in
+# gen_card_costs.py — the shared card-script reading layer both generators
+# import — so the two matrices always resolve the same file for a vocab entry.
 
 # Ignored-but-seen script attributes, reported once at the end (not per-card:
 # the scripts legitimately carry far more keywords/categories/subtypes than the
@@ -81,67 +85,6 @@ DFC_SEPARATOR = "ALTERNATE"
 _ignored_keywords = set()
 _ignored_cats = set()
 _ignored_subtypes = set()
-
-
-def parse_vocab_with_stems(path):
-    """Return {index: script_stem} for the token band's 3-tuple entries
-    {"script_stem", "Display Name", N}. The shared parse_vocab deliberately
-    captures only the display name; the stem is what resolves the on-disk
-    token script under bin/resources/tokenscripts/."""
-    text = open(path).read()
-    return {int(m.group(3)): m.group(1)
-            for m in re.finditer(r'\{\s*"([^"]+)"\s*,\s*"([^"]+)"\s*,\s*(\d+)', text)}
-
-
-def find_back_face_file(name):
-    """Resolve a DFC BACK-face vocab entry to its combined <front>_<back>.txt.
-
-    find_card_file matches by front stem (exact, then prefix), so a back-face
-    name like "Insectile Aberration" misses entirely; the combined filename
-    ends with the back face's uid instead."""
-    stem = re.sub(r'[^a-z0-9_]', '',
-                  name.lower().replace(' ', '_').replace('-', '_').replace('/', '_'))
-    stem = re.sub(r'_+', '_', stem)
-    suffix = "_" + stem + ".txt"
-    for subdir in sorted(os.listdir(CARDS_DIR)):
-        subdir_path = os.path.join(CARDS_DIR, subdir)
-        if not os.path.isdir(subdir_path):
-            continue
-        for f in sorted(os.listdir(subdir_path)):
-            if f.lower().endswith(suffix):
-                return os.path.join(subdir_path, f)
-    return None
-
-
-def split_faces(text):
-    """Split a script into (front_lines, back_lines) on the ALTERNATE
-    separator line. A single-faced script has back_lines == None."""
-    lines = text.splitlines()
-    for i, line in enumerate(lines):
-        if line.strip() == DFC_SEPARATOR:
-            return lines[:i], lines[i + 1:]
-    return lines, None
-
-
-def face_lines_for(name):
-    """The script lines for the vocab entry's own face, plus DFC context.
-
-    Returns ``(lines, front_lines, is_back)``: the front section of the
-    resolved script, or the back section (with the front carried alongside)
-    when the name only resolves as a combined-file suffix — a DFC back-face
-    vocab entry. ``(None, None, False)`` if no script."""
-    path = find_card_file(name)
-    if path is not None:
-        front, _back = split_faces(open(path).read())
-        return front, front, False
-    path = find_back_face_file(name)
-    if path is not None:
-        front, back = split_faces(open(path).read())
-        if back is not None:
-            return back, front, True
-        print(f"  WARNING: '{name}' matched combined file '{path}' "
-              f"but it has no {DFC_SEPARATOR} section")
-    return None, None, False
 
 
 def field(lines, key):
