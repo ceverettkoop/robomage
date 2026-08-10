@@ -641,6 +641,9 @@ _CHAIN_PAIRS = [
     ("_MANA_DEV_START",         "MANA_DEV_START"),
     ("_MANA_DEV_OPP_START",     "MANA_DEV_OPP_START"),
     ("_MANA_DEV_END",           "MANA_DEV_END"),
+    ("_LOG_VITALS_START",       "LOG_VITALS_START"),
+    ("_LOG_VITALS_OPP_START",   "LOG_VITALS_OPP_START"),
+    ("_LOG_VITALS_END",         "LOG_VITALS_END"),
 ]
 
 

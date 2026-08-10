@@ -20,6 +20,7 @@ it); also runnable standalone::
 
     train/.venv/bin/python train/test_obs_invariants.py
 """
+import math
 import os
 import random
 import re
@@ -51,6 +52,7 @@ from env import (
     _MANA_DEV_START, _MANA_DEV_OPP_START,
     _MD_POTENTIAL_TOTAL, _MD_LANDS_IN_PLAY, _MD_SELF_LANDS_IN_HAND,
     _MD_SELF_LAND_DROPS, _MD_OPP_LAND_DROPS,
+    _LOG_VITALS_START, _LOG_VITALS_OPP_START, _LV_LOG_LIFE, _LV_LOG_LIBRARY,
     _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START, _REVEALED_START,
     _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
     _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
@@ -60,7 +62,9 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
                     SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
                     MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
-                    LAND_DROPS_NORMALIZER)
+                    LAND_DROPS_NORMALIZER, LOG_VITALS_PLAYER_SIZE,
+                    LIFE_NORMALIZER, LIBRARY_NORMALIZER,
+                    LOG_LIFE_DENOM, LOG_LIBRARY_DENOM)
 from opponents import make_controller
 from scripted_agent import scripted_action
 
@@ -250,6 +254,61 @@ def _check_mana_dev(decision_idx, seat, state):
                       f"lands_in_hand {in_hand} exceeds hand count {hand_ct}")
 
 
+# Tolerance for the log-vitals identity. The engine narrows a double log1p ratio to
+# float32 (~1e-7 relative) and the count is recovered exactly from the linear float,
+# so anything beyond this is a real disagreement, not arithmetic noise.
+_LOG_VITALS_TOL = 1e-5
+
+
+def _check_log_vitals(decision_idx, seat, state):
+    """Invariant (13): the LOG VITALS block is exactly the log1p re-warping of the
+    SAME observation's LINEAR life and library floats.
+
+    The strong form of the check: the integer life total and library size are
+    recovered from the linear encodings that already exist in this obs (life =
+    round(f * LIFE_NORMALIZER), library = round(f * LIBRARY_NORMALIZER)), and the
+    log floats must equal log1p(max(v, 0)) / the mirrored denominator. So the two
+    encodings can never describe different numbers — a serializer that read the
+    wrong player's life, ordered the halves backwards, or forgot to clamp a negative
+    life into log1p's domain fails here rather than silently training on it.
+
+    During the bo3 sideboard phase the block is MASKED (env._build_sideboard_mask /
+    obs_builder.cpp's twin) because the player blocks it mirrors are masked, so the
+    identity deliberately does not hold there; the masked all-zeros form is asserted
+    instead — which is itself the check that the mask covers the new block."""
+    in_sideboard = float(state[_IS_SIDEBOARD_IDX]) > 0.5
+    halves = (
+        ("self_log_vitals", _LOG_VITALS_START, _SELF_BLOCK_START, _LIBRARY_CTX_START),
+        ("opp_log_vitals", _LOG_VITALS_OPP_START, _OPP_BLOCK_START, _LIBRARY_CTX_START + 1),
+    )
+    for name, start, pb_start, lib_off in halves:
+        block = state[start:start + LOG_VITALS_PLAYER_SIZE]
+        # Finite and non-negative: log1p over a clamped count can never be either.
+        for i, v in enumerate(block):
+            if not np.isfinite(v) or v < -_LOG_VITALS_TOL:
+                _fail(decision_idx, seat, name, i, v,
+                      "log-scaled vital must be finite and non-negative")
+        if in_sideboard:
+            for i, v in enumerate(block):
+                if float(v) != 0.0:
+                    _fail(decision_idx, seat, name, i, v,
+                          "log-scaled vital must be masked to 0.0 during the "
+                          "sideboard phase (it mirrors the masked player blocks)")
+            continue
+        # Recover the counts from THIS obs's linear floats, then re-derive the logs.
+        life = int(round(float(state[pb_start + _PB_LIFE]) * LIFE_NORMALIZER))
+        library = int(round(float(state[lib_off]) * LIBRARY_NORMALIZER))
+        for off, field, count, denom in (
+                (_LV_LOG_LIFE, "log_life", life, LOG_LIFE_DENOM),
+                (_LV_LOG_LIBRARY, "log_library", library, LOG_LIBRARY_DENOM)):
+            expected = math.log1p(max(count, 0)) / denom
+            got = float(block[off])
+            if abs(got - expected) > _LOG_VITALS_TOL:
+                _fail(decision_idx, seat, f"{name}.{field}", off, got,
+                      f"log float {got} != log1p(max({count},0))/{denom} = {expected} "
+                      f"(count recovered from this obs's linear float)")
+
+
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
     """Assert every observation invariant for one decision. Raises on violation.
@@ -333,14 +392,14 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
 
     # (7) Player-block sanity: life / hand / library counts finite & non-negative.
     for label, base in (("self", _SELF_BLOCK_START), ("opp", _OPP_BLOCK_START)):
-        life = float(state[base + _PB_LIFE]) * 20.0
+        life = float(state[base + _PB_LIFE]) * LIFE_NORMALIZER
         hand = float(state[base + _PB_HAND_CT]) * 10.0
         for field, val in (("life", life), ("hand_count", hand)):
             if not np.isfinite(val) or val < -0.5:  # -0.5: tolerate float rounding at 0
                 _fail(decision_idx, seat, f"{label}_player.{field}", "-", val,
                       f"{field} de-normalizes to {val} (expected finite & >= 0)")
     for label, off in (("self", _LIBRARY_CTX_START), ("opp", _LIBRARY_CTX_START + 1)):
-        lib = float(state[off]) * 60.0
+        lib = float(state[off]) * LIBRARY_NORMALIZER
         if not np.isfinite(lib) or lib < -0.5:
             _fail(decision_idx, seat, f"{label}_player.library", "-", lib,
                   f"library count de-normalizes to {lib} (expected finite & >= 0)")
@@ -399,7 +458,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
                 self_lib_sum += cnt
 
     # (9c) self-live-library counts sum to the viewer's library card count.
-    lib_ct = int(round(float(state[_LIBRARY_CTX_START]) * 60.0))
+    lib_ct = int(round(float(state[_LIBRARY_CTX_START]) * LIBRARY_NORMALIZER))
     if self_lib_sum != lib_ct:
         _fail(decision_idx, seat, "self_live_lib.sum", "-", self_lib_sum,
               f"library counts sum to {self_lib_sum} but self_library_ct is {lib_ct}")
@@ -426,6 +485,12 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # flags — must match, with phased-out permanents excluded from BOTH per CR
     # 702.26e). lands_in_hand is self-only and bounded by the hand count.
     _check_mana_dev(decision_idx, seat, state)
+
+    # (13) Log-scaled vitals: each log float is exactly log1p(max(count,0)) over the
+    # mirrored denominator, where the count is recovered from the SAME obs's LINEAR
+    # life/library float — the two encodings of one number, pinned to each other.
+    # (Masked to zeros during the sideboard phase, which is asserted instead there.)
+    _check_log_vitals(decision_idx, seat, state)
 
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata
@@ -692,8 +757,18 @@ def check_opponent_decklist_frozen():
     swaps = 0
     saw_sideboard = False
     post_board = 0
+    # Log-vitals coverage over this bo3: the main invariant loop is bo1 only, so
+    # this is where the block's SIDEBOARD-phase form (masked to zeros) is exercised
+    # alongside its normal form (the log identity). Counted so neither branch can
+    # pass vacuously.
+    lv_live, lv_masked = 0, 0
     try:
-        for obs, _num, cats, seat in _drive_bo3_sideboarding(env):
+        for idx, (obs, _num, cats, seat) in enumerate(_drive_bo3_sideboarding(env)):
+            _check_log_vitals(idx, seat, obs[:STATE_SIZE])
+            if obs[_IS_SIDEBOARD_IDX] > 0.5:
+                lv_masked += 1
+            else:
+                lv_live += 1
             blocks = (
                 tuple(_decode_decklist_block(obs, _OPP_DECK_MAIN_START,
                                              DECKLIST_MAIN_SLOTS)),
@@ -733,7 +808,11 @@ def check_opponent_decklist_frozen():
     if post_board == 0:
         raise InvariantError("the match never reached a post-board game — the "
                              "frozen-block assertion would pass vacuously")
-    return swaps, post_board
+    if lv_live == 0 or lv_masked == 0:
+        raise InvariantError(
+            f"log-vitals coverage was vacuous: {lv_live} live decisions, "
+            f"{lv_masked} sideboard-masked ones (both branches must be seen)")
+    return swaps, post_board, lv_live, lv_masked
 
 
 # "Sideboard in: 4x Lightning Bolt" / "Sideboard out: 1x Island" — the count is the
@@ -1107,12 +1186,14 @@ def main():
           "activations on one Jace", flush=True)
 
     try:
-        n_swaps, n_post = check_opponent_decklist_frozen()
+        n_swaps, n_post, lv_live, lv_masked = check_opponent_decklist_frozen()
     except InvariantError as e:
         print(f"FAIL  opponent decklist frozen across bo3\n  {e}", flush=True)
         return 1
     print(f"ok    opponent decklist frozen across bo3: {n_swaps} swaps made, "
           f"{n_post} post-board decisions checked", flush=True)
+    print(f"ok    log vitals across bo3: {lv_live} live decisions match the log "
+          f"identity, {lv_masked} sideboard decisions masked to zeros", flush=True)
 
     try:
         n_acts, n_ords = check_sideboard_copy_ordinals()

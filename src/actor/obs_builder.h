@@ -43,7 +43,7 @@ constexpr int ACTOR_MATCHUP_TAIL_FEATS = 1 + 2 * ARCH_N;
 
 // obs = state | cats | ids | ctrl | zone | refs | ords | hand_costs |
 //       bf_ability_costs | matchup_tail.
-// Must equal train/env.py::OBS_SIZE (7157). Derived from the engine layout
+// Must equal train/env.py::OBS_SIZE (7161). Derived from the engine layout
 // constants so a layout change is caught by the static_assert, never a literal.
 // The per-action metadata blocks (N_ACTION_OBS_BLOCKS: cats | ids | ctrl | zone_ref
 // | slot_ref | option_ordinal; pub stays a side-channel, not in the obs) are counted
@@ -54,7 +54,7 @@ constexpr int ACTOR_OBS_SIZE =
     MAX_HAND_SLOTS * ACTOR_N_COST_FEATS +
     MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS +
     ACTOR_MATCHUP_TAIL_FEATS;
-static_assert(ACTOR_OBS_SIZE == 7157, "actor obs size must match env.py OBS_SIZE");
+static_assert(ACTOR_OBS_SIZE == 7161, "actor obs size must match env.py OBS_SIZE");
 
 struct ActorObs {
     std::vector<float> obs;  // ACTOR_OBS_SIZE floats

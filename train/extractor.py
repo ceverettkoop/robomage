@@ -17,7 +17,7 @@ Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 looked up in a learned nn.Embedding. This decouples the observation size from the
 vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slots.
 
-Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6350):
+Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6354):
   obs[0:36]            global context (player stats, step, flags, stack size)
   obs[36:3684]         96 permanent slots × 38 floats
                          slots 0-47: self; slots 48-95: opponent
@@ -68,7 +68,11 @@ Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6350):
                          potential_total, lands_in_play, lands_in_hand,
                          land_drops_remaining, max-CMC proxy) then opponent
                          (10 — no lands_in_hand, which is hidden information)
-  obs[6350:]           action metadata (cats|ids|ctrl|zone|refs|ords) + cost
+  obs[6350:6354]       log-scaled vitals: self (log1p(max(life,0))/log1p(20),
+                         log1p(library)/log1p(60)) then opponent — the same counts
+                         as the linear floats above, re-warped for resolution near
+                         zero (see the LOG VITALS block in machine_io.h)
+  obs[6354:]           action metadata (cats|ids|ctrl|zone|refs|ords) + cost
                          features (appended by env.py; refs are normalized
                          entity-slot references, (idx+1)/108 with 0.0 = none)
 """
@@ -102,7 +106,8 @@ try:
                         STACK_QUAL_FIELDS, STACK_TGT_FIELDS, HIST_ENTRY_SIZE,
                         PENDING_DECISION_SIZE, EXTRAS_SCALARS,
                         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
-                        MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE)
+                        MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
+                        LOG_VITALS_PLAYER_SIZE)
 except ImportError:
     from train._enums import (ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
                              DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
@@ -113,7 +118,8 @@ except ImportError:
                              STACK_QUAL_FIELDS, STACK_TGT_FIELDS, HIST_ENTRY_SIZE,
                              PENDING_DECISION_SIZE, EXTRAS_SCALARS,
                              EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
-                             MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE)
+                             MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
+                             LOG_VITALS_PLAYER_SIZE)
 
 
 def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -313,7 +319,15 @@ _OPP_DECK_SIDE_END    = _OPP_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _DECKLIST_
 _MANA_DEV_START       = _OPP_DECK_SIDE_END
 _MANA_DEV_SIZE        = MANA_DEV_SELF_SIZE + MANA_DEV_OPP_SIZE
 _MANA_DEV_END         = _MANA_DEV_START + _MANA_DEV_SIZE
-_STATE_END            = _MANA_DEV_END
+# Log-scaled vitals: (log_life, log_library) for self, then the same for the
+# opponent. Like the mana-development block these are plain normalized scalars with
+# no card identity, so they pass through RAW into the trunk; the whole point is that
+# the net receives the log warping directly instead of having to learn it from the
+# linear life/library floats it already gets.
+_LOG_VITALS_START     = _MANA_DEV_END
+_LOG_VITALS_SIZE      = 2 * LOG_VITALS_PLAYER_SIZE
+_LOG_VITALS_END       = _LOG_VITALS_START + _LOG_VITALS_SIZE
+_STATE_END            = _LOG_VITALS_END
 # obs[_STATE_END:] = action metadata + cost features + matchup tail (env.py)
 # Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE and
 # the obs tail offsets; these asserts are the mirror check).
@@ -348,6 +362,8 @@ _ENV_CHAIN_PAIRS = [
     ("_OPP_DECK_SIDE_START",  _OPP_DECK_SIDE_START),
     ("_MANA_DEV_START",       _MANA_DEV_START),
     ("_MANA_DEV_END",         _MANA_DEV_END),
+    ("_LOG_VITALS_START",     _LOG_VITALS_START),
+    ("_LOG_VITALS_END",       _LOG_VITALS_END),
 ]
 for _name, _mine in _ENV_CHAIN_PAIRS:
     _theirs = getattr(_env_mod, _name)
@@ -385,6 +401,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
       extras(19 raw: lands played, priority, monarch, ..., MandatoryChoice one-hot) +
       mana_dev(21 raw: per-color untapped-source potential, total, lands in play /
                 in hand, land drops remaining, max-CMC proxy — self then opponent) +
+      log_vitals(4 raw: log1p-scaled life and library size, self then opponent) +
       action_extras(action metadata cats|ids|ctrl|zone|refs + cost feats) +
       arch_onehot(2*N_ARCH raw: one-hot self archetype | one-hot opp archetype;
                   the tail's raw bucket index is stripped and stashed as
@@ -425,6 +442,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + card_feat + 1                              # pending-decision source embed + ctrl flag
             + _EXTRAS_SIZE                               # 22 global extras (raw passthrough)
             + _MANA_DEV_SIZE                             # 21 mana development (raw passthrough)
+            + _LOG_VITALS_SIZE                           # 4 log-scaled vitals (raw passthrough)
             # action extras (6 blocks incl. refs + ords + costs): everything after
             # the state EXCEPT the matchup tail, which is handled separately.
             + (observation_space.shape[0] - _STATE_END - _MATCHUP_TAIL_FEATS)
@@ -578,6 +596,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         pending       = obs[:, _PENDING_START:_PENDING_END]     # pending-decision source id + ctrl flag
         extras        = obs[:, _EXTRAS_START:_EXTRAS_END]       # 19 global extras (raw passthrough)
         mana_dev      = obs[:, _MANA_DEV_START:_MANA_DEV_END]   # mana development (raw passthrough)
+        log_vitals    = obs[:, _LOG_VITALS_START:_LOG_VITALS_END]  # log-scaled life/library (raw)
         action_extras = obs[:, _STATE_END:_BUCKET_IDX]          # action cats|ids|ctrl|zone|refs + cost features
         # Matchup tail: the raw value-bucket index is STRIPPED here (a bucket id is
         # a meaningless magnitude to the trunk) and stashed for the policy's
@@ -707,7 +726,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
         opp_side_agg = _masked_mean_max(opp_side_enc, opp_side_present)
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
-                          revealed_agg, pending_feat, extras, mana_dev, action_extras,
+                          revealed_agg, pending_feat, extras, mana_dev, log_vitals,
+                          action_extras,
                           arch_onehot,
                           perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
                           self_lib_agg, self_main_agg, self_side_agg,

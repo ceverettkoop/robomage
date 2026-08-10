@@ -5,6 +5,8 @@
 # OBS_KEYWORDS array in src/machine_io.h.
 # Re-run train/gen_enums.py after changing any of them.
 
+import math
+
 ACTION_CATEGORY_MAX = 49
 N_ACTION_CATEGORIES = 50
 
@@ -25,7 +27,7 @@ DECKLIST_MAIN_SLOTS = 48  # src/classes/gamestate.h
 DECKLIST_SIDE_SLOTS = 16  # src/classes/gamestate.h
 KNOWN_TOP_LIBRARY_SIZE = 5  # src/classes/game.h
 ACTION_HISTORY_SIZE = 128  # src/classes/game.h
-STATE_SIZE = 6350  # src/machine_io.h
+STATE_SIZE = 6354  # src/machine_io.h
 N_CARD_TYPES = 1024  # src/machine_io.h
 PERM_SLOT_SIZE = 38  # src/machine_io.h
 OPTION_ORDINAL_MAX = 63  # src/machine_io.h
@@ -52,6 +54,15 @@ MANA_DEV_SELF_SIZE = 11  # src/machine_io.h
 MANA_DEV_OPP_SIZE = 10  # src/machine_io.h
 MANA_COUNT_NORMALIZER = 10  # src/machine_io.h
 LAND_DROPS_NORMALIZER = 3  # src/machine_io.h
+LOG_VITALS_PLAYER_SIZE = 2  # src/machine_io.h
+LIFE_NORMALIZER = 20  # src/machine_io.h
+LIBRARY_NORMALIZER = 60  # src/machine_io.h
+
+# Log1p denominators for the LOG VITALS block, derived from the mirrored
+# scales above exactly as machine_io.h derives its own (std::log1p of the
+# same int), so the two sides can never divide by different numbers.
+LOG_LIFE_DENOM = math.log1p(LIFE_NORMALIZER)  # src/machine_io.h
+LOG_LIBRARY_DENOM = math.log1p(LIBRARY_NORMALIZER)  # src/machine_io.h
 
 # Name-keyed ActionCategory constants: CAT_<ENUM_NAME> = value, for every
 # entry in the C++ ActionCategory enum (src/classes/action.h).

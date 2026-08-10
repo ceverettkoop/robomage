@@ -41,6 +41,7 @@ static int slot_ref_of(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
                                 bool with_lands_in_hand);
+static void push_log_vitals_block(std::vector<float>& out, int life, int library_ct);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
 static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer);
@@ -207,7 +208,7 @@ int action_card_vocab_idx(const LegalAction& la) {
 
 
 static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
-    out.push_back(static_cast<float>(ps.life) / 20.0f);
+    out.push_back(static_cast<float>(ps.life) / static_cast<float>(LIFE_NORMALIZER));
     out.push_back(static_cast<float>(ps.hand_ct) / 10.0f);
     out.push_back(static_cast<float>(ps.poison_counters) / 10.0f);
     for (int i = 0; i < 6; i++) out.push_back(static_cast<float>(ps.mana[i]) / 10.0f);
@@ -234,6 +235,17 @@ static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
     // is the total mana this player could float. Documented as a proxy in machine_io.h;
     // the slot exists so a real payer-based value can land without a layout break.
     out.push_back(static_cast<float>(ps.mana_potential_total) / count_norm);
+}
+
+// Pushes one player's half of the LOG VITALS block: LOG_VITALS_PLAYER_SIZE floats,
+// log_life then log_library. Life comes from the PlayerState and the library count
+// from the GameState's own library-context counter (the same integer the linear
+// library float is built from), so the two encodings of a value can never disagree
+// about which count they describe. Both fields are public information, hence the
+// identical self and opponent halves.
+static void push_log_vitals_block(std::vector<float>& out, int life, int library_ct) {
+    out.push_back(norm_log_count(life, LOG_LIFE_DENOM));
+    out.push_back(norm_log_count(library_ct, LOG_LIBRARY_DENOM));
 }
 
 // Pushes PERM_SLOT_SIZE floats (35 status + chosen-name id + returnable-exile id + card-id;
@@ -973,8 +985,8 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(gs->is_sideboard_phase ? 1.0f : 0.0f);
 
     // Library counts & post-board flag (3 floats)
-    state.push_back(static_cast<float>(gs->self_library_ct) / 60.0f);
-    state.push_back(static_cast<float>(gs->opp_library_ct) / 60.0f);
+    state.push_back(static_cast<float>(gs->self_library_ct) / static_cast<float>(LIBRARY_NORMALIZER));
+    state.push_back(static_cast<float>(gs->opp_library_ct) / static_cast<float>(LIBRARY_NORMALIZER));
     state.push_back(gs->match_game_number > 0 ? 1.0f : 0.0f);
 
     // Current turn (1 float)
@@ -1054,6 +1066,15 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Self (11 floats) then opponent (10 — no lands_in_hand, which is hidden).
     push_mana_dev_block(state, gs->self, /*with_lands_in_hand=*/true);
     push_mana_dev_block(state, gs->opponent, /*with_lands_in_hand=*/false);
+
+    // ── Log-scaled vitals (see machine_io.h [6350-6353]) ──────────────────────
+    // The same life/library counts already emitted linearly above (player blocks,
+    // library-context block), re-warped through log1p so the near-zero region —
+    // where the game is decided and the linear floats have their least resolution —
+    // gets proportional resolution. Self (2 floats) then opponent (2). Both
+    // encodings are kept deliberately; see the rationale in machine_io.h.
+    push_log_vitals_block(state, gs->self.life, gs->self_library_ct);
+    push_log_vitals_block(state, gs->opponent.life, gs->opp_library_ct);
 
     // Loud, NDEBUG-surviving length check: cli_output fwrites STATE_SIZE floats from this
     // buffer, so an under-fill would silently OOB-read under BUILD=RELEASE (where assert() is

@@ -3,6 +3,7 @@
 
 #include "classes/gamestate.h"
 #include "classes/action.h"
+#include <cmath>
 #include <vector>
 
 // BQUERY format (machine mode): a text header line
@@ -65,7 +66,7 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// Fixed-size state vector layout (STATE_SIZE = 6350 floats):
+// Fixed-size state vector layout (STATE_SIZE = 6354 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -321,8 +322,35 @@
 //  [6340-6349]   Opponent mana development (10 floats): the same fields MINUS
 //                lands_in_hand, i.e. potential_W/U/B/R/G/C, potential_total,
 //                lands_in_play, land_drops_remaining, max_affordable_cmc_proxy.
+//
+//  ── Log-scaled vitals ────────────────────────────────────────────────────────
+//  The SAME life and library counts the player blocks / library-context block
+//  already carry, re-warped through log1p. The linear floats (life/20, library/60)
+//  give the net its LEAST resolution exactly where the stakes are highest: 2 life
+//  vs 5 life is 0.10 vs 0.25 and 1 card vs 3 cards is 0.017 vs 0.050 — differences
+//  a net has to spend capacity magnifying, right at the boundary where they decide
+//  the game. log1p re-warps to PROPORTIONAL resolution (d log x = dx / x), so the
+//  near-zero cliff — the region with the fewest training samples and the steepest
+//  value gradient — becomes smooth, low-curvature structure learnable from little
+//  data, while the mid/high range compresses (where a point of life genuinely does
+//  matter less). Both encodings are kept, not one: absolute life-payment arithmetic
+//  ("can I pay 4 life twice?", "is 6 damage lethal?") is genuinely LINEAR in the
+//  mid-range, and that is what the linear floats state directly.
+//    log_life    = log1p(max(life, 0)) / LOG_LIFE_DENOM       (= log1p(20))
+//    log_library = log1p(library_count) / LOG_LIBRARY_DENOM   (= log1p(60))
+//  The 20 and the 60 are LIFE_NORMALIZER / LIBRARY_NORMALIZER, the very divisors of
+//  the linear floats, so the two encodings of a value hit 1.0 at the same point.
+//  Life is clamped at 0 first (a player at -3 is dead; the SBA has just not run
+//  yet, and log1p is undefined below -1). Both are 1.0 at the starting value and
+//  EXCEED 1.0 above it (life > 20, library > 60) — exactly like the linear floats,
+//  which are likewise unclamped above their normalizer.
+//
+//  [6350-6351]   Self log vitals (2 floats): log_life, log_library
+//  [6352-6353]   Opponent log vitals (2 floats): same two fields. Library size is
+//                public information, so unlike lands_in_hand above there is nothing
+//                to withhold from the opponent half.
 
-static constexpr int STATE_SIZE             = 6350;
+static constexpr int STATE_SIZE             = 6354;
 // Max sideboard swaps a player may complete in one between-games phase. Both the
 // engine's phase cap and the normalizer for the serialized swaps-made scalar, so
 // the two can never drift apart.
@@ -391,6 +419,25 @@ static constexpr int MANA_DEV_OPP_SIZE  = 10;  // same minus lands_in_hand
 // decode with exactly the divisor the engine used.
 static constexpr int MANA_COUNT_NORMALIZER = 10;  // source/land counts and mana totals
 static constexpr int LAND_DROPS_NORMALIZER = 3;   // land drops remaining this turn
+// Log-scaled vitals block (see the layout comment above): log_life + log_library
+// per player, self half then opponent half — same two fields both sides, since
+// library size is public.
+static constexpr int LOG_VITALS_PLAYER_SIZE = 2;  // log_life, log_library
+// The life and library scales. These are the divisors of the LINEAR floats — the
+// player block's life (push_player_block) and the library-context counts — AND the
+// log1p scales below, deliberately the same numbers: both encodings of a value then
+// reach 1.0 at the same point (a full life total / an unmilled library), so the net
+// sees one consistent "100%" across the pair. Plain ints so gen_enums.py's
+// parse_int_constant mirrors them into train/_enums.py; nothing re-spells a bare 20
+// or 60 on either side of the boundary.
+static constexpr int LIFE_NORMALIZER    = 20;  // starting life total
+static constexpr int LIBRARY_NORMALIZER = 60;  // starting library size
+// The log denominators. `const`, not `constexpr`: std::log1p is not a constant
+// expression in C++17 (clang rejects even the __builtin_ form there), so these are
+// initialized once at static-init from the scales above rather than spelled as
+// pre-computed float literals that could drift from them.
+static const double LOG_LIFE_DENOM    = std::log1p(static_cast<double>(LIFE_NORMALIZER));
+static const double LOG_LIBRARY_DENOM = std::log1p(static_cast<double>(LIBRARY_NORMALIZER));
 
 static constexpr int STATE_HEADER_SIZE = 2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + HEADER_FLAGS;
 static constexpr int STACK_SLOT_SIZE   = STACK_HEAD_FIELDS + STACK_XAMT_FIELDS +
@@ -440,7 +487,11 @@ static constexpr int OPP_DECK_SIDE_END    = OPP_DECK_SIDE_START + DECKLIST_SIDE_
 static constexpr int MANA_DEV_START       = OPP_DECK_SIDE_END;
 static constexpr int MANA_DEV_OPP_START   = MANA_DEV_START + MANA_DEV_SELF_SIZE;
 static constexpr int MANA_DEV_END         = MANA_DEV_OPP_START + MANA_DEV_OPP_SIZE;
-static_assert(MANA_DEV_END == STATE_SIZE,
+// Log-scaled vitals (self half, then the opponent's) closes the vector.
+static constexpr int LOG_VITALS_START     = MANA_DEV_END;
+static constexpr int LOG_VITALS_OPP_START = LOG_VITALS_START + LOG_VITALS_PLAYER_SIZE;
+static constexpr int LOG_VITALS_END       = LOG_VITALS_OPP_START + LOG_VITALS_PLAYER_SIZE;
+static_assert(LOG_VITALS_END == STATE_SIZE,
               "state-vector offset chain must end exactly at STATE_SIZE — a block "
               "was added/resized/reordered without updating STATE_SIZE (and the "
               "layout comment above, train/env.py, and train/extractor.py)");
@@ -469,6 +520,16 @@ inline float norm_card_id(int idx) {
 // never collide with the "none" sentinel. Decode: round(v * 108) - 1.
 inline float norm_ref(int idx) {
     return static_cast<float>(idx + 1) / static_cast<float>(N_ENTITY_REF_SLOTS);
+}
+
+// Log-scaled count for the LOG VITALS block: log1p(max(v, 0)) / denom, where denom
+// is LOG_LIFE_DENOM / LOG_LIBRARY_DENOM. The clamp keeps a momentarily-negative life
+// total (dead, SBA not yet run) inside log1p's domain and reads as 0.0, the same
+// value a player at exactly 0 life gets. Computed in double and narrowed once, so
+// every consumer of the layout (serializer and the AZ actor, which shares this
+// serializer) produces bit-identical floats.
+inline float norm_log_count(int v, double denom) {
+    return static_cast<float>(std::log1p(static_cast<double>(v > 0 ? v : 0)) / denom);
 }
 
 // viewer: which player's perspective to fill from. Zone::UNKNOWN defaults to the priority player.

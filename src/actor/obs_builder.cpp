@@ -141,6 +141,12 @@ static void write_matchup_tail(float* o, bool self_is_a) {
 // in play, land drops left in a turn that is over), so — like the player blocks and the
 // global extras — it is masked: it is simply not kept below, and holds no card-id slot,
 // so the default 0.0 fill is correct. env.py's mask does the same by omission.
+// The LOG VITALS block is masked the same way and for the same reason: it re-states the
+// player blocks' life and the library-context counts, and the PLAYER blocks are masked
+// here, so keeping the log copy would leak the ended game's life totals back in. (The
+// LINEAR library counts inside the kept match/library-context range do survive the mask;
+// the log copy does not, so during the sideboard phase the two encodings are deliberately
+// NOT redundant — obsinv asserts the zeroed block there instead of the log identity.)
 struct SideboardMask {
     std::array<bool, STATE_SIZE> keep{};   // value-initialized: all false
     std::array<float, STATE_SIZE> fill{};  // value-initialized: all 0.0f

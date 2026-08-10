@@ -104,6 +104,7 @@ try:
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
+        LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -130,6 +131,7 @@ except ImportError:
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
+        LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -550,7 +552,23 @@ _MANA_DEV_END        = _MANA_DEV_OPP_START + MANA_DEV_OPP_SIZE
 assert _MD_SELF_MAX_CMC + 1 == MANA_DEV_SELF_SIZE, MANA_DEV_SELF_SIZE
 assert _MD_OPP_MAX_CMC + 1 == MANA_DEV_OPP_SIZE, MANA_DEV_OPP_SIZE
 
-assert _MANA_DEV_END == STATE_SIZE, (_MANA_DEV_END, STATE_SIZE)
+# ── Log-scaled vitals (mirrors machine_io.h's LOG VITALS block) ──────────────
+# log1p re-warpings of the SAME life/library counts the player blocks and the
+# library-context block already carry linearly: log1p(max(life,0))/log1p(20) and
+# log1p(library)/log1p(60). The linear floats have their least resolution exactly
+# at the near-zero cliff where the game is decided (2 vs 5 life, 1 vs 3 cards);
+# the log copy gives that region proportional resolution while compressing the
+# high end. Both are kept — linear for life-payment arithmetic, log for the
+# endgame gradient. Values exceed 1.0 above the starting value, like the linear
+# floats. Self half then opponent half, same two fields (both public).
+_LV_LOG_LIFE    = 0
+_LV_LOG_LIBRARY = 1
+_LOG_VITALS_START     = _MANA_DEV_END
+_LOG_VITALS_OPP_START = _LOG_VITALS_START + LOG_VITALS_PLAYER_SIZE
+_LOG_VITALS_END       = _LOG_VITALS_OPP_START + LOG_VITALS_PLAYER_SIZE
+assert _LV_LOG_LIBRARY + 1 == LOG_VITALS_PLAYER_SIZE, LOG_VITALS_PLAYER_SIZE
+
+assert _LOG_VITALS_END == STATE_SIZE, (_LOG_VITALS_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
@@ -581,7 +599,13 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # stale ended game, so it stays masked; it holds no card-id slots. The MANA
 # DEVELOPMENT block is masked for the same reason — untapped sources, lands in play
 # and land drops left all describe the ended game's final turn — and likewise holds
-# no card-id slot, so the 0.0 fill is the right one. Card-id slots
+# no card-id slot, so the 0.0 fill is the right one. The LOG VITALS block is masked
+# too: it re-states the PLAYER blocks' life (masked) and the library counts, so
+# keeping it would leak the ended game's life totals past the player-block mask.
+# (The LINEAR library counts live inside the kept match/library-context range and DO
+# survive; the log copy does not, so during the sideboard phase the two encodings are
+# deliberately not redundant — test_obs_invariants asserts the zeroed block there
+# rather than the log identity.) Card-id slots
 # must be filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes
 # to a real vocab index 0 and defeats the extractor's empty-slot masking.
 def _build_sideboard_mask():

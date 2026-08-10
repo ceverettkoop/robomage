@@ -133,6 +133,7 @@ class ScriptTrunk(nn.Module):
         "KNOWN_TOP_LIB_END", "KNOWN_TOP_LIB_SLOTS", "REVEALED_START",
         "REVEALED_END", "PENDING_START", "PENDING_END", "EXTRAS_START",
         "EXTRAS_END", "MANA_DEV_START", "MANA_DEV_END",
+        "LOG_VITALS_START", "LOG_VITALS_END",
         "STATE_END", "PERM_START", "PERM_END", "PERM_SLOTS",
         "PERM_SLOT_SIZE", "PERM_STATUS_FLOATS", "PERM_CHOSEN_NAME_OFF",
         "PERM_RETURNABLE_OFF", "PERM_CARD_OFF", "STACK_START", "STACK_END",
@@ -194,6 +195,8 @@ class ScriptTrunk(nn.Module):
         self.EXTRAS_END = int(_ex._EXTRAS_END)
         self.MANA_DEV_START = int(_ex._MANA_DEV_START)
         self.MANA_DEV_END = int(_ex._MANA_DEV_END)
+        self.LOG_VITALS_START = int(_ex._LOG_VITALS_START)
+        self.LOG_VITALS_END = int(_ex._LOG_VITALS_END)
         self.STATE_END = int(_ex._STATE_END)
         self.PERM_START = int(_ex._PERM_START)
         self.PERM_END = int(_ex._PERM_END)
@@ -280,6 +283,7 @@ class ScriptTrunk(nn.Module):
         pending = obs[:, self.PENDING_START:self.PENDING_END]
         extras = obs[:, self.EXTRAS_START:self.EXTRAS_END]
         mana_dev = obs[:, self.MANA_DEV_START:self.MANA_DEV_END]
+        log_vitals = obs[:, self.LOG_VITALS_START:self.LOG_VITALS_END]
         # Mirror the extractor: the action/cost block stops BEFORE the matchup
         # tail's raw bucket float (stripped from the trunk input), and the two
         # archetype one-hots enter the base cat right after it.
@@ -389,7 +393,8 @@ class ScriptTrunk(nn.Module):
         opp_side_agg = self._mean_max(opp_side_enc, opp_side_present)
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
-                          revealed_agg, pending_feat, extras, mana_dev, action_extras,
+                          revealed_agg, pending_feat, extras, mana_dev, log_vitals,
+                          action_extras,
                           arch_onehot,
                           perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
                           self_lib_agg, self_main_agg, self_side_agg,
