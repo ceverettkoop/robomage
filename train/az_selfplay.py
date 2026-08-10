@@ -48,13 +48,17 @@ try:
     from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
     from cli_spec import (BIN_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
                           DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
-                          DEFAULT_SB_PERSIST)
+                          DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
+                          DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
+                          DEFAULT_AZ_TEMP_MOVES)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
     from train.cli_spec import (BIN_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
                                 DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
-                                DEFAULT_SB_PERSIST)
+                                DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES,
+                                DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
+                                DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES)
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
@@ -66,11 +70,14 @@ _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 # Defaults (AlphaZero-style)
 DEFAULT_ROOT_NOISE_EPS = 0.25
 DEFAULT_ROOT_NOISE_ALPHA = 1.0
-DEFAULT_TEMP_MOVES = 20        # sample-from-visits for the first N real decisions, then argmax
+# sample-from-visits for the first N real decisions, then argmax; value lives
+# in cli_spec's AZ-defaults block (one home), local alias kept for callers.
+DEFAULT_TEMP_MOVES = DEFAULT_AZ_TEMP_MOVES
 # Sideboard-rooted search budget (DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH) lives in
 # cli_spec — the single home shared with opponents.SearchController and the CLI
 # flag defaults — and is imported above.
-DEFAULT_MIRROR_FRAC = 0.25     # P(opponent deck == focus deck) per self-play game
+# P(opponent deck == focus deck) per self-play game; value in cli_spec too.
+DEFAULT_MIRROR_FRAC = DEFAULT_AZ_MIRROR_FRAC
 FLUSH_SAMPLES = 4096           # write a shard once this many samples accumulate
 HEARTBEAT_MOVES = 25           # Python backend: mid-game progress line every N decisions
 
@@ -759,7 +766,8 @@ def _discard_pre_bo3_shards(out_dir: str) -> None:
         fh.write(time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
 
 
-def generate(deck: str, *, games: int = 10, sims: int = 256, worlds: int = 4,
+def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
+             sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
              workers: Optional[int] = None, checkpoint: Optional[str] = None,
              temp_moves: int = DEFAULT_TEMP_MOVES,
              root_noise_eps: float = DEFAULT_ROOT_NOISE_EPS,
@@ -1578,10 +1586,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--deck", default="delver",
                     help="Focus deck (.dk stem) — its opponent is a mirror with "
                          "P=--mirror-frac, else a uniform league-roster draw")
-    ap.add_argument("--games", type=int, default=10)
-    ap.add_argument("--sims", type=int, default=256,
+    ap.add_argument("--games", type=int, default=DEFAULT_AZ_GAMES)
+    ap.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                     help="PUCT sims per decision, TOTAL across --worlds")
-    ap.add_argument("--worlds", type=int, default=4)
+    ap.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
     ap.add_argument("--workers", type=int, default=None,
                     help="Worker processes (default max(1, cpu-2))")
     ap.add_argument("--checkpoint", default=None,

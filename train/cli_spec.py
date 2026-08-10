@@ -62,6 +62,46 @@ DEFAULT_SB_ROLLOUT_TURNS = 12
 # boundary-wide budget. 0 restores per-pick fresh searches.
 DEFAULT_SB_PERSIST = 1
 
+# ── AZ pipeline defaults ────────────────────────────────────────────────────
+# One home for every tunable the AZ subcommands share, same one-home rule as
+# the sb_* knobs above: the az-selfplay / az-train / az-eval / az / az-league
+# CLI args AND the az_train.py / az_selfplay.py function + argparse defaults
+# MUST reference these constants, not literals — argparse always supplies the
+# CLI default, so a drifted literal silently overrides the constant.
+
+# Self-play generation.
+DEFAULT_AZ_GAMES = 50        # matches per az/az-league slot (and standalone az-selfplay)
+DEFAULT_AZ_SIMS = 256        # in-game PUCT sims, TOTAL across worlds
+DEFAULT_AZ_WORLDS = 4        # determinized worlds per search
+DEFAULT_AZ_MIRROR_FRAC = 0.25  # P(opponent deck == focus deck) per self-play game
+DEFAULT_AZ_TEMP_MOVES = 20   # sample from visit counts for the first N decisions per game
+
+# Optimization (az-train / the train step of az / az-league).
+# LR is half the PPO LR_CONST below: az-train refines an already-competent warm
+# start against a small, heavily game-correlated shard window, where the old
+# 1e-3 rewrote the PPO trunk/bodies (~60-100% weight drift within a few
+# thousand minibatches) and let the value head memorize per-game outcomes.
+DEFAULT_AZ_LR = 5e-5
+DEFAULT_AZ_WEIGHT_DECAY = 1e-4
+DEFAULT_AZ_BATCH_SIZE = 256
+DEFAULT_AZ_TRAIN_BATCHES = 1000  # standalone az-train
+DEFAULT_AZ_CYCLE_BATCHES = 500   # per az / az-league slot
+DEFAULT_AZ_WINDOW = 50           # newest-N-shards training window (0 = AUTO)
+DEFAULT_AZ_CV = 1.0              # value-loss weight
+
+# Promotion gate (az-eval / the gate step of az / az-league).
+DEFAULT_AZ_EVAL_GAMES = 56
+DEFAULT_AZ_EVAL_SIMS = 32
+DEFAULT_AZ_EVAL_WORLDS = 2
+DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55
+DEFAULT_AZ_GATE_FLOOR = 0.2
+DEFAULT_AZ_GATE_FLOOR_MIN = 4
+DEFAULT_AZ_GATE_CROSS_PAIRS = 2
+DEFAULT_AZ_GATE_EVERY = 1
+
+# Expert (behavior-cloning) shard generation.
+DEFAULT_AZ_EXPERT_GAMES = 16
+
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
 N_ENVS_SELF_PLAY = 10  # self-play (each loads an opponent model)
@@ -773,16 +813,16 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--deck", "str", default="delver", suggest="deck",
             help="Focus deck (.dk stem); its opponent is a mirror with "
                  "P=--mirror-frac, else a uniform league-roster draw"),
-        Arg("--games", "int", default=50, help="Games to generate"),
-        Arg("--sims", "int", default=256,
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Games to generate"),
+        Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="PUCT simulations per decision, TOTAL across --worlds"),
-        Arg("--worlds", "int", default=4, help="Determinized worlds per search"),
+        Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
         Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
             help="AZ (.pt) / PPO (.zip) ckpt or 'gen' (default: generalist AZ "
                  "ckpt, else gen PPO warm-start, else random init)"),
-        Arg("--temp-moves", "int", default=20,
+        Arg("--temp-moves", "int", default=DEFAULT_AZ_TEMP_MOVES,
             help="Sample from visit counts for the first N real decisions, then argmax"),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help="PUCT sims at a bo3 sideboard root (bo3 only; heavier per step "
@@ -798,8 +838,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
             help="Persist per-world trees + rollout memo across a bo3 sideboard "
                  f"boundary's picks (1/0; default {DEFAULT_SB_PERSIST})"),
-        Arg("--mirror-frac", "float", default=0.25,
-            help="P(opponent deck == focus deck) per game (default 0.25); else a "
+        Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
+            help="P(opponent deck == focus deck) per game "
+                 f"(default {DEFAULT_AZ_MIRROR_FRAC}); else a "
                  "uniform league-roster draw"),
         Arg("--out", "str", default=None, help="Output dir (default az_data/gen)"),
         Arg("--seed", "int", default=1, help="Base RNG seed"),
@@ -812,11 +853,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
-        Arg("--batches", "int", default=1000, help="Optimizer updates"),
-        Arg("--batch-size", "int", default=256),
-        Arg("--lr", "float", default=1e-3),
-        Arg("--c-v", "float", default=1.0, help="Value-loss weight"),
-        Arg("--window", "int", default=50, help="Number of most-recent shards to train on"),
+        Arg("--batches", "int", default=DEFAULT_AZ_TRAIN_BATCHES, help="Optimizer updates"),
+        Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
+        Arg("--lr", "float", default=DEFAULT_AZ_LR),
+        Arg("--c-v", "float", default=DEFAULT_AZ_CV, help="Value-loss weight"),
+        Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
+            help="Number of most-recent shards to train on"),
         Arg("--from-ppo", "str", default=None, suggest="checkpoint",
             help="Warm-start from a PPO checkpoint instead of resuming AZ"),
         Arg("--fresh", "flag", help="Start from random init"),
@@ -830,14 +872,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Candidate AZ .pt ('gen' or a path)"),
         Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
             help="Incumbent AZ .pt (default: gen__azfinal.pt; scripted if none yet)"),
-        Arg("--games", "int", default=56,
+        Arg("--games", "int", default=DEFAULT_AZ_EVAL_GAMES,
             help="Total gate matches, split over the roster-wide panel (a mirror "
                  "per roster deck + direction-balanced cross pairs)"),
-        Arg("--sims", "int", default=32),
-        Arg("--worlds", "int", default=2),
-        Arg("--promote-threshold", "float", default=0.55),
+        Arg("--sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
+        Arg("--worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
         Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
-        Arg("--gate-floor", "float", default=0.2,
+        Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
                  ">=4 gate matches whose win-rate deficit vs the incumbent on "
                  "LIKE pairings falls below 2*floor-1 vetoes promotion even "
@@ -862,11 +904,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "(default: every deck in decks/league/). Each focus deck plays "
                  "each; per game the opponent is the mirror with P=--mirror-frac, "
                  "else a uniform draw from this pool."),
-        Arg("--games", "int", default=50, help="Self-play games this cycle"),
-        Arg("--sims", "int", default=256,
-            help="Self-play PUCT sims, TOTAL across --worlds (256/4 = 64 per "
-                 "determinized world tree)"),
-        Arg("--worlds", "int", default=4),
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Self-play games this cycle"),
+        Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
+            help="Self-play PUCT sims, TOTAL across --worlds "
+                 f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
+                 f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
+        Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
         Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
@@ -880,11 +923,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Persist trees + rollout memo across a bo3 sideboard boundary "
                  f"(1/0; default {DEFAULT_SB_PERSIST})"),
         Arg("--workers", "int", default=None),
-        Arg("--batches", "int", default=500),
-        Arg("--batch-size", "int", default=256),
-        Arg("--lr", "float", default=1e-3),
-        Arg("--window", "int", default=50,
-            help="Training window: newest N shards (default 50). 0 = AUTO — 2x "
+        Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES),
+        Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
+        Arg("--lr", "float", default=DEFAULT_AZ_LR),
+        Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
+            help=f"Training window: newest N shards (default {DEFAULT_AZ_WINDOW}). "
+                 "0 = AUTO — 2x "
                  "the shards this cycle's generation writes, so every training "
                  "pass covers exactly this pass plus the previous one"),
         Arg("--exhaustive", "flag",
@@ -907,14 +951,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Play every cell of the exhaustive matrix N times per cycle "
                  "(default 1). Each repeat is an independent match with its "
                  "own seat draw and game seed."),
-        Arg("--eval-games", "int", default=56,
+        Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
             help="Total gate matches, split over the roster-wide panel (a mirror "
-                 "per roster deck + direction-balanced cross pairs; default 56 "
-                 "= 4 per matchup on a 10-deck roster)"),
-        Arg("--eval-sims", "int", default=32),
-        Arg("--eval-worlds", "int", default=2),
-        Arg("--promote-threshold", "float", default=0.55),
-        Arg("--gate-floor", "float", default=0.2,
+                 "per roster deck + direction-balanced cross pairs; default "
+                 f"{DEFAULT_AZ_EVAL_GAMES} = 4 per matchup on a 10-deck roster)"),
+        Arg("--eval-sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
+        Arg("--eval-worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
+        Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
                  ">=4 gate matches whose win-rate deficit vs the incumbent on "
                  "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
@@ -925,11 +969,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "action): behavior-cloning targets for hand-coded combo lines "
                  "(e.g. league/wubg_doomsday) that neither PPO exploration nor "
                  "prior-guided search discovers"),
-        Arg("--expert-games", "int", default=16,
+        Arg("--expert-games", "int", default=DEFAULT_AZ_EXPERT_GAMES,
             help="Expert matches per expert deck per cycle"),
         Arg("--seed", "int", default=1),
-        Arg("--mirror-frac", "float", default=0.25,
-            help="P(opponent deck == focus deck) per self-play game (default 0.25); "
+        Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
+            help="P(opponent deck == focus deck) per self-play game "
+                 f"(default {DEFAULT_AZ_MIRROR_FRAC}); "
                  "else a uniform league-roster draw"),
         Arg("--scripted-opponent-frac", "float", default=0.0,
             help="Fraction of self-play games (0..1) whose opponent seat is "
@@ -959,11 +1004,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "interrupted; still resumable via --resume)"),
         Arg("--cycles-per-deck", "int", default=1,
             help="az cycles to run per deck per rotation"),
-        Arg("--games", "int", default=50, help="Self-play games per cycle"),
-        Arg("--sims", "int", default=256,
-            help="Self-play PUCT sims, TOTAL across --worlds (256/4 = 64 per "
-                 "determinized world tree)"),
-        Arg("--worlds", "int", default=4),
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Self-play games per cycle"),
+        Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
+            help="Self-play PUCT sims, TOTAL across --worlds "
+                 f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
+                 f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
+        Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
         Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
@@ -978,26 +1024,27 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"(1/0; default {DEFAULT_SB_PERSIST})"),
         Arg("--workers", "int", default=None,
             help="Self-play worker processes (default max(1, cpu-2))"),
-        Arg("--batches", "int", default=500),
-        Arg("--batch-size", "int", default=256),
-        Arg("--lr", "float", default=1e-3),
-        Arg("--window", "int", default=50,
-            help="Training window: newest N shards (default 50). 0 = AUTO — 2x "
+        Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES),
+        Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
+        Arg("--lr", "float", default=DEFAULT_AZ_LR),
+        Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
+            help=f"Training window: newest N shards (default {DEFAULT_AZ_WINDOW}). "
+                 "0 = AUTO — 2x "
                  "the shards each slot's generation writes, so every training "
                  "pass covers exactly that pass plus the previous one"),
-        Arg("--eval-games", "int", default=56,
+        Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
             help="Total gate matches, split over the roster-wide panel (a mirror "
-                 "per roster deck + direction-balanced cross pairs; default 56 "
-                 "= 4 per matchup on a 10-deck roster)"),
-        Arg("--eval-sims", "int", default=32),
-        Arg("--eval-worlds", "int", default=2),
-        Arg("--promote-threshold", "float", default=0.55),
-        Arg("--gate-floor", "float", default=0.2,
+                 "per roster deck + direction-balanced cross pairs; default "
+                 f"{DEFAULT_AZ_EVAL_GAMES} = 4 per matchup on a 10-deck roster)"),
+        Arg("--eval-sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
+        Arg("--eval-worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
+        Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
                  ">=4 gate matches whose win-rate deficit vs the incumbent on "
                  "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
                  "disables; on mirrors alone this equals win-rate < floor)"),
-        Arg("--gate-every", "int", default=1,
+        Arg("--gate-every", "int", default=DEFAULT_AZ_GATE_EVERY,
             help="Run the eval/gate every K slots instead of every slot: the "
                  "candidate accumulates K cycles of training (and "
                  "candidate-generated self-play) between promotions, and the "
@@ -1042,12 +1089,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "action): behavior-cloning targets for hand-coded combo lines "
                  "(e.g. league/wubg_doomsday) that neither PPO exploration nor "
                  "prior-guided search discovers"),
-        Arg("--expert-games", "int", default=16,
+        Arg("--expert-games", "int", default=DEFAULT_AZ_EXPERT_GAMES,
             help="Expert matches per expert deck per slot"),
         Arg("--seed", "int", default=1,
             help="Base RNG seed (slot i uses seed+i)"),
-        Arg("--mirror-frac", "float", default=0.25,
-            help="P(opponent deck == focus deck) per self-play game (default 0.25); "
+        Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
+            help="P(opponent deck == focus deck) per self-play game "
+                 f"(default {DEFAULT_AZ_MIRROR_FRAC}); "
                  "else a uniform league-roster draw"),
         Arg("--scripted-opponent-frac", "float", default=0.0,
             help="Fraction of self-play games (0..1) whose opponent seat is "

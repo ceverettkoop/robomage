@@ -37,7 +37,17 @@ from progress_io import write_progress_state, read_progress_state
 # arg was absent — import them so a change to the default actually reaches the
 # az / az-league paths.
 from cli_spec import (DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
-                      DEFAULT_SB_ROLLOUT_TURNS, DEFAULT_SB_PERSIST)
+                      DEFAULT_SB_ROLLOUT_TURNS, DEFAULT_SB_PERSIST,
+                      DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
+                      DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_LR,
+                      DEFAULT_AZ_WEIGHT_DECAY, DEFAULT_AZ_BATCH_SIZE,
+                      DEFAULT_AZ_TRAIN_BATCHES, DEFAULT_AZ_CYCLE_BATCHES,
+                      DEFAULT_AZ_WINDOW, DEFAULT_AZ_CV,
+                      DEFAULT_AZ_EVAL_GAMES, DEFAULT_AZ_EVAL_SIMS,
+                      DEFAULT_AZ_EVAL_WORLDS, DEFAULT_AZ_PROMOTE_THRESHOLD,
+                      DEFAULT_AZ_GATE_FLOOR, DEFAULT_AZ_GATE_FLOOR_MIN,
+                      DEFAULT_AZ_GATE_CROSS_PAIRS, DEFAULT_AZ_GATE_EVERY,
+                      DEFAULT_AZ_EXPERT_GAMES)
 
 import numpy as np
 
@@ -56,7 +66,9 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 # P(opponent deck == focus deck) per self-play game (mirror vs cross-deck roster).
-DEFAULT_MIRROR_FRAC = 0.25
+# Value lives in cli_spec's AZ-defaults block (one home); local alias kept for
+# the existing internal references.
+DEFAULT_MIRROR_FRAC = DEFAULT_AZ_MIRROR_FRAC
 
 # Promotion-gate defaults. The gate panel is ROSTER-WIDE: a candidate-vs-incumbent
 # mirror for every roster deck (so a piloting regression on ANY deck shows up in
@@ -71,9 +83,11 @@ DEFAULT_MIRROR_FRAC = 0.25
 # trigger stays a 0-for-4 wipeout; a lopsided cross matchup the incumbent also
 # loses no longer counts against the deck. Deliberate: per-deck samples are
 # tiny, so the floor is a catastrophic-collapse tripwire, not a fine measure.
-DEFAULT_GATE_FLOOR = 0.2
-DEFAULT_GATE_FLOOR_MIN = 4
-DEFAULT_GATE_CROSS_PAIRS = 2
+# Values live in cli_spec's AZ-defaults block (one home); local aliases kept
+# for the existing internal references.
+DEFAULT_GATE_FLOOR = DEFAULT_AZ_GATE_FLOOR
+DEFAULT_GATE_FLOOR_MIN = DEFAULT_AZ_GATE_FLOOR_MIN
+DEFAULT_GATE_CROSS_PAIRS = DEFAULT_AZ_GATE_CROSS_PAIRS
 
 # az-league gates (az_eval + promotion) run every DEFAULT_GATE_EVERY slots. One
 # slot of training between gates is a small weight delta against a >=55%
@@ -82,7 +96,7 @@ DEFAULT_GATE_CROSS_PAIRS = 2
 # and K slots of CANDIDATE-generated self-play (resolve_source prefers the
 # snapshot line) — before paying for an eval. Promotion cadence, not training,
 # is all that changes: candidate snapshots still save every slot.
-DEFAULT_GATE_EVERY = 1
+DEFAULT_GATE_EVERY = DEFAULT_AZ_GATE_EVERY
 
 
 # ----------------------------------------------------------------------
@@ -193,9 +207,12 @@ def _read_steps(az_path: str) -> int:
 # Training
 # ----------------------------------------------------------------------
 
-def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
-             lr: float = 1e-3, c_v: float = 1.0, window: int = 50,
-             weight_decay: float = 1e-4, from_ppo: Optional[str] = None,
+def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
+             batch_size: int = DEFAULT_AZ_BATCH_SIZE,
+             lr: float = DEFAULT_AZ_LR, c_v: float = DEFAULT_AZ_CV,
+             window: int = DEFAULT_AZ_WINDOW,
+             weight_decay: float = DEFAULT_AZ_WEIGHT_DECAY,
+             from_ppo: Optional[str] = None,
              fresh: bool = False, log_every: int = 50,
              snapshot_every: int = 0, data_dir: Optional[str] = None,
              ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 0) -> dict:
@@ -371,12 +388,14 @@ def _like_pairing_floor(per_matchup: dict, gate_floor: float,
 
 
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
-            games: int = 56, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
+            games: int = DEFAULT_AZ_EVAL_GAMES, sims: int = DEFAULT_AZ_EVAL_SIMS,
+            worlds: int = DEFAULT_AZ_EVAL_WORLDS, c_puct: float = 1.5,
             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
             sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
             sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
             sb_persist: int = DEFAULT_SB_PERSIST,
-            promote_threshold: float = 0.55, promote: bool = False,
+            promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD,
+            promote: bool = False,
             roster: Optional[list] = None,
             cross_pairs: int = DEFAULT_GATE_CROSS_PAIRS,
             gate_floor: float = DEFAULT_GATE_FLOOR,
@@ -514,20 +533,25 @@ def _promote_to_final(cand_path: str, ckpt_dir: str = _AZ_CKPT_DIR) -> str:
 # One full cycle: generate -> train -> eval
 # ----------------------------------------------------------------------
 
-def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
+def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
+             sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
              sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
              sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
              sb_persist: int = DEFAULT_SB_PERSIST,
-             workers: Optional[int] = None, batches: int = 500,
-             batch_size: int = 256, lr: float = 1e-3, window: int = 50,
-             eval_games: int = 56, eval_sims: int = 32, eval_worlds: int = 2,
-             promote_threshold: float = 0.55, seed: int = 1,
+             workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
+             batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
+             window: int = DEFAULT_AZ_WINDOW,
+             eval_games: int = DEFAULT_AZ_EVAL_GAMES,
+             eval_sims: int = DEFAULT_AZ_EVAL_SIMS,
+             eval_worlds: int = DEFAULT_AZ_EVAL_WORLDS,
+             promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD, seed: int = 1,
              use_actor: Optional[bool] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              scripted_opponent_frac: float = 0.0,
              gate_floor: float = DEFAULT_GATE_FLOOR,
-             expert_decks: Optional[list] = None, expert_games: int = 16,
+             expert_decks: Optional[list] = None,
+             expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
              roster: Optional[list] = None, bo3: bool = True,
              gate: bool = True, exhaustive: bool = False,
              exhaustive_selfplay: bool = False,
@@ -679,15 +703,19 @@ def _default_az_league_roster() -> list:
 
 
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
-              games: int = 50, sims: int = 256, worlds: int = 4,
+              games: int = DEFAULT_AZ_GAMES, sims: int = DEFAULT_AZ_SIMS,
+              worlds: int = DEFAULT_AZ_WORLDS,
               sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
               sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
               sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
               sb_persist: int = DEFAULT_SB_PERSIST,
-              workers: Optional[int] = None, batches: int = 500,
-              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
-              eval_games: int = 56, eval_sims: int = 32, eval_worlds: int = 2,
-              promote_threshold: float = 0.55, seed: int = 1,
+              workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
+              batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
+              window: int = DEFAULT_AZ_WINDOW,
+              eval_games: int = DEFAULT_AZ_EVAL_GAMES,
+              eval_sims: int = DEFAULT_AZ_EVAL_SIMS,
+              eval_worlds: int = DEFAULT_AZ_EVAL_WORLDS,
+              promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD, seed: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
               scripted_opponent_frac: float = 0.0,
               matrix: bool = False, exhaustive: bool = False,
@@ -695,7 +723,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               exhaustive_repeats: int = 1,
               gate_floor: float = DEFAULT_GATE_FLOOR,
               gate_every: int = DEFAULT_GATE_EVERY,
-              expert_decks: Optional[list] = None, expert_games: int = 16,
+              expert_decks: Optional[list] = None,
+              expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
               use_actor: Optional[bool] = None, resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
@@ -1099,11 +1128,11 @@ if __name__ == "__main__":
 
     t = sub.add_parser("train", help="Train AZNet on self-play shards")
     t.add_argument("--deck", default="delver")
-    t.add_argument("--batches", type=int, default=1000)
-    t.add_argument("--batch-size", type=int, default=256)
-    t.add_argument("--lr", type=float, default=1e-3)
-    t.add_argument("--c-v", type=float, default=1.0)
-    t.add_argument("--window", type=int, default=50)
+    t.add_argument("--batches", type=int, default=DEFAULT_AZ_TRAIN_BATCHES)
+    t.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
+    t.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
+    t.add_argument("--c-v", type=float, default=DEFAULT_AZ_CV)
+    t.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
     t.add_argument("--from-ppo", default=None, help="Warm-start from a PPO ckpt")
     t.add_argument("--fresh", action="store_true", help="Start from random init")
     t.add_argument("--snapshot-every", type=int, default=0)
@@ -1114,9 +1143,9 @@ if __name__ == "__main__":
     e.add_argument("--deck", default="delver")
     e.add_argument("--candidate", required=True)
     e.add_argument("--incumbent", default=None)
-    e.add_argument("--games", type=int, default=56)
-    e.add_argument("--sims", type=int, default=32)
-    e.add_argument("--worlds", type=int, default=2)
+    e.add_argument("--games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
+    e.add_argument("--sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
+    e.add_argument("--worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
     e.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                    help="PUCT sims at a bo3 sideboard root (bo3 only)")
     e.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
@@ -1127,7 +1156,8 @@ if __name__ == "__main__":
                    default=DEFAULT_SB_ROLLOUT_TURNS,
                    help="Leaf-rollout horizon at a bo3 sideboard root, in "
                         "player turns (0 = off)")
-    e.add_argument("--promote-threshold", type=float, default=0.55)
+    e.add_argument("--promote-threshold", type=float,
+                   default=DEFAULT_AZ_PROMOTE_THRESHOLD)
     e.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
                    help="Per-piloted-deck win-rate floor; a deck below it "
                         "vetoes promotion (0 disables)")
@@ -1139,10 +1169,10 @@ if __name__ == "__main__":
 
     c = sub.add_parser("cycle", help="One generate->train->eval cycle")
     c.add_argument("--deck", default="delver")
-    c.add_argument("--games", type=int, default=50)
-    c.add_argument("--sims", type=int, default=256,
+    c.add_argument("--games", type=int, default=DEFAULT_AZ_GAMES)
+    c.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                    help="Self-play PUCT sims, TOTAL across --worlds")
-    c.add_argument("--worlds", type=int, default=4)
+    c.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
     c.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                    help="PUCT sims at a bo3 sideboard root (bo3 only)")
     c.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
@@ -1154,21 +1184,22 @@ if __name__ == "__main__":
                    help="Leaf-rollout horizon at a bo3 sideboard root, in "
                         "player turns (0 = off)")
     c.add_argument("--workers", type=int, default=None)
-    c.add_argument("--batches", type=int, default=500)
-    c.add_argument("--batch-size", type=int, default=256)
-    c.add_argument("--lr", type=float, default=1e-3)
-    c.add_argument("--window", type=int, default=50)
-    c.add_argument("--eval-games", type=int, default=56)
-    c.add_argument("--eval-sims", type=int, default=32)
-    c.add_argument("--eval-worlds", type=int, default=2)
-    c.add_argument("--promote-threshold", type=float, default=0.55)
+    c.add_argument("--batches", type=int, default=DEFAULT_AZ_CYCLE_BATCHES)
+    c.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
+    c.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
+    c.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
+    c.add_argument("--eval-games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
+    c.add_argument("--eval-sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
+    c.add_argument("--eval-worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
+    c.add_argument("--promote-threshold", type=float,
+                   default=DEFAULT_AZ_PROMOTE_THRESHOLD)
     c.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
                    help="Per-piloted-deck gate floor (0 disables the veto)")
     c.add_argument("--expert-decks", default=None,
                    help="Comma-separated decks to also write scripted:hard "
                         "EXPERT demonstration shards for each cycle (BC "
                         "targets for combo lines search can't discover)")
-    c.add_argument("--expert-games", type=int, default=16,
+    c.add_argument("--expert-games", type=int, default=DEFAULT_AZ_EXPERT_GAMES,
                    help="Expert matches per expert deck per cycle")
     c.add_argument("--seed", type=int, default=1)
     c.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
@@ -1198,10 +1229,10 @@ if __name__ == "__main__":
                     help="Full passes over the roster (0 = run indefinitely "
                          "until interrupted)")
     lg.add_argument("--cycles-per-deck", type=int, default=1)
-    lg.add_argument("--games", type=int, default=50)
-    lg.add_argument("--sims", type=int, default=256,
+    lg.add_argument("--games", type=int, default=DEFAULT_AZ_GAMES)
+    lg.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                     help="Self-play PUCT sims, TOTAL across --worlds")
-    lg.add_argument("--worlds", type=int, default=4)
+    lg.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
     lg.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                     help="PUCT sims at a bo3 sideboard root (bo3 only)")
     lg.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
@@ -1213,14 +1244,15 @@ if __name__ == "__main__":
                     help="Leaf-rollout horizon at a bo3 sideboard root, in "
                          "player turns (0 = off)")
     lg.add_argument("--workers", type=int, default=None)
-    lg.add_argument("--batches", type=int, default=500)
-    lg.add_argument("--batch-size", type=int, default=256)
-    lg.add_argument("--lr", type=float, default=1e-3)
-    lg.add_argument("--window", type=int, default=50)
-    lg.add_argument("--eval-games", type=int, default=56)
-    lg.add_argument("--eval-sims", type=int, default=32)
-    lg.add_argument("--eval-worlds", type=int, default=2)
-    lg.add_argument("--promote-threshold", type=float, default=0.55)
+    lg.add_argument("--batches", type=int, default=DEFAULT_AZ_CYCLE_BATCHES)
+    lg.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
+    lg.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
+    lg.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
+    lg.add_argument("--eval-games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
+    lg.add_argument("--eval-sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
+    lg.add_argument("--eval-worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
+    lg.add_argument("--promote-threshold", type=float,
+                    default=DEFAULT_AZ_PROMOTE_THRESHOLD)
     lg.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
                     help="Per-piloted-deck gate floor (0 disables the veto)")
     lg.add_argument("--matrix", action="store_true",
@@ -1230,7 +1262,7 @@ if __name__ == "__main__":
                     help="Comma-separated decks to also write scripted:hard "
                          "EXPERT demonstration shards for each slot (BC "
                          "targets for combo lines search can't discover)")
-    lg.add_argument("--expert-games", type=int, default=16,
+    lg.add_argument("--expert-games", type=int, default=DEFAULT_AZ_EXPERT_GAMES,
                     help="Expert matches per expert deck per slot")
     lg.add_argument("--seed", type=int, default=1)
     lg.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,

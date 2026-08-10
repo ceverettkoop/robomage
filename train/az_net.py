@@ -713,18 +713,32 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
                     transferred.append(tk)
         notes.append("multi-head value head copied 1:1 from PPO value_net "
                      f"({N_VALUE_BUCKETS} archetype-bucket columns, now behind tanh)")
-        # A PopArt-trained PPO head predicts NORMALIZED values (its per-bucket
-        # (mu, sigma) live in policy buffers AZNet has no counterpart for), so its
-        # copied columns are on a different scale than AZ's tanh targets. Harmless
-        # (AZ re-fits the head from ±1 targets) but say so rather than hide it.
+        # A PopArt-trained PPO head predicts NORMALIZED values: the real value is
+        # v_norm * sigma[bucket] + mu[bucket] (the policy's popart buffers, see
+        # extractor's _bucket_values). AZNet has no such buffers, so FOLD the
+        # de-normalization into the copied linear layer — w' = sigma*w,
+        # b' = sigma*b + mu per bucket column — so the warm-started head outputs
+        # values on the PPO return scale (game ±0.3 / match ±1.0) from step 0
+        # instead of a per-bucket-miscalibrated normalized value (measured: sign
+        # accuracy vs game outcome at or below coin-flip without the fold). The
+        # tanh AZNet applies on top is monotone, so ordering is preserved and the
+        # output lands in AZ's [-1,1] target space, if compressed.
         sigma = sd.get("popart_sigma")
         mu = sd.get("popart_mu")
         if sigma is not None and mu is not None and (
                 bool((sigma != 1.0).any()) or bool((mu != 0.0).any())):
-            notes.append("source checkpoint was trained with PopArt: the copied "
-                         "value head is in NORMALIZED value space (its per-bucket "
-                         "mu/sigma are not transferred) — AZ retrains it against "
-                         "its own [-1,1] targets")
+            wk, bk = "value_head.weight", "value_head.bias"
+            if wk in transferred and bk in transferred:
+                s = torch.where(sigma > 0, sigma, torch.ones_like(sigma))
+                net_sd[wk] = net_sd[wk] * s.unsqueeze(1)
+                net_sd[bk] = net_sd[bk] * s + mu
+                notes.append("source checkpoint was trained with PopArt: folded "
+                             "per-bucket (mu, sigma) into the copied value head "
+                             "(w'=sigma*w, b'=sigma*b+mu) so it starts on the "
+                             "real return scale")
+            else:
+                notes.append("source checkpoint was trained with PopArt but the "
+                             "value head did not transfer — nothing to fold")
     else:
         notes.append("stock MlpPolicy: policy/value heads start fresh "
                      "(shape-incompatible with the per-action AZ head)")
