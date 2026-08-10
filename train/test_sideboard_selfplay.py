@@ -46,7 +46,10 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from env import _MATCH_CTX_START  # noqa: E402
+from env import (_MATCH_CTX_START, RoboMageEnv, scripted_action,  # noqa: E402
+                 ACT_CATS_START, ACT_IDS_START)
+from _enums import (ACTION_CATEGORY_MAX, N_CARD_TYPES,  # noqa: E402
+                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE)
 from cli_spec import BINARY, BIN_DIR  # noqa: E402
 from search_env import SearchRoboMageEnv  # noqa: E402
 from mcts import UniformEvaluator  # noqa: E402
@@ -195,6 +198,128 @@ def check_scripted_cell_rotation() -> int:
     return failures
 
 
+def _menu(obs, num):
+    """Decode (categories, card ids) for the current menu from the raw obs."""
+    cats = np.round(obs[ACT_CATS_START:ACT_CATS_START + num]
+                    * ACTION_CATEGORY_MAX).astype(int)
+    ids = np.round(obs[ACT_IDS_START:ACT_IDS_START + num]
+                   * N_CARD_TYPES).astype(int)
+    return cats, ids
+
+
+def _drive_to_sideboard(env, seed, max_decisions=3000):
+    """Play scripted until the first sideboard prompt; return its obs."""
+    obs, _ = env.reset(seed=seed)
+    for _ in range(max_decisions):
+        if obs[_IS_SIDEBOARD_IDX] > 0.5:
+            return obs
+        obs, _r, term, trunc, _i = env.step(scripted_action(obs, env._num_choices))
+        if term or trunc:
+            raise AssertionError("match ended before any sideboard prompt")
+    raise AssertionError("no sideboard prompt within the decision cap")
+
+
+def check_takeback_only_when_stranded() -> int:
+    """The reverse of an outstanding half-move (the TAKEBACK) is offered ONLY
+    when the balancing direction has no genuine completion.
+
+    Case 1 (genuine completions exist): after opening a swap with a cut, the
+    follow-up menu must offer sideboard-in choices but NOT the cut card itself —
+    an out-X-then-in-X no-op is unexpressible.
+
+    Case 2 (stranded, sideboard-less deck): a cut's follow-up menu is exactly the
+    lone takeback, so the deck can still never be stuck off-size."""
+    failures = 0
+
+    def fail(msg):
+        nonlocal failures
+        failures += 1
+        print(f"FAIL takeback: {msg}")
+
+    # ── Case 1: real sideboard, so genuine completions exist ─────────────────
+    deck_a, deck_b, paths = _write_decks()
+    env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
+                      auto_sideboard=False)
+    try:
+        obs = _drive_to_sideboard(env, seed=SEED)
+        num = env._num_choices
+        cats, ids = _menu(obs, num)
+        if CAT_SIDEBOARD_DONE not in cats:
+            fail(f"balanced menu missing Done (cats={cats.tolist()})")
+        outs = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
+        if not outs:
+            fail("balanced menu offers no cut")
+        else:
+            cut_id = ids[outs[0]]
+            obs, _r, _t, _tr, _i = env.step(outs[0])
+            num = env._num_choices
+            cats, ids = _menu(obs, num)
+            if obs[_IS_SIDEBOARD_IDX] <= 0.5 or num < 1:
+                fail("no follow-up menu after opening a cut")
+            ins = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
+            if not ins:
+                fail("follow-up menu offers no genuine completion")
+            if any(ids[i] == cut_id for i in ins):
+                fail(f"avoidable takeback offered (cut card id {cut_id} back "
+                     f"in the IN menu alongside {len(ins)} completions)")
+            elif ins:
+                # Complete the swap; the balanced menu must re-offer Done.
+                obs, _r, _t, _tr, _i = env.step(ins[0])
+                cats, _ = _menu(obs, env._num_choices)
+                if CAT_SIDEBOARD_DONE not in cats:
+                    fail("Done absent after completing the swap")
+                else:
+                    print(f"  ok  avoidable takeback absent ({len(ins)} genuine "
+                          f"completions offered; swap completed, Done back)")
+    finally:
+        env.close()
+        for p in paths:
+            if os.path.exists(p):
+                os.remove(p)
+
+    # ── Case 2: sideboard-less deck — a cut strands, the takeback appears ────
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    a = os.path.join(d, "az_sb_nosb_a.dk")
+    b = os.path.join(d, "az_sb_nosb_b.dk")
+    with open(a, "w") as f:
+        f.write("36 Grizzly Bears\n24 Forest\n")
+    with open(b, "w") as f:
+        f.write("60 Swamp\n")
+    env = RoboMageEnv(deck_a="temp/az_sb_nosb_a", deck_b="temp/az_sb_nosb_b",
+                      bo3=True, auto_sideboard=False)
+    try:
+        obs = _drive_to_sideboard(env, seed=SEED)
+        num = env._num_choices
+        cats, ids = _menu(obs, num)
+        outs = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
+        if not outs:
+            fail("sideboard-less balanced menu offers no cut")
+        else:
+            cut_id = ids[outs[0]]
+            obs, _r, _t, _tr, _i = env.step(outs[0])
+            num = env._num_choices
+            cats, ids = _menu(obs, num)
+            if num != 1 or cats[0] != CAT_SIDEBOARD_IN or ids[0] != cut_id:
+                fail(f"stranded menu should be the lone takeback of card "
+                     f"{cut_id}, got cats={cats.tolist()} ids={ids.tolist()}")
+            else:
+                # Taking it must restore the balanced menu (Done available).
+                obs, _r, _t, _tr, _i = env.step(0)
+                cats, _ = _menu(obs, env._num_choices)
+                if CAT_SIDEBOARD_DONE not in cats:
+                    fail("Done absent after the forced takeback")
+                else:
+                    print("  ok  stranded cut offers exactly the lone takeback; "
+                          "deck restored to balance")
+    finally:
+        env.close()
+        for p in (a, b):
+            if os.path.exists(p):
+                os.remove(p)
+    return failures
+
+
 def main() -> int:
     sched_failures = check_scripted_cell_rotation()
     if sched_failures:
@@ -205,6 +330,11 @@ def main() -> int:
     if not os.path.exists(BINARY):
         print(f"binary not found at {BINARY} — run `make` first", file=sys.stderr)
         return 2
+
+    tb_failures = check_takeback_only_when_stranded()
+    if tb_failures:
+        print(f"\ntakeback-only-when-stranded: FAILED ({tb_failures} failure(s))")
+        return 1
 
     deck_a, deck_b, paths = _write_decks()
     env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
