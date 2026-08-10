@@ -718,7 +718,7 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
         # extractor's _bucket_values). AZNet has no such buffers, so FOLD the
         # de-normalization into the copied linear layer — w' = sigma*w,
         # b' = sigma*b + mu per bucket column — so the warm-started head outputs
-        # values on the PPO return scale (game ±0.3 / match ±1.0) from step 0
+        # values on the PPO return scale (per-game ±1.0, matching AZ's own z) from step 0
         # instead of a per-bucket-miscalibrated normalized value (measured: sign
         # accuracy vs game outcome at or below coin-flip without the fold). The
         # tanh AZNet applies on top is monotone, so ordering is preserved and the

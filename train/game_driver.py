@@ -699,7 +699,8 @@ class GameDriver:
         human_wins = (self._reward > 0 and human_is_a) or (self._reward < 0 and not human_is_a)
         if self._reward == 0:
             return "Game over — no winner detected (draw?)."
-        # In bo3 the terminal reward is the MATCH result; report it with the
+        # In bo3 the terminal reward is the DECIDING GAME's result (±1.0), whose
+        # sign is also the match winner's; report it with the
         # final game score. The match ends the instant the deciding game does, so
         # no fresh obs follows: the stored match context reflects the score
         # *entering* that last game — the winner takes it, so add 1 to their tally.

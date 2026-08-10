@@ -1015,7 +1015,7 @@ def _replay_to_step(env, game, step):
     printed warning) if replay diverged from the stored observation, so callers
     never present a counterfactual built on a desynced state. `prefix_reward` is
     the cumulative Player-A reward accrued during the prefix — nonzero when the
-    branch point is in game 2+ of a bo3 match (the ±0.3 intermediates from
+    branch point is in game 2+ of a bo3 match (the ±1.0 per-game results from
     earlier games land here, not after the branch).
     """
     engine_seed = game["engine_seed"]
@@ -1591,8 +1591,8 @@ def _print_boundaries(rows):
 def _print_match_calibration(games):
     """Per (match, game) score-conditioned value calibration: V(s) at each
     game's first decision vs the empirical mean REMAINING match return for
-    that score across the sample (remaining = final result minus the ±0.3
-    intermediates already accrued at that score)."""
+    that score across the sample (remaining = final result minus the
+    ±BO3_GAME_WIN_REWARD per-game results already accrued at that score)."""
     # Collect one row per (match, game-within-match).
     rows = []
     for g_idx, game in enumerate(games):

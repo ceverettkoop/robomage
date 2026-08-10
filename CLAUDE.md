@@ -706,9 +706,17 @@ so raising the margin never removes a deck from the field; it only thins the ver
 - `GAME_RESULT: N Player A wins` / `GAME_RESULT: N Player B wins` — after each game
 - `MATCH_RESULT: Player A wins X-Y` — terminal signal for the match
 
-**Reward structure (from Player A perspective):**
-- Individual game win/loss: +0.3 / -0.3 (intermediate)
-- Match win/loss: +1.0 / -1.0 (terminal)
+**Reward structure (from Player A perspective) — PER GAME:**
+- Individual game win/loss: **+1.0 / -1.0** (the primary signal; in bo3 it lands at every
+  `GAME_RESULT`, so an episode's return is the discounted sum of the match's game results)
+- Match win/loss: **0.0 / 0.0** — the separate match-terminal reward is retired. `MATCH_RESULT`
+  still ends the episode; the constants (`MATCH_WIN_REWARD`/`MATCH_LOSS_REWARD`) and their
+  plumbing stay in `train/env.py` so a match bonus can be dialed back in from one place.
+- Why per-game: it is exactly the AlphaZero value target (`az_selfplay` prices every sample by
+  the winner of the game it was played in), so a PPO checkpoint warm-starting an AZ net
+  (`az_net.from_ppo`) hands over a critic already calibrated in AZ's units.
+- Shaping is budgeted **per game** against that ±1.0 (`SHAPING_EPISODE_CAP` in `train/env.py`);
+  bo1 and bo3 games are shaped identically (no bo3 /3 division).
 
 **Bo3-relevant state-vector fields** (exact indices/normalizers live in the `src/machine_io.h`
 layout block — don't hardcode them here):

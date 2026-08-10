@@ -184,9 +184,10 @@ def drive_game(env, obs, controller_a, controller_b, *,
         total_reward += reward
         # Per-game winner (bo3): the engine flags the step a game ended on, and
         # this env family reports the raw Player-A-perspective reward, so the sign
-        # names the winner. On the last game that reward carries the ±0.3 game
-        # result AND the ±1.0 match result, but they always share a sign (the
-        # match winner won the final game), so it stays correct.
+        # names the winner. Every game is worth ±1.0; the bo3 match terminal adds
+        # nothing by default (MATCH_*_REWARD = 0.0 in env.py) and, if re-enabled,
+        # shares the final game's sign (the match winner won the final game), so
+        # this stays correct either way.
         # NOTE: valid because run_games drives a NarrativeEnv/SearchNarrativeEnv
         # (RoboMageEnv subclasses, one engine step per env step). The TRAINING
         # wrappers aggregate several inner steps into one info and would break

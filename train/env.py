@@ -190,8 +190,30 @@ SHAPING_MULLIGAN_PENALTY =  0.00  # per mulligan taken beyond the 2nd (C++: >= 3
 SHAPING_OPPONENT_BELOW10 =  0.00  # one-time bonus when opponent life first drops < 10
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
-SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per episode
+SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per GAME
 SHAPING_EPISODE_CAP_DOOMSDAY = 0.6  # higher cap for doomsday deck
+# Shaping magnitude vs the outcome signal. The caps above are sized against the
+# PER-GAME outcome reward (±1.0 — see the per-game reward block below), which is
+# the unit the value function is now asked to predict. One game's accumulated
+# shaping must never outweigh that game's own result, so every cap stays
+# strictly under 1.0 (asserted below), and the budget is reset at each bo3 game
+# boundary (see step()).
+# History / why the magnitudes did NOT change with the per-game rework: when a
+# bo3 game was worth only ±0.3 and the MATCH ±1.0, bo3 shaping was divided by 3
+# (both the per-step magnitude and the budget) so a whole match's shaping stayed
+# under the smallest decisive match return. Now that each game carries a full
+# ±1.0 the per-game budget is the natural unit and that /3 is gone: a bo3 game is
+# shaped exactly like a bo1 game. This does not increase shaping's relative
+# influence — measured per game it falls slightly, from (0.3/3)/0.3 = 0.33 of the
+# outcome magnitude to 0.3/1.0 = 0.30 (doomsday: 0.67 -> 0.60) — while leaving
+# the doomsday combo curriculum at the absolute strength it was tuned at.
+# The one property that weakens is the whole-EPISODE bound: three per-game
+# budgets (0.9, or 1.8 on doomsday) can exceed the +1.0 return of a 2-1 match, so
+# a bo3 episode's shaped TOTAL can read the wrong sign. That is deliberate and
+# contained: win-rate consumers classify from info["outcome"], computed from the
+# pre-shaping reward, and each individual game — the credit-assignment unit that
+# now matters — still keeps its sign. Shaping also anneals to 0 over
+# SHAPING_DECAY_STEPS (cli_spec.py), so the asymptotic objective is pure win/loss.
 
 # ── Doomsday deck shaping ────────────────────────────────────────────────────
 SHAPING_DD_CAST_DOOMSDAY    = 0.2  # reward for casting Doomsday
@@ -204,17 +226,38 @@ SHAPING_DD_KEEP_DOOMSDAY    = 0.00  # reward for not shuffling after placed Doom
 SHAPING_DD_LED_WITH_DRAW    = 0.03 # reward for cracking LED with a cycling/draw ability on the stack
 SHAPING_DD_LED_EMPTY_STACK  = -0.02 # penalty for cracking LED with nothing on the stack
 
-# ── Bo3 match rewards ────────────────────────────────────────────────────────
-BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3
-BO3_GAME_LOSS_REWARD  = -0.3   # intermediate penalty for losing a game in bo3
-BO3_MATCH_WIN_REWARD  =  1.0   # terminal reward for winning the match
-BO3_MATCH_LOSS_REWARD = -1.0   # terminal penalty for losing the match
+# ── Game / match rewards (the ONE home; edit here, nowhere else) ─────────────
+# PER-GAME reward structure: the win/loss of EACH GAME is the primary signal at
+# ±1.0. In bo1 that is the single terminal reward; in bo3 it lands at every
+# GAME_RESULT boundary, so an episode's return is the (discounted) sum of the
+# match's game results.
+# Why per-game: it matches the AlphaZero value target exactly, which is the
+# per-game z = ±1 (az_selfplay prices every sample by the winner of the GAME it
+# was played in). A PPO checkpoint then hands the AZ warm start
+# (az_net.from_ppo, which folds the PopArt de-normalization into the copied
+# value head) a critic that already speaks AZ's units instead of one calibrated
+# to a 0.3-game/1.0-match blend.
+# The separate MATCH-terminal reward is RETIRED (0.0) rather than deleted: the
+# constants and the MATCH_RESULT plumbing stay so a match bonus can be dialed
+# back in by editing these two lines alone. Leave them at 0.0 unless you
+# deliberately want the critic to also track match equity — any nonzero value
+# reintroduces the scale mismatch with AZ's per-game target.
+GAME_WIN_REWARD   =  1.0   # reward for winning a game (bo1 terminal, bo3 per game)
+GAME_LOSS_REWARD  = -1.0   # penalty for losing a game
+MATCH_WIN_REWARD  =  0.0   # extra terminal reward for winning a bo3 match
+MATCH_LOSS_REWARD =  0.0   # extra terminal penalty for losing a bo3 match
+# Back-compat aliases (these bo3-prefixed names predate the per-game rework and
+# are imported elsewhere, e.g. analysis.py's match calibration).
+BO3_GAME_WIN_REWARD   = GAME_WIN_REWARD
+BO3_GAME_LOSS_REWARD  = GAME_LOSS_REWARD
+BO3_MATCH_WIN_REWARD  = MATCH_WIN_REWARD
+BO3_MATCH_LOSS_REWARD = MATCH_LOSS_REWARD
 
-# The total shaping an episode can accumulate must stay strictly below the
-# smallest decisive terminal reward magnitude, or shaping could flip the SIGN of
-# a finished episode's return — a lost game netting positive reward. The bo1
-# terminal is ±1.0; in bo3 the per-game budget is ep_cap/3 (see step()), so a
-# full match is also bounded by the cap. Keep the caps under 1.0.
+# The shaping a single GAME can accumulate must stay strictly below the decisive
+# per-game reward magnitude, or shaping could flip the SIGN of a finished game's
+# contribution — a lost game netting positive reward. Every game (bo1 terminal or
+# bo3 intermediate) is worth ±1.0 and the budget resets per game (see step()), so
+# keep the caps under 1.0.
 assert SHAPING_EPISODE_CAP < 1.0, SHAPING_EPISODE_CAP
 assert SHAPING_EPISODE_CAP_DOOMSDAY < 1.0, SHAPING_EPISODE_CAP_DOOMSDAY
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
@@ -902,25 +945,27 @@ class RoboMageEnv(gym.Env):
 
             # Detect win/loss
             if self._bo3:
-                # In bo3 mode, individual game results are intermediate rewards
+                # In bo3 mode every GAME is worth the full ±GAME_WIN_REWARD; the
+                # match line only ENDS the episode (MATCH_*_REWARD is 0.0 by
+                # default — see the reward block above).
                 if line.startswith(b"GAME_RESULT:"):
                     game_result = True
                     if b"Player A wins" in line:
-                        reward += BO3_GAME_WIN_REWARD
+                        reward += GAME_WIN_REWARD
                     elif b"Player B wins" in line:
-                        reward += BO3_GAME_LOSS_REWARD
+                        reward += GAME_LOSS_REWARD
                 elif line.startswith(b"MATCH_RESULT:"):
                     if b"Player A wins" in line:
-                        reward += BO3_MATCH_WIN_REWARD
+                        reward += MATCH_WIN_REWARD
                     elif b"Player B wins" in line:
-                        reward += BO3_MATCH_LOSS_REWARD
+                        reward += MATCH_LOSS_REWARD
                     done = True
             else:
                 if b"Player A wins" in line:
-                    reward = 1.0
+                    reward = GAME_WIN_REWARD
                     done = True
                 elif b"Player B wins" in line:
-                    reward = -1.0
+                    reward = GAME_LOSS_REWARD
                     done = True
 
             # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
@@ -1686,16 +1731,13 @@ class ModelVsScriptedEnv(gym.Env):
             shaping += phi_curr - _shaping_potential(self._last_obs)
 
         shaping *= self.shaping_scale
-        # In bo3, scale per-game shaping to 1/3 so total across 3 games
-        # stays proportional to the match reward (1.0)
+        # The budget is PER GAME (reset at each bo3 game boundary below), sized
+        # against the ±1.0 a game is worth. bo1 and bo3 games are shaped
+        # identically — no bo3 /3 division any more, since a bo3 game is no
+        # longer a fractional slice of the outcome signal (see the shaping
+        # magnitude rationale next to SHAPING_EPISODE_CAP).
         ep_cap = SHAPING_EPISODE_CAP_DOOMSDAY if self._is_doomsday else SHAPING_EPISODE_CAP
-        if self._bo3:
-            shaping /= 3.0
-            # Scale the per-game budget too, so the whole-match shaping total is
-            # bounded by ep_cap (< the 1.3 minimum decisive match |reward|) —
-            # otherwise 3 full per-game budgets could outweigh a match loss.
-            ep_cap /= 3.0
-        # Clamp to remaining episode budget
+        # Clamp to remaining per-game budget
         remaining = ep_cap - self._episode_shaping
         floor = -(ep_cap + self._episode_shaping)
         shaping = max(floor, min(remaining, shaping))
@@ -1754,7 +1796,7 @@ class ModelVsScriptedEnv(gym.Env):
         the shaping reward accumulated across all opponent steps. Two values are
         ACCUMULATED across the loop rather than taken from the last step, because
         a bo3 game boundary may fall on any step in it:
-          * ``reward`` — game results (±0.3) earned on the incoming step or on an
+          * ``reward`` — game results (±1.0) earned on the incoming step or on an
             intermediate opponent step would otherwise be silently overwritten by
             the last step's (usually zero) reward and never reach the learner.
             All engine rewards are Player-A-perspective, so plain summation is
@@ -1938,7 +1980,7 @@ class SelfPlayEnv(gym.Env):
         """Step with the frozen opponent until it is the training model's turn.
 
         ``reward`` is accumulated and ``game_result`` OR-ed across the loop (not
-        taken from the last step): in bo3 a game result (±0.3) may arrive on the
+        taken from the last step): in bo3 a game result (±1.0) may arrive on the
         incoming step or on an intermediate opponent step, and would otherwise be
         silently dropped. Rewards are Player-A-perspective, so summation is
         correct; the caller negates the total for seat B.
