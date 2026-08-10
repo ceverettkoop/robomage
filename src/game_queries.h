@@ -47,6 +47,16 @@ inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Cre
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
 inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }
 
+// True if this card in HAND consumes a land drop when played (CR 305.2): a land card, or
+// a modal DFC whose BACK face is a land (Witch Enchanter // Witch-Blessed Meadow — playing
+// that face is a land play, not a cast). Single source shared by the PLAY_LAND legal-action
+// enumeration and the ML observation's lands-in-hand count, so the two can't disagree about
+// which hand cards are land drops.
+inline bool card_playable_as_land(const CardData &cd) {
+    return is_land_card(cd) ||
+           (cd.is_modal_dfc && cd.backside && is_land_card(*cd.backside));
+}
+
 // The CardData face a permanent entity is currently showing: the back face while the
 // permanent is transformed (CR 712.8e — a face-up back face has its own characteristics),
 // else the front. Falls back to the front face for single-faced cards and non-permanents.

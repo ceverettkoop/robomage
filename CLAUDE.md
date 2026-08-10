@@ -931,7 +931,11 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
   holes; a returnable-exile id implies that card is in an exile block; `chosen_name` only on
   non-empty slots; the step one-hot sums to 1 and the mandatory-choice one-hot to ≤1; player
   life/hand/library counts are finite and non-negative; a declared companion is revealed to the
-  opponent for the whole game proper. Every offset/constant is imported from `env`/`_enums` (zero
+  opponent for the whole game proper; the mana-development block is finite/non-negative with each
+  per-color potential ≤ `potential_total`, `potential_total` ≥ the floating pool it includes,
+  `land_drops_remaining` inside the normalizer's range, `lands_in_hand` ≤ hand size, and
+  `lands_in_play` equal to the lands counted over that side's permanent slots (`is_land` &
+  `!is_phased_out`) in the SAME observation. Every offset/constant is imported from `env`/`_enums` (zero
   magic numbers, so it is layout-change-proof). **Wired into `ci_check.py` as the `obsinv` tier, so
   `make check` runs it**; also runnable standalone: `train/.venv/bin/python train/test_obs_invariants.py`
 - `src/machine_io.h` — state vector layout documentation and constants

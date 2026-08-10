@@ -638,6 +638,9 @@ _CHAIN_PAIRS = [
     ("_OPP_DECK_MAIN_START",    "OPP_DECK_MAIN_START"),
     ("_OPP_DECK_SIDE_START",    "OPP_DECK_SIDE_START"),
     ("_OPP_DECK_SIDE_END",      "OPP_DECK_SIDE_END"),
+    ("_MANA_DEV_START",         "MANA_DEV_START"),
+    ("_MANA_DEV_OPP_START",     "MANA_DEV_OPP_START"),
+    ("_MANA_DEV_END",           "MANA_DEV_END"),
 ]
 
 

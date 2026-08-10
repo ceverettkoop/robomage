@@ -102,11 +102,13 @@ def _run_case(td, ts_path, bo3):
     # 2) Drive the SAME game/match through the Python env, both seats azraw.
     ctrl = AZRawController(ts_path)
     env = RoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
-    if bo3:
-        # The actor plays the whole match to the engine's natural end; disable the
-        # env's training-only step cap so the Python drive runs the identical match
-        # (rather than truncating mid-game and comparing an unequal root count).
-        env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
+    # The actor plays the whole game/match to the engine's natural end; disable the
+    # env's training-only step cap so the Python drive runs the identical game
+    # (rather than truncating mid-game and comparing an unequal root count). The bo1
+    # cap is 1000 decisions and the parity net is randomly initialized, so a game
+    # that happens to run one decision past it reported a bogus "decision count
+    # differs" — a cap artifact, never an obs mismatch.
+    env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
     try:
         obs, _ = env.reset(options={"engine_seed": SEED})
         runner.drive_game(env, obs, ctrl, ctrl)

@@ -102,6 +102,8 @@ try:
         STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+        MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
+        MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -126,6 +128,8 @@ except ImportError:
         STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+        MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
+        MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -524,7 +528,29 @@ _OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIST
 _OPP_DECK_SIDE_START    = _OPP_DECK_MAIN_END
 _OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
 
-assert _OPP_DECK_SIDE_END == STATE_SIZE, (_OPP_DECK_SIDE_END, STATE_SIZE)
+# ── Mana development (mirrors machine_io.h's MANA DEVELOPMENT block) ─────────
+# The one summary of each player's mana BASE: per-color untapped-source potential
+# (W,U,B,R,G,C), the total source count + floating pool, lands in play, lands in
+# hand (self only — hidden for the opponent), land drops still available this turn
+# (the same expression the PLAY_LAND legal-action gate uses), and the reserved
+# max-affordable-CMC proxy (currently == potential_total; see machine_io.h).
+# Sub-offsets within one half; the opponent half omits lands_in_hand, so its later
+# fields sit one earlier — never index the opp block with the self offsets.
+_MD_POTENTIAL_START = 0                     # 6 floats: W, U, B, R, G, C
+_MD_POTENTIAL_TOTAL = MANA_DEV_COLORS       # 6
+_MD_LANDS_IN_PLAY   = _MD_POTENTIAL_TOTAL + 1
+_MD_SELF_LANDS_IN_HAND = _MD_LANDS_IN_PLAY + 1        # SELF half only
+_MD_SELF_LAND_DROPS    = _MD_SELF_LANDS_IN_HAND + 1
+_MD_SELF_MAX_CMC       = _MD_SELF_LAND_DROPS + 1
+_MD_OPP_LAND_DROPS     = _MD_LANDS_IN_PLAY + 1        # opp half: no lands_in_hand
+_MD_OPP_MAX_CMC        = _MD_OPP_LAND_DROPS + 1
+_MANA_DEV_START      = _OPP_DECK_SIDE_END
+_MANA_DEV_OPP_START  = _MANA_DEV_START + MANA_DEV_SELF_SIZE
+_MANA_DEV_END        = _MANA_DEV_OPP_START + MANA_DEV_OPP_SIZE
+assert _MD_SELF_MAX_CMC + 1 == MANA_DEV_SELF_SIZE, MANA_DEV_SELF_SIZE
+assert _MD_OPP_MAX_CMC + 1 == MANA_DEV_OPP_SIZE, MANA_DEV_OPP_SIZE
+
+assert _MANA_DEV_END == STATE_SIZE, (_MANA_DEV_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
@@ -552,7 +578,10 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # opponent revealed-cards multi-hot (the primary signal), and the pending-decision
 # context (which IN card the OUT query is cutting for). The global-extras block
 # (lands played, monarch, day/night, MandatoryChoice one-hot, ...) describes the
-# stale ended game, so it stays masked; it holds no card-id slots. Card-id slots
+# stale ended game, so it stays masked; it holds no card-id slots. The MANA
+# DEVELOPMENT block is masked for the same reason — untapped sources, lands in play
+# and land drops left all describe the ended game's final turn — and likewise holds
+# no card-id slot, so the 0.0 fill is the right one. Card-id slots
 # must be filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes
 # to a real vocab index 0 and defeats the extractor's empty-slot masking.
 def _build_sideboard_mask():

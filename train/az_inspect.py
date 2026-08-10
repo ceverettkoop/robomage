@@ -719,7 +719,10 @@ def obs_blocks():
         ("opp revealed", e._REVEALED_START, e._OPP_KNOWN_HAND_START),
         ("opp known hand", e._OPP_KNOWN_HAND_START, e._PENDING_DECISION_START),
         ("pending decision", e._PENDING_DECISION_START, e._EXTRAS_START),
-        ("global extras", e._EXTRAS_START, e.STATE_SIZE),
+        # NB: this span also covers the deck-identity tail blocks, which have never
+        # had their own row here; it stops at the mana-development block below.
+        ("global extras", e._EXTRAS_START, e._MANA_DEV_START),
+        ("mana development", e._MANA_DEV_START, e.STATE_SIZE),
         ("action categories", e.ACT_CATS_START, e.ACT_CATS_START + e.MAX_ACTIONS),
         ("action card ids", e.ACT_IDS_START, e.ACT_IDS_START + e.MAX_ACTIONS),
         ("action controllers", e.ACT_CTRL_START, e.ACT_CTRL_START + e.MAX_ACTIONS),
@@ -1291,6 +1294,7 @@ def _body_segments(sd):
         ("revealed agg",       E),
         ("pending decision",   card_feat + 1),
         ("global extras",      env._EXTRAS_END - env._EXTRAS_START),
+        ("mana development",   env._MANA_DEV_END - env._MANA_DEV_START),
         ("action extras raw",  env.BUCKET_IDX - env.STATE_SIZE),
         ("arch one-hots",      env.ARCH_ONEHOT_END - env.ARCH_ONEHOT_START),
         ("perm agg",           2 * E),

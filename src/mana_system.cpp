@@ -252,14 +252,14 @@ bool ability_is_mana(const Ability &ab) {
 // Colorless contributes no color (CR 105.2c), so a colorless-only board yields an empty set
 // and the source produces nothing. Returned in WUBRG order for a stable choice menu.
 static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownership player,
-                                               std::shared_ptr<Orderer> orderer) {
+                                               const std::set<Entity> &entities) {
     std::set<Colors> colors;
     MatchCtx ctx;
     ctx.controller = player;
     // ManaReflected's Valid$ lists its alternatives comma-separated (Forge Valid$ convention).
     // permanent_matches_any matches each alternative (legendary creature / legendary
     // planeswalker) independently, so the comma-OR is handled in one shared place.
-    for (auto entity : battlefield_permanents(orderer->mEntities, player)) {
+    for (auto entity : battlefield_permanents(entities, player)) {
         if (!permanent_matches_any(entity, ab.reflected_mana_filter, ctx)) continue;
         for (Colors c : effective_colors(entity)) colors.insert(c);
     }
@@ -267,6 +267,35 @@ static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownershi
     for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
         if (colors.count(c)) ordered.push_back(c);
     return ordered;
+}
+
+// Can `ab` (a mana ability of `permanent`, entity `e`) be activated RIGHT NOW, ignoring its
+// own activation mana cost? The physical gate — instant-speed window, Activation$ condition,
+// tap state, activation limit, summoning sickness without haste. Shared by
+// collect_available_mana_sources and mana_potential so the observation's "what could I
+// produce" summary can never disagree with the menu about which sources are available.
+static bool mana_ability_available_now(Entity e, const Permanent &permanent, const Ability &ab,
+                                       Zone::Ownership player, const std::set<Entity> &entities,
+                                       bool include_instant_speed) {
+    // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
+    // mid-cost-payment. Callers listing actions for a player who holds priority pass
+    // include_instant_speed; the affordability/payment callers leave it false.
+    if (ab.instant_speed && !include_instant_speed) return false;
+    // Activation$ gate (CR 602.5): e.g. Mox Opal's Metalcraft — illegal unless the
+    // controller meets the named condition (here, controls 3+ artifacts).
+    if (!activation_condition_met(ab, player, entities, e)) return false;
+    if (ab.tap_cost && permanent.is_tapped) return false;
+    if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) return false;
+    // Summoning sickness check for creatures with tap cost
+    if (ab.tap_cost && permanent.has_summoning_sickness &&
+        global_coordinator.entity_has_component<Creature>(e)) {
+        auto &cr = global_coordinator.GetComponent<Creature>(e);
+        bool has_haste = false;
+        for (const auto &kw : cr.keywords)
+            if (kw == "Haste") { has_haste = true; break; }
+        if (!has_haste) return false;
+    }
+    return true;
 }
 
 // Collect all mana abilities a player could activate.
@@ -283,30 +312,15 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
 
         for (const auto &ab : permanent.abilities) {
             if (!ability_is_mana(ab)) continue;
-            // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
-            // mid-cost-payment. Callers listing actions for a player who holds priority pass
-            // include_instant_speed; the affordability/payment callers leave it false.
-            if (ab.instant_speed && !include_instant_speed) continue;
-            // Activation$ gate (CR 602.5): e.g. Mox Opal's Metalcraft — illegal unless the
-            // controller meets the named condition (here, controls 3+ artifacts).
-            if (!activation_condition_met(ab, player, orderer->mEntities, entity)) continue;
-            if (ab.tap_cost && permanent.is_tapped) continue;
-            if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
-            // Summoning sickness check for creatures with tap cost
-            if (ab.tap_cost && permanent.has_summoning_sickness &&
-                global_coordinator.entity_has_component<Creature>(entity)) {
-                auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                bool has_haste = false;
-                for (const auto &kw : cr.keywords)
-                    if (kw == "Haste") { has_haste = true; break; }
-                if (!has_haste) continue;
-            }
+            if (!mana_ability_available_now(entity, permanent, ab, player, orderer->mEntities,
+                                            include_instant_speed))
+                continue;
             // AB$ ManaReflected (Mox Amber): producible colors are the union of the colors of
             // the Valid$-matching permanents you control, computed live. Expand into per-color
             // choices like mana_choices. An empty set (no/colorless legendaries) makes the
             // ability produce nothing, so it is not offered as a usable mana source.
             if (!ab.reflected_mana_filter.empty()) {
-                for (Colors choice_color : reflected_color_set(ab, player, orderer)) {
+                for (Colors choice_color : reflected_color_set(ab, player, orderer->mEntities)) {
                     Ability choice_ab = ab;
                     choice_ab.color = choice_color;
                     sources.push_back({entity, choice_ab});
@@ -323,6 +337,53 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         }
     }
     return sources;
+}
+
+// See mana_system.h for the contract. One pass over the player's live battlefield
+// permanents: per permanent, the union of the colors its AVAILABLE mana abilities could
+// produce (each color counted once for the permanent, per the "one unit per source per
+// color" rule), whether it is a mana source at all, and whether it is a land. Deliberately
+// mana-COST-free (no payer), so it is safe to call on the ML serialization path where no
+// Orderer is in scope.
+ManaPotential mana_potential(Zone::Ownership player, const std::set<Entity> &entities) {
+    ManaPotential out;
+    for (auto entity : battlefield_permanents(entities, player)) {
+        auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
+        if (type_set_has(permanent.types, "Land")) out.lands++;
+        if (rules_mod::mana_activation_prohibited(entity)) continue;
+
+        bool colors[6] = {false, false, false, false, false, false};
+        bool is_source = false;
+        auto note_color = [&](Colors c) {
+            int idx = static_cast<int>(c);
+            if (idx < 0 || idx >= 6) return;  // NO_COLOR/GENERIC: produces nothing nameable
+            colors[idx] = true;
+            is_source = true;                 // a source only counts once it can make SOMETHING
+        };
+        for (const auto &ab : permanent.abilities) {
+            if (!ability_is_mana(ab)) continue;
+            // Instant-speed mana abilities (LED) ARE potential mana for their controller at
+            // priority, which is the horizon this summary describes.
+            if (!mana_ability_available_now(entity, permanent, ab, player, entities,
+                                            /*include_instant_speed=*/true))
+                continue;
+            // A ManaReflected source whose color set is empty (Mox Amber with no legendary,
+            // or only colorless ones) produces nothing, so note_color leaves it uncounted —
+            // matching collect_available_mana_sources, which offers no action for it.
+            if (!ab.reflected_mana_filter.empty()) {
+                for (Colors c : reflected_color_set(ab, player, entities)) note_color(c);
+            } else if (!ab.mana_choices.empty()) {
+                for (Colors c : ab.mana_choices) note_color(c);
+            } else {
+                note_color(ab.color);
+            }
+        }
+        if (!is_source) continue;
+        out.sources++;
+        for (int i = 0; i < 6; i++)
+            if (colors[i]) out.by_color[i]++;
+    }
+    return out;
 }
 
 ActionCategory mana_action_category(Colors color) {

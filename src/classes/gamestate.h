@@ -41,6 +41,13 @@ typedef struct PlayerState_tag {
     bool city_blessing;        // this player has the city's blessing (CR 702.131c)
     bool revolt;               // a permanent this player controlled left the battlefield this turn
     int  extra_turns_pending;  // extra turns this player has queued (CR 500.7)
+    // ── Mana development (serialized as the state vector's MANA DEVELOPMENT block;
+    // field meanings and normalizers are documented in machine_io.h) ──
+    int  mana_potential[6];    // WUBRGC: untapped sources that could produce that color NOW
+    int  mana_potential_total; // distinct untapped mana sources + floating pool size
+    int  lands_in_play;        // battlefield lands this player controls
+    int  lands_in_hand;        // land cards in hand — VIEWER ONLY (0 for the opponent)
+    int  land_drops_remaining; // lands still playable this turn (rules_mod, clamped at 0)
 } PlayerState;
 
 typedef struct PermanentState_tag {

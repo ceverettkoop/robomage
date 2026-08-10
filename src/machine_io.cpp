@@ -26,6 +26,8 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "game_queries.h"
+#include "mana_system.h"                    // mana_potential (mana-development block)
+#include "systems/rules_modifying.h"        // rules_mod::land_drops_remaining
 #include "systems/state_manager_internal.h"
 
 extern Coordinator global_coordinator;
@@ -37,6 +39,8 @@ static int token_vocab_idx(Entity e);
 static int get_card_vocab_idx(Entity e);
 static int slot_ref_of(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
+static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
+                                bool with_lands_in_hand);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
 static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer);
@@ -208,6 +212,28 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
     out.push_back(static_cast<float>(ps.poison_counters) / 10.0f);
     for (int i = 0; i < 6; i++) out.push_back(static_cast<float>(ps.mana[i]) / 10.0f);
     out.push_back(static_cast<float>(ps.energy) / 10.0f);
+}
+
+// Pushes one half of the MANA DEVELOPMENT block: MANA_DEV_SELF_SIZE floats for the
+// viewer (with_lands_in_hand), MANA_DEV_OPP_SIZE for the opponent (whose hand is hidden,
+// so lands_in_hand is omitted rather than emitted as a zero — a zero would read as
+// "no lands in hand", a claim about hidden information). Field order and normalizers
+// are documented in machine_io.h.
+static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
+                                bool with_lands_in_hand) {
+    const float count_norm = static_cast<float>(MANA_COUNT_NORMALIZER);
+    for (int i = 0; i < MANA_DEV_COLORS; i++)
+        out.push_back(static_cast<float>(ps.mana_potential[i]) / count_norm);
+    out.push_back(static_cast<float>(ps.mana_potential_total) / count_norm);
+    out.push_back(static_cast<float>(ps.lands_in_play) / count_norm);
+    if (with_lands_in_hand)
+        out.push_back(static_cast<float>(ps.lands_in_hand) / count_norm);
+    out.push_back(static_cast<float>(ps.land_drops_remaining) /
+                  static_cast<float>(LAND_DROPS_NORMALIZER));
+    // max_affordable_cmc_proxy: no payment solver here, so the honest available bound
+    // is the total mana this player could float. Documented as a proxy in machine_io.h;
+    // the slot exists so a real payer-based value can land without a layout break.
+    out.push_back(static_cast<float>(ps.mana_potential_total) / count_norm);
 }
 
 // Pushes PERM_SLOT_SIZE floats (35 status + chosen-name id + returnable-exile id + card-id;
@@ -570,6 +596,13 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             case Zone::HAND:
                 if (is_self) {
                     gs->self.hand_ct++;
+                    // Land drops available FROM HAND (mana-development block). Counted in the
+                    // same pass, through the shared card_playable_as_land predicate the
+                    // PLAY_LAND enumeration uses (so a modal DFC with a land back face counts).
+                    // Viewer-only: the opponent's hand is hidden information.
+                    if (global_coordinator.entity_has_component<CardData>(e) &&
+                        card_playable_as_land(global_coordinator.GetComponent<CardData>(e)))
+                        gs->self.lands_in_hand++;
                     if (self_hand_idx < MAX_HAND_SLOTS)
                         gs->self_hand[self_hand_idx++] = get_card_vocab_idx(e);
                 } else {
@@ -656,6 +689,29 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         fill_permanent_state(gs->opp_permanents[i], opp_ents[i], viewer);
     for (int i = 0; i < stored_stack; i++)
         fill_stack_entry(gs->stack[i], stack_items[i].ent, viewer);
+
+    // ── Mana development ──────────────────────────────────────────────────────
+    // Reuses the battlefield entities pass A already collected (both sides in one
+    // set, since mana_potential re-guards by controller) instead of re-scanning the
+    // ECS. mana_potential applies the live-permanent guard itself, so the phased-out
+    // permanents deliberately kept in the serialized slots are excluded here.
+    {
+        std::set<Entity> bf_entities(self_ents, self_ents + self_bf);
+        bf_entities.insert(opp_ents, opp_ents + opp_bf);
+        auto fill_mana_dev = [&](PlayerState& ps, Zone::Ownership owner, Entity ent) {
+            ManaPotential mp = mana_potential(owner, bf_entities);
+            for (int i = 0; i < MANA_DEV_COLORS; i++) ps.mana_potential[i] = mp.by_color[i];
+            // Untapped sources PLUS whatever is already floating in the pool.
+            size_t pool = global_coordinator.entity_has_component<Player>(ent)
+                              ? global_coordinator.GetComponent<Player>(ent).mana.size() : 0;
+            ps.mana_potential_total  = mp.sources + static_cast<int>(pool);
+            ps.lands_in_play         = mp.lands;
+            ps.land_drops_remaining  = rules_mod::land_drops_remaining(owner);
+        };
+        Zone::Ownership opp_view = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        fill_mana_dev(gs->self, viewer, viewer_entity);
+        fill_mana_dev(gs->opponent, opp_view, opp_entity);
+    }
 
     // Graveyards in RECENCY order: slot 0 = most recent arrival (lowest distance_from_top)
     auto fill_graveyard = [](int* slots, std::vector<GyItem>& items) {
@@ -993,6 +1049,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     push_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct, DECKLIST_MAIN_SLOTS);
     // Opponent STATIC sideboard (15 x 2 = 30)
     push_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct, DECKLIST_SIDE_SLOTS);
+
+    // ── Mana development (see machine_io.h [6329-6349]) ───────────────────────
+    // Self (11 floats) then opponent (10 — no lands_in_hand, which is hidden).
+    push_mana_dev_block(state, gs->self, /*with_lands_in_hand=*/true);
+    push_mana_dev_block(state, gs->opponent, /*with_lands_in_hand=*/false);
 
     // Loud, NDEBUG-surviving length check: cli_output fwrites STATE_SIZE floats from this
     // buffer, so an under-fill would silently OOB-read under BUILD=RELEASE (where assert() is

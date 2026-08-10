@@ -47,15 +47,20 @@ from env import (
     _PENDING_DECISION_START, _HIST_START, _ACTION_HISTORY_SIZE,
     _ACTION_HISTORY_ENTRY, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
     _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
-    _SELF_BLOCK_START, _OPP_BLOCK_START,
-    _PB_LIFE, _PB_HAND_CT, _LIBRARY_CTX_START, _REVEALED_START,
+    _SELF_BLOCK_START, _OPP_BLOCK_START, _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
+    _MANA_DEV_START, _MANA_DEV_OPP_START,
+    _MD_POTENTIAL_TOTAL, _MD_LANDS_IN_PLAY, _MD_SELF_LANDS_IN_HAND,
+    _MD_SELF_LAND_DROPS, _MD_OPP_LAND_DROPS,
+    _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START, _REVEALED_START,
     _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
     _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
     _DECKLIST_SLOT_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
 from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
-                    SIDEBOARD_SWAP_CAP)
+                    SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
+                    MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
+                    LAND_DROPS_NORMALIZER)
 from opponents import make_controller
 from scripted_agent import scripted_action
 
@@ -176,6 +181,74 @@ def _zone_block_offsets(start):
 
 
 # ── The invariant checks (all read `state` = obs[:STATE_SIZE]) ─────────────────
+
+def _count_slot_lands(state, start):
+    """Lands among one side's serialized permanent slots, phased-out excluded.
+
+    The observation deliberately keeps phased-out permanents visible (with the
+    is_phased_out flag set), while the engine's mana-development counts use the
+    live-permanent guard — so this mirrors that guard rather than counting every
+    is_land slot."""
+    n = 0
+    for s in range(_PERM_SLOTS):
+        base = start + s * _PERM_SLOT_SIZE
+        if state[base + _OFF_IS_LAND] > 0.5 and state[base + _OFF_IS_PHASED_OUT] < 0.5:
+            n += 1
+    return n
+
+
+def _check_mana_dev(decision_idx, seat, state):
+    """Invariant (12): the MANA DEVELOPMENT block (see machine_io.h)."""
+    halves = (
+        ("self_mana_dev", _MANA_DEV_START, MANA_DEV_SELF_SIZE,
+         _MD_SELF_LAND_DROPS, _SELF_BLOCK_START, _SELF_PERM_START,
+         _MD_SELF_LANDS_IN_HAND),
+        ("opp_mana_dev", _MANA_DEV_OPP_START, MANA_DEV_OPP_SIZE,
+         _MD_OPP_LAND_DROPS, _OPP_BLOCK_START, _OPP_PERM_START, None),
+    )
+    for name, start, width, drops_off, pb_start, perm_start, hand_off in halves:
+        block = state[start:start + width]
+        # Finite and non-negative (every field is a count; -0.5 tolerates float noise).
+        for i, v in enumerate(block):
+            if not np.isfinite(v) or v < -0.5 / MANA_COUNT_NORMALIZER:
+                _fail(decision_idx, seat, name, i, v,
+                      "mana-development float must be finite and non-negative")
+        total = float(block[_MD_POTENTIAL_TOTAL]) * MANA_COUNT_NORMALIZER
+        # Per-color potential <= the source total (a source counts once per color
+        # it can make, and once toward the total).
+        for c in range(MANA_DEV_COLORS):
+            pot = float(block[c]) * MANA_COUNT_NORMALIZER
+            if pot > total + 0.5:
+                _fail(decision_idx, seat, f"{name}.potential", c, pot,
+                      f"per-color potential {pot} exceeds potential_total {total}")
+        # potential_total includes the floating pool, so it can never be smaller.
+        pool = float(np.sum(state[pb_start + _PB_MANA:pb_start + _PB_MANA
+                                  + MANA_DEV_COLORS])) * MANA_COUNT_NORMALIZER
+        if total + 0.5 < pool:
+            _fail(decision_idx, seat, f"{name}.potential_total", "-", total,
+                  f"potential_total {total} < floating pool {pool} (it must include it)")
+        # Land drops fit the normalizer's range: 0 .. LAND_DROPS_NORMALIZER. (If a
+        # future card can grant more, the NORMALIZER is what must grow — this bound
+        # follows it rather than restating a literal.)
+        drops = float(block[drops_off]) * LAND_DROPS_NORMALIZER
+        if not (-0.5 <= drops <= LAND_DROPS_NORMALIZER + 0.5):
+            _fail(decision_idx, seat, f"{name}.land_drops_remaining", "-", drops,
+                  f"land drops {drops} outside [0,{LAND_DROPS_NORMALIZER}]")
+        # lands_in_play == the lands visible in this side's permanent slots.
+        lands = int(round(float(block[_MD_LANDS_IN_PLAY]) * MANA_COUNT_NORMALIZER))
+        slot_lands = _count_slot_lands(state, perm_start)
+        if lands != slot_lands:
+            _fail(decision_idx, seat, f"{name}.lands_in_play", "-", lands,
+                  f"lands_in_play {lands} != {slot_lands} lands counted over this "
+                  "side's permanent slots (is_land & !is_phased_out)")
+        # lands_in_hand (self only) can never exceed the hand size.
+        if hand_off is not None:
+            in_hand = float(block[hand_off]) * MANA_COUNT_NORMALIZER
+            hand_ct = float(state[pb_start + _PB_HAND_CT]) * 10.0
+            if in_hand > hand_ct + 0.5:
+                _fail(decision_idx, seat, f"{name}.lands_in_hand", "-", in_hand,
+                      f"lands_in_hand {in_hand} exceeds hand count {hand_ct}")
+
 
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
@@ -343,6 +416,16 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         _fail(decision_idx, seat, "opp_deck.constancy", "-", "changed",
               "opponent static decklist block changed across decisions of the same seat")
     deck_block_by_seat[seat] = opp_block
+
+    # (12) Mana-development block: every float is a finite non-negative count, the
+    # per-color potentials are bounded by the source total, the total covers the
+    # floating pool it includes, land drops stay inside the normalizer's range, and
+    # lands_in_play agrees with the SAME observation's permanent slots (the strong
+    # cross-check: two independent derivations of "how many lands does this player
+    # have" — the engine's live-permanent scan vs. the serialized per-slot is_land
+    # flags — must match, with phased-out permanents excluded from BOTH per CR
+    # 702.26e). lands_in_hand is self-only and bounded by the hand count.
+    _check_mana_dev(decision_idx, seat, state)
 
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata

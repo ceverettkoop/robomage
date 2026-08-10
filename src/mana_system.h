@@ -70,6 +70,32 @@ bool activate_mana_source(Entity source, const Ability& ab, Zone::Ownership cont
                           std::shared_ptr<Orderer> orderer, ManaValue& pool, Player& player,
                           bool commit, ManaLogStyle log_style);
 
+// ── Mana development summary (ML observation) ───────────────────────────────
+// What a player COULD produce right now, as opposed to what is floating in their
+// pool. Counts SOURCES, not mana: a permanent contributes at most one unit per color
+// it could produce and one unit to `sources`, however many mana its ability makes
+// (Ancient Tomb counts 1) and however many abilities offer the same color. A
+// permanent with a multi-color producer ("Any" / "Combo W U G" / Mox Amber's
+// reflected colors) contributes to EACH of those colors.
+//
+// Availability is the same physical gate collect_available_mana_sources applies
+// (shared helper, no second definition): live battlefield permanent, mana ability,
+// not prohibited (Null Rod), untapped if the ability taps, no summoning sickness
+// without haste for a {T} ability, Activation$ gate met, activation limit not
+// reached. The ability's own MANA cost (Talon Gates' {1}{T}) is NOT checked — that
+// would need the payer — so a cost-bearing source counts as potential.
+struct ManaPotential {
+    int by_color[6] = {0, 0, 0, 0, 0, 0};  // indexed by Colors: W, U, B, R, G, C
+    int sources = 0;                       // distinct permanents counted once
+    int lands = 0;                         // battlefield lands (same live-permanent guard)
+};
+
+// `entities` is any entity set to scan (the iterating system's mEntities, or the
+// battlefield set the ML serializer already collected); every candidate is re-guarded
+// with is_battlefield_permanent(e, player), so phased-out permanents and the other
+// player's permanents are excluded here rather than at the call site.
+ManaPotential mana_potential(Zone::Ownership player, const std::set<Entity>& entities);
+
 // Check if a given mana pool can afford a cost (does not read player state)
 bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost);
 

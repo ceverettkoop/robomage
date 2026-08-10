@@ -137,6 +137,10 @@ static void write_matchup_tail(float* o, bool self_is_a) {
 // static-decklist blocks), plus the self-is-A seat flag; card-id positions inside
 // masked blocks are filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 (0.0
 // decodes to real vocab index 0). We build the identical keep/fill pair once.
+// The MANA DEVELOPMENT block is board state of the ENDED game (untapped sources, lands
+// in play, land drops left in a turn that is over), so — like the player blocks and the
+// global extras — it is masked: it is simply not kept below, and holds no card-id slot,
+// so the default 0.0 fill is correct. env.py's mask does the same by omission.
 struct SideboardMask {
     std::array<bool, STATE_SIZE> keep{};   // value-initialized: all false
     std::array<float, STATE_SIZE> fill{};  // value-initialized: all 0.0f

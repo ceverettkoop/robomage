@@ -25,7 +25,7 @@ DECKLIST_MAIN_SLOTS = 48  # src/classes/gamestate.h
 DECKLIST_SIDE_SLOTS = 16  # src/classes/gamestate.h
 KNOWN_TOP_LIBRARY_SIZE = 5  # src/classes/game.h
 ACTION_HISTORY_SIZE = 128  # src/classes/game.h
-STATE_SIZE = 6329  # src/machine_io.h
+STATE_SIZE = 6350  # src/machine_io.h
 N_CARD_TYPES = 1024  # src/machine_io.h
 PERM_SLOT_SIZE = 38  # src/machine_io.h
 OPTION_ORDINAL_MAX = 63  # src/machine_io.h
@@ -47,6 +47,11 @@ PENDING_DECISION_SIZE = 2  # src/machine_io.h
 EXTRAS_SCALARS = 13  # src/machine_io.h
 EXTRAS_SB_CTX_SIZE = 3  # src/machine_io.h
 DECKLIST_SLOT_SIZE = 2  # src/machine_io.h
+MANA_DEV_COLORS = 6  # src/machine_io.h
+MANA_DEV_SELF_SIZE = 11  # src/machine_io.h
+MANA_DEV_OPP_SIZE = 10  # src/machine_io.h
+MANA_COUNT_NORMALIZER = 10  # src/machine_io.h
+LAND_DROPS_NORMALIZER = 3  # src/machine_io.h
 
 # Name-keyed ActionCategory constants: CAT_<ENUM_NAME> = value, for every
 # entry in the C++ ActionCategory enum (src/classes/action.h).

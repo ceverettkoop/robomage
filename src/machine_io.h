@@ -65,7 +65,7 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// Fixed-size state vector layout (STATE_SIZE = 6329 floats):
+// Fixed-size state vector layout (STATE_SIZE = 6350 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -282,8 +282,47 @@
 //                registered 75 but NOT which 60 of it they boarded into for game 2+.
 //                That split is hidden information, and the MCTS determinizer models
 //                it as such (see `opp_sideboard_hidden` in search_server.cpp).
+//
+//  ── Mana development ─────────────────────────────────────────────────────────
+//  A summary of each player's MANA BASE, which nothing else in the observation
+//  states: the player-block "mana" floats are the FLOATING pool (~always empty at a
+//  decision point) and the land-play limit was never serialized at all, so
+//  castability had to be inferred from 48 raw permanent slots through pooling.
+//  Counts and mana are normalized by MANA_COUNT_NORMALIZER, land drops by
+//  LAND_DROPS_NORMALIZER. Self first, then the opponent, like every other block.
+//
+//  [6329-6339]   Self mana development (11 floats):
+//                  [0-5] potential_W/U/B/R/G/C — how many of this player's UNTAPPED
+//                        battlefield mana sources could produce that color right now
+//                        (mana_potential(), mana_system.h): a permanent with an
+//                        activatable mana ability, phased-out excluded, a {T} ability on
+//                        a summoning-sick creature excluded, activation limits and
+//                        Activation$ gates honored. "Any"/"Combo"/reflected producers
+//                        count toward EACH color they could make; a permanent counts at
+//                        most ONCE per color no matter how many abilities offer it.
+//                  [6]   potential_total — distinct untapped sources (each counted once,
+//                        regardless of how much mana it makes) PLUS the floating pool's
+//                        current size. Every per-color count is <= this.
+//                  [7]   lands_in_play — battlefield lands this player controls
+//                  [8]   lands_in_hand — land cards in hand (a modal DFC whose BACK face
+//                        is a land counts: playing it is a land play). SELF ONLY — the
+//                        opponent's hand is hidden information.
+//                  [9]   land_drops_remaining / LAND_DROPS_NORMALIZER — lands this player
+//                        may still play this turn, from the SAME expression the PLAY_LAND
+//                        legal-action gate uses (rules_mod::land_drops_remaining, which
+//                        folds in AdjustLandPlays statics), clamped at 0.
+//                  [10]  max_affordable_cmc_proxy — a PROXY, currently equal to
+//                        potential_total: the engine runs no payment solver here, and a
+//                        source's color feasibility/multi-mana output is not resolved
+//                        against a concrete cost. The slot is kept deliberately so a real
+//                        payer-based "highest mana value castable now" can replace it
+//                        WITHOUT another layout break (every checkpoint dies on a layout
+//                        change, so the reserved float is the cheap half of that trade).
+//  [6340-6349]   Opponent mana development (10 floats): the same fields MINUS
+//                lands_in_hand, i.e. potential_W/U/B/R/G/C, potential_total,
+//                lands_in_play, land_drops_remaining, max_affordable_cmc_proxy.
 
-static constexpr int STATE_SIZE             = 6329;
+static constexpr int STATE_SIZE             = 6350;
 // Max sideboard swaps a player may complete in one between-games phase. Both the
 // engine's phase cap and the normalizer for the serialized swaps-made scalar, so
 // the two can never drift apart.
@@ -341,6 +380,17 @@ static constexpr int EXTRAS_SCALARS    = 13;   // lands x2, priority, monarch x2
                                                // revolt x2, extra turns x2, is_day, is_night
 static constexpr int EXTRAS_SB_CTX_SIZE = 3;   // self_plays_first + swaps made + maindeck drift
 static constexpr int DECKLIST_SLOT_SIZE = 2;   // card id + count per decklist slot
+// Mana-development block (see the layout comment above). The self half carries one
+// extra field — lands_in_hand — that the opponent half cannot (hidden information).
+static constexpr int MANA_DEV_COLORS    = 6;   // potential W, U, B, R, G, C
+static constexpr int MANA_DEV_SELF_SIZE = 11;  // 6 colors + total + lands_in_play +
+                                               // lands_in_hand + land_drops + max-cmc proxy
+static constexpr int MANA_DEV_OPP_SIZE  = 10;  // same minus lands_in_hand
+// Normalizers for that block, kept as ints so train/gen_enums.py can mirror them
+// (parse_int_constant only reads plain integer literals) and the Python invariants
+// decode with exactly the divisor the engine used.
+static constexpr int MANA_COUNT_NORMALIZER = 10;  // source/land counts and mana totals
+static constexpr int LAND_DROPS_NORMALIZER = 3;   // land drops remaining this turn
 
 static constexpr int STATE_HEADER_SIZE = 2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + HEADER_FLAGS;
 static constexpr int STACK_SLOT_SIZE   = STACK_HEAD_FIELDS + STACK_XAMT_FIELDS +
@@ -386,7 +436,11 @@ static constexpr int SELF_DECK_SIDE_START = SELF_DECK_MAIN_START + DECKLIST_MAIN
 static constexpr int OPP_DECK_MAIN_START  = SELF_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
 static constexpr int OPP_DECK_SIDE_START  = OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * DECKLIST_SLOT_SIZE;
 static constexpr int OPP_DECK_SIDE_END    = OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * DECKLIST_SLOT_SIZE;
-static_assert(OPP_DECK_SIDE_END == STATE_SIZE,
+// Mana development (self half, then the opponent's) closes the vector.
+static constexpr int MANA_DEV_START       = OPP_DECK_SIDE_END;
+static constexpr int MANA_DEV_OPP_START   = MANA_DEV_START + MANA_DEV_SELF_SIZE;
+static constexpr int MANA_DEV_END         = MANA_DEV_OPP_START + MANA_DEV_OPP_SIZE;
+static_assert(MANA_DEV_END == STATE_SIZE,
               "state-vector offset chain must end exactly at STATE_SIZE — a block "
               "was added/resized/reordered without updating STATE_SIZE (and the "
               "layout comment above, train/env.py, and train/extractor.py)");
