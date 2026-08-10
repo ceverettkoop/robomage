@@ -183,10 +183,13 @@ actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
 # only thing that catches the C++ actor drifting from src/machine_io.h — but they
 # only fire under `make actor`, which needs libtorch and is not in the default
 # build, so a layout change can (and did) land with the actor left uncompilable.
-# These two TUs are the actor's only torch-free ones, so -fsyntax-only fires every
+# These TUs are the actor's only torch-free ones, so -fsyntax-only fires every
 # layout assert with nothing but a compiler. Wired into ci_check.py's `actorobs`
-# tier, which IS part of `make check`.
-ACTOR_SYNTAX_SRCS := $(SRCDIR)/actor/obs_builder.cpp $(SRCDIR)/actor/npz_writer.cpp
+# tier, which IS part of `make check`. td_targets.cpp joins them for the same
+# reason: it is the C++ twin of az_selfplay.py's n-step TD rule and must stay
+# compilable wherever libtorch is not installed.
+ACTOR_SYNTAX_SRCS := $(SRCDIR)/actor/obs_builder.cpp $(SRCDIR)/actor/npz_writer.cpp \
+                     $(SRCDIR)/actor/td_targets.cpp
 
 actor-syntax: pygen
 	@for f in $(ACTOR_SYNTAX_SRCS); do \

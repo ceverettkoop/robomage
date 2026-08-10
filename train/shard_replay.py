@@ -2,8 +2,10 @@
 
 The AZ trainer's shards (``train/az_data/gen/shard_*.npz``: parallel arrays
 ``obs (N, OBS_SIZE)``, ``pi (N, MAX_ACTIONS)``, ``z (N,)``, ``mask (N,
-MAX_ACTIONS)`` — one row per SEARCHED decision root, in game-backfill order)
-carry no game/match ids, yet every row's obs embeds the bo3 match context
+MAX_ACTIONS)``, plus the n-step TD columns ``q``/``explored``/``td_q (N,)``
+this module does not need — one row per SEARCHED decision root, in
+game-backfill order) carry no game/match ids, yet every row's obs embeds the
+bo3 match context
 (game number, win counters, sideboard flag) and the mover's seat. This module
 recovers that structure and re-packs the rows into the per-game trace dicts
 ``analysis._collect_game_traces`` produces, so ``tui_analysis.py`` can browse

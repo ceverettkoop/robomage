@@ -712,9 +712,13 @@ so raising the margin never removes a deck from the field; it only thins the ver
 - Match win/loss: **0.0 / 0.0** — the separate match-terminal reward is retired. `MATCH_RESULT`
   still ends the episode; the constants (`MATCH_WIN_REWARD`/`MATCH_LOSS_REWARD`) and their
   plumbing stay in `train/env.py` so a match bonus can be dialed back in from one place.
-- Why per-game: it is exactly the AlphaZero value target (`az_selfplay` prices every sample by
+- Why per-game: it is exactly the AlphaZero outcome target (`az_selfplay` prices every sample by
   the winner of the game it was played in), so a PPO checkpoint warm-starting an AZ net
-  (`az_net.from_ppo`) hands over a critic already calibrated in AZ's units.
+  (`az_net.from_ppo`) hands over a critic already calibrated in AZ's units. (AZ additionally
+  records an **n-step TD target** `td_q` per sample and trains on
+  `(1 - q_mix) * z + q_mix * td_q` — knobs `--td-n` / `--q-mix`; see the "n-step TD value
+  targets" section of [`docs/alphazero_status.md`](docs/alphazero_status.md). `z` is unchanged
+  and stays the anchor.)
 - Shaping is budgeted **per game** against that ±1.0 (`SHAPING_EPISODE_CAP` in `train/env.py`);
   bo1 and bo3 games are shaped identically (no bo3 /3 division).
 

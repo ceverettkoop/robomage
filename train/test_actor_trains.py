@@ -129,9 +129,8 @@ def _python_selfplay(ckpt, out_dir):
 # ----------------------------------------------------------------------
 
 def _load(deck, data_dir):
-    obs, pi, z, mask, n_shards = az_train.load_window(deck, window=1000,
-                                                      data_dir=data_dir)
-    return obs, pi, z, mask, n_shards
+    w = az_train.load_window(deck, window=1000, data_dir=data_dir)
+    return w["obs"], w["pi"], w["z"], w["mask"], w["n_shards"]
 
 
 def _schema(obs, pi, z, mask):

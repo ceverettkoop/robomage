@@ -127,6 +127,7 @@ struct AZMcts::Impl {
     int this_root = 0;
     int root_n = 0;
     bool root_is_a = false;
+    bool root_is_sb = false;  // this root is a bo3 sideboard prompt (sample tag)
     std::vector<double> root_priors;
     std::vector<int64_t> visit_totals;  // summed root.N across worlds
     double value_acc = 0.0;
@@ -639,6 +640,7 @@ struct AZMcts::Impl {
         // Select this root's budget: the sideboard budget when the root is a
         // sideboard prompt (and the sb_* config is set), else the in-game budget.
         bool sb = sideboard_phase;
+        root_is_sb = sb;
         cur_sims = (sb && cfg.sb_sims >= 0) ? cfg.sb_sims : cfg.sims;
         cur_worlds = (sb && cfg.sb_worlds >= 0) ? cfg.sb_worlds : cfg.worlds;
         cur_max_depth = (sb && cfg.sb_max_depth >= 0) ? cfg.sb_max_depth : cfg.max_depth;
@@ -920,6 +922,10 @@ struct AZMcts::Impl {
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
             s.mask.assign(static_cast<size_t>(MAX_ACTIONS), 0);
             s.mover_is_a = root_is_a;
+            // n-step TD inputs (mirrors az_selfplay.py): this root's value, and
+            // whether the action actually played leaves the search's own line.
+            s.q = static_cast<float>(results.back().root_value);
+            s.is_sideboard = root_is_sb;
             for (int i = 0; i < root_n; i++) {
                 s.pi[static_cast<size_t>(i)] =
                     total > 0 ? static_cast<float>(
@@ -928,13 +934,14 @@ struct AZMcts::Impl {
                               : 0.0f;
                 s.mask[static_cast<size_t>(i)] = 1;
             }
-            game_samples.push_back(std::move(s));
 
             if (move_counter < cfg.temp_moves && total > 0) {
                 std::discrete_distribution<int> dist(
                     visit_totals.begin(), visit_totals.begin() + root_n);
                 chosen = dist(rng);
             }
+            s.explored = chosen != best;
+            game_samples.push_back(std::move(s));
             move_counter += 1;
         }
 

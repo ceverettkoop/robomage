@@ -24,9 +24,13 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import numpy as np  # noqa: E402
+
 import runner  # noqa: E402
 from runner import GameRecord, GameOutcome  # noqa: E402
 from cli_spec import BINARY  # noqa: E402
+from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX  # noqa: E402
+from az_selfplay import _backfill_and_pack  # noqa: E402
 
 DECK_A, DECK_B = "league/ur_delver", "league/gw_maverick"
 N_MATCHES = 6
@@ -133,8 +137,119 @@ def check_live_bo3():
                        for gi, c in sorted(per_game.items())))
 
 
+# ----------------------------------------------------------------------
+# n-step TD value targets (az_selfplay._backfill_and_pack)
+# ----------------------------------------------------------------------
+#
+# The per-game outcome z is the OTHER half of the value target the shards carry;
+# the n-step TD column td_q bootstraps off a later decision's search root value
+# instead, sign-flipped when that decision's mover is the other seat. This is a
+# synthetic match (no engine): a hand-built sample stream with known q values and
+# a known winner, so every branch of the rule has an exactly predictable td_q.
+
+TD_N = 3   # small horizon so a short synthetic game exercises the full window
+
+
+def _td_sample(game_idx, mover_is_a, q, explored=0, sideboard=False):
+    """One packed-sample dict in the shape _backfill_and_pack consumes."""
+    obs = np.zeros(OBS_SIZE, dtype=np.float32)
+    obs[_SELF_IS_A_IDX] = 1.0 if mover_is_a else 0.0
+    obs[_IS_SIDEBOARD_IDX] = 1.0 if sideboard else 0.0
+    pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
+    pi[0] = 1.0
+    mask = np.zeros(MAX_ACTIONS, dtype=bool)
+    mask[:2] = True
+    s = {"obs": obs, "pi": pi, "mask": mask, "mover_is_a": mover_is_a,
+         "game_idx": game_idx, "explored": int(explored)}
+    if q is not None:
+        s["q"] = float(q)
+    return s
+
+
+def check_td_targets():
+    """Every branch of the n-step rule, with exact expected td_q values.
+
+    Game 0 (won by A) is a 9-sample stream with seats alternating A,B,A,... and
+    one exploratory move at index 4, covering: full-horizon bootstrap WITH the
+    seat flip, the shortened horizon at the explored barrier, the immediate
+    block, and terminal-inside-the-horizon. Game 1 is preceded by two SIDEBOARD
+    samples (their own chain) and won by B."""
+    #        idx: 0    1    2    3    4*   5    6    7    8      (* = explored)
+    q0 = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
+    seats0 = [True, False, True, False, True, False, True, False, True]
+    samples = [_td_sample(0, seats0[i], q0[i], explored=(i == 4))
+               for i in range(9)]
+    # Game 1: two sideboard roots (seat A then B) then three in-game samples.
+    samples += [_td_sample(1, True, 0.11, sideboard=True),
+                _td_sample(1, False, 0.22, sideboard=True),
+                _td_sample(1, True, 0.33),
+                _td_sample(1, False, 0.44),
+                _td_sample(1, True, 0.55)]
+    game_winners = ["A", "B"]
+
+    packed = _backfill_and_pack(samples, game_winners, td_n=TD_N)
+    z, td = packed["z"], packed["td_q"]
+
+    # z: mover-perspective outcome of the sample's own game.
+    exp_z = [1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,   # game 0, A won
+             -1.0, 1.0, -1.0, 1.0, -1.0]                        # game 1, B won
+    if list(map(float, z)) != exp_z:
+        raise SplitError(f"z mispriced: {list(map(float, z))} != {exp_z}")
+
+    exp_td = [
+        # 0: E=4, j_max=3, 0+3 <= 3 -> bootstrap q[3]; mover(3)=B != A -> NEGATE.
+        -0.40,
+        # 1: E=4, j_max=3, 1+3=4 > 3 -> shortened to j_max=3; mover(3)=B == B -> +.
+        0.40,
+        # 2: j_max=3 -> shortened to 3; mover(3)=B != A -> negate.
+        -0.40,
+        # 3: j_max=3 == t -> immediate block -> z.
+        -1.0,
+        # 4: E=inf (no later explored), j_max=L=8, 4+3=7 <= 8 -> bootstrap q[7];
+        #    mover(7)=B != A -> negate.
+        -0.80,
+        # 5: 5+3=8 <= 8 -> bootstrap q[8]; mover(8)=A != B -> negate.
+        -0.90,
+        # 6: 6+3=9 > j_max=L=8 -> window reaches the game end -> z.
+        1.0,
+        # 7, 8: same, terminal in reach -> z.
+        -1.0, 1.0,
+        # 9, 10: SIDEBOARD chain -> always z (never bootstraps).
+        -1.0, 1.0,
+        # 11: game-1 in-game chain, L=13; 11+3=14 > 13 -> z.
+        -1.0,
+        # 12, 13: likewise z.
+        1.0, -1.0,
+    ]
+    for i, (got, want) in enumerate(zip(map(float, td), exp_td)):
+        if abs(got - want) > 1e-6:
+            raise SplitError(f"td_q[{i}] = {got}, expected {want}")
+
+    # A chain must never cross the game boundary: game 0's last samples resolve to
+    # z, not to game 1's q values (already asserted above by exact value, but pin
+    # the intent explicitly for the sideboard rows too).
+    if float(td[8]) != float(z[8]) or float(td[9]) != float(z[9]):
+        raise SplitError("chains crossed a game / sideboard boundary")
+
+    # Expert-style rows: no q recorded at all -> td_q must fall back to z.
+    exp_samples = [_td_sample(0, i % 2 == 0, None) for i in range(6)]
+    ep = _backfill_and_pack(exp_samples, ["A"], td_n=TD_N)
+    if not np.all(np.isnan(ep["q"])):
+        raise SplitError("a sample recorded without a search must store q = NaN")
+    if not np.array_equal(ep["td_q"], ep["z"]):
+        raise SplitError(f"expert rows must keep td_q == z, got "
+                         f"{ep['td_q']} vs {ep['z']}")
+    if not np.all(np.isfinite(ep["td_q"])):
+        raise SplitError("td_q must never be NaN")
+
+    return (f"9+5 synthetic samples, td_n={TD_N}: seat-flip bootstrap, "
+            f"shortened horizon, immediate block, terminal->z, sideboard->z, "
+            f"expert->z")
+
+
 def main():
-    checks = (check_seat_flip, check_merge_and_format, check_live_bo3)
+    checks = (check_seat_flip, check_merge_and_format, check_td_targets,
+              check_live_bo3)
     for fn in checks:
         try:
             detail = fn()

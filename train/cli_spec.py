@@ -75,6 +75,14 @@ DEFAULT_AZ_SIMS = 256        # in-game PUCT sims, TOTAL across worlds
 DEFAULT_AZ_WORLDS = 4        # determinized worlds per search
 DEFAULT_AZ_MIRROR_FRAC = 0.25  # P(opponent deck == focus deck) per self-play game
 DEFAULT_AZ_TEMP_MOVES = 20   # sample from visit counts for the first N decisions per game
+# n-step TD value target (GENERATION side — baked into each shard's td_q column).
+# Each recorded sample's value target bootstraps off the search root value q of
+# the sample n decisions later in the same game, sign-flipped when that decision's
+# mover is the other seat. The chain is SHORTENED at an exploratory move (the
+# temperature branch played a non-argmax action), because everything after such a
+# move is off-policy noise rather than the line the search endorsed; a window that
+# reaches the end of the game uses the true outcome z instead.
+DEFAULT_AZ_TD_N = 10
 
 # Optimization (az-train / the train step of az / az-league).
 # LR is half the PPO LR_CONST below: az-train refines an already-competent warm
@@ -88,6 +96,10 @@ DEFAULT_AZ_TRAIN_BATCHES = 1000  # standalone az-train
 DEFAULT_AZ_CYCLE_BATCHES = 500   # per az / az-league slot
 DEFAULT_AZ_WINDOW = 50           # newest-N-shards training window (0 = AUTO)
 DEFAULT_AZ_CV = 1.0              # value-loss weight
+# Mixing weight of the shard's n-step TD target against the per-game outcome:
+# v_target = (1 - q_mix) * z + q_mix * td_q. 0 = the classic pure-outcome AZ
+# target, 1 = pure bootstrap. TRAINING side (the shards always carry td_q).
+DEFAULT_AZ_Q_MIX = 0.5
 
 # Promotion gate (az-eval / the gate step of az / az-league).
 DEFAULT_AZ_EVAL_GAMES = 56
@@ -451,6 +463,25 @@ def _actor_mode():
     ], label="actor",
        help="Self-play backend — (neither) = AUTO: the C++ az_actor iff it is "
             "built, else the pure-Python backend")
+
+
+# n-step TD knobs. Two sides of one scheme, so their help lives in one place and
+# is reused verbatim by every subcommand that exposes them: --td-n is a
+# GENERATION knob (it is baked into the shard's td_q column at pack time), --q-mix
+# a TRAINING knob (how much of the value target that column supplies).
+_TD_N_HELP = (
+    "n-step TD horizon for the recorded value target (default "
+    f"{DEFAULT_AZ_TD_N}): a sample's td_q bootstraps off the search ROOT VALUE of "
+    "the decision n samples later in the same game, negated when that decision's "
+    "mover is the other seat. The chain is SHORTENED at the next exploratory "
+    "(non-argmax) move, and a window that reaches the end of the game uses the "
+    "true outcome z instead. Generation-side: it is stored in the shard.")
+_Q_MIX_HELP = (
+    "Weight of the shard's n-step TD target in the value loss (default "
+    f"{DEFAULT_AZ_Q_MIX}): v_target = (1 - q_mix) * z + q_mix * td_q. 0 = the "
+    "classic pure-outcome AlphaZero target, 1 = pure bootstrap. Training-side: "
+    "it re-weights already-recorded shards, so it can be changed without "
+    "regenerating self-play.")
 
 
 def append_spec_knob(spec: str, key, value) -> str:
@@ -824,6 +855,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "ckpt, else gen PPO warm-start, else random init)"),
         Arg("--temp-moves", "int", default=DEFAULT_AZ_TEMP_MOVES,
             help="Sample from visit counts for the first N real decisions, then argmax"),
+        Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help="PUCT sims at a bo3 sideboard root (bo3 only; heavier per step "
                  f"than an in-game decision; default {DEFAULT_SB_SIMS})"),
@@ -857,6 +889,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--c-v", "float", default=DEFAULT_AZ_CV, help="Value-loss weight"),
+        Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
         Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
             help="Number of most-recent shards to train on"),
         Arg("--from-ppo", "str", default=None, suggest="checkpoint",
@@ -910,6 +943,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
         Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
@@ -926,6 +960,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
+        Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
         Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
             help=f"Training window: newest N shards (default {DEFAULT_AZ_WINDOW}). "
                  "0 = AUTO — 2x "
@@ -1010,6 +1045,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
         Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
@@ -1027,6 +1063,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
+        Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
         Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
             help=f"Training window: newest N shards (default {DEFAULT_AZ_WINDOW}). "
                  "0 = AUTO — 2x "

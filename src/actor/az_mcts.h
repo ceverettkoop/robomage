@@ -103,12 +103,17 @@ struct MCTSConfig {
     uint32_t selfplay_rng_seed = 0; // seeds the per-run noise+sampling RNG
 };
 
-// One stored self-play training sample (z is backfilled at real game end).
+// One stored self-play training sample (z + td_q are backfilled at real game end).
 struct SelfPlaySample {
     std::vector<float> obs;     // ACTOR_OBS_SIZE — clean root obs (before determinize)
     std::vector<float> pi;      // MAX_ACTIONS — normalized root visits in [:nc], else 0
     std::vector<uint8_t> mask;  // MAX_ACTIONS — 1 in [:nc], else 0
     bool mover_is_a;            // root mover seat (obs[SELF_IS_A]>0.5)
+    // ── n-step TD target inputs (mirror az_selfplay.py's per-sample q/explored;
+    // see td_targets.h for the rule they feed) ──────────────────────────────
+    float q = 0.0f;             // this search's ROOT VALUE, root-mover perspective
+    bool explored = false;      // the played action != the visit argmax (tau branch)
+    bool is_sideboard = false;  // the root was a bo3 sideboard prompt (own chain)
 };
 
 // One searched root's outcome (recorded for --dump-visits and stats).

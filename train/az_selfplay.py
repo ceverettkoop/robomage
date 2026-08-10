@@ -50,7 +50,7 @@ try:
                           DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
                           DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
-                          DEFAULT_AZ_TEMP_MOVES)
+                          DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
@@ -58,7 +58,8 @@ except ImportError:  # pragma: no cover
                                 DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
                                 DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES,
                                 DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
-                                DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES)
+                                DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES,
+                                DEFAULT_AZ_TD_N)
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
@@ -78,8 +79,15 @@ DEFAULT_TEMP_MOVES = DEFAULT_AZ_TEMP_MOVES
 # flag defaults — and is imported above.
 # P(opponent deck == focus deck) per self-play game; value in cli_spec too.
 DEFAULT_MIRROR_FRAC = DEFAULT_AZ_MIRROR_FRAC
+# n-step TD horizon baked into each shard's td_q column; value in cli_spec too.
+DEFAULT_TD_N = DEFAULT_AZ_TD_N
 FLUSH_SAMPLES = 4096           # write a shard once this many samples accumulate
 HEARTBEAT_MOVES = 25           # Python backend: mid-game progress line every N decisions
+
+# The shard schema, in the order arrays are written. BOTH backends (this module
+# and src/actor) must write exactly these keys; az_train.load_window fails loudly
+# on a shard missing any of them.
+SHARD_KEYS = ("obs", "pi", "z", "mask", "q", "explored", "td_q")
 
 
 def _fmt_secs(s: float) -> str:
@@ -369,8 +377,10 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
             pi[:num_choices] = visits.astype(np.float32)
             mask = np.zeros(MAX_ACTIONS, dtype=bool)
             mask[:num_choices] = True
-            samples.append({"obs": env._obs.copy(), "pi": pi, "mask": mask,
-                            "mover_is_a": priority_is_a, "game_idx": game_idx})
+            sample = {"obs": env._obs.copy(), "pi": pi, "mask": mask,
+                      "mover_is_a": priority_is_a, "game_idx": game_idx,
+                      "q": float(result.root_value), "explored": 0}
+            samples.append(sample)
             searched += 1
             # Temperature schedule is per-game: the first temp_moves decisions of
             # EACH game sample from the visit counts, then switch to argmax.
@@ -378,6 +388,11 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 action = int(rng.choice(num_choices, p=visits))
             else:
                 action = result.best_action()
+            # An action other than the visit argmax is an EXPLORATORY move: it
+            # truncates every earlier sample's n-step bootstrap window (see
+            # compute_td_targets), because what follows is no longer the line the
+            # search endorsed.
+            sample["explored"] = int(action != result.best_action())
         else:
             priors, _ = evaluator.evaluate(env._obs, num_choices)
             action = int(np.argmax(priors))
@@ -512,8 +527,10 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
             pi[:num_choices] = visits.astype(np.float32)
             mask = np.zeros(MAX_ACTIONS, dtype=bool)
             mask[:num_choices] = True
-            samples.append({"obs": env._obs.copy(), "pi": pi, "mask": mask,
-                            "mover_is_a": priority_is_a, "game_idx": game_idx})
+            sample = {"obs": env._obs.copy(), "pi": pi, "mask": mask,
+                      "mover_is_a": priority_is_a, "game_idx": game_idx,
+                      "q": float(result.root_value), "explored": 0}
+            samples.append(sample)
             searched += 1
             # Temperature schedule is per-game: the first temp_moves decisions of
             # EACH game sample from the visit counts, then switch to argmax.
@@ -521,6 +538,9 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
                 action = int(rng.choice(num_choices, p=visits))
             else:
                 action = result.best_action()
+            # Exploratory (non-argmax) move: truncates earlier samples' n-step
+            # bootstrap windows (see compute_td_targets).
+            sample["explored"] = int(action != result.best_action())
         elif net_to_move:
             priors, _ = evaluator.evaluate(env._obs, num_choices)
             action = int(np.argmax(priors))
@@ -576,34 +596,129 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
     return samples, game_winners, searched, fallback, dropped, sb_stats
 
 
-def _backfill_and_pack(samples, game_winners):
+def compute_td_targets(z, q, explored, game_idx, is_sideboard, mover_is_a, td_n):
+    """The n-step TD value target ``td_q``, one float per sample.
+
+    Every argument but ``td_n`` is a parallel per-sample sequence in PLAY ORDER.
+    A bootstrap window may only run inside one CHAIN — a contiguous run sharing
+    ``(game_idx, is_sideboard)`` — so it never crosses a game boundary (the next
+    game's values are unrelated) nor the bo3 SIDEBOARD boundary. Sideboard-root
+    samples carry the UPCOMING game's ``game_idx`` (they gate it) and sit as a
+    contiguous run in FRONT of that game's in-game samples, so they form their own
+    chain: they never appear inside an in-game sample's window and their own
+    targets are always ``z`` (a sideboard pick's value is only about the game it
+    is choosing, and the picks within a boundary are one seat's bookkeeping, not a
+    line of play).
+
+    For sample ``t`` in a chain ending at ``L`` (the chain's last sample), with
+    ``E`` the first sample after ``t`` in the same chain whose action was
+    EXPLORATORY (``explored``; infinity when there is none) and
+    ``j_max = min(E - 1, L)``:
+
+      * ``t + td_n <= j_max``  -> bootstrap: ``td_q[t] = s * q[t + td_n]``
+      * ``j_max == L``         -> the window runs clean to the end of the game, so
+                                  the true outcome is in reach: ``td_q[t] = z[t]``
+      * otherwise              -> SHORTENED horizon: bootstrap off the last sample
+                                  before the exploratory move,
+                                  ``td_q[t] = s * q[j_max]`` (``z[t]`` when the
+                                  block is immediate, i.e. ``j_max == t``)
+
+    ``s`` is the mandatory PERSPECTIVE FLIP: ``q`` and ``z`` are both stored from
+    their own sample's MOVER's point of view and the seat alternates freely
+    between samples, so ``s = +1`` when the bootstrap sample's mover is the same
+    seat as ``t``'s and ``-1`` otherwise. A non-finite ``q`` at the bootstrap
+    sample (expert shards record ``q = NaN``) falls back to ``z[t]``, so the
+    returned array is always finite."""
+    m = len(z)
+    z = np.asarray(z, dtype=np.float32)
+    q = np.asarray(q, dtype=np.float32)
+    explored = np.asarray(explored)
+    mover_is_a = np.asarray(mover_is_a, dtype=bool)
+    td = z.astype(np.float32, copy=True)
+    n = max(1, int(td_n))
+    key = list(zip(game_idx, is_sideboard))
+    lo = 0
+    while lo < m:
+        hi = lo
+        while hi + 1 < m and key[hi + 1] == key[lo]:
+            hi += 1
+        if not key[lo][1]:
+            _fill_chain_td(td, z, q, explored, mover_is_a, lo, hi, n)
+        lo = hi + 1
+    return td
+
+
+def _fill_chain_td(td, z, q, explored, mover_is_a, lo, hi, n):
+    """Apply the n-step rule inside one chain ``[lo, hi]`` (see
+    :func:`compute_td_targets`). ``td`` is pre-seeded with ``z``, so every branch
+    that falls back to the outcome simply leaves its entry alone."""
+    # next_explored[i] = smallest j > i in [lo, hi] with explored[j], else hi + 1
+    # (an out-of-chain sentinel, which makes j_max == hi == L on its own).
+    nxt = hi + 1
+    next_explored = [hi + 1] * (hi - lo + 1)
+    for i in range(hi, lo - 1, -1):
+        next_explored[i - lo] = nxt
+        if explored[i]:
+            nxt = i
+    for t in range(lo, hi + 1):
+        j_max = min(next_explored[t - lo] - 1, hi)
+        if t + n <= j_max:
+            j = t + n
+        elif j_max >= hi:
+            continue            # terminal inside the horizon -> keep z[t]
+        elif j_max > t:
+            j = j_max           # shortened horizon at the exploratory move
+        else:
+            continue            # immediate block -> keep z[t]
+        qj = q[j]
+        if not np.isfinite(qj):
+            continue            # no root value recorded (expert shard) -> z[t]
+        td[t] = qj if mover_is_a[j] == mover_is_a[t] else -qj
+
+
+def _backfill_and_pack(samples, game_winners, td_n: int = DEFAULT_TD_N):
     """Fill z per sample from its mover's perspective vs the winner of the GAME the
-    sample belongs to (``game_winners[game_idx]``), then pack to arrays. A drawn
-    game (winner None) -> z=0."""
+    sample belongs to (``game_winners[game_idx]``), derive the n-step TD target
+    ``td_q`` from the whole match's samples (:func:`compute_td_targets`), then pack
+    to the shard arrays. A drawn game (winner None) -> z=0.
+
+    Returns a dict of the :data:`SHARD_KEYS` arrays. Samples recorded WITHOUT a
+    search (``generate_expert``'s behavior-cloning rows) carry no root value: they
+    get ``q = NaN``, ``explored = 0`` and therefore ``td_q = z``."""
     n = len(samples)
     obs = np.zeros((n, OBS_SIZE), dtype=np.float32)
     pi = np.zeros((n, MAX_ACTIONS), dtype=np.float32)
     z = np.zeros((n,), dtype=np.float32)
     mask = np.zeros((n, MAX_ACTIONS), dtype=bool)
+    q = np.zeros((n,), dtype=np.float32)
+    explored = np.zeros((n,), dtype=np.uint8)
+    mover_is_a = np.zeros((n,), dtype=bool)
     for i, s in enumerate(samples):
         obs[i] = s["obs"]
         pi[i] = s["pi"]
         mask[i] = s["mask"]
+        q[i] = s.get("q", np.nan)
+        explored[i] = np.uint8(s.get("explored", 0))
+        mover_is_a[i] = s["mover_is_a"]
         winner = game_winners[s["game_idx"]]
         if winner is None:
             z[i] = 0.0
         else:
             mover_won = (winner == "A") == s["mover_is_a"]
             z[i] = 1.0 if mover_won else -1.0
-    return obs, pi, z, mask
+    td_q = compute_td_targets(
+        z, q, explored, [s["game_idx"] for s in samples],
+        [bool(s["obs"][_IS_SIDEBOARD_IDX] > 0.5) for s in samples],
+        mover_is_a, td_n)
+    return {"obs": obs, "pi": pi, "z": z, "mask": mask, "q": q,
+            "explored": explored, "td_q": td_q}
 
 
 def _write_shard(out_dir, arrays, n_idx):
     ts = time.strftime("%Y%m%d_%H%M%S")
     pid = os.getpid()
     path = os.path.join(out_dir, f"shard_{ts}_{pid}_{n_idx}.npz")
-    obs, pi, z, mask = arrays
-    np.savez_compressed(path, obs=obs, pi=pi, z=z, mask=mask)
+    np.savez_compressed(path, **{k: arrays[k] for k in SHARD_KEYS})
     return path
 
 
@@ -622,7 +737,7 @@ def _match_winner(game_winners) -> str:
 def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
             sb_sims, sb_worlds, sb_max_depth, sb_rollout_turns, sb_persist,
-            scripted_seats=None):
+            scripted_seats=None, td_n=DEFAULT_TD_N):
     """Play this worker's slice of the matchup schedule. ``matchups`` is a list of
     per-MATCH (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
     swapped per match before its reset respawns the engine. With ``bo3`` each
@@ -689,8 +804,7 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                         on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
                         sb_max_depth=sb_max_depth,
                         sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist)
-            obs, pi, z, mask = _backfill_and_pack(samples, game_winners)
-            buf.append((obs, pi, z, mask))
+            buf.append(_backfill_and_pack(samples, game_winners, td_n=td_n))
             total_samples += len(samples)
             stats["searched"] += searched
             stats["fallback"] += fallback
@@ -715,7 +829,7 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                           "fallback": fallback, "secs": time.time() - t0,
                           "scripted": (None if net_is_a is None
                                        else ("B" if net_is_a else "A"))})
-            if sum(len(b[2]) for b in buf) >= FLUSH_SAMPLES:
+            if _buffered(buf) >= FLUSH_SAMPLES:
                 shards.append(_write_shard(out_dir, _concat(buf), shard_n))
                 result_q.put({"kind": "shard", "worker": worker_idx,
                               "path": shards[-1]})
@@ -732,11 +846,13 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
 
 
 def _concat(buf):
-    obs = np.concatenate([b[0] for b in buf], axis=0)
-    pi = np.concatenate([b[1] for b in buf], axis=0)
-    z = np.concatenate([b[2] for b in buf], axis=0)
-    mask = np.concatenate([b[3] for b in buf], axis=0)
-    return obs, pi, z, mask
+    """Concatenate a list of per-match :func:`_backfill_and_pack` dicts."""
+    return {k: np.concatenate([b[k] for b in buf], axis=0) for k in SHARD_KEYS}
+
+
+def _buffered(buf) -> int:
+    """Samples currently held in a shard buffer (list of packed dicts)."""
+    return sum(len(b["z"]) for b in buf)
 
 
 # ----------------------------------------------------------------------
@@ -784,7 +900,8 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              scripted_opponent_frac: float = 0.0,
              bo3: bool = False, exhaustive: bool = False,
              exhaustive_selfplay: bool = False,
-             exhaustive_repeats: int = 1) -> dict:
+             exhaustive_repeats: int = 1,
+             td_n: int = DEFAULT_TD_N) -> dict:
     """Generate ``games`` self-play MATCHES over a FOCUS pool and write shards.
 
     ``games`` is a count of MATCHES (bo1: one game each; bo3: up to three games
@@ -833,6 +950,10 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     scripted cells are what forced the Python backend, this schedule runs
     entirely on the C++ actor when it is built. ``exhaustive_repeats=n`` plays
     every cell of whichever matrix is selected ``n`` times (default 1).
+
+    ``td_n`` is the n-step TD horizon baked into every written sample's ``td_q``
+    column (see :func:`compute_td_targets`) — a GENERATION-side knob, honoured
+    identically by both backends (the actor takes it as ``--td-n``).
 
     ``use_actor`` picks the generation backend:
       * ``None`` (AUTO, default) — use the C++ ``bin/az_actor`` iff it is built,
@@ -969,7 +1090,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     common = dict(source=source, schedule=schedule, sims=sims, worlds=worlds,
                   workers=workers, temp_moves=temp_moves,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
-                  out_dir=out_dir, seed=seed)
+                  out_dir=out_dir, seed=seed, td_n=td_n)
     if hybrid:
         return _generate_hybrid(deck, scripted_seats=scripted_seats,
                                 actor_bin=_ACTOR_BIN, bo3=bo3, sb_sims=sb_sims,
@@ -1020,7 +1141,8 @@ def _generate_hybrid(deck, *, source, schedule, scripted_seats, sims, worlds,
                      sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
                      sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                     sb_persist=bool(DEFAULT_SB_PERSIST)) -> dict:
+                     sb_persist=bool(DEFAULT_SB_PERSIST),
+                     td_n=DEFAULT_TD_N) -> dict:
     """Split an exhaustive-matrix schedule across BOTH backends: the C++ actor
     plays the pure self-play cells (it is much faster per match), the Python
     multiprocess backend the vs-scripted cells (the actor has no scripted seat).
@@ -1042,7 +1164,8 @@ def _generate_hybrid(deck, *, source, schedule, scripted_seats, sims, worlds,
               temp_moves=temp_moves, root_noise_eps=root_noise_eps,
               root_noise_alpha=root_noise_alpha, out_dir=out_dir, bo3=bo3,
               sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
-              sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist)
+              sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist,
+              td_n=td_n)
     summaries = []
     if self_sched:
         print(f"[az-selfplay] hybrid pass 1/2: ACTOR ({len(self_sched)} matches)")
@@ -1074,7 +1197,7 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                      sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                      sb_persist=bool(DEFAULT_SB_PERSIST),
-                     scripted_seats=None) -> dict:
+                     scripted_seats=None, td_n=DEFAULT_TD_N) -> dict:
     import multiprocessing as mp
 
     matches = len(schedule)
@@ -1101,7 +1224,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                         args=(slices[wi], source, sims, worlds, temp_moves,
                               root_noise_eps, root_noise_alpha, out_dir, seed,
                               wi, result_q, bo3, sb_sims, sb_worlds, sb_max_depth,
-                              sb_rollout_turns, sb_persist, seat_slices[wi]))
+                              sb_rollout_turns, sb_persist, seat_slices[wi],
+                              td_n))
         p.start()
         procs.append(p)
 
@@ -1251,7 +1375,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        sb_worlds=DEFAULT_SB_WORLDS,
                        sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                        sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                       sb_persist=bool(DEFAULT_SB_PERSIST)) -> list:
+                       sb_persist=bool(DEFAULT_SB_PERSIST),
+                       td_n=DEFAULT_TD_N) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
     The single source of the actor CLI contract on the Python side — used by
@@ -1272,7 +1397,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--model", model, "--out-dir", out_dir,
            "--noise-eps", str(noise_eps),
            "--noise-alpha", str(noise_alpha),
-           "--temp-moves", str(temp_moves)]
+           "--temp-moves", str(temp_moves),
+           "--td-n", str(td_n)]
     if bo3:
         cmd += ["--bo3",
                 "--sb-sims", str(sb_sims),
@@ -1293,7 +1419,8 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                     sb_worlds=DEFAULT_SB_WORLDS,
                     sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                    sb_persist=bool(DEFAULT_SB_PERSIST)) -> dict:
+                    sb_persist=bool(DEFAULT_SB_PERSIST),
+                    td_n=DEFAULT_TD_N) -> dict:
     import glob
     import shutil
     import subprocess
@@ -1356,7 +1483,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
             bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
             sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
-            sb_persist=sb_persist)
+            sb_persist=sb_persist, td_n=td_n)
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -1450,8 +1577,12 @@ def _play_match_expert(env, agent, seed):
             pi[action] = 1.0
             mask = np.zeros(MAX_ACTIONS, dtype=bool)
             mask[:num_choices] = True
+            # No search ran, so there is no root value to bootstrap from: q = NaN
+            # and explored = 0 make compute_td_targets leave td_q == z on every
+            # expert row (the demonstration's own outcome is the whole signal).
             samples.append({"obs": env._obs.copy(), "pi": pi, "mask": mask,
-                            "mover_is_a": priority_is_a, "game_idx": game_idx})
+                            "mover_is_a": priority_is_a, "game_idx": game_idx,
+                            "q": float("nan"), "explored": 0})
         else:
             action = 0
         _, reward, terminated, truncated, info = env.step(action)
@@ -1489,7 +1620,11 @@ def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
     combo actually wins, breaking the chicken-and-egg so search can extend the
     line from there. ``decks`` (str or list) is the focus pool — the deck(s)
     needing demonstrations; opponents follow ``mirror_frac``/``roster`` like
-    self-play. Torch-free and fast (no search), so it runs serially."""
+    self-play. Torch-free and fast (no search), so it runs serially.
+
+    Expert rows carry no search root value, so their shard columns are
+    ``q = NaN``, ``explored = 0`` and ``td_q = z`` — the n-step TD target
+    degenerates to the plain per-game outcome for behavior-cloning data."""
     from search_env import SearchRoboMageEnv
     from scripted_agent import make_agent
 
@@ -1530,7 +1665,7 @@ def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
             stats["wins_a"] += int(mwinner == "A")
             stats["wins_b"] += int(mwinner == "B")
             stats["draws"] += int(mwinner == "DRAW")
-            if sum(len(b[2]) for b in buf) >= FLUSH_SAMPLES:
+            if _buffered(buf) >= FLUSH_SAMPLES:
                 shards.append(_write_shard(out_dir, _concat(buf), shard_n))
                 shard_n += 1
                 buf = []
@@ -1578,7 +1713,8 @@ def run(args) -> None:
              sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
              sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                       DEFAULT_SB_ROLLOUT_TURNS),
-             sb_persist=bool(getattr(args, "sb_persist", DEFAULT_SB_PERSIST)))
+             sb_persist=bool(getattr(args, "sb_persist", DEFAULT_SB_PERSIST)),
+             td_n=int(getattr(args, "td_n", DEFAULT_TD_N)))
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -1597,6 +1733,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                          "(default: generalist AZ ckpt, else gen PPO warm-start, "
                          "else random)")
     ap.add_argument("--temp-moves", type=int, default=DEFAULT_TEMP_MOVES)
+    ap.add_argument("--td-n", type=int, default=DEFAULT_TD_N,
+                    help="n-step TD horizon baked into each sample's td_q "
+                         "(default %d); the chain is shortened at the next "
+                         "exploratory move and falls back to the game outcome "
+                         "when the window reaches the end of the game"
+                         % DEFAULT_TD_N)
     ap.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                     help="PUCT sims at a bo3 sideboard root (bo3 only; default %d)"
                          % DEFAULT_SB_SIMS)

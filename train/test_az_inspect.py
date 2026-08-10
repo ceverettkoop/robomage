@@ -103,7 +103,11 @@ def synth_obs(rng, planted_idx):
 
 
 def synth_shards(path, rng, planted_idx):
-    """A shard directory in the trainer's schema (obs / pi / z / mask)."""
+    """A shard directory in the trainer's schema (az_selfplay.SHARD_KEYS).
+
+    Includes the n-step TD columns (q / explored / td_q); the shard-sample
+    reader treats them as optional, and the stale-layout shard below is written
+    WITHOUT them on purpose so that path stays covered too."""
     for k in range(_N_SHARDS):
         obs = np.stack([synth_obs(rng, planted_idx)
                         for _ in range(_N_SHARD_ROWS)])
@@ -115,8 +119,12 @@ def synth_shards(path, rng, planted_idx):
             w = rng.random(n)
             pi[r, :n] = w / w.sum()
         z = rng.choice([-1.0, 1.0], size=_N_SHARD_ROWS).astype(np.float32)
+        q = rng.uniform(-1.0, 1.0, size=_N_SHARD_ROWS).astype(np.float32)
+        explored = rng.integers(0, 2, size=_N_SHARD_ROWS).astype(np.uint8)
+        td_q = np.where(explored.astype(bool), z, q).astype(np.float32)
         np.savez_compressed(os.path.join(path, f"shard_x_{k}_0.npz"),
-                            obs=obs, pi=pi, z=z, mask=mask)
+                            obs=obs, pi=pi, z=z, mask=mask, q=q,
+                            explored=explored, td_q=td_q)
 
 
 def test_layout(net):

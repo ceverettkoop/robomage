@@ -163,14 +163,17 @@ All Phase C deliverables are on the branch (landed across the WIP commits
 - **`train/az_selfplay.py`** — multiprocess self-play, mirrors + cross-deck (a
   focus deck vs a mirror with `--mirror-frac`, else a uniform roster opponent):
   per searched (loop-safe, >1 choice) decision stores `(obs copy, visit-count pi,
-  legal mask, mover seat)`; root Dirichlet (eps .25 / alpha 1.0), tau=1 for the
+  legal mask, mover seat, search root value `q`, exploratory-move flag)`; root
+  Dirichlet (eps .25 / alpha 1.0), tau=1 for the
   first 20 moves then argmax; z backfilled ±1 per-mover (0 on draws); unsafe
   roots fall back to the net's argmax and are NOT stored (post snapshot_safe
   effectively never — every decision kind is a safe root). Shards pool into
-  `train/az_data/gen/shard_*.npz` (obs/pi/z/mask) — the exact format the
+  `train/az_data/gen/shard_*.npz` (obs/pi/z/mask/q/explored/td_q — see
+  "n-step TD value targets" below) — the exact format the
   Phase D C++ writer reproduces.
 - **`train/az_train.py`** — Adam (wd 1e-4) on
-  `CE(pi, masked_log_softmax) + c_v*MSE(v,z)` over a last-M-shards window from the
+  `CE(pi, masked_log_softmax) + c_v*MSE(v, v_target)` with
+  `v_target = (1 - q_mix)*z + q_mix*td_q`, over a last-M-shards window from the
   pooled `az_data/gen/` dir; saves CANDIDATE snapshots only. **`gen__azfinal`
   advances exclusively through the `az-eval` promotion gate** (candidate vs
   incumbent over a ROSTER-WIDE panel — a mirror per roster deck plus
@@ -679,6 +682,94 @@ Whatif/replay is preserved: `_replay_to_step` feeds recorded `full_actions` (no
 live search during a replay); the whatif counterfactual `_rollout_from` re-drives
 the branch live, which now legitimately searches on a search spec (works with the
 search env; snapshots released between decisions as usual).
+
+## n-step TD value targets (exploration-aware horizons)
+
+**What it is.** The value target is no longer only the game's final result. Every
+recorded sample now also carries an **n-step TD target `td_q`**, which bootstraps
+off the SEARCH ROOT VALUE of a decision `n` samples later in the same game rather
+than waiting for the outcome. The trainer optimizes a mix of the two, so the
+critic gets a lower-variance, faster-settling signal while the outcome keeps it
+anchored to ground truth.
+
+Rationale: `z` is one bit of information smeared across every decision of a game —
+a brilliant turn-3 line and the punt that lost the game on turn 12 receive the
+same label. The search root value at a later decision is a much sharper estimate
+of "how is this going", and it is already computed for free by the search that
+produced the sample.
+
+**Shard schema (clean break — old shards are rejected, not migrated).** Alongside
+`obs / pi / z / mask`, every shard now carries three parallel per-sample columns:
+
+| column | dtype | meaning |
+|---|---|---|
+| `q` | float32 | that decision's search ROOT VALUE (ΣW/ΣN across worlds), in the **mover's** perspective. `NaN` for expert (behavior-cloning) rows, which run no search. |
+| `explored` | uint8 | 1 iff the action actually played differs from the search's visit-count argmax — i.e. the temperature branch took a non-argmax action. |
+| `td_q` | float32 | the n-step target below. Always finite and in `[-1, 1]`. |
+
+`az_train.load_window` **hard-fails** on a shard missing any of them ("regenerate
+self-play shards (schema changed: n-step TD targets)") rather than silently
+mixing two different value targets in one training window.
+
+**The rule** (`az_selfplay.compute_td_targets`, mirrored bit-exactly by
+`src/actor/td_targets.cpp`). Samples are the searched decisions of a match, in
+play order, both seats interleaved. They are partitioned into **chains** keyed on
+`(game_idx, is_sideboard)`: a bootstrap window never crosses a game boundary, and
+never crosses the bo3 sideboard boundary. For sample `t` in a chain whose last
+sample is `L`, with `E` the first sample after `t` in that chain with
+`explored = 1` (infinity when there is none) and `j_max = min(E - 1, L)`:
+
+* `t + n <= j_max` → **bootstrap**: `td_q[t] = s * q[t + n]`
+* `j_max == L` → the window runs clean to the end of the game, so the true
+  outcome is in reach: `td_q[t] = z[t]`
+* otherwise → **shortened horizon** at the exploratory move:
+  `td_q[t] = s * q[j_max]`, or `z[t]` when the block is immediate (`j_max == t`)
+
+`s` is the **perspective flip** and is mandatory: `q` and `z` are each stored from
+their own sample's mover's point of view and the seat alternates freely between
+samples, so `s = +1` when the bootstrap sample's mover is the same seat as `t`'s
+and `-1` otherwise. Getting this sign wrong silently poisons every target.
+
+*Why shorten at an exploratory move.* Bootstrapping assumes the states between
+`t` and `t + n` were reached by the policy the search endorses. A temperature
+sample that plays a non-argmax action breaks that assumption: everything after it
+is off-policy noise, so the window stops just before it and bootstraps from the
+last on-policy decision instead (or falls back to `z` when that is `t` itself).
+
+*Sideboard rows.* A sideboard-root sample's value is about the game it is
+choosing, and a boundary's picks are one seat's bookkeeping rather than a line of
+play, so sideboard samples form their own chain: they always keep `td_q = z` and
+never appear inside an in-game sample's window. (They sit as a contiguous run in
+front of the in-game samples of the game they gate, so the chain key alone
+separates them.) *Expert rows* (`generate_expert`) record `q = NaN`,
+`explored = 0` and therefore `td_q = z` — BC data is priced purely by its own
+demonstration's outcome.
+
+**Knobs** (one home: the `DEFAULT_AZ_*` block in `train/cli_spec.py`):
+
+```
+--td-n N       GENERATION side (az-selfplay, az, az-league; default 10)
+               the n-step horizon, baked into each shard's td_q column. The
+               C++ actor takes the same flag and computes the identical rule.
+--q-mix F      TRAINING side (az-train, az, az-league; default 0.5)
+               v_target = (1 - q_mix) * z + q_mix * td_q.
+               0 = the classic pure-outcome AlphaZero target; 1 = pure bootstrap.
+               Re-weights already-recorded shards, so it can be changed without
+               regenerating self-play.
+```
+
+Both are persisted in the az-league resume sidecar alongside the other knobs.
+`az-train`'s periodic log line reports the value loss against BOTH targets —
+`v_mix=` (what is optimized) and `v_z=` (plain `MSE(v, z)`, no grad) — so a drift
+between the bootstrap and the outcome is visible while training.
+
+**Regression coverage.** The `pergame` ci tier (`train/test_per_game_split.py`)
+runs a synthetic match with hand-picked `q` values that pins every branch of the
+rule to exact expected `td_q` values, including the seat-flip sign, the shortened
+horizon, the immediate block, terminal-in-window, sideboard rows and expert rows.
+The `sbselfplay` tier additionally asserts on a REAL bo3 match that sideboard
+samples never bootstrap and that `td_q` is finite in `[-1, 1]`; the opt-in `actor`
+tier's `test_actor_shards.py` pins the C++ writer's schema (keys, dtypes, ranges).
 
 ## Static checkpoint inspection (az_inspect)
 

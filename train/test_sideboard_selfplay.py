@@ -156,7 +156,8 @@ def main() -> int:
               f"count (gates the upcoming game)")
 
     # Backfill z from each sample's game vs its mover.
-    obs, pi, z, mask = _backfill_and_pack(samples, game_winners)
+    packed = _backfill_and_pack(samples, game_winners)
+    z = packed["z"]
 
     # (iii) each sideboard sample's z == +/-1 per the UPCOMING game's winner.
     for i in sb_idx:
@@ -191,6 +192,23 @@ def main() -> int:
             break
     else:
         print("ok  (iv): in-game samples price by their own game's winner")
+
+    # (v) n-step TD targets: a sideboard-root sample never bootstraps (its td_q is
+    # its own z), and every td_q is finite and inside [-1, 1].
+    td_q = packed["td_q"]
+    if not np.all(np.isfinite(td_q)) or np.any(np.abs(td_q) > 1.0 + 1e-6):
+        failures += 1
+        print(f"FAIL (v): td_q must be finite and within [-1,1]; got "
+              f"min={td_q.min()} max={td_q.max()}")
+    for i in sb_idx:
+        if td_q[i] != z[i]:
+            failures += 1
+            print(f"FAIL (v): sideboard sample pos {i}: td_q={td_q[i]} != "
+                  f"z={z[i]} — a sideboard root must not bootstrap")
+            break
+    else:
+        print(f"ok  (v): every sideboard sample's td_q == z; td_q finite in "
+              f"[-1,1] ({int((td_q != z).sum())}/{len(z)} rows bootstrapped)")
 
     # Housekeeping: remove the temp decks we created.
     for p in paths:

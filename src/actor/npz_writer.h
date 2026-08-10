@@ -14,7 +14,9 @@
 //     an output dir, mirroring train/az_selfplay.py's per-game flush granularity
 //     (a shard is flushed at a game boundary once the buffer reaches the sample
 //     threshold; a game is never split across shards). Keys: obs (f32 n×obs_w),
-//     pi (f32 n×act_w), z (f32 n), mask (bool n×act_w).
+//     pi (f32 n×act_w), z (f32 n), mask (bool n×act_w), q (f32 n), explored
+//     (uint8 n), td_q (f32 n) — byte-identical to train/az_selfplay.py's
+//     SHARD_KEYS, which the trainer requires in full.
 
 #include <cstdint>
 #include <cstdio>
@@ -38,6 +40,9 @@ public:
     // Add a bool ('|b1') array member; `data` is prod(shape) bytes (0/1).
     void add_bool(const std::string& name, const uint8_t* data,
                   const std::vector<size_t>& shape);
+    // Add a uint8 ('|u1') array member (numpy dtype uint8, NOT bool).
+    void add_uint8(const std::string& name, const uint8_t* data,
+                   const std::vector<size_t>& shape);
 
     // Write the central directory + EOCD, close, and rename the temp file into
     // place. Safe to call once; the destructor calls it if not already done.
@@ -69,9 +74,11 @@ public:
     ShardAccumulator(std::string out_dir, size_t flush_samples, size_t obs_width,
                      size_t act_width);
 
-    // Append one z-backfilled sample row.
+    // Append one backfilled sample row: the per-game outcome `z`, the search
+    // root value `q`, the exploratory-move flag, and the n-step TD target
+    // `td_q` (see td_targets.h), all already resolved by the caller.
     void add_sample(const float* obs, const float* pi, float z,
-                    const uint8_t* mask);
+                    const uint8_t* mask, float q, uint8_t explored, float td_q);
 
     // Flush a shard if the buffer has reached the sample threshold. Call at a
     // GAME boundary (after adding a whole game's samples) so a game is never
@@ -97,6 +104,9 @@ private:
     std::vector<float> pi_;
     std::vector<float> z_;
     std::vector<uint8_t> mask_;
+    std::vector<float> q_;
+    std::vector<uint8_t> explored_;
+    std::vector<float> td_q_;
     size_t buffered_;  // rows currently buffered
     size_t total_;     // rows written across all shards
     int shard_n_;

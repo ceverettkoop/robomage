@@ -43,6 +43,7 @@ from cli_spec import (DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
                       DEFAULT_AZ_WEIGHT_DECAY, DEFAULT_AZ_BATCH_SIZE,
                       DEFAULT_AZ_TRAIN_BATCHES, DEFAULT_AZ_CYCLE_BATCHES,
                       DEFAULT_AZ_WINDOW, DEFAULT_AZ_CV,
+                      DEFAULT_AZ_TD_N, DEFAULT_AZ_Q_MIX,
                       DEFAULT_AZ_EVAL_GAMES, DEFAULT_AZ_EVAL_SIMS,
                       DEFAULT_AZ_EVAL_WORLDS, DEFAULT_AZ_PROMOTE_THRESHOLD,
                       DEFAULT_AZ_GATE_FLOOR, DEFAULT_AZ_GATE_FLOOR_MIN,
@@ -103,13 +104,19 @@ DEFAULT_GATE_EVERY = DEFAULT_AZ_GATE_EVERY
 # Shard loading
 # ----------------------------------------------------------------------
 
-def load_window(deck: str, window: int, data_dir: Optional[str] = None):
+def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
     """Load the last ``window`` shards (by mtime) into flat arrays.
 
     Shards pool into ``az_data/gen/`` — self-play across every focus deck feeds
     the ONE generalist net — so ``deck`` is used only for the error message; the
     default ``data_dir`` is the shared gen pool. Pass ``data_dir`` to override
-    (tests point it at a temp dir)."""
+    (tests point it at a temp dir).
+
+    Returns a dict of the :data:`az_selfplay.SHARD_KEYS` arrays plus
+    ``n_shards``. Every key is REQUIRED: a shard predating the n-step TD schema
+    (no ``td_q`` column) is a hard error, because silently training such a shard
+    would mix two different value targets in one window."""
+    from az_selfplay import SHARD_KEYS
     data_dir = data_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     shards = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
                     key=os.path.getmtime)
@@ -117,24 +124,31 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None):
         raise FileNotFoundError(
             f"no self-play shards in {data_dir} — run az-selfplay first")
     shards = shards[-window:]
-    obs, pi, z, mask = [], [], [], []
+    parts = {k: [] for k in SHARD_KEYS}
     for s in shards:
         d = np.load(s)
-        obs.append(d["obs"]); pi.append(d["pi"]); z.append(d["z"]); mask.append(d["mask"])
-    obs = np.concatenate(obs, axis=0)
-    pi = np.concatenate(pi, axis=0)
-    z = np.concatenate(z, axis=0)
-    mask = np.concatenate(mask, axis=0)
+        missing = [k for k in SHARD_KEYS if k not in d.files]
+        if missing:
+            raise RuntimeError(
+                f"self-play shard {s} is missing the column(s) "
+                f"{', '.join(missing)} — regenerate self-play shards (schema "
+                f"changed: n-step TD targets). Delete {data_dir}/shard_*.npz and "
+                f"re-run az-selfplay / the az cycle.")
+        for k in SHARD_KEYS:
+            parts[k].append(d[k])
+    out = {k: np.concatenate(v, axis=0) for k, v in parts.items()}
     # Shards are raw observation rows, so an obs-layout change (e.g. a new tail
     # block) makes older shards unusable. Say so instead of letting the net's
     # first slice fail with a bare shape error deep in the forward pass.
-    if obs.shape[1] != OBS_SIZE or mask.shape[1] != MAX_ACTIONS:
+    if out["obs"].shape[1] != OBS_SIZE or out["mask"].shape[1] != MAX_ACTIONS:
         raise RuntimeError(
             f"self-play shards in {data_dir} were recorded against a different "
-            f"observation layout (obs width {obs.shape[1]}, mask {mask.shape[1]}) "
-            f"but this build has OBS_SIZE={OBS_SIZE}, MAX_ACTIONS={MAX_ACTIONS} — "
+            f"observation layout (obs width {out['obs'].shape[1]}, mask "
+            f"{out['mask'].shape[1]}) but this build has OBS_SIZE={OBS_SIZE}, "
+            f"MAX_ACTIONS={MAX_ACTIONS} — "
             "delete/regenerate the shards (re-run az-selfplay) before training")
-    return obs, pi, z, mask, len(shards)
+    out["n_shards"] = len(shards)
+    return out
 
 
 def prune_shards(window: int, data_dir: Optional[str] = None) -> int:
@@ -210,12 +224,21 @@ def _read_steps(az_path: str) -> int:
 def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              batch_size: int = DEFAULT_AZ_BATCH_SIZE,
              lr: float = DEFAULT_AZ_LR, c_v: float = DEFAULT_AZ_CV,
+             q_mix: float = DEFAULT_AZ_Q_MIX,
              window: int = DEFAULT_AZ_WINDOW,
              weight_decay: float = DEFAULT_AZ_WEIGHT_DECAY,
              from_ppo: Optional[str] = None,
              fresh: bool = False, log_every: int = 50,
              snapshot_every: int = 0, data_dir: Optional[str] = None,
              ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 0) -> dict:
+    """Optimize the gen AZNet on the newest ``window`` shards.
+
+    The value target is the MIX ``(1 - q_mix) * z + q_mix * td_q``: the shard's
+    per-game outcome blended with its recorded n-step TD bootstrap (see
+    :func:`az_selfplay.compute_td_targets`). ``q_mix=0`` restores the classic
+    pure-outcome AlphaZero target. The periodic log line reports the value loss
+    against BOTH the mixed target and the plain outcome, so a drift between them
+    is visible while training."""
     import torch
     import torch.nn.functional as F
     from az_net import az_checkpoint_path, decay_exempt_param_groups
@@ -223,10 +246,26 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)
 
-    obs, pi, z, mask, n_shards = load_window(deck, window, data_dir)
+    w = load_window(deck, window, data_dir)
+    obs, pi, z, mask = w["obs"], w["pi"], w["z"], w["mask"]
+    td_q, n_shards = w["td_q"], w["n_shards"]
     n = obs.shape[0]
+    # Both backends already resolve every unbootstrappable row to z, so a NaN
+    # here means a shard was written by something that does not honour the
+    # schema — refuse it rather than propagate NaN through the value head.
+    if not np.all(np.isfinite(td_q)):
+        raise RuntimeError(
+            f"{int((~np.isfinite(td_q)).sum())} of {n} shard rows have a "
+            f"non-finite td_q — every writer must resolve an unbootstrappable "
+            f"sample to its outcome z (regenerate the shards)")
+    q_mix = float(q_mix)
+    v_target = ((1.0 - q_mix) * z + q_mix * td_q).astype(np.float32)
     print(f"[az-train] gen (focus={deck}): {n} samples from {n_shards} shards; "
-          f"batches={batches} batch_size={batch_size} lr={lr} c_v={c_v}")
+          f"batches={batches} batch_size={batch_size} lr={lr} c_v={c_v} "
+          f"q_mix={q_mix}")
+    print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_q; "
+          f"td_q != z on {int((td_q != z).sum())}/{n} rows "
+          f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f})")
 
     net, prior_steps, prov = _init_net(from_ppo, fresh)
     print(f"[az-train] net: {prov}")
@@ -242,6 +281,7 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     obs_t = torch.as_tensor(obs)
     pi_t = torch.as_tensor(pi)
     z_t = torch.as_tensor(z)
+    vt_t = torch.as_tensor(v_target)
     mask_t = torch.as_tensor(mask)
 
     log_path = os.path.join(ckpt_dir, f"{GEN_STEM}_az_train.log")
@@ -257,12 +297,17 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             idx = rng.integers(0, n, size=bs)
             bi = torch.as_tensor(idx)
             ob = obs_t[bi]; tp = pi_t[bi]; tz = z_t[bi]; mk = mask_t[bi]
+            tv = vt_t[bi]
 
             logits, value = net(ob, mk)
             logp = F.log_softmax(logits, dim=-1)
             logp = torch.where(mk, logp, torch.zeros_like(logp))   # kill -inf*0 nan
             loss_pi = -(tp * logp).sum(dim=1).mean()
-            loss_v = F.mse_loss(value, tz)
+            # Optimized against the MIXED target; the pure-outcome MSE is
+            # computed alongside (no grad) purely as a comparable diagnostic.
+            loss_v = F.mse_loss(value, tv)
+            with torch.no_grad():
+                loss_vz = F.mse_loss(value, tz)
             loss = loss_pi + c_v * loss_v
 
             opt.zero_grad()
@@ -275,7 +320,8 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             last_loss = fl
             if b == 0 or (b + 1) % log_every == 0 or b == batches - 1:
                 line = (f"[az-train] batch {b+1}/{batches} loss={fl:.4f} "
-                        f"(pi={loss_pi.item():.4f} v={loss_v.item():.4f})")
+                        f"(pi={loss_pi.item():.4f} v_mix={loss_v.item():.4f} "
+                        f"v_z={loss_vz.item():.4f})")
                 print(line)
                 logf.write(line + "\n"); logf.flush()
             if snapshot_every and (b + 1) % snapshot_every == 0:
@@ -541,6 +587,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              sb_persist: int = DEFAULT_SB_PERSIST,
              workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
              batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
+             td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
              window: int = DEFAULT_AZ_WINDOW,
              eval_games: int = DEFAULT_AZ_EVAL_GAMES,
              eval_sims: int = DEFAULT_AZ_EVAL_SIMS,
@@ -630,7 +677,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                scripted_opponent_frac=scripted_opponent_frac,
                                bo3=bo3, exhaustive=exhaustive,
                                exhaustive_selfplay=exhaustive_selfplay,
-                               exhaustive_repeats=exhaustive_repeats)
+                               exhaustive_repeats=exhaustive_repeats,
+                               td_n=td_n)
     if expert_decks:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
@@ -647,7 +695,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
               f"window={window} (2x, covers this pass + the previous one)")
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
-                  window=window, seed=seed)
+                  q_mix=q_mix, window=window, seed=seed)
     if not gate:
         print("=== az cycle: eval/gate skipped (gated every K slots) ===")
         return {"generate": gen, "train": tr, "eval": None}
@@ -711,6 +759,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               sb_persist: int = DEFAULT_SB_PERSIST,
               workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
               batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
+              td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
               window: int = DEFAULT_AZ_WINDOW,
               eval_games: int = DEFAULT_AZ_EVAL_GAMES,
               eval_sims: int = DEFAULT_AZ_EVAL_SIMS,
@@ -803,6 +852,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         batches = int(p.get("batches", batches))
         batch_size = int(p.get("batch_size", batch_size))
         lr = float(p.get("lr", lr))
+        # .get defaults keep sidecars written before the n-step TD knobs resumable.
+        td_n = int(p.get("td_n", td_n))
+        q_mix = float(p.get("q_mix", q_mix))
         window = int(p.get("window", window))
         eval_games = int(p.get("eval_games", eval_games))
         eval_sims = int(p.get("eval_sims", eval_sims))
@@ -868,6 +920,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "sb_rollout_turns": sb_rollout_turns, "sb_persist": sb_persist,
             "workers": workers,
             "batches": batches, "batch_size": batch_size, "lr": lr,
+            "td_n": td_n, "q_mix": q_mix,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
             "seed": seed, "mirror_frac": mirror_frac,
@@ -902,7 +955,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
           f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth} "
           f"sb_rollout_turns={sb_rollout_turns} sb_persist={sb_persist}  "
-          f"batches={batches} window={window_txt}  "
+          f"batches={batches} window={window_txt} td_n={td_n} q_mix={q_mix}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
           f"gate_floor={gate_floor} gate_every={gate_txt}")
     if gate_every == 0 and total is None:
@@ -962,7 +1015,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
                        sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist,
                        workers=workers,
-                       batches=batches, batch_size=batch_size, lr=lr, window=window,
+                       batches=batches, batch_size=batch_size, lr=lr,
+                       td_n=td_n, q_mix=q_mix, window=window,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
@@ -1031,7 +1085,8 @@ def _resolve_use_actor(args) -> Optional[bool]:
 
 def run_train(args) -> None:
     train_az(args.deck, batches=args.batches, batch_size=args.batch_size,
-             lr=args.lr, c_v=args.c_v, window=args.window,
+             lr=args.lr, c_v=args.c_v,
+             q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX), window=args.window,
              from_ppo=args.from_ppo, fresh=args.fresh,
              snapshot_every=args.snapshot_every,
              seed=args.seed if args.seed is not None else 0)
@@ -1077,7 +1132,9 @@ def run_cycle(args) -> None:
                                       DEFAULT_SB_ROLLOUT_TURNS),
              sb_persist=getattr(args, "sb_persist", DEFAULT_SB_PERSIST),
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
-             lr=args.lr, window=args.window, eval_games=args.eval_games,
+             lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
+             q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
+             window=args.window, eval_games=args.eval_games,
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
              promote_threshold=args.promote_threshold,
              seed=args.seed if args.seed is not None else 1,
@@ -1104,7 +1161,9 @@ def run_league(args) -> None:
                                        DEFAULT_SB_ROLLOUT_TURNS),
               sb_persist=getattr(args, "sb_persist", DEFAULT_SB_PERSIST),
               workers=args.workers, batches=args.batches, batch_size=args.batch_size,
-              lr=args.lr, window=args.window, eval_games=args.eval_games,
+              lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
+              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
+              window=args.window, eval_games=args.eval_games,
               eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
               promote_threshold=args.promote_threshold,
               seed=args.seed if args.seed is not None else 1,
@@ -1132,6 +1191,10 @@ if __name__ == "__main__":
     t.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
     t.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
     t.add_argument("--c-v", type=float, default=DEFAULT_AZ_CV)
+    t.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
+                   help="Weight of the shard's n-step TD target in the value "
+                        "loss: (1-q_mix)*z + q_mix*td_q (default %s)"
+                        % DEFAULT_AZ_Q_MIX)
     t.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
     t.add_argument("--from-ppo", default=None, help="Warm-start from a PPO ckpt")
     t.add_argument("--fresh", action="store_true", help="Start from random init")
@@ -1187,6 +1250,12 @@ if __name__ == "__main__":
     c.add_argument("--batches", type=int, default=DEFAULT_AZ_CYCLE_BATCHES)
     c.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
     c.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
+    c.add_argument("--td-n", type=int, default=DEFAULT_AZ_TD_N,
+                   help="n-step TD horizon recorded in this cycle's shards "
+                        "(default %d)" % DEFAULT_AZ_TD_N)
+    c.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
+                   help="Weight of td_q in the value target (default %s)"
+                        % DEFAULT_AZ_Q_MIX)
     c.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
     c.add_argument("--eval-games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
     c.add_argument("--eval-sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
@@ -1247,6 +1316,12 @@ if __name__ == "__main__":
     lg.add_argument("--batches", type=int, default=DEFAULT_AZ_CYCLE_BATCHES)
     lg.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
     lg.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
+    lg.add_argument("--td-n", type=int, default=DEFAULT_AZ_TD_N,
+                    help="n-step TD horizon recorded in each slot's shards "
+                         "(default %d)" % DEFAULT_AZ_TD_N)
+    lg.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
+                    help="Weight of td_q in the value target (default %s)"
+                         % DEFAULT_AZ_Q_MIX)
     lg.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
     lg.add_argument("--eval-games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
     lg.add_argument("--eval-sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)

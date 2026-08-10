@@ -7,8 +7,9 @@ engine-free sources:
   * the checkpoint's WEIGHTS (``checkpoints/az/gen__az*.pt`` + its ``.meta.json``),
     loaded through :func:`az_net.load_az` so the obs-layout handshake is checked;
   * the recorded self-play SHARDS (``az_data/gen/shard_*.npz``: ``obs, pi, z,
-    mask``), which are real observed states with the search's visit posterior and
-    the eventual game result attached.
+    mask``, plus the optional n-step TD columns ``q, explored, td_q``), which are
+    real observed states with the search's visit posterior and the eventual game
+    result attached.
 
 Neither needs the C++ engine, a subprocess, or a played game — the point is to be
 able to say something about the model that is not "it won N% of its games".
@@ -393,13 +394,23 @@ def shard_paths(data_dir=AZ_DATA_DIR):
                   key=os.path.getmtime)
 
 
+# Shard columns this reader gathers: the four the analysis views need, plus the
+# n-step TD trio, which is optional here (see load_shard_sample).
+_SHARD_CORE_COLS = ("obs", "pi", "z", "mask")
+_SHARD_TD_COLS = ("q", "explored", "td_q")
+
+
 def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
     """Load a bounded RANDOM SAMPLE of recorded decisions.
 
     The full pool is gigabytes of float32 observations, so this walks the shards
     newest-first and takes an even per-shard quota, keeping the sample spread over
     the window rather than concentrated in whichever shard happened to be biggest.
-    Returns a dict with ``obs, pi, z, mask, n_shards, n_rows_total``.
+    Returns a dict with ``obs, pi, z, mask, n_shards, n_rows_total``, plus the
+    n-step TD columns ``q, explored, td_q`` when the shards carry them. Those are
+    OPTIONAL here on purpose: this is a diagnostic reader that gets pointed at
+    arbitrary (including hand-built or pre-schema) shard directories, unlike the
+    trainer's :func:`az_train.load_window`, which requires them.
     """
     from env import OBS_SIZE, MAX_ACTIONS
     data_dir = data_dir or AZ_DATA_DIR
@@ -413,7 +424,10 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
         paths = paths[:int(window)]
     rng = np.random.default_rng(seed)
     quota = max(1, int(max_rows) // len(paths))
-    obs, pi, z, mask = [], [], [], []
+    # The n-step TD columns are taken only when EVERY sampled shard carries them,
+    # so a mixed directory can never yield ragged parallel arrays.
+    cols = {k: [] for k in _SHARD_CORE_COLS + _SHARD_TD_COLS}
+    have_td = True
     total = 0
     used = 0
     for p in paths:
@@ -428,18 +442,24 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
         total += o.shape[0]
         take = min(quota, o.shape[0])
         sel = np.sort(rng.choice(o.shape[0], size=take, replace=False))
-        obs.append(o[sel]); pi.append(d["pi"][sel])
-        z.append(d["z"][sel]); mask.append(d["mask"][sel])
+        for k in _SHARD_CORE_COLS:
+            cols[k].append(d[k][sel])
+        if all(k in d.files for k in _SHARD_TD_COLS):
+            for k in _SHARD_TD_COLS:
+                cols[k].append(d[k][sel])
+        else:
+            have_td = False
         used += 1
-        if sum(a.shape[0] for a in obs) >= max_rows:
+        if sum(a.shape[0] for a in cols["obs"]) >= max_rows:
             break
-    out = {"obs": np.concatenate(obs), "pi": np.concatenate(pi),
-           "z": np.concatenate(z), "mask": np.concatenate(mask),
-           "n_shards": used, "n_rows_total": total}
+    keys = _SHARD_CORE_COLS + (_SHARD_TD_COLS if have_td else ())
+    out = {k: np.concatenate(cols[k]) for k in keys}
+    out["n_shards"] = used
+    out["n_rows_total"] = total
     if out["obs"].shape[0] > max_rows:
         keep = np.sort(rng.choice(out["obs"].shape[0], size=max_rows,
                                   replace=False))
-        for key in ("obs", "pi", "z", "mask"):
+        for key in keys:
             out[key] = out[key][keep]
     return out
 
