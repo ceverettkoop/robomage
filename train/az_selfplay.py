@@ -28,6 +28,10 @@ Python for the vs-scripted cells (see :func:`_generate_hybrid`).
 ``generate(exhaustive_selfplay=True)`` narrows that matrix to the pure self-play
 cells only (one match per unordered deck pair, no scripted/Python component), and
 ``exhaustive_repeats=n`` plays every cell of the matrix n times.
+``generate(scripted_cells=k, slot=s)`` adds a ROTATING slice of k vs-scripted
+cells back onto that self-play matrix — the k ordered (focus, opponent) pairs
+starting at offset ``(s * k) % n_ordered``, wrapping — so successive az-league
+slots tile every ordered pair while the bulk of each slot stays on the actor.
 
 :func:`generate_expert` additionally writes EXPERT demonstration shards —
 scripted:hard piloting both seats, pi = one-hot on the expert's action — in the
@@ -50,7 +54,9 @@ try:
                           DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
                           DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
-                          DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N)
+                          DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N,
+                          DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+                          DEFAULT_AZ_SCRIPTED_CELLS)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
@@ -59,7 +65,9 @@ except ImportError:  # pragma: no cover
                                 DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES,
                                 DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
                                 DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES,
-                                DEFAULT_AZ_TD_N)
+                                DEFAULT_AZ_TD_N,
+                                DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+                                DEFAULT_AZ_SCRIPTED_CELLS)
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
@@ -132,9 +140,40 @@ def build_matchup_schedule_ex(focus_decks, opponent_decks, games: int,
     return sched
 
 
+def ordered_matchup_pairs(focus_decks, opponent_decks) -> list:
+    """The full ORDERED ``(focus, opponent)`` pair list of the exhaustive matrix.
+
+    The vs-SCRIPTED family of :func:`build_exhaustive_schedule_ex` — 100 pairs on
+    the 10-deck roster — in a fixed, seed-independent order. Shared with the
+    rotating ``scripted_cells`` slice so both name the same cell list."""
+    focus = list(focus_decks or [])
+    pool = list(opponent_decks or []) or list(focus)
+    return [(f, o) for f in focus for o in pool]
+
+
+def rotating_scripted_pairs(focus_decks, opponent_decks, k: int,
+                            slot: int = 0) -> list:
+    """``k`` ordered (focus, opponent) pairs for ``slot``, rotating with wraparound.
+
+    Slot ``s`` takes the ``k`` consecutive pairs of
+    :func:`ordered_matchup_pairs` starting at offset ``(s * k) % n_ordered``,
+    wrapping around the end of the list — so consecutive slots tile the whole
+    ordered pair list and coverage accumulates across an az-league run instead of
+    re-playing the same cells every slot. ``k <= 0`` (or an empty matrix) yields
+    nothing; ``k > n_ordered`` walks the list more than once."""
+    pairs = ordered_matchup_pairs(focus_decks, opponent_decks)
+    k = int(k)
+    if k <= 0 or not pairs:
+        return []
+    n = len(pairs)
+    off = (int(slot) * k) % n
+    return [pairs[(off + i) % n] for i in range(k)]
+
+
 def build_exhaustive_schedule_ex(focus_decks, opponent_decks, seed: int,
                                  include_scripted: bool = True,
-                                 repeats: int = 1) -> tuple:
+                                 repeats: int = 1, scripted_cells: int = 0,
+                                 slot: int = 0) -> tuple:
     """The EXHAUSTIVE matchup matrix: every cell exactly ``repeats`` times, no
     random draw.
 
@@ -156,6 +195,15 @@ def build_exhaustive_schedule_ex(focus_decks, opponent_decks, seed: int,
     repeat on the 10-deck roster) — a matrix with no Python/scripted component,
     so the whole schedule runs on the C++ actor.
 
+    ``scripted_cells=k`` (self-play-only matrices only — it is inert when
+    ``include_scripted`` already plays every ordered pair) adds back a ROTATING
+    slice of the vs-scripted family: the ``k`` ordered pairs
+    :func:`rotating_scripted_pairs` gives this ``slot``, so a run's slots tile the
+    whole ordered list over time. They are added ONCE per call (an absolute
+    per-slot count, NOT multiplied by ``repeats``) and marked exactly like the
+    full matrix's scripted cells, so the hybrid backend routes them to Python
+    while the actor keeps the self-play cells.
+
     The seeded RNG randomizes only each cell's seat assignment and the
     interleaving of the two families (scripted cells cost less wall-clock than
     searched-both-seats cells, so shuffling balances the contiguous worker
@@ -171,9 +219,8 @@ def build_exhaustive_schedule_ex(focus_decks, opponent_decks, seed: int,
     pool = list(opponent_decks or []) or list(focus)
     cells = []                       # (fdeck, opp, net_is_a_or_None)
     if include_scripted:
-        for f in focus:              # ordered: one vs-scripted cell per pair
-            for o in pool:
-                cells.append((f, o, True))
+        for f, o in ordered_matchup_pairs(focus, pool):   # every ordered pair
+            cells.append((f, o, True))
     seen = set()
     for f in focus:                  # unordered: one pure self-play cell per pair
         for o in pool:
@@ -182,6 +229,12 @@ def build_exhaustive_schedule_ex(focus_decks, opponent_decks, seed: int,
                 seen.add(key)
                 cells.append((f, o, None))
     cells = cells * repeats
+    if not include_scripted:
+        # Rotating vs-scripted slice: k matches for THIS slot, added after the
+        # repeats multiplication so k is an exact per-slot count.
+        cells += [(f, o, True)
+                  for f, o in rotating_scripted_pairs(focus, pool,
+                                                      scripted_cells, slot)]
     rng.shuffle(cells)
     sched_ex, seats = [], []
     for fdeck, opp, scripted in cells:
@@ -900,7 +953,9 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              scripted_opponent_frac: float = 0.0,
              bo3: bool = False, exhaustive: bool = False,
              exhaustive_selfplay: bool = False,
-             exhaustive_repeats: int = 1,
+             exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+             scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
+             slot: int = 0,
              td_n: int = DEFAULT_TD_N) -> dict:
     """Generate ``games`` self-play MATCHES over a FOCUS pool and write shards.
 
@@ -949,7 +1004,17 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     included (55 on the 10-deck roster), with NO vs-scripted cells. Since the
     scripted cells are what forced the Python backend, this schedule runs
     entirely on the C++ actor when it is built. ``exhaustive_repeats=n`` plays
-    every cell of whichever matrix is selected ``n`` times (default 1).
+    every cell of whichever matrix is selected ``n`` times.
+
+    ``scripted_cells=k`` adds a ROTATING slice of the vs-scripted family back
+    onto a ``exhaustive_selfplay`` schedule: ``k`` matches per call, taken from
+    the full ordered (focus, opponent) pair list starting at offset
+    ``(slot * k) % n_ordered`` and wrapping, so an az-league run's successive
+    ``slot``s tile every ordered pair over time (a standalone cycle is slot 0).
+    They are marked exactly like the full matrix's scripted cells, so the backend
+    goes HYBRID for them — actor self-play cells, Python scripted cells — with no
+    special-casing. ``k=0`` disables; it is IGNORED (with a printed note) under
+    full ``exhaustive``, which already plays every ordered pair.
 
     ``td_n`` is the n-step TD horizon baked into every written sample's ``td_q``
     column (see :func:`compute_td_targets`) — a GENERATION-side knob, honoured
@@ -969,6 +1034,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
             f"(got {scripted_opponent_frac})")
     exhaustive = bool(exhaustive) or bool(exhaustive_selfplay)
     exhaustive_repeats = max(1, int(exhaustive_repeats))
+    scripted_cells = max(0, int(scripted_cells))
     if exhaustive:
         # The matrix defines the match count; the random-draw knobs are inert.
         ignored = [name for name, on in
@@ -980,6 +1046,10 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
               f"{' (self-play cells only)' if exhaustive_selfplay else ''}: "
               f"ignoring {', '.join(ignored)} (every cell is played {times})")
         scripted_opponent_frac = 0.0
+    if exhaustive and not exhaustive_selfplay and scripted_cells:
+        print(f"[az-selfplay] ignoring scripted_cells={scripted_cells}: the full "
+              f"exhaustive matrix already plays every ordered vs-scripted cell")
+        scripted_cells = 0
     if workers is None:
         workers = max(1, (os.cpu_count() or 2) - 2)
     out_dir = out_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
@@ -987,6 +1057,44 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     if roster is None:
         roster = league_roster()
     focus = list(focus_decks) if focus_decks else [deck]
+
+    # Build the schedule BEFORE choosing a backend: whether this run needs the
+    # hybrid split is a property of the schedule (does it contain vs-scripted
+    # cells?), not of the exhaustive flags — a self-play matrix carrying a
+    # rotating scripted_cells slice needs the split just as the full matrix does.
+    if exhaustive:
+        sched_ex, scripted_seats = build_exhaustive_schedule_ex(
+            focus, roster, seed, include_scripted=not exhaustive_selfplay,
+            repeats=exhaustive_repeats, scripted_cells=scripted_cells, slot=slot)
+        n_scr = sum(1 for s in scripted_seats if s is not None)
+        per = ("one" if exhaustive_repeats == 1 else f"{exhaustive_repeats}")
+        scr_txt = (
+            f"{n_scr} vs scripted:hard, rotating slice of the ordered pair list "
+            f"at slot {slot}; " if exhaustive_selfplay and n_scr else
+            "" if exhaustive_selfplay else
+            f"{n_scr} vs scripted:hard, {per} per ordered focus x opponent pair; ")
+        print(f"[az-selfplay] exhaustive matrix"
+              f"{' (SELF-PLAY ONLY)' if exhaustive_selfplay else ''}: "
+              f"{len(sched_ex)} matches ({scr_txt}"
+              f"{len(sched_ex) - n_scr} pure self-play, {per} per unordered pair)")
+        games = len(sched_ex)
+    else:
+        sched_ex = build_matchup_schedule_ex(focus, roster, games, mirror_frac,
+                                             seed)
+        scripted_seats = None
+        n_scr = 0
+        if scripted_opponent_frac > 0.0:
+            # Dedicated RNG stream (never touches the schedule's draws) indexed
+            # per MATCH, so the scripted assignment is reproducible and
+            # independent of how the schedule is sliced across workers. Entry =
+            # net_is_a; None = pure self-play for that match.
+            srng = np.random.default_rng([seed, 0x5C819])
+            scripted_seats = [(focus_is_a
+                               if srng.random() < scripted_opponent_frac
+                               else None)
+                              for (_a, _b, focus_is_a) in sched_ex]
+            n_scr = sum(1 for s in scripted_seats if s is not None)
+    schedule = [(a, b) for a, b, _ in sched_ex]
 
     have_actor = os.path.exists(_ACTOR_BIN)
     if bo3:
@@ -1001,7 +1109,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     else:
         chosen = "forced"
     hybrid = False
-    if exhaustive and not exhaustive_selfplay:
+    if exhaustive and n_scr and n_scr < len(schedule):
         # HYBRID backend: the C++ actor (when built) plays the pure self-play
         # cells while the Python backend plays the vs-scripted cells (the actor
         # has no scripted-opponent seat). --no-actor keeps everything on the
@@ -1020,6 +1128,11 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
             hybrid = True
             chosen = "HYBRID (forced)" if requested is True else "AUTO->HYBRID"
         use_actor = False
+    elif exhaustive and n_scr:
+        # Degenerate matrix: every cell is a vs-scripted cell (e.g. a one-deck
+        # roster whose only self-play cell was dropped) — pure Python.
+        use_actor = False
+        chosen += "->PYTHON (all cells vs-scripted)"
     elif use_actor and scripted_opponent_frac > 0.0:
         if chosen == "forced":
             raise ValueError(
@@ -1033,35 +1146,6 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
             f"--actor requested but the actor binary is not built at {_ACTOR_BIN} "
             f"(build it with `make actor`, or pass --no-actor)")
 
-    if exhaustive:
-        sched_ex, scripted_seats = build_exhaustive_schedule_ex(
-            focus, roster, seed, include_scripted=not exhaustive_selfplay,
-            repeats=exhaustive_repeats)
-        n_scr = sum(1 for s in scripted_seats if s is not None)
-        per = ("one" if exhaustive_repeats == 1 else f"{exhaustive_repeats}")
-        scr_txt = ("" if exhaustive_selfplay else
-                   f"{n_scr} vs scripted:hard, {per} per ordered focus x "
-                   f"opponent pair; ")
-        print(f"[az-selfplay] exhaustive matrix"
-              f"{' (SELF-PLAY ONLY)' if exhaustive_selfplay else ''}: "
-              f"{len(sched_ex)} matches ({scr_txt}"
-              f"{len(sched_ex) - n_scr} pure self-play, {per} per unordered pair)")
-        games = len(sched_ex)
-    else:
-        sched_ex = build_matchup_schedule_ex(focus, roster, games, mirror_frac,
-                                             seed)
-        scripted_seats = None
-        if scripted_opponent_frac > 0.0:
-            # Dedicated RNG stream (never touches the schedule's draws) indexed
-            # per MATCH, so the scripted assignment is reproducible and
-            # independent of how the schedule is sliced across workers. Entry =
-            # net_is_a; None = pure self-play for that match.
-            srng = np.random.default_rng([seed, 0x5C819])
-            scripted_seats = [(focus_is_a
-                               if srng.random() < scripted_opponent_frac
-                               else None)
-                              for (_a, _b, focus_is_a) in sched_ex]
-    schedule = [(a, b) for a, b, _ in sched_ex]
     workers = max(1, min(workers, games))
     source = resolve_source(deck, checkpoint)
     focus_lbl = focus[0] if len(focus) == 1 else f"{len(focus)} decks [{','.join(focus)}]"

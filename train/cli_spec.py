@@ -30,28 +30,33 @@ BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resou
 # The balanced delta menu offers every sideboard card AND every maindeck card at
 # once — ~33 children on a league deck, up to ~39 — so 32 sims was roughly ONE
 # visit per child: the visit distribution the policy trains on was essentially
-# noise, and could not rank cards at all. 256 gives ~6-8 visits per child (split
-# over DEFAULT_SB_WORLDS trees), enough for the ordering to be meaningful rather
-# than borderline. This affects only the AZ / search paths (az_selfplay,
-# bin/az_actor, az*/eval, the analysis window); PPO training does no search, so
-# its cost is unchanged. NOTE: the az / az-league / az-selfplay CLI args MUST
-# reference this constant, not a literal — argparse always supplies the CLI
-# default, so a drifted literal silently overrides this "one home" (that bug
-# shipped runs at sb_sims=32 while this constant said 128).
-DEFAULT_SB_SIMS = 256
+# noise, and could not rank cards at all. 128 gives ~3-4 visits per child (split
+# over DEFAULT_SB_WORLDS trees) — enough for the ordering to be meaningful.
+# 256 was tried and measurably ~TRIPLED az-league match wall-clock (a bo3 pays
+# this budget at every pick of both sideboard boundaries), so the last league run
+# pinned 128 deliberately; these are those pinned values. This affects only the
+# AZ / search paths (az_selfplay, bin/az_actor, az*/eval, the analysis window);
+# PPO training does no search, so its cost is unchanged. NOTE: the az / az-league
+# / az-selfplay CLI args MUST reference this constant, not a literal — argparse
+# always supplies the CLI default, so a drifted literal silently overrides this
+# "one home" (that bug shipped runs at sb_sims=32 while this constant said 128).
+DEFAULT_SB_SIMS = 128
 DEFAULT_SB_WORLDS = 4
-DEFAULT_SB_MAX_DEPTH = 200
+DEFAULT_SB_MAX_DEPTH = 128
 # Leaf-rollout horizon at sideboard roots, in player turns of the sampled next
-# game (12 = 6 full turn cycles). Measured (2026-07): the PUCT tree alone never
-# reaches the game — at sb_sims=256 the PV is ~3 decisions deep (the 33-child
+# game (6 = 3 full turn cycles). Measured (2026-07): the PUCT tree alone never
+# reaches the game — at sb_sims=128-256 the PV is ~3 decisions deep (the 33-child
 # swap menu spreads visits sideways), and even 4096 sims reach only ~turn 1 —
-# while a rollout covers turn 12 in 46-92 decisions, linear cost. Each sim
-# plays the raw policy forward to end-of-turn-12 and backs up THAT state's net
+# while a rollout covers each turn in ~4-8 decisions, linear cost. Each sim
+# plays the raw policy forward to end-of-turn-N and backs up THAT state's net
 # value, so the swap ranking is informed by concrete simulated futures instead
-# of the net's static read of the decklist features. 0 disables (pure in-place
-# leaf evaluation, the pre-rollout behavior). The per-turn step cap lives in
+# of the net's static read of the decklist features. 12 turns (with sb_sims=256)
+# measurably ~tripled az-league match wall-clock; 6 is the horizon the last
+# league run pinned deliberately, still reaching the turns where a sideboard
+# swap actually shows up. 0 disables (pure in-place leaf evaluation, the
+# pre-rollout behavior). The per-turn step cap lives in
 # mcts.ROLLOUT_STEPS_PER_TURN (mirrored in src/actor/az_mcts.cpp).
-DEFAULT_SB_ROLLOUT_TURNS = 12
+DEFAULT_SB_ROLLOUT_TURNS = 6
 # Sideboard-boundary persistence (1 = on): a boundary's ~10-20 pick decisions
 # share one set of per-world trees (seeds pinned to the boundary's first
 # searched root, each pick re-rooted at the played action's child and topped up
@@ -93,7 +98,14 @@ DEFAULT_AZ_LR = 5e-5
 DEFAULT_AZ_WEIGHT_DECAY = 1e-4
 DEFAULT_AZ_BATCH_SIZE = 256
 DEFAULT_AZ_TRAIN_BATCHES = 1000  # standalone az-train
-DEFAULT_AZ_CYCLE_BATCHES = 500   # per az / az-league slot
+# Per az / az-league slot: 0 = AUTO, one epoch over the loaded window
+# (max(1, n_samples // batch_size) optimizer updates). A fixed 1000 batches x 256
+# over a ~137k-sample window was ~1.9 epochs of re-fitting one small, heavily
+# game-correlated window — the memorization regime — and the effective epoch
+# count drifted silently as the window's data volume changed. Auto pins it at
+# exactly one pass regardless of volume. The STANDALONE az-train default above
+# stays a fixed batch count (it is a manual, one-off refit, not a cycle step).
+DEFAULT_AZ_CYCLE_BATCHES = 0
 DEFAULT_AZ_WINDOW = 50           # newest-N-shards training window (0 = AUTO)
 DEFAULT_AZ_CV = 1.0              # value-loss weight
 # Mixing weight of the shard's n-step TD target against the per-game outcome:
@@ -103,16 +115,43 @@ DEFAULT_AZ_Q_MIX = 0.5
 
 # Promotion gate (az-eval / the gate step of az / az-league).
 DEFAULT_AZ_EVAL_GAMES = 56
-DEFAULT_AZ_EVAL_SIMS = 32
-DEFAULT_AZ_EVAL_WORLDS = 2
+# Gate at SERVING strength: the `az:gen` serving spec defaults to 128 sims over 4
+# worlds, so gating at 16 sims/world measured a different — and much weaker —
+# player than the one that actually gets deployed, and its promote/keep verdict
+# said little about the served net.
+DEFAULT_AZ_EVAL_SIMS = 128
+DEFAULT_AZ_EVAL_WORLDS = 4
 DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55
 DEFAULT_AZ_GATE_FLOOR = 0.2
 DEFAULT_AZ_GATE_FLOOR_MIN = 4
 DEFAULT_AZ_GATE_CROSS_PAIRS = 2
-DEFAULT_AZ_GATE_EVERY = 1
+# Gate every K az-league slots. 2 amortizes the (now 4x heavier, see the eval
+# budget above) gate: at DEFAULT_AZ_LR a single slot's weight delta rarely clears
+# the 0.55 promote bar anyway, so paying the gate every slot mostly bought
+# "kept-incumbent" lines.
+DEFAULT_AZ_GATE_EVERY = 2
 
-# Expert (behavior-cloning) shard generation.
-DEFAULT_AZ_EXPERT_GAMES = 16
+# Expert (behavior-cloning) shard generation. --expert-decks defaults to the
+# ROSTER sentinel: every deck in decks/league/ gets scripted:hard demonstration
+# shards each cycle (the hand-coded lines search never finds are not a
+# doomsday-only problem). 'none' (case-insensitive) or an empty value disables.
+# The sentinel is resolved in ONE place — az_train._resolve_expert_decks, where
+# expert_decks is consumed — so the az-league sidecar can persist the RAW user
+# value and a --resume re-resolves it against the roster of the day.
+EXPERT_DECKS_ROSTER = "roster"
+EXPERT_DECKS_NONE = "none"
+DEFAULT_AZ_EXPERT_GAMES = 8
+
+# Exhaustive-matrix repeats: how many times each cell of the exact matchup matrix
+# is played per az cycle / az-league slot (--exhaustive-repeats).
+DEFAULT_AZ_EXHAUSTIVE_REPEATS = 2
+
+# Rotating vs-scripted cells added to an --exhaustive-selfplay slot: K matches
+# per slot drawn from the full ORDERED (focus, opponent) pair list, starting at
+# offset (slot * K) % n_ordered and wrapping, so coverage of every ordered pair
+# accumulates across slots while a slot stays overwhelmingly C++-actor self-play.
+# 0 disables. Ignored under full --exhaustive (which plays every scripted cell).
+DEFAULT_AZ_SCRIPTED_CELLS = 20
 
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
@@ -957,7 +996,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Persist trees + rollout memo across a bo3 sideboard boundary "
                  f"(1/0; default {DEFAULT_SB_PERSIST})"),
         Arg("--workers", "int", default=None),
-        Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES),
+        Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
+            help=f"Optimizer updates this cycle (default {DEFAULT_AZ_CYCLE_BATCHES}). "
+                 "0 = AUTO: exactly one epoch over the loaded training window, "
+                 "max(1, samples // batch_size) updates, so the epoch count "
+                 "cannot drift as the window's data volume changes"),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
@@ -982,10 +1025,22 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "pair, mirrors included (55 on the 10-deck roster), with NO "
                  "vs-scripted cells — so the whole schedule runs on the C++ "
                  "actor backend and nothing falls back to Python"),
-        Arg("--exhaustive-repeats", "int", default=1,
+        Arg("--exhaustive-repeats", "int", default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
             help="Play every cell of the exhaustive matrix N times per cycle "
-                 "(default 1). Each repeat is an independent match with its "
-                 "own seat draw and game seed."),
+                 f"(default {DEFAULT_AZ_EXHAUSTIVE_REPEATS}). Each repeat is an "
+                 "independent match with its own seat draw and game seed."),
+        Arg("--scripted-cells", "int", default=DEFAULT_AZ_SCRIPTED_CELLS,
+            help="With --exhaustive-selfplay only: ALSO play K vs-scripted:hard "
+                 "matches this cycle, taken from the full ORDERED (focus, "
+                 "opponent) pair list — the same list plain --exhaustive plays "
+                 "in full — starting at offset (slot * K) %% n_ordered and "
+                 "wrapping, so successive az-league slots cover every ordered "
+                 f"pair in turn (default {DEFAULT_AZ_SCRIPTED_CELLS}; 0 "
+                 "disables). A standalone az cycle is slot 0. These cells are "
+                 "marked exactly like --exhaustive's, so the hybrid backend "
+                 "routes them to Python while the C++ actor plays the "
+                 "self-play cells. Ignored (with a note) under full "
+                 "--exhaustive."),
         Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
             help="Total gate matches, split over the roster-wide panel (a mirror "
                  "per roster deck + direction-balanced cross pairs; default "
@@ -998,12 +1053,15 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  ">=4 gate matches whose win-rate deficit vs the incumbent on "
                  "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
                  "disables; on mirrors alone this equals win-rate < floor)"),
-        Arg("--expert-decks", "str", default=None, suggest="league_deck", multi=True,
+        Arg("--expert-decks", "str", default=EXPERT_DECKS_ROSTER,
+            suggest="league_deck", multi=True,
             help="Comma-separated decks to ALSO write scripted:hard EXPERT "
                  "demonstration shards for each cycle (pi = one-hot expert "
                  "action): behavior-cloning targets for hand-coded combo lines "
                  "(e.g. league/wubg_doomsday) that neither PPO exploration nor "
-                 "prior-guided search discovers"),
+                 f"prior-guided search discovers. Default '{EXPERT_DECKS_ROSTER}' "
+                 "= every deck in decks/league/; pass 'none' (or an empty "
+                 "value) to write no expert shards"),
         Arg("--expert-games", "int", default=DEFAULT_AZ_EXPERT_GAMES,
             help="Expert matches per expert deck per cycle"),
         Arg("--seed", "int", default=1),
@@ -1060,7 +1118,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"(1/0; default {DEFAULT_SB_PERSIST})"),
         Arg("--workers", "int", default=None,
             help="Self-play worker processes (default max(1, cpu-2))"),
-        Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES),
+        Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
+            help=f"Optimizer updates per slot (default {DEFAULT_AZ_CYCLE_BATCHES}). "
+                 "0 = AUTO: exactly one epoch over the loaded training window, "
+                 "max(1, samples // batch_size) updates, so the epoch count "
+                 "cannot drift as the window's data volume changes"),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
@@ -1114,18 +1176,32 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "roster), with NO vs-scripted cells — so every slot's "
                  "self-play runs entirely on the C++ actor backend "
                  "(persisted in the resume sidecar)"),
-        Arg("--exhaustive-repeats", "int", default=1,
+        Arg("--exhaustive-repeats", "int", default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
             help="Play every cell of the exhaustive matrix N times per slot "
-                 "(default 1) — e.g. 2 makes each slot every self-play "
-                 "matchup twice. Each repeat is an independent match with its "
-                 "own seat draw and game seed (persisted in the resume "
-                 "sidecar)."),
-        Arg("--expert-decks", "str", default=None, suggest="league_deck", multi=True,
+                 f"(default {DEFAULT_AZ_EXHAUSTIVE_REPEATS}) — e.g. 2 makes each "
+                 "slot every self-play matchup twice. Each repeat is an "
+                 "independent match with its own seat draw and game seed "
+                 "(persisted in the resume sidecar)."),
+        Arg("--scripted-cells", "int", default=DEFAULT_AZ_SCRIPTED_CELLS,
+            help="With --exhaustive-selfplay only: ALSO play K vs-scripted:hard "
+                 "matches per slot, taken from the full ORDERED (focus, "
+                 "opponent) pair list — the same list plain --exhaustive plays "
+                 "in full — starting at offset (slot * K) %% n_ordered and "
+                 "wrapping, so successive slots cover every ordered pair in "
+                 f"turn (default {DEFAULT_AZ_SCRIPTED_CELLS}; 0 disables). "
+                 "These cells are marked exactly like --exhaustive's, so the "
+                 "hybrid backend routes them to Python while the C++ actor "
+                 "plays the self-play cells. Ignored (with a note) under full "
+                 "--exhaustive (persisted in the resume sidecar)."),
+        Arg("--expert-decks", "str", default=EXPERT_DECKS_ROSTER,
+            suggest="league_deck", multi=True,
             help="Comma-separated decks to ALSO write scripted:hard EXPERT "
                  "demonstration shards for each slot (pi = one-hot expert "
                  "action): behavior-cloning targets for hand-coded combo lines "
                  "(e.g. league/wubg_doomsday) that neither PPO exploration nor "
-                 "prior-guided search discovers"),
+                 f"prior-guided search discovers. Default '{EXPERT_DECKS_ROSTER}' "
+                 "= every deck in decks/league/; pass 'none' (or an empty "
+                 "value) to write no expert shards"),
         Arg("--expert-games", "int", default=DEFAULT_AZ_EXPERT_GAMES,
             help="Expert matches per expert deck per slot"),
         Arg("--seed", "int", default=1,

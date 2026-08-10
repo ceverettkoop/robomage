@@ -453,10 +453,10 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
   by the *next* game's seed, so the K sampled worlds vary correctly game-to-game
   (covered by the snapshot-tier world-variation test).
 - **Sideboard-root search budget** — the sideboard root gets its own heavier, deeper
-  budget: `sb_sims=256` / `sb_worlds=4` / `sb_max_depth=200` / `sb_rollout_turns=12`
+  budget: `sb_sims=128` / `sb_worlds=4` / `sb_max_depth=128` / `sb_rollout_turns=6`
   / `sb_persist=1` (the `DEFAULT_SB_*` constants in `cli_spec.py`; the horizon is
   game-long, so it is deeper than an in-game decision, leaf rollouts — see the
-  2026-07-31 update below — carry each sim to turn 12 of the sampled next game, and
+  2026-07-31 update below — carry each sim to turn 6 of the sampled next game, and
   boundary persistence shares one set of trees + a rollout memo across a boundary's
   picks). Inert for bo1.
 - **Actor parity + next-game flush** — the C++ actor mirrors the Python match loop
@@ -539,6 +539,14 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
 > immediate leaf-eval path even under `--batch K>1`). `test_mcts_parity.py`
 > gained a rolled bo3-sb gate at `sb_rollout_turns=3`; the bo1 and
 > inherited-budget bo3 gates stay rollout-free as the unrolled baseline.
+
+> **Update (2026-08-09): sideboard budget retuned to 128 / 6 / 128.** The
+> 256-sims / 12-turn / depth-200 budget above measurably ~**tripled** az-league
+> match wall-clock (a bo3 pays it at every pick of both boundaries), so
+> `DEFAULT_SB_SIMS` 256 → **128**, `DEFAULT_SB_ROLLOUT_TURNS` 12 → **6**, and
+> `DEFAULT_SB_MAX_DEPTH` 200 → **128** — the values the last league run pinned
+> deliberately (the `az_matrix` curriculum already overrode to them). The
+> measurements above were taken at the old budget and are kept as history.
 
 > **Update (2026-07-26).** `--sb-sims` default raised 32 → **128**. The 32 was
 > chosen when a sideboard decision was the old paired IN→OUT menu; the balanced

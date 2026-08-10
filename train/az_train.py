@@ -48,7 +48,9 @@ from cli_spec import (DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
                       DEFAULT_AZ_EVAL_WORLDS, DEFAULT_AZ_PROMOTE_THRESHOLD,
                       DEFAULT_AZ_GATE_FLOOR, DEFAULT_AZ_GATE_FLOOR_MIN,
                       DEFAULT_AZ_GATE_CROSS_PAIRS, DEFAULT_AZ_GATE_EVERY,
-                      DEFAULT_AZ_EXPERT_GAMES)
+                      DEFAULT_AZ_EXPERT_GAMES, DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+                      DEFAULT_AZ_SCRIPTED_CELLS,
+                      EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
 
 import numpy as np
 
@@ -233,6 +235,12 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 0) -> dict:
     """Optimize the gen AZNet on the newest ``window`` shards.
 
+    ``batches <= 0`` resolves to AUTO — ``max(1, n_samples // batch_size)``
+    optimizer updates, i.e. exactly one epoch over the loaded window — and the
+    resolution is printed (``batches=auto(one-epoch)->534``). That is the az /
+    az-league cycle default (``DEFAULT_AZ_CYCLE_BATCHES``); the standalone
+    az-train default stays a fixed batch count.
+
     The value target is the MIX ``(1 - q_mix) * z + q_mix * td_q``: the shard's
     per-game outcome blended with its recorded n-step TD bootstrap (see
     :func:`az_selfplay.compute_td_targets`). ``q_mix=0`` restores the classic
@@ -260,8 +268,18 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             f"sample to its outcome z (regenerate the shards)")
     q_mix = float(q_mix)
     v_target = ((1.0 - q_mix) * z + q_mix * td_q).astype(np.float32)
+    # batches <= 0 = AUTO: exactly ONE epoch over the loaded window. A fixed
+    # batch count silently drifts in epochs as the window's data volume changes
+    # (1000 x 256 over a ~137k-sample window was ~1.9 epochs of re-fitting one
+    # small, correlated window); one pass is the same amount of fitting whatever
+    # the volume.
+    bs = min(batch_size, n)
+    batches_txt = str(batches)
+    if batches <= 0:
+        batches = max(1, n // bs)
+        batches_txt = f"auto(one-epoch)->{batches}"
     print(f"[az-train] gen (focus={deck}): {n} samples from {n_shards} shards; "
-          f"batches={batches} batch_size={batch_size} lr={lr} c_v={c_v} "
+          f"batches={batches_txt} batch_size={batch_size} lr={lr} c_v={c_v} "
           f"q_mix={q_mix}")
     print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_q; "
           f"td_q != z on {int((td_q != z).sum())}/{n} rows "
@@ -288,7 +306,6 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     os.makedirs(ckpt_dir, exist_ok=True)
     first_loss = None
     last_loss = None
-    bs = min(batch_size, n)
 
     with open(log_path, "a") as logf:
         logf.write(f"# az-train {time.strftime('%Y-%m-%d %H:%M:%S')} deck={deck} "
@@ -579,6 +596,33 @@ def _promote_to_final(cand_path: str, ckpt_dir: str = _AZ_CKPT_DIR) -> str:
 # One full cycle: generate -> train -> eval
 # ----------------------------------------------------------------------
 
+def _resolve_expert_decks(expert_decks) -> Optional[list]:
+    """Resolve an ``--expert-decks`` value to a deck list (or None = no experts).
+
+    The ONE place the ``roster`` / ``none`` sentinels are interpreted, so every
+    caller (az cycle, az-league, the resume sidecar) can carry the RAW user value
+    around and resolve it at the moment it is consumed:
+
+    * ``roster`` (the default) -> every deck in ``decks/league/``, re-read now, so
+      a resumed run picks up the roster of the day;
+    * ``none`` / empty / None -> None (write no expert shards);
+    * anything else -> the explicit deck list (a comma-joined string is split).
+    """
+    if expert_decks is None:
+        return None
+    if isinstance(expert_decks, str):
+        expert_decks = [d.strip() for d in expert_decks.split(",") if d.strip()]
+    decks = [str(d).strip() for d in expert_decks if str(d).strip()]
+    if not decks:
+        return None
+    lowered = [d.lower() for d in decks]
+    if lowered == [EXPERT_DECKS_NONE]:
+        return None
+    if lowered == [EXPERT_DECKS_ROSTER]:
+        return _default_az_league_roster() or None
+    return decks
+
+
 def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
              sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
@@ -597,12 +641,14 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              scripted_opponent_frac: float = 0.0,
              gate_floor: float = DEFAULT_GATE_FLOOR,
-             expert_decks: Optional[list] = None,
+             expert_decks=EXPERT_DECKS_ROSTER,
              expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
              roster: Optional[list] = None, bo3: bool = True,
              gate: bool = True, exhaustive: bool = False,
              exhaustive_selfplay: bool = False,
-             exhaustive_repeats: int = 1) -> dict:
+             exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+             scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
+             slot: int = 0) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
@@ -619,6 +665,13 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     the cycle plays ONLY the pure self-play cells, one bo3 match per unordered
     deck pair (55 on the 10-deck roster), entirely on the C++ actor backend.
     ``exhaustive_repeats=n`` plays every cell of that matrix n times per cycle.
+
+    ``scripted_cells=k`` (self-play matrix only) adds back k vs-scripted matches
+    per cycle, rotating through the ordered (focus, opponent) pair list by
+    ``slot`` — az-league passes its slot index, a standalone cycle is slot 0 —
+    so coverage of every ordered pair accumulates across a run. The cells are
+    marked like the full matrix's, so the hybrid backend routes them to Python
+    while the actor plays the self-play cells.
 
     ``window=0`` sizes the training window automatically: 2x the shards THIS
     cycle's generation just wrote (self-play + expert), so each training pass
@@ -678,14 +731,21 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                bo3=bo3, exhaustive=exhaustive,
                                exhaustive_selfplay=exhaustive_selfplay,
                                exhaustive_repeats=exhaustive_repeats,
+                               scripted_cells=scripted_cells, slot=slot,
                                td_n=td_n)
-    if expert_decks:
+    experts = _resolve_expert_decks(expert_decks)
+    if experts:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
         print("=== az cycle: expert demonstrations (scripted:hard) ===")
+        print(f"[az cycle] expert decks: {expert_decks} -> {len(experts)} deck(s) "
+              f"[{', '.join(experts)}] x {expert_games} matches each")
         gen["expert"] = az_selfplay.generate_expert(
-            list(expert_decks), games=expert_games * len(expert_decks),
+            experts, games=expert_games * len(experts),
             roster=roster, mirror_frac=mirror_frac, bo3=bo3, seed=seed)
+    else:
+        print(f"[az cycle] expert decks: {expert_decks!r} -> none "
+              f"(no expert shards this cycle)")
     if window == 0:
         # Auto window: 2x the shards this cycle just wrote, so training always
         # reads exactly this generation pass plus the previous one.
@@ -769,10 +829,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               scripted_opponent_frac: float = 0.0,
               matrix: bool = False, exhaustive: bool = False,
               exhaustive_selfplay: bool = False,
-              exhaustive_repeats: int = 1,
+              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
               gate_floor: float = DEFAULT_GATE_FLOOR,
               gate_every: int = DEFAULT_GATE_EVERY,
-              expert_decks: Optional[list] = None,
+              expert_decks=EXPERT_DECKS_ROSTER,
               expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
               use_actor: Optional[bool] = None, resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
@@ -809,6 +870,13 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     ``exhaustive_repeats=n`` plays each cell n times per slot — e.g.
     ``exhaustive_selfplay=True, exhaustive_repeats=2`` is "every self-play
     matchup twice, every slot".
+
+    ``scripted_cells=k`` (with ``exhaustive_selfplay``) additionally plays k
+    vs-scripted:hard matches per slot, ROTATING through the full ordered (focus,
+    opponent) pair list: slot ``s`` takes the k consecutive pairs starting at
+    ``(s * k) % n_ordered``, wrapping — so ceil(n_ordered / k) slots cover every
+    ordered pair, and the scripted cells never repeat the same corner of the
+    matrix while the rest of the slot stays on the C++ actor.
 
     ``gate_every=0`` disables the eval/gate entirely: no slot is gated, and at
     run COMPLETION the newest candidate snapshot is promoted to
@@ -869,8 +937,14 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         exhaustive = bool(p.get("exhaustive", False))
         exhaustive_selfplay = bool(p.get("exhaustive_selfplay", False))
         exhaustive_repeats = int(p.get("exhaustive_repeats", 1))
+        scripted_cells = int(p.get("scripted_cells", 0))
         gate_floor = float(p.get("gate_floor", gate_floor))
         gate_every = int(p.get("gate_every", gate_every))
+        # The RAW user value (sentinel included) is what the sidecar carries;
+        # _resolve_expert_decks interprets it at use, so a resumed run re-reads
+        # decks/league/ instead of freezing yesterday's roster. Sidecars written
+        # before the sentinel existed carry an explicit list or None and resolve
+        # to themselves.
         expert_decks = p.get("expert_decks", None)
         expert_games = int(p.get("expert_games", expert_games))
         use_actor = p.get("use_actor", use_actor)
@@ -891,6 +965,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     # 'gen' is the reserved generalist stem — a roster deck may not collide with it.
     for _d in roster:
         assert_not_reserved_deck(_d)
+    # Normalize to a list (or None) but do NOT resolve the roster/none sentinel
+    # here: az_cycle resolves it at the moment the shards are generated, and the
+    # sidecar below persists this raw value.
     if expert_decks and isinstance(expert_decks, str):
         expert_decks = [d.strip() for d in expert_decks.split(",") if d.strip()]
     expert_decks = list(expert_decks) if expert_decks else None
@@ -904,6 +981,14 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     # (and a later --resume) see the effective mode.
     exhaustive = bool(exhaustive) or bool(exhaustive_selfplay)
     exhaustive_repeats = max(1, int(exhaustive_repeats))
+    # The rotating vs-scripted slice only applies to the self-play-only matrix
+    # (full --exhaustive already plays every ordered pair).
+    if scripted_cells and not exhaustive_selfplay:
+        print(f"[az-league] ignoring --scripted-cells {scripted_cells}: it "
+              f"applies to --exhaustive-selfplay slots only"
+              + (" (full --exhaustive already plays every ordered vs-scripted "
+                 "cell)" if exhaustive else ""))
+    scripted_cells = max(0, int(scripted_cells)) if exhaustive_selfplay else 0
     whole_roster_slots = matrix or exhaustive
     per_rotation = (cycles_per_deck if whole_roster_slots
                     else len(roster) * cycles_per_deck)
@@ -928,6 +1013,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "exhaustive": exhaustive,
             "exhaustive_selfplay": exhaustive_selfplay,
             "exhaustive_repeats": exhaustive_repeats,
+            "scripted_cells": scripted_cells,
             "gate_floor": gate_floor, "gate_every": gate_every,
             "expert_decks": expert_decks,
             "expert_games": expert_games, "use_actor": use_actor,
@@ -940,8 +1026,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     total_txt = "unbounded" if total is None else str(total)
     times_txt = ("once" if exhaustive_repeats == 1
                  else f"{exhaustive_repeats}x")
+    scr_cells_txt = (f"; +{scripted_cells} rotating vs-scripted cell(s) per slot"
+                     if scripted_cells else "; no vs-scripted cells")
     focus_txt = (f"exhaustive SELF-PLAY matrix (every unordered pair {times_txt}, "
-                 f"every slot; no vs-scripted cells)" if exhaustive_selfplay
+                 f"every slot{scr_cells_txt})" if exhaustive_selfplay
                  else f"exhaustive matrix (every matchup cell {times_txt}, every slot)"
                  if exhaustive
                  else "matrix (whole-roster focus every slot)" if matrix
@@ -967,8 +1055,16 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               f"(scripted:hard on the opponent seat that share of self-play "
               f"games; Python backend)")
     if expert_decks:
+        # Raw value (the 'roster' sentinel included) — az_cycle prints what it
+        # resolves to each slot.
         print(f"  expert demonstrations: {', '.join(expert_decks)} "
               f"({expert_games} scripted:hard matches per deck per slot)")
+    if scripted_cells:
+        n_ordered = len(roster) * len(roster)
+        print(f"  rotating vs-scripted cells: {scripted_cells} per slot, offset "
+              f"(slot * {scripted_cells}) % {n_ordered} over the ordered "
+              f"(focus, opponent) pair list "
+              f"({-(-n_ordered // scripted_cells)} slots cover every pair)")
 
     def save_progress(next_slot: int):
         _write_az_league_state(ckpt_dir, {
@@ -1027,7 +1123,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        roster=roster, bo3=bo3, gate=do_gate,
                        exhaustive=exhaustive,
                        exhaustive_selfplay=exhaustive_selfplay,
-                       exhaustive_repeats=exhaustive_repeats)
+                       exhaustive_repeats=exhaustive_repeats,
+                       scripted_cells=scripted_cells, slot=si)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         last_snapshot = tr.get("snapshot")
         if ev is None:
@@ -1141,13 +1238,18 @@ def run_cycle(args) -> None:
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
              gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
-             expert_decks=_split_decks(getattr(args, "expert_decks", None)),
-             expert_games=getattr(args, "expert_games", 16),
+             # Raw value: az_cycle resolves the roster/none sentinel.
+             expert_decks=_split_decks(getattr(args, "expert_decks",
+                                               EXPERT_DECKS_ROSTER)),
+             expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args),
              exhaustive=getattr(args, "exhaustive", False),
              exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
-             exhaustive_repeats=getattr(args, "exhaustive_repeats", 1))
+             exhaustive_repeats=getattr(args, "exhaustive_repeats",
+                                        DEFAULT_AZ_EXHAUSTIVE_REPEATS),
+             scripted_cells=getattr(args, "scripted_cells",
+                                    DEFAULT_AZ_SCRIPTED_CELLS))
 
 
 def run_league(args) -> None:
@@ -1172,11 +1274,16 @@ def run_league(args) -> None:
               matrix=getattr(args, "matrix", False),
               exhaustive=getattr(args, "exhaustive", False),
               exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
-              exhaustive_repeats=getattr(args, "exhaustive_repeats", 1),
+              exhaustive_repeats=getattr(args, "exhaustive_repeats",
+                                         DEFAULT_AZ_EXHAUSTIVE_REPEATS),
+              scripted_cells=getattr(args, "scripted_cells",
+                                     DEFAULT_AZ_SCRIPTED_CELLS),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
               gate_every=getattr(args, "gate_every", DEFAULT_GATE_EVERY),
-              expert_decks=_split_decks(getattr(args, "expert_decks", None)),
-              expert_games=getattr(args, "expert_games", 16),
+              # Raw value: az_cycle resolves the roster/none sentinel per slot.
+              expert_decks=_split_decks(getattr(args, "expert_decks",
+                                                EXPERT_DECKS_ROSTER)),
+              expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
               use_actor=_resolve_use_actor(args), resume=args.resume,
               bo3=not getattr(args, "bo1", False))
 
@@ -1264,10 +1371,26 @@ if __name__ == "__main__":
                    default=DEFAULT_AZ_PROMOTE_THRESHOLD)
     c.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
                    help="Per-piloted-deck gate floor (0 disables the veto)")
-    c.add_argument("--expert-decks", default=None,
+    c.add_argument("--exhaustive", action="store_true",
+                   help="Exact matchup matrix instead of the random draw")
+    c.add_argument("--exhaustive-selfplay", action="store_true",
+                   help="Exhaustive matrix, pure SELF-PLAY cells only "
+                        "(implies --exhaustive)")
+    c.add_argument("--exhaustive-repeats", type=int,
+                   default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+                   help="Play every cell of the matrix N times (default %d)"
+                        % DEFAULT_AZ_EXHAUSTIVE_REPEATS)
+    c.add_argument("--scripted-cells", type=int,
+                   default=DEFAULT_AZ_SCRIPTED_CELLS,
+                   help="With --exhaustive-selfplay: also play K vs-scripted "
+                        "matches from the rotating ordered-pair slice "
+                        "(default %d; 0 disables)" % DEFAULT_AZ_SCRIPTED_CELLS)
+    c.add_argument("--expert-decks", default=EXPERT_DECKS_ROSTER,
                    help="Comma-separated decks to also write scripted:hard "
                         "EXPERT demonstration shards for each cycle (BC "
-                        "targets for combo lines search can't discover)")
+                        "targets for combo lines search can't discover); "
+                        "default '%s' = every decks/league/ deck, 'none' to "
+                        "disable" % EXPERT_DECKS_ROSTER)
     c.add_argument("--expert-games", type=int, default=DEFAULT_AZ_EXPERT_GAMES,
                    help="Expert matches per expert deck per cycle")
     c.add_argument("--seed", type=int, default=1)
@@ -1333,10 +1456,27 @@ if __name__ == "__main__":
     lg.add_argument("--matrix", action="store_true",
                     help="Whole-roster focus MATRIX every slot instead of the "
                          "per-deck focus rotation")
-    lg.add_argument("--expert-decks", default=None,
+    lg.add_argument("--exhaustive", action="store_true",
+                    help="Exact matchup matrix every slot")
+    lg.add_argument("--exhaustive-selfplay", action="store_true",
+                    help="Exhaustive matrix, pure SELF-PLAY cells only "
+                         "(implies --exhaustive)")
+    lg.add_argument("--exhaustive-repeats", type=int,
+                    default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+                    help="Play every cell of the matrix N times per slot "
+                         "(default %d)" % DEFAULT_AZ_EXHAUSTIVE_REPEATS)
+    lg.add_argument("--scripted-cells", type=int,
+                    default=DEFAULT_AZ_SCRIPTED_CELLS,
+                    help="With --exhaustive-selfplay: also play K vs-scripted "
+                         "matches per slot from the rotating ordered-pair "
+                         "slice (default %d; 0 disables)"
+                         % DEFAULT_AZ_SCRIPTED_CELLS)
+    lg.add_argument("--expert-decks", default=EXPERT_DECKS_ROSTER,
                     help="Comma-separated decks to also write scripted:hard "
                          "EXPERT demonstration shards for each slot (BC "
-                         "targets for combo lines search can't discover)")
+                         "targets for combo lines search can't discover); "
+                         "default '%s' = every decks/league/ deck, 'none' to "
+                         "disable" % EXPERT_DECKS_ROSTER)
     lg.add_argument("--expert-games", type=int, default=DEFAULT_AZ_EXPERT_GAMES,
                     help="Expert matches per expert deck per slot")
     lg.add_argument("--seed", type=int, default=1)

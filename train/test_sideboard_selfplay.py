@@ -21,6 +21,13 @@ finishes fast and cleanly) and asserts:
         here straight from the recorded ``game_winners``);
   (iv)  sanity: in-game samples still price by their OWN game's winner.
 
+It also covers az_selfplay's exhaustive SCHEDULE building — specifically the
+rotating vs-scripted slice an ``--exhaustive-selfplay`` slot adds
+(:func:`check_scripted_cell_rotation`): slot ``s`` takes the K consecutive
+ordered (focus, opponent) pairs at offset ``(s * K) % n_ordered`` with
+wraparound, ceil(n_ordered / K) slots cover every pair, K=0 adds nothing, and a
+full ``--exhaustive`` matrix ignores the knob. That part is engine-free.
+
 Torch-free: ``_play_match``/``_backfill_and_pack`` (az_selfplay), ``run_search``
 (mcts) and ``SearchRoboMageEnv`` (search_env) all import torch only lazily inside
 worker/evaluator code paths this test never enters; the evaluator here is
@@ -43,7 +50,9 @@ from env import _MATCH_CTX_START  # noqa: E402
 from cli_spec import BINARY, BIN_DIR  # noqa: E402
 from search_env import SearchRoboMageEnv  # noqa: E402
 from mcts import UniformEvaluator  # noqa: E402
-from az_selfplay import _play_match, _backfill_and_pack  # noqa: E402
+from az_selfplay import (_play_match, _backfill_and_pack,  # noqa: E402
+                         build_exhaustive_schedule_ex, ordered_matchup_pairs,
+                         rotating_scripted_pairs)
 
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
 
@@ -88,7 +97,111 @@ def _expected_z(winner, mover_is_a) -> float:
     return 1.0 if ((winner == "A") == mover_is_a) else -1.0
 
 
+def check_scripted_cell_rotation() -> int:
+    """The rotating vs-scripted slice of an --exhaustive-selfplay schedule.
+
+    Engine-free (pure schedule building): slot s takes the K consecutive ordered
+    (focus, opponent) pairs starting at (s * K) % n_ordered, wrapping, so
+    successive az-league slots tile the whole ordered list. Returns a failure
+    count."""
+    failures = 0
+    roster = [f"league/d{i}" for i in range(10)]
+    pairs = ordered_matchup_pairs(roster, roster)
+    n_ordered = len(pairs)          # 100 on a 10-deck roster
+    k = 20
+    if n_ordered != 100:
+        failures += 1
+        print(f"FAIL (r0): expected 100 ordered pairs on a 10-deck roster, "
+              f"got {n_ordered}")
+
+    # (r1) slot 0 takes pairs 0..K-1; slot 5 wraps back to offset 0 ((5*20)%100).
+    if rotating_scripted_pairs(roster, roster, k, slot=0) != pairs[:k]:
+        failures += 1
+        print("FAIL (r1): slot 0 must take the first K ordered pairs")
+    if rotating_scripted_pairs(roster, roster, k, slot=5) != pairs[:k]:
+        failures += 1
+        print("FAIL (r1): slot 5 with K=20 must wrap to offset 0 "
+              "((5*20) % 100 == 0)")
+    # A genuinely wrapping slice: K=30, slot 3 -> offset 90 -> 90..99 then 0..19.
+    wrapped = rotating_scripted_pairs(roster, roster, 30, slot=3)
+    if wrapped != pairs[90:] + pairs[:20]:
+        failures += 1
+        print(f"FAIL (r1): K=30 slot 3 must wrap 90..99 + 0..19, got "
+              f"{wrapped[:3]}...{wrapped[-3:]}")
+    if not failures:
+        print("ok  (r1): rotation offset (slot * K) % n_ordered wraps correctly")
+
+    # (r2) ceil(n_ordered / K) consecutive slots cover every ordered pair.
+    slots = -(-n_ordered // k)
+    seen = set()
+    for s in range(slots):
+        seen.update(rotating_scripted_pairs(roster, roster, k, slot=s))
+    if seen != set(pairs):
+        failures += 1
+        print(f"FAIL (r2): {slots} slots covered {len(seen)}/{n_ordered} "
+              f"ordered pairs")
+    else:
+        print(f"ok  (r2): {slots} slots cover all {n_ordered} ordered pairs")
+
+    # (r3) the cells land in the schedule, marked exactly like --exhaustive's
+    # scripted cells (a non-None net_is_a seat), on top of the 55 unordered
+    # self-play cells x repeats.
+    sched, seats = build_exhaustive_schedule_ex(
+        roster, roster, seed=1, include_scripted=False, repeats=2,
+        scripted_cells=k, slot=0)
+    n_scr = sum(1 for s in seats if s is not None)
+    n_self = len(seats) - n_scr
+    if n_scr != k or n_self != 55 * 2 or len(sched) != len(seats):
+        failures += 1
+        print(f"FAIL (r3): expected {k} scripted + 110 self-play cells, got "
+              f"{n_scr} + {n_self} (sched {len(sched)}, seats {len(seats)})")
+    else:
+        print(f"ok  (r3): schedule = 110 self-play + {k} scripted cells "
+              f"(K is per-slot, not multiplied by repeats)")
+    # The scripted cells are exactly this slot's pair slice (either seat order).
+    want = {tuple(sorted(p)) for p in pairs[:k]}
+    got = {tuple(sorted((a, b))) for (a, b, _), s in zip(sched, seats)
+           if s is not None}
+    if not got <= want:
+        failures += 1
+        print(f"FAIL (r3): scripted cells outside this slot's slice: {got - want}")
+
+    # (r4) K=0 adds nothing.
+    _s0, seats0 = build_exhaustive_schedule_ex(
+        roster, roster, seed=1, include_scripted=False, repeats=1,
+        scripted_cells=0, slot=0)
+    if any(s is not None for s in seats0) or len(seats0) != 55:
+        failures += 1
+        print(f"FAIL (r4): scripted_cells=0 must leave a pure 55-cell self-play "
+              f"matrix, got {len(seats0)} cells "
+              f"({sum(1 for s in seats0 if s is not None)} scripted)")
+    else:
+        print("ok  (r4): scripted_cells=0 leaves the pure self-play matrix")
+
+    # (r5) full --exhaustive ignores the knob (it already plays every ordered
+    # pair): the schedule is identical with and without it.
+    full_a = build_exhaustive_schedule_ex(roster, roster, seed=3,
+                                          include_scripted=True, repeats=1,
+                                          scripted_cells=0, slot=0)
+    full_b = build_exhaustive_schedule_ex(roster, roster, seed=3,
+                                          include_scripted=True, repeats=1,
+                                          scripted_cells=k, slot=7)
+    if full_a != full_b or len(full_a[0]) != 155:
+        failures += 1
+        print(f"FAIL (r5): full exhaustive must ignore scripted_cells "
+              f"(155 cells; got {len(full_a[0])} vs {len(full_b[0])})")
+    else:
+        print("ok  (r5): full exhaustive ignores scripted_cells (155 cells)")
+    return failures
+
+
 def main() -> int:
+    sched_failures = check_scripted_cell_rotation()
+    if sched_failures:
+        print(f"\nexhaustive scripted-cell rotation: FAILED "
+              f"({sched_failures} assertion failure(s))")
+        return 1
+
     if not os.path.exists(BINARY):
         print(f"binary not found at {BINARY} — run `make` first", file=sys.stderr)
         return 2
