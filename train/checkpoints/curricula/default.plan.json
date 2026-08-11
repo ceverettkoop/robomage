@@ -5,31 +5,33 @@
   "phases": [
     {
       "kind": "league",
-      "label": "PPO generalist over the league roster",
       "steps": 18000000,
       "overrides": {
-        "scripted_anchor_frac": 0.2
+        "scripted_anchor_frac": 0.2,
+        "exploiter_floor": 0.0,
+        "promote_margin": 0.0,
+        "fresh": true,
+        "n_envs": 24,
+        "popart": true,
+        "bo3": true
       }
     },
     {
       "kind": "az-league",
-      "label": "AZ exhaustive self-play matrix + rotating scripted cells",
       "rotations": 2,
+      "games": 50,
       "overrides": {
+        "workers": 28,
         "exhaustive_selfplay": true,
-        "exhaustive_repeats": 2,
-        "scripted_cells": 20,
-        "expert_games": 8,
-        "batches": 0,
-        "gate_every": 2
+        "actor": true
       }
     },
     {
       "kind": "baseline",
-      "label": "Generalist round-robin vs scripted:hard",
       "games": 100,
       "overrides": {
-        "all": true
+        "all": true,
+        "workers": 28
       }
     }
   ]
