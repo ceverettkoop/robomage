@@ -41,13 +41,18 @@
 // Rebuilt from scratch by gather_active_statics on every SBE pass; its ActiveStatic
 // entries hold raw pointers into component arrays, so it can be left holding stale
 // pointers across a snapshot restore (the ECS component storage moves). That is
-// safe: nothing reads g_active_statics outside the SBE / legal-action machinery,
-// which never runs at a sideboard prompt (the only cross-game restore root), and
-// the very next SBE pass rebuilds it before any reader. It is deliberately NOT part
-// of the game snapshot.
+// safe for restores: the post-restore hook recomputes it before any reader. It is
+// deliberately NOT part of the game snapshot. But it is NOT safe across a bo3 game
+// boundary: the per-game init_ecs() destroys the previous game's components without
+// touching this registry, and the mulligan-decision observation reads it (via
+// rules_mod::land_drops_remaining in populate_gamestate) BEFORE the first SBE pass
+// of the new game rebuilds it — so StateManager::init() must clear it.
 std::vector<ActiveStatic> g_active_statics;
 
 void StateManager::init() {
+    // Drop the previous game's registry: its sa pointers dangle into component
+    // storage the ECS reset just destroyed (see the comment on g_active_statics).
+    g_active_statics.clear();
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
     global_coordinator.SetSystemSignature<StateManager>(signature);
