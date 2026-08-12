@@ -961,6 +961,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--bo1", "flag",
             help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
                  "opts back into one-off games"),
+        Arg("--workers", "int", default=None,
+            help="Process-pool fan-out over the gate's matchup panel (default "
+                 "max(1, cpu-1), capped at the panel size; 1 = serial). "
+                 "Result-identical for any worker count — per-matchup seeds "
+                 "and fresh controllers make matchups independent"),
     ]),
     Sub("az",
         "One AlphaZero cycle (self-play -> train -> eval/gate) over a deck x "

@@ -450,6 +450,47 @@ def _like_pairing_floor(per_matchup: dict, gate_floor: float,
     return vetoes, deck_floor
 
 
+def _gate_worker_init():
+    """Gate-pool worker initializer: pin the batch-1 CPU net eval to one math
+    thread. Gate parallelism comes from the process fan-out (each worker already
+    alternates with its own engine subprocess); letting torch fan tiny matmuls
+    across cores would just oversubscribe the pool."""
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    try:
+        import torch
+        torch.set_num_threads(1)
+    except ImportError:
+        pass
+
+
+def _gate_matchup_worker(mi: int, dx: str, dy: str, per: int, cand_spec: str,
+                         opp_spec: str, bo3: bool, seed: int) -> tuple:
+    """One gate matchup — ``per`` matches of candidate-piloting-``dx`` vs
+    opponent-piloting-``dy``, seats split half/half — returning
+    ``(mi, mw, ml, md)`` from the candidate's view.
+
+    Controllers are built FRESH from the specs by each ``run_match`` call
+    (never cached across matchups): a controller's internal rng advances as it
+    searches, so reuse would make a matchup's result depend on which matchups
+    ran before it on the same worker. Fresh construction plus seeds derived
+    only from ``mi`` make every matchup's result identical to the serial
+    loop's, regardless of worker count or scheduling."""
+    from runner import run_match
+    half = per // 2
+    mw = ml = md = 0
+    mseed = seed + mi * 100003
+    if per - half:  # candidate (piloting dx) in seat A
+        r = run_match(cand_spec, opp_spec, deck_a=dx, deck_b=dy,
+                      games=per - half, bo3=bo3, seed=mseed, transcript="quiet")
+        mw += r.wins; ml += r.losses; md += r.draws
+    if half:        # candidate (piloting dx) in seat B — flip tally to cand view
+        r = run_match(opp_spec, cand_spec, deck_a=dy, deck_b=dx,
+                      games=half, bo3=bo3, seed=mseed + per, transcript="quiet")
+        mw += r.losses; ml += r.wins; md += r.draws
+    return mi, mw, ml, md
+
+
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = DEFAULT_AZ_EVAL_GAMES, sims: int = DEFAULT_AZ_EVAL_SIMS,
             worlds: int = DEFAULT_AZ_EVAL_WORLDS, c_puct: float = 1.5,
@@ -463,7 +504,8 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             cross_pairs: int = DEFAULT_GATE_CROSS_PAIRS,
             gate_floor: float = DEFAULT_GATE_FLOOR,
             floor_min_matches: int = DEFAULT_GATE_FLOOR_MIN,
-            ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True) -> dict:
+            ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True,
+            workers: Optional[int] = None) -> dict:
     """ROSTER-WIDE gate: play ``candidate`` vs ``incumbent`` over a panel of
     matchups covering EVERY deck in ``roster`` (default: the whole decks/league/
     roster) as pilot — a mirror per deck plus direction-balanced cross pairings
@@ -490,8 +532,16 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     veto is much cheaper than promoting a net that forgot how to pilot a deck.
     Prints per-matchup and per-piloted-deck breakdowns. The no-incumbent-yet
     fallback (vs scripted) is preserved (the like-pairing baseline is then the
-    scripted opponent piloting the same deck)."""
-    from runner import run_match
+    scripted opponent piloting the same deck).
+
+    ``workers`` fans the matchup panel out over a process pool (default
+    ``max(1, cpu-1)``, capped at the panel size; 1 = the old serial loop). A
+    gate match is one driver process ping-ponging with one engine subprocess —
+    ~one busy core — so the serial panel left the machine idle. Matchups are
+    independent and every matchup's seeds derive only from its panel index
+    (and its controllers are built fresh per matchup — see
+    :func:`_gate_matchup_worker`), so the aggregate/breakdown/veto results are
+    identical for ANY worker count; only per-matchup print order varies."""
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
     cand_path = resolve_az_checkpoint(candidate, prefer="snapshot") or candidate
@@ -512,35 +562,56 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     focus_decks = _normalize_focus(deck, roster)
     matchups = _gate_matchups(focus_decks, roster, cross_pairs, seed)
     per = max(2, games // len(matchups))   # matches per matchup (>=2 so seats alternate)
+    if workers is None:
+        workers = max(1, (os.cpu_count() or 2) - 1)
+    workers = max(1, min(int(workers), len(matchups)))
     unit = "matches" if bo3 else "games"
     print(f"[az-eval] {len(matchups)} matchup(s) x {per} {unit} "
-          f"({'bo3' if bo3 else 'bo1'}, seats alternating): candidate={cand_path} vs "
+          f"({'bo3' if bo3 else 'bo1'}, seats alternating, {workers} worker(s)): "
+          f"candidate={cand_path} vs "
           f"{'incumbent ' + inc_path if have_inc else 'scripted (no incumbent yet)'} "
           f"@ sims={sims} worlds={worlds}")
+
+    def _tag(dx: str, dy: str) -> str:
+        return f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
+
+    # Run the panel: each matchup's result depends only on its index mi (seeds)
+    # and the specs (fresh controllers per matchup), so the parallel fan-out is
+    # result-identical to the serial loop for any worker count.
+    tallies: dict = {}       # mi -> (mw, ml, md), candidate's view
+    if workers > 1:
+        import multiprocessing as mp
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+        ctx = mp.get_context("spawn")
+        with ProcessPoolExecutor(max_workers=workers, mp_context=ctx,
+                                 initializer=_gate_worker_init) as ex:
+            futs = [ex.submit(_gate_matchup_worker, mi, dx, dy, per, cand_spec,
+                              opp_spec, bo3, seed)
+                    for mi, (dx, dy) in enumerate(matchups)]
+            for fut in as_completed(futs):
+                mi, mw, ml, md = fut.result()
+                tallies[mi] = (mw, ml, md)
+                dx, dy = matchups[mi]
+                print(f"[az-eval]   {_tag(dx, dy)}: {mw}W-{ml}L-{md}D "
+                      f"({len(tallies)}/{len(matchups)})", flush=True)
+    else:
+        for mi, (dx, dy) in enumerate(matchups):
+            _, mw, ml, md = _gate_matchup_worker(mi, dx, dy, per, cand_spec,
+                                                 opp_spec, bo3, seed)
+            tallies[mi] = (mw, ml, md)
+            print(f"[az-eval]   {_tag(dx, dy)}: {mw}W-{ml}L-{md}D")
 
     w = l = d = 0
     breakdown = []
     per_deck: dict = {}      # piloted deck -> [w, l, d] from the candidate's view
     per_matchup: dict = {}   # (dx, dy) -> [w, l, d], candidate piloting dx
     for mi, (dx, dy) in enumerate(matchups):
-        half = per // 2
-        mw = ml = md = 0
-        mseed = seed + mi * 100003
-        if per - half:  # candidate (piloting dx) in seat A
-            r = run_match(cand_spec, opp_spec, deck_a=dx, deck_b=dy,
-                          games=per - half, bo3=bo3, seed=mseed, transcript="quiet")
-            mw += r.wins; ml += r.losses; md += r.draws
-        if half:        # candidate (piloting dx) in seat B — flip tally to cand view
-            r = run_match(opp_spec, cand_spec, deck_a=dy, deck_b=dx,
-                          games=half, bo3=bo3, seed=mseed + per, transcript="quiet")
-            mw += r.losses; ml += r.wins; md += r.draws
+        mw, ml, md = tallies[mi]
         w += mw; l += ml; d += md
         t = per_deck.setdefault(dx, [0, 0, 0])
         t[0] += mw; t[1] += ml; t[2] += md
         per_matchup[(dx, dy)] = [mw, ml, md]
-        tag = f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
-        breakdown.append((tag, mw, ml, md))
-        print(f"[az-eval]   {tag}: {mw}W-{ml}L-{md}D")
+        breakdown.append((_tag(dx, dy), mw, ml, md))
 
     wr = w / max(1, w + l + d)
     print(f"[az-eval] AGGREGATE candidate {w}W-{l}L-{d}D (win_rate={wr:.3f})")
@@ -766,7 +837,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                  sb_persist=sb_persist,
                  promote_threshold=promote_threshold,
                  promote=True, seed=seed, roster=roster, gate_floor=gate_floor,
-                 bo3=bo3)
+                 bo3=bo3, workers=workers)
     return {"generate": gen, "train": tr, "eval": ev}
 
 
@@ -1202,7 +1273,8 @@ def run_eval(args) -> None:
             promote_threshold=args.promote_threshold, promote=args.promote,
             gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
             seed=args.seed if args.seed is not None else 1,
-            bo3=not getattr(args, "bo1", False))
+            bo3=not getattr(args, "bo1", False),
+            workers=getattr(args, "workers", None))
 
 
 def _split_decks(val) -> Optional[list]:
