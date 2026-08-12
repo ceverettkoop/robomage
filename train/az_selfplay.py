@@ -1602,11 +1602,26 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
               f"samples={s} A={wa} B={wb} draws={dr}")
 
     cap = max(1, workers)
+    active = []
     try:
-        for start in range(0, total_groups, cap):
-            batch = [_launch(gi) for gi in range(start, min(start + cap, total_groups))]
-            for rec in batch:
+        # Sliding pool: keep up to `cap` actor processes in flight and launch
+        # the next matchup group the moment any one exits. Group durations vary
+        # widely (bo3 matches, mixed matchups), so fixed launch batches would
+        # idle the whole pool on each batch's slowest match. Per-group seeds are
+        # assigned by group index at launch, so scheduling order never affects
+        # results.
+        next_gi = 0
+        while next_gi < total_groups or active:
+            while next_gi < total_groups and len(active) < cap:
+                active.append(_launch(next_gi))
+                next_gi += 1
+            done = [rec for rec in active if rec["p"].poll() is not None]
+            if not done:
+                time.sleep(0.2)
+                continue
+            for rec in done:
                 _reap(rec)
+                active.remove(rec)
         if failed:
             for gi, rc, err in failed:
                 tail = "\n".join(err.strip().splitlines()[-10:])
@@ -1615,6 +1630,11 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                 f"az_actor self-play: {len(failed)} of {total_groups} matchup "
                 f"group(s) failed")
     finally:
+        # Abnormal exit (a failed group raising above, KeyboardInterrupt):
+        # don't leave live actor processes running detached.
+        for rec in active:
+            if rec["p"].poll() is None:
+                rec["p"].terminate()
         if tmpdir:
             shutil.rmtree(tmpdir, ignore_errors=True)
 
