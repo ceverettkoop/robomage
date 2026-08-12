@@ -845,7 +845,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *common_args(),
     ]),
     Sub("baseline", "Evaluate model win rate vs the scripted HARD agent (mirror match)", items=[
-        Arg("model", "str", required=False, suggest="checkpoint",
+        Arg("model", "str", required=False, suggest="agent",
             help="Model to evaluate: 'gen', a .zip/.pt path (e.g. an exp_* "
                  "exploiter checkpoint), or a search spec ('az:gen', 'mcts:gen', "
                  "'azraw:gen', with the usual ?sims=... knobs). With --all it "

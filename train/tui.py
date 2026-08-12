@@ -172,9 +172,9 @@ def _expand_checkpoint(val):
 
 # Suggestion source tagged on each Arg in cli_spec (arg.suggest) → scanner.
 # 'checkpoint' stays PPO-zips-only (fields that MaskablePPO.load directly:
-# --load resume, --from-ppo, baseline); 'agent' adds the az:/azraw:/mcts: gen
-# entries for fields that go through make_controller; 'az_checkpoint' is bare AZ
-# .pt paths.
+# --load resume, --from-ppo); 'agent' adds the az:/azraw:/mcts: gen entries for
+# fields that go through make_controller (observe's players, baseline's model);
+# 'az_checkpoint' is bare AZ .pt paths.
 _SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
              "checkpoint": _scan_checkpoints, "agent": _scan_agents,
              "az_checkpoint": _scan_az_checkpoints,
