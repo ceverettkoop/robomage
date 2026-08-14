@@ -143,7 +143,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -2528,7 +2528,7 @@
   Opp:   8 life | mana: empty | hand count: 3 | lib 1
   Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Clue
   Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Self GY: Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
   Self exile: Geist of Saint Traft
@@ -2557,7 +2557,7 @@
   Opp:   8 life | mana: empty | hand count: 3 | lib 1
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra
   Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday

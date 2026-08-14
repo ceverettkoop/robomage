@@ -533,7 +533,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Tropical Island (T)
   Opp BF:   Badlands (T)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Ponder
   Opp GY:  Cabal Therapy, Marsh Flats
@@ -918,7 +918,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Bayou (T) | Tropical Island (T)
   Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Sheoldred's Edict, Force of Will, Polluted Delta, Ponder, Ponder
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
@@ -2047,7 +2047,7 @@
   Opp:   21 life | mana: empty | hand count: 0 | lib 45
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Goblin Bombardment | Plateau (T) | Scrubland (T) | Silent Clearing
   Opp BF:   Bayou (T) | Forest (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Tropical Island (T) | Underground Sea (T)
-  Stack: Ajani, Nacatl Pariah (ability, self) [amt=1]
+  Stack: Ajani, Nacatl Pariah (ability, self)
   Self GY: Voice of Victory, Amped Raptor, Badlands, Swords to Plowshares, Orcish Bowmasters, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Fatal Push, Verdant Catacombs, Sheoldred's Edict, Force of Will, Polluted Delta, Ponder, Ponder
   Self exile: Arid Mesa, Wasteland, Arid Mesa, Wasteland, Cabal Therapy
@@ -2067,7 +2067,7 @@
   Opp:   21 life | mana: empty | hand count: 0 | lib 45
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Goblin Bombardment | Plateau (T) | Scrubland (T) | Silent Clearing
   Opp BF:   Bayou (T) | Forest (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Tropical Island (T) | Underground Sea (T)
-  Stack: Ajani, Nacatl Pariah (ability, self) [amt=1]
+  Stack: Ajani, Nacatl Pariah (ability, self)
   Pending: Goblin Bombardment (self)
   Self GY: Voice of Victory, Amped Raptor, Badlands, Swords to Plowshares, Orcish Bowmasters, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Fatal Push, Verdant Catacombs, Sheoldred's Edict, Force of Will, Polluted Delta, Ponder, Ponder
@@ -2090,7 +2090,7 @@
   Opp:   21 life | mana: empty | hand count: 0 | lib 45
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Goblin Bombardment | Plateau (T) | Scrubland (T) | Silent Clearing
   Opp BF:   Bayou (T) | Forest (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Tropical Island (T) | Underground Sea (T)
-  Stack: Ajani, Nacatl Pariah (ability, self) [amt=1]
+  Stack: Ajani, Nacatl Pariah (ability, self)
   Self GY: Voice of Victory, Amped Raptor, Badlands, Swords to Plowshares, Orcish Bowmasters, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Fatal Push, Verdant Catacombs, Sheoldred's Edict, Force of Will, Polluted Delta, Ponder, Ponder
   Self exile: Arid Mesa, Wasteland, Arid Mesa, Wasteland, Cabal Therapy
@@ -2811,7 +2811,7 @@
   Opp:   13 life | mana: empty | hand count: 0 | lib 35
   Self BF:  Bayou (T) | Forest (T) | Kaito, Bane of Nightmares [5/6] [loy 7] [Hexproof] | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Elegant Parlor (T) | Plateau (T) | Scrubland (T) | Silent Clearing
-  Stack: Polluted Delta (ability, self) [amt=1] -> Kaito, Bane of Nightmares (ability, self)
+  Stack: Polluted Delta (ability, self) -> Kaito, Bane of Nightmares (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Witherbloom Command, Flow State, Wasteland, Fatal Push, Verdant Catacombs, Sheoldred's Edict, Force of Will, Ponder, Ponder
   Opp GY:  Goblin Bombardment, Thoughtseize, Goblin Bombardment, Marsh Flats, Orcish Bowmasters, Voice of Victory, Arid Mesa, Ajani, Nacatl Pariah, Voice of Victory, Amped Raptor, Badlands, Swords to Plowshares, Orcish Bowmasters, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -3319,7 +3319,7 @@
   Opp:   6 life | mana: empty | hand count: 0 | lib 32
   Self BF:  Bayou | Forest | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island | Underground Sea | Clue
   Opp BF:   Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plains (T) | Plateau | Scrubland
-  Stack: Polluted Delta (ability, self) [amt=1] -> Kaito, Bane of Nightmares (ability, self)
+  Stack: Polluted Delta (ability, self) -> Kaito, Bane of Nightmares (ability, self)
   Self GY: Polluted Delta, Brainstorm, Polluted Delta, Witherbloom Command, Flow State, Wasteland, Fatal Push, Verdant Catacombs, Sheoldred's Edict, Force of Will, Ponder, Ponder
   Opp GY:  Silent Clearing, Marsh Flats, Goblin Bombardment, Thoughtseize, Goblin Bombardment, Marsh Flats, Orcish Bowmasters, Voice of Victory, Arid Mesa, Ajani, Nacatl Pariah, Voice of Victory, Amped Raptor, Badlands, Swords to Plowshares, Orcish Bowmasters, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Uro, Titan of Nature's Wrath, Baleful Strix
@@ -3347,7 +3347,7 @@
   Opp:   6 life | mana: empty | hand count: 0 | lib 32
   Self BF:  Bayou (T) | Forest (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island | Underground Sea
   Opp BF:   Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plains (T) | Plateau | Scrubland
-  Stack: Polluted Delta (ability, self) [amt=1] -> Kaito, Bane of Nightmares (ability, self)
+  Stack: Polluted Delta (ability, self) -> Kaito, Bane of Nightmares (ability, self)
   Self GY: Polluted Delta, Brainstorm, Polluted Delta, Witherbloom Command, Flow State, Wasteland, Fatal Push, Verdant Catacombs, Sheoldred's Edict, Force of Will, Ponder, Ponder
   Opp GY:  Silent Clearing, Marsh Flats, Goblin Bombardment, Thoughtseize, Goblin Bombardment, Marsh Flats, Orcish Bowmasters, Voice of Victory, Arid Mesa, Ajani, Nacatl Pariah, Voice of Victory, Amped Raptor, Badlands, Swords to Plowshares, Orcish Bowmasters, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Uro, Titan of Nature's Wrath, Baleful Strix
@@ -3373,7 +3373,7 @@
   Opp:   6 life | mana: empty | hand count: 0 | lib 32
   Self BF:  Bayou (T) | Forest (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Orcish Bowmasters [1/1] [Flash] (SICK) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plains (T) | Plateau | Scrubland
-  Stack: Polluted Delta (ability, self) [amt=1] -> Kaito, Bane of Nightmares (ability, self)
+  Stack: Polluted Delta (ability, self) -> Kaito, Bane of Nightmares (ability, self)
   Pending: Orcish Bowmasters (self)
   Self GY: Polluted Delta, Brainstorm, Polluted Delta, Witherbloom Command, Flow State, Wasteland, Fatal Push, Verdant Catacombs, Sheoldred's Edict, Force of Will, Ponder, Ponder
   Opp GY:  Silent Clearing, Marsh Flats, Goblin Bombardment, Thoughtseize, Goblin Bombardment, Marsh Flats, Orcish Bowmasters, Voice of Victory, Arid Mesa, Ajani, Nacatl Pariah, Voice of Victory, Amped Raptor, Badlands, Swords to Plowshares, Orcish Bowmasters, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -3407,7 +3407,7 @@
   Opp:   5 life | mana: empty | hand count: 0 | lib 32
   Self BF:  Bayou (T) | Forest (T) | Island (T) | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] | Orcish Bowmasters [1/1] [Flash] (SICK) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1] (SICK)
   Opp BF:   Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plains (T) | Plateau | Scrubland
-  Stack: Polluted Delta (ability, self) [amt=1] -> Kaito, Bane of Nightmares (ability, self)
+  Stack: Polluted Delta (ability, self) -> Kaito, Bane of Nightmares (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Brainstorm, Polluted Delta, Witherbloom Command, Flow State, Wasteland, Fatal Push, Verdant Catacombs, Sheoldred's Edict, Force of Will, Ponder, Ponder
   Opp GY:  Silent Clearing, Marsh Flats, Goblin Bombardment, Thoughtseize, Goblin Bombardment, Marsh Flats, Orcish Bowmasters, Voice of Victory, Arid Mesa, Ajani, Nacatl Pariah, Voice of Victory, Amped Raptor, Badlands, Swords to Plowshares, Orcish Bowmasters, Ocelot Pride, Thoughtseize, Marsh Flats

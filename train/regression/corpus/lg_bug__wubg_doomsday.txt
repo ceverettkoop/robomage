@@ -212,7 +212,7 @@
   Self:  19 life | mana: empty | hand(6): Dark Ritual, Doomsday, Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Opp revealed: Tropical Island
@@ -483,7 +483,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Island (T)
   Opp BF:   Tropical Island
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Ponder, Polluted Delta
   Known top: Tamiyo, Inquisitive Student, Ponder, ?, ?, ?
@@ -3121,7 +3121,7 @@
   Opp:   6 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island | Clue | Orc Army [1/1] [+1/+1:1] (SICK)
   Opp BF:   Scrubland | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest
   Opp GY:  Street Wraith, Edge of Autumn, Island, Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Polluted Delta, Polluted Delta, Dark Ritual
@@ -3142,7 +3142,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 47
   Self BF:  Scrubland | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra
   Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Clue | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Lorien Revealed (ability, opponent) -> Misty Rainforest (ability, opponent) [amt=1]
+  Stack: Lorien Revealed (ability, opponent) -> Misty Rainforest (ability, opponent)
   Self GY: Street Wraith, Edge of Autumn, Island, Doomsday
   Opp GY:  Lorien Revealed, Misty Rainforest
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Polluted Delta, Polluted Delta, Dark Ritual
@@ -3164,7 +3164,7 @@
   Opp:   6 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Clue | Orc Army [1/1] [+1/+1:1] (SICK)
   Opp BF:   Scrubland | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra
-  Stack: Lorien Revealed (ability, self) -> Misty Rainforest (ability, self) [amt=1]
+  Stack: Lorien Revealed (ability, self) -> Misty Rainforest (ability, self)
   Pending: Lorien Revealed (self)
   Self GY: Lorien Revealed, Misty Rainforest
   Opp GY:  Street Wraith, Edge of Autumn, Island, Doomsday
@@ -3190,7 +3190,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Scrubland | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra
   Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Clue | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Misty Rainforest (ability, opponent) [amt=1]
+  Stack: Misty Rainforest (ability, opponent)
   Self GY: Street Wraith, Edge of Autumn, Island, Doomsday
   Opp GY:  Lorien Revealed, Misty Rainforest
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Polluted Delta, Polluted Delta, Dark Ritual
@@ -3213,7 +3213,7 @@
   Opp:   6 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Tropical Island (T) | Clue | Orc Army [1/1] [+1/+1:1] (SICK)
   Opp BF:   Scrubland | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Lorien Revealed, Misty Rainforest
   Opp GY:  Street Wraith, Edge of Autumn, Island, Doomsday

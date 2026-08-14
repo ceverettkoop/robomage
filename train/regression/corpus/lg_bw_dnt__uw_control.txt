@@ -175,7 +175,7 @@
   Self:  19 life | mana: empty | hand(7): Brainstorm, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
   Opp BF:   Aether Vial (T) | Scrubland (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
@@ -805,7 +805,7 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Aether Vial [charge:1] (T) | Scrubland (T) | Wasteland
   Opp BF:   Island (T)
-  Stack: Polluted Delta (ability, opponent) [amt=1]
+  Stack: Polluted Delta (ability, opponent)
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp exile:  Geist of Saint Traft
@@ -826,7 +826,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 72
   Self BF:  Island (T)
   Opp BF:   Aether Vial [charge:1] (T) | Scrubland (T) | Wasteland
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Aether Vial
@@ -3230,7 +3230,7 @@
   Opp:   13 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Aether Vial [charge:5] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Island | Murktide Regent [7/7] [+1/+1:4] [Flying] (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Self GY: Prismatic Vista, Wasteland, Aether Vial
   Opp GY:  Force of Negation, Swords to Plowshares, Tundra, Polluted Delta
   Self exile: Pre-War Formalwear, Orcish Bowmasters
@@ -3253,7 +3253,7 @@
   Opp:   13 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Aether Vial [charge:5] | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Island | Murktide Regent [7/7] [+1/+1:4] [Flying] (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Wasteland, Aether Vial
   Opp GY:  Force of Negation, Swords to Plowshares, Tundra, Polluted Delta

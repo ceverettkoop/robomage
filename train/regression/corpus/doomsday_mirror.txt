@@ -1703,7 +1703,7 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
   Opp:   20 life | mana: empty | hand count: 3 | lib 48
   Opp BF:   Lotus Petal
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Edge of Autumn, Underground Sea, Thoughtseize
   Opp GY:  Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Verdant Catacombs
@@ -1720,7 +1720,7 @@
   Self:  20 life | mana: empty | hand(3): Dark Ritual, Polluted Delta, Verdant Catacombs | lib 48
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Lotus Petal
-  Stack: Misty Rainforest (ability, opponent) [amt=1]
+  Stack: Misty Rainforest (ability, opponent)
   Self GY: Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Edge of Autumn, Island, Ponder, Edge of Autumn, Underground Sea, Thoughtseize
   Known top: Thoughtseize, ?, ?, ?, ?
@@ -1740,7 +1740,7 @@
   Self:  17 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Thoughtseize, Street Wraith | lib 48
   Opp:   20 life | mana: empty | hand count: 3 | lib 48
   Opp BF:   Lotus Petal
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Edge of Autumn, Island, Ponder, Edge of Autumn, Underground Sea, Thoughtseize
   Opp GY:  Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
@@ -2307,7 +2307,7 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Doomsday, Thoughtseize, Street Wraith | lib 46
   Opp:   17 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Undercity Sewers (T)
-  Stack: Polluted Delta (ability, opponent) [amt=1]
+  Stack: Polluted Delta (ability, opponent)
   Self GY: Force of Will, Polluted Delta, Misty Rainforest, Edge of Autumn, Island, Ponder, Edge of Autumn, Underground Sea, Thoughtseize
   Opp GY:  Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Verdant Catacombs
@@ -2327,7 +2327,7 @@
   Self:  17 life | mana: empty | hand(2): Dark Ritual, Verdant Catacombs | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 46
   Opp BF:   Undercity Sewers (T)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Force of Will, Polluted Delta, Misty Rainforest, Edge of Autumn, Island, Ponder, Edge of Autumn, Underground Sea, Thoughtseize
@@ -3067,7 +3067,7 @@
   Opp:   15 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Lion's Eye Diamond | Swamp
   Opp BF:   Undercity Sewers (T)
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Force of Will, Polluted Delta, Misty Rainforest, Edge of Autumn, Island, Ponder, Edge of Autumn, Underground Sea, Thoughtseize
   Known opp hand: Doomsday, Doomsday, Street Wraith
@@ -3089,7 +3089,7 @@
   Opp:   16 life | mana: empty | hand count: 0 | lib 45
   Self BF:  Undercity Sewers (T)
   Opp BF:   Lion's Eye Diamond | Swamp
-  Stack: Verdant Catacombs (ability, opponent) [amt=1]
+  Stack: Verdant Catacombs (ability, opponent)
   Self GY: Thoughtseize, Force of Will, Polluted Delta, Misty Rainforest, Edge of Autumn, Island, Ponder, Edge of Autumn, Underground Sea, Thoughtseize
   Opp GY:  Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Edge of Autumn, Swamp, Underground Sea, Verdant Catacombs
@@ -3109,7 +3109,7 @@
   Opp:   15 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Lion's Eye Diamond | Swamp
   Opp BF:   Undercity Sewers (T)
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize, Force of Will, Polluted Delta, Misty Rainforest, Edge of Autumn, Island, Ponder, Edge of Autumn, Underground Sea, Thoughtseize
@@ -9402,7 +9402,7 @@
   Opp:   2 life | mana: empty | hand count: 5 | lib 0
   Self BF:  Lotus Petal | Lion's Eye Diamond | Swamp | Undercity Sewers | Underground Sea | Dauthi Voidwalker [3/2]
   Opp BF:   Lion's Eye Diamond
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Doomsday, Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Undercity Sewers, Street Wraith, Doomsday
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Street Wraith, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Island, Underground Sea, Polluted Delta, Ponder, Dark Ritual, Thoughtseize, Thoughtseize, Thoughtseize, Force of Will
@@ -9430,7 +9430,7 @@
   Opp:   2 life | mana: empty | hand count: 5 | lib 0
   Self BF:  Lotus Petal | Lion's Eye Diamond | Swamp | Undercity Sewers | Underground Sea
   Opp BF:   Lion's Eye Diamond
-  Stack: Dauthi Voidwalker (ability, self) [amt=1] -> Misty Rainforest (ability, self) [amt=1]
+  Stack: Dauthi Voidwalker (ability, self) [amt=1] -> Misty Rainforest (ability, self)
   Self GY: Dauthi Voidwalker, Misty Rainforest, Doomsday, Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Undercity Sewers, Street Wraith, Doomsday
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Street Wraith, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Island, Underground Sea, Polluted Delta, Ponder, Dark Ritual, Thoughtseize, Thoughtseize, Thoughtseize, Force of Will
@@ -9454,7 +9454,7 @@
   Opp:   15 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Lion's Eye Diamond
   Opp BF:   Lotus Petal | Lion's Eye Diamond | Swamp | Undercity Sewers | Underground Sea
-  Stack: Dauthi Voidwalker (ability, opponent) [amt=1] -> Misty Rainforest (ability, opponent) [amt=1]
+  Stack: Dauthi Voidwalker (ability, opponent) [amt=1] -> Misty Rainforest (ability, opponent)
   Self GY: Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Undercity Sewers, Street Wraith, Doomsday
   Opp GY:  Dauthi Voidwalker, Misty Rainforest, Doomsday, Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Street Wraith, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Island, Underground Sea, Polluted Delta, Ponder, Dark Ritual, Thoughtseize, Thoughtseize, Thoughtseize, Force of Will
@@ -9481,7 +9481,7 @@
   Opp:   2 life | mana: empty | hand count: 5 | lib 0
   Self BF:  Lotus Petal | Lion's Eye Diamond | Swamp | Undercity Sewers | Underground Sea
   Opp BF:   Lion's Eye Diamond
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Dauthi Voidwalker, Misty Rainforest, Doomsday, Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Undercity Sewers, Street Wraith, Doomsday
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Street Wraith, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Island, Underground Sea, Polluted Delta, Ponder, Dark Ritual, Thoughtseize, Thoughtseize, Thoughtseize, Force of Will
@@ -9505,7 +9505,7 @@
   Opp:   15 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Lion's Eye Diamond
   Opp BF:   Lotus Petal | Lion's Eye Diamond | Swamp | Undercity Sewers | Underground Sea
-  Stack: Misty Rainforest (ability, opponent) [amt=1]
+  Stack: Misty Rainforest (ability, opponent)
   Self GY: Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Undercity Sewers, Street Wraith, Doomsday
   Opp GY:  Dauthi Voidwalker, Misty Rainforest, Doomsday, Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Street Wraith, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Misty Rainforest, Island, Underground Sea, Polluted Delta, Ponder, Dark Ritual, Thoughtseize, Thoughtseize, Thoughtseize, Force of Will
@@ -9531,7 +9531,7 @@
   Opp:   2 life | mana: empty | hand count: 5 | lib 0
   Self BF:  Lotus Petal | Lion's Eye Diamond | Swamp | Undercity Sewers | Underground Sea
   Opp BF:   Lion's Eye Diamond
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Dauthi Voidwalker, Misty Rainforest, Doomsday, Verdant Catacombs, Dark Ritual, Polluted Delta, Thoughtseize, Lotus Petal, Edge of Autumn, Underground Sea, Ponder, Personal Tutor, Lotus Petal, Edge of Autumn, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Edge of Autumn, Underground Sea, Edge of Autumn, Undercity Sewers, Street Wraith, Doomsday

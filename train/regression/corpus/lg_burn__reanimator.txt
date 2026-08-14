@@ -500,7 +500,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Swamp
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Force of Will, Marsh Flats
   Opp GY:  Chain Lightning, Rift Bolt

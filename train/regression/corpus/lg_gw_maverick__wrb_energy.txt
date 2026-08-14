@@ -1279,7 +1279,7 @@
   Opp:   15 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Opp BF:   Scrubland (T) | Silent Clearing
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1858,7 +1858,7 @@
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Opp BF:   Silent Clearing
-  Stack: Windswept Heath (ability, self) [amt=1]
+  Stack: Windswept Heath (ability, self)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats

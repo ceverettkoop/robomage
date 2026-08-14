@@ -3102,7 +3102,7 @@
   Opp:   20 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Island | Lion's Eye Diamond | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue | Clue (SICK)
   Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Dark Depths (T) | Construct [6/5] [Haste] (eq:Skateboard)
-  Stack: Dark Depths (ability, opponent) [amt=1]
+  Stack: Dark Depths (ability, opponent)
   Self GY: Tropical Island, Tropical Island, Lotus Petal
   Opp GY:  Dark Depths, Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Self exile: Quantum Riddler

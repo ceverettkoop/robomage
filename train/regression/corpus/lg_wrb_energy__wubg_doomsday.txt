@@ -425,7 +425,7 @@
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Lotus Petal, Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa

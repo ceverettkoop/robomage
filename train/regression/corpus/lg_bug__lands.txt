@@ -272,7 +272,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Life from the Loam, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island | lib 55
   Opp:   20 life | mana: empty | hand count: 5 | lib 55
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest
   Extras: self_lands_played=1, self_revolt
@@ -585,7 +585,7 @@
   Opp:   20 life | mana: empty | hand count: 1 | lib 53
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Exploration | Grafdigger's Cage | Mox Diamond | Thespian's Stage (T)
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Bayou, Misty Rainforest
   Opp GY:  Wasteland, Savannah
@@ -2692,7 +2692,7 @@
   Opp:   5 life | mana: empty | hand count: 4 | lib 39
   Self BF:  Expedition Map | Exploration | Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Thespian's Stage (T) | Urza's Saga [lore:1] (T) | Wasteland | Construct [6/6] (T) | Construct [6/6] (T)
   Opp BF:   Forest | Clue | Clue | Clue | Clue
-  Stack: Misty Rainforest (ability, opponent) [amt=1]
+  Stack: Misty Rainforest (ability, opponent)
   Self GY: Life from the Loam, Life from the Loam, Malevolent Rumble, Forest, Yavimaya, Cradle of Growth, Thespian's Stage, Dark Depths, Pithing Needle, Malevolent Rumble, The Tabernacle at Pendrell Vale, Sphere of Resistance, Exploration, Savannah, Savannah
   Opp GY:  Misty Rainforest, Tamiyo, Inquisitive Student, Baleful Strix, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Wasteland, Brainstorm, Tropical Island, Baleful Strix, Tropical Island, Underground Sea, Ponder, Force of Will, Verdant Catacombs, Bayou, Misty Rainforest
   Known opp hand: Life from the Loam
@@ -2713,7 +2713,7 @@
   Opp:   20 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Forest | Clue | Clue | Clue | Clue
   Opp BF:   Expedition Map | Exploration | Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Thespian's Stage (T) | Urza's Saga [lore:1] (T) | Wasteland | Construct [6/6] (T) | Construct [6/6] (T)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Tamiyo, Inquisitive Student, Baleful Strix, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Wasteland, Brainstorm, Tropical Island, Baleful Strix, Tropical Island, Underground Sea, Ponder, Force of Will, Verdant Catacombs, Bayou, Misty Rainforest
   Opp GY:  Life from the Loam, Life from the Loam, Malevolent Rumble, Forest, Yavimaya, Cradle of Growth, Thespian's Stage, Dark Depths, Pithing Needle, Malevolent Rumble, The Tabernacle at Pendrell Vale, Sphere of Resistance, Exploration, Savannah, Savannah

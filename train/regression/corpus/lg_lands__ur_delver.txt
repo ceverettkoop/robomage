@@ -303,7 +303,7 @@
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 1 | lib 53
   Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Urza's Saga, Dark Depths
@@ -688,7 +688,7 @@
   Opp:   20 life | mana: empty | hand count: 0 | lib 52
   Self BF:  Island (T)
   Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [4/4] (SICK)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
   Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths

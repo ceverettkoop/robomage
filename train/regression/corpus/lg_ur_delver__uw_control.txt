@@ -326,7 +326,7 @@
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Opp BF:   Thundering Falls (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -865,7 +865,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island
   Opp BF:   Cori-Steel Cutter
-  Stack: Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Mishra's Bauble (ability, opponent)
   Self GY: Force of Will, Ponder, Flooded Strand
   Opp GY:  Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
@@ -939,7 +939,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Island (T)
   Opp BF:   Cori-Steel Cutter
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2386,7 +2386,7 @@
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
   Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative

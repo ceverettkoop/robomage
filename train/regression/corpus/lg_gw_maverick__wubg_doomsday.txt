@@ -370,7 +370,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Once Upon a Time

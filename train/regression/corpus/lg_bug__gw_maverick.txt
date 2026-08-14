@@ -443,7 +443,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Tropical Island (T)
   Opp BF:   Dryad Arbor [1/1] (SICK)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Ponder
   Opp GY:  Once Upon a Time
@@ -523,7 +523,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Dryad Arbor [1/1]
   Opp BF:   Bayou | Tropical Island (T)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Polluted Delta, Ponder, Ponder
@@ -852,7 +852,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Bayou (T) | Tropical Island (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Thoughtseize, Brainstorm, Force of Will, Polluted Delta, Ponder, Ponder
   Opp GY:  Thalia, Guardian of Thraben, Green Sun's Zenith, Misty Rainforest, Once Upon a Time
@@ -2237,7 +2237,7 @@
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] | Tropical Island (T) | Tropical Island (T) | Uro, Titan of Nature's Wrath [6/6] (SICK) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Forest (T) | Keen-Eyed Curator [3/3] (T) | Frenzied Trapbreaker [3/3] (T)
-  Stack: Polluted Delta (ability, self) [amt=1] -> Uro, Titan of Nature's Wrath (ability, self)
+  Stack: Polluted Delta (ability, self) -> Uro, Titan of Nature's Wrath (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Flow State, Wasteland, Verdant Catacombs, Thoughtseize, Polluted Delta, Ponder, Ponder
   Opp GY:  Wasteland, Endurance, Dryad Arbor, Thalia, Guardian of Thraben, Green Sun's Zenith, Misty Rainforest, Once Upon a Time
@@ -2847,7 +2847,7 @@
   Opp:   14 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Tropical Island (T) | Tropical Island (T) | Uro, Titan of Nature's Wrath [6/6] (SICK) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Forest (T) | Keen-Eyed Curator [3/3] (T) | Frenzied Trapbreaker [3/3] (T)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Wasteland, Verdant Catacombs, Thoughtseize
   Opp GY:  Wasteland, Endurance, Dryad Arbor, Thalia, Guardian of Thraben, Green Sun's Zenith, Misty Rainforest, Once Upon a Time

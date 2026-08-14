@@ -227,7 +227,7 @@
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
-  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Tropical Island
@@ -393,7 +393,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Island
   Opp BF:   Tropical Island
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Tropical Island
@@ -624,7 +624,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Island | Mystic Sanctuary
   Opp BF:   Tropical Island | Tropical Island
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
@@ -1528,7 +1528,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 36
   Self BF:  Swamp (T) | Tropical Island (T) | Tropical Island (T)
   Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
@@ -2107,7 +2107,7 @@
   Opp:   17 life | mana: empty | hand count: 0 | lib 34
   Self BF:  Swamp | Tropical Island | Tropical Island
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Stack: Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Mishra's Bauble (ability, opponent)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2130,7 +2130,7 @@
   Opp:   17 life | mana: empty | hand count: 0 | lib 34
   Self BF:  Swamp (T) | Tropical Island (T) | Tropical Island
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Stack: Orcish Bowmasters (spell, self) -> Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Orcish Bowmasters (spell, self) -> Mishra's Bauble (ability, opponent)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2150,7 +2150,7 @@
   Opp:   17 life | mana: empty | hand count: 0 | lib 34
   Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Stack: Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Mishra's Bauble (ability, opponent)
   Pending: Orcish Bowmasters (self)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
@@ -2174,7 +2174,7 @@
   Opp:   17 life | mana: empty | hand count: 0 | lib 34
   Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player) -> Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player) -> Mishra's Bauble (ability, opponent)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2196,7 +2196,7 @@
   Opp:   16 life | mana: empty | hand count: 0 | lib 34
   Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Stack: Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Mishra's Bauble (ability, opponent)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2338,7 +2338,7 @@
   Opp:   15 life | mana: empty | hand count: 1 | lib 33
   Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [2/2] [+1/+1:2] (SICK)
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Self GY: Verdant Catacombs, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2361,7 +2361,7 @@
   Opp:   15 life | mana: empty | hand count: 1 | lib 33
   Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (SICK)
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Stack: Lorien Revealed (ability, self) -> Verdant Catacombs (ability, self) [amt=1]
+  Stack: Lorien Revealed (ability, self) -> Verdant Catacombs (ability, self)
   Pending: Lorien Revealed (self)
   Self GY: Lorien Revealed, Verdant Catacombs, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
@@ -2389,7 +2389,7 @@
   Opp:   15 life | mana: empty | hand count: 1 | lib 33
   Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [2/2] [+1/+1:2] (SICK)
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Pending: Verdant Catacombs (self)
   Self GY: Lorien Revealed, Verdant Catacombs, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
@@ -2963,7 +2963,7 @@
   Opp:   1 life | mana: empty | hand count: 3 | lib 42
   Self BF:  Cori-Steel Cutter | Island (T) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island
   Opp BF:   Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island | Tropical Island | Orc Army [2/2] [+1/+1:2] (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Flow State, Murktide Regent, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Sheoldred's Edict, Lorien Revealed, Verdant Catacombs, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student

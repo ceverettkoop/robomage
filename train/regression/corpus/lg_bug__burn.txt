@@ -455,7 +455,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Tropical Island (T)
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Ponder
   Known top: Thoughtseize, Force of Will, ?, ?, ?
@@ -1043,7 +1043,7 @@
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Bayou | Island | Tropical Island
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
   Opp GY:  Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt

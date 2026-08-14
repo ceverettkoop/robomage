@@ -97,7 +97,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Force of Will, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -331,7 +331,7 @@
   Self:  19 life | mana: empty | hand(6): Brainstorm, Brainstorm, Dark Ritual, Polluted Delta, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 66
   Opp BF:   Island (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Doomsday
   Opp GY:  Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -672,7 +672,7 @@
   Opp:   15 life | mana: empty | hand count: 3 | lib 65
   Self BF:  Island (T)
   Opp BF:   Island | Underground Sea (T)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
   Opp GY:  Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -999,7 +999,7 @@
   Opp:   12 life | mana: empty | hand count: 2 | lib 64
   Self BF:  Island (T) | Scrubland
   Opp BF:   Island | Underground Sea (T)
-  Stack: Bloodstained Mire (ability, opponent) [amt=1]
+  Stack: Bloodstained Mire (ability, opponent)
   Self GY: Tamiyo, Inquisitive Student, Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
   Opp GY:  Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp revealed: Polluted Delta, Ponder, Island, Thoughtseize, Lotus Petal, Underground Sea, Bloodstained Mire
@@ -1019,7 +1019,7 @@
   Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Island | Underground Sea (T)
   Opp BF:   Island (T) | Scrubland
-  Stack: Bloodstained Mire (ability, self) [amt=1]
+  Stack: Bloodstained Mire (ability, self)
   Pending: Bloodstained Mire (self)
   Self GY: Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp GY:  Tamiyo, Inquisitive Student, Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
@@ -1930,7 +1930,7 @@
   Opp:   12 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Island (T) | Quantum Riddler [4/6] [Flying] (SICK) | Scrubland (T) | Tundra (T)
   Opp BF:   Island | Swamp | Underground Sea
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Self GY: Flooded Strand, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
   Opp GY:  Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Known top: Dark Ritual, ?, ?, ?, ?
@@ -1951,7 +1951,7 @@
   Opp:   12 life | mana: empty | hand count: 3 | lib 62
   Self BF:  Island (T) | Quantum Riddler [4/6] [Flying] (SICK) | Scrubland (T) | Tundra (T)
   Opp BF:   Island | Swamp | Underground Sea
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
   Opp GY:  Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
@@ -2278,7 +2278,7 @@
   Opp:   11 life | mana: empty | hand count: 3 | lib 60
   Self BF:  Island (T) | Scrubland (T) | Tropical Island | Tundra (T)
   Opp BF:   Island (T) | Swamp (T) | Underground Sea
-  Stack: Polluted Delta (ability, opponent) [amt=1]
+  Stack: Polluted Delta (ability, opponent)
   Self GY: Flooded Strand, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
   Opp GY:  Polluted Delta, Flow State, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Quantum Riddler
@@ -2299,7 +2299,7 @@
   Opp:   17 life | mana: empty | hand count: 4 | lib 41
   Self BF:  Island (T) | Swamp (T) | Underground Sea
   Opp BF:   Island (T) | Scrubland (T) | Tropical Island | Tundra (T)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Flow State, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Opp GY:  Flooded Strand, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
@@ -4854,7 +4854,7 @@
   Opp:   5 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Island (T) | Lion's Eye Diamond | Scrubland (T) | Street Wraith [3/4] (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Teferi, Time Raveler [loy 8] | Tropical Island (T) | Tundra (T) | Underground Sea
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Self GY: Flooded Strand, Ponder, Veil of Summer, Flooded Strand, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
   Opp GY:  Echoing Truth, Careful Study, The Creation of Avacyn, Ponder, Thoughtseize, Underground Sea, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Fatal Push, Brainstorm, Polluted Delta, Flow State, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta
   Self exile: Quantum Riddler
@@ -4882,7 +4882,7 @@
   Opp:   5 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Island (T) | Lion's Eye Diamond | Scrubland (T) | Street Wraith [3/4] (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Teferi, Time Raveler [loy 8] | Tropical Island (T) | Tundra (T) | Underground Sea
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Ponder, Veil of Summer, Flooded Strand, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Polluted Delta, Brainstorm, Tamiyo, Inquisitive Student, Brainstorm, Flooded Strand, Doomsday
   Opp GY:  Echoing Truth, Careful Study, The Creation of Avacyn, Ponder, Thoughtseize, Underground Sea, Atraxa, Grand Unifier, Atraxa, Grand Unifier, Fatal Push, Brainstorm, Polluted Delta, Flow State, Bloodstained Mire, Thoughtseize, Thoughtseize, Thoughtseize, Lotus Petal, Ponder, Polluted Delta

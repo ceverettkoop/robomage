@@ -188,7 +188,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Fatal Push, Polluted Delta, Sheoldred's Edict, Tropical Island, Wasteland | lib 54
   Opp:   20 life | mana: empty | hand count: 6 | lib 69
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -556,7 +556,7 @@
   Opp:   18 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Underground Sea
   Opp BF:   Bayou
-  Stack: Polluted Delta (ability, opponent) [amt=1]
+  Stack: Polluted Delta (ability, opponent)
   Self GY: Otherworldly Gaze, Thoughtseize, Thoughtseize, Consign to Memory, Lotus Petal
   Opp GY:  Polluted Delta, Polluted Delta
   Opp revealed: Polluted Delta, Bayou
@@ -576,7 +576,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 65
   Self BF:  Bayou
   Opp BF:   Underground Sea
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Polluted Delta
   Opp GY:  Otherworldly Gaze, Thoughtseize, Thoughtseize, Consign to Memory, Lotus Petal
@@ -2367,7 +2367,7 @@
   Opp:   10 life | mana: empty | hand count: 7 | lib 56
   Self BF:  Baleful Strix [1/1] [Flying, Deathtouch] | Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Tropical Island | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Undercity Sewers (T)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Baleful Strix, Witherbloom Command, Brainstorm, Wasteland, Sheoldred's Edict, Polluted Delta
   Opp GY:  Otherworldly Gaze, Otherworldly Gaze, Force of Negation, Fatal Push, Archon of Cruelty, Underground Sea, Otherworldly Gaze, Thoughtseize, Thoughtseize, Consign to Memory, Lotus Petal

@@ -208,7 +208,7 @@
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Fiery Islet (T)
-  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp exile:  Rift Bolt
@@ -702,7 +702,7 @@
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
   Self BF:  Island
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
@@ -983,7 +983,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt

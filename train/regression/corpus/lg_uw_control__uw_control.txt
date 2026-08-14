@@ -99,7 +99,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Extras: self_lands_played=1, self_revolt
@@ -256,7 +256,7 @@
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Opp BF:   Island (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp GY:  Ponder, Polluted Delta
@@ -623,7 +623,7 @@
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Force of Will, Ponder, Flooded Strand
@@ -819,7 +819,7 @@
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 47
   Self BF:  Island (T)
   Opp BF:   Island (T) | Island (T)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -2831,7 +2831,7 @@
   Opp:   23 life | mana: empty | energy 4 | hand count: 2 | lib 40
   Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra | Clue (SICK)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Self GY: Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
   Self exile: Force of Will, Flow State
@@ -2853,7 +2853,7 @@
   Opp:   23 life | mana: empty | energy 4 | hand count: 2 | lib 40
   Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra | Clue (SICK)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Wasteland (self)
   Self GY: Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
@@ -2884,7 +2884,7 @@
   Opp:   23 life | mana: empty | energy 4 | hand count: 2 | lib 40
   Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 5] | Tundra (T)
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra | Clue (SICK)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Meticulous Archive, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
@@ -3537,7 +3537,7 @@
   Opp:   23 life | mana: empty | energy 4 | hand count: 4 | lib 35
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Plains | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 7] | Tundra
   Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Ponder, Meticulous Archive, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
@@ -3969,7 +3969,7 @@
   Opp:   15 life | mana: empty | energy 4 | hand count: 0 | lib 33
   Self BF:  Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 8] | Tundra
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Wasteland, Tune the Narrative, Tune the Narrative
   Opp GY:  Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -4314,7 +4314,7 @@
   Opp:   15 life | mana: empty | energy 4 | hand count: 0 | lib 32
   Self BF:  Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Teferi, Time Raveler [loy 4] | The One Ring [burden:3] [Indestructible] (T) | Tundra (T) | Tundra
   Opp BF:   Island | Island | Meticulous Archive | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] | Teferi, Time Raveler [loy 9] | Tundra | Tundra
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Polluted Delta, Wasteland, Tune the Narrative, Tune the Narrative
   Opp GY:  Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -5092,7 +5092,7 @@
   Opp:   10 life | mana: empty | energy 1 | hand count: 1 | lib 30
   Self BF:  Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Plains (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 5] | The One Ring [burden:4] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 10] | Tundra (T) | Tundra (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Lorien Revealed, Brainstorm, Tamiyo, Inquisitive Student, Flooded Strand, Polluted Delta, Wasteland, Tune the Narrative, Tune the Narrative
   Opp GY:  Wrath of the Skies, Tamiyo, Inquisitive Student, Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -5824,7 +5824,7 @@
   Opp:   5 life | mana: empty | energy 1 | hand count: 1 | lib 28
   Self BF:  Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Plains | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 6] | The One Ring [burden:5] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Island (T) | Island | Meticulous Archive | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 18] [Flying] | Teferi, Time Raveler [loy 11] | Tundra | Tundra | Tundra
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Ponder, Flow State, Wrath of the Skies, Force of Negation, The One Ring, Force of Will, Force of Will, Flooded Strand, Lorien Revealed, Brainstorm, Tamiyo, Inquisitive Student, Flooded Strand, Polluted Delta, Wasteland, Tune the Narrative, Tune the Narrative
   Opp GY:  Brainstorm, Wrath of the Skies, Tamiyo, Inquisitive Student, Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta

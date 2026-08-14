@@ -361,7 +361,7 @@
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Opp BF:   Thundering Falls (T)
-  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -1087,7 +1087,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 46
   Self BF:  Island
   Opp BF:   Thundering Falls (T) | Fish [1/1] (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -1419,7 +1419,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 43
   Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Opp BF:   Thundering Falls (T) | Volcanic Island (T) | Fish [1/1] (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -1743,7 +1743,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 42
   Self BF:  Island | Mystic Sanctuary | Thundering Falls (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] (T)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2009,7 +2009,7 @@
   Opp:   10 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] | Monk [1/1] (SICK)
   Opp BF:   Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
@@ -2317,7 +2317,7 @@
   Opp:   16 life | mana: empty | hand count: 1 | lib 34
   Self BF:  Cori-Steel Cutter | Island | Mystic Sanctuary | Thundering Falls | Volcanic Island
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] (T) | Monk [1/1] (SICK)
-  Stack: Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Mishra's Bauble (ability, opponent)
   Self GY: Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain, Into the Flood Maw
@@ -2335,7 +2335,7 @@
   Opp:   16 life | mana: empty | hand count: 1 | lib 34
   Self BF:  Cori-Steel Cutter | Island | Mystic Sanctuary | Thundering Falls | Volcanic Island
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] (T) | Monk [1/1] (SICK)
-  Stack: Mishra's Bauble (ability, opponent) [amt=1]
+  Stack: Mishra's Bauble (ability, opponent)
   Pending: Unholy Heat (self)
   Self GY: Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble

@@ -99,7 +99,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Daze, Ponder, Scalding Tarn, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest
   Extras: self_lands_played=1, self_revolt
@@ -1468,7 +1468,7 @@
   Opp:   10 life | mana: empty | hand count: 3 | lib 5
   Self BF:  Delver of Secrets [1/1] (SICK) | Island (T)
   Opp BF:   Underground Sea (T) | Underground Sea (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Doomsday
@@ -1698,7 +1698,7 @@
   Opp:   18 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Underground Sea
   Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [1/1] (SICK) | Island (T) | Mountain (T)
-  Stack: Verdant Catacombs (ability, self) [amt=1]
+  Stack: Verdant Catacombs (ability, self)
   Pending: Verdant Catacombs (self)
   Self GY: Verdant Catacombs, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Underground Sea, Doomsday
   Opp GY:  Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
@@ -2025,7 +2025,7 @@
   Opp:   3 life | mana: empty | hand count: 3 | lib 0
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mountain (T)
   Opp BF:   Underground Sea
-  Stack: Wooded Foothills (ability, self) [amt=1]
+  Stack: Wooded Foothills (ability, self)
   Pending: Wooded Foothills (self)
   Self GY: Wooded Foothills, Brainstorm, Dragon's Rage Channeler, Delver of Secrets, Unholy Heat, Lightning Bolt, Scalding Tarn, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Verdant Catacombs, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Underground Sea, Doomsday

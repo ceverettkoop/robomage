@@ -168,7 +168,7 @@
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp revealed: Tropical Island
@@ -384,7 +384,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Island (T)
   Opp BF:   Tropical Island
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tropical Island
@@ -960,7 +960,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 50
   Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue
   Opp BF:   Tropical Island
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
@@ -1612,7 +1612,7 @@
   Opp:   15 life | mana: empty | energy 4 | hand count: 3 | lib 37
   Self BF:  Swamp (T)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying]
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2115,7 +2115,7 @@
   Opp:   14 life | mana: empty | energy 4 | hand count: 2 | lib 35
   Self BF:  Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 6]
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand

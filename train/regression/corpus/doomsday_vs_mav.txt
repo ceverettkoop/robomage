@@ -180,7 +180,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Thoughtseize, Dark Ritual, Polluted Delta | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
@@ -498,7 +498,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Swamp (T)
   Opp BF:   Savannah
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
@@ -824,7 +824,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Swamp | Undercity Sewers (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Self GY: Misty Rainforest, Personal Tutor, Daze, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known top: Edge of Autumn, ?, ?, ?, ?
@@ -846,7 +846,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Swamp | Undercity Sewers (T)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Personal Tutor, Daze, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
@@ -2752,7 +2752,7 @@
   Opp:   9 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Swamp | Underground Sea
-  Stack: Windswept Heath (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Undercity Sewers (opponent)
+  Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Undercity Sewers (opponent)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Undercity Sewers, Misty Rainforest, Polluted Delta, Polluted Delta
   Opp exile:  Personal Tutor, Daze, Thoughtseize, Thoughtseize
@@ -2770,7 +2770,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Swamp | Underground Sea
   Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
-  Stack: Windswept Heath (ability, opponent) [amt=1] -> Keen-Eyed Curator (ability, opponent) -> Undercity Sewers (self)
+  Stack: Windswept Heath (ability, opponent) -> Keen-Eyed Curator (ability, opponent) -> Undercity Sewers (self)
   Self GY: Undercity Sewers, Misty Rainforest, Polluted Delta, Polluted Delta
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Personal Tutor, Daze, Thoughtseize, Thoughtseize
@@ -2793,7 +2793,7 @@
   Opp:   9 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Swamp | Underground Sea
-  Stack: Windswept Heath (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Undercity Sewers (opponent)
+  Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Undercity Sewers (opponent)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Undercity Sewers, Misty Rainforest, Polluted Delta, Polluted Delta
@@ -3331,7 +3331,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Swamp | Underground Sea
   Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Self GY: Polluted Delta, Misty Rainforest
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Polluted Delta, Undercity Sewers, Personal Tutor, Daze, Thoughtseize, Thoughtseize
@@ -3354,7 +3354,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Swamp | Underground Sea
   Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Misty Rainforest
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time

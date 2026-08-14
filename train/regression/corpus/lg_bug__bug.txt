@@ -169,7 +169,7 @@
   Self:  19 life | mana: empty | hand(7): Fatal Push, Force of Will, Polluted Delta, Tamiyo, Inquisitive Student, Thoughtseize, Undercity Sewers, Uro, Titan of Nature's Wrath | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest
   Opp revealed: Tropical Island
@@ -340,7 +340,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Bayou
   Opp BF:   Tropical Island
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Force of Will
@@ -2614,7 +2614,7 @@
   Opp:   15 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Swamp (T)
   Opp BF:   Bayou (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers | Clue | Clue | Clue | Clue (SICK)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Witherbloom Command, Wasteland, Life from the Loam, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -4007,7 +4007,7 @@
   Opp:   12 life | mana: empty | hand count: 0 | lib 28
   Self BF:  Island (T) | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Undercity Sewers (T) | Wasteland (T) | Clue | Clue | Clue | Clue | Clue
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Wasteland, Life from the Loam, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -5253,7 +5253,7 @@
   Opp:   18 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [4/5] [loy 6] [Hexproof] | Undercity Sewers | Clue | Clue | Clue
   Opp BF:   Forest (T) | Island (T) | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Polluted Delta (ability, self) [amt=1] -> Kaito, Bane of Nightmares (ability, self)
+  Stack: Polluted Delta (ability, self) -> Kaito, Bane of Nightmares (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Life from the Loam, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Bayou, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -6103,7 +6103,7 @@
   Opp:   7 life | mana: empty | hand count: 2 | lib 8
   Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 7] (T) | Swamp (T) | Undercity Sewers | Clue
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath, Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath, Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest

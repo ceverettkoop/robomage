@@ -2958,7 +2958,7 @@
   Opp:   16 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Wasteland | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Self GY: Prismatic Vista, Scrubland, Wasteland
   Opp GY:  Wasteland, Horizon Canopy, Bojuka Bog, Once Upon a Time
   Opp revealed: Wasteland, Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
@@ -2977,7 +2977,7 @@
   Opp:   16 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Wasteland | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Pending: Wasteland (self)
   Self GY: Prismatic Vista, Scrubland, Wasteland
   Opp GY:  Wasteland, Horizon Canopy, Bojuka Bog, Once Upon a Time
@@ -3009,7 +3009,7 @@
   Opp:   16 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T,SICK) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Wasteland, Prismatic Vista, Scrubland, Wasteland
   Opp GY:  Wasteland, Horizon Canopy, Bojuka Bog, Once Upon a Time

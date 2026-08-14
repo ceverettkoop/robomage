@@ -765,7 +765,7 @@
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Murktide Regent, Ponder, Thundering Falls, Volcanic Island, Volcanic Island | lib 46
   Opp:   20 life | mana: empty | hand count: 4 | lib 52
   Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
@@ -1727,7 +1727,7 @@
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Island (T)
   Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Doomsday

@@ -3834,7 +3834,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [4/4] [+1/+1:4] (T)
   Opp BF:   Tamiyo, Seasoned Scholar [loy 8] [Flying] | Undercity Sewers (T)
-  Stack: Flooded Strand (ability, opponent) [amt=1]
+  Stack: Flooded Strand (ability, opponent)
   Self GY: Wasteland
   Opp GY:  Flooded Strand, Ponder, Edge of Autumn, Island, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Edge of Autumn, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
@@ -3855,7 +3855,7 @@
   Opp:   20 life | mana: empty | hand count: 2 | lib 69
   Self BF:  Tamiyo, Seasoned Scholar [loy 8] [Flying] | Undercity Sewers (T)
   Opp BF:   Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [4/4] [+1/+1:4] (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Ponder, Edge of Autumn, Island, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp GY:  Wasteland
@@ -4625,7 +4625,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Tamiyo, Seasoned Scholar [loy 10] [Flying] | Undercity Sewers (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Self GY: Prismatic Vista, Wasteland, Wasteland
   Opp GY:  Scrubland, Flooded Strand, Ponder, Edge of Autumn, Island, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Edge of Autumn, Undercity Sewers, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
@@ -4646,7 +4646,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Tamiyo, Seasoned Scholar [loy 10] [Flying] | Undercity Sewers (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Wasteland, Wasteland
   Opp GY:  Scrubland, Flooded Strand, Ponder, Edge of Autumn, Island, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal

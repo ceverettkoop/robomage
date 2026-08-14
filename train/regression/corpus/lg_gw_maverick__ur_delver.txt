@@ -226,7 +226,7 @@
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Opp BF:   Forest
-  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
@@ -526,7 +526,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Island (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
@@ -1711,7 +1711,7 @@
   Opp:   17 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Island
   Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [2/2] [+1/+1:2] [Haste] (T) | Karakas (T) | Knight of the Reliquary [5/5] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Preordain, Volcanic Island, Daze, Wasteland, Ponder, Lightning Bolt, Ponder, Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2874,7 +2874,7 @@
   Opp:   8 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [11/11] (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Misty Rainforest (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 7)
+  Stack: Misty Rainforest (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 7)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Thundering Falls, Brainstorm
@@ -3022,7 +3022,7 @@
   Opp:   8 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Misty Rainforest (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 7)
+  Stack: Misty Rainforest (ability, self) -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 7)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Thundering Falls, Brainstorm

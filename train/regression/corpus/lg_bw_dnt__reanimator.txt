@@ -513,7 +513,7 @@
   Opp:   18 life | mana: empty | hand count: 5 | lib 66
   Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
   Opp BF:   Island
-  Stack: Polluted Delta (ability, opponent) [amt=1]
+  Stack: Polluted Delta (ability, opponent)
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Force of Will
   Opp exile:  Force of Negation
@@ -534,7 +534,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 72
   Self BF:  Island
   Opp BF:   Aether Vial (T) | Scrubland (T) | Wasteland
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Force of Will
   Opp GY:  Aether Vial
@@ -2088,51 +2088,9 @@
 --- Narrative ---
   Resolving ability (category: ChangeZone)
   Griselbrand is moved to the battlefield
-  Resolving ability (category: LoseLife, amount: 0)
-  Player B loses 0 life (now at 7)
-
---- Decision 101 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  7 life | mana: empty | hand(4): Force of Will, Ponder, Undercity Sewers, Underground Sea | lib 58
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Reanimate, Careful Study, Bloodstained Mire, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Actions:
-   0: Pass priority
-   1: Play Undercity Sewers
-   2: Play Underground Sea
-   3: Activate Griselbrand (Draw)  [#0]
-  >> B/B: 1 (Play Undercity Sewers)
---- Narrative ---
-  Player B played Undercity Sewers
-  Undercity Sewers enters tapped.
-  Undercity Sewers triggered
-
---- Decision 102 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  7 life | mana: empty | hand(3): Force of Will, Ponder, Underground Sea | lib 58
-  Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Self GY: Reanimate, Careful Study, Bloodstained Mire, Polluted Delta, Undercity Sewers, Brainstorm, Flow State, Polluted Delta, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Force of Negation
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Griselbrand (Draw)  [#0]
-  >> B/B: 1 (Activate Griselbrand (Draw))
---- Narrative ---
-  Player B pays 7 life
-  Player B's Griselbrand ability is on the stack
-  Player B has 0 life - Player A wins!
+  Resolving ability (category: LoseLife, amount: 8)
+  Player B loses 8 life (now at -1)
+  Resolving ability (category: Cleanup)
+  Player B has -1 life - Player A wins!
 
 === A/A wins ===

@@ -146,7 +146,7 @@
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Fiery Islet (T)
-  Stack: Flooded Strand (ability, self) [amt=1]
+  Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp exile:  Rift Bolt
@@ -570,7 +570,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Island (T)
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Rift Bolt

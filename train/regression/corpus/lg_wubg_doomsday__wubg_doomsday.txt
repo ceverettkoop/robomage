@@ -256,7 +256,7 @@
   Self:  19 life | mana: empty | hand(4): Daze, Thassa's Oracle, Tundra, Underground Sea | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
   Self BF:  Lotus Petal
-  Stack: Polluted Delta (ability, self) [amt=1]
+  Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Ponder, Lotus Petal
   Known top: Dark Ritual, Brainstorm, ?, ?, ?

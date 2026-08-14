@@ -2143,7 +2143,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Undercity Sewers
   Opp BF:   Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] | Forest (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
-  Stack: Windswept Heath (ability, opponent) [amt=1] -> Scythecat Cub (ability, opponent) -> Dryad Arbor (opponent, slot 48)
+  Stack: Windswept Heath (ability, opponent) -> Scythecat Cub (ability, opponent) -> Dryad Arbor (opponent, slot 48)
   Self GY: Personal Tutor, Deep Analysis, Edge of Autumn, Island, Edge of Autumn, Polluted Delta, Lotus Petal
   Opp GY:  Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Thoughtseize
@@ -2167,7 +2167,7 @@
   Opp:   14 life | mana: empty | hand count: 7 | lib 44
   Self BF:  Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] | Forest (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
   Opp BF:   Undercity Sewers
-  Stack: Windswept Heath (ability, self) [amt=1] -> Scythecat Cub (ability, self) -> Dryad Arbor (self, slot 0)
+  Stack: Windswept Heath (ability, self) -> Scythecat Cub (ability, self) -> Dryad Arbor (self, slot 0)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Once Upon a Time, Thalia, Guardian of Thraben
   Opp GY:  Personal Tutor, Deep Analysis, Edge of Autumn, Island, Edge of Autumn, Polluted Delta, Lotus Petal

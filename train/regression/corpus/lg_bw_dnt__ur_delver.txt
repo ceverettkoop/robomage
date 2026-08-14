@@ -264,7 +264,7 @@
   Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Flow State, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
   Opp BF:   Scrubland (T)
-  Stack: Polluted Delta (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Aether Vial
@@ -633,7 +633,7 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
   Opp BF:   Island
-  Stack: Scalding Tarn (ability, opponent) [amt=1]
+  Stack: Scalding Tarn (ability, opponent)
   Self GY: Aether Vial
   Opp GY:  Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
@@ -654,7 +654,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 72
   Self BF:  Island
   Opp BF:   Aether Vial (T) | Scrubland (T) | Wasteland
-  Stack: Scalding Tarn (ability, self) [amt=1]
+  Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Aether Vial
@@ -971,7 +971,7 @@
   Opp:   20 life | mana: empty | hand count: 3 | lib 71
   Self BF:  Island
   Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Misty Rainforest (ability, self) [amt=1]
+  Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Wasteland, Aether Vial
@@ -1981,7 +1981,7 @@
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
   Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
@@ -2002,7 +2002,7 @@
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
   Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
-  Stack: Prismatic Vista (ability, self) [amt=1]
+  Stack: Prismatic Vista (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
