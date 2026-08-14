@@ -22,6 +22,14 @@ fails, so one invocation reports every finding):
   curriculum The curriculum plan schema and the argv each phase kind composes
           for its train.py subcommand, the resume argv forms, and the plan-hash
           prefix check (train/test_curriculum.py). Stdlib-only, instant.
+  shardrec The play-session shard recorder (train/shard_record.py behind the
+          GUI's "Record shards" / play.py --record-shards): a synthetic bo3
+          match's searched + one-hot rows write trainer-schema shards, a
+          MID-GAME flush is already a valid shard whose unfinished-game rows
+          price z=0, game-boundary rewrites never duplicate, z backfill is
+          per-game per-mover, and both readers (shard_replay records,
+          az_inspect samples) round-trip it (train/test_shard_record.py).
+          Torch-free, engine-free, instant.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
@@ -131,8 +139,9 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "actorobs", "pergame",
-             "snapshot", "sbselfplay", "mirror", "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "curriculum", "shardrec", "obsinv", "actorobs",
+             "pergame", "snapshot", "sbselfplay", "mirror", "replay", "smoke",
+             "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -301,6 +310,24 @@ def tier_curriculum(rep):
                                 f"{r.stdout}{r.stderr}")
 
 
+def tier_shardrec(rep):
+    """Play-session shard-recorder regression (train/shard_record.py).
+
+    Drives a ShardRecorder through a synthetic bo3 match (searched rows via
+    the on_result signature, one-hot rows via the driver step observer,
+    sideboard rows priced on the upcoming game) and asserts the trainer-schema
+    checklist, the mid-game-flush validity (unfinished game rows z=0, atomic
+    rewrite never duplicates), per-mover z backfill, and both readers'
+    round-trip (see train/test_shard_record.py). Torch-free, engine-free."""
+    r = subprocess.run([sys.executable, "train/test_shard_record.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("shardrec", "shard-recorder violation "
+                              f"(test_shard_record.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
+
+
 def tier_snapshot(rep):
     """The --search-server snapshot/restore/determinize protocol regression.
 
@@ -413,22 +440,35 @@ def tier_analysis(rep):
 
 def tier_gui(rep):
     """Headless PySide6 shell smokes (opt-in; needs the optional PySide6
-    extra). Runs offscreen: the play-board auto-drive, the live-analysis
-    window, the play-session save→reopen replay round-trip, the synthetic
-    .rmtrace open into the analysis browser, and the shard-mode browser
-    (self-skips without recorded shards). Self-skips without PySide6."""
+    extra). Runs offscreen: the play-board auto-drive, the shard-recording
+    play session (--record-shards writes ≥1 valid shard into a scratch dir),
+    the live-analysis window, the play-session save→reopen replay round-trip,
+    the synthetic .rmtrace open into the analysis browser, and the shard-mode
+    browser (self-skips without recorded shards). Self-skips without
+    PySide6."""
     try:
         import PySide6  # noqa: F401
     except Exception as e:
         print(f"  [skip] gui: PySide6 not importable ({e})", flush=True)
         return
     env = dict(os.environ, QT_QPA_PLATFORM="offscreen")
+    rec_dir = tempfile.mkdtemp(prefix="ci_record_smoke_")
     legs = [
         ("play smoke",
          dict(env, ROBOMAGE_GUI_SMOKE="8"),
          [sys.executable, "train/play.py", "--gui",
           "--human-deck", "league/ur_delver",
           "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+        # Recording leg: the driver step-observer records every >1-choice
+        # decision as a one-hot shard row (a scripted opponent never searches,
+        # so this exercises the recorder without torch); gui_main.run's
+        # RECORD SMOKE check fails the leg when no shard was written.
+        ("record-shards smoke",
+         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=rec_dir),
+         [sys.executable, "train/play.py", "--gui",
+          "--human-deck", "league/ur_delver",
+          "--model-deck", "league/gw_maverick", "--scripted", "--bo1",
+          "--record-shards"]),
         ("analysis-window smoke",
          dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_ANALYSIS_SMOKE="1"),
          [sys.executable, "train/play.py", "--gui", "--analysis",
@@ -444,13 +484,16 @@ def tier_gui(rep):
          dict(env, ROBOMAGE_BROWSER_SMOKE="1"),
          [sys.executable, "train/gui_main.py"]),
     ]
-    for name, leg_env, cmd in legs:
-        r = subprocess.run(cmd, cwd=_REPO_ROOT, capture_output=True,
-                           text=True, env=leg_env)
-        print(r.stdout, end="", flush=True)
-        if r.returncode != 0:
-            rep.error("gui", f"{name} failed (exit {r.returncode}):\n"
-                             f"{r.stdout}{r.stderr}")
+    try:
+        for name, leg_env, cmd in legs:
+            r = subprocess.run(cmd, cwd=_REPO_ROOT, capture_output=True,
+                               text=True, env=leg_env)
+            print(r.stdout, end="", flush=True)
+            if r.returncode != 0:
+                rep.error("gui", f"{name} failed (exit {r.returncode}):\n"
+                                 f"{r.stdout}{r.stderr}")
+    finally:
+        shutil.rmtree(rec_dir, ignore_errors=True)
 
 
 def tier_azinspect(rep):
@@ -799,6 +842,8 @@ def main(argv=None):
             tier_vocab(rep)
         elif t == "curriculum":
             tier_curriculum(rep)
+        elif t == "shardrec":
+            tier_shardrec(rep)
         elif t == "obsinv":
             tier_obsinv(rep)
         elif t == "actorobs":

@@ -1377,6 +1377,15 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help="GUI only: open the analysis window (live MCTS evaluation of "
                  "your decisions on a detached engine copy; default evaluator "
                  "az:gen). The no-args GUI launcher has its own checkbox for this."),
+        Arg("--record-shards", "flag",
+            help="GUI only: record every decision of the session into "
+                 "trainer-schema shard files under train/az_data/recorded/ — "
+                 "a search opponent's searched decisions with their full "
+                 "visit posterior, everything else as one-hot rows. Browse "
+                 "them live via View ▸ Analyze Recording… (F10), or later "
+                 "with the analysis browser / az-inspect / tui_analysis "
+                 "pointed at the directory. The launcher dialog has its own "
+                 "checkbox for this."),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
         Arg("--bo1", "flag",

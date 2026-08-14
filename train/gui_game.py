@@ -1075,6 +1075,30 @@ class PlayPane(QWidget):
             if ctrl is not None and hasattr(ctrl, "on_result"):
                 ctrl.on_result = self._analysis.opp_search_sink()
 
+        # Shard recorder (Session ▸ Analyze Recording… browses the output).
+        # Built AFTER the analysis window so its on_result tap CHAINS in front
+        # of the analysis sink instead of replacing it. The driver's step
+        # observer commits every decision (searched or not); on_search_result
+        # enriches the opponent's searched ones with the visit posterior.
+        self.recorder = None
+        if getattr(session, "record_dir", None):
+            from shard_record import ShardRecorder
+            self.recorder = ShardRecorder(session.record_dir)
+            self._driver.step_observer = self.recorder.observe_step
+            ctrl = getattr(session, "controller", None)
+            if ctrl is not None and hasattr(ctrl, "on_result"):
+                prev_sink = ctrl.on_result
+                rec_tap = self.recorder.on_search_result
+                if prev_sink is None:
+                    ctrl.on_result = rec_tap
+                else:
+                    def _fanout(obs, num, result, chosen,
+                                _rec=rec_tap, _prev=prev_sink):
+                        _rec(obs, num, result, chosen)
+                        _prev(obs, num, result, chosen)
+                    ctrl.on_result = _fanout
+            self._append_log(f"Recording shards to {session.record_dir}")
+
         # Whether this pane is the window's active mode. Gates the app-wide
         # arrow-key filter (installed in start(), removed in shutdown()) so a
         # hidden play pane, or an open dialog, never steals keys. The host
@@ -1260,6 +1284,8 @@ class PlayPane(QWidget):
         self._driver.request_quit()
         if self._thread is not None:
             self._thread.join(timeout=2.0)
+        if self.recorder is not None:
+            self.recorder.close()      # driver stopped: flush the final rows
 
     # ----- render (UI thread) -----
 
@@ -1914,6 +1940,7 @@ _LAUNCHER_DEFAULTS = {
     "search_procs": None,
     "match_clock": 1500.0,                   # 25 min of thinking for the whole bo3
     "paced": True,
+    "record_shards": False,
     "analysis_enabled": True,
     "analysis_evaluator": "az:gen",
     "analysis_worlds": 4,
@@ -2071,12 +2098,22 @@ class NewPlaySessionDialog(QDialog):
         self._paced.addItem("Off — instant obvious decisions", False)
         self._paced.setCurrentIndex(
             {None: 0, True: 1, False: 2}.get(_cfg_get(cfg, "paced"), 0))
+        self._record = QCheckBox("Record shards for analysis")
+        self._record.setChecked(bool(_cfg_get(cfg, "record_shards")))
+        self._record.setToolTip(
+            "Record every decision of the match into trainer-schema shard "
+            "files (train/az_data/recorded/rec_*): the opponent's searched "
+            "decisions with their full visit posterior and root value, every "
+            "other decision (yours included) as a one-hot row. Analyze them "
+            "live from View ▸ Analyze Recording… (F10), or later with the "
+            "analysis browser / az-inspect pointed at the directory.")
         form.addRow("Simulations", self._sims)
         form.addRow("Worlds", self._worlds)
         form.addRow("Think time (s)", self._think_time)
         form.addRow("Search procs", self._search_procs)
         form.addRow("Match clock (s)", self._match_clock)
         form.addRow("Paced responses", self._paced)
+        form.addRow(self._record)
         box = QGroupBox("Search opponent settings")
         box.setLayout(form)
         return box
@@ -2262,9 +2299,11 @@ class NewPlaySessionDialog(QDialog):
 
         player = {0: None, 1: "A", 2: "B"}[self._player.currentIndex()]
         bo3 = bool(self._format.currentData())
+        record = self._record.isChecked() and self._is_search_spec(opponent)
         self._options = dict(binary=self._binary, model_path=model_path,
                              human_player=player, human_deck=human_deck,
-                             model_deck=model_deck, bo3=bo3, analysis=analysis)
+                             model_deck=model_deck, bo3=bo3, analysis=analysis,
+                             record_shards=record)
         # Persist the BASE opponent + individual knobs (not the composed spec) so
         # the fields autofill cleanly next session without double-appending.
         _save_launcher_config(dict(
@@ -2275,6 +2314,7 @@ class NewPlaySessionDialog(QDialog):
             search_procs=self._spin_value(self._search_procs),
             match_clock=self._spin_value(self._match_clock),
             paced=self._paced.currentData(),
+            record_shards=self._record.isChecked(),
             analysis_enabled=self._analysis_enable.isChecked(),
             analysis_evaluator=self._combo_spec(self._analysis_eval),
             analysis_worlds=self._spin_value(self._analysis_worlds),

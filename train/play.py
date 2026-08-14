@@ -206,7 +206,8 @@ if __name__ == "__main__":
             _sys.exit(gui_main.run(
                 args.binary, model_path, human_player=args.player,
                 human_deck=args.human_deck, model_deck=args.model_deck,
-                bo3=not args.bo1, analysis=args.analysis))
+                bo3=not args.bo1, analysis=args.analysis,
+                record_shards=args.record_shards))
     elif args.tui:
         import tui_game
         tui_game.run(args.binary, model_path, human_player=args.player,

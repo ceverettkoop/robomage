@@ -50,6 +50,7 @@ from PySide6.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QListWidget,
 
 import browse_session as bs
 import decode
+import shard_probes
 from cli_spec import BINARY
 from env import STATE_SIZE
 from game_driver import stack_target_refs
@@ -622,6 +623,8 @@ class BrowserPane(QWidget):
         self._collect_stop = None      # stop event of the running collect job
         self._busy_kind = None         # None | "sim" | "whatif"
         self._analysis_thread = None
+        self._probe_net = None         # lazy az_inspect probe net (+ label)
+        self._probe_net_label = ""
         self._started = False
         self._closed = False
         self._active = True
@@ -694,6 +697,14 @@ class BrowserPane(QWidget):
                 item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
                 item.setToolTip(_MSG_SHARD if self._shards
                                 else "No live env — browse-only session.")
+            self._menu_list.addItem(item)
+        # Net probes (az_inspect over the browsed records): per-decision
+        # block-importance / card-swap / sweeps / recorded-π-vs-net, plus the
+        # pooled KL and calibration views. Work in every session mode; the
+        # probe net (AZ checkpoint, else PPO warm-start) loads on first use.
+        for key, label in shard_probes.PROBE_MENU:
+            item = QListWidgetItem(label)
+            item.setData(Qt.UserRole, key)
             self._menu_list.addItem(item)
         self._menu_list.itemClicked.connect(
             lambda item: self._run_menu_entry(item.data(Qt.UserRole)))
@@ -1083,6 +1094,9 @@ class BrowserPane(QWidget):
         if key in ("whatif", "run5", "run20"):
             self._run_engine_entry(key)
             return
+        if key in shard_probes.PROBE_KEYS:
+            self._run_probe_entry(key)
+            return
         pool = bs.analysis_pool(self._store.games)
         if not pool:
             self._say("No games simulated yet.")
@@ -1107,6 +1121,47 @@ class BrowserPane(QWidget):
 
         self._analysis_thread = threading.Thread(
             target=runner, name="gui-browser-analysis", daemon=True)
+        self._analysis_thread.start()
+
+    def _run_probe_entry(self, key):
+        """az_inspect net probes over the browsed records (shard_probes).
+
+        Snapshot on the UI thread (cheap list copies; step ndarrays are
+        append-only), stack + torch on the one-shot analysis thread. The probe
+        net loads on first use and is cached; the analysis_busy gate keeps a
+        single worker touching it."""
+        if self._store.analysis_busy:
+            self._say("An analysis is already running.")
+            return
+        if (key in shard_probes.DECISION_PROBES
+                and self._store.cur_game is None):
+            self._say(_MSG_NO_SEL)
+            return
+        snap = shard_probes.snapshot(self._store.games, self._store.cur_game,
+                                     self._store.cur_step)
+        if not any(c["observations"] for c in snap["games"]):
+            self._say("No browsable decisions yet.")
+            return
+        model_spec = (getattr(self._args, "model", None)
+                      or (self._provenance_loaded or {}).get("model") or "gen")
+        self._store.analysis_busy = True
+        self._say(f"Running {key}…")
+        bridge = self._bridge
+
+        def runner():
+            try:
+                if self._probe_net is None:
+                    self._probe_net, self._probe_net_label = \
+                        shard_probes.load_probe_net(model_spec)
+                lines = shard_probes.run_probe(key, self._probe_net, snap)
+                text = "\n".join(
+                    [f"probe net: {self._probe_net_label}", ""] + lines)
+            except Exception:  # noqa: BLE001 — report, never crash the UI
+                text = traceback.format_exc()
+            bridge.analysis_done.emit((key, text))
+
+        self._analysis_thread = threading.Thread(
+            target=runner, name="gui-browser-probe", daemon=True)
         self._analysis_thread.start()
 
     def _run_engine_entry(self, key):

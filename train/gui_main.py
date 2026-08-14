@@ -87,6 +87,8 @@ _KEYS_TEXT = """Game board:
   F9              toggle the analysis window
                   (F5 analyze, F6 review opponent's last decision,
                    Shift+F5 stop)
+  F10             analyze the session's shard recording (when
+                  "Record shards" was ticked) in a second window
 
 Application:
   Ctrl+N          new play session
@@ -370,6 +372,9 @@ class SessionManager(QObject):
                 bo3=opts.get("bo3", True), analysis=analysis_cfg is not None,
                 step_pacing=True, engine_seed=opts.get("engine_seed"))
             session.analysis_cfg = analysis_cfg
+            if opts.get("record_shards"):
+                from shard_record import default_recording_dir
+                session.record_dir = default_recording_dir()
             pane = PlayPane(session,
                             replay_actions=(replay or {}).get("actions"))
         except Exception as exc:                          # noqa: BLE001
@@ -693,6 +698,49 @@ class SessionManager(QObject):
         }
 
 
+# ── Shard-browser window (Analyze Recording…) ────────────────────────────────
+
+def _torch_available():
+    import importlib.util
+    return importlib.util.find_spec("torch") is not None
+
+
+def _recording_value_spec(opponent_spec):
+    """The V(s) model spec for browsing a recording, derived from the play
+    session's opponent spec: strip the ?knob query; an mcts: wrapper searches
+    with the PPO heads, so its value net is the bare PPO spec."""
+    base = (opponent_spec or "az:gen").split("?", 1)[0].strip()
+    low = base.lower()
+    if low.startswith("mcts:"):
+        return base[5:] or "gen"
+    return base or "az:gen"
+
+
+class ShardBrowserWindow(QMainWindow):
+    """A SECOND top-level window hosting a shard-mode BrowserPane, so a live
+    play session's recording can be analyzed WITHOUT tearing the game down
+    (the SessionManager owns only the main window's one session). Reads the
+    recording directory on open; reopen the window (View ▸ Analyze Recording…)
+    to pick up decisions recorded since."""
+
+    def __init__(self, opts, parent=None):
+        super().__init__(parent)          # QMainWindow stays top-level
+        from gui_browser import BrowserPane
+        self.setWindowTitle(f"RoboMage — Recording · {opts.get('shards', '')}")
+        self.resize(1180, 860)
+        self._pane = BrowserPane(opts, parent=self)
+        self.setCentralWidget(self._pane)
+        try:
+            self._pane.status.connect(self.statusBar().showMessage)
+        except Exception:                                  # noqa: BLE001
+            pass
+        self._pane.start()
+
+    def closeEvent(self, event):
+        self._pane.shutdown()
+        super().closeEvent(event)
+
+
 # ── Main window ───────────────────────────────────────────────────────────────
 
 class MainWindow(QMainWindow):
@@ -712,6 +760,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self._stack)
         self.manager = SessionManager(self, self._stack, self._welcome,
                                       binary_path)
+        # Open Analyze-Recording browser windows (independent top-levels; they
+        # outlive session switches and are closed with the app).
+        self._shard_browsers = []
 
         self._build_menus()
         self.statusBar()                     # create it (styled by _QSS)
@@ -754,6 +805,9 @@ class MainWindow(QMainWindow):
             "Analysis Window", self._toggle_analysis_window, "F9")
         self._act_analysis_win.setCheckable(True)
         viewm.addAction(self._act_analysis_win)
+        self._act_analyze_rec = self._action(
+            "Analyze Recording…", self._analyze_recording, "F10")
+        viewm.addAction(self._act_analyze_rec)
         # No shortcuts on the log-width entries: PlayPane keeps its own
         # widget-scoped </> shortcuts, so menu shortcuts would double-fire.
         self._act_widen = self._action(
@@ -794,6 +848,10 @@ class MainWindow(QMainWindow):
         self._act_analysis_win.setEnabled(has_analysis)
         self._act_analysis_win.setChecked(
             bool(has_analysis and pane._analysis.isVisible()))
+        rec = (getattr(pane, "recorder", None)
+               if mode == "play" and pane is not None else None)
+        self._act_analyze_rec.setEnabled(
+            bool(rec is not None and rec.rows_recorded))
         for act in (self._act_widen, self._act_narrow):
             act.setEnabled(mode == "play")
 
@@ -828,6 +886,47 @@ class MainWindow(QMainWindow):
         if path:
             self.manager.open_path(path)
 
+    def _analyze_recording(self):
+        """View ▸ Analyze Recording… (F10): flush the play session's shard
+        recorder and open its directory in a shard-mode browser window — a
+        SECOND window, so the game keeps running (mid-game analysis). Rows of
+        the game in progress are included (their z is 0 until it ends); reopen
+        to pick up newer decisions."""
+        pane = self.manager.pane
+        rec = (getattr(pane, "recorder", None)
+               if self.manager.mode == "play" else None)
+        if rec is None:
+            return
+        if not rec.rows_recorded:
+            self.statusBar().showMessage("No decisions recorded yet.", 5000)
+            return
+        rec.flush()
+        session = self.manager._session
+        opts = {
+            "shards": rec.out_dir,
+            "seat": "A" if session.opp_is_a else "B",     # the opponent's rows
+            "model": _recording_value_spec(
+                (self.manager._opts or {}).get("model_path")),
+            "no_net": not _torch_available(),
+            "n_games": 0,                                  # load every match
+            "binary": self._binary,
+        }
+        try:
+            win = ShardBrowserWindow(opts, parent=self)
+        except Exception as exc:                          # noqa: BLE001
+            _critical(self, "Could not open recording", str(exc))
+            return
+        self._shard_browsers.append(win)
+        win.show()
+
+    def _close_shard_browsers(self):
+        browsers, self._shard_browsers = self._shard_browsers, []
+        for win in browsers:
+            try:
+                win.close()
+            except Exception:                              # noqa: BLE001
+                pass
+
     def _toggle_analysis_window(self, checked):
         pane = self.manager.pane
         if (self.manager.mode != "play" or pane is None
@@ -850,12 +949,14 @@ class MainWindow(QMainWindow):
         # Confirm-if-active happens inside the teardown (skipped under smoke).
         if not self.manager.close_current(confirm=True):
             return
+        self._close_shard_browsers()
         app = QApplication.instance()
         if app is not None:
             app.quit()
 
     def closeEvent(self, event):
         # Window close = quit: full teardown order, env closed by the manager.
+        self._close_shard_browsers()
         self.manager.shutdown()
         super().closeEvent(event)
 
@@ -863,19 +964,24 @@ class MainWindow(QMainWindow):
 # ── Entry points ──────────────────────────────────────────────────────────────
 
 def run(binary_path, model_path, human_player=None,
-        human_deck="delver", model_deck="delver", bo3=True, analysis=False):
+        human_deck="delver", model_deck="delver", bo3=True, analysis=False,
+        record_shards=False):
     """play.py --gui entry: MainWindow + a play session built directly (no
     dialog). Same signature/semantics as tui_game.run. Returns the exit code;
-    the ROBOMAGE_ANALYSIS_SMOKE exit-1 check lives here."""
+    the ROBOMAGE_ANALYSIS_SMOKE / record-shards smoke exit-1 checks live
+    here."""
     app = _ensure_app()
     window = MainWindow(binary_path)
     window.show()
     opts = dict(binary=binary_path, model_path=model_path,
                 human_player=human_player, human_deck=human_deck,
                 model_deck=model_deck, bo3=bo3,
-                analysis=({} if analysis else None))
+                analysis=({} if analysis else None),
+                record_shards=record_shards)
     if not window.manager.new_play_session(opts):
         return 1
+    # Capture the recorder before the smoke path tears the pane down.
+    recorder = getattr(window.manager.pane, "recorder", None)
     app.exec()
     window.manager.shutdown()                # idempotent safety net
     if (os.environ.get("ROBOMAGE_ANALYSIS_SMOKE")
@@ -883,6 +989,17 @@ def run(binary_path, model_path, human_player=None,
         print("ANALYSIS SMOKE FAILED: no analysis stats arrived",
               file=sys.stderr)
         return 1
+    if record_shards and _smoke_active():
+        import glob as _glob
+        n_files = (len(_glob.glob(os.path.join(recorder.out_dir,
+                                               "shard_*.npz")))
+                   if recorder is not None else 0)
+        if recorder is None or not recorder.rows_recorded or not n_files:
+            print("RECORD SMOKE FAILED: no shard rows were recorded",
+                  file=sys.stderr)
+            return 1
+        print(f"RECORD SMOKE OK: {recorder.rows_recorded} rows in "
+              f"{n_files} shard(s) -> {recorder.out_dir}", flush=True)
     return 0
 
 

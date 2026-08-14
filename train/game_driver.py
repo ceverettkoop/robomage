@@ -418,6 +418,13 @@ class GameDriver:
         # UI-thread list() snapshot is always a consistent replayable prefix
         # regardless of env class (plain TuiEnv has no _action_history).
         self.action_log = []
+        # Optional per-decision observer (e.g. shard_record.ShardRecorder
+        # .observe_step), called on the worker thread after each MAIN-LOOP
+        # env.step with (pre_step_obs, num_choices, action, reward, info,
+        # done). Not called during a saved-session replay prefix (those
+        # decisions belong to the session that recorded them). Exceptions are
+        # swallowed — an observer must never break play.
+        self.step_observer = None
 
     # ----- the loop (worker thread) -----
 
@@ -512,10 +519,21 @@ class GameDriver:
                         return
 
                 self.action_log.append(int(action))
+                # Copy the pre-step obs before stepping — the env may reuse
+                # its obs buffer, so the reference alone could alias the
+                # post-step state by the time the observer runs.
+                pre_obs = (obs.copy() if self.step_observer is not None
+                           else None)
                 obs, reward, terminated, truncated, info = env.step(action)
                 if reward:
                     self._reward = reward
                 done = terminated or truncated
+                if self.step_observer is not None:
+                    try:
+                        self.step_observer(pre_obs, num, int(action), reward,
+                                           info, done)
+                    except Exception:  # noqa: BLE001 — observer must not break play
+                        pass
                 # A finished game disengages autopass: the human drives the
                 # between-games sideboard and the next game's mulligan
                 # themselves instead of autopass blowing through them (its
@@ -735,6 +753,8 @@ class Session:
     controller: object = None    # the opponent Controller (analysis hooks)
     analysis_cfg: object = None  # AnalysisConfig when the front end enables it
     engine_seed: object = None   # force the engine --seed (saved-session restore)
+    record_dir: object = None    # shard-recording directory (front end sets it;
+    #                              the pane builds a shard_record.ShardRecorder)
 
 
 def build_session(binary_path, model_path, human_player=None,

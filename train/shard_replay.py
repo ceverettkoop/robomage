@@ -175,8 +175,8 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
     """
     records = []
     for games in matches:
-        steps, vals, interp, actions, num_choices, probs, opp = \
-            [], [], [], [], [], [], []
+        steps, vals, zs, interp, actions, num_choices, probs, opp = \
+            [], [], [], [], [], [], [], []
         for rows in games:
             for i in rows:
                 n = int(mask[i].sum())
@@ -185,6 +185,7 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
                     steps.append(np.array(obs[i]))
                     mover_z = float(z[i])
                     vals.append(mover_z)
+                    zs.append(mover_z)
                     actions.append(best)
                     num_choices.append(n)
                     probs.append(pi[i, :n].astype(np.float64))
@@ -200,6 +201,8 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
         records.append({
             "observations": steps,
             "values": vals,
+            "z": zs,          # exact per-step game outcome (values may be
+            #                   overwritten by net V(s); this never is)
             "interp_features": interp,
             "actions": actions,
             "num_choices": num_choices,

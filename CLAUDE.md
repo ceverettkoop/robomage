@@ -847,6 +847,28 @@ core lives in `train/analysis_session.py`; regression tests in `train/test_analy
 run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make check`):
 `train/.venv/bin/python train/ci_check.py --tier analysis`.
 
+**Shard recording of GUI play** (`train/shard_record.py`; the play launcher's "Record shards"
+checkbox — search opponents only — or `play.py --gui --record-shards`): a play session is
+recorded into **trainer-schema shards** (`az_selfplay.SHARD_KEYS`, one dir per session under
+`train/az_data/recorded/rec_*`; `ROBOMAGE_RECORD_DIR` overrides the base). A search opponent's
+searched decisions land with their full visit posterior / root value / explored flag (the
+`SearchController.on_result` tap, CHAINED with the analysis window's sink); every other
+>1-choice decision — the human's included — lands as a one-hot behavior row (`q=NaN`, the
+`generate_expert` precedent) via the driver's `step_observer` hook, so both seats are
+browsable. One shard file per match, atomically rewritten at each game boundary and on demand,
+so the dir is always valid for every existing shard consumer (`az_train.load_window`,
+`az_inspect --shards`, `tui_az_inspect --shards`, `tui_analysis --shards`, the GUI browser's
+shard mode) — rows of the game still in progress carry `z=0` until it finishes. **View ▸
+Analyze Recording… (F10)** flushes mid-game and opens the recording in a shard-mode
+`BrowserPane` in a SECOND window (the live game keeps running); viewpoint seat defaults to the
+opponent so you page the model's decisions, and the analysis dialog's seat toggle shows your
+own. The browser (all modes) also has **net-probe menu entries** (`train/shard_probes.py`,
+Qt-free glue over `az_inspect`'s probes with a lazily loaded AZ net, PPO warm-start fallback):
+per-decision recorded-π-vs-net, obs-block permutation importance, card-identity swap and scalar
+sweeps at the selected step, plus pooled KL(search‖net) and value calibration against realized
+z. Recorder regression: `train/test_shard_record.py`, wired into default `make check` as the
+`shardrec` tier; the opt-in `gui` tier adds a record-smoke leg.
+
 ### Key files
 
 - `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper. Lazily re-exports `scripted_action` for back-compat callers; the real rule-based agent logic lives in `train/scripted_agent.py`.
@@ -875,6 +897,14 @@ run as the **opt-in** `ci_check.py` tier `analysis` (not part of default `make c
   multi-phase plan builder (phase list + per-phase form + Save/Load/Run/Resume/Status)
 - `train/gui_analysis.py` — the analysis window (worker thread, live MCTS table, branch chart,
   PV scrubber + MiniBoard)
+- `train/shard_record.py` — `ShardRecorder`: records GUI play into trainer-schema shards
+  (searched rows via `SearchController.on_result`, one-hot rows via `GameDriver.step_observer`,
+  per-game mover-perspective z backfill through `az_selfplay._backfill_and_pack`, atomic
+  per-match rewrites safe to read mid-game). Regression `train/test_shard_record.py`
+  (`make check` tier `shardrec`)
+- `train/shard_probes.py` — Qt-free glue running `az_inspect`'s net probes over browsed
+  records (snapshot on the UI thread, stack+torch on the worker); `PROBE_MENU` is appended to
+  the GUI browser's analyses sidebar
 - `train/tui_analysis.py` — standalone Textual analysis browser (game list, board-state pager,
   clickable V(s) histogram, every `analysis.py` REPL view, `whatif` branching); behind
   `./tui.sh`'s `analysis-tui → browse` menu entry
