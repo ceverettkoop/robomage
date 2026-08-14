@@ -1424,7 +1424,7 @@ AZ_INSPECT_TOOL = Tool("az-inspect", "train/tui_az_inspect.py", flat=True, subs=
         "embedding space, the per-matchup critic, and per-decision probes. "
         "No games are played",
         mode="interactive", items=[
-        Arg("--model", "str", default="gen", suggest="checkpoint",
+        Arg("--model", "str", default="gen", suggest="az_checkpoint",
             help="AZ checkpoint: 'gen' (the generalist), a snapshot stem "
                  "(gen__azv384000), or a path"),
         Arg("--with-shards", "flag",

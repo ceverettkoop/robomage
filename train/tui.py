@@ -256,6 +256,11 @@ class ArgFormMixin:
         if a.suggest in ("checkpoint", "agent") and (
                 a.default == "scripted" or a.name == "--opponent"):
             opts = ["scripted"] + opts
+        # AZ fields defaulting to the generalist stem offer 'gen' itself, so the
+        # default is selectable (and preselected) rather than only the explicit
+        # snapshot paths the scanner finds.
+        if a.suggest == "az_checkpoint" and a.default == "gen":
+            opts = ["gen"] + opts
         return opts
 
     def _arg_for_widget(self, widget):
