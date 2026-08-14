@@ -44,6 +44,12 @@ struct MCTSConfig {
     int max_depth = 60;
     int batch = 1;                  // 1 = exact mcts.py parity; K>1 = virtual-loss batching
     uint32_t world_seed_base = 42;  // world seed(root r, world w) = base + 100003*r + w
+    // Merge interchangeable duplicate menu actions into one search edge
+    // (src/actor/menu_merge.h, mirroring mcts.py's run_search merge_dupes
+    // kwarg — the two sides must agree or visit parity breaks). Must stay
+    // constant for the process (never flip across a persisted sideboard
+    // boundary's trees).
+    bool merge_dupes = true;
 
     // ── bo3 sideboard-root budget (mirrors az_selfplay.py's sb_sims/sb_worlds/
     // sb_max_depth) ─────────────────────────────────────────────────────────

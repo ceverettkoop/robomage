@@ -329,7 +329,8 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
                 sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                 sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                sb_persist=bool(DEFAULT_SB_PERSIST)):
+                sb_persist=bool(DEFAULT_SB_PERSIST),
+                merge_dupes=True):
     """Play one match (bo1: a single game; bo3: a best-of-three) and return
     (samples, game_winners, searched, fallback, dropped, sb_stats) — sb_stats
     reports the boundary persistence's reused visits + rollout-memo hits.
@@ -397,7 +398,8 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                           max_depth=sb_max_depth,
                           rollout_turns=sb_rollout_turns,
                           root_noise_eps=root_noise_eps,
-                          root_noise_alpha=root_noise_alpha, rng=rng)
+                          root_noise_alpha=root_noise_alpha, rng=rng,
+                          merge_dupes=merge_dupes)
                 if sb_persist:
                     key = sb_root_key(env._obs)
                     b = sb_boundary
@@ -424,7 +426,8 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 sb_boundary = None
                 result = run_search(env, evaluator, sims=sims, worlds=worlds,
                                     root_noise_eps=root_noise_eps,
-                                    root_noise_alpha=root_noise_alpha, rng=rng)
+                                    root_noise_alpha=root_noise_alpha, rng=rng,
+                                    merge_dupes=merge_dupes)
             visits = result.policy_target(1.0)          # normalized visit counts
             pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
             pi[:num_choices] = visits.astype(np.float32)
@@ -499,7 +502,8 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
                             sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
                             sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                             sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                            sb_persist=bool(DEFAULT_SB_PERSIST)):
+                            sb_persist=bool(DEFAULT_SB_PERSIST),
+                            merge_dupes=True):
     """Play one match with the net+MCTS on ONE seat (``net_is_a``) and the
     rule-based scripted:hard ``agent`` on the other, returning the same tuple as
     :func:`_play_match`.
@@ -547,7 +551,8 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
                           max_depth=sb_max_depth,
                           rollout_turns=sb_rollout_turns,
                           root_noise_eps=root_noise_eps,
-                          root_noise_alpha=root_noise_alpha, rng=rng)
+                          root_noise_alpha=root_noise_alpha, rng=rng,
+                          merge_dupes=merge_dupes)
                 if sb_persist:
                     key = sb_root_key(env._obs)
                     b = sb_boundary
@@ -574,7 +579,8 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
                 sb_boundary = None
                 result = run_search(env, evaluator, sims=sims, worlds=worlds,
                                     root_noise_eps=root_noise_eps,
-                                    root_noise_alpha=root_noise_alpha, rng=rng)
+                                    root_noise_alpha=root_noise_alpha, rng=rng,
+                                    merge_dupes=merge_dupes)
             visits = result.policy_target(1.0)          # normalized visit counts
             pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
             pi[:num_choices] = visits.astype(np.float32)
@@ -790,7 +796,7 @@ def _match_winner(game_winners) -> str:
 def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
             sb_sims, sb_worlds, sb_max_depth, sb_rollout_turns, sb_persist,
-            scripted_seats=None, td_n=DEFAULT_TD_N):
+            scripted_seats=None, td_n=DEFAULT_TD_N, merge_dupes=True):
     """Play this worker's slice of the matchup schedule. ``matchups`` is a list of
     per-MATCH (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
     swapped per match before its reset respawns the engine. With ``bo3`` each
@@ -845,7 +851,7 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                     root_noise_alpha=root_noise_alpha, seed=seed,
                     on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
                     sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
-                    sb_persist=sb_persist)
+                    sb_persist=sb_persist, merge_dupes=merge_dupes)
             else:
                 agent.set_deck_names(*matchups[m])
                 samples, game_winners, searched, fallback, dropped, sb_st = \
@@ -856,7 +862,8 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                         root_noise_alpha=root_noise_alpha, seed=seed,
                         on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
                         sb_max_depth=sb_max_depth,
-                        sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist)
+                        sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist,
+                        merge_dupes=merge_dupes)
             buf.append(_backfill_and_pack(samples, game_winners, td_n=td_n))
             total_samples += len(samples)
             stats["searched"] += searched
@@ -950,6 +957,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
              sb_persist: bool = bool(DEFAULT_SB_PERSIST),
+             merge_dupes: bool = True,
              scripted_opponent_frac: float = 0.0,
              bo3: bool = False, exhaustive: bool = False,
              exhaustive_selfplay: bool = False,
@@ -1174,7 +1182,8 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     common = dict(source=source, schedule=schedule, sims=sims, worlds=worlds,
                   workers=workers, temp_moves=temp_moves,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
-                  out_dir=out_dir, seed=seed, td_n=td_n)
+                  out_dir=out_dir, seed=seed, td_n=td_n,
+                  merge_dupes=merge_dupes)
     if hybrid:
         return _generate_hybrid(deck, scripted_seats=scripted_seats,
                                 actor_bin=_ACTOR_BIN, bo3=bo3, sb_sims=sb_sims,
@@ -1226,6 +1235,7 @@ def _generate_hybrid(deck, *, source, schedule, scripted_seats, sims, worlds,
                      sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                      sb_persist=bool(DEFAULT_SB_PERSIST),
+                     merge_dupes=True,
                      td_n=DEFAULT_TD_N) -> dict:
     """Split an exhaustive-matrix schedule across BOTH backends: the C++ actor
     plays the pure self-play cells (it is much faster per match), the Python
@@ -1249,7 +1259,7 @@ def _generate_hybrid(deck, *, source, schedule, scripted_seats, sims, worlds,
               root_noise_alpha=root_noise_alpha, out_dir=out_dir, bo3=bo3,
               sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
               sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist,
-              td_n=td_n)
+              merge_dupes=merge_dupes, td_n=td_n)
     summaries = []
     if self_sched:
         print(f"[az-selfplay] hybrid pass 1/2: ACTOR ({len(self_sched)} matches)")
@@ -1281,6 +1291,7 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                      sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                      sb_persist=bool(DEFAULT_SB_PERSIST),
+                     merge_dupes=True,
                      scripted_seats=None, td_n=DEFAULT_TD_N) -> dict:
     import multiprocessing as mp
 
@@ -1309,7 +1320,7 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                               root_noise_eps, root_noise_alpha, out_dir, seed,
                               wi, result_q, bo3, sb_sims, sb_worlds, sb_max_depth,
                               sb_rollout_turns, sb_persist, seat_slices[wi],
-                              td_n))
+                              td_n, merge_dupes))
         p.start()
         procs.append(p)
 
@@ -1460,6 +1471,7 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                        sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                        sb_persist=bool(DEFAULT_SB_PERSIST),
+                       merge_dupes=True,
                        td_n=DEFAULT_TD_N) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
@@ -1482,7 +1494,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--noise-eps", str(noise_eps),
            "--noise-alpha", str(noise_alpha),
            "--temp-moves", str(temp_moves),
-           "--td-n", str(td_n)]
+           "--td-n", str(td_n),
+           "--merge-dupes", str(int(merge_dupes))]
     if bo3:
         cmd += ["--bo3",
                 "--sb-sims", str(sb_sims),
@@ -1504,6 +1517,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                     sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                     sb_persist=bool(DEFAULT_SB_PERSIST),
+                    merge_dupes=True,
                     td_n=DEFAULT_TD_N) -> dict:
     import glob
     import shutil
@@ -1567,7 +1581,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
             bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
             sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
-            sb_persist=sb_persist, td_n=td_n)
+            sb_persist=sb_persist, merge_dupes=merge_dupes, td_n=td_n)
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -1818,6 +1832,7 @@ def run(args) -> None:
              sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                       DEFAULT_SB_ROLLOUT_TURNS),
              sb_persist=bool(getattr(args, "sb_persist", DEFAULT_SB_PERSIST)),
+             merge_dupes=bool(getattr(args, "merge_dupes", 1)),
              td_n=int(getattr(args, "td_n", DEFAULT_TD_N)))
 
 
@@ -1837,6 +1852,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                          "(default: generalist AZ ckpt, else gen PPO warm-start, "
                          "else random)")
     ap.add_argument("--temp-moves", type=int, default=DEFAULT_TEMP_MOVES)
+    ap.add_argument("--merge-dupes", type=int, default=1,
+                    help="Merge interchangeable duplicate menu actions into one "
+                         "search edge (decode.menu_merge_reps; default 1, pass "
+                         "0 for the legacy per-copy edges)")
     ap.add_argument("--td-n", type=int, default=DEFAULT_TD_N,
                     help="n-step TD horizon baked into each sample's td_q "
                          "(default %d); the chain is shortened at the next "

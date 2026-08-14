@@ -65,6 +65,9 @@ struct ActorConfig {
     // Sideboard-boundary tree persistence + rollout memo (see az_mcts.h).
     // Default mirrors cli_spec.DEFAULT_SB_PERSIST.
     int sb_persist = 1;
+    // Duplicate-edge merging (see az_mcts.h / menu_merge.h; must match the
+    // Python side's merge_dupes or visit parity breaks).
+    int merge_dupes = 1;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
     double noise_eps = 0.25;
@@ -93,6 +96,8 @@ void print_usage(const char* prog) {
                  "(leaf-rollout horizon in player turns; 0=off, sb -1=inherit)\n"
                  "       [--sb-persist 0|1] (persist trees + rollout memo across a "
                  "bo3 sideboard boundary)\n"
+                 "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
+                 "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
                  "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n",
                  prog);
@@ -165,6 +170,8 @@ int main(int argc, char const* argv[]) {
             cfg.sb_rollout_turns = std::stoi(need_arg(argc, argv, i, "--sb-rollout-turns"));
         } else if (a == "--sb-persist") {
             cfg.sb_persist = std::stoi(need_arg(argc, argv, i, "--sb-persist"));
+        } else if (a == "--merge-dupes") {
+            cfg.merge_dupes = std::stoi(need_arg(argc, argv, i, "--merge-dupes"));
         } else if (a == "--selfplay") {
             cfg.selfplay = true;
             cfg.search = true;  // self-play implies MCTS search
@@ -260,6 +267,7 @@ int main(int argc, char const* argv[]) {
         mc.rollout_turns = cfg.rollout_turns;
         mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = inherit rollout_turns
         mc.sb_tree_persist = cfg.sb_persist != 0;
+        mc.merge_dupes = cfg.merge_dupes != 0;
         mc.selfplay = cfg.selfplay;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
         mc.noise_alpha = cfg.noise_alpha;

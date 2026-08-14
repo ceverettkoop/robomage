@@ -31,6 +31,7 @@ from typing import Optional, Protocol, Sequence
 import numpy as np
 
 from _enums import CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT
+from decode import menu_merge_reps
 from env import (_CUR_TURN_IDX, _IS_SIDEBOARD_IDX, _MATCH_CTX_START,
                  _SELF_IS_A_IDX, _obs_action_category, _obs_action_card_id)
 from search_env import SearchRoboMageEnv, SimQuery
@@ -164,10 +165,11 @@ class SearchResult:
 
 class _Node:
     __slots__ = ("num_choices", "P", "N", "W", "children", "self_is_a",
-                 "pick_meta")
+                 "pick_meta", "rep", "sel_mask")
 
     def __init__(self, num_choices: int, priors: np.ndarray, self_is_a: bool,
-                 pick_meta: Optional[tuple] = None):
+                 pick_meta: Optional[tuple] = None,
+                 rep: Optional[np.ndarray] = None):
         self.num_choices = num_choices
         self.P = priors
         self.N = np.zeros(num_choices, dtype=np.int64)
@@ -180,13 +182,47 @@ class _Node:
         # whose AWAITING_ROOT phase never builds one). Populated only when the
         # search runs with a rollout memo; None otherwise.
         self.pick_meta = pick_meta
+        # Duplicate-edge merge partition (decode.menu_merge_reps): rep[i] is
+        # the representative index of action i's duplicate group. None =
+        # merging disabled. Set at creation (and re-set on boundary root
+        # adoption) via set_rep, which also folds P — visits/Q/children only
+        # ever live at representative indices.
+        self.rep = None
+        self.sel_mask = None
+        if rep is not None:
+            self.set_rep(rep)
+
+    def set_rep(self, rep: np.ndarray) -> None:
+        """Install a merge partition and fold P onto the representatives.
+
+        MUST be called exactly once after every assignment of raw priors to
+        ``P`` (creation, and boundary-root adoption where P is overwritten
+        with fresh noise-mixed priors): P is copied (the caller may share one
+        raw priors array across worlds / with SearchResult.priors) and each
+        non-representative's mass is added to its representative (ascending
+        index — the C++ actor folds in the same order) then zeroed.
+        ``sel_mask`` (-inf at non-reps) makes select() skip merged-away
+        actions; without it an unvisited P=0 non-rep would win the argmax at
+        val=0 whenever every representative has Q + U < 0."""
+        self.rep = rep
+        self.P = np.array(self.P, dtype=np.float64, copy=True)
+        mask = np.zeros(self.num_choices, dtype=np.float64)
+        for i in range(1, self.num_choices):
+            r = int(rep[i])
+            if r != i:
+                self.P[r] += self.P[i]
+                self.P[i] = 0.0
+                mask[i] = -np.inf
+        self.sel_mask = mask
 
     def select(self, c_puct: float) -> int:
         # Q is stored in this node's mover perspective, so plain argmax is
         # correct at both seats. Unvisited actions take Q=0 (neutral FPU).
         q = np.where(self.N > 0, self.W / np.maximum(self.N, 1), 0.0)
         u = c_puct * self.P * (np.sqrt(1.0 + self.N.sum()) / (1.0 + self.N))
-        return int(np.argmax(q + u))
+        if self.sel_mask is None:
+            return int(np.argmax(q + u))
+        return int(np.argmax(q + u + self.sel_mask))
 
 
 # Stability early-stop tuning (timed searches with a min deadline only).
@@ -247,6 +283,7 @@ def run_search(
     memo_picks: tuple = (),
     time_budget_s: Optional[float] = None,
     time_budget_min_s: Optional[float] = None,
+    merge_dupes: bool = True,
 ) -> SearchResult:
     """Search the env's current decision. The env must be parked at a real,
     loop-safe decision (env.last_search_safe). On return the env is back at
@@ -319,6 +356,7 @@ def run_search(
     root_is_a = bool(root_obs[_SELF_IS_A_IDX] > 0.5)
     root_priors, _ = evaluator.evaluate(root_obs, root_n)
     rollout_anchor = _rollout_anchor(root_obs)
+    root_rep = menu_merge_reps(root_obs, root_n) if merge_dupes else None
 
     env.snapshot(snapshot_slot)
 
@@ -359,6 +397,14 @@ def run_search(
         reused = reuse_roots[w] if reuse_roots is not None else None
         if reused is not None:
             reused.P = np.array(priors, copy=True)
+            # Adoption overwrites P with fresh raw priors, so the merge fold
+            # must be re-applied (exactly once) — and the partition is refilled
+            # from THIS search's root obs (same menu by world consistency).
+            if root_rep is not None:
+                reused.set_rep(root_rep)
+            else:
+                reused.rep = None
+                reused.sel_mask = None
             if root_pm is not None and reused.pick_meta is None:
                 reused.pick_meta = root_pm
             n_have = int(reused.N.sum())
@@ -366,7 +412,8 @@ def run_search(
             roots.append(reused)
             budgets.append(max(0, sims_per_world - n_have))
         else:
-            roots.append(_Node(root_n, priors, root_is_a, pick_meta=root_pm))
+            roots.append(_Node(root_n, priors, root_is_a, pick_meta=root_pm,
+                               rep=root_rep))
             budgets.append(sims_per_world)
 
     def _one_sim(w: int) -> None:
@@ -377,7 +424,7 @@ def run_search(
         if memo_ctx is not None:
             memo_ctx["world_seed"] = seeds[w]
         v = _simulate(env, evaluator, roots[w], c_puct, max_depth,
-                      rollout_turns, rollout_anchor, memo_ctx)
+                      rollout_turns, rollout_anchor, memo_ctx, merge_dupes)
         sims_run += 1
         sim_steps += v[1]
 
@@ -480,6 +527,7 @@ def run_search_parallel(
     rng: Optional[np.random.Generator] = None,
     time_budget_s: Optional[float] = None,
     time_budget_min_s: Optional[float] = None,
+    merge_dupes: bool = True,
 ) -> SearchResult:
     """World-parallel :func:`run_search` for INTERACTIVE search only.
 
@@ -517,7 +565,7 @@ def run_search_parallel(
             max_depth=max_depth, rollout_turns=rollout_turns,
             root_noise_eps=root_noise_eps,
             root_noise_alpha=root_noise_alpha, rng=rng, time_budget_s=time_budget_s,
-            time_budget_min_s=time_budget_min_s)
+            time_budget_min_s=time_budget_min_s, merge_dupes=merge_dupes)
 
     assert root_noise_eps == 0.0, (
         "run_search_parallel is inference-only: root dirichlet noise would consume "
@@ -563,7 +611,7 @@ def run_search_parallel(
             max_depth=max_depth, rollout_turns=rollout_turns,
             root_noise_eps=0.0, rng=None,
             world_seeds=seeds_i, time_budget_s=time_budget_s,
-            time_budget_min_s=time_budget_min_s)
+            time_budget_min_s=time_budget_min_s, merge_dupes=merge_dupes)
 
     results: list[Optional[SearchResult]] = [None] * n_envs
     errors: list[tuple[int, Exception]] = []
@@ -736,7 +784,13 @@ def walk_reuse_root(root: "_Node", actions, num_choices: int,
     deterministic line indices are stable, so child-by-index is exact."""
     node = root
     for a in actions:
-        node = node.children.get(int(a))
+        a = int(a)
+        # A real played action may be a merged-away duplicate (the tree only
+        # keeps children at representative indices) — canonicalize through the
+        # node's merge partition before the child lookup.
+        if node.rep is not None and 0 <= a < node.num_choices:
+            a = int(node.rep[a])
+        node = node.children.get(a)
         if node is None:
             return None
     if node.num_choices != num_choices or node.self_is_a != seat_is_a:
@@ -793,6 +847,7 @@ def _simulate(
     rollout_turns: int = 0,
     rollout_anchor: int = 0,
     memo_ctx: Optional[dict] = None,
+    merge_dupes: bool = False,
 ) -> tuple[float, int]:
     """One PUCT descent from the (already restored+determinized) root.
     Returns (leaf value in root-node mover perspective, engine steps used).
@@ -843,8 +898,10 @@ def _simulate(
             priors, value = evaluator.evaluate(query.obs, query.num_choices)
             pm = (pick_meta_for(query.obs, query.num_choices)
                   if picks is not None else None)
+            rep = (menu_merge_reps(query.obs, query.num_choices)
+                   if merge_dupes else None)
             node.children[action] = _Node(query.num_choices, priors, child_is_a,
-                                          pick_meta=pm)
+                                          pick_meta=pm, rep=rep)
             if rollout_turns > 0:
                 key = None
                 if (picks is not None and query.obs[_IS_SIDEBOARD_IDX] > 0.5
@@ -956,7 +1013,8 @@ class IncrementalSearch:
                  rollout_turns: int = 0,
                  rng: Optional[np.random.Generator] = None,
                  snapshot_slot: int = 0,
-                 world_seeds: Optional[Sequence[int]] = None):
+                 world_seeds: Optional[Sequence[int]] = None,
+                 merge_dupes: bool = True):
         if world_seeds is not None and len(world_seeds) < worlds:
             raise ValueError(
                 f"world_seeds needs >= {worlds} entries, got {len(world_seeds)}")
@@ -975,6 +1033,9 @@ class IncrementalSearch:
         self.priors = priors
         self.net_value = float(net_value)
         self._rollout_anchor = _rollout_anchor(self.root_obs)
+        self._merge_dupes = bool(merge_dupes)
+        root_rep = (menu_merge_reps(self.root_obs, self.num_choices)
+                    if merge_dupes else None)
         env.snapshot(snapshot_slot)
         self.seeds: list[int] = []
         self.roots: list[_Node] = []
@@ -982,7 +1043,8 @@ class IncrementalSearch:
             seed = (int(world_seeds[w]) if world_seeds is not None
                     else int(rng.integers(1, 2**31 - 1)))
             self.seeds.append(seed)
-            self.roots.append(_Node(self.num_choices, priors, self.root_is_a))
+            self.roots.append(_Node(self.num_choices, priors, self.root_is_a,
+                                    rep=root_rep))
         self._next_world = 0
         self.sims_run = 0
         self.sim_steps = 0
@@ -1002,7 +1064,8 @@ class IncrementalSearch:
             _check_root_query(q, self.num_choices, w)
             _, steps = _simulate(env, self._evaluator, self.roots[w],
                                  self._c_puct, self._max_depth,
-                                 self._rollout_turns, self._rollout_anchor)
+                                 self._rollout_turns, self._rollout_anchor,
+                                 merge_dupes=self._merge_dupes)
             self.sims_run += 1
             self.sim_steps += steps
         return self.stats()
@@ -1053,6 +1116,10 @@ class IncrementalSearch:
         node = root
         a = int(action)
         for _ in range(max(0, int(max_len))):
+            # A caller may name a merged-away duplicate (e.g. clicking its
+            # zero-visit row in the analysis table) — show its group's line.
+            if node.rep is not None and 0 <= a < node.num_choices:
+                a = int(node.rep[a])
             n_vis = int(node.N[a])
             if n_vis <= 0:
                 break

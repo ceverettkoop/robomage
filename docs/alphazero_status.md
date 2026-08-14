@@ -943,6 +943,63 @@ as the design intent it was built against:
   Python-generated shards; (c) throughput benchmark vs the Phase C Python
   generator.
 
+## Duplicate-edge merging (2026-08-14)
+
+Both search backends merge **interchangeable duplicate menu actions** into one
+edge (three copies of Tropical Island in hand = one "play Tropical Island"
+edge), so a fixed sim budget stops splitting itself across identical subtrees
+and searches strictly more unique futures, and the collective line carries its
+full prior mass (no vote-splitting against distinct alternatives).
+
+- **Predicate (the shared Python↔C++ contract):** `decode.menu_merge_reps` /
+  `MENU_MERGE_WHITELIST` (train/decode.py) and its bit-exact twin
+  `src/actor/menu_merge.h`. `rep[i]` = lowest menu index with an equal
+  whitelisted key `(category, card id, ctrl, zone_ref, ordinal)` — a pure
+  integer decode of the six per-action obs blocks (whitelisted zones always
+  carry `slot_ref == -1`, so no state reads). Whitelist: all same-owner HAND
+  picks (cast / play-land / discard / bottom-deck / cost-pitch), library
+  search picks (SEARCH_LIBRARY / TOP_LIBRARY), graveyard picks (targets /
+  choose-card / escape-cost exiles / flashback-variant casts), and exile
+  CHOOSE_CARD picks. Deliberately excluded: **cast-from-exile / play-free**
+  (two same-name exile cards can carry different hidden
+  `ImpulseCastPermission`s — free vs pay-life vs energy, suspend timing),
+  `OTHER_CHOICE`, null card ids, and anything with a real `slot_ref`
+  (battlefield/stack state can differ per entity).
+- **Tree mechanics:** each node stores the partition (`_Node.rep` /
+  `Node::rep`) captured from its creation obs (the `pick_meta` pattern);
+  raw priors are **folded** onto representatives (ascending member index,
+  float64) and `select()` masks non-representatives, so N/W/children only
+  ever live at rep indices and the engine is only ever sent rep indices.
+  Invariant: *fold exactly once, immediately after every P assignment*
+  (creation, boundary-root adoption, batched flush) — adoption overwrites P
+  with fresh raw priors first, so double-folding is impossible. Root
+  Dirichlet noise keeps its **raw-dimension** draws (rng streams unchanged);
+  the fold happens after mixing, so a duplicate group gets the sum of its
+  members' noise.
+- **Naturally-canonical fallbacks:** duplicate actions have bit-identical
+  per-action features, so the net's logits for them are identical and every
+  first-max argmax fallback already picks the group's lowest index (= the
+  rep). If the net ever gains positional per-action features this stops
+  holding and the fallback paths must canonicalize explicitly on BOTH sides.
+- **Training targets unchanged in shape:** `pi` stays a raw-menu-width visit
+  distribution with all of a group's mass on its representative; no mask
+  change, no shard-schema change (identical logits make the CE loss
+  indifferent to within-group placement). Real played duplicate indices are
+  canonicalized through each node's `rep` at the walk/follow sites
+  (`walk_reuse_root`, `_try_follow_tree`, C++ `walk_node`).
+- **Accepted approximation:** graveyard/hand recency — removing the older vs
+  newer copy permutes the remaining obs id sequences; the states are
+  semantically equivalent, the obs bytes differ.
+- **Kill-switch:** `merge_dupes=True` kwarg (`run_search` /
+  `IncrementalSearch` / `SearchController` / `AnalysisConfig`),
+  `az_selfplay --merge-dupes 0|1`, actor `--merge-dupes 0|1`
+  (`MCTSConfig::merge_dupes`). Config-constant per process — never flip it
+  across a persisted sideboard boundary.
+- **Tests:** `train/test_menu_merge.py` (predicate + fold/select/walk
+  semantics, standalone); `train/test_mcts_parity.py` now also asserts ≥1
+  duplicate-bearing searched root (non-vacuous), zero visit mass on
+  merged-away duplicates, and a `--merge-dupes 0` kill-switch parity case.
+
 ## Notes, quirks, known limitations
 
 - The `SEARCHINFO safe=` split is effectively closed since the snapshot-safe

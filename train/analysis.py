@@ -4366,7 +4366,21 @@ def _report_search_compare(ctrl, args):
               "policy — try a deck/opponent with more loop-safe priority windows).")
         return
 
-    kls = np.array([_kl(r["priors"], r["visit_dist"]) for r in recs])
+    # The search merges duplicate edges (visit mass sits on each group's
+    # representative), so fold the raw priors the same way before comparing —
+    # otherwise duplicate-heavy roots would report inflated KL.
+    def _folded_priors(r):
+        from decode import menu_merge_reps
+        p = r["priors"].copy()
+        rep = menu_merge_reps(r["obs"], r["num_choices"])
+        for i in range(1, r["num_choices"]):
+            j = int(rep[i])
+            if j != i:
+                p[j] += p[i]
+                p[i] = 0.0
+        return p
+
+    kls = np.array([_kl(_folded_priors(r), r["visit_dist"]) for r in recs])
     agree = np.array([int(np.argmax(r["priors"]) == np.argmax(r["visit_dist"]))
                       for r in recs])
     net_v = np.array([r["net_value"] for r in recs])

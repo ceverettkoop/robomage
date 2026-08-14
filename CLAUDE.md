@@ -913,7 +913,13 @@ z. Recorder regression: `train/test_shard_record.py`, wired into default `make c
 - `train/search_env.py` — `SearchRoboMageEnv` (snapshot protocol client, mirror pool,
   `spawn_detached_mirror`)
 - `train/mcts.py` — determinized PUCT search: `run_search`/`run_search_parallel` (now also
-  reporting per-action `q`, `w_sum`, per-world `world_values`) and `IncrementalSearch`
+  reporting per-action `q`, `w_sum`, per-world `world_values`) and `IncrementalSearch`.
+  **Duplicate-edge merging is ON by default** (`merge_dupes=True`): interchangeable duplicate
+  menu actions (same-owner hand picks, library search picks, graveyard/exile picks — see
+  `decode.menu_merge_reps`/`MENU_MERGE_WHITELIST`) collapse to one search edge, with the C++
+  twin in `src/actor/menu_merge.h`; the two predicates MUST change in lockstep (the actor
+  parity gate asserts bit-identical visits). See the "Duplicate-edge merging" section of
+  `docs/alphazero_status.md`
 - `train/test_analysis_session.py` — analysis-core regression (opt-in ci tier `analysis`)
 - `train/az_inspect.py` — **static** inspection of an AZ checkpoint, never from a played game.
   Most views need only the WEIGHTS: card-embedding neighbours / label purity / clusters / PCA

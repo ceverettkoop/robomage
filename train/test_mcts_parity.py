@@ -113,13 +113,21 @@ class ParitySearchController:
 
     wants_search_env = True
 
-    def __init__(self, evaluator, sb_budget=False, sb_persist=False):
+    def __init__(self, evaluator, sb_budget=False, sb_persist=False,
+                 merge_dupes=True):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
         self.ev = evaluator
         self.env = None
         self.root_counter = 0
         self.records = []  # list[(root_index, num_choices, np.int64[num_choices])]
         self.is_sb = []    # parallel to records: was each searched root a sideboard root
+        # Duplicate-edge merging (must match the actor's --merge-dupes).
+        # rep_records holds each searched root's menu_merge_reps partition so
+        # main() can assert the feature was actually exercised (>= 1
+        # non-identity root) and that visit mass never lands on a
+        # merged-away duplicate.
+        self.merge_dupes = merge_dupes
+        self.rep_records = []
         # When set, mirror the actor's sideboard budget (SB_SIMS/SB_WORLDS/
         # SB_MAX_DEPTH/SB_ROLLOUT_TURNS) at is_sideboard_phase roots; in-game
         # roots stay on the SIMS/WORLDS/default budget. Off => every root uses
@@ -162,7 +170,8 @@ class ParitySearchController:
         is_sb = bool(obs[_IS_SIDEBOARD_IDX] > 0.5)
         if self.sb_budget and is_sb:
             kw = dict(sims=SB_SIMS, worlds=SB_WORLDS, max_depth=SB_MAX_DEPTH,
-                      rollout_turns=SB_ROLLOUT_TURNS, c_puct=C_PUCT)
+                      rollout_turns=SB_ROLLOUT_TURNS, c_puct=C_PUCT,
+                      merge_dupes=self.merge_dupes)
             if self.sb_persist:
                 key = sb_root_key(obs)
                 b = self._boundary
@@ -192,10 +201,13 @@ class ParitySearchController:
         else:
             self._boundary = None
             result = run_search(env, self.ev, sims=SIMS, worlds=WORLDS,
-                                c_puct=C_PUCT, world_seeds=_seeds_for(r))
+                                c_puct=C_PUCT, world_seeds=_seeds_for(r),
+                                merge_dupes=self.merge_dupes)
         self.records.append((r, int(num_choices),
                              result.visits.astype(np.int64)))
         self.is_sb.append(is_sb)
+        from decode import menu_merge_reps
+        self.rep_records.append(menu_merge_reps(obs, num_choices))
         chosen = result.best_action()
         self._latch(obs, chosen)
         return chosen
@@ -219,11 +231,13 @@ def _read_visits_dump(path):
     return out
 
 
-def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False):
+def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
+               merge_dupes=True):
     cmd = [ACTOR_BIN, "--search", "--sims", str(SIMS), "--worlds", str(WORLDS),
            "--c", str(C_PUCT), "--batch", str(batch), "--world-seeds",
            str(SEED_BASE), "--deck", DECK, "--seed", str(SEED),
-           "--model", ts_path, "--dump-visits", dump_path, "--games", "1"]
+           "--model", ts_path, "--dump-visits", dump_path, "--games", "1",
+           "--merge-dupes", str(int(merge_dupes))]
     if bo3:
         cmd.append("--bo3")
     if sb is not None:
@@ -239,14 +253,16 @@ def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False):
     return _read_visits_dump(dump_path)
 
 
-def _python_reference(ts_path, bo3, sb_budget=False, sb_persist=False):
+def _python_reference(ts_path, bo3, sb_budget=False, sb_persist=False,
+                      merge_dupes=True):
     """Drive the SAME game (bo1) or MATCH (bo3) through the Python reference,
     searching each loop-safe root. When ``sb_budget`` mirrors the actor's separate
     sideboard budget at is_sideboard_phase roots; ``sb_persist`` additionally
     mirrors --sb-persist boundary trees + the rollout memo.
-    Returns (records, is_sb)."""
+    Returns (records, is_sb, rep_records)."""
     ev = TSEvaluator(ts_path)
-    ctrl = ParitySearchController(ev, sb_budget=sb_budget, sb_persist=sb_persist)
+    ctrl = ParitySearchController(ev, sb_budget=sb_budget, sb_persist=sb_persist,
+                                  merge_dupes=merge_dupes)
     env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
     # The C++ actor plays to the engine's natural end (no decision cap); disable
     # RoboMageEnv's training-only step truncation so both sides run the SAME full
@@ -258,7 +274,7 @@ def _python_reference(ts_path, bo3, sb_budget=False, sb_persist=False):
         runner.drive_game(env, obs, ctrl, ctrl)
     finally:
         env.close()
-    return ctrl.records, ctrl.is_sb
+    return ctrl.records, ctrl.is_sb, ctrl.rep_records
 
 
 def _compare_visits(tag, actor1, py):
@@ -325,16 +341,29 @@ def main():
         # (including the sideboard roots) must match bit-for-bit.
         actor1 = None            # bo1 batch=1 visits, reused by the K=16 report below
         sb_default_summary = None  # bo3 inherited-budget sideboard-root summary (gate #4)
+        merged_roots = 0         # searched roots whose menu had duplicate groups
         for bo3 in (False, True):
             tag = "bo3" if bo3 else "bo1"
             dump1 = os.path.join(td, f"visits_b1_{tag}.bin")
             visits = _run_actor(ts_path, dump1, batch=1, bo3=bo3)
             if visits is None:
                 return 1
-            py, is_sb = _python_reference(ts_path, bo3)
+            py, is_sb, py_reps = _python_reference(ts_path, bo3)
             rc, total_sims = _compare_visits(tag, visits, py)
             if rc:
                 return rc
+            # Merge invariants: visit mass never lands on a merged-away
+            # duplicate, and (asserted after both games) the run actually
+            # contained duplicate-bearing menus — otherwise the merge parity
+            # would be passing vacuously.
+            for i, ((_ri, nc, v), rep) in enumerate(zip(py, py_reps)):
+                nonrep = np.arange(nc) != rep[:nc]
+                merged_roots += int(nonrep.any())
+                if np.any(v[:nc][nonrep] != 0):
+                    print(f"FAIL [{tag}]: root {i} has visits on merged-away "
+                          f"duplicates (rep={rep.tolist()}, "
+                          f"visits={v.tolist()})", file=sys.stderr)
+                    return 1
             print(f"PASS [{tag}]: MCTS visit-count parity exact over {len(visits)} "
                   f"searched roots ({total_sims} total root visits) "
                   f"[deck={DECK} seed={SEED} sims={SIMS} worlds={WORLDS} "
@@ -343,6 +372,27 @@ def main():
                 sb_default_summary = _sb_root_summary(visits, is_sb)
             else:
                 actor1 = visits
+        if merged_roots == 0:
+            print("FAIL: no searched root contained duplicate menu actions — "
+                  "the merge feature was not exercised (deck/seed change?)",
+                  file=sys.stderr)
+            return 1
+        print(f"PASS [merge]: {merged_roots} searched root(s) had duplicate "
+              f"groups; zero visit mass on merged-away duplicates everywhere")
+
+        # Kill-switch parity (bo1): --merge-dupes 0 on both sides must
+        # reproduce the legacy per-copy-edge search bit-for-bit.
+        dump_nm = os.path.join(td, "visits_b1_nomerge.bin")
+        actor_nm = _run_actor(ts_path, dump_nm, batch=1, merge_dupes=False)
+        if actor_nm is None:
+            return 1
+        py_nm, _, _ = _python_reference(ts_path, bo3=False, merge_dupes=False)
+        rc, total_sims = _compare_visits("bo1-nomerge", actor_nm, py_nm)
+        if rc:
+            return rc
+        print(f"PASS [bo1-nomerge]: kill-switch (--merge-dupes 0) parity exact "
+              f"over {len(actor_nm)} searched roots ({total_sims} total root "
+              f"visits)")
 
         # Explicit sb-budget cases (bo3): run the actor with a SEPARATE sideboard
         # budget (--sb-sims/--sb-worlds/--sb-max-depth/--sb-rollout-turns) while
@@ -361,9 +411,9 @@ def main():
                                       SB_ROLLOUT_TURNS), sb_persist=persist)
             if actor_sb is None:
                 return 1
-            py_sb, is_sb_sb = _python_reference(ts_path, bo3=True,
-                                                sb_budget=True,
-                                                sb_persist=persist)
+            py_sb, is_sb_sb, _ = _python_reference(ts_path, bo3=True,
+                                                   sb_budget=True,
+                                                   sb_persist=persist)
             rc, total_sims = _compare_visits(tag, actor_sb, py_sb)
             if rc:
                 return rc

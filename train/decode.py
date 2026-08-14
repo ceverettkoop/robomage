@@ -117,7 +117,8 @@ from _enums import (_CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX,  # noqa: 
                     CAT_BOTTOM_DECK_CARD,
                     CAT_MANA_W, CAT_MANA_C, CAT_SEARCH_LIBRARY, CAT_TOP_LIBRARY,
                     CAT_PAYING_COSTS, CAT_DIG_CHOICE, CAT_OTHER_CHOICE,
-                    CAT_SHUFFLE, CAT_DONT_SHUFFLE, CAT_EXILE_FROM_YARD)
+                    CAT_SHUFFLE, CAT_DONT_SHUFFLE, CAT_EXILE_FROM_YARD,
+                    CAT_DISCARD, CAT_CHOOSE_CARD)
 
 # Categories whose choice references a specific board/stack entity, where an
 # "@slotN" suffix disambiguates same-named cards: select attacker/blocker,
@@ -1232,6 +1233,103 @@ def menu_is_interchangeable(obs, num_choices):
     if any(b is None or not np.array_equal(b, blocks[0]) for b in blocks):
         return False
     return not (state_ref_targets(state) & {int(r) for r in refs})
+
+
+# ── Duplicate-edge merge partition (MCTS) ─────────────────────────────────────
+#
+# `menu_merge_reps` is the shared Python↔C++ contract for merging duplicate
+# search edges (three copies of the same card in hand offered as three
+# identical actions collapse to ONE edge). The C++ twin is
+# src/actor/menu_merge.h — the two MUST stay in exact lockstep (the actor
+# parity gate, ci_check --tier actor, asserts bit-identical visit counts).
+#
+# The whitelist is (category, zone_ref) pairs for which serialized-identical
+# actions are known-interchangeable. All of them reference cards in hand /
+# library / graveyard / exile, whose actions always carry slot_ref == -1 (the
+# entity-ref slot map covers only battlefield + stack), so the merge key never
+# needs to read the state vector — it is a pure integer decode of the six
+# per-action metadata blocks.
+#
+# Deliberately EXCLUDED:
+#   - CAST_SPELL / PLAY_FREE @ exile: two same-name exile cards can carry
+#     different hidden ImpulseCastPermissions (free vs pay-life vs energy,
+#     from_suspend timing) that the obs cannot distinguish.
+#   - CAT_OTHER_CHOICE and null card ids: text-only prompts whose options only
+#     a description distinguishes (same rule as menu_is_interchangeable).
+#   - Battlefield/stack picks (slot_ref >= 0): per-entity state (damage,
+#     counters, attachments) can differ; menu_is_interchangeable's whole-menu
+#     fast path still covers those via entity_ref_features.
+MENU_MERGE_WHITELIST = frozenset({
+    # hand picks (zone REF_SELF_HAND = 3): cast / play land / discard /
+    # bottom-deck / cost-payment pitch
+    (CAT_CAST_SPELL, 3), (CAT_PLAY_LAND, 3), (CAT_DISCARD, 3),
+    (CAT_BOTTOM_DECK_CARD, 3), (CAT_PAYING_COSTS, 3),
+    # library search picks: library cards have no ActionRefZone value, so they
+    # emit zone REF_NONE = 0 (and the null ctrl sentinel)
+    (CAT_SEARCH_LIBRARY, 0), (CAT_TOP_LIBRARY, 0),
+    # graveyard picks (REF_SELF_GY = 6 / REF_OPP_GY = 7): reanimation targets,
+    # zone-change picks, escape-cost exiles, flashback/escape/GY-permission
+    # casts (distinguished from normal casts by their variant ordinal)
+    (CAT_SELECT_TARGET, 6), (CAT_SELECT_TARGET, 7),
+    (CAT_CHOOSE_CARD, 6), (CAT_CHOOSE_CARD, 7),
+    (CAT_EXILE_FROM_YARD, 6), (CAT_EXILE_FROM_YARD, 7),
+    (CAT_CAST_SPELL, 6), (CAT_CAST_SPELL, 7),
+    # exile picks (REF_SELF_EXILE = 8 / REF_OPP_EXILE = 9): zone-change picks
+    # only — see the cast-from-exile exclusion above
+    (CAT_CHOOSE_CARD, 8), (CAT_CHOOSE_CARD, 9),
+})
+
+
+def menu_merge_reps(obs, num_choices):
+    """Partition the legal-action menu into duplicate groups for edge merging.
+
+    Returns an int16 array `rep` of length `num_choices` where `rep[i]` is the
+    LOWEST menu index whose whitelisted merge key equals action i's (so
+    `rep[i] == i` marks a representative and `rep[0] == 0` always). The merge
+    key is (category, card id, ctrl, zone_ref, ordinal) over the obs metadata
+    blocks; an action is mergeable only when its card id is a real vocab id,
+    its category is not CAT_OTHER_CHOICE, its slot_ref is -1, and its
+    (category, zone_ref) pair is in MENU_MERGE_WHITELIST (library picks
+    additionally require the null ctrl sentinel — belt-and-braces for their
+    REF_NONE encoding).
+
+    The C++ mirror is menu_merge_reps() in src/actor/menu_merge.h; any change
+    here must land there identically (actor visit parity is asserted bit-exact).
+    """
+    n = int(num_choices)
+    rep = np.arange(n, dtype=np.int16)
+    if n <= 1:
+        return rep
+    cats = action_categories(obs, n)
+    ids = np.round(action_card_ids(obs)[:n] * N_CARD_TYPES).astype(int)
+    ctrl_raw = action_ctrls(obs)[:n]
+    # three-way controller classification (see _ctrl_str): 2 = null sentinel,
+    # 1 = self, 0 = opponent
+    ctrl = np.where(ctrl_raw < _NULL_SENTINEL / 2, 2,
+                    np.where(ctrl_raw > 0.5, 1, 0)).astype(int)
+    zones = action_zone_refs(obs, n)
+    slots = action_slot_refs(obs, n)
+    ords = action_ordinals(obs, n)
+    lib_cats = (CAT_SEARCH_LIBRARY, CAT_TOP_LIBRARY)
+    mergeable = [
+        ids[i] >= 0
+        and int(cats[i]) != CAT_OTHER_CHOICE
+        and int(slots[i]) == -1
+        and (int(cats[i]), int(zones[i])) in MENU_MERGE_WHITELIST
+        and (int(cats[i]) not in lib_cats or int(ctrl[i]) == 2)
+        for i in range(n)
+    ]
+    for i in range(1, n):
+        if not mergeable[i]:
+            continue
+        for j in range(i):
+            if (mergeable[j]
+                    and cats[j] == cats[i] and ids[j] == ids[i]
+                    and ctrl[j] == ctrl[i] and zones[j] == zones[i]
+                    and ords[j] == ords[i]):
+                rep[i] = rep[j]
+                break
+    return rep
 
 
 # ── Formatting helpers ────────────────────────────────────────────────────────

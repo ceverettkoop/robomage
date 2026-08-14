@@ -478,7 +478,7 @@ class SearchController:
                  sims_cap: int = 0, sb_sims_cap: int = 0, procs: int = 1,
                  clock: float | None = None, clock_t_min: float = 0.5,
                  clock_t_max: float = 60.0, clock_sb_t_max: float = 15.0,
-                 paced: bool = False):
+                 paced: bool = False, merge_dupes: bool = True):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
         if procs < 1:
             raise ValueError(f"procs must be >= 1, got {procs}")
@@ -505,6 +505,10 @@ class SearchController:
         self._time_budget = time_budget
         self._sims_cap = sims_cap
         self._sb_sims_cap = sb_sims_cap
+        # Duplicate-edge merging (decode.menu_merge_reps). Config-constant for
+        # the controller's lifetime — must not flip across a sideboard
+        # boundary's persisted trees.
+        self._merge_dupes = bool(merge_dupes)
         # Mirror-pool engine count for world-parallel interactive search. procs==1
         # (the default) keeps the single-env run_search call site byte-identical
         # (parity depends on it); procs>1 fans the worlds across procs-1 extra
@@ -701,7 +705,12 @@ class SearchController:
         for root in trees:
             node = root
             for a in delta:
-                node = node.children.get(int(a))
+                a = int(a)
+                # Real actions may be merged-away duplicates; the tree only
+                # keeps children at representative indices.
+                if node.rep is not None and 0 <= a < node.num_choices:
+                    a = int(node.rep[a])
+                node = node.children.get(a)
                 if node is None:
                     break
             if (node is not None and node.num_choices == num_choices
@@ -816,7 +825,8 @@ class SearchController:
                 max_depth=self._sb_max_depth,
                 rollout_turns=self._sb_rollout_turns,
                 rng=self._rng, time_budget_s=tb,
-                time_budget_min_s=tmin_s)
+                time_budget_min_s=tmin_s,
+                merge_dupes=self._merge_dupes)
             persist_here = sbp_key is not None and envs is None
             if persist_here:
                 # Boundary continue: same identity AND every action since the
@@ -863,7 +873,8 @@ class SearchController:
             result = _search(
                 sims=(self._sims_cap if timed else self._sims),
                 worlds=self._worlds, c_puct=self._c_puct,
-                rng=self._rng, time_budget_s=tb, time_budget_min_s=tmin_s)
+                rng=self._rng, time_budget_s=tb, time_budget_min_s=tmin_s,
+                merge_dupes=self._merge_dupes)
         self.stats["searched"] += 1
         self.stats["sims"] += result.sims_run
         self.stats["sim_steps"] += result.sim_steps

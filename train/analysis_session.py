@@ -81,6 +81,7 @@ class AnalysisConfig:
     sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS  # sideboard roots: leaf-rollout horizon (player turns; 0 = off)
     seed: int = 0            # search rng seed; 0 = fresh entropy per run
     auto_analyze: bool = True  # UI: start a run at every new analyzable decision
+    merge_dupes: bool = True   # merge interchangeable duplicate menu actions
 
 
 @dataclass
@@ -253,7 +254,7 @@ class AnalysisSession:
                 worlds=cfg.worlds, c_puct=cfg.c_puct,
                 max_depth=cfg.sb_max_depth if req.is_sideboard else cfg.max_depth,
                 rollout_turns=(cfg.sb_rollout_turns if req.is_sideboard else 0),
-                rng=rng)
+                rng=rng, merge_dupes=cfg.merge_dupes)
             stats = self._search.stats()
             if on_update is not None:
                 on_update(stats)

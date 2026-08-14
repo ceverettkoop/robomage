@@ -16,6 +16,7 @@
 #include "classes/game.h"     // cur_game.turn (rollout horizon check)
 #include "components/zone.h"  // Zone::PLAYER_A / PLAYER_B
 #include "error.h"
+#include "menu_merge.h"       // menu_merge_reps (duplicate-edge merging)
 #include "obs_builder.h"      // build_obs, ACTOR_OBS_SIZE, ACTOR_SELF_IS_A_IDX
 #include "search_server.h"    // search_loop_safe, search_request_restore, determinize_hidden_state
 #include "snapshot.h"         // snapshot_save, snapshot_release_all
@@ -66,6 +67,12 @@ struct Node {
     // persistent sideboard-boundary search is active; empty otherwise.
     std::vector<int16_t> menu_cat;
     std::vector<int16_t> menu_id;
+    // Duplicate-edge merge partition (menu_merge.h; mirrors _Node.rep):
+    // rep[i] is action i's representative index. Empty = merging disabled.
+    // Filled (and P folded onto the representatives) by Impl::init_merge
+    // after every P assignment; select() skips non-representatives, so
+    // N/W/children only ever live at representative indices.
+    std::vector<int16_t> rep;
 #ifndef NDEBUG
     // Debug builds only: the menu's per-action metadata (cat / card id / ctrl /
     // zone / slot ref / ordinal, from the obs blocks) recorded at node creation,
@@ -89,6 +96,9 @@ struct Node {
         int best = 0;
         double best_val = -std::numeric_limits<double>::infinity();
         for (int i = 0; i < num_choices; i++) {
+            // Merged-away duplicates are never selected (Python: sel_mask
+            // -inf). rep[0] == 0, so the best=0 init stays a representative.
+            if (!rep.empty() && rep[static_cast<size_t>(i)] != i) continue;
             double ni = static_cast<double>(N[static_cast<size_t>(i)]);
             double q = N[static_cast<size_t>(i)] > 0
                            ? W[static_cast<size_t>(i)] / ni
@@ -240,6 +250,27 @@ struct AZMcts::Impl {
         return pool.back().get();
     }
 
+    // Fill n->rep from the node's creation obs and fold P onto the
+    // representatives (ascending member index, float64) — mirror of
+    // _Node.set_rep. MUST run exactly once after EVERY assignment of raw
+    // priors to n->P (fresh creation, boundary-root adoption, batched
+    // flush_pending), never twice: adoption always overwrites P with fresh
+    // raw priors first, so double-folding is structurally impossible.
+    void init_merge(Node* n, const float* o) {
+        if (!cfg.merge_dupes) {
+            n->rep.clear();
+            return;
+        }
+        menu_merge_reps(o, n->num_choices, n->rep);
+        for (int i = 1; i < n->num_choices; i++) {
+            const int r = n->rep[static_cast<size_t>(i)];
+            if (r != i) {
+                n->P[static_cast<size_t>(r)] += n->P[static_cast<size_t>(i)];
+                n->P[static_cast<size_t>(i)] = 0.0;
+            }
+        }
+    }
+
 #ifndef NDEBUG
     // Debug builds only (see Node::dbg_menu): record the per-action metadata
     // blocks of `o`'s menu into `out`.
@@ -379,6 +410,11 @@ struct AZMcts::Impl {
         } else {
             cur_root = make_node(root_n, root_priors, root_is_a);
         }
+        // Every branch above just assigned raw (clean or noise-mixed) priors
+        // to cur_root->P, so the merge fold applies exactly once — including
+        // re-adopted boundary roots, whose partition is refilled from THIS
+        // search's root obs (same menu by world consistency).
+        init_merge(cur_root, root_obs.data());
         if (memo_active && cur_root->menu_cat.empty())
             fill_pick_meta(cur_root, root_obs.data(), root_n);
         world_roots[static_cast<size_t>(w)] = cur_root;
@@ -466,6 +502,7 @@ struct AZMcts::Impl {
             if (pl.parent->children.find(pl.action) == pl.parent->children.end()) {
                 pl.parent->children[pl.action] =
                     make_node(pl.num_choices, res[static_cast<size_t>(i)].priors, is_a);
+                init_merge(pl.parent->children[pl.action], pl.obs.data());
 #ifndef NDEBUG
                 capture_menu(pl.obs.data(), pl.num_choices,
                              pl.parent->children[pl.action]->dbg_menu);
@@ -557,6 +594,10 @@ struct AZMcts::Impl {
                            int num_choices, bool seat_is_a) {
         Node* n = root;
         for (int a : actions) {
+            // Real played actions may be merged-away duplicates; children are
+            // keyed by representative indices only.
+            if (!n->rep.empty() && a >= 0 && a < n->num_choices)
+                a = n->rep[static_cast<size_t>(a)];
             auto it = n->children.find(a);
             if (it == n->children.end()) return nullptr;
             n = it->second;
@@ -745,6 +786,7 @@ struct AZMcts::Impl {
             }
             AZEvalResultD r = eval_one(o, nc);
             parent->children[paction] = make_node(nc, r.priors, leaf_is_a);
+            init_merge(parent->children[paction], o);
             fill_pick_meta(parent->children[paction], o, nc);
 #ifndef NDEBUG
             capture_menu(o, nc, parent->children[paction]->dbg_menu);
