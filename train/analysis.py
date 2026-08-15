@@ -4368,7 +4368,8 @@ def _report_search_compare(ctrl, args):
 
     # The search merges duplicate edges (visit mass sits on each group's
     # representative), so fold the raw priors the same way before comparing —
-    # otherwise duplicate-heavy roots would report inflated KL.
+    # otherwise duplicate-heavy roots would report inflated KL and spurious
+    # argmax disagreement (net's max prior on a copy search never visits).
     def _folded_priors(r):
         from decode import menu_merge_reps
         p = r["priors"].copy()
@@ -4380,9 +4381,10 @@ def _report_search_compare(ctrl, args):
                 p[i] = 0.0
         return p
 
-    kls = np.array([_kl(_folded_priors(r), r["visit_dist"]) for r in recs])
-    agree = np.array([int(np.argmax(r["priors"]) == np.argmax(r["visit_dist"]))
-                      for r in recs])
+    folded = [_folded_priors(r) for r in recs]
+    kls = np.array([_kl(p, r["visit_dist"]) for p, r in zip(folded, recs)])
+    agree = np.array([int(np.argmax(p) == np.argmax(r["visit_dist"]))
+                      for p, r in zip(folded, recs)])
     net_v = np.array([r["net_value"] for r in recs])
     root_v = np.array([r["root_value"] for r in recs])
     vmae = float(np.mean(np.abs(net_v - root_v)))

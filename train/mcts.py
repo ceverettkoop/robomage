@@ -847,7 +847,7 @@ def _simulate(
     rollout_turns: int = 0,
     rollout_anchor: int = 0,
     memo_ctx: Optional[dict] = None,
-    merge_dupes: bool = False,
+    merge_dupes: bool = True,
 ) -> tuple[float, int]:
     """One PUCT descent from the (already restored+determinized) root.
     Returns (leaf value in root-node mover perspective, engine steps used).
